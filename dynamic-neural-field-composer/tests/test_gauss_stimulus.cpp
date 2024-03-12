@@ -3,6 +3,11 @@
 
 #include "elements/gauss_stimulus.h"
 
+void createGaussStimulusWrapper(const std::string& id, const double& size, const dnf_composer::element::GaussStimulusParameters& gsp) 
+{
+    dnf_composer::element::GaussStimulus stimulus({id, size}, gsp);
+}
+
 TEST_CASE("GaussStimulus class tests", "[GaussStimulus]")
 {
     // Create a GaussStimulus object for testing
@@ -26,13 +31,16 @@ TEST_CASE("GaussStimulus class tests", "[GaussStimulus]")
 
         // invalid position
         gsp.position = position + size;
-        REQUIRE_THROWS_AS(dnf_composer::element::GaussStimulus::GaussStimulus({ id, size }, gsp), dnf_composer::Exception);
+        REQUIRE_THROWS_AS(createGaussStimulusWrapper(id, size, gsp), dnf_composer::Exception);
+        //The C++ standard doesn't allow direct calls to constructors to create objects in regular code flow. 
+        //REQUIRE_THROWS_AS(dnf_composer::element::GaussStimulus::GaussStimulus({ id, size }, gsp), dnf_composer::Exception);
     }
 
     SECTION("GaussStimulus constructor with invalid size")
     {
         int invalidSize = 0;  // Choose a size that triggers the exception
-        REQUIRE_THROWS_AS(dnf_composer::element::GaussStimulus::GaussStimulus({ id, invalidSize }, gsp), dnf_composer::Exception);
+        REQUIRE_THROWS_AS(createGaussStimulusWrapper(id, size, gsp), dnf_composer::Exception);
+        //REQUIRE_THROWS_AS(dnf_composer::element::GaussStimulus({ id, invalidSize }, gsp), dnf_composer::Exception);
     }
 
     SECTION("init() method")

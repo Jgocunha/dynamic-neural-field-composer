@@ -2,6 +2,7 @@
 
 #include <string>
 #include <chrono>
+#include <cstring>
 
 #include "user_interface/user_interface_window.h"
 

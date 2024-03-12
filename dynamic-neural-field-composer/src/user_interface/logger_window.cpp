@@ -42,25 +42,25 @@ namespace dnf_composer
             const char* errorTag = "[ERROR]";
             const char* fatalTag = "[FATAL]";
 
-            // // Check if the line contains the DEBUG tag
-            // if (std::strncmp(line_start, debugTag, std::strlen(debugTag)) == 0)
-            //     textColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);  // Green
+            // Check if the line contains the DEBUG tag
+            if (std::strncmp(line_start, debugTag, std::strlen(debugTag)) == 0)
+                textColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);  // Green
 
-            // // Check if the line contains the INFO tag
-            // if (std::strncmp(line_start, infoTag, std::strlen(infoTag)) == 0)
-            //     textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  // White
+            // Check if the line contains the INFO tag
+            if (std::strncmp(line_start, infoTag, std::strlen(infoTag)) == 0)
+                textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  // White
 
-            // // Check if the line contains the WARNING tag
-            // if (std::strncmp(line_start, warningTag, std::strlen(warningTag)) == 0)
-            //     textColor = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);  // Yellow
+            // Check if the line contains the WARNING tag
+            if (std::strncmp(line_start, warningTag, std::strlen(warningTag)) == 0)
+                textColor = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);  // Yellow
 
-            // // Check if the line contains the ERROR tag
-            // if (std::strncmp(line_start, errorTag, std::strlen(errorTag)) == 0)
-            //     textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);  // Red
+            // Check if the line contains the ERROR tag
+            if (std::strncmp(line_start, errorTag, std::strlen(errorTag)) == 0)
+                textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);  // Red
 
-            // // Check if the line contains the FATAL tag
-            // if (std::strncmp(line_start, fatalTag, std::strlen(fatalTag)) == 0)
-            //     textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);  // Red
+            // Check if the line contains the FATAL tag
+            if (std::strncmp(line_start, fatalTag, std::strlen(fatalTag)) == 0)
+                textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);  // Red
         }
 
         void LoggerWindow::drawLog()

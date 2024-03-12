@@ -21,8 +21,12 @@ namespace dnf_composer
                 const auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
                 std::tm buf;
+                // https://stackoverflow.com/questions/69992446/c-location-of-localtime-s-in-gcc
+                // put WIN32 ifdef here
                 //if (localtime_s(&buf, &in_time_t))
                     //throw dnf_composer::Exception(dnf_composer::ErrorCode::LOG_LOCAL_TIME_ERROR);
+                if(localtime_r(&in_time_t, &buf) == nullptr)
+                    throw dnf_composer::Exception(dnf_composer::ErrorCode::LOG_LOCAL_TIME_ERROR);
 
                 const std::string levelStr = getLogLevelText(logLevel);
                 std::ostringstream oss;

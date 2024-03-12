@@ -136,3 +136,27 @@ cd build
 cmake ..
 make
 ```
+
+## Using g++ 13 on Ubuntu 22.04 for stuff like std::ranges
+
+https://lindevs.com/install-g-on-ubuntu/
+
+```bash
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+sudo apt install -y g++-13
+g++-13 --version # verify
+```
+
+## WIN32 incompatibilities
+
+1. localtime_r vs. localtime_s
+```cpp
+// in logger.cpp
+// https://stackoverflow.com/questions/69992446/c-location-of-localtime-s-in-gcc
+// put WIN32 ifdef here
+//if (localtime_s(&buf, &in_time_t))
+    //throw dnf_composer::Exception(dnf_composer::ErrorCode::LOG_LOCAL_TIME_ERROR);
+if(localtime_r(&in_time_t, &buf) == nullptr)
+    throw dnf_composer::Exception(dnf_composer::ErrorCode::LOG_LOCAL_TIME_ERROR);
+```
+

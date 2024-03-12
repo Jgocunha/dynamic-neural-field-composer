@@ -23,11 +23,11 @@ namespace dnf_composer
 
 			void Timer::stop() const
 			{
-				// auto endTimepoint = std::chrono::high_resolution_clock::now();
-				// const auto start = std::chrono::time_point_cast<std::chrono::microseconds>(startTimepoint).time_since_epoch();
-				// const auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch();
-				// const auto duration = end - start;
-				// std::cout << "Signature: " << sig << " Duration: " << duration << std::endl;
+				auto endTimepoint = std::chrono::high_resolution_clock::now();
+				const auto start = std::chrono::time_point_cast<std::chrono::microseconds>(startTimepoint).time_since_epoch();
+				const auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch();
+				const auto duration = end - start;
+				std::cout << "Signature: " << sig << " Duration: " << duration << std::endl;
 			}
 		}
 	}
