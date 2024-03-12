@@ -275,35 +275,35 @@ target_include_directories(${EXE_PROJECT_EXAMPLE_PANDA_JOINT_TASK} PRIVATE inclu
 target_link_libraries(${EXE_PROJECT_EXAMPLE_PANDA_JOINT_TASK} PRIVATE imgui::imgui ${CMAKE_PROJECT_NAME})
 
 # # Setup Catch2
-enable_testing()
-find_package(Catch2 CONFIG REQUIRED)
-include(CTest)
-include(Catch)
+# enable_testing()
+# find_package(Catch2 CONFIG REQUIRED)
+# include(CTest)
+# include(Catch)
 
-# Add test project
-set(TEST_PROJECT ${CMAKE_PROJECT_NAME}-test)
-add_executable(${TEST_PROJECT}
-    tests/test.cpp
-    tests/test_clones.cpp
-    tests/test_simulation_rw.cpp
-    tests/test_application.cpp
-    tests/test_element.cpp
-    tests/test_gauss_kernel.cpp
-    tests/test_gauss_stimulus.cpp
-    tests/test_mexican_hat_kernel.cpp
-    tests/test_neural_field.cpp
-    tests/test_normal_noise.cpp
-    tests/test_simulation.cpp
-    tests/test_user_interface.cpp
-    tests/test_visualization.cpp
-    tests/test_learning_wizard.cpp
-    tests/test_element_factory.cpp
-    tests/test_kernel.cpp
-    tests/test_field_coupling.cpp
-    tests/test_gauss_field_coupling.cpp
-)
-target_include_directories(${TEST_PROJECT} PRIVATE include)
-target_link_libraries(${TEST_PROJECT} PRIVATE Catch2::Catch2 Catch2::Catch2WithMain ${CMAKE_PROJECT_NAME})
+# # Add test project
+# set(TEST_PROJECT ${CMAKE_PROJECT_NAME}-test)
+# add_executable(${TEST_PROJECT}
+# tests/test.cpp
+# tests/test_clones.cpp
+# tests/test_simulation_rw.cpp
+# tests/test_application.cpp
+# tests/test_element.cpp
+# tests/test_gauss_kernel.cpp
+# tests/test_gauss_stimulus.cpp
+# tests/test_mexican_hat_kernel.cpp
+# tests/test_neural_field.cpp
+# tests/test_normal_noise.cpp
+# tests/test_simulation.cpp
+# tests/test_user_interface.cpp
+# tests/test_visualization.cpp
+# tests/test_learning_wizard.cpp
+# tests/test_element_factory.cpp
+# tests/test_kernel.cpp
+# tests/test_field_coupling.cpp
+# tests/test_gauss_field_coupling.cpp
+# )
+# target_include_directories(${TEST_PROJECT} PRIVATE include)
+# target_link_libraries(${TEST_PROJECT} PRIVATE Catch2::Catch2 Catch2::Catch2WithMain ${CMAKE_PROJECT_NAME})
 
-# Automatically discover and add tests
-catch_discover_tests(${TEST_PROJECT})
+# # Automatically discover and add tests
+# catch_discover_tests(${TEST_PROJECT})

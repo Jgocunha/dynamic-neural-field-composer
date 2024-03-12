@@ -23,10 +23,10 @@ int main(int argc, char* argv[])
 		app.activateUserInterfaceWindow(dnf_composer::user_interface::ELEMENT_WINDOW);
 		app.activateUserInterfaceWindow(dnf_composer::user_interface::MONITORING_WINDOW);
 
-	    // dnf_composer::user_interface::PlotParameters plotParameters;
-	    // plotParameters.annotations = { "Plot title", "Spatial dimension", "Amplitude" };
-	    // plotParameters.dimensions = { 0, 100, -30, 40 , 1.0};
-		// app.activateUserInterfaceWindow(dnf_composer::user_interface::PLOT_WINDOW, plotParameters);
+	    dnf_composer::user_interface::PlotParameters plotParameters;
+	    plotParameters.annotations = { "Plot title", "Spatial dimension", "Amplitude" };
+	    plotParameters.dimensions = { 0, 100, -30, 40 , 1.0};
+		app.activateUserInterfaceWindow(dnf_composer::user_interface::PLOT_WINDOW, plotParameters);
 
 		app.init();
 

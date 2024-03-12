@@ -55,9 +55,10 @@ namespace dnf_composer
             glfwMakeContextCurrent(window);
             glfwSwapInterval(1); // Enable vsync
 
-            // Setup Dear ImGui context
+            // Setup Dear ImGui and ImPlot context
             IMGUI_CHECKVERSION();
             ImGui::CreateContext();
+            ImPlot::CreateContext();
             ImGuiIO& io = ImGui::GetIO(); (void)io;
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -130,7 +131,7 @@ namespace dnf_composer
 
             // Load Fonts
             std::string convertedPath = std::string(PROJECT_DIR) + "/resources/fonts/Lexend-Light.ttf";
-            const ImFont* font = io.Fonts->AddFontFromFileTTF(convertedPath.c_str(), 18.0f);
+            const ImFont* font = io.Fonts->AddFontFromFileTTF(convertedPath.c_str(), fontSize);
 
             // Our state
             bool show_demo_window = true;

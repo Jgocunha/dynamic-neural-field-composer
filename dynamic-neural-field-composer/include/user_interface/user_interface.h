@@ -57,9 +57,10 @@ namespace dnf_composer
 
 			GLFWwindow* window;
 			bool closeUI;
-			int windowWidth = 1280;
-            int windowHeight = 720;
+			int windowWidth = 2560;
+            int windowHeight = 1440;
 			ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.00f); // Darkish gray
+			double fontSize = 24.0;
 		public:
 			UserInterface();
 			UserInterface(const UserInterface&) = delete;
