@@ -59,8 +59,7 @@ namespace dnf_composer
 			bool closeUI;
 			int windowWidth = 1280;
             int windowHeight = 720;
-
-			//ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.00f); // Darkish gray
+			ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.00f); // Darkish gray
 		public:
 			UserInterface();
 			UserInterface(const UserInterface&) = delete;

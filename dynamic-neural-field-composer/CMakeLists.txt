@@ -151,14 +151,10 @@ set(src
     "src/wizards/learning_wizard.cpp"
 )
 
-# configure_file(./resources/resources.rc.in ./resources/resources.rc)
-
 # Define library target
 add_library(${CMAKE_PROJECT_NAME}
     ${header}
     ${src}
-
-    # ./resources/resources.rc
 )
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -167,13 +163,13 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+# Setup GLFW and OpenGL
+find_package(glfw3 REQUIRED)
+find_package(OpenGL REQUIRED)
+
 # Setup imgui
 find_package(imgui CONFIG REQUIRED)
-
-# target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui::imgui "d3d12.lib" "dxgi.lib" "d3dcompiler.lib")
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui::imgui)
-
-# LINUX_GL_LIBS = -lGL $(LINUX_GL_LIBS) `pkg-config --static --libs glfw3
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui::imgui glfw OpenGL)
 
 # Setup implot
 find_package(implot CONFIG REQUIRED)

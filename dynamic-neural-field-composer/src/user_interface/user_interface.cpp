@@ -74,8 +74,51 @@ namespace dnf_composer
             ImGuiStyle& style = ImGui::GetStyle();
             if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
             {
-                style.WindowRounding = 0.0f;
-                style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+                 style.WindowBorderSize = 1.0f;
+                style.WindowRounding = 0.25f;
+                style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
+
+                // Set window colors
+
+                style.Colors[ImGuiCol_Text] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f); // Text color
+                style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Disabled text color
+                style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f); // Text background color when selected
+                style.Colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Background color
+                style.Colors[ImGuiCol_ChildBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Child window background color
+                style.Colors[ImGuiCol_PopupBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Popup background color
+                style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // Border shadow color (used by some widgets)
+                style.Colors[ImGuiCol_FrameBg] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // Frame background color
+                style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f); // Frame background color when hovered
+                style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Frame background color when active
+                style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Tab color when unfocused
+                style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Docking empty box color
+                style.Colors[ImGuiCol_PlotLines] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f); // Plot lines color
+                style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); // Plot lines color when hovered
+                style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f); // Plot histogram color
+                style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); // Plot histogram color when hovered
+                style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f); // Text background color when selected
+
+                style.Colors[ImGuiCol_Separator] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Separator color
+                style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // Separator color when hovered
+                style.Colors[ImGuiCol_SeparatorActive] = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Separator color when active
+                style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f); // Resize grip color
+                style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.9f, 0.9f, 0.9f, 1.0f); // Resize grip color when hovered
+                style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // Resize grip color when active
+                style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Tab color when unfocused and active
+                style.Colors[ImGuiCol_DockingPreview] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Docking preview overlay color
+
+                style.Colors[ImGuiCol_Button] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Button color
+                style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Button color when hovered
+                style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // Button color when active
+                style.Colors[ImGuiCol_TitleBg] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Title bar background color
+                style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Title bar background color when active
+                style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Title bar background color when collapsed
+                style.Colors[ImGuiCol_Header] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Header color
+                style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Header color when hovered
+                style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // Header color when active
+                style.Colors[ImGuiCol_Tab] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Tab color
+                style.Colors[ImGuiCol_TabHovered] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Tab color when hovered
+                style.Colors[ImGuiCol_TabActive] = ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // Tab color when active
             }
 
             // Setup Platform/Renderer backends
@@ -86,21 +129,8 @@ namespace dnf_composer
             ImGui_ImplOpenGL3_Init(glsl_version);
 
             // Load Fonts
-            // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-            // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-            // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-            // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-            // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-            // - Read 'docs/FONTS.md' for more instructions and details.
-            // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-            // - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
-            //io.Fonts->AddFontDefault();
-            //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-            //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-            //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-            //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-            //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-            //IM_ASSERT(font != nullptr);
+            std::string convertedPath = std::string(PROJECT_DIR) + "/resources/fonts/Lexend-Light.ttf";
+            const ImFont* font = io.Fonts->AddFontFromFileTTF(convertedPath.c_str(), 18.0f);
 
             // Our state
             bool show_demo_window = true;
@@ -130,9 +160,9 @@ namespace dnf_composer
             ImGui::Render();
             int display_w, display_h;
             glfwGetFramebufferSize(window, &display_w, &display_h);
-            //glViewport(0, 0, display_w, display_h);
-            //glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-            //glClear(GL_COLOR_BUFFER_BIT);
+            glViewport(0, 0, display_w, display_h);
+            glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+            glClear(GL_COLOR_BUFFER_BIT);
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
             ImGuiIO& io = ImGui::GetIO(); (void)io;
