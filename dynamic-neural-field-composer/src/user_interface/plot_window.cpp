@@ -69,7 +69,7 @@ namespace dnf_composer
 
 		void PlotWindow::renderPlot(const PlotParameters& parameters) const
 		{
-			//configure(parameters.dimensions);
+			configure(parameters.dimensions);
 
 			const std::string plotWindowTitle = parameters.annotations.title + " window";
 

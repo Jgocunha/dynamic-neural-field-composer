@@ -137,6 +137,13 @@ cmake ..
 make
 ```
 
+## Installing
+
+```bash
+# in build
+sudo make install
+```
+
 ## Using g++ 13 on Ubuntu 22.04 for stuff like std::ranges
 
 https://lindevs.com/install-g-on-ubuntu/
