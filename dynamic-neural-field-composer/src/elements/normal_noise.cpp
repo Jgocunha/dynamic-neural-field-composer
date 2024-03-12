@@ -16,7 +16,7 @@ namespace dnf_composer
 
 		void NormalNoise::init()
 		{
-			std::ranges::fill(components["output"], 0.0);
+			//std::ranges::fill(components["output"], 0.0);
 		}
 
 		void NormalNoise::step(double t, double deltaT)

@@ -50,7 +50,7 @@ namespace dnf_composer
 				components["kernel"][i] = parameters.amplitudeExc * gaussExc[i] - parameters.amplitudeInh * gaussInh[i];
 
 			fullSum = 0;
-			std::ranges::fill(components["input"], 0.0);
+			//std::ranges::fill(components["input"], 0.0);
 		}
 
 		void LateralInteractions::step(double t, double deltaT)

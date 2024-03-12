@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "../tools/math.h"
 
 namespace dnf_composer

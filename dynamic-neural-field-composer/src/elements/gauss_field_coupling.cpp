@@ -21,7 +21,7 @@ namespace dnf_composer
 
 		void GaussFieldCoupling::init()
 		{
-			std::ranges::fill(components["output"], 0.0);
+			//std::ranges::fill(components["output"], 0.0);
 		}
 
 		void GaussFieldCoupling::step(double t, double deltaT)
@@ -65,7 +65,7 @@ namespace dnf_composer
 		void GaussFieldCoupling::updateOutput()
 		{
 			std::vector<double> summedGaussians(commonParameters.dimensionParameters.size);
-			std::ranges::fill(summedGaussians, 0.0);
+			//std::ranges::fill(summedGaussians, 0.0);
 
 			for (const auto& coupling : parameters.couplings)
 			{

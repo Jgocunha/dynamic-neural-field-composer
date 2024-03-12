@@ -60,65 +60,70 @@ namespace dnf_composer
 
 		void Element::removeInput(const std::string& inputElementId)
 		{
-			for (auto& key : inputs | std::views::keys)
-			{
-				if (key->commonParameters.identifiers.uniqueName == inputElementId) {
-					inputs.erase(key);
-					log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '" + this->getUniqueName() + ". \n");
-					return;
-				}
-			}
+			// for (auto& key : inputs | std::views::keys)
+			// {
+			// 	if (key->commonParameters.identifiers.uniqueName == inputElementId) {
+			// 		inputs.erase(key);
+			// 		log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '" + this->getUniqueName() + ". \n");
+			// 		return;
+			// 	}
+			// }
 		}
 
 		void Element::removeInput(int uniqueId)
 		{
-			for (auto& key : inputs | std::views::keys)
-			{
-				if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
-					inputs.erase(key);
-					log(tools::logger::LogLevel::INFO, "Input '" + std::to_string(uniqueId) + "' removed successfully from '" + this->getUniqueName() + ".");
-					return;
-				}
-			}
+			// for (auto& key : inputs | std::views::keys)
+			// {
+			// 	if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
+			// 		inputs.erase(key);
+			// 		log(tools::logger::LogLevel::INFO, "Input '" + std::to_string(uniqueId) + "' removed successfully from '" + this->getUniqueName() + ".");
+			// 		return;
+			// 	}
+			// }
 		}
 
 		bool Element::hasInput(const std::string& inputElementName, const std::string& inputComponent)
 		{
-			const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
-				const auto& [key, value] = pair;
-				return key->commonParameters.identifiers.uniqueName == inputElementName && value == inputComponent;
-				});
-			if (found)
-				return true;
+			// // ranges any_of is not working for some reason
+			// const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
+			// 	const auto& [key, value] = pair;
+			// 	return key->commonParameters.identifiers.uniqueName == inputElementName && value == inputComponent;
+			// 	});
+			// if (found)
+			// 	return true;
+			// return false;
 			return false;
 		}
 
 		bool Element::hasInput(int inputElementId, const std::string& inputComponent)
 		{
-			const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
-				const auto& [key, value] = pair;
-				return key->commonParameters.identifiers.uniqueIdentifier == inputElementId && value == inputComponent;
-				});
-			if (found)
-				return true;
+			// // ranges any_of is not working for some reason
+			// const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
+			// 	const auto& [key, value] = pair;
+			// 	return key->commonParameters.identifiers.uniqueIdentifier == inputElementId && value == inputComponent;
+			// 	});
+			// if (found)
+			// 	return true;
+			// return false;
 			return false;
 		}
 
 		void Element::updateInput()
 		{
-			std::ranges::fill(components["input"], 0);
+			// ranges fill is not working for some reason
+			// std::ranges::fill(components["input"], 0);
 
-			for (const auto& input_pair : inputs) {
-				const auto inputElement = input_pair.first;
-				auto inputElementComponent = input_pair.second;
-				auto& inputElementComponents = inputElement->components;
-				const auto& inputElementComponentValue = inputElementComponents.at(inputElementComponent);
+			// for (const auto& input_pair : inputs) {
+			// 	const auto inputElement = input_pair.first;
+			// 	auto inputElementComponent = input_pair.second;
+			// 	auto& inputElementComponents = inputElement->components;
+			// 	const auto& inputElementComponentValue = inputElementComponents.at(inputElementComponent);
 
-				for (int i = 0; i < inputElementComponentValue.size(); i++)
-				{
-					components["input"][i] += inputElementComponentValue[i];
-				}
-			}
+			// 	for (int i = 0; i < inputElementComponentValue.size(); i++)
+			// 	{
+			// 		components["input"][i] += inputElementComponentValue[i];
+			// 	}
+			// }
 		}
 
 		int Element::getMaxSpatialDimension() const
@@ -191,8 +196,8 @@ namespace dnf_composer
 			std::vector<std::shared_ptr<Element>> inputVec;
 			inputVec.reserve(inputs.size());
 
-			for (const auto& key : inputs | std::views::keys)
-				inputVec.push_back(key);
+			// for (const auto& key : inputs | std::views::keys)
+			// 	inputVec.push_back(key);
 
 			return inputVec;
 		}

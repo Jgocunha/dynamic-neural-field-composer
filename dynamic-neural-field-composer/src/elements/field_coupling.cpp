@@ -32,8 +32,8 @@ namespace dnf_composer
 
 		void FieldCoupling::init()
 		{
-			std::ranges::fill(components["input"], 0);
-			std::ranges::fill(components["output"], 0);
+			//std::ranges::fill(components["input"], 0);
+			//std::ranges::fill(components["output"], 0);
 
 			if (readWeights())
 				trained = true;
@@ -50,8 +50,8 @@ namespace dnf_composer
 
 		void FieldCoupling::close()
 		{
-			std::ranges::fill(components["input"], 0);
-			std::ranges::fill(components["output"], 0);
+			//std::ranges::fill(components["input"], 0);
+			//std::ranges::fill(components["output"], 0);
 			resetWeights();
 		}
 

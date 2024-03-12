@@ -41,7 +41,7 @@ namespace dnf_composer
 
 			components["input"].resize(extIndex.size());
 			fullSum = 0;
-			std::ranges::fill(components["input"], 0.0);
+			//std::ranges::fill(components["input"], 0.0);
 		}
 
 		void GaussKernel::step(double t, double deltaT)
