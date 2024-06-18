@@ -11,7 +11,7 @@ namespace dnf_composer
     {
         namespace logger
         {
-        	LogLevel Logger::minLogLevel = LogLevel::DEBUG; 
+            LogLevel Logger::minLogLevel = LogLevel::DEBUG;
 
             Logger::Logger(LogLevel level, LogOutputMode mode)
                 : logLevel(level), outputMode(mode)
@@ -27,7 +27,7 @@ namespace dnf_composer
 
                 std::tm buf;
                 if (localtime_s(&buf, &in_time_t))
-                    throw Exception(ErrorCode::LOG_LOCAL_TIME_ERROR);
+                    throw std::runtime_error("Failed to get current time for logging.");
 
                 const std::string levelStr = getLogLevelText(logLevel);
                 const std::string prefixStr = "<dnf-composer> " + levelStr;
@@ -40,10 +40,10 @@ namespace dnf_composer
                 {
                 case LogOutputMode::ALL:
                     colorCode = getLogLevelColorCodeCmd(logLevel);
-                    oss << colorCode << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] "<< prefixStr << " " << message;
+                    oss << colorCode << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
                     log_cmd(oss.str());
                     std::ostringstream().swap(oss); // swap m with a default constructed stringstream
-                    oss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] "<< prefixStr << " "  << " " << message;
+                    oss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << " " << message;
                     log_ui(color, oss.str());
                     break;
                 case LogOutputMode::CONSOLE:
@@ -52,7 +52,7 @@ namespace dnf_composer
                     log_cmd(oss.str());
                     break;
                 case LogOutputMode::GUI:
-                    oss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " <<  " " << message;
+                    oss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << " " << message;
                     log_ui(color, oss.str());
                     break;
                 default:

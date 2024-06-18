@@ -6,8 +6,6 @@
 #include <iomanip>
 #include <imgui-platform-kit/log_window.h>
 
-#include "exceptions/exception.h"
-
 #ifdef ERROR
 #undef ERROR
 #endif

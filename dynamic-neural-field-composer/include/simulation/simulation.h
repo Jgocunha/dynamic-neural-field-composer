@@ -1,71 +1,64 @@
 #pragma once
 
-#include <vector>
-#include <memory>
+#include <stdexcept>
 #include <string>
-#include <filesystem>
-#include <chrono>
+#include <vector>
 
-
-#include "elements/element.h"
-#include "exceptions/exception.h"
-#include "tools/utils.h"
+#include "tools/logger.h"
 
 namespace dnf_composer
 {
-	class Simulation;
-	std::shared_ptr<Simulation> createSimulation(const std::string& identifier, double deltaT, double tZero, double t);
-
-	class Simulation : public std::enable_shared_from_this<Simulation>
+	struct SimulationParameters
 	{
-	protected:
+		std::string id;
+		double dt;
+		double t0;
+		double t;
+		SimulationParameters(std::string id = "default", double dt = 1.0, double t0 = 0.0, double t = 0.0)
+			: id(std::move(id)), dt(dt), t0(t0), t(t)
+		{
+			if (dt <= 0 || t0 > t)
+				throw std::invalid_argument("Invalid simulation parameters dt, t0, or t. "
+								"dt must be positive and t0 must be less than t.");
+		}
+	};
+
+	struct SimulationState
+	{
 		bool initialized;
 		bool paused;
-		std::vector<std::shared_ptr<element::Element>> elements;
-		std::string uniqueIdentifier;
-	public:
-		double deltaT;
-		double tZero;
-		double t;
-	public:
+		SimulationState() : initialized(false), paused(false) {}
+	};
 
-		Simulation(std::string identifier = "default name", double deltaT = 1, double tZero = 0, double t = 0);
-		Simulation(const Simulation& other);
-		Simulation& operator=(const Simulation& other);
-		Simulation(Simulation&& other) noexcept;
-		Simulation& operator=(Simulation&&) noexcept;
+	class Simulation
+	{
+	private:
+		SimulationParameters parameters;
+		SimulationState state;
+		//std::vector<element::Element> elements;
+	public:
+		Simulation();
+		Simulation(SimulationParameters parameters);
+		Simulation(std::string id, double dt, double t0, double t);
 
-		void init();
+		void initialize();
 		void step();
-		void run(double runTime);
-		void close();
+		void terminate();
+		void runFor(double runTime);
 		void pause();
 		void resume();
-		void save(const std::string& savePath = {});
-		void read(const std::string& readPath = {});
+		void reset();
 
-		void addElement(const std::shared_ptr<element::Element>& element);
-		void removeElement(const std::string& elementId);
-		void resetElement(const std::string& idOfElementToReset, const std::shared_ptr<element::Element>& newElement);
-		void createInteraction(const std::string& stimulusElementId, const std::string& stimulusComponent, 
-			const std::string& receivingElementId) const;
+		void addElement(const element::Element& element);
+		void removeElement(const std::string& id);
+		
 
-		void setUniqueIdentifier(const std::string& id);
-
-		std::vector<std::shared_ptr<element::Element>> getElements() const;
-		std::string getUniqueIdentifier() const;
-		std::shared_ptr<element::Element> getElement(const std::string& id) const;
-		std::shared_ptr<element::Element> getElement(int index) const;
-		std::vector<double> getComponent(const std::string& id, const std::string& componentName) const;
-		std::vector<double>* getComponentPtr(const std::string& id, const std::string& componentName) const;
-		int getNumberOfElements() const;
-		std::vector < std::shared_ptr<element::Element>> getElementsThatHaveSpecifiedElementAsInput(const std::string& specifiedElement, 
-		                                                                                            const std::string& inputComponent = "output") const;
-
-		void exportComponentToFile(const std::string& id, const std::string& componentName) const;
-
-		bool isInitialized() const;
-
-		~Simulation() = default;
+		//bool save(const std::string& path);
+		//bool read(const std::string& path);
+		//std::string toString() const;
+		//void print() const;
+		//bool operator==(const Simulation& other) const;
+		bool isInitialized() const { return state.initialized; }
+		bool isPaused() const { return state.paused; }
 	};
 }
