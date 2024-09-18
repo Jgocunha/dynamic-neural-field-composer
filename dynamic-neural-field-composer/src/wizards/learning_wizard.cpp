@@ -38,7 +38,7 @@ namespace dnf_composer
 
     void LearningWizard::simulateAssociation()
     {
-        static constexpr int timeSteps = 25; // this value is hardcoded and depends on the fields timescale...
+        static constexpr int timeSteps = 10; // this value is hardcoded and depends on the fields timescale...
 
         for (int i = 0; i < static_cast<int>(targetPeakLocationsForNeuralFieldPre.size()); i++)
         {
@@ -50,6 +50,8 @@ namespace dnf_composer
                 auto kernel_amplitude = kernel->getParameters().amplitude;
                 gaussStimulusParameters.amplitude = kernel_amplitude;
                 gaussStimulusParameters.width = kernel_width;
+                gaussStimulusParameters.normalized = false;
+                gaussStimulusParameters.circular = true;
 
                 const std::string stimulusName = "Input Gaussian Stimulus " + std::to_string(i + 1) + std::to_string(j + 1);
                 const element::ElementIdentifiers stimulusIdentifiers{ stimulusName };
@@ -98,6 +100,7 @@ namespace dnf_composer
             }
 
             // Remove gaussian stimuli from the input field
+            // This works if the field is self-sustained, but if it is not, the field will return to its resting level
             for (size_t j = 0; j < targetPeakLocationsForNeuralFieldPre[i].size(); j++)
             {
                 std::string stimulusName = "Input Gaussian Stimulus " + std::to_string(i + 1) + std::to_string(j + 1);
@@ -291,7 +294,6 @@ namespace dnf_composer
         const std::shared_ptr<element::Element> outputElement = simulation->getElementsThatHaveSpecifiedElementAsInput(fieldCoupling->getUniqueName()).at(0);
         neuralFieldPost = std::dynamic_pointer_cast<element::NeuralField>(outputElement);
     }
-
 
     void LearningWizard::saveWeights() const
     {
