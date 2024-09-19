@@ -385,15 +385,29 @@ namespace dnf_composer
 			}
 
 
+			//template <typename T>
+			//std::vector<T> flattenMatrix(const std::vector<std::vector<T>>& matrix)
+			//{
+			//	const int rows = matrix.size();
+			//	const int cols = matrix[0].size();
+			//	std::vector<T> flat_matrix(rows * cols);
+			//	for (int i = 0; i < rows; ++i)
+			//		for (int j = 0; j < cols; ++j)
+			//			flat_matrix[i * cols + j] = static_cast<T>(matrix[i][j]);
+			//	return flat_matrix;
+			//}
 			template <typename T>
 			std::vector<T> flattenMatrix(const std::vector<std::vector<T>>& matrix)
 			{
 				const int rows = matrix.size();
 				const int cols = matrix[0].size();
 				std::vector<T> flat_matrix(rows * cols);
+
+				// Traverse rows from bottom to top
 				for (int i = 0; i < rows; ++i)
 					for (int j = 0; j < cols; ++j)
-						flat_matrix[i * cols + j] = static_cast<T>(matrix[i][j]);
+						flat_matrix[i * cols + j] = static_cast<T>(matrix[rows - 1 - i][j]);
+
 				return flat_matrix;
 			}
 		}

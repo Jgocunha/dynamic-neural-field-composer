@@ -18,7 +18,7 @@ namespace dnf_composer
 			float scaleMin, scaleMax;
 
 			HeatmapParameters()
-				: scaleMin(0.0f), scaleMax(0.01f)
+				: scaleMin(0.0f), scaleMax(0.03f)
 			{}
 		};
 

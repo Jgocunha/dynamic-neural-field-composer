@@ -100,7 +100,7 @@ std::shared_ptr<dnf_composer::Simulation> getExperimentSimulation()
 
 	// element common parameters
 	dnf_composer::element::ElementSpatialDimensionParameters perceptualFieldSpatialDimensions{ 360, 0.5 };
-	dnf_composer::element::ElementSpatialDimensionParameters outputFieldSpatialDimensions{180, 0.5};
+	dnf_composer::element::ElementSpatialDimensionParameters outputFieldSpatialDimensions{28, 0.1};
 
 	// create neural field
 	//const dnf_composer::element::HeavisideFunction activationFunction{ 0 };

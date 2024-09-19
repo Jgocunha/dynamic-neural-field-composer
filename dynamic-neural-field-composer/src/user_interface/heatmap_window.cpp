@@ -12,9 +12,9 @@ namespace dnf_composer
 
 		void HeatmapWindow::render()
 		{
-            bool open = true;
+            static bool open = true;
 
-            if (ImGui::Begin("Heatmap", &open, ImGuiWindowFlags_NoCollapse))
+            if (ImGui::Begin("Inter-field synaptic connections", &open, ImGuiWindowFlags_NoCollapse))
             {
                 renderColormap();
                 renderPlot();
@@ -70,13 +70,13 @@ namespace dnf_composer
             static constexpr ImPlotFlags hm_flags = ImPlotFlags_Crosshairs | ImPlotFlags_NoLegend;
             //ImPlot::SetNextAxesToFit();
             ImVec2 plotSize = ImGui::GetContentRegionAvail();  // Get available size in the ImGui window
-            plotSize.x -= 60.0f; // Subtract some padding
+            plotSize.x -= 90.0f; // Subtract some padding
             plotSize.y -= 5.0f; // Subtract some padding
 
             if (ImPlot::BeginPlot("##Heatmap1", plotSize, hm_flags))
             {
-                static constexpr ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoLabel;
-                ImPlot::SetupAxes("x", "y", flags, flags);
+                static constexpr ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;// | ImPlotAxisFlags_NoLabel;
+                ImPlot::SetupAxes("Output field spatial dimension", "Perceptual field spatial dimension", flags, flags);
                 ImPlot::PlotHeatmap("Heatmap Data", flattened_matrix.data(), rows, cols,
                     parameters.scaleMin, parameters.scaleMax, nullptr,
                     ImPlotPoint(0, 0), ImPlotPoint(x_max, y_max), hm_flags);
@@ -84,7 +84,7 @@ namespace dnf_composer
             }
 
             ImGui::SameLine();
-            ImPlot::ColormapScale("##HeatScale", parameters.scaleMin, parameters.scaleMax, ImVec2(60, plotSize.y));
+            ImPlot::ColormapScale("##HeatScale", parameters.scaleMin, parameters.scaleMax, ImVec2(80, plotSize.y));
 
             ImPlot::PopColormap();
         }
