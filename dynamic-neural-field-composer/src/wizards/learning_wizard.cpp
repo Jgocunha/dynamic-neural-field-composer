@@ -38,7 +38,7 @@ namespace dnf_composer
 
     void LearningWizard::simulateAssociation()
     {
-        static constexpr int timeSteps = 10; // this value is hardcoded and depends on the fields timescale...
+        static constexpr int timeSteps = 25; // this value is hardcoded and depends on the fields timescale...
 
         for (int i = 0; i < static_cast<int>(targetPeakLocationsForNeuralFieldPre.size()); i++)
         {
@@ -275,6 +275,7 @@ namespace dnf_composer
             fieldCoupling->updateWeights(input, output);
             lineCount = (lineCount + 1) % (numLinesInput);
         }
+        fieldCoupling->saveWeights();
     }
 
     void LearningWizard::setFieldCoupling(const std::string& fieldCouplingUniqueId)
