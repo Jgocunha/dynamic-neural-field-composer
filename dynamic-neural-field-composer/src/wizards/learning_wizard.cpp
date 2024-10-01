@@ -275,7 +275,7 @@ namespace dnf_composer
             fieldCoupling->updateWeights(input, output);
             lineCount = (lineCount + 1) % (numLinesInput);
         }
-        fieldCoupling->saveWeights();
+        //fieldCoupling->saveWeights();
     }
 
     void LearningWizard::setFieldCoupling(const std::string& fieldCouplingUniqueId)
