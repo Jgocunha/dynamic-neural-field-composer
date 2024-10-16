@@ -40,7 +40,7 @@ namespace dnf_composer
 				if (ImGui::Begin(plotWindowTitle.c_str(), &open, ImGuiWindowFlags_NoCollapse))
 				{
 					renderPlot(plot);
-					renderElementSelector(plot);
+					//renderElementSelector(plot);
 				}
 				ImGui::End();
 
@@ -57,7 +57,7 @@ namespace dnf_composer
 		void PlotWindow::createPlot( PlotParameters& parameters)
 		{
 			parameters.id = ++current_id;
-			parameters.annotations.title += " " + std::to_string(parameters.id);
+			//parameters.annotations.title += " " + std::to_string(parameters.id);
 			plots.emplace_back(parameters);
 
 			const std::string message = "Added a new plot to the application with id: " + parameters.annotations.title + ".";
@@ -72,13 +72,13 @@ namespace dnf_composer
 			plotSize.x -= 5.0f; // Subtract some padding
 			plotSize.y -= 5.0f; // Subtract some padding
 
-			static constexpr ImPlotFlags flags = ImPlotFlags_Crosshairs | ImPlotFlags_Equal;
+			static constexpr ImPlotFlags flags = ImPlotFlags_Crosshairs; //| ImPlotFlags_Equal;
 
 
 			if (ImPlot::BeginPlot(parameters.annotations.title.c_str(), plotSize, flags))
 			{
-				ImPlot::SetupAxes(parameters.annotations.x_label.c_str(), parameters.annotations.y_label.c_str(),
-					ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+				ImPlot::SetupAxes(parameters.annotations.x_label.c_str(), parameters.annotations.y_label.c_str());
+					//ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 				ImPlot::SetupLegend(ImPlotLocation_South, ImPlotLegendFlags_Horizontal);
 
 				const int numOfPlots = visualization->getNumberOfPlots();
