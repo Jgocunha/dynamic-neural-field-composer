@@ -18,7 +18,7 @@ namespace dnf_composer::user_interface
         ImGuiStyle& style = ImGui::GetStyle();
         style.FrameBorderSize = 1.0f;
 
-        renderFullscreenWindow();
+        //renderFullscreenWindow();
 		renderMainMenuBar();
         renderFileWindows();
         renderAdvancedSettingsWindows();
