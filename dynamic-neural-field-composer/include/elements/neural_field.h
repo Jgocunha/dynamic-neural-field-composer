@@ -173,7 +173,7 @@ namespace dnf_composer
 			double getLowestActivation() const { return state.lowestActivation; }
 			double getHighestActivation() const { return state.highestActivation; }
 			std::vector<NeuralFieldBump> getBumps() const { return state.bumps; }
-			std::shared_ptr<Kernel> getSelfExcitationKernel() const;
+			//std::shared_ptr<Kernel> getSelfExcitationKernel() const;
 			double getStabilityThreshold() const { return state.thresholdForStability; }
 		protected:
 			void calculateActivation(double t, double deltaT);

@@ -25,6 +25,7 @@ namespace dnf_composer
 
 		void Element::close()
 		{
+			// views::values can be used
 			for (auto& pair : components)
 			{
 				auto& component = pair.second;
@@ -37,7 +38,7 @@ namespace dnf_composer
 			log(tools::logger::LogLevel::INFO, toString());
 		}
 
-		void Element::addInput(const std::shared_ptr<Element>& inputElement, const std::string& inputComponent)
+		/*void Element::addInput(const std::shared_ptr<Element>& inputElement, const std::string& inputComponent)
 		{
 			if (!inputElement)
 			{
@@ -70,24 +71,83 @@ namespace dnf_composer
 
 			const std::string logMessage = "Input '" + inputElement->getUniqueName() +"' added successfully to '" +  this->getUniqueName() + ".";
 			log(tools::logger::LogLevel::INFO, logMessage);
+		}*/
+
+		void Element::addInput(const std::shared_ptr<Element>& inputElement, const std::string& inputComponent)
+		{
+			if (!inputElement)
+			{
+				const std::string logMessage = "Input is null.";
+				log(tools::logger::LogLevel::ERROR, logMessage);
+				return;
+			}
+
+			// views::keys can be used
+			for (const auto& [key, value] : inputs)
+			{
+				if (auto lockedKey = key.lock())	
+				{
+					if (lockedKey == inputElement)
+					{
+						const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' already exists.";
+						log(tools::logger::LogLevel::ERROR, logMessage);
+						return;
+					}
+				}
+			}
+
+			if (inputElement->getComponentPtr("output")->size() != this->getComponentPtr("input")->size())
+			{
+				if (inputElement->getComponentPtr("output")->size() != this->getSize())
+				{
+					const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' has a different size than '" + this->getUniqueName() + "'.";
+					log(tools::logger::LogLevel::ERROR, logMessage);
+					return;
+				}
+			}
+
+			inputs[inputElement] = inputComponent;
+			inputElement->outputs[this->shared_from_this()] = inputComponent;
+
+			const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' added successfully to '" + this->getUniqueName() + "'.";
+			log(tools::logger::LogLevel::INFO, logMessage);
 		}
+
+		//void Element::removeInput(const std::string& inputElementId)
+		//{
+		//	for (auto& key : inputs | std::views::keys)
+		//	{
+		//		if (key->commonParameters.identifiers.uniqueName == inputElementId) {
+		//			inputs.erase(key);
+		//			log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '" 
+		//				+ this->getUniqueName() + ". ");
+		//			return;
+		//		}
+		//	}
+		//}
 
 		void Element::removeInput(const std::string& inputElementId)
 		{
-			for (auto& key : inputs | std::views::keys)
+			for (auto it = inputs.begin(); it != inputs.end(); )
 			{
-				if (key->commonParameters.identifiers.uniqueName == inputElementId) {
-					inputs.erase(key);
-					log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '" 
-						+ this->getUniqueName() + ". ");
+				auto key = it->first.lock();
+				if (key && key->commonParameters.identifiers.uniqueName == inputElementId)
+				{
+					it = inputs.erase(it);
+					log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '"
+						+ this->getUniqueName() + "'. ");
 					return;
+				}
+				else
+				{
+					++it;
 				}
 			}
 		}
 
 		void Element::removeInput(int uniqueId)
 		{
-			for (auto& key : inputs | std::views::keys)
+			/*for (auto& key : inputs | std::views::keys)
 			{
 				if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 					inputs.erase(key);
@@ -95,32 +155,68 @@ namespace dnf_composer
 						+ this->getUniqueName() + ".");
 					return;
 				}
+			}*/
+
+			for (auto it = inputs.begin(); it != inputs.end(); )
+			{
+				auto key = it->first.lock();
+				if (key && key->commonParameters.identifiers.uniqueIdentifier == uniqueId)
+				{
+					it = inputs.erase(it);
+					log(tools::logger::LogLevel::INFO, "Input '" + std::to_string(uniqueId) + "' removed successfully from '"
+						+ this->getUniqueName() + "'. ");
+					return;
+				}
+				else
+				{
+					++it;
+				}
 			}
 		}
 
 		bool Element::hasInput(const std::string& inputElementName, const std::string& inputComponent)
 		{
-			const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
+			// commonParameters is not a member of 'std::weak_ptr'
+			/*const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
 				const auto& [key, value] = pair;
 				return key->commonParameters.identifiers.uniqueName == inputElementName && value == inputComponent;
 				});
 			if (found)
 				return true;
-			return false;
+			return false;*/
+			const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
+				auto key = pair.first.lock();
+				if (key)
+					return key->commonParameters.identifiers.uniqueName == inputElementName && pair.second == inputComponent;
+				return false;
+				});
+			if (found)
+					return true;
+				return false; 
 		}
 
 		bool Element::hasInput(int inputElementId, const std::string& inputComponent)
 		{
-			const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
+			/*const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
 				const auto& [key, value] = pair;
 				return key->commonParameters.identifiers.uniqueIdentifier == inputElementId && value == inputComponent;
+				});
+			if (found)
+				return true;
+			return false;*/
+
+			const bool found = std::ranges::any_of(inputs, [&](const auto& pair) {
+				auto key = pair.first.lock();
+				if (key)
+					return key->commonParameters.identifiers.uniqueIdentifier == inputElementId && pair.second == inputComponent;
+				return false;
 				});
 			if (found)
 				return true;
 			return false;
 		}
 
-		void Element::updateInput()
+		/*void Element::updateInput()
 		{
 			std::ranges::fill(components["input"], 0);
 
@@ -133,6 +229,30 @@ namespace dnf_composer
 
 				for (size_t i = 0; i < inputElementComponentValue.size(); i++)
 					components["input"][i] += inputElementComponentValue[i];
+			}
+		}*/
+
+		void Element::updateInput()
+		{
+			std::ranges::fill(components["input"], 0);
+
+			for (auto it = inputs.begin(); it != inputs.end(); )
+			{
+				auto inputElement = it->first.lock();
+				if (!inputElement)
+				{
+					it = inputs.erase(it);  // Remove expired weak_ptr from inputs
+					continue;
+				}
+
+				const std::string& inputComponent = it->second;
+				auto& inputElementComponents = inputElement->components;
+				const auto& inputElementComponentValue = inputElementComponents.at(inputComponent);
+
+				for (size_t i = 0; i < inputElementComponentValue.size(); i++)
+					components["input"][i] += inputElementComponentValue[i];
+
+				++it;
 			}
 		}
 
@@ -207,18 +327,40 @@ namespace dnf_composer
 
 		std::vector<std::shared_ptr<Element>> Element::getInputs()
 		{
-			std::vector<std::shared_ptr<Element>> inputVec;
+			/*std::vector<std::shared_ptr<Element>> inputVec;
 			inputVec.reserve(inputs.size());
 
 			for (const auto& key : inputs | std::views::keys)
 				inputVec.push_back(key);
+
+			return inputVec;*/
+
+			std::vector<std::shared_ptr<Element>> inputVec;
+			inputVec.reserve(inputs.size());
+
+			for (const auto& pair : inputs)
+			{
+				auto key = pair.first.lock();
+				if (key)
+					inputVec.push_back(key);
+			}
 
 			return inputVec;
 		}
 
 		std::unordered_map<std::shared_ptr<Element>, std::string> Element::getInputsAndComponents()
 		{
-			return inputs;
+			//return inputs;
+			std::unordered_map<std::shared_ptr<Element>, std::string> inputsAndComponents;
+
+			for (const auto& pair : inputs)
+			{
+				auto key = pair.first.lock();
+				if (key)
+					inputsAndComponents[key] = pair.second;
+			}
+
+			return inputsAndComponents;
 		}
 	}
 }

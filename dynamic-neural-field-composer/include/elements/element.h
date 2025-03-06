@@ -21,8 +21,9 @@ namespace dnf_composer
 		protected:
 			ElementCommonParameters commonParameters;
 			std::unordered_map<std::string, std::vector<double>> components;
-			std::unordered_map<std::shared_ptr<Element>, std::string> inputs;
-			std::unordered_map<std::shared_ptr<Element>, std::string> outputs;
+			std::unordered_map<std::weak_ptr<Element>, std::string, std::owner_less<std::weak_ptr<Element>>> inputs;
+			std::unordered_map<std::weak_ptr<Element>, std::string, std::owner_less<std::weak_ptr<Element>>> outputs;
+
 		public:
 			Element(const ElementCommonParameters& parameters);
 

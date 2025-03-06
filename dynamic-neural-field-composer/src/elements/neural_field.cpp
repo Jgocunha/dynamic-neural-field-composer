@@ -71,7 +71,7 @@ namespace dnf_composer
 			return false;
 		}
 
-		std::shared_ptr<Kernel> NeuralField::getSelfExcitationKernel() const
+		/*std::shared_ptr<Kernel> NeuralField::getSelfExcitationKernel() const
 		{
 			for (const auto& input : inputs)
 			{
@@ -87,7 +87,7 @@ namespace dnf_composer
 				}
 			}
 			return nullptr;
-		}
+		}*/
 
 		std::string NeuralField::toString() const
 		{
