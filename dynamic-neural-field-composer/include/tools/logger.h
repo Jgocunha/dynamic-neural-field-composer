@@ -7,6 +7,7 @@
 #include <imgui-platform-kit/log_window.h>
 
 #include "exceptions/exception.h"
+#include "utils.h"
 
 #ifdef ERROR
 #undef ERROR

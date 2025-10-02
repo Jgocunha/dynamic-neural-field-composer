@@ -13,36 +13,36 @@
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
 
-namespace dnf_composer
+namespace dnf_composer::user_interface
 {
-	namespace user_interface
+	class ElementWindow final : public imgui_kit::UserInterfaceWindow
 	{
-		class ElementWindow : public imgui_kit::UserInterfaceWindow
-		{
-		private:
-			std::shared_ptr<Simulation> simulation;
-		public:
-			ElementWindow(const std::shared_ptr<Simulation>& simulation);
+	private:
+		std::shared_ptr<Simulation> simulation;
+	public:
+		explicit ElementWindow(const std::shared_ptr<Simulation>& simulation);
 
-			ElementWindow(const ElementWindow&) = delete;
-			ElementWindow& operator=(const ElementWindow&) = delete;
-			ElementWindow(ElementWindow&&) = delete;
-			ElementWindow& operator=(ElementWindow&&) = delete;
+		ElementWindow(const ElementWindow&) = delete;
+		ElementWindow& operator=(const ElementWindow&) = delete;
+		ElementWindow(ElementWindow&&) = delete;
+		ElementWindow& operator=(ElementWindow&&) = delete;
 
-			void render() override;
-			~ElementWindow() override = default;
-		private:
-			void renderModifyElementParameters() const;
-			static void switchElementToModify(const std::shared_ptr<element::Element>& element);
-			static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element) ;
-			static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
-			static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element);
-			static void modifyElementGaussKernel(const std::shared_ptr<element::Element>& element);
-			static void modifyElementMexicanHatKernel(const std::shared_ptr<element::Element>& element);
-			static void modifyElementNormalNoise(const std::shared_ptr<element::Element>& element);
-			static void modifyElementGaussFieldCoupling(const std::shared_ptr<element::Element>& element);
-			static void modifyElementOscillatoryKernel(const std::shared_ptr<element::Element>& element);
-			static void modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element);
-		};
-	}
+		void render() override;
+		~ElementWindow() override = default;
+	private:
+		void renderModifyElementParameters() const;
+		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
+		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element) ;
+		static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
+		static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element);
+		static void modifyElementGaussKernel(const std::shared_ptr<element::Element>& element);
+		static void modifyElementMexicanHatKernel(const std::shared_ptr<element::Element>& element);
+		static void modifyElementNormalNoise(const std::shared_ptr<element::Element>& element);
+		static void modifyElementGaussFieldCoupling(const std::shared_ptr<element::Element>& element);
+		static void modifyElementOscillatoryKernel(const std::shared_ptr<element::Element>& element);
+		static void modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element);
+		static ImVec4 getColorForElementType(element::ElementLabel label);
+		static std::string getIconForElementType(element::ElementLabel label);
+		static std::string getElementTypeDisplayName(element::ElementLabel label);
+	};
 }

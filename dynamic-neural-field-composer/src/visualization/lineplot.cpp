@@ -90,9 +90,10 @@ namespace dnf_composer
 		char titleBuffer[128];
 		char xLabelBuffer[128];
 		char yLabelBuffer[128];
-		strncpy_s(titleBuffer, title.c_str(), sizeof(titleBuffer) - 1);
-		strncpy_s(xLabelBuffer, x_label.c_str(), sizeof(xLabelBuffer) - 1);
-		strncpy_s(yLabelBuffer, y_label.c_str(), sizeof(yLabelBuffer) - 1);
+
+		snprintf(titleBuffer, sizeof(titleBuffer), "%s", title.c_str());
+		snprintf(xLabelBuffer, sizeof(xLabelBuffer), "%s", x_label.c_str());
+		snprintf(yLabelBuffer, sizeof(yLabelBuffer), "%s", y_label.c_str());
 
         if (ImGui::BeginMenuBar())
         {

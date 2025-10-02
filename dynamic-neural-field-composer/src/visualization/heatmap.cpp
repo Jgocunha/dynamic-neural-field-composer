@@ -90,9 +90,9 @@ namespace dnf_composer
 		char titleBuffer[128];
 		char xLabelBuffer[128];
 		char yLabelBuffer[128];
-		strncpy_s(titleBuffer, title.c_str(), sizeof(titleBuffer) - 1);
-		strncpy_s(xLabelBuffer, x_label.c_str(), sizeof(xLabelBuffer) - 1);
-		strncpy_s(yLabelBuffer, y_label.c_str(), sizeof(yLabelBuffer) - 1);
+		snprintf(titleBuffer, sizeof(titleBuffer), "%s", title.c_str());
+		snprintf(xLabelBuffer, sizeof(xLabelBuffer), "%s", x_label.c_str());
+		snprintf(yLabelBuffer, sizeof(yLabelBuffer), "%s", y_label.c_str());
 
 		static ImPlotColormap map = ImPlotColormap_Deep;
 		if (ImGui::BeginMenuBar())
@@ -159,8 +159,9 @@ namespace dnf_composer
 
 		if (autoScale)
 		{
-			heatmapParameters.scaleMin = *std::ranges::min_element(flattened_matrix->begin(), flattened_matrix->end());
-			heatmapParameters.scaleMax = *std::ranges::max_element(flattened_matrix->begin(), flattened_matrix->end());
+			auto [min_it, max_it] = std::minmax_element(flattened_matrix->begin(), flattened_matrix->end());
+			heatmapParameters.scaleMin = *min_it;
+			heatmapParameters.scaleMax = *max_it;
 			scaleMin = static_cast<float>(heatmapParameters.scaleMin);
 			scaleMax = static_cast<float>(heatmapParameters.scaleMax);
 		}

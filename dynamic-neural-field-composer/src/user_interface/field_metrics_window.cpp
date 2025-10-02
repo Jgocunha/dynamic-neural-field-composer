@@ -11,7 +11,7 @@ namespace dnf_composer
 
 		void FieldMetricsWindow::render()
 		{
-			if (ImGui::Begin("Neural Field Monitoring"))
+			if (ImGui::Begin("Neural Field Monitoring", nullptr, imgui_kit::getGlobalWindowFlags()))
 			{
 				ImGui::Text("Overview of Neural Fields:");
 				getNeuralFieldsAndRenderCentroids();

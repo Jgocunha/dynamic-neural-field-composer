@@ -5,6 +5,8 @@
 #include "user_interface/plot_control_window.h"
 #include "user_interface/simulation_window.h"
 #include "elements/element_factory.h"
+#include "user_interface/plots_window.h"
+#include "user_interface/node_graph_window.h"
 
 int main()
 {
@@ -12,15 +14,19 @@ int main()
     {
         using namespace dnf_composer;
 
-        const auto simulation = std::make_shared<Simulation>("default", 25.0, 0.0, 0.0);
+        const auto simulation = std::make_shared<Simulation>("example gauss and field couplings", 25.0, 0.0, 0.0);
         const auto visualization = std::make_shared<Visualization>(simulation);
         const Application app{ simulation, visualization };
 
         app.addWindow<user_interface::MainWindow>();
         app.addWindow<imgui_kit::LogWindow>();
+        app.addWindow<user_interface::FieldMetricsWindow>();
         app.addWindow<user_interface::ElementWindow>();
-        app.addWindow<user_interface::PlotControlWindow>();
         app.addWindow<user_interface::SimulationWindow>();
+        app.addWindow<user_interface::PlotControlWindow>();
+        app.addWindow<user_interface::PlotsWindow>();
+        app.addWindow<user_interface::NodeGraphWindow>();
+
 
         element::ElementFactory factory;
         const element::ElementDimensions input_dimensions{200, 0.7};

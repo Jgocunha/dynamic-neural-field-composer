@@ -52,7 +52,7 @@ namespace dnf_composer
 				tau = other.tau;
 				startingRestingLevel = other.startingRestingLevel;
 				if (other.activationFunction == nullptr)
-					activationFunction = std::make_unique<HeavisideFunction>(0);
+					activationFunction = std::make_unique<SigmoidFunction>(0.0, 10.0);
 				else
 					activationFunction = other.activationFunction->clone();
 			}

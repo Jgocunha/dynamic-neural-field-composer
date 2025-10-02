@@ -38,7 +38,23 @@ The project includes platform-specific scripts to facilitate building and instal
 - `build.bat`, `build.sh`: Compile the project using CMake configurations.
 - `install.bat`, `install.sh`: Install the library to your system via CMake.
 
-**Note**: Linux shell scripts (`.sh`) are still under development.
+**Note**:
+In a Linux machine you might have to:
+1. Create a build directory inside the project folder ```mkdir build```;
+2. Set ```VCPKG_ROOT``` directory as an environment variable ```export VCPKG_ROOT=/opt/vcpkg```;
+3. Confirm you have at least GCC 13+ ```g++ --version```, if not:
+    -   Install GCC 13
+    ```bash
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo apt update
+    sudo apt install gcc-13 g++-13
+    ```
+    - Set it as default (optional):
+    ```bash
+    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+    sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+    ```
+Before running the ```build.sh```.
 
 ## Integration into Your CMake Project
 
