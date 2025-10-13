@@ -388,7 +388,7 @@ namespace dnf_composer
 				const element::NormalNoiseParameters nnp = { amplitude };
 				const element::ElementDimensions dimensions{ x_max, d_x };
 				const std::shared_ptr<element::NormalNoise> normalNoise( new element::NormalNoise({ id, dimensions}, nnp));
-				const element::GaussKernelParameters gkp = { 0.25, 0.2 };
+				const element::GaussKernelParameters gkp{ 0.25, 0.2 };
 				const std::shared_ptr<element::GaussKernel> gaussKernelNormalNoise(new element::GaussKernel({ std::string(id) + " gauss kernel", dimensions }, gkp));
 				simulation->addElement(normalNoise);
 				simulation->addElement(gaussKernelNormalNoise);
@@ -497,7 +497,7 @@ namespace dnf_composer
 
 			if (ImGui::Button("Add", { 100.0f, 30.0f }))
 			{
-				const element::GaussKernelParameters gkp = { sigma, amplitude, amplitudeGlobal, circular, normalized};
+				const element::GaussKernelParameters gkp{ sigma, amplitude, amplitudeGlobal, circular, normalized};
 				const element::ElementDimensions dimensions{ x_max, d_x };
 				const std::shared_ptr<element::GaussKernel> gaussKernel(new element::GaussKernel({ id, dimensions }, gkp));
 				simulation->addElement(gaussKernel);

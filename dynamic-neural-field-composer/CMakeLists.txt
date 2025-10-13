@@ -77,6 +77,7 @@ set(elements_headers
         "include/elements/normal_noise.h"
         "include/elements/oscillatory_kernel.h"
         "include/elements/asymmetric_gauss_kernel.h"
+        "include/elements/kernel_coupling.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -148,6 +149,7 @@ set(src
         "src/elements/neural_field.cpp"
         "src/elements/normal_noise.cpp"
         "src/elements/asymmetric_gauss_kernel.cpp"
+        "src/elements/kernel_coupling.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -268,3 +270,4 @@ add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
+add_example_executable(test_kernel_dimensionality test_kernel_dimensionality.cpp)

@@ -18,7 +18,7 @@ namespace dnf_composer
 			bool circular;
 			bool normalized;
 
-			GaussKernelParameters(double width = 3.0, double amp = 3.0, double ampGlobal = -0.01,
+			explicit GaussKernelParameters(double width = 3.0, double amp = 3.0, double ampGlobal = -0.01,
 				bool circular = true, bool normalized = true)
 				: width(width), amplitude(amp), amplitudeGlobal(ampGlobal),
 					circular(circular), normalized(normalized)
@@ -34,7 +34,7 @@ namespace dnf_composer
 					normalized == other.normalized;
 			}
 
-			std::string toString() const override
+			[[nodiscard]] std::string toString() const override
 			{
 				std::ostringstream result;
 				result << std::fixed << std::setprecision(2); // Ensures numbers have 2 decimal places

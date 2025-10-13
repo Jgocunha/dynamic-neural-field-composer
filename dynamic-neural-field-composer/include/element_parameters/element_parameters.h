@@ -22,6 +22,7 @@ namespace dnf_composer
 			NORMAL_NOISE,
 			FIELD_COUPLING,
 			GAUSS_FIELD_COUPLING,
+			KERNEL_COUPLING,
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
