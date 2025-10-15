@@ -1,6 +1,7 @@
 *.vs
 *.vscode
 profiling/
+*.idea
 
 install/
 build/
