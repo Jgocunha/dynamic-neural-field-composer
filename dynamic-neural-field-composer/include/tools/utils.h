@@ -5,6 +5,7 @@
 #include <random>
 #include <sstream>
 #include <fstream>
+#include <chrono>
 
 namespace dnf_composer
 {
@@ -45,6 +46,15 @@ namespace dnf_composer
 				for (auto& row : matrix)
 					for (auto& element : row)
 						element = dis(gen);
+			}
+
+			inline bool safe_localtime(const std::time_t* time, std::tm* result)
+			{
+#ifdef _WIN32
+				return localtime_s(result, time) == 0;
+#else
+				return localtime_r(time, result) != nullptr;
+#endif
 			}
 		}
 	}

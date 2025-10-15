@@ -401,13 +401,11 @@ namespace dnf_composer
 
 	void Simulation::generateUniqueIdentifier()
 	{
-		const std::time_t now = std::time(nullptr);
-		std::tm local_time;
-		const errno_t error = localtime_s(&local_time, &now);
-		if (error != 0)
-			throw Exception(ErrorCode::SIM_INVALID_PARAMETER);
+		const auto now = std::chrono::system_clock::now();
+		const auto time_t = std::chrono::system_clock::to_time_t(now);
+
 		std::ostringstream oss;
-		oss << std::put_time(&local_time, "default sim [%Y-%m-%d] [%H-%M-%S]");
+		oss << std::put_time(std::localtime(&time_t), "default sim [%Y-%m-%d] [%H-%M-%S]");
 		uniqueIdentifier = oss.str();
 	}
 

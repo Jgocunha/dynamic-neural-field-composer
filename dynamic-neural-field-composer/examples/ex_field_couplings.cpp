@@ -14,7 +14,7 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("default", 25.0, 0.0, 0.0);
+		const auto simulation = std::make_shared<Simulation>("example field couplings", 1.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
@@ -37,10 +37,10 @@ int main()
 			element::MexicanHatKernelParameters{});
 		const auto nn_1 = factory.createElement(element::NORMAL_NOISE,
 			element::ElementCommonParameters{element::ElementIdentifiers{"normal noise stkl past field"}, input_dimensions},
-			element::NormalNoiseParameters{});
+			element::NormalNoiseParameters{0.05});
 		const auto gs_1 = factory.createElement(element::GAUSS_STIMULUS,
 			element::ElementCommonParameters{element::ElementIdentifiers{"stimulus stkl past field"}, input_dimensions},
-			element::GaussStimulusParameters{});
+			element::GaussStimulusParameters{5, 15, 20});
 
 		const element::ElementDimensions output_dimensions{280, 1.0};
 		const auto nf_2 = factory.createElement(element::NEURAL_FIELD,
@@ -51,16 +51,13 @@ int main()
 			element::GaussKernelParameters{});
 		const auto nn_2 = factory.createElement(element::NORMAL_NOISE,
 			element::ElementCommonParameters{element::ElementIdentifiers{"normal noise stkl present field"}, output_dimensions},
-			element::NormalNoiseParameters{});
+			element::NormalNoiseParameters{0.05});
 		const auto gs_2 = factory.createElement(element::GAUSS_STIMULUS,
 			element::ElementCommonParameters{element::ElementIdentifiers{"stimulus stkl present field"}, output_dimensions},
-			element::GaussStimulusParameters{});
+			element::GaussStimulusParameters{5, 15, 40});
 		const auto fc_1 = factory.createElement(element::FIELD_COUPLING,
 			element::ElementCommonParameters{element::ElementIdentifiers{"coupling past-present"}, output_dimensions},
 			element::FieldCouplingParameters{input_dimensions});
-		/*const auto gfc_1 = factory.createElement(element::GAUSS_FIELD_COUPLING, 
-			element::ElementCommonParameters{element::ElementIdentifiers{element::ElementLabel::GAUSS_FIELD_COUPLING}, output_dimensions},
-			element::GaussFieldCouplingParameters{input_dimensions,true, false, {{50.0, 50.0, 5.0, 5.0}}});*/
 
 		const auto nf_3 = factory.createElement(element::ElementLabel::NEURAL_FIELD,
 			element::ElementCommonParameters{ element::ElementIdentifiers{"stkl next field" }, input_dimensions },
@@ -70,10 +67,10 @@ int main()
 			element::MexicanHatKernelParameters{});
 		const auto nn_3 = factory.createElement(element::NORMAL_NOISE,
 			element::ElementCommonParameters{ element::ElementIdentifiers{"normal noise stkl next field"}, input_dimensions },
-			element::NormalNoiseParameters{});
+			element::NormalNoiseParameters{0.05});
 		const auto gs_3 = factory.createElement(element::GAUSS_STIMULUS,
 			element::ElementCommonParameters{ element::ElementIdentifiers{"stimulus stkl next field"}, input_dimensions },
-			element::GaussStimulusParameters{});
+			element::GaussStimulusParameters{5, 15, 60});
 		const auto fc_2 = factory.createElement(element::FIELD_COUPLING,
 			element::ElementCommonParameters{ element::ElementIdentifiers{"coupling present-next"}, output_dimensions },
 			element::FieldCouplingParameters{ input_dimensions });
@@ -81,20 +78,21 @@ int main()
 		simulation->addElement(nf_1);
 		simulation->addElement(mhk_1);
 		simulation->addElement(nn_1);
+
 		simulation->addElement(nf_2);
 		simulation->addElement(gk_2);
 		simulation->addElement(nn_2);
+
 		simulation->addElement(gs_1);
 		simulation->addElement(gs_2);
 		simulation->addElement(fc_1);
-		//simulation->addElement(gfc_1);
+
 		simulation->addElement(nf_3);
 		simulation->addElement(mhk_3);
 		simulation->addElement(nn_3);
+
 		simulation->addElement(gs_3);
 		simulation->addElement(fc_2);
-
-
 
 		nf_1->addInput(mhk_1);
 		mhk_1->addInput(nf_1);
@@ -108,8 +106,6 @@ int main()
 
 		fc_1->addInput(nf_1);
 		nf_2->addInput(fc_1);
-		//gfc_1->addInput(nf_1);
-		//nf_2->addInput(gfc_1);
 
 		nf_3->addInput(mhk_3);
 		mhk_3->addInput(nf_3);
@@ -123,7 +119,7 @@ int main()
 			PlotCommonParameters{
 			PlotType::LINE_PLOT,
 			PlotDimensions{ 0.0, 280, -20.0, 20, 1.0, 1.0},
-			PlotAnnotations{ "Color field", "Color (hue value)", "Activation" } },
+			PlotAnnotations{ "stkl past field dynamics", "Spatial location", "Amplitude" } },
 			LinePlotParameters{},
 			{ { nf_1->getUniqueName(), "activation" }, { nf_1->getUniqueName(), "output" }, { nf_1->getUniqueName(), "input" } });
 
@@ -131,7 +127,7 @@ int main()
 			PlotCommonParameters{
 			PlotType::LINE_PLOT,
 			PlotDimensions{ 0.0, 280, -20.0, 20, 1.0, 1.0 },
-			PlotAnnotations{ "Spatial field", "Spatial location", "Activation" } },
+			PlotAnnotations{ "stkl present field dynamics", "Spatial location", "Activation" } },
 			LinePlotParameters{},
 			{ {nf_2->getUniqueName(), "activation"}, {nf_2->getUniqueName(), "output"}, {nf_2->getUniqueName(), "input"} });
 
@@ -139,7 +135,7 @@ int main()
 			PlotCommonParameters{
 			PlotType::LINE_PLOT,
 			PlotDimensions{ 0.0, 280, -20.0, 20, 1.0, 1.0 },
-			PlotAnnotations{ "Spatial field", "Spatial location", "Activation" } },
+			PlotAnnotations{ "stkl next field dynamics", "Spatial location", "Activation" } },
 			LinePlotParameters{},
 			{ {nf_3->getUniqueName(), "activation"}, {nf_3->getUniqueName(), "output"}, {nf_3->getUniqueName(), "input"} });
 
@@ -147,7 +143,7 @@ int main()
 			PlotCommonParameters{
 				PlotType::HEATMAP, 
 				PlotDimensions{0.0, 280, 0.0, 280, 1.0, 1.0}, 
-				PlotAnnotations{"Color-space coupling", "Spatial location", "Color (hue value)"} }, 
+				PlotAnnotations{"stkl past-present coupling", "stkl present spatial location", "stkl past spatial location"} },
 				HeatmapParameters{},
 			{ {fc_1->getUniqueName(), "weights"} }
 		);
@@ -156,18 +152,10 @@ int main()
 			PlotCommonParameters{
 				PlotType::HEATMAP,
 				PlotDimensions{0.0, 280, 0.0, 280, 1.0, 1.0},
-				PlotAnnotations{"Color-space coupling", "Spatial location", "Color (hue value)"} },
+				PlotAnnotations{"stkl present-next coupling", "stkl next spatial location", "stkl present spatial location"} },
 				HeatmapParameters{},
 			{ {fc_2->getUniqueName(), "weights"} }
 			);
-
-		/*visualization->plot(
-			PlotCommonParameters{
-			PlotType::LINE_PLOT,
-			PlotDimensions{ 0.0, 100, -20.0, 20, 1.0, 1.0},
-			PlotAnnotations{ "Field coupling output", "Spatial dimension", "Amplitude" } },
-			LinePlotParameters{},
-			{{gfc_1->getUniqueName(), "output"}});*/
 
 		app.init();
 
@@ -177,6 +165,8 @@ int main()
 		}
 
 		app.close();
+
+		return 0;
 	}
 	catch (const dnf_composer::Exception& ex)
 	{

@@ -72,6 +72,7 @@ namespace dnf_composer
 			FieldCouplingParameters parameters;
 			std::shared_ptr<Element> input;
 			std::shared_ptr<Element> output;
+			std::string weightsDirectory;
 		public:
 			FieldCoupling(const ElementCommonParameters& elementCommonParameters, 
 				const FieldCouplingParameters& fc_parameters);
@@ -84,7 +85,9 @@ namespace dnf_composer
 			void setLearningRate(double learningRate);
 			void setLearning(bool learning);
 			void setParameters(const FieldCouplingParameters& fcp);
+			void setWeightsDirectory(const std::string& dir);
 			FieldCouplingParameters getParameters() const;
+			std::string getWeightsDirectory() const;
 
 			void readWeights();
 			void writeWeights() const;

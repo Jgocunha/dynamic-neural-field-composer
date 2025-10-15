@@ -16,7 +16,7 @@ namespace dnf_composer
 
 		void SimulationWindow::render()
 		{
-			if (ImGui::Begin("Simulation Control"))
+			if (ImGui::Begin("Simulation Control", nullptr, imgui_kit::getGlobalWindowFlags()))
 			{
 				renderSimulationControlButtons();
 				renderSimulationProperties();
@@ -31,6 +31,7 @@ namespace dnf_composer
 
 		void SimulationWindow::renderSimulationControlButtons() const
 		{
+
 			if (ImGui::Button("Start"))
 				simulation->init();
 
@@ -43,6 +44,50 @@ namespace dnf_composer
 
 			if (ImGui::Button("Resume"))
 				simulation->resume();
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Stop"))
+				simulation->close();
+
+			// Section for running a specific number of iterations
+			ImGui::Separator();
+
+			static bool runNSteps = false;
+			static int iterationCount = 1000; // Default value
+			static int currentIteration = 0;
+			ImGui::SetNextItemWidth(120);
+			ImGui::InputInt("Iterations", &iterationCount, 1, 10);
+			if (iterationCount < 1) iterationCount = 1; // Ensure positive value
+
+			ImGui::SameLine();
+			if (ImGui::Button("Run N steps"))
+			{
+				// Run the simulation for the specified number of iterations
+				currentIteration = simulation->getT();
+				if (!simulation->isInitialized())
+				{
+					simulation->init();
+					currentIteration = 0;
+				}
+				simulation->resume();
+				runNSteps = true;
+				tools::logger::log(tools::logger::INFO, "Simulation has started running for "
+					+ std::to_string(iterationCount) + " steps.");
+			}
+
+			if (runNSteps)
+			{
+				// simulation has finished running the specified number of iterations
+				if (simulation->getT() >= iterationCount + currentIteration)
+				{
+					runNSteps = false;
+					simulation->pause();
+					tools::logger::log(tools::logger::INFO, "Simulation has finished running "
+						+ std::to_string(iterationCount) + " steps.");
+				}
+			}
+
 		}
 
 		void SimulationWindow::renderSimulationProperties() const
@@ -343,7 +388,7 @@ namespace dnf_composer
 				const element::NormalNoiseParameters nnp = { amplitude };
 				const element::ElementDimensions dimensions{ x_max, d_x };
 				const std::shared_ptr<element::NormalNoise> normalNoise( new element::NormalNoise({ id, dimensions}, nnp));
-				const element::GaussKernelParameters gkp = { 0.25, 0.2 };
+				const element::GaussKernelParameters gkp{ 0.25, 0.2 };
 				const std::shared_ptr<element::GaussKernel> gaussKernelNormalNoise(new element::GaussKernel({ std::string(id) + " gauss kernel", dimensions }, gkp));
 				simulation->addElement(normalNoise);
 				simulation->addElement(gaussKernelNormalNoise);
@@ -452,7 +497,7 @@ namespace dnf_composer
 
 			if (ImGui::Button("Add", { 100.0f, 30.0f }))
 			{
-				const element::GaussKernelParameters gkp = { sigma, amplitude, amplitudeGlobal, circular, normalized};
+				const element::GaussKernelParameters gkp{ sigma, amplitude, amplitudeGlobal, circular, normalized};
 				const element::ElementDimensions dimensions{ x_max, d_x };
 				const std::shared_ptr<element::GaussKernel> gaussKernel(new element::GaussKernel({ id, dimensions }, gkp));
 				simulation->addElement(gaussKernel);

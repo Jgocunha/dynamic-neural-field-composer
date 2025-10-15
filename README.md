@@ -23,6 +23,7 @@ Dynamic Neural Field Composer leverages modern C++ standards to offer a robust f
 - **C++20**: Ensures compatibility with modern C++ features for optimal performance.
 - **CMake 3.15+**: For building and configuring the project.
 - **VCPKG**: Manages C++ libraries, facilitating the integration of external tools like ImGui and ImPlot.
+- **imgui-platform-kit**: A cross-platform toolkit designed to facilitate the development of user interfaces using Dear ImGui. [imgui-platform-kit](https://github.com/Jgocunha/imgui-platform-kit)
 - **DirectX 12 (Windows)** / **OpenGL (Linux)**: Essential for rendering graphical content.
 - **GLFW (Linux)**: Supports window management and various operating functions on Linux.
 
@@ -38,7 +39,23 @@ The project includes platform-specific scripts to facilitate building and instal
 - `build.bat`, `build.sh`: Compile the project using CMake configurations.
 - `install.bat`, `install.sh`: Install the library to your system via CMake.
 
-**Note**: Linux shell scripts (`.sh`) are still under development.
+**Note**:
+In a Linux machine you might have to:
+1. Create a build directory inside the project folder ```mkdir build```;
+2. Set ```VCPKG_ROOT``` directory as an environment variable ```export VCPKG_ROOT=/opt/vcpkg```;
+3. Confirm you have at least GCC 13+ ```g++ --version```, if not:
+    -   Install GCC 13
+    ```bash
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo apt update
+    sudo apt install gcc-13 g++-13
+    ```
+    - Set it as default (optional):
+    ```bash
+    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+    sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+    ```
+Before running the ```build.sh```.
 
 ## Integration into Your CMake Project
 

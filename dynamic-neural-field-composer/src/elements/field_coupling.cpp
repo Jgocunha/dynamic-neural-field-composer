@@ -16,8 +16,10 @@ namespace dnf_composer
 			commonParameters.identifiers.label = ElementLabel::FIELD_COUPLING;
 			components["input"] = std::vector<double>(parameters.inputFieldDimensions.size);
 			components["output"] = std::vector<double>(commonParameters.dimensionParameters.size);
-			components["weights"] = std::vector<double>(components.at("input").size() * components.at("output").size());
+			components["weights"] = std::vector<double>(components.at("input").size()
+				* components.at("output").size());
 			std::ranges::fill(components["weights"], 0);
+			weightsDirectory = std::string(OUTPUT_DIRECTORY) + "/inter-field-synaptic-connections";
 			readWeights();
 		}
 
@@ -61,6 +63,11 @@ namespace dnf_composer
 			parameters = fcp;
 		}
 
+		void FieldCoupling::setWeightsDirectory(const std::string& dir)
+		{
+			weightsDirectory = dir;
+		}
+
 		void FieldCoupling::setLearningRate(double learningRate)
 		{
 			parameters.learningRate = learningRate;
@@ -74,6 +81,11 @@ namespace dnf_composer
 		FieldCouplingParameters FieldCoupling::getParameters() const
 		{
 			return parameters;
+		}
+
+		std::string FieldCoupling::getWeightsDirectory() const
+		{
+			return weightsDirectory;
 		}
 
 		void FieldCoupling::updateOutput()
@@ -111,7 +123,6 @@ namespace dnf_composer
 			input = inputs.begin()->first;
 		}
 
-
 		void FieldCoupling::updateOutputField()
 		{
 			if (outputs.size() != 1)
@@ -144,7 +155,8 @@ namespace dnf_composer
 			switch (parameters.learningRule)
 			{
 			case LearningRule::DELTA:
-				log(tools::logger::LogLevel::ERROR, "Delta learning rule is not implemented yet.");
+				log(tools::logger::LogLevel::ERROR, "Unsupervised delta learning rule is not implemented yet.");
+				//tools::math::unsupervisedDeltaLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
 				break;
 			case LearningRule::HEBB:
 				tools::math::hebbLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
@@ -157,8 +169,7 @@ namespace dnf_composer
 
 		void FieldCoupling::readWeights()
 		{
-			const std::string filename = std::string(OUTPUT_DIRECTORY) + "/inter-field-synaptic-connections/" +
-				commonParameters.identifiers.uniqueName + "_weights.txt";
+			const std::string filename = weightsDirectory + "/" + commonParameters.identifiers.uniqueName + "_weights.txt";
 			std::ifstream file(filename);
 
 			const size_t inputSize = components.at("input").size();
@@ -202,8 +213,7 @@ namespace dnf_composer
 
 		void FieldCoupling::writeWeights() const
 		{
-			const std::string filename = std::string(OUTPUT_DIRECTORY) + "/inter-field-synaptic-connections/" +
-				commonParameters.identifiers.uniqueName + "_weights.txt";
+			const std::string filename = weightsDirectory + "/" + commonParameters.identifiers.uniqueName + "_weights.txt";
 			std::ofstream file(filename);
 
 			if (file.is_open()) 
@@ -241,7 +251,8 @@ namespace dnf_composer
 		{
 			if (!input)
 			{
-				const std::string logMessage = "Field coupling '" + commonParameters.identifiers.uniqueName + "' has no input field. Learning is disabled.";
+				const std::string logMessage = "Field coupling '" + commonParameters.identifiers.uniqueName +
+					"' has no input field. Learning is disabled.";
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				parameters.isLearningActive = false;
 				return false;
@@ -249,7 +260,8 @@ namespace dnf_composer
 
 			if (!output)
 			{
-				const std::string logMessage = "Field coupling '" + commonParameters.identifiers.uniqueName + "' has no output field. Learning is disabled.";
+				const std::string logMessage = "Field coupling '" + commonParameters.identifiers.uniqueName +
+					"' has no output field. Learning is disabled.";
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				parameters.isLearningActive = false;
 				return false;

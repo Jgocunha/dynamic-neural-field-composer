@@ -5,46 +5,41 @@
 #include "dynamic-neural-field-composer.h"
 
 
-// This .cpp file is an example of how you can use the library to create your own DNF simulation.
-
-int main(int argc, char* argv[])
+int main()
 {
 	try
 	{
-		const auto simulation = dnf_composer::createSimulation();
-		const dnf_composer::Application app{ simulation };
+		using namespace dnf_composer;
 
-		app.addWindow<dnf_composer::user_interface::MainWindow>();
+		const auto simulation = std::make_shared<Simulation>("main launcher");
+		const auto visualization = std::make_shared<Visualization>(simulation);
+		const Application app{ simulation, visualization };
+
+		app.addWindow<user_interface::MainWindow>();
 		app.addWindow<imgui_kit::LogWindow>();
-		app.addWindow<dnf_composer::user_interface::SimulationWindow>();
-		app.addWindow<dnf_composer::user_interface::ElementWindow>();
-
-		dnf_composer::user_interface::PlotParameters plotParameters;
-		plotParameters.annotations = { "Plot title", "Spatial dimension", "Amplitude" };
-		plotParameters.dimensions = { 0, 100, -30, 40 , 1.0 };
-		auto visualization = dnf_composer::createVisualization(simulation);
-		app.addWindow<dnf_composer::user_interface::PlotWindow>(visualization, plotParameters);
-
+		app.addWindow<user_interface::FieldMetricsWindow>();
+		app.addWindow<user_interface::ElementWindow>();
+		app.addWindow<user_interface::SimulationWindow>();
+		app.addWindow<user_interface::PlotControlWindow>();
+		app.addWindow<user_interface::PlotsWindow>();
+		app.addWindow<user_interface::NodeGraphWindow>();
 
 		app.init();
 
-
-		bool userRequestClose = false;
-		while (!userRequestClose)
+		while (!app.hasGUIBeenClosed())
 		{
 			app.step();
-			userRequestClose = app.hasUIBeenClosed();
 		}
+
 		app.close();
-		return 0;
 	}
-	catch (const dnf_composer::Exception &ex)
+	catch (const dnf_composer::Exception& ex)
 	{
 		const std::string errorMessage = "Exception: " + std::string(ex.what()) + " ErrorCode: " + std::to_string(static_cast<int>(ex.getErrorCode())) + ". ";
 		log(dnf_composer::tools::logger::LogLevel::FATAL, errorMessage, dnf_composer::tools::logger::LogOutputMode::CONSOLE);
 		return static_cast<int>(ex.getErrorCode());
 	}
-	catch (const std::exception &ex)
+	catch (const std::exception& ex)
 	{
 		log(dnf_composer::tools::logger::LogLevel::FATAL, "Exception caught: " + std::string(ex.what()) + ". ", dnf_composer::tools::logger::LogOutputMode::CONSOLE);
 		return 1;

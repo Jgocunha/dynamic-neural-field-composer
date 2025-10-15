@@ -21,18 +21,18 @@ namespace dnf_composer
 	{
 		simulation->init();
 		gui->initialize();
+		loadImGuiIniFile();
+		enableKeyboardShortcuts();
 		log(tools::logger::LogLevel::INFO, "Application initialized successfully.");
-
-		// [Put this elsewhere] Enable Keyboard Controls
-		auto io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	}
 
 	void Application::step() const
 	{
 		simulation->step();
 		if (guiActive)
+		{
 			gui->render();
+		}
 	}
 
 	void Application::close() const
@@ -73,10 +73,36 @@ namespace dnf_composer
 												{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Light.ttf", 16},
 			});
 		const StyleParameters styleParams{ Theme::GreenLeaf };
+#ifdef _WIN32
 		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.ico" };
+#else
+		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.png" };
+#endif
 		const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR) + "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
 		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, bgParams };
 		gui = std::make_shared<UserInterface>(guiParameters);
+		imgui_kit::setGlobalWindowFlags(ImGuiWindowFlags_NoCollapse);
 		log(tools::logger::LogLevel::INFO, "GUI parameters set successfully.");
+	}
+
+	void Application::loadImGuiIniFile() const
+	{
+		// [Put this elsewhere] Load ImGui Ini File
+		auto io = ImGui::GetIO();
+		std::string iniFilePath = std::string(PROJECT_DIR) + "/resources/layouts/" + simulation->getIdentifier() + "_layout.ini";
+		if (!std::filesystem::exists(iniFilePath))
+		{
+			log(tools::logger::LogLevel::INFO, "Layout file with simulation name does not exist. Using default layout file.");
+			iniFilePath = std::string(PROJECT_DIR) + "/resources/layouts/default_layout.ini";
+		}
+		io.IniFilename = iniFilePath.c_str();
+		ImGui::LoadIniSettingsFromDisk(io.IniFilename);
+	}
+
+	void Application::enableKeyboardShortcuts()
+	{
+		// [Put this elsewhere] Enable Keyboard Controls
+		auto io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	}
 }
