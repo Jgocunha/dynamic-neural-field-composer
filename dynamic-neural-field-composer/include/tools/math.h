@@ -12,14 +12,13 @@
 #include <vector>
 #include <array>
 #include <cmath>
-#include <math.h>
+//#include <math.h>
 #include <algorithm>
 #include <numeric>
 #include <functional>
 #include <random>
-#include <numbers> // std::numbers
+#include <numbers>
 #include <fstream>
-
 
 namespace dnf_composer::tools::math
 {
@@ -79,7 +78,7 @@ namespace dnf_composer::tools::math
 		const int pad = (ng - 1) / 2;
 
 		for (int i = 0; i < nf; ++i) {
-			T sum = T(); // Initialize sum for each element of output
+			T sum = T(); // Initialize the sum for each element of output
 			for (int j = 0; j < ng; ++j) {
 				int fIndex = i + j - pad; // Adjust index for 'same' mode with shift correction
 				if (fIndex >= 0 && fIndex < nf) { // Check boundaries
@@ -380,7 +379,7 @@ namespace dnf_composer::tools::math
 			}
 		}
 
-		return true; // Vectors are equal within threshold
+		return true; // Vectors are equal within the threshold
 	}
 
 	template <typename T>

@@ -431,7 +431,7 @@ namespace dnf_composer
 
 			if(ImGui::Button("Add", { 100.0f, 30.0f }))
 			{
-				const element::FieldCouplingParameters fcp = { {in_x_max, in_d_x}, learningRule, scalar, learningRate };
+				const element::FieldCouplingParameters fcp = { element::ElementDimensions(in_x_max, in_d_x), learningRule, scalar, learningRate };
 				const element::ElementDimensions dimensions{ x_max, d_x };
 				const std::shared_ptr<element::FieldCoupling> fieldCoupling(new element::FieldCoupling({ id, dimensions }, fcp));
 				simulation->addElement(fieldCoupling);
@@ -467,7 +467,7 @@ namespace dnf_composer
 
 			if (ImGui::Button("Add", { 100.0f, 30.0f }))
 			{
-				const element::GaussFieldCouplingParameters gfcp = { {in_x_max, in_d_x}, normalized, circular, {{x_i, x_j, amplitude, width}} };
+				const element::GaussFieldCouplingParameters gfcp = { element::ElementDimensions(in_x_max, in_d_x), normalized, circular, {{x_i, x_j, amplitude, width}} };
 				const element::ElementDimensions dimensions{ x_max, d_x };
 				const std::shared_ptr<element::GaussFieldCoupling> gaussCoupling(new element::GaussFieldCoupling({ id, dimensions }, gfcp));
 				simulation->addElement(gaussCoupling);

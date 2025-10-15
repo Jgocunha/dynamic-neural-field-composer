@@ -37,13 +37,15 @@ int main()
 
 		// fields
 		const auto field_ucp = element::ElementCommonParameters{ "field u" };
-		const auto field_up = element::NeuralFieldParameters{ 25.0, -10.0, element::SigmoidFunction{0.0, 5.0} };
+		const auto field_up = element::NeuralFieldParameters{ 25.0, -10.0,
+			element::SigmoidFunction{0.0, 5.0} };
 		const auto field_u = std::make_shared < element::NeuralField > ( field_ucp, field_up );
 		simulation->addElement(field_u);
 		field_u->addInput(s);
 
 		const auto field_vcp = element::ElementCommonParameters{ "field v", 200};
-		const auto field_vp = element::NeuralFieldParameters{ 25.0, -10.0, element::SigmoidFunction{0.0, 5.0} };
+		const auto field_vp = element::NeuralFieldParameters{ 25.0, -10.0,
+			element::SigmoidFunction{0.0, 5.0} };
 		const auto field_v = std::make_shared < element::NeuralField > (field_vcp, field_vp );
 		simulation->addElement(field_v);
 
@@ -69,8 +71,9 @@ int main()
 		// simulation->addElement(u_v);
 		// u_v->addInput(field_u);
 		// field_v->addInput(u_v);
-		const auto u_v_cp = element::ElementCommonParameters{ "coupling u-v"};
-		const auto u_v_p = element::KernelCouplingParameters{ 5.0, 18.00, 0.0, true, true, 100, 200};
+		const auto u_v_cp = element::ElementCommonParameters{ "coupling u-v", 200};
+		const auto u_v_p = element::KernelCouplingParameters{ 5.0, 18.00, 0.0,
+			true, true, 100, 200};
 		const auto u_v = std::make_shared < element::KernelCoupling >(u_v_cp, u_v_p);
 		simulation->addElement(u_v);
 		u_v->addInput(field_u);
@@ -83,7 +86,7 @@ int main()
 		simulation->addElement(nn_u);
 		field_u->addInput(nn_u);
 
-		const auto nn_vcp = element::ElementCommonParameters{ "normal noise v", 200 };
+		const auto nn_vcp = element::ElementCommonParameters{ "normal noise v",200};
 		const auto nn_vp = element::NormalNoiseParameters{0.015};
 		const auto nn_v = std::make_shared < element::NormalNoise > (nn_vcp, nn_vp);
 		simulation->addElement(nn_v);

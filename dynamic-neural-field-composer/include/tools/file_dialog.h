@@ -5,7 +5,7 @@
 #include <imgui_internal.h>
 #include <chrono>
 #include <string>
-#include <time.h>
+#include <ctime>
 #include <filesystem>
 #include <sstream>
 #include "utils.h"
@@ -26,7 +26,7 @@ namespace FileDialog {
 	static FileDialogType file_dialog_open_type = FileDialogType::OpenFile;
 	static float padding = 10.0;
 
-	inline void ShowFileDialog(bool* open, char* buffer, [[maybe_unused]] unsigned int buffer_size,
+	inline void ShowFileDialog(const bool* open, char* buffer, [[maybe_unused]] unsigned int buffer_size,
 		FileDialogType type = FileDialogType::OpenFile)
 	{
 		static int file_dialog_file_select_index = 0;
@@ -242,9 +242,9 @@ namespace FileDialog {
 						+ std::chrono::system_clock::now());
 				std::time_t tt = std::chrono::system_clock::to_time_t(st);
 
-				std::tm mt;
+				std::tm mt{};
 				if (!dnf_composer::tools::utils::safe_localtime(&tt, &mt)) {
-					// Handle error - you might want to throw an exception or use a default
+					// Handle error - you might want to throw an exception or use a default,
 					// For example:
 					throw std::runtime_error("Failed to convert time");
 				}
@@ -280,7 +280,7 @@ namespace FileDialog {
 			ImGui::SameLine();
 
 			static bool disable_delete_button = false;
-			disable_delete_button = (file_dialog_current_folder == "");
+			disable_delete_button = (file_dialog_current_folder.empty());
 			if (disable_delete_button) {
 				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -357,7 +357,7 @@ namespace FileDialog {
 			ImGui::SameLine();
 			if (ImGui::Button("Choose")) {
 				if (type == FileDialogType::SelectFolder) {
-					if (file_dialog_current_folder == "") {
+					if (file_dialog_current_folder.empty()) {
 						snprintf(file_dialog_error, sizeof(file_dialog_error), "%s", "Error: You must select a folder!");
 					}
 					else {
@@ -370,7 +370,7 @@ namespace FileDialog {
 					}
 				}
 				else if (type == FileDialogType::OpenFile) {
-					if (file_dialog_current_file == "") {
+					if (file_dialog_current_file.empty()) {
 						snprintf(file_dialog_error, sizeof(file_dialog_error), "%s", "Error: You must select a file!");
 					}
 					else {
@@ -392,7 +392,7 @@ namespace FileDialog {
 		}
 	}
 
-	inline void ShowFileDialog_s(bool* open, char* buffer, FileDialogType type = FileDialogType::OpenFile)
+	inline void ShowFileDialog_s(const bool* open, char* buffer, FileDialogType type = FileDialogType::OpenFile)
 	{
 		ShowFileDialog(open, buffer, 500, type);
 	}

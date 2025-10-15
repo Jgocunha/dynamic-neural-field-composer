@@ -5,6 +5,10 @@
 #include "tools/math.h"
 #include "kernel.h"
 
+#ifdef min
+#undef min
+#endif
+
 
 namespace dnf_composer::element
 {

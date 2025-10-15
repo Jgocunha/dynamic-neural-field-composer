@@ -102,8 +102,7 @@ namespace dnf_composer
             switch (activationFunctionType) {
             case element::ActivationFunctionType::HEAVISIDE:
             {
-                const auto heavisideActivationFunction = dynamic_cast<const element::HeavisideFunction*>(neuralFieldParameters.activationFunction.get());
-                if (heavisideActivationFunction) {
+	            if (const auto heavisideActivationFunction = dynamic_cast<const element::HeavisideFunction*>(neuralFieldParameters.activationFunction.get())) {
                     elementJson["activationFunction"] = {
                         {"type", "heaviside"},
                         {"x_shift", heavisideActivationFunction->getXShift()}
@@ -113,8 +112,7 @@ namespace dnf_composer
             break;
             case element::ActivationFunctionType::SIGMOID:
             {
-                const auto sigmoidActivationFunction = dynamic_cast<const element::SigmoidFunction*>(neuralFieldParameters.activationFunction.get());
-                if (sigmoidActivationFunction) {
+	            if (const auto sigmoidActivationFunction = dynamic_cast<const element::SigmoidFunction*>(neuralFieldParameters.activationFunction.get())) {
                     elementJson["activationFunction"] = {
                         {"type", "sigmoid"},
                         {"x_shift", sigmoidActivationFunction->getXShift()},
@@ -231,7 +229,7 @@ namespace dnf_composer
 		            const double tau = elementJson["tau"];
 		            const double restingLevel = elementJson["restingLevel"];
 
-		            // Check activation function type and parameters
+		            // Check the activation function type and parameters
 		            auto activationFunctionJson = elementJson["activationFunction"];
 		            std::unique_ptr<element::ActivationFunction> activationFunction;
 		            if (!activationFunctionJson.is_null()) {
@@ -322,7 +320,7 @@ namespace dnf_composer
                 const double input_d_x = elementJson["input_d_x"];
                 auto coupling = std::make_shared<element::FieldCoupling>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
-                    element::FieldCouplingParameters({input_x_max, input_d_x}, learningRule, scalar, learningRate)
+                    element::FieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), learningRule, scalar, learningRate)
                 );
                 simulation->addElement(coupling);
             }
@@ -348,7 +346,7 @@ namespace dnf_composer
 
                 auto coupling = std::make_shared<element::GaussFieldCoupling>(
 					element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
-                    element::GaussFieldCouplingParameters({input_x_max, input_d_x}, normalized, circular, couplings)
+                    element::GaussFieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), normalized, circular, couplings)
 				);
                 simulation->addElement(coupling);
             }
