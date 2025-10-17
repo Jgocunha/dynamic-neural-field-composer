@@ -1,0 +1,146 @@
+[
+    {
+        "activationFunction": {
+            "steepness": 5.0,
+            "type": "sigmoid",
+            "x_shift": 0.0
+        },
+        "d_x": 1.0,
+        "inputs": [
+            [
+                "normal noise a",
+                "output"
+            ],
+            [
+                "gauss stimulus a",
+                "output"
+            ],
+            [
+                "mexican hat kernel u -> u",
+                "output"
+            ]
+        ],
+        "label": [
+            1,
+            "neural field"
+        ],
+        "restingLevel": -4.099999904632568,
+        "tau": 25.0,
+        "uniqueName": "neural field u",
+        "x_max": 100
+    },
+    {
+        "amplitude": 19.299999237060547,
+        "amplitudeGlobal": -0.3100000023841858,
+        "circular": true,
+        "d_x": 1.0,
+        "inputs": [
+            [
+                "neural field v",
+                "output"
+            ]
+        ],
+        "label": [
+            3,
+            "gauss kernel"
+        ],
+        "normalized": true,
+        "uniqueName": "gauss kernel u -> u",
+        "width": 2.799999952316284,
+        "x_max": 100
+    },
+    {
+        "amplitude": 0.10000000149011612,
+        "d_x": 1.0,
+        "inputs": null,
+        "label": [
+            7,
+            "normal noise"
+        ],
+        "uniqueName": "normal noise a",
+        "x_max": 100
+    },
+    {
+        "amplitude": 9.0,
+        "circular": true,
+        "d_x": 1.0,
+        "inputs": null,
+        "label": [
+            2,
+            "gauss stimulus"
+        ],
+        "normalized": false,
+        "position": 67.69999694824219,
+        "uniqueName": "gauss stimulus a",
+        "width": 5.0,
+        "x_max": 100
+    },
+    {
+        "amplitudeExc": 16.100000381469727,
+        "amplitudeGlobal": -0.009999999776482582,
+        "amplitudeInh": 15.0,
+        "circular": true,
+        "d_x": 1.0,
+        "inputs": [
+            [
+                "neural field u",
+                "output"
+            ]
+        ],
+        "label": [
+            4,
+            "mexican hat kernel"
+        ],
+        "normalized": true,
+        "uniqueName": "mexican hat kernel u -> u",
+        "widthExc": 5.0,
+        "widthInh": 10.0,
+        "x_max": 100
+    },
+    {
+        "activationFunction": {
+            "steepness": 5.0,
+            "type": "sigmoid",
+            "x_shift": 0.0
+        },
+        "d_x": 1.0,
+        "inputs": [
+            [
+                "gauss kernel u -> u",
+                "output"
+            ],
+            [
+                "gauss kernel u -> v",
+                "output"
+            ]
+        ],
+        "label": [
+            1,
+            "neural field"
+        ],
+        "restingLevel": -10.0,
+        "tau": 25.0,
+        "uniqueName": "neural field v",
+        "x_max": 100
+    },
+    {
+        "amplitude": 10.699999809265137,
+        "amplitudeGlobal": -0.009999999776482582,
+        "circular": true,
+        "d_x": 1.0,
+        "inputs": [
+            [
+                "neural field u",
+                "output"
+            ]
+        ],
+        "label": [
+            3,
+            "gauss kernel"
+        ],
+        "normalized": true,
+        "uniqueName": "gauss kernel u -> v",
+        "width": 4.400000095367432,
+        "x_max": 100
+    }
+]
