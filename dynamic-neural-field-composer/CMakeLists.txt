@@ -108,6 +108,8 @@ set(user_interface_headers
         "include/user_interface/main_window.h"
         "include/user_interface/widgets.h"
         "include/user_interface/plots_window.h"
+        include/user_interface/main_menu_window.h
+        include/user_interface/byte.h
 )
 
 set(header 
@@ -174,6 +176,7 @@ set(src
         "src/user_interface/main_window.cpp"
         "src/user_interface/widgets.cpp"
         "src/user_interface/plots_window.cpp"
+        src/user_interface/main_menu_window.cpp
 )
 
 # Define library target
