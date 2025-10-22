@@ -65,12 +65,19 @@ namespace dnf_composer
 	{
 		using namespace imgui_kit;
 		const WindowParameters winParams{ "Dynamic Neural Field Composer" };
-		const FontParameters fontParams({ {std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
-												{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Thin.ttf", 16},
-												{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Medium.ttf", 16},
-												{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Bold.ttf", 18},
-												{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Italic.ttf", 16},
-												{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Light.ttf", 16},
+		// const FontParameters fontParams({ {std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
+		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Thin.ttf", 16},
+		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Medium.ttf", 16},
+		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Bold.ttf", 18},
+		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Italic.ttf", 16},
+		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Light.ttf", 16},
+		//	});
+		 const FontParameters fontParams({
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf", 16},
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 16},
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 22},
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 24},
+														{std::string(PROJECT_DIR) + "/resources/fonts/MaterialDesignIconsDesktop.ttf", 24},
 			});
 		const StyleParameters styleParams{Theme::Light, imgui_kit::colours::White};
 #ifdef _WIN32
@@ -80,9 +87,14 @@ namespace dnf_composer
 #endif
 		//const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR) + "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
 		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, /*bgParams*/ };
+
+
+
 		gui = std::make_shared<UserInterface>(guiParameters);
 		imgui_kit::setGlobalWindowFlags(ImGuiWindowFlags_NoCollapse);
 		log(tools::logger::LogLevel::INFO, "GUI parameters set successfully.");
+
+
 	}
 
 	void Application::loadImGuiIniFile() const
@@ -102,5 +114,8 @@ namespace dnf_composer
 	{
 		auto io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+		// g_pIconFont = io.Fonts->AddFontFromMemoryTTF(icon_font, sizeof(icon_font), 17,
+		// 	NULL, io.Fonts->GetGlyphRangesCyrillic());
 	}
 }

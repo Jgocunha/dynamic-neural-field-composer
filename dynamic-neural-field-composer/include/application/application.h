@@ -9,8 +9,9 @@
 #include "exceptions/exception.h"
 #include "simulation/simulation.h"
 #include "visualization/visualization.h"
+#include "user_interface/icon_font.h"
 
-inline ImFont* iconfont = nullptr;
+// inline ImFont* g_pIconFont = nullptr;
 
 
 namespace dnf_composer
@@ -38,6 +39,7 @@ namespace dnf_composer
 		std::shared_ptr<Visualization> visualization;
 		std::shared_ptr<imgui_kit::UserInterface> gui;
 		bool guiActive;
+
 	public:
 		explicit Application(const std::shared_ptr<Simulation>& simulation = nullptr,
 			const std::shared_ptr<Visualization>& visualization = nullptr);
