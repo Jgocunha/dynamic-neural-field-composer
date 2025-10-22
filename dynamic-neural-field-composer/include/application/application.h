@@ -9,8 +9,6 @@
 #include "exceptions/exception.h"
 #include "simulation/simulation.h"
 #include "visualization/visualization.h"
-#include "user_interface/main_window.h"
-#include "user_interface/byte.h"
 
 inline ImFont* iconfont = nullptr;
 
