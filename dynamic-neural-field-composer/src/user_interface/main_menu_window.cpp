@@ -25,7 +25,7 @@ namespace dnf_composer::user_interface {
     void MainMenuWindow::render()
     {
 
-        static float g_uiScalePct = 100.0f;
+        static float g_uiScalePct = 80.0f;
         auto windowHandle = ImGui::GetMainViewport()->PlatformHandle;
         ImGuiIO& io = ImGui::GetIO();
         io.FontGlobalScale = ImGui_ImplWin32_GetDpiScaleForHwnd(windowHandle) * (g_uiScalePct / 100.0f);
@@ -166,6 +166,28 @@ namespace dnf_composer::user_interface {
 
                         float x = childMin.x + pad;
                         float y = childMin.y + childSz.y - pad - targetH;
+
+                        // ImGui::Begin("Hi! " ICON_FA_FACE_SMILE);
+
+                        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[3]);// bold font
+                        ImGui::Text("Texting with ", ICON_FA_KEYBOARD);
+                        ImGui::Text("Texting with " ICON_FA_EGG " in the middle");
+                        ImGui::Button("Press Me " ICON_FA_THUMBS_UP);
+
+                        ImGui::Text(ICON_FA_ADDRESS_BOOK
+                            ICON_FA_ADDRESS_CARD
+                            ICON_FA_FACE_ANGRY
+                            ICON_FA_CIRCLE_ARROW_DOWN
+                            ICON_FA_BACKWARD
+                            ICON_FA_BACON
+                            ICON_FA_BACTERIA
+                            ICON_FA_BACTERIUM
+                            ICON_FA_BAHAI
+                            ICON_FA_BAN
+                            ICON_FA_ANCHOR
+                            ICON_FA_BARCODE
+                            ICON_FA_BARS);
+                        ImGui::PopFont();
 
                         ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[3]);
                         //ImGui::PushFont(g_pIconFont);

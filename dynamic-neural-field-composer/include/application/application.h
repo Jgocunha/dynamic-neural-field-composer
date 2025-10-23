@@ -9,7 +9,8 @@
 #include "exceptions/exception.h"
 #include "simulation/simulation.h"
 #include "visualization/visualization.h"
-#include "user_interface/icon_font.h"
+#include "user_interface/IconsFontAwesome6.h"
+#include "user_interface/fa.h"
 
 // inline ImFont* g_pIconFont = nullptr;
 

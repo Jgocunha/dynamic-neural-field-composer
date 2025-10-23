@@ -77,7 +77,6 @@ namespace dnf_composer
 		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 16},
 		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 22},
 		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 24},
-														{std::string(PROJECT_DIR) + "/resources/fonts/MaterialDesignIconsDesktop.ttf", 24},
 			});
 		const StyleParameters styleParams{Theme::Light, imgui_kit::colours::White};
 #ifdef _WIN32
@@ -88,13 +87,9 @@ namespace dnf_composer
 		//const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR) + "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
 		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, /*bgParams*/ };
 
-
-
 		gui = std::make_shared<UserInterface>(guiParameters);
 		imgui_kit::setGlobalWindowFlags(ImGuiWindowFlags_NoCollapse);
 		log(tools::logger::LogLevel::INFO, "GUI parameters set successfully.");
-
-
 	}
 
 	void Application::loadImGuiIniFile() const
@@ -117,5 +112,20 @@ namespace dnf_composer
 
 		// g_pIconFont = io.Fonts->AddFontFromMemoryTTF(icon_font, sizeof(icon_font), 17,
 		// 	NULL, io.Fonts->GetGlyphRangesCyrillic());
+
+		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+		ImFontConfig icons_config;
+		icons_config.MergeMode = true; // Merge icon font to the previous font if you want to have both icons and text
+		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
+			FA_compressed_size, 16.0f, &icons_config, icons_ranges);
+
+		//If you want change between icons size you will need to create a new font
+		//io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, 12.0f, &icons_config, icons_ranges);
+		//io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, 20.0f, &icons_config, icons_ranges);
+
+		//To use brands icons you need do the same steps but using the brands header
+		//If a quotation mark is displayed instead of the icon, probably the Icon header and Font Awesome version are not the same
+
+		io.Fonts->Build();
 	}
 }
