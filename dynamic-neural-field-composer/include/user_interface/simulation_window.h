@@ -28,6 +28,8 @@ namespace dnf_composer
 			SimulationWindow& operator=(SimulationWindow&&) = delete;
 
 			void render() override;
+			void render(const ImRect& bounds, bool* p_open = nullptr);
+			void renderPanelContents();
 			~SimulationWindow() override = default;
 		private:
 			void renderSimulationControlButtons() const;

@@ -17,15 +17,6 @@ int main()
 		const Application app{ simulation, visualization };
 
 		app.addWindow<user_interface::MainMenuWindow>();
-		// app.addWindow<user_interface::MainWindow>();
-		// app.addWindow<imgui_kit::LogWindow>();
-		// app.addWindow<user_interface::FieldMetricsWindow>();
-		// app.addWindow<user_interface::ElementWindow>();
-		// app.addWindow<user_interface::SimulationWindow>();
-		// app.addWindow<user_interface::PlotControlWindow>();
-		// app.addWindow<user_interface::PlotsWindow>();
-		// app.addWindow<user_interface::NodeGraphWindow>();
-
 		app.init();
 
 		while (!app.hasGUIBeenClosed())

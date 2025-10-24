@@ -18,16 +18,38 @@ namespace dnf_composer
 		{
 			if (ImGui::Begin("Simulation Control", nullptr, imgui_kit::getGlobalWindowFlags()))
 			{
-				renderSimulationControlButtons();
-				renderSimulationProperties();
-				renderAddElement();
-				renderSetInteraction();
-				renderRemoveElement();
-				renderLogElementProperties();
-				renderExportElementComponents();
+				renderPanelContents();
 			}
 			ImGui::End();
 		}
+
+		void SimulationWindow::render(const ImRect& bounds, bool* p_open)
+		{
+			// Pin this window into the given rect
+			ImGui::SetNextWindowPos(bounds.Min);
+			ImGui::SetNextWindowSize(ImVec2(bounds.Max.x - bounds.Min.x, bounds.Max.y - bounds.Min.y));
+			ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
+								   | ImGuiWindowFlags_NoMove
+								   | ImGuiWindowFlags_NoResize;
+
+			if (ImGui::Begin("Simulation Control", p_open, flags))
+			{
+				renderPanelContents();
+			}
+			ImGui::End();
+		}
+
+		void SimulationWindow::renderPanelContents()
+		{
+			renderSimulationControlButtons();
+			renderSimulationProperties();
+			renderAddElement();          // add elements (NeuralField, GaussStimulus, etc.)
+			renderSetInteraction();      // wire up inputs between elements
+			renderRemoveElement();       // remove elements
+			renderLogElementProperties();// log properties
+			renderExportElementComponents(); // export components
+		}
+
 
 		void SimulationWindow::renderSimulationControlButtons() const
 		{

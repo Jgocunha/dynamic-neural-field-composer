@@ -21,8 +21,8 @@ namespace dnf_composer
 	{
 		simulation->init();
 		gui->initialize();
-		loadImGuiIniFile();
 		enableKeyboardShortcuts();
+		appendFonts();
 		log(tools::logger::LogLevel::INFO, "Application initialized successfully.");
 	}
 
@@ -65,16 +65,9 @@ namespace dnf_composer
 	{
 		using namespace imgui_kit;
 		const WindowParameters winParams{ "Dynamic Neural Field Composer" };
-		// const FontParameters fontParams({ {std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
-		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Thin.ttf", 16},
-		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Medium.ttf", 16},
-		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Bold.ttf", 18},
-		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Italic.ttf", 16},
-		// 										{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Light.ttf", 16},
-		//	});
-		 const FontParameters fontParams({
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf", 16},
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 16},
+		const FontParameters fontParams({
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf", 18},
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 18},
 		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 22},
 		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 24},
 			});
@@ -84,36 +77,36 @@ namespace dnf_composer
 #else
 		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.png" };
 #endif
-		//const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR) + "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
-		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, /*bgParams*/ };
+		const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR) + "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
+		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, bgParams };
 
 		gui = std::make_shared<UserInterface>(guiParameters);
 		imgui_kit::setGlobalWindowFlags(ImGuiWindowFlags_NoCollapse);
 		log(tools::logger::LogLevel::INFO, "GUI parameters set successfully.");
 	}
 
-	void Application::loadImGuiIniFile() const
-	{
-		auto io = ImGui::GetIO();
-		std::string iniFilePath = std::string(PROJECT_DIR) + "/resources/layouts/" + simulation->getIdentifier() + "_layout.ini";
-		if (!std::filesystem::exists(iniFilePath))
-		{
-			log(tools::logger::LogLevel::INFO, "Layout file with simulation name does not exist. Using default layout file.");
-			iniFilePath = std::string(PROJECT_DIR) + "/resources/layouts/default_layout.ini";
-		}
-		io.IniFilename = iniFilePath.c_str();
-		ImGui::LoadIniSettingsFromDisk(io.IniFilename);
-	}
-
 	void Application::enableKeyboardShortcuts()
 	{
 		auto io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	}
 
-		// g_pIconFont = io.Fonts->AddFontFromMemoryTTF(icon_font, sizeof(icon_font), 17,
-		// 	NULL, io.Fonts->GetGlyphRangesCyrillic());
+	void Application::appendFonts()
+	{
+		const auto io = ImGui::GetIO();
 
-		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+		ImFontConfig cfg{};
+		cfg.OversampleH = 2;          // 2 is often crisper than 3 at small sizes
+		cfg.OversampleV = 2;
+		cfg.PixelSnapH  = true;       // snap glyphs to pixel boundary for crispness
+		// If you use FreeType:
+		cfg.FontBuilderFlags = ImGuiFreeTypeBuilderFlags_LightHinting   // gentle hinting (good for UI)
+							 | ImGuiFreeTypeBuilderFlags_Bitmap;        // keep bitmap rendering (fast)
+
+		// If you want *maximum* crispness at small sizes (old-school look), try:
+		 cfg.FontBuilderFlags = ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
+
+		static constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 		ImFontConfig icons_config;
 		icons_config.MergeMode = true; // Merge icon font to the previous font if you want to have both icons and text
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
@@ -123,9 +116,7 @@ namespace dnf_composer
 		//io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, 12.0f, &icons_config, icons_ranges);
 		//io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, 20.0f, &icons_config, icons_ranges);
 
-		//To use brands icons you need do the same steps but using the brands header
-		//If a quotation mark is displayed instead of the icon, probably the Icon header and Font Awesome version are not the same
-
 		io.Fonts->Build();
 	}
+
 }

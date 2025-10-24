@@ -12,8 +12,8 @@
 #include "user_interface/IconsFontAwesome6.h"
 #include "user_interface/fa.h"
 
-// inline ImFont* g_pIconFont = nullptr;
-
+#define IMGUI_ENABLE_FREETYPE
+#include "user_interface/imgui_freetype.h"
 
 namespace dnf_composer
 {
@@ -79,8 +79,8 @@ namespace dnf_composer
 		~Application() = default;
 	private:
 		void setGUIParameters();
-		void loadImGuiIniFile() const;
 		static void enableKeyboardShortcuts();
+		static void appendFonts();
 	};
 }
 
