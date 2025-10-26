@@ -54,20 +54,14 @@ namespace dnf_composer
 
 		void SimulationWindow::renderAddElementCard() const
 		{
-		    ImGui::PushID("add_element_card");
-
-		    // 2-column layout like the reference mock
+			ImGui::PushID("add_element_card");
 		    ImGui::Columns(2, nullptr, false);
 
-		    // --- Left column: element type + Add button ---
+		    // ---------------- Left column ----------------
 		    ImGui::TextUnformatted("Select type");
 
-		    // Persist selection across frames
 		    static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
-
-		    // Show a combo with all valid types
-		    const char* current =
-		        element::ElementLabelToString.at(selected).c_str();
+		    const char* current = element::ElementLabelToString.at(selected).c_str();
 		    if (ImGui::BeginCombo("##element_type", current))
 		    {
 		        for (const auto& [fst, snd] : element::ElementLabelToString)
@@ -81,64 +75,70 @@ namespace dnf_composer
 		        ImGui::EndCombo();
 		    }
 
-		    // Vertical space, then the Add button (as requested, under the combo)
 		    ImGui::Spacing();
+		    bool addRequested = ImGui::Button("Add element", ImVec2(-FLT_MIN, 0));
 
-		    bool addRequested = false;
-		    if (ImGui::Button("Add element", ImVec2(-FLT_MIN, 0)))
-		        addRequested = true;
-
-		    // Move to the right column
+		    // ---------------- Right column ----------------
 		    ImGui::NextColumn();
-
-		    // --- Right column: parameters for the selected type ---
 		    ImGui::TextUnformatted("Define parameters");
 
-		    // For step 1, we implement the Neural field.
-		    // (We’ll extend this switch with other types next.)
-		    switch (selected)
-		    {
-		    case element::ElementLabel::NEURAL_FIELD:
-		    {
-		        // Parameter state lives here, so the left-side Add button can read it
-		        static char   id[CHAR_SIZE] = "neural field u";
-		        static int    x_max         = 100;
-		        static double d_x           = 1.0;
-		        static double tau           = 25.0;
-		        static double sigmoid_k     = 5.0;
-		        static double resting       = -10.0;
+		    // Fixed-size, scrollable pane for parameters
+		    // (tweak the height multiplier if you want more/less visible rows)
+		    const float col_w   = ImGui::GetColumnWidth();
+		    const float pad_w   = ImGui::GetStyle().ItemSpacing.x * 1.0f;
+		    const float child_w = col_w - pad_w; // fill the column width
+		    const float child_h = 220.0f * ImGui::GetIO().FontGlobalScale;
 
-		        // Inputs (labels match the reference figure)
-		    		//ImGui::PushFont(g_MonoFont);
-		        ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-		        ImGui::InputInt("Size", &x_max, 1, 10);
-		        ImGui::InputDouble("Step", &d_x, 0.1, 0.5, "%.2f");
-		        ImGui::InputDouble("Resting level", &resting, 1.0, 10.0, "%.2f");
-		        ImGui::InputDouble("Time scale", &tau, 1.0, 10.0, "%.2f");
-		        ImGui::InputDouble("Sigmoid steepness", &sigmoid_k, 1.0, 10.0, "%.2f");
-		    		//ImGui::PopFont();
-		        // If the Add button (left side) was pressed, create the element now
-		        if (addRequested)
+			constexpr ImGuiWindowFlags child_flags =
+		        ImGuiWindowFlags_AlwaysVerticalScrollbar |
+		        ImGuiWindowFlags_AlwaysHorizontalScrollbar |
+		        ImGuiWindowFlags_NoSavedSettings;
+
+		    if (ImGui::BeginChild("##params_scroll", ImVec2(child_w, child_h), true, child_flags))
+		    {
+		        switch (selected)
 		        {
-		            const element::SigmoidFunction activation{ 0, sigmoid_k };
-		            const element::NeuralFieldParameters nfp{ tau, resting, activation };
+		        case element::ElementLabel::NEURAL_FIELD:
+		        {
+		            static char   id[CHAR_SIZE] = "neural field u";
+		            static int    x_max         = 100;
+		            static double d_x           = 1.0;
+		            static double resting       = -10.0;
+		            static double tau           = 25.0;
+		            static double sigmoid_k     = 5.0;
 
-		            const element::ElementIdentifiers ids{ id };
-		            const element::ElementDimensions dims{ x_max, d_x };
-		            const element::ElementCommonParameters common{ ids, dims };
 
-		            const auto nf = std::make_shared<element::NeuralField>(common, nfp);
-		            simulation->addElement(nf);
+		        		ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+		        		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale); // adjust width to taste
+		        		ImGui::InputInt("Size", &x_max, 0, 0);
+		        		ImGui::InputDouble("Step", &d_x, 0.0, 0.0, "%.2f");
+		        		ImGui::InputDouble("Resting level", &resting, 0.0, 0.0, "%.2f");
+		        		ImGui::InputDouble("Time scale", &tau, 0.0, 0.0, "%.2f");
+		        		ImGui::InputDouble("Sigmoid steepness", &sigmoid_k, 0.0, 0.0, "%.2f");
+
+		        		ImGui::PopItemWidth();
+		            if (addRequested)
+		            {
+		                const element::SigmoidFunction activation{ 0, sigmoid_k };
+		                const element::NeuralFieldParameters nfp{ tau, resting, activation };
+		                const element::ElementIdentifiers ids{ id };
+		                const element::ElementDimensions  dims{ x_max, d_x };
+		                const element::ElementCommonParameters common{ ids, dims };
+		                auto nf = std::make_shared<element::NeuralField>(common, nfp);
+		                simulation->addElement(nf);
+		            }
+		            break;
 		        }
-		        break;
-		    }
-		    default:
-		        // For other types we’ll plug in their parameter UIs next.
-		        ImGui::TextDisabled("Parameters UI coming next for this type.");
-		        break;
-		    }
+		        default:
+		            ImGui::TextDisabled("Parameters UI coming next for this type.");
+		            break;
+		        }
 
-		    // End 2-column layout
+		        // (Optional) ensure a small extra width so a horizontal bar is always usable
+		        // ImGui::Dummy(ImVec2(child_w + 120.0f, 0));
+		    }
+		    ImGui::EndChild();
+
 		    ImGui::Columns(1);
 		    ImGui::PopID();
 		}
