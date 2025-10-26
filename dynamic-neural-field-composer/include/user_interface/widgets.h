@@ -19,7 +19,7 @@ namespace dnf_composer::user_interface::widgets
 		ImVec2 size;
 		std::string title;
 	public:
-		Card(const std::string& id, const ImVec2& topLeftPosition, const ImVec2& size, const std::string& title);
+		Card(std::string  id, const ImVec2& topLeftPosition, const ImVec2& size, std::string  title);
 		bool beginCard(const float& uiScale) const; // remember to end the card
 		static void endCard();
 	};

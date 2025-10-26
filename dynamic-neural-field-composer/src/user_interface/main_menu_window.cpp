@@ -300,7 +300,7 @@ namespace dnf_composer::user_interface
             // body-only rendering
             simulationWindow->renderPanelContents();
         }
-        buildCard.endCard();
+        dnf_composer::user_interface::widgets::Card::endCard();
     }
 
 }

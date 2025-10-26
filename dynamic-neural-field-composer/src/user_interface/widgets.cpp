@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "user_interface/widgets.h"
 
 #include "application/application.h"
@@ -104,8 +106,8 @@ namespace dnf_composer::user_interface::widgets
 		return pressed;
 	}
 
-	Card::Card(const std::string& id, const ImVec2& topLeftPosition, const ImVec2& size, const std::string& title)
-		: id(id), topLeftPosition(topLeftPosition), size(size), title(title)
+	Card::Card(std::string  id, const ImVec2& topLeftPosition, const ImVec2& size, std::string  title)
+		: id(std::move(id)), topLeftPosition(topLeftPosition), size(size), title(std::move(title))
 	{}
 
 	bool Card::beginCard(const float& uiScale) const
