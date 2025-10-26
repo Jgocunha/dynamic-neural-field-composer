@@ -4,6 +4,8 @@
 
 #include "user_interface/simulation_window.h"
 
+#include "application/application.h"
+
 
 namespace dnf_composer
 {
@@ -107,13 +109,14 @@ namespace dnf_composer
 		        static double resting       = -10.0;
 
 		        // Inputs (labels match the reference figure)
+		    		//ImGui::PushFont(g_MonoFont);
 		        ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
 		        ImGui::InputInt("Size", &x_max, 1, 10);
 		        ImGui::InputDouble("Step", &d_x, 0.1, 0.5, "%.2f");
 		        ImGui::InputDouble("Resting level", &resting, 1.0, 10.0, "%.2f");
 		        ImGui::InputDouble("Time scale", &tau, 1.0, 10.0, "%.2f");
 		        ImGui::InputDouble("Sigmoid steepness", &sigmoid_k, 1.0, 10.0, "%.2f");
-
+		    		//ImGui::PopFont();
 		        // If the Add button (left side) was pressed, create the element now
 		        if (addRequested)
 		        {
@@ -124,7 +127,7 @@ namespace dnf_composer
 		            const element::ElementDimensions dims{ x_max, d_x };
 		            const element::ElementCommonParameters common{ ids, dims };
 
-		            auto nf = std::make_shared<element::NeuralField>(common, nfp);
+		            const auto nf = std::make_shared<element::NeuralField>(common, nfp);
 		            simulation->addElement(nf);
 		        }
 		        break;
