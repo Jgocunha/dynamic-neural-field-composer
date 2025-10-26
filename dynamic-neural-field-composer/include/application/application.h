@@ -9,11 +9,11 @@
 #include "exceptions/exception.h"
 #include "simulation/simulation.h"
 #include "visualization/visualization.h"
-#include "user_interface/IconsFontAwesome6.h"
-#include "user_interface/fa.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
+#include "user_interface/fonts/fa.h"
 
 #define IMGUI_ENABLE_FREETYPE
-#include "user_interface/imgui_freetype.h"
+#include "user_interface/fonts/imgui_freetype.h"
 
 namespace dnf_composer
 {
@@ -82,5 +82,13 @@ namespace dnf_composer
 		static void enableKeyboardShortcuts();
 		static void appendFonts();
 	};
+
+	inline ImFont* g_LightFont;
+	inline ImFont* g_MediumFont;
+	inline ImFont* g_BoldFont;
+	inline ImFont* g_BlackFont;
+	inline ImFont* g_MonoFont;
+	inline constexpr size_t g_FontCount = 5; // icon font is not counted, since it is merged to the last added font
+	inline ImFont* g_IconsFont;
 }
 

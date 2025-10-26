@@ -6,19 +6,21 @@
 
 #include "tools/math.h"
 
-namespace dnf_composer::user_interface
+namespace dnf_composer::user_interface::widgets
 {
-	namespace widgets
-	{
-		void renderHelpMarker(const char* desc);
-		bool tab(const char* icon, const char* label, bool selected);
-	}
+	void renderHelpMarker(const char* desc);
+	bool renderSidebarTab(const char* icon, const char* label, bool selected);
 
-	// helper functions for imgui
-	static float centerTextY(const ImFont* font, const float& y0, const float& h)
+	class Card
 	{
-		// In Dear ImGui: height = Ascent - Descent, AddText expects pos.y == top
-		const float text_h = font->Ascent - font->Descent;
-		return y0 + (h - text_h) * 0.5f;
-	}
+	private:
+		std::string id;
+		ImVec2 topLeftPosition;
+		ImVec2 size;
+		std::string title;
+	public:
+		Card(const std::string& id, const ImVec2& topLeftPosition, const ImVec2& size, const std::string& title);
+		bool beginCard(const float& uiScale) const; // remember to end the card
+		static void endCard();
+	};
 }
