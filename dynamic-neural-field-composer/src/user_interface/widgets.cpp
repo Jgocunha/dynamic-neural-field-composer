@@ -119,6 +119,7 @@ namespace dnf_composer::user_interface::widgets
 		const float r   = 10.0f * uiScale;
 		const float pad = 12.0f * uiScale;
 		const float th  = 32.0f * uiScale;     // title bar height
+		const float titleGap = 30.0f  * uiScale;  // extra space below title
 
 		// background
 		dl->AddRectFilled(a, b, ImGui::GetColorU32(ImGuiCol_FrameBg), r);
@@ -133,11 +134,11 @@ namespace dnf_composer::user_interface::widgets
 		ImGui::PopFont();
 
 		// set the cursor to the card’s inner body area and start a child
-		const auto body_pos  = ImVec2(a.x + pad, a.y + th + pad);
-		const auto body_size = ImVec2(size.x - 2*pad, size.y - th - 2*pad);
-
+		const auto body_pos  = ImVec2(a.x + pad, a.y + th + pad + titleGap);
+		const auto body_size = ImVec2(size.x - 2*pad, size.y - th - 2*pad - titleGap);
 		ImGui::SetCursorScreenPos(body_pos);
 		return ImGui::BeginChild(id.c_str(), body_size, false, ImGuiWindowFlags_NoSavedSettings);
+
 	}
 
 	void Card::endCard()

@@ -23,31 +23,121 @@ namespace dnf_composer
 			ImGui::End();
 		}
 
-		void SimulationWindow::render(const ImRect& bounds, bool* p_open)
+		void SimulationWindow::render(const ImRect& bounds, bool* p_open) const
 		{
 			// Pin this window into the given rect
 			ImGui::SetNextWindowPos(bounds.Min);
 			ImGui::SetNextWindowSize(ImVec2(bounds.Max.x - bounds.Min.x, bounds.Max.y - bounds.Min.y));
-			ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
+			const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
 								   | ImGuiWindowFlags_NoMove
 								   | ImGuiWindowFlags_NoResize;
 
 			if (ImGui::Begin("Simulation Control", p_open, flags))
 			{
-				renderPanelContents();
+				renderSimulationControlButtons();
+				renderSimulationProperties();
+				renderAddElement();          // add elements (NeuralField, GaussStimulus, etc.)
+				renderSetInteraction();      // wire up inputs between elements
+				renderRemoveElement();       // remove elements
+				renderLogElementProperties();// log properties
+				renderExportElementComponents(); // export components
 			}
 			ImGui::End();
 		}
 
-		void SimulationWindow::renderPanelContents()
+		void SimulationWindow::renderPanelContents() const
 		{
-			renderSimulationControlButtons();
-			renderSimulationProperties();
-			renderAddElement();          // add elements (NeuralField, GaussStimulus, etc.)
-			renderSetInteraction();      // wire up inputs between elements
-			renderRemoveElement();       // remove elements
-			renderLogElementProperties();// log properties
-			renderExportElementComponents(); // export components
+			renderAddElementCard();
+		}
+
+		void SimulationWindow::renderAddElementCard() const
+		{
+		    ImGui::PushID("add_element_card");
+
+		    // 2-column layout like the reference mock
+		    ImGui::Columns(2, nullptr, false);
+
+		    // --- Left column: element type + Add button ---
+		    ImGui::TextUnformatted("Select type");
+
+		    // Persist selection across frames
+		    static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
+
+		    // Show a combo with all valid types
+		    const char* current =
+		        element::ElementLabelToString.at(selected).c_str();
+		    if (ImGui::BeginCombo("##element_type", current))
+		    {
+		        for (const auto& [fst, snd] : element::ElementLabelToString)
+		        {
+		            if (fst == element::ElementLabel::UNINITIALIZED) continue;
+		            const bool is_selected = (selected == fst);
+		            if (ImGui::Selectable(snd.c_str(), is_selected))
+		                selected = fst;
+		            if (is_selected) ImGui::SetItemDefaultFocus();
+		        }
+		        ImGui::EndCombo();
+		    }
+
+		    // Vertical space, then the Add button (as requested, under the combo)
+		    ImGui::Spacing();
+
+		    bool addRequested = false;
+		    if (ImGui::Button("Add element", ImVec2(-FLT_MIN, 0)))
+		        addRequested = true;
+
+		    // Move to the right column
+		    ImGui::NextColumn();
+
+		    // --- Right column: parameters for the selected type ---
+		    ImGui::TextUnformatted("Define parameters");
+
+		    // For step 1, we implement the Neural field.
+		    // (We’ll extend this switch with other types next.)
+		    switch (selected)
+		    {
+		    case element::ElementLabel::NEURAL_FIELD:
+		    {
+		        // Parameter state lives here, so the left-side Add button can read it
+		        static char   id[CHAR_SIZE] = "neural field u";
+		        static int    x_max         = 100;
+		        static double d_x           = 1.0;
+		        static double tau           = 25.0;
+		        static double sigmoid_k     = 5.0;
+		        static double resting       = -10.0;
+
+		        // Inputs (labels match the reference figure)
+		        ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+		        ImGui::InputInt("Size", &x_max, 1, 10);
+		        ImGui::InputDouble("Step", &d_x, 0.1, 0.5, "%.2f");
+		        ImGui::InputDouble("Resting level", &resting, 1.0, 10.0, "%.2f");
+		        ImGui::InputDouble("Time scale", &tau, 1.0, 10.0, "%.2f");
+		        ImGui::InputDouble("Sigmoid steepness", &sigmoid_k, 1.0, 10.0, "%.2f");
+
+		        // If the Add button (left side) was pressed, create the element now
+		        if (addRequested)
+		        {
+		            const element::SigmoidFunction activation{ 0, sigmoid_k };
+		            const element::NeuralFieldParameters nfp{ tau, resting, activation };
+
+		            const element::ElementIdentifiers ids{ id };
+		            const element::ElementDimensions dims{ x_max, d_x };
+		            const element::ElementCommonParameters common{ ids, dims };
+
+		            auto nf = std::make_shared<element::NeuralField>(common, nfp);
+		            simulation->addElement(nf);
+		        }
+		        break;
+		    }
+		    default:
+		        // For other types we’ll plug in their parameter UIs next.
+		        ImGui::TextDisabled("Parameters UI coming next for this type.");
+		        break;
+		    }
+
+		    // End 2-column layout
+		    ImGui::Columns(1);
+		    ImGui::PopID();
 		}
 
 

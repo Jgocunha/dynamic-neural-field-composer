@@ -107,8 +107,8 @@ namespace dnf_composer::user_interface
         }
 
         // compute rects exactly like before
-        ImVec2 rSidebarMin = ImVec2(p.x + layoutProperties.scaledMargin, p.y + layoutProperties.scaledMargin);
-        ImVec2 rSidebarMax = ImVec2(p.x + sidebar_w - layoutProperties.scaledMargin, p.y + s.y - layoutProperties.scaledMargin);
+        const auto rSidebarMin = ImVec2(p.x + layoutProperties.scaledMargin, p.y + layoutProperties.scaledMargin);
+        const auto rSidebarMax = ImVec2(p.x + sidebar_w - layoutProperties.scaledMargin, p.y + s.y - layoutProperties.scaledMargin);
 
         mainAreaSize = {ImVec2(p.x + sidebar_w, p.y + layoutProperties.scaledMargin), ImVec2(p.x + s.x - layoutProperties.scaledMargin, p.y + s.y - layoutProperties.scaledMargin)};
 
@@ -121,7 +121,7 @@ namespace dnf_composer::user_interface
         // const ImU32 c_top    = ImColor(0.90f, 0.97f, 0.96f, 0.92f);
         // const ImU32 c_bottom = ImColor(0.86f, 0.94f, 0.95f, 0.92f);
         //
-        // // Solid rounded base (use the bottom/mid tone)
+        // // Solid rounded base (use the bottom/mid-tone)
         // draw->AddRectFilled(rSidebarMin, rSidebarMax, c_bottom, layoutProperties.scaledRadius);
         //
         // // Rounded top cap to cover the curved area

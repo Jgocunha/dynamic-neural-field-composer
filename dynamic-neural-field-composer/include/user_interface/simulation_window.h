@@ -20,7 +20,7 @@ namespace dnf_composer
 		private:
 			std::shared_ptr<Simulation> simulation;
 		public:
-			SimulationWindow(const std::shared_ptr<Simulation>& simulation);
+			explicit SimulationWindow(const std::shared_ptr<Simulation>& simulation);
 
 			SimulationWindow(const SimulationWindow&) = delete;
 			SimulationWindow& operator=(const SimulationWindow&) = delete;
@@ -28,13 +28,14 @@ namespace dnf_composer
 			SimulationWindow& operator=(SimulationWindow&&) = delete;
 
 			void render() override;
-			void render(const ImRect& bounds, bool* p_open = nullptr);
-			void renderPanelContents();
+			void render(const ImRect& bounds, bool* p_open = nullptr) const;
+			void renderPanelContents() const;
 			~SimulationWindow() override = default;
 		private:
 			void renderSimulationControlButtons() const;
 			void renderSimulationProperties() const;
 			void renderAddElement() const;
+			void renderAddElementCard() const;
 			void renderSetInteraction() const;
 			void renderRemoveElement() const;
 			void renderElementProperties(const std::pair<int, std::string>& elementId) const;
