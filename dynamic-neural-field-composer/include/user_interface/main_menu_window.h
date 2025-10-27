@@ -14,7 +14,7 @@ namespace dnf_composer::user_interface
         ID3D12Resource*              logoTex    = nullptr;
         D3D12_CPU_DESCRIPTOR_HANDLE  logoCpu    = {};
         D3D12_GPU_DESCRIPTOR_HANDLE  logoGpu    = {};
-        ImTextureID                  logoId;
+        ImTextureID                  logoId     {};
         int                          logoW      = 2596;
         int                          logoH      = 2365;
         bool                         loadingAttempted     = false;
@@ -23,7 +23,7 @@ namespace dnf_composer::user_interface
 
     struct LayoutProperties
     {
-        float guiScale = 80.0f/100.0f;
+        float guiScale = 70.0f/100.0f;
 
         const float margin = 20.0f;
         const float radius = 10.0f;
@@ -54,7 +54,7 @@ namespace dnf_composer::user_interface
         //     layoutProperties.guiScale = pct/100.0f;
     };
 
-    class MainMenuWindow : public imgui_kit::UserInterfaceWindow
+    class MainMenuWindow final : public imgui_kit::UserInterfaceWindow
     {
         std::shared_ptr<Simulation> simulation;
         std::unique_ptr<SimulationWindow> simulationWindow;
@@ -63,7 +63,7 @@ namespace dnf_composer::user_interface
         SidebarLogo logo;
         LayoutProperties layoutProperties;
     public:
-        MainMenuWindow(const std::shared_ptr<Simulation>& simulation);
+        explicit MainMenuWindow(const std::shared_ptr<Simulation>& simulation);
         void render() override;
     private:
         void drawZones();

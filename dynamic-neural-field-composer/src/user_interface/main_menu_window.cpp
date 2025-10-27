@@ -287,20 +287,24 @@ namespace dnf_composer::user_interface
         const float  contentWidth    = (mainMax.x - mainMin.x) - 32.0f* layoutProperties.guiScale;
 
         // Card sizing
-        const float card_w = ImClamp(contentWidth, 420.0f* layoutProperties.guiScale, 740.0f* layoutProperties.guiScale);
-        const float card_h = 820.0f* layoutProperties.guiScale;
+        const float card_w = ImClamp(contentWidth, 420.0f* layoutProperties.guiScale, 640.0f* layoutProperties.guiScale);
+        const float card_h = 1000.0f* layoutProperties.guiScale;
 
         // Layout: first card at top-left
         const ImVec2 cardPosition = contentPosition;
         const auto cardSize  = ImVec2(card_w, card_h);
 
-        const widgets::Card buildCard("##card_simulation", cardPosition, cardSize, "Simulation Control");
+        const widgets::Card buildCard("##card_add_element", cardPosition, cardSize, "Add element");
         if (buildCard.beginCard(layoutProperties.guiScale))
         {
             // body-only rendering
-            simulationWindow->renderPanelContents();
+            simulationWindow->renderAddElementCard();
+            simulationWindow->renderRemoveElementCard();
+            simulationWindow->renderSetInteractionCard();
+            simulationWindow->renderLogElementParametersCard();
+            simulationWindow->renderExportElementComponentCard();
         }
-        dnf_composer::user_interface::widgets::Card::endCard();
+        widgets::Card::endCard();
     }
 
 }
