@@ -52,7 +52,13 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderAddElementCard() const
 	{
-		ImGui::PushID("add_element_card");
+		ImGui::PushID("add_element_section");
+
+		// Headline
+		ImGui::PushFont(g_BoldFont);
+		ImGui::TextUnformatted("Add element");
+		ImGui::PopFont();
+
 	    ImGui::Columns(2, nullptr, false);
 
 	    // ---------------- Left column ----------------
@@ -146,7 +152,7 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderRemoveElementCard() const
 	{
-	    ImGui::PushID("remove_element_card");
+	    ImGui::PushID("remove_element_inline");
 
 	    // --- Row: "Remove [combo] from simulation"  -------------------------
 	    // Make the label baseline align with framed widgets (combo).
@@ -216,7 +222,7 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderSetInteractionCard() const
 	{
-		ImGui::PushID("set_interactions_card");
+		ImGui::PushID("set_interactions_section");
 
 	    // Headline
 	    ImGui::PushFont(g_BoldFont);
@@ -266,14 +272,14 @@ namespace dnf_composer::user_interface
 	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
 	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 	    ImGui::PushFont(g_IconsFont);
-	    bool connectPressed = ImGui::Button(ICON_FA_PLUG, ImVec2(btnSide, btnSide));
+	    const bool connectPressed = ImGui::Button(ICON_FA_PLUG, ImVec2(btnSide, btnSide));
 	    ImGui::PopFont();
 	    ImGui::PopStyleColor(3);
 
 	    if (connectPressed && !selectedTarget.empty() && !selectedSource.empty())
 	    {
-	        auto target = simulation->getElement(selectedTarget);
-	        auto input  = simulation->getElement(selectedSource);
+	        const auto target = simulation->getElement(selectedTarget);
+	        const auto input  = simulation->getElement(selectedSource);
 	        if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
 	        {
 	            target->addInput(input);   // same API used in your old set-interaction UI
@@ -292,10 +298,9 @@ namespace dnf_composer::user_interface
 
 	    if (!selectedTarget.empty())
 	    {
-	        auto target = simulation->getElement(selectedTarget);
-	        if (target)
+		    if (const auto target = simulation->getElement(selectedTarget))
 	        {
-	            const auto& inputs = target->getInputs();   // vector<shared_ptr<Element>>
+	            const auto& inputs = target->getInputs();
 	            if (inputs.empty())
 	            {
 	                ImGui::TextDisabled("No connections.");
@@ -346,7 +351,7 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderExportElementComponentCard() const
 	{
-		ImGui::PushID("export_inline");
+		 ImGui::PushID("export_inline");
 
 	    // Baseline-aligned sentence with inline combos:
 	    ImGui::AlignTextToFramePadding();
@@ -372,8 +377,6 @@ namespace dnf_composer::user_interface
 
 	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("component");
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
 	    // Component combo (depends on selected element)
 	    static std::string selectedComponent;
@@ -384,8 +387,7 @@ namespace dnf_composer::user_interface
 	    {
 	        if (!selectedElementId.empty())
 	        {
-	            auto elem = simulation->getElement(selectedElementId);
-	            if (elem)
+	            if (const auto elem = simulation->getElement(selectedElementId))
 	            {
 	                for (const auto& comp : elem->getComponentList())
 	                {
@@ -399,94 +401,87 @@ namespace dnf_composer::user_interface
 	        ImGui::EndCombo();
 	    }
 
-	    // Right-aligned download icon button
+	    // Inline download icon button (directly after component combo)
 	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
 	    const float h = ImGui::GetFrameHeight();
 	    const ImVec2 iconSz(h, h);
 
-	    // Place at absolute right edge of this window’s content region
-	    const float right = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-	    ImVec2 btnPos = ImGui::GetCursorScreenPos();
-	    btnPos.x = right - iconSz.x;
-	    ImGui::SetCursorScreenPos(btnPos);
-
 	    // Center glyph inside the square button
 	    const ImVec2 glyph = ImGui::CalcTextSize(ICON_FA_DOWNLOAD);
-	    ImVec2 pad(ImMax(0.0f, (iconSz.x - glyph.x) * 0.5f),
-	               ImMax(0.0f, (iconSz.y - glyph.y) * 0.5f));
+	    const ImVec2 pad(ImMax(0.0f, (iconSz.x - glyph.x) * 0.5f),
+	                     ImMax(0.0f, (iconSz.y - glyph.y) * 0.5f));
 
 	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, pad);
 	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
 	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
 	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 	    ImGui::PushFont(g_IconsFont);
-	    bool exportClicked = ImGui::Button(ICON_FA_DOWNLOAD, iconSz);
+	    const bool exportClicked = ImGui::Button(ICON_FA_DOWNLOAD, iconSz);
 	    ImGui::PopFont();
 	    ImGui::PopStyleColor(3);
 	    ImGui::PopStyleVar();
 
 	    if (exportClicked && !selectedElementId.empty() && !selectedComponent.empty())
-	        simulation->exportComponentToFile(selectedElementId, selectedComponent); // your existing API :contentReference[oaicite:2]{index=2}
+	        simulation->exportComponentToFile(selectedElementId, selectedComponent);
 
 	    ImGui::PopID();
 	}
 
 	void SimulationWindow::renderLogElementParametersCard() const
 	{
-		 ImGui::PushID("log_inline");
+		ImGui::PushID("log_inline");
 
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("Log");
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted("Log");
+		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
-	    // Element combo
-	    static std::string selectedId;
-	    const char* preview = selectedId.empty() ? "element" : selectedId.c_str();
-	    ImGui::SetNextItemWidth(180.0f * ImGui::GetIO().FontGlobalScale);
-	    if (ImGui::BeginCombo("##log_elem_combo", preview))
-	    {
-	        for (const auto& e : simulation->getElements())
-	        {
-	            const std::string& name = e->getUniqueName();
-	            const bool is_sel = (selectedId == name);
-	            if (ImGui::Selectable(name.c_str(), is_sel))
-	                selectedId = name;
-	            if (is_sel) ImGui::SetItemDefaultFocus();
-	        }
-	        ImGui::EndCombo();
-	    }
+		// Element combo
+		static std::string selectedId;
+		const char* preview = selectedId.empty() ? "element" : selectedId.c_str();
+		ImGui::SetNextItemWidth(180.0f * ImGui::GetIO().FontGlobalScale);
+		if (ImGui::BeginCombo("##log_elem_combo", preview))
+		{
+			for (const auto& e : simulation->getElements())
+			{
+				const std::string& name = e->getUniqueName();
+				const bool is_sel = (selectedId == name);
+				if (ImGui::Selectable(name.c_str(), is_sel))
+					selectedId = name;
+				if (is_sel) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("parameters");
+		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted("parameters");
 
-	    // Right-aligned terminal icon button
-	    const float h = ImGui::GetFrameHeight();
-	    const ImVec2 iconSz(h, h);
+		// Inline terminal icon button (directly after text)
+		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
-	    const float right = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-	    ImVec2 btnPos = ImGui::GetCursorScreenPos();
-	    btnPos.x = right - iconSz.x;
-	    ImGui::SetCursorScreenPos(btnPos);
+		const float h = ImGui::GetFrameHeight();
+		const ImVec2 iconSz(h, h);
 
-	    const ImVec2 glyph = ImGui::CalcTextSize(ICON_FA_TERMINAL);
-	    ImVec2 pad(ImMax(0.0f, (iconSz.x - glyph.x) * 0.5f),
-	               ImMax(0.0f, (iconSz.y - glyph.y) * 0.5f));
+		// Center the glyph inside the square
+		const ImVec2 glyph = ImGui::CalcTextSize(ICON_FA_TERMINAL);
+		ImVec2 pad(ImMax(0.0f, (iconSz.x - glyph.x) * 0.5f),
+				   ImMax(0.0f, (iconSz.y - glyph.y) * 0.5f));
 
-	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, pad);
-	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
-	    ImGui::PushFont(g_IconsFont);
-	    bool logClicked = ImGui::Button(ICON_FA_TERMINAL, iconSz);
-	    ImGui::PopFont();
-	    ImGui::PopStyleColor(3);
-	    ImGui::PopStyleVar();
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, pad);
+		ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
+		ImGui::PushFont(g_IconsFont);
+		const bool logClicked = ImGui::Button(ICON_FA_TERMINAL, iconSz);
+		ImGui::PopFont();
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
 
-	    if (logClicked && !selectedId.empty())
-	        if (auto e = simulation->getElement(selectedId)) e->print(); // your existing print() path :contentReference[oaicite:3]{index=3}
+		if (logClicked && !selectedId.empty())
+			if (const auto e = simulation->getElement(selectedId)) e->print();
 
-	    ImGui::PopID();
+		ImGui::PopID();
 	}
 
 

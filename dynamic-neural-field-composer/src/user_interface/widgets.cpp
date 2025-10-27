@@ -127,7 +127,7 @@ namespace dnf_composer::user_interface::widgets
 		dl->AddRect(a, b, ImGui::GetColorU32(ImGuiCol_Border), r);
 
 		// title text
-		ImGui::PushFont(g_BoldFont);
+		ImGui::PushFont(g_BlackFont);
 		ImGui::SetCursorPosX(30);
 		ImGui::SetCursorPosY(a.y + (th - ImGui::GetTextLineHeight())*0.5f);
 		ImGui::Text(title.c_str());

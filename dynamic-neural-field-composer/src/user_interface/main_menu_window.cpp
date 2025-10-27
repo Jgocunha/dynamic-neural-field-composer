@@ -202,7 +202,7 @@ namespace dnf_composer::user_interface
 
         auto Section = [&](const char* title)
         {
-            ImGui::PushFont(g_BoldFont);
+            ImGui::PushFont(g_BlackFont);
             ImGui::SetCursorPosX(20);
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
             ImGui::Text(title);
@@ -287,14 +287,14 @@ namespace dnf_composer::user_interface
         const float  contentWidth    = (mainMax.x - mainMin.x) - 32.0f* layoutProperties.guiScale;
 
         // Card sizing
-        const float card_w = ImClamp(contentWidth, 420.0f* layoutProperties.guiScale, 640.0f* layoutProperties.guiScale);
-        const float card_h = 1000.0f* layoutProperties.guiScale;
+        const float card_w = ImClamp(contentWidth, 400.0f* layoutProperties.guiScale, 540.0f* layoutProperties.guiScale);
+        const float card_h = 900.0f* layoutProperties.guiScale;
 
         // Layout: first card at top-left
         const ImVec2 cardPosition = contentPosition;
         const auto cardSize  = ImVec2(card_w, card_h);
 
-        const widgets::Card buildCard("##card_add_element", cardPosition, cardSize, "Add element");
+        const widgets::Card buildCard("##card_add_element", cardPosition, cardSize, "Simulation control");
         if (buildCard.beginCard(layoutProperties.guiScale))
         {
             // body-only rendering
