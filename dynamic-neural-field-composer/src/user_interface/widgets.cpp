@@ -68,12 +68,14 @@ namespace dnf_composer::user_interface::widgets
 		const ImVec4 icon_col = ImLerp(text_uns, text_sel, a_fill);
 		const ImVec4 text_col = ImLerp(text_uns, text_sel, a_fill);
 
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+
 		if (a_fill > 0.001f)
 		{
 			ImVec4 a = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			a.w = a_fill; // keep dynamic alpha
 			const ImU32 col = ImGui::GetColorU32(a);
-			ImGui::GetForegroundDrawList()->AddRectFilled(
+			dl->AddRectFilled(
 				ImVec2(bb.Min.x, bb.Min.y),
 				ImVec2(bb.Min.x + a_fill * 6.0f, bb.Max.y),
 				col, 7.0f);
@@ -94,14 +96,14 @@ namespace dnf_composer::user_interface::widgets
 		// center icon within its reserved box horizontally
 		const ImVec2 icon_size = ImGui::CalcTextSize(icon);
 		const float icon_x = bb.Min.x + pad_x + (icon_box - icon_size.x) * 0.5f;
-		ImGui::GetForegroundDrawList()->AddText(ImVec2(icon_x, icon_y), ImColor(icon_col), icon);
+		dl->AddText(ImVec2(icon_x, icon_y), ImColor(icon_col), icon);
 		ImGui::PopFont();
 
 		// Label: center using label font metrics
 		ImGui::PushFont(g_MediumFont);
 		const float text_y = centerTextY(g_MediumFont, bb.Min.y, line_h);
 		const float text_x = bb.Min.x + pad_x + icon_box + gap_x;
-		ImGui::GetForegroundDrawList()->AddText(ImVec2(text_x, text_y), ImColor(text_col), label);
+		dl->AddText(ImVec2(text_x, text_y), ImColor(text_col), label);
 		ImGui::PopFont();
 
 		return pressed;
