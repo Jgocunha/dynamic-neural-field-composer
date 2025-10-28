@@ -68,8 +68,8 @@ namespace dnf_composer
 		const FontParameters fontParams({
 		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf", 18},
 		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 18},
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 22},
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 24},
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 24},
+		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 30},
 													{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 18},
 		});
 		const StyleParameters styleParams{Theme::Light, imgui_kit::colours::White};
@@ -126,12 +126,14 @@ namespace dnf_composer
 		ImFontConfig icons_config;
 		icons_config.MergeMode = true; // Merge icon font to the previous font if you want to have both icons and text
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 16.0f, &icons_config, icons_ranges);
-		g_IconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1]; // Get the last font added to the font stack
+			FA_compressed_size, 18.0f, &icons_config, icons_ranges);
+		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1]; // Get the last font added to the font stack
 
-		//If you want change between icons size you will need to create a new font
-		//io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, 12.0f, &icons_config, icons_ranges);
-		//io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, 20.0f, &icons_config, icons_ranges);
+		icons_config.MergeMode = false;
+		//If you want change between icon size, you will need to create a new font
+		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
+			FA_compressed_size, 48.0f, &icons_config, icons_ranges);
+		g_LargeIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1]; // Get the last font added to the font stack
 
 		io.Fonts->Build();
 

@@ -89,6 +89,7 @@ namespace dnf_composer
 	inline ImFont* g_BlackFont;
 	inline ImFont* g_MonoFont;
 	inline constexpr size_t g_FontCount = 5; // icon font is not counted, since it is merged to the last added font
-	inline ImFont* g_IconsFont;
+	inline ImFont* g_MediumIconsFont;
+	inline ImFont* g_LargeIconsFont;
 }
 

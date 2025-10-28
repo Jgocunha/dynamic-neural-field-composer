@@ -36,6 +36,23 @@ namespace dnf_composer::user_interface
 		ImGui::End();
 	}
 
+	void NodeGraphWindow::renderGraph() const
+	{
+		ImNodeEditor::SetCurrentEditor(context);
+		//const auto& io = ImGui::GetIO();
+		widgets::renderHelpMarker("Visualize the elements and their interactions in the simulation.\n"
+					  "Create interactions by clicking on output pins and dragging to input pins.\n"
+					  "Delete interactions by double clicking on links.");
+		//ImGui::SameLine();
+		//ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
+		ImNodeEditor::Begin("dnf-composer node graph");
+		renderElementNodes();
+		handleInteractions();
+		ImNodeEditor::End();
+		ImNodeEditor::SetCurrentEditor(nullptr);
+	}
+
+
 	void NodeGraphWindow::renderElementNodes() const
 	{
 		for (const auto& element : simulation->getElements())

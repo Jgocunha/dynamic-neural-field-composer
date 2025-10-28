@@ -40,9 +40,9 @@ namespace dnf_composer::user_interface
 		// Set window to be behind all other windows
 		//ImGui::SetNextWindowBgAlpha(0.0f); // Make background completely transparent
 
-        if (ImGui::Begin("Fullscreen window", nullptr, flags))
-        {}
-        ImGui::End();
+        // if (ImGui::Begin("Fullscreen window", nullptr, flags))
+        // {}
+        // ImGui::End();
     }
 
     void MainWindow::renderMainMenuBar()

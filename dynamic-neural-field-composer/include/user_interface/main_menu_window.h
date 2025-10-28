@@ -4,6 +4,8 @@
 #include "widgets.h"
 #include <imgui-platform-kit/user_interface.h>
 
+#include "element_window.h"
+#include "node_graph_window.h"
 #include "application/application.h"
 #include "user_interface/simulation_window.h"
 
@@ -23,7 +25,7 @@ namespace dnf_composer::user_interface
 
     struct LayoutProperties
     {
-        float guiScale = 70.0f/100.0f;
+        float guiScale = 80.0f/100.0f;
 
         const float margin = 20.0f;
         const float radius = 10.0f;
@@ -58,6 +60,9 @@ namespace dnf_composer::user_interface
     {
         std::shared_ptr<Simulation> simulation;
         std::unique_ptr<SimulationWindow> simulationWindow;
+        std::unique_ptr<ElementWindow> elementWindow;
+        std::unique_ptr<NodeGraphWindow> nodeGraphWindow;
+        std::unique_ptr<imgui_kit::LogWindow> logWindow;
         std::tuple<ImVec2, ImVec2> mainAreaSize; // min, max
         int selectedSidebarTab;
         SidebarLogo logo;

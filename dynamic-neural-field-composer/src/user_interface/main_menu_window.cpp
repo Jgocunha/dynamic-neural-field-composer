@@ -37,6 +37,9 @@ namespace dnf_composer::user_interface
         : simulation(simulation), logo(), layoutProperties()
     {
         simulationWindow = std::make_unique<SimulationWindow>(simulation);
+        elementWindow = std::make_unique<ElementWindow>(simulation);
+        nodeGraphWindow = std::make_unique<NodeGraphWindow>(simulation);
+        logWindow = std::make_unique<imgui_kit::LogWindow>();
         mainAreaSize = {ImVec2(0, 0), ImVec2(0, 0)};
         selectedSidebarTab = 0;
     }
@@ -283,28 +286,111 @@ namespace dnf_composer::user_interface
         const ImVec2 mainMin = std::get<0>(mainAreaSize);
         const ImVec2 mainMax = std::get<1>(mainAreaSize);
 
-        const auto contentPosition  = ImVec2(mainMin.x + 16.0f* layoutProperties.guiScale, mainMin.y + 16.0f* layoutProperties.guiScale);
-        const float  contentWidth    = (mainMax.x - mainMin.x) - 32.0f* layoutProperties.guiScale;
+        const float m   = 16.0f * layoutProperties.guiScale; // outer/inner margin
+        const ImVec2 pos(mainMin.x + m, mainMin.y + m);
+        const float  W  = (mainMax.x - mainMin.x) - m * 2.0f;
+        const float  H  = (mainMax.y - mainMin.y) - m * 2.0f;
 
-        // Card sizing
-        const float card_w = ImClamp(contentWidth, 400.0f* layoutProperties.guiScale, 540.0f* layoutProperties.guiScale);
-        const float card_h = 900.0f* layoutProperties.guiScale;
+        // --- Column widths (A+B fixed-ish, C gets the rest) ---
+        const float colGap = m;
+        const float colA   = 620.0f * layoutProperties.guiScale;  // Simulation control
+        const float colB   = 450.0f * layoutProperties.guiScale;  // Element control
+        const float colC   = ImMax(420.0f * layoutProperties.guiScale,
+                                   W - colA - colB - 2.0f*colGap); // right column gets the remainder
 
-        // Layout: first card at top-left
-        const ImVec2 cardPosition = contentPosition;
-        const auto cardSize  = ImVec2(card_w, card_h);
+        // Safety: if the window is too small, clamp so we at least draw something
+        if (colC < 220.0f * layoutProperties.guiScale) return;
 
-        const widgets::Card buildCard("##card_add_element", cardPosition, cardSize, "Simulation control");
-        if (buildCard.beginCard(layoutProperties.guiScale))
+        // --- Row heights inside Column C (right) ---
+        const float rowGap = m;
+        const float plotsH = H * 0.55f;                      // Plots ~55%
+        const float nodeH  = H * 0.27f;                      // Node graph ~27%
+        const float logsH  = H - plotsH - nodeH - 2.0f*rowGap; // remaining ~18%
+
+        ImVec2 p = pos;
+
+        // =========================
+        // Column A: Simulation control (tall)
+        // =========================
         {
-            // body-only rendering
-            simulationWindow->renderAddElementCard();
-            simulationWindow->renderRemoveElementCard();
-            simulationWindow->renderSetInteractionCard();
-            simulationWindow->renderLogElementParametersCard();
-            simulationWindow->renderExportElementComponentCard();
+            const widgets::Card cardA("##card_sim", p, ImVec2(colA, H), "Simulation control");
+            if (cardA.beginCard(layoutProperties.guiScale))
+            {
+                simulationWindow->renderSimulationParametersCard();
+                ImGui::Spacing();
+                ImGui::Spacing();
+                simulationWindow->renderSimulationControlsCard();
+                ImGui::Spacing();
+                ImGui::Spacing();
+                simulationWindow->renderRunForIterationsCard();
+                ImGui::Spacing();
+                ImGui::Spacing();
+                simulationWindow->renderAddElementCard();
+                ImGui::Spacing();
+                ImGui::Spacing();
+                simulationWindow->renderRemoveElementCard();
+                ImGui::Spacing();
+                ImGui::Spacing();
+                simulationWindow->renderSetInteractionCard();
+                ImGui::Spacing();
+                ImGui::Spacing();
+                simulationWindow->renderLogElementParametersCard();
+                ImGui::Spacing();
+                ImGui::Spacing();
+                simulationWindow->renderExportElementComponentCard();
+            }
+            widgets::Card::endCard();
         }
-        widgets::Card::endCard();
+
+        // =========================
+        // Column B: Element control (tall)
+        // =========================
+        p.x += colA + colGap;
+        {
+            const widgets::Card cardB("##card_element", p, ImVec2(colB, H), "Element control");
+            if (cardB.beginCard(layoutProperties.guiScale))
+            {
+                elementWindow->renderElementControlCard();
+            }
+            widgets::Card::endCard();
+        }
+
+        // =========================
+        // Column C: Right stack
+        // =========================
+        p.x += colB + colGap;
+
+        // Plots (top)
+        {
+            const widgets::Card cardC1("##card_plots", p, ImVec2(colC, plotsH), "Plots");
+            if (cardC1.beginCard(layoutProperties.guiScale))
+            {
+                ImGui::TextDisabled("Plots content");
+            }
+            widgets::Card::endCard();
+            p.y += plotsH + rowGap;
+        }
+
+        // Node graph (middle)
+        {
+            const widgets::Card cardC2("##card_node_graph", p, ImVec2(colC, nodeH), "Node graph");
+            if (cardC2.beginCard(layoutProperties.guiScale))
+            {
+                nodeGraphWindow->renderGraph();
+            }
+            widgets::Card::endCard();
+            p.y += nodeH + rowGap;
+        }
+
+        // Log window (bottom)
+        {
+            const widgets::Card cardC3("##card_logs", p, ImVec2(colC, logsH), "Log window");
+            if (cardC3.beginCard(layoutProperties.guiScale))
+            {
+                ImGui::TextDisabled("Logs content");
+            }
+            widgets::Card::endCard();
+        }
     }
 
 }

@@ -59,6 +59,7 @@ namespace dnf_composer::user_interface
 		NodeGraphWindow& operator=(NodeGraphWindow&&) = delete;
 
 		void render() override;
+		void renderGraph() const;
 		~NodeGraphWindow() override = default;
 	private:
 		void renderElementNodes() const;

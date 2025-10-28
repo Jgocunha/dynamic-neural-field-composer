@@ -5,6 +5,8 @@
 
 #include "simulation/simulation.h"
 #include "elements/element_factory.h"
+#include "application/application.h"
+#include "user_interface/widgets.h"
 
 enum CharSize : size_t
 {
@@ -27,6 +29,9 @@ namespace dnf_composer::user_interface
 
 		void render() override;
 		void render(const ImRect& bounds, bool* p_open = nullptr) const;
+		void renderSimulationParametersCard() const;
+		void renderSimulationControlsCard() const;
+		void renderRunForIterationsCard() const;
 		void renderAddElementCard() const;
 		void renderRemoveElementCard() const;
 		void renderSetInteractionCard() const;

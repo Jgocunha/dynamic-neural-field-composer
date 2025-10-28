@@ -5,6 +5,7 @@
 #include "dynamic-neural-field-composer.h"
 
 #include "user_interface/main_menu_window.h"
+#include "user_interface/main_window.h"
 
 int main()
 {
@@ -17,6 +18,7 @@ int main()
 		const Application app{ simulation, visualization };
 
 		app.addWindow<user_interface::MainMenuWindow>();
+		app.addWindow<user_interface::MainWindow>();
 		app.init();
 
 		while (!app.hasGUIBeenClosed())

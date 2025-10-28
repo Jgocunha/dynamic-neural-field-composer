@@ -9,7 +9,8 @@ extern ImFont* g_MediumFont;
 extern ImFont* g_BoldFont;
 extern ImFont* g_BlackFont;
 extern ImFont* g_MonoFont;
-extern ImFont* g_IconsFont;
+extern ImFont* g_MediumIconsFont;
+extern ImFont* g_LargeIconsFont;
 
 namespace dnf_composer::user_interface::widgets
 {
@@ -78,7 +79,7 @@ namespace dnf_composer::user_interface::widgets
 				col, 7.0f);
 		}
 
-		// lamba to center text vertically within a bounding box
+		// lamba to a center text vertically within a bounding box
 		auto centerTextY = [](const ImFont* font, const float y0, const float h) noexcept -> float
 		{
 			// in ImGui: height = Ascent - Descent, AddText expects pos.y == top
@@ -88,8 +89,8 @@ namespace dnf_composer::user_interface::widgets
 		};
 
 		// Icon: center using icon font metrics
-		ImGui::PushFont(g_IconsFont);
-		const float icon_y = centerTextY(g_IconsFont, bb.Min.y, line_h);
+		ImGui::PushFont(g_MediumIconsFont);
+		const float icon_y = centerTextY(g_MediumIconsFont, bb.Min.y, line_h);
 		// center icon within its reserved box horizontally
 		const ImVec2 icon_size = ImGui::CalcTextSize(icon);
 		const float icon_x = bb.Min.x + pad_x + (icon_box - icon_size.x) * 0.5f;
@@ -106,6 +107,52 @@ namespace dnf_composer::user_interface::widgets
 		return pressed;
 	}
 
+	bool renderIconTileButton(const char* id, const char* icon, const char* label,
+						   const float tile, const float uiScale,
+						   const ImU32 colBg, const ImU32 colHover, const ImU32 colActive,
+						   const ImU32 colText, const ImU32 colLabel)
+	{
+		ImGui::PushID(id);
+		ImGui::BeginGroup();
+
+		// Button styling (rounded square, soft bg)
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f * uiScale);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button,        colBg);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colHover);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colActive);
+		ImGui::PushStyleColor(ImGuiCol_Text,          colText);
+
+		// Center icon inside the square by padding based on glyph size
+		const ImVec2 iconBox(tile, tile);
+
+		ImGui::PushFont(g_LargeIconsFont);
+		const bool pressed = ImGui::Button(icon, iconBox);
+		ImGui::PopFont();
+
+		//ImGui::PopStyleVar(); // FramePadding
+		ImGui::PopStyleColor(4);
+		ImGui::PopStyleVar(2);
+
+		// Label under the tile, centered to the button width
+		const ImVec2 lbl = ImGui::CalcTextSize(label);
+		const auto btn = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+		// X: center within the tile using button's left edge
+		const float labelX = btn.Min.x + (tile - lbl.x) * 0.5f;
+		// Y: current cursor is already below the button; use it
+		ImVec2 labelPos = ImGui::GetCursorScreenPos();
+		labelPos.x = labelX;
+
+		ImGui::SetCursorScreenPos(labelPos);
+		ImGui::PushStyleColor(ImGuiCol_Text, colLabel);
+		ImGui::TextUnformatted(label);
+		ImGui::PopStyleColor();
+
+		ImGui::EndGroup();
+		ImGui::PopID();
+		return pressed;
+	}
+
 	Card::Card(std::string  id, const ImVec2& topLeftPosition, const ImVec2& size, std::string  title)
 		: id(std::move(id)), topLeftPosition(topLeftPosition), size(size), title(std::move(title))
 	{}
@@ -117,7 +164,7 @@ namespace dnf_composer::user_interface::widgets
 		const auto b = ImVec2(topLeftPosition.x + size.x, topLeftPosition.y + size.y);
 
 		const float r   = 10.0f * uiScale;
-		const float pad = 12.0f * uiScale;
+		const float pad = 22.0f * uiScale;
 		const float th  = 32.0f * uiScale;     // title bar height
 		const float titleGap = 30.0f  * uiScale;  // extra space below title
 
@@ -128,15 +175,18 @@ namespace dnf_composer::user_interface::widgets
 
 		// title text
 		ImGui::PushFont(g_BlackFont);
-		ImGui::SetCursorPosX(30);
-		ImGui::SetCursorPosY(a.y + (th - ImGui::GetTextLineHeight())*0.5f);
-		ImGui::Text(title.c_str());
+		// place title using screen coordinates, aligned with the card's inner padding
+		const float yOffset = 20.0f * ImGui::GetIO().FontGlobalScale;  // tweak value to taste
+		const ImVec2 title_pos(a.x + pad, a.y + (th - ImGui::GetTextLineHeight()) * 0.5f + yOffset);
+		ImGui::SetCursorScreenPos(title_pos);
+		ImGui::TextUnformatted(title.c_str());
 		ImGui::PopFont();
 
 		// set the cursor to the card’s inner body area and start a child
 		const auto body_pos  = ImVec2(a.x + pad, a.y + th + pad + titleGap);
 		const auto body_size = ImVec2(size.x - 2*pad, size.y - th - 2*pad - titleGap);
 		ImGui::SetCursorScreenPos(body_pos);
+
 		return ImGui::BeginChild(id.c_str(), body_size, false, ImGuiWindowFlags_NoSavedSettings);
 
 	}

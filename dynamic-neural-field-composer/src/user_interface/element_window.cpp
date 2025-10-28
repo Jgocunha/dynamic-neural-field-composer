@@ -4,6 +4,9 @@
 
 #include "user_interface/element_window.h"
 
+#include "application/application.h"
+
+
 namespace dnf_composer::user_interface
 {
 	ElementWindow::ElementWindow(const std::shared_ptr<Simulation>& simulation)
@@ -19,6 +22,78 @@ namespace dnf_composer::user_interface
 		}
 		ImGui::End();
 	}
+
+	void ElementWindow::renderElementControlCard() const
+	{
+		constexpr ImGuiWindowFlags childFlags =
+        ImGuiWindowFlags_AlwaysVerticalScrollbar |
+        ImGuiWindowFlags_NoSavedSettings;
+
+		//ImGui::SameLine();
+		widgets::renderHelpMarker("Left click and drag or double-click to change element parameter values.");
+	    ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
+
+	    // group elements by type
+	    std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
+	    for (const auto& e : simulation->getElements())
+	        byType[e->getLabel()].push_back(e);
+
+	    const float ui     = ImGui::GetIO().FontGlobalScale;
+	    const float innerW = ImGui::GetContentRegionAvail().x;
+
+	    // panel width: fill the card minus a margin
+	    const float panelW = ImMax(200.0f * ui, innerW - 16.0f * ui);
+
+	    auto PanelHeightFor = [&](element::ElementLabel type) -> float
+	    {
+	        // tweak per type so everything fits nicely
+	        switch (type)
+	        {
+	            case element::ElementLabel::NORMAL_NOISE:        return 50.0f  * ui; // 1
+	            case element::ElementLabel::NEURAL_FIELD:        return 90.0f  * ui; // 2
+	            case element::ElementLabel::GAUSS_STIMULUS:      return 160.0f * ui; // 3
+	            case element::ElementLabel::GAUSS_KERNEL:        return 160.0f * ui; // 3
+				case element::ElementLabel::FIELD_COUPLING:		return 200.0f * ui; // 5
+	            case element::ElementLabel::MEXICAN_HAT_KERNEL:  return 240.0f * ui; // 6
+
+	            case element::ElementLabel::OSCILLATORY_KERNEL:  return 180.0f * ui;
+	            case element::ElementLabel::GAUSS_FIELD_COUPLING:return 200.0f * ui;
+	            default:                                         return 140.0f * ui;
+	        }
+	    };
+
+	    for (const auto& [label, elems] : byType)
+	    {
+	        ImGui::PushFont(g_BoldFont);
+	        ImGui::TextUnformatted(getElementTypeDisplayName(label).c_str());
+	        ImGui::PopFont();
+	        ImGui::Spacing();
+
+	        for (const auto& e : elems)
+	        {
+	            // small title above each panel
+	            ImGui::TextUnformatted(e->getUniqueName().c_str());
+
+	            const ImVec4 tint = getColorForElementType(label);
+	            const ImVec2 size(panelW, PanelHeightFor(label));
+
+	            // draw panel first (behind) then render the editor inside it
+	            PanelScope scope = beginElementPanel(tint, size);
+	            {
+	                // keep your editors unchanged:
+	                switchElementToModify(e);   // draws inputs at p.rect.Min + pad
+	            }
+	            endElementPanel(scope);
+
+	            ImGui::Spacing();
+	        }
+
+	        ImGui::Spacing();
+	    }
+
+	    ImGui::EndChild();
+	}
+
 
 	void ElementWindow::renderModifyElementParameters() const
 	{
@@ -64,7 +139,7 @@ namespace dnf_composer::user_interface
 		//ImGui::SeparatorText((getIconForElementType(label) + " " + elementId).c_str());
 		//ImGui::PopStyleColor();
 
-		ImGui::SeparatorText( ("Element " + elementId).c_str() );
+		//ImGui::SeparatorText( ("Element " + elementId).c_str() );
 
 		switch (label)
 		{
@@ -106,26 +181,23 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementNeuralField(const std::shared_ptr<element::Element>& element)
 {
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
 		element::NeuralFieldParameters nfp = neuralField->getParameters();
 
 		auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
 		auto tau = static_cast<float>(nfp.tau);
-		auto stabilityThreshold = static_cast<float>(neuralField->getStabilityThreshold());
 
 		std::string label = "##" + element->getUniqueName() + "Resting level";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f);
 		ImGui::SameLine(); ImGui::Text("Resting level");
 
 		label = "##" + element->getUniqueName() + "Tau";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f);
 		ImGui::SameLine(); ImGui::Text("Tau");
-
-		// stability threshold
-		label = "##" + element->getUniqueName() + "Stability threshold";
-		ImGui::DragFloat(label.c_str(), &stabilityThreshold, 0.01f, 0.0f, 2.0f);
-		ImGui::SameLine(); ImGui::Text("Stability threshold");
-
 
 	static constexpr double epsilon = 1e-6;
 	if (std::abs(restingLevel - static_cast<float>(nfp.startingRestingLevel)) > epsilon)
@@ -139,15 +211,12 @@ namespace dnf_composer::user_interface
 		nfp.tau = tau;
 		neuralField->setParameters(nfp);
 	}
-
-	if (std::abs(stabilityThreshold - static_cast<float>(neuralField->getStabilityThreshold())) > epsilon)
-	{
-		neuralField->setThresholdForStability(stabilityThreshold);
-	}
 }
 
 	void ElementWindow::modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto stimulus = std::dynamic_pointer_cast<element::GaussStimulus>(element);
 		element::GaussStimulusParameters gsp = stimulus->getParameters();
 
@@ -158,14 +227,17 @@ namespace dnf_composer::user_interface
 		bool normalized = gsp.normalized;
 
 		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0, 30);
 		ImGui::SameLine(); ImGui::Text("Amplitude");
 
 		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &width, 0.01f, 0, 30);
 		ImGui::SameLine(); ImGui::Text("Width");
 
 		label = "##" + element->getUniqueName() + "Position";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &position, 0.1f,
 			0.0f, static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 		ImGui::SameLine(); ImGui::Text("Position");
@@ -196,6 +268,8 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto fieldCoupling = std::dynamic_pointer_cast<element::FieldCoupling>(element);
 		element::FieldCouplingParameters fcp = fieldCoupling->getParameters();
 
@@ -219,10 +293,12 @@ namespace dnf_composer::user_interface
 		}
 
 		label = "##" + element->getUniqueName() + "Learning rate";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &learningRate, 0.01f, 0, 10);
 		ImGui::SameLine(); ImGui::Text("Learning rate");
 
 		label = "##" + element->getUniqueName() + "Scalar";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &scalar, 0.1f, -20, 20);
 		ImGui::SameLine(); ImGui::Text("Scalar");
 
@@ -249,19 +325,19 @@ namespace dnf_composer::user_interface
 
 		ImGui::PushID(element->getUniqueName().c_str()); // Use unique ID for scope
 
-		if (ImGui::Button("Read weights"))
+		if (ImGui::Button("Load"))
 		{
 			fieldCoupling->readWeights();
 		}
 		ImGui::SameLine();
 
-		if (ImGui::Button("Save weights"))
+		if (ImGui::Button("Save"))
 		{
 			fieldCoupling->writeWeights();
 		}
 		ImGui::SameLine();
 
-		if (ImGui::Button("Clear weights"))
+		if (ImGui::Button("Clear"))
 		{
 			fieldCoupling->clearWeights();
 		}
@@ -271,6 +347,8 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementGaussKernel(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto kernel = std::dynamic_pointer_cast<element::GaussKernel>(element);
 		element::GaussKernelParameters gkp = kernel->getParameters();
 
@@ -281,16 +359,19 @@ namespace dnf_composer::user_interface
 		bool normalized = gkp.normalized;
 
 		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -50.0f, 50.0f);
 		ImGui::SameLine(); ImGui::Text("Amplitude");
 
 		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.0f, 30.0f);
 		ImGui::SameLine(); ImGui::Text("Width");
 
-		label = "##" + element->getUniqueName() + "Amplitude global";
+		label = "##" + element->getUniqueName() + "Amp. global";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.1f, -10, 10);
-		ImGui::SameLine(); ImGui::Text("Amplitude global");
+		ImGui::SameLine(); ImGui::Text("Amp. global");
 
 		label = "##" + element->getUniqueName() + "Circular";
 		ImGui::Checkbox(label.c_str(), &circular);
@@ -318,6 +399,8 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementMexicanHatKernel(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto kernel = std::dynamic_pointer_cast<element::MexicanHatKernel>(element);
 		element::MexicanHatKernelParameters mhkp = kernel->getParameters();
 
@@ -329,25 +412,30 @@ namespace dnf_composer::user_interface
 		bool circular = mhkp.circular;
 		bool normalized = mhkp.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude exc.";
+		std::string label = "##" + element->getUniqueName() + "Amp. exc.";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitudeExc, 0.1f, -50.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude exc.");
+		ImGui::SameLine(); ImGui::Text("Amp. exc.");
 
 		label = "##" + element->getUniqueName() + "Width exc.";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &widthExc, 0.1f, 0.0f, 30.0f);
 		ImGui::SameLine(); ImGui::Text("Width exc.");
 
-		label = "##" + element->getUniqueName() + "Amplitude inh.";
+		label = "##" + element->getUniqueName() + "Amp. inh.";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitudeInh, 0.1f, 0.0f, 100.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude inh.");
+		ImGui::SameLine(); ImGui::Text("Amp. inh.");
 
 		label = "##" + element->getUniqueName() + "Width inh.";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &widthInh, 0.1f, 0.0f, 30.0f);
 		ImGui::SameLine(); ImGui::Text("Width inh.");
 
-		label = "##" + element->getUniqueName() + "Amplitude global";
+		label = "##" + element->getUniqueName() + "Amp. global";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.01f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude global");
+		ImGui::SameLine(); ImGui::Text("Amp. global");
 
 		label = "##" + element->getUniqueName() + "Circular";
 		ImGui::Checkbox(label.c_str(), &circular);
@@ -380,12 +468,15 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementNormalNoise(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto normalNoise = std::dynamic_pointer_cast<element::NormalNoise>(element);
 		element::NormalNoiseParameters nnp = normalNoise->getParameters();
 
 		auto amplitude = static_cast<float>(nnp.amplitude);
 
 		const std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitude, 0.01f, 0.0f, 5.0f);
 		ImGui::SameLine(); ImGui::Text("Amplitude");
 
@@ -399,6 +490,8 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementGaussFieldCoupling(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
 		element::GaussFieldCouplingParameters gfcp = gfc->getParameters();
 		const int size = gfc->getMaxSpatialDimension();
@@ -427,21 +520,25 @@ namespace dnf_composer::user_interface
 			auto width = static_cast<float>(coupling.width);
 
 			label = "##" + element->getUniqueName() + "x_i" + std::to_string(couplingIndex);
+			ImGui::SetNextItemWidth(150.0f * ui);
 			ImGui::DragFloat(label.c_str(), &x_i, 0.05f, 0.0f, static_cast<float>(other_size));
 			text = "x_i " + std::to_string(couplingIndex);
 			ImGui::SameLine(); ImGui::Text(text.c_str());
 
 			label = "##" + element->getUniqueName() + "x_j" + std::to_string(couplingIndex);
+			ImGui::SetNextItemWidth(150.0f * ui);
 			ImGui::DragFloat(label.c_str(), &x_j, 0.05f, 0.0f, static_cast<float>(size));
 			text = "x_j " + std::to_string(couplingIndex);
 			ImGui::SameLine(); ImGui::Text(text.c_str());
 
 			label = "##" + element->getUniqueName() + "Amplitude" + std::to_string(couplingIndex);
+			ImGui::SetNextItemWidth(150.0f * ui);
 			ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0.0f, 100.0f);
 			text = "Amplitude " + std::to_string(couplingIndex);
 			ImGui::SameLine(); ImGui::Text(text.c_str());
 
 			label = "##" + element->getUniqueName() + "Width" + std::to_string(couplingIndex);
+			ImGui::SetNextItemWidth(150.0f * ui);
 			ImGui::DragFloat(label.c_str(), &width, 0.1f,1.0f, 30.0f);
 			text = "Width " + std::to_string(couplingIndex);
 			ImGui::SameLine(); ImGui::Text(text.c_str());
@@ -532,6 +629,8 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementOscillatoryKernel(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto kernel = std::dynamic_pointer_cast<element::OscillatoryKernel>(element);
 		element::OscillatoryKernelParameters okp = kernel->getParameters();
 
@@ -543,20 +642,24 @@ namespace dnf_composer::user_interface
 		bool normalized = okp.normalized;
 
 		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0.0f, 50.0f);
 		ImGui::SameLine(); ImGui::Text("Amplitude");
 
 		label = "##" + element->getUniqueName() + "Decay";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &decay, 0.005f, 0.001f, 10.0f);
 		ImGui::SameLine(); ImGui::Text("Decay");
 
 		label = "##" + element->getUniqueName() + "Zero crossings";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &zeroCrossings, 0.005f, 0.0f, 1.0f);
 		ImGui::SameLine(); ImGui::Text("Zero crossings");
 
-		label = "##" + element->getUniqueName() + "Amplitude global";
+		label = "##" + element->getUniqueName() + "Amp. global";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.01f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude global");
+		ImGui::SameLine(); ImGui::Text("Amp. global");
 
 		label = "##" + element->getUniqueName() + "Circular";
 		ImGui::Checkbox(label.c_str(), &circular);
@@ -587,6 +690,8 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
 		const auto kernel = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
 		element::AsymmetricGaussKernelParameters agkp = kernel->getParameters();
 
@@ -598,18 +703,22 @@ namespace dnf_composer::user_interface
 		bool normalized = agkp.normalized;
 
 		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitude, 0.05f, -30.0f, 30.0f);
 		ImGui::SameLine(); ImGui::Text("Amplitude");
 
 		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &width, 0.005f, 0.0f, 30.0f);
 		ImGui::SameLine(); ImGui::Text("Width");
 
-		label = "##" + element->getUniqueName() + "Amplitude global";
+		label = "##" + element->getUniqueName() + "Amp. global";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.005f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude global");
+		ImGui::SameLine(); ImGui::Text("Amp. global");
 
 		label = "##" + element->getUniqueName() + "Time shift";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		ImGui::DragFloat(label.c_str(), &timeShift, 0.01f, -10, 10);
 		ImGui::SameLine(); ImGui::Text("Time shift");
 
