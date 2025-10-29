@@ -13,7 +13,7 @@ namespace dnf_composer::user_interface
 		{
 			// Add a new plot button
 			ImGui::Text("Add a new plot:"); ImGui::SameLine();
-			static PlotType selectedPlotType = PlotType::LINE_PLOT;
+			static auto selectedPlotType = PlotType::LINE_PLOT;
 			ImGui::Combo("Plot type", reinterpret_cast<int*>(&selectedPlotType), "Line plot\0Heatmap\0\0");
 			ImGui::SameLine();
 			if (ImGui::Button("Add"))

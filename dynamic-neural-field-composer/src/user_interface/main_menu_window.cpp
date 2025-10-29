@@ -1,5 +1,7 @@
 #include "user_interface/main_menu_window.h"
 
+#include <unordered_set>
+
 #include "application/application.h"
 
 extern ID3D12Device*                g_pd3dDevice;
@@ -36,6 +38,7 @@ namespace dnf_composer::user_interface
     MainMenuWindow::MainMenuWindow(const std::shared_ptr<Simulation>& simulation)
         : simulation(simulation), logo(), layoutProperties()
     {
+        visualization = std::make_shared<Visualization>(simulation);
         simulationWindow = std::make_unique<SimulationWindow>(simulation);
         elementWindow = std::make_unique<ElementWindow>(simulation);
         nodeGraphWindow = std::make_unique<NodeGraphWindow>(simulation);
@@ -53,8 +56,10 @@ namespace dnf_composer::user_interface
         const auto windowHandle = ImGui::GetMainViewport()->PlatformHandle;
         ImGuiIO& io = ImGui::GetIO();
         io.FontGlobalScale = ImGui_ImplWin32_GetDpiScaleForHwnd(windowHandle) * (layoutProperties.guiScale );
-        io.ConfigFlags &= ~ImGuiConfigFlags_DockingEnable;      // no docking
-        io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;    // (optional) no multi-viewport OS windows
+        //io.ConfigFlags &= ~ImGuiConfigFlags_DockingEnable;      // no docking
+       // io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;    // (optional) no multi-viewport OS windows
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;        // <-- enable docking
+        io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
 
         const ImGuiViewport* vp = ImGui::GetMainViewport();
 
@@ -359,13 +364,72 @@ namespace dnf_composer::user_interface
         // Column C: Right stack
         // =========================
         p.x += colB + colGap;
-
-        // Plots (top)
         {
+            // --- Plots card ----------------------------------------------------------
             const widgets::Card cardC1("##card_plots", p, ImVec2(colC, plotsH), "Plots");
-            if (cardC1.beginCard(layoutProperties.guiScale))
-            {
-                ImGui::TextDisabled("Plots content");
+            if (cardC1.beginCard(layoutProperties.guiScale)) {
+                ImGui::BeginChild("##plots_card_body", ImVec2(0,0), false,
+                                  ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings);
+                // --- Transparent dock background (fixes the dark fill) ---
+                ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, ImVec4(0,0,0,0));
+
+                // 1) Local dockspace that lives INSIDE this card -> plots cannot escape the card
+                ImGuiID dock_id = ImGui::GetID("PlotsCardDockSpace");
+                ImGuiWindowClass plots_class{};
+                plots_class.ClassId = ImHashStr("PlotsCardOnly");
+                plots_class.DockingAllowUnclassed = false;
+
+                ImGuiDockNodeFlags dock_flags =
+                    ImGuiDockNodeFlags_AutoHideTabBar;
+                ImGui::DockSpace(dock_id, ImVec2(0,0), dock_flags, &plots_class);
+
+                ImGui::PopStyleColor(); // DockingEmptyBg
+
+
+                // --- Ensure a plot exists for every neural field -----------------
+                auto ensurePlotsForNFs = [&](){
+                    // collect existing “owners” (one plot per NF) from your Visualization/Plot layer
+                    std::unordered_set<std::string> existing;
+                    for (const auto& [plotPtr, dataVec] : visualization->getPlots()) {
+                        if (!dataVec.empty()) {
+                            // The first pair's .first is the element's unique name
+                            existing.insert(dataVec.front().first);
+                        }
+                    }
+
+                    for (const auto& e : simulation->getElements())
+                    {
+                        if (e->getLabel() != element::ElementLabel::NEURAL_FIELD) continue;
+                        const std::string nf_name = e->getUniqueName();
+                        if (existing.contains(nf_name)) continue;   // already has a plot
+
+                        double dx = 1.0;
+                        //if (auto dims = e->tryGetDimensions())   // adapt if different in your API
+                            dx = e->getStepSize();
+
+                        PlotCommonParameters common{
+                            PlotType::LINE_PLOT,
+                            PlotDimensions{0, 0, 0, 0, dx, 1.0},          // xStep = dx, ranges auto-fit
+                            PlotAnnotations{ nf_name, "Spatial location", "Amplitude" }
+                        };
+                        LinePlotParameters line{ 3.0, true };
+                        visualization->plot(
+                            common, line,
+                            { { nf_name, "activation" },
+                              { nf_name, "input" },
+                              { nf_name, "output" } }
+                        );
+                    }
+                };
+                ensurePlotsForNFs();   // call every frame; it’s cheap
+
+
+                // 3) Constrain visualization plot windows to this dockspace, render, then clear
+                visualization->setDockTarget(dock_id, plots_class);
+                visualization->render();   // this opens "Plot #id" windows, now docked in the card
+                visualization->clearDockTarget();
+
+                ImGui::EndChild();
             }
             widgets::Card::endCard();
             p.y += plotsH + rowGap;

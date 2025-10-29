@@ -17,8 +17,11 @@ namespace dnf_composer
 	private:
 		std::shared_ptr<Simulation> simulation;
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> plots;
+		bool               hasDockTarget = false;
+		ImGuiID            dockTargetId  = 0;
+		ImGuiWindowClass   dockClass{};
 	public:
-		Visualization(const std::shared_ptr<Simulation>& simulation);
+		explicit Visualization(const std::shared_ptr<Simulation>& simulation);
 
 		void plot(PlotType type = PlotType::LINE_PLOT);
 
@@ -39,6 +42,14 @@ namespace dnf_composer
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> getPlots() { return plots; }
 
 		void render();
+
+		// Constrain plot windows to a specific dock space (inside the Plots card)
+		void setDockTarget(ImGuiID dock_id, const ImGuiWindowClass& cls) {
+			dockTargetId   = dock_id;
+			dockClass      = cls;
+			hasDockTarget  = true;
+		}
+		void clearDockTarget() { hasDockTarget = false; dockTargetId = 0; }
 	};
 }
 

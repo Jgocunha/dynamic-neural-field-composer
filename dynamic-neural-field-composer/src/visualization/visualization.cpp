@@ -187,6 +187,11 @@ namespace dnf_composer
 			const std::string plotWindowTitle = "Plot #" + std::to_string(plotID);
 			bool open = true;
 
+			if (hasDockTarget) {
+				ImGui::SetNextWindowDockID(dockTargetId, ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowClass(&dockClass);
+			}
+
 			if (ImGui::Begin(plotWindowTitle.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar))
 			{
 				entry.first->render(allDataToPlotPtr, legends);

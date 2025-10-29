@@ -59,6 +59,7 @@ namespace dnf_composer::user_interface
     class MainMenuWindow final : public imgui_kit::UserInterfaceWindow
     {
         std::shared_ptr<Simulation> simulation;
+        std::shared_ptr<Visualization> visualization;
         std::unique_ptr<SimulationWindow> simulationWindow;
         std::unique_ptr<ElementWindow> elementWindow;
         std::unique_ptr<NodeGraphWindow> nodeGraphWindow;
