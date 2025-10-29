@@ -1,5 +1,7 @@
 #include "visualization/lineplot.h"
 
+#include "application/application.h"
+
 namespace dnf_composer
 {
 	LinePlotParameters::LinePlotParameters()
@@ -181,9 +183,30 @@ namespace dnf_composer
             );
         }
 
-        if (!ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, flags)) {
-            return; 
-        }
+		// --- Custom bold title (above the plot) ---
+		// ImGui::PushFont(g_BoldFont);
+		// ImGui::TextUnformatted(commonParameters.annotations.title.c_str());
+		// ImGui::PopFont();
+		// ImGui::Spacing();
+
+		// // or centered:
+		// ImGui::PushFont(g_BoldFont);
+		// const float textWidth = ImGui::CalcTextSize(commonParameters.annotations.title.c_str()).x;
+		// const float availWidth = ImGui::GetContentRegionAvail().x;
+		// ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (availWidth - textWidth) * 0.5f);
+		// ImGui::TextUnformatted(commonParameters.annotations.title.c_str());
+		// ImGui::PopFont();
+		// ImGui::Spacing();
+
+		// const std::string plotInternalID = "##" + uniquePlotID;
+  //
+  //       if (!ImPlot::BeginPlot(plotInternalID.c_str(), plotSize, flags)) {
+  //           return;
+  //       }
+
+		if (!ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, flags)) {
+			return;
+		}
 
         if (linePlotParameters.autoFit) {
             ImPlot::SetupAxes(

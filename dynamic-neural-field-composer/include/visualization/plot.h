@@ -11,6 +11,7 @@ namespace dnf_composer
 		int uniqueIdentifier;
 		PlotCommonParameters commonParameters;
 	public:
+		virtual ~Plot() = default;
 		Plot(PlotCommonParameters parameters = PlotCommonParameters());
 
 		int getUniqueIdentifier() const;

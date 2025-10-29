@@ -20,11 +20,11 @@ namespace dnf_composer
 	{
 		LinePlotParameters linePlotParameters;
 	public:
-		LinePlot(const PlotCommonParameters& parameters = 
-			{ PlotType::LINE_PLOT,
-			{0.0, 100.0, -20.0, 20.0, 1.0, 1.0},
-			{"Line plot", "Spatial dimension", "Amplitude"} },
-			const LinePlotParameters& linePlotParameters = LinePlotParameters());
+		explicit LinePlot(const PlotCommonParameters& parameters =
+		                  { PlotType::LINE_PLOT,
+			                  {0.0, 100.0, -20.0, 20.0, 1.0, 1.0},
+			                  {"Line plot", "Spatial dimension", "Amplitude"} },
+		                  const LinePlotParameters& linePlotParameters = LinePlotParameters());
 
 		void setLineThickness(double lineThickness);
 		void setAutoFit(bool autoFit);

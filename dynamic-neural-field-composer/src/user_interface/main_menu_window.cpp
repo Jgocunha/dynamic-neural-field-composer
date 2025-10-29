@@ -451,7 +451,6 @@ namespace dnf_composer::user_interface
             const widgets::Card cardC3("##card_logs", p, ImVec2(colC, logsH), "Log window");
             if (cardC3.beginCard(layoutProperties.guiScale))
             {
-                //ImGui::TextDisabled("Logs content");
                 logWindow->renderContent();
             }
             widgets::Card::endCard();

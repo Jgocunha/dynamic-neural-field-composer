@@ -57,6 +57,7 @@ namespace dnf_composer
 
 	struct PlotSpecificParameters
 	{
+		virtual ~PlotSpecificParameters() = default;
 		PlotSpecificParameters() = default;
 		virtual std::string toString() const = 0;
 	};
