@@ -9,7 +9,6 @@ extern ID3D12DescriptorHeap*        g_pd3dSrvDescHeap ;
 extern UINT                         g_pd3dSrvDescSize;
 
 
-
 namespace dnf_composer::user_interface
 {
 
@@ -56,9 +55,7 @@ namespace dnf_composer::user_interface
         const auto windowHandle = ImGui::GetMainViewport()->PlatformHandle;
         ImGuiIO& io = ImGui::GetIO();
         io.FontGlobalScale = ImGui_ImplWin32_GetDpiScaleForHwnd(windowHandle) * (layoutProperties.guiScale );
-        //io.ConfigFlags &= ~ImGuiConfigFlags_DockingEnable;      // no docking
-       // io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;    // (optional) no multi-viewport OS windows
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;        // <-- enable docking
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;        // enable docking for plots
         io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
 
         const ImGuiViewport* vp = ImGui::GetMainViewport();
@@ -95,7 +92,6 @@ namespace dnf_composer::user_interface
         ImDrawList* draw = ImGui::GetWindowDrawList();
 
         // colour palette
-        const ImU32 kWhite       = ImGui::GetColorU32(ImGuiCol_FrameBg);    // card / frame background
         const ImU32 kPanelLight  = ImGui::GetColorU32(ImGuiCol_MenuBarBg);  // light chrome (sidebar/menubar look)
         const ImU32 kBorderLight = ImGui::GetColorU32(ImGuiCol_Border);
         // Soft wash over the wallpaper = WindowBg with reduced alpha
@@ -296,17 +292,17 @@ namespace dnf_composer::user_interface
         const float  W  = (mainMax.x - mainMin.x) - m * 2.0f;
         const float  H  = (mainMax.y - mainMin.y) - m * 2.0f;
 
-        // --- Column widths (A+B fixed-ish, C gets the rest) ---
+        //  Column widths (A+B fixed-ish, C gets the rest)
         const float colGap = m;
         const float colA   = 620.0f * layoutProperties.guiScale;  // Simulation control
         const float colB   = 450.0f * layoutProperties.guiScale;  // Element control
         const float colC   = ImMax(420.0f * layoutProperties.guiScale,
-                                   W - colA - colB - 2.0f*colGap); // right column gets the remainder
+                                   W - colA - colB - 2.0f*colGap); // the right column gets the remainder
 
         // Safety: if the window is too small, clamp so we at least draw something
         if (colC < 220.0f * layoutProperties.guiScale) return;
 
-        // --- Row heights inside Column C (right) ---
+        //  Row heights inside Column C (right)
         const float rowGap = m;
         const float plotsH = H * 0.55f;                      // Plots ~55%
         const float nodeH  = H * 0.27f;                      // Node graph ~27%
@@ -370,7 +366,7 @@ namespace dnf_composer::user_interface
             if (cardC1.beginCard(layoutProperties.guiScale)) {
                 ImGui::BeginChild("##plots_card_body", ImVec2(0,0), false,
                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings);
-                // --- Transparent dock background (fixes the dark fill) ---
+                //  Transparent dock background (fixes the dark fill) ---
                 ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, ImVec4(0,0,0,0));
 
                 // 1) Local dock space that lives INSIDE this card -> plot cannot escape the card
@@ -403,13 +399,13 @@ namespace dnf_composer::user_interface
                         const std::string nf_name = e->getUniqueName();
                         if (existing.contains(nf_name)) continue;   // already has a plot
 
-                        double dx = 1.0;
-                        //if (auto dims = e->tryGetDimensions())   // adapt if different in your API
-                            dx = e->getStepSize();
+                        const double dx = e->getStepSize();
+                        const double xMax = e->getMaxSpatialDimension();
+                        const double yMin = e->getComponent("resting level")[0];
 
                         PlotCommonParameters common{
                             PlotType::LINE_PLOT,
-                            PlotDimensions{0, 0, 0, 0, dx, 1.0},          // xStep = dx, ranges auto-fit
+                            PlotDimensions{0, xMax, yMin, -yMin, dx, 1.0}, // ranges auto-fit
                             PlotAnnotations{ nf_name, "Spatial location", "Amplitude" }
                         };
                         LinePlotParameters line{ 3.0, true };
@@ -421,10 +417,10 @@ namespace dnf_composer::user_interface
                         );
                     }
                 };
-                ensurePlotsForNFs();   // call every frame; it’s cheap
+                ensurePlotsForNFs();   // call every frame; it’s inexpensive
 
 
-                // 3) Constrain visualization plot windows to this dockspace, render, then clear
+                // 3) Constrain visualization plot windows to this dock space, render, then clear
                 visualization->setDockTarget(dock_id, plots_class);
                 visualization->render();   // this opens "Plot #id" windows, now docked in the card
                 visualization->clearDockTarget();
