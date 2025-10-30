@@ -28,7 +28,6 @@ namespace dnf_composer::user_interface
 		SimulationWindow& operator=(SimulationWindow&&) = delete;
 
 		void render() override;
-		void render(const ImRect& bounds, bool* p_open = nullptr) const;
 		void renderSimulationParametersCard() const;
 		void renderSimulationControlsCard() const;
 		void renderRunForIterationsCard() const;

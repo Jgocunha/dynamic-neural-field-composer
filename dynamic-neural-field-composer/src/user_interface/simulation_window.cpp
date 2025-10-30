@@ -23,22 +23,6 @@ namespace dnf_composer::user_interface
 		ImGui::End();
 	}
 
-	void SimulationWindow::render(const ImRect& bounds, bool* p_open) const
-	{
-		// Pin this window into the given rect
-		ImGui::SetNextWindowPos(bounds.Min);
-		ImGui::SetNextWindowSize(ImVec2(bounds.Max.x - bounds.Min.x, bounds.Max.y - bounds.Min.y));
-		const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
-							   | ImGuiWindowFlags_NoMove
-							   | ImGuiWindowFlags_NoResize;
-
-		if (ImGui::Begin("Simulation Control", p_open, flags))
-		{
-			renderPanelContents();
-		}
-		ImGui::End();
-	}
-
 	void SimulationWindow::renderPanelContents() const
 	{
 		renderSimulationControlButtons();
@@ -57,7 +41,6 @@ namespace dnf_composer::user_interface
 		const float ui = ImGui::GetIO().FontGlobalScale;
 		const float gap = ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
 
-		// --- read current values
 		const std::string id   = simulation->getIdentifier();
 		double      dt   = simulation->getDeltaT();
 
@@ -65,13 +48,13 @@ namespace dnf_composer::user_interface
 		static char idBuf[128];
 		std::snprintf(idBuf, IM_ARRAYSIZE(idBuf), "%s", id.c_str());
 
-		// 1) Simulation ID
+		// Simulation ID
 		ImGui::AlignTextToFramePadding();
 		ImGui::TextUnformatted("Simulation");
 		ImGui::SameLine();
 
 		ImGui::SetNextItemWidth(150.0f * ui);
-		bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
+		const bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
 										 ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue);
 
 		// Commit on Enter or when losing focus after modification
@@ -81,13 +64,13 @@ namespace dnf_composer::user_interface
 		// spacer between the two groups
 		ImGui::SameLine(0.0f, gap);
 
-		// 2) Time step Δt
+		// Time step delta_t
 		ImGui::AlignTextToFramePadding();
 		ImGui::TextUnformatted("Time step");
 		ImGui::SameLine();
 
 		ImGui::SetNextItemWidth(65.0f * ui);
-		bool dtEdited = ImGui::InputDouble("##dt_ms", &dt, 0.0, 0.0, "%.2f");
+		const bool dtEdited = ImGui::InputDouble("##dt_ms", &dt, 0.0, 0.0, "%.2f");
 
 		if (dtEdited || ImGui::IsItemDeactivatedAfterEdit())
 			simulation->setDeltaT(dt);
@@ -152,7 +135,7 @@ namespace dnf_composer::user_interface
 	    static bool  runNSteps        = false;
 	    static int   startIteration   = 0;
 
-	    // ---- "Run simulation for [ N ] iterations" ----
+	    // "Run simulation for [ N ] iterations"
 	    ImGui::AlignTextToFramePadding();
 	    ImGui::TextUnformatted("Run simulation for");
 	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
@@ -170,7 +153,7 @@ namespace dnf_composer::user_interface
 	    const float tile = 36.0f * ui;                       // compact square
 	    const ImVec2 iconBox(tile, tile);
 
-	    // soft “tile” look like your transport buttons
+	    // soft “tile”
 	    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f * ui);
 	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
 	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.96f, 0.98f, 0.99f, 1.0f));
@@ -326,7 +309,7 @@ namespace dnf_composer::user_interface
 		ImGui::TextUnformatted("Remove elements");
 		ImGui::PopFont();
 
-	    // --- Row: "Remove [combo] from simulation"  -------------------------
+	    //  Row: "Remove [combo] from simulation"
 	    // Make the label baseline align with framed widgets (combo).
 	    ImGui::AlignTextToFramePadding();
 	    ImGui::TextUnformatted("Remove");
@@ -357,7 +340,7 @@ namespace dnf_composer::user_interface
 	    ImGui::AlignTextToFramePadding();
 	    ImGui::TextUnformatted("from simulation");
 
-	    // --- Trash icon button (right after the sentence) --------------------
+	    //  Trash icon button (right after the sentence)
 	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
 	    const float line_h  = ImGui::GetFrameHeight();
@@ -366,7 +349,6 @@ namespace dnf_composer::user_interface
 	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
 	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f,0.0f,0.0f,0.15f));
 	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0f,0.0f,0.0f,0.25f));
-	    // ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.90f,0.10f,0.10f,1.0f)); // red icon
 
 	    ImGui::PushFont(g_MediumIconsFont);
 	    const bool clicked = ImGui::Button(ICON_FA_TRASH, iconSz);
@@ -395,7 +377,7 @@ namespace dnf_composer::user_interface
 	    // Two columns like the mock
 	    ImGui::Columns(2, nullptr, false);
 
-	    // ---------- Left column: target/source + connect button ----------
+	    //  Left column: target/source + connect button
 	    const float leftW = 220.0f * ImGui::GetIO().FontGlobalScale;
 	    ImGui::SetColumnWidth(0, leftW);
 
@@ -438,7 +420,7 @@ namespace dnf_composer::user_interface
 		// Disable until both target & source are chosen
 		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
 		ImGui::BeginDisabled(!canConnect);
-		bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
+		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
 		ImGui::EndDisabled();
 		ImGui::PopStyleColor(3);
 
@@ -453,7 +435,7 @@ namespace dnf_composer::user_interface
 			}
 		}
 
-	    // ---------- Right column: current connections list (scrollable) ----------
+	    //  Right column: current connections list (scrollable)
 	    ImGui::NextColumn();
 	    ImGui::TextUnformatted("Connected elements");
 		ImGui::SameLine();
@@ -570,18 +552,12 @@ namespace dnf_composer::user_interface
 	        ImGui::EndCombo();
 	    }
 
-	    // Inline download icon button (directly after component combo)
+	    // Inline download icon button (directly after the component combo)
 	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
 	    const float h = ImGui::GetFrameHeight();
 	    const ImVec2 iconSz(h + 10.0f, h);
 
-	    // // Center glyph inside the square button
-	    // const ImVec2 glyph = ImGui::CalcTextSize(ICON_FA_DOWNLOAD);
-	    // const ImVec2 pad(ImMax(0.0f, (iconSz.x - glyph.x) * 0.5f),
-	    //                  ImMax(0.0f, (iconSz.y - glyph.y) * 0.5f));
-
-	    //ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, pad);
 	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
 	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
 	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
@@ -589,7 +565,6 @@ namespace dnf_composer::user_interface
 	    const bool exportClicked = ImGui::Button(ICON_FA_DOWNLOAD, iconSz);
 	    ImGui::PopFont();
 	    ImGui::PopStyleColor(3);
-	   // ImGui::PopStyleVar();
 
 	    if (exportClicked && !selectedElementId.empty() && !selectedComponent.empty())
 	        simulation->exportComponentToFile(selectedElementId, selectedComponent);
@@ -637,12 +612,6 @@ namespace dnf_composer::user_interface
 		const float h = ImGui::GetFrameHeight();
 		const ImVec2 iconSz(h + 10.0f, h);
 
-		// // Center the glyph inside the square
-		// const ImVec2 glyph = ImGui::CalcTextSize(ICON_FA_TERMINAL);
-		// ImVec2 pad(ImMax(0.0f, (iconSz.x - glyph.x) * 0.5f),
-		// 		   ImMax(0.0f, (iconSz.y - glyph.y) * 0.5f));
-
-		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, pad);
 		ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
@@ -650,7 +619,6 @@ namespace dnf_composer::user_interface
 		const bool logClicked = ImGui::Button(ICON_FA_TERMINAL, iconSz);
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
-		//ImGui::PopStyleVar();
 
 		if (logClicked && !selectedId.empty())
 			if (const auto e = simulation->getElement(selectedId)) e->print();
