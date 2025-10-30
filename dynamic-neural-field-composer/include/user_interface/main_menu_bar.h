@@ -26,21 +26,21 @@ namespace dnf_composer::user_interface
 		bool showImGuiKitStyleEditor = false;
 	};
 
-	class MainWindow final : public imgui_kit::UserInterfaceWindow
+	class MainMenuBar final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
 		AdvancedSettingsFlags advancedSettingsFlags;
 		FileFlags fileFlags;
 	public:
-		explicit MainWindow(const std::shared_ptr<Simulation>& simulation);
-		MainWindow(const MainWindow&) = delete;
-		MainWindow& operator=(const MainWindow&) = delete;
-		MainWindow(MainWindow&&) = delete;
-		MainWindow& operator=(MainWindow&&) = delete;
+		explicit MainMenuBar(const std::shared_ptr<Simulation>& simulation);
+		MainMenuBar(const MainMenuBar&) = delete;
+		MainMenuBar& operator=(const MainMenuBar&) = delete;
+		MainMenuBar(MainMenuBar&&) = delete;
+		MainMenuBar& operator=(MainMenuBar&&) = delete;
 
 		void render() override;
-		~MainWindow() override = default;
+		~MainMenuBar() override = default;
 	private:
 		void renderMainMenuBar();
 		void renderFileWindows();

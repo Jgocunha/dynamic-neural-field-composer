@@ -4,11 +4,11 @@
 
 namespace dnf_composer::user_interface
 {
-	MainWindow::MainWindow(const std::shared_ptr<Simulation>& simulation)
+	MainMenuBar::MainMenuBar(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
 	{}
 
-	void MainWindow::render()
+	void MainMenuBar::render()
 	{
 		renderMainMenuBar();
 		renderFileWindows();
@@ -16,7 +16,7 @@ namespace dnf_composer::user_interface
 		handleShortcuts();
 	}
 
-    void MainWindow::renderMainMenuBar()
+    void MainMenuBar::renderMainMenuBar()
     {
         if (ImGui::BeginMainMenuBar())
         {
@@ -131,7 +131,7 @@ namespace dnf_composer::user_interface
         }
     }
 
-    void MainWindow::renderFileWindows()
+    void MainMenuBar::renderFileWindows()
     {
         static char path[500] = "";
         static char* file_dialog_buffer = path;
@@ -161,7 +161,7 @@ namespace dnf_composer::user_interface
         }
     }
 
-    void MainWindow::renderAdvancedSettingsWindows()
+    void MainMenuBar::renderAdvancedSettingsWindows()
     {
         if (advancedSettingsFlags.showImGuiDemo)
             ImGui::ShowDemoWindow();
@@ -186,7 +186,7 @@ namespace dnf_composer::user_interface
 			imgui_kit::showImGuiKitThemeSelector(&advancedSettingsFlags.showImGuiKitStyleEditor);
     }
 
-    void MainWindow::handleShortcuts()
+    void MainMenuBar::handleShortcuts()
     {
         const ImGuiIO& io = ImGui::GetIO();
 

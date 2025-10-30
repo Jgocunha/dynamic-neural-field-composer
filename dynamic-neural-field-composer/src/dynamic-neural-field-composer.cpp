@@ -18,7 +18,7 @@ int main()
 		const Application app{ simulation, visualization };
 
 		app.addWindow<user_interface::MainMenuWindow>();
-		app.addWindow<user_interface::MainWindow>();
+		app.addWindow<user_interface::MainMenuBar>();
 		app.init();
 
 		while (!app.hasGUIBeenClosed())
