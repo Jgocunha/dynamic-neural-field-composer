@@ -373,7 +373,7 @@ namespace dnf_composer::user_interface
                 // --- Transparent dock background (fixes the dark fill) ---
                 ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, ImVec4(0,0,0,0));
 
-                // 1) Local dockspace that lives INSIDE this card -> plots cannot escape the card
+                // 1) Local dock space that lives INSIDE this card -> plot cannot escape the card
                 ImGuiID dock_id = ImGui::GetID("PlotsCardDockSpace");
                 ImGuiWindowClass plots_class{};
                 plots_class.ClassId = ImHashStr("PlotsCardOnly");
@@ -451,7 +451,7 @@ namespace dnf_composer::user_interface
             const widgets::Card cardC3("##card_logs", p, ImVec2(colC, logsH), "Log window");
             if (cardC3.beginCard(layoutProperties.guiScale))
             {
-                logWindow->renderContent();
+                imgui_kit::LogWindow::renderContent();
             }
             widgets::Card::endCard();
         }

@@ -105,7 +105,7 @@ set(user_interface_headers
         "include/user_interface/plot_control_window.h"
         "include/user_interface/simulation_window.h"
         "include/user_interface/node_graph_window.h"
-        "include/user_interface/main_window.h"
+        "include/user_interface/main_menu_bar.h"
         "include/user_interface/widgets.h"
         "include/user_interface/plots_window.h"
         "include/user_interface/fonts/IconsFontAwesome6.h"
@@ -174,7 +174,7 @@ set(src
         "src/user_interface/field_metrics_window.cpp"
         "src/user_interface/element_window.cpp"
         "src/user_interface/node_graph_window.cpp"
-        "src/user_interface/main_window.cpp"
+        "src/user_interface/main_menu_bar.cpp"
         "src/user_interface/widgets.cpp"
         "src/user_interface/plots_window.cpp"
         src/user_interface/main_menu_window.cpp

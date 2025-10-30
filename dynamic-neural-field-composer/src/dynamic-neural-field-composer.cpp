@@ -5,7 +5,7 @@
 #include "dynamic-neural-field-composer.h"
 
 #include "user_interface/main_menu_window.h"
-#include "user_interface/main_window.h"
+#include "user_interface/main_menu_bar.h"
 
 int main()
 {

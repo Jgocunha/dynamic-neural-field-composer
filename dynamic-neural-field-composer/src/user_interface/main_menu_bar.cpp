@@ -1,4 +1,4 @@
-#include "user_interface/main_window.h"
+#include "user_interface/main_menu_bar.h"
 
 #include <imgui-platform-kit/themes.h>
 
@@ -8,42 +8,13 @@ namespace dnf_composer::user_interface
 		: simulation(simulation)
 	{}
 
-
 	void MainWindow::render()
 	{
-		renderFullscreenWindow();
 		renderMainMenuBar();
 		renderFileWindows();
 		renderAdvancedSettingsWindows();
 		handleShortcuts();
 	}
-
-    void MainWindow::renderFullscreenWindow()
-    {
-        static bool use_work_area = true;
-        static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
-		| ImGuiWindowFlags_NoMove
-		| ImGuiWindowFlags_NoResize
-		| ImGuiWindowFlags_NoBringToFrontOnFocus
-		| ImGuiWindowFlags_NoNavFocus
-		//| ImGuiWindowFlags_NoInputs           // Prevents all mouse/keyboard input
-		//| ImGuiWindowFlags_NoBackground       // Makes window background transparent
-		| ImGuiWindowFlags_NoScrollbar        // Removes scrollbars
-		| ImGuiWindowFlags_NoScrollWithMouse  // Prevents mouse wheel scrolling
-		| ImGuiWindowFlags_NoCollapse         // Prevents collapsing (redundant with NoDecoration but explicit)
-		| ImGuiWindowFlags_NoTitleBar;        // Removes title bar (redundant with NoDecoration but explicit)
-
-		const ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
-		ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
-
-		// Set window to be behind all other windows
-		//ImGui::SetNextWindowBgAlpha(0.0f); // Make background completely transparent
-
-        // if (ImGui::Begin("Fullscreen window", nullptr, flags))
-        // {}
-        // ImGui::End();
-    }
 
     void MainWindow::renderMainMenuBar()
     {
@@ -93,26 +64,27 @@ namespace dnf_composer::user_interface
                 	initialized = true;
                 }
 
-                ImGui::Text("Simulation Identifier");
-                ImGui::InputText("##inline_identifier", newIdentifier, sizeof(newIdentifier));
+                ImGui::Text("Simulation identifier");
+            	static char idBuf[128];
+            	std::snprintf(idBuf, IM_ARRAYSIZE(idBuf), "%s", simulation->getUniqueIdentifier().c_str());
+            	const bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
+										 ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue);
 
-                ImGui::SameLine();
-                if (ImGui::Button("Save##menu_identifier"))
-                {
-                    simulation->setUniqueIdentifier(newIdentifier);
-                }
+            	// Commit on Enter or when losing focus after modification
+            	if (idEdited || (ImGui::IsItemDeactivatedAfterEdit()))
+            		simulation->setUniqueIdentifier(std::string(idBuf));
 
                 ImGui::Separator();
 
                 static auto deltaT = static_cast<float>(simulation->getDeltaT());
-                ImGui::Text("Time Step (deltaT) ");
+                ImGui::Text("Time step (ms) ");
                 ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.001f, 25.0, "%.3f");
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     simulation->setDeltaT(deltaT);
 
                 ImGui::Separator();
 
-                ImGui::Text("Current Time (t) ");
+                ImGui::Text("Current time (ms) ");
                 ImGui::SameLine();
                 ImGui::Text("%.3f", simulation->getT());
 
@@ -132,26 +104,6 @@ namespace dnf_composer::user_interface
 
         	if (ImGui::BeginMenu("Interface Settings"))
         	{
-        		if (ImGui::MenuItem("Load Layout", "Ctrl+L"))
-        		{
-        			FileDialog::file_dialog_open = true;
-        			fileFlags.showOpenLayoutDialog = true;
-        			FileDialog::file_dialog_open_type = FileDialog::FileDialogType::OpenFile;
-        		}
-        		if (ImGui::MenuItem("Save Layout"))
-        		{
-        			std::string savePath = std::string(PROJECT_DIR) + "/resources/layouts/"
-						+ simulation->getIdentifier() + "_layout.ini";
-        			ImGui::SaveIniSettingsToDisk(savePath.c_str());
-        			log(tools::logger::LogLevel::INFO, "Saved layout to " + savePath + ".");
-        		}
-        		if (ImGui::MenuItem("Fixed Layout", nullptr, &interfaceFlags.fixedLayout))
-        		{
-        			toggleFixedLayout();
-        		}
-
-        		ImGui::Separator();
-
         		ImGui::MenuItem("Dear ImGuiStyle Editor", nullptr,
 					&advancedSettingsFlags.showToolStyleEditor);
         		ImGui::MenuItem("Dear ImGui Kit Style Editor", nullptr,
@@ -203,12 +155,6 @@ namespace dnf_composer::user_interface
                 {
                     simulation->read(path);
                     fileFlags.showOpenSimulationDialog = false;
-                	snprintf(path, sizeof(path), "%s", "");
-                }
-                else if (fileFlags.showOpenLayoutDialog)
-                {
-                    handleOpenLayoutDialog(path);
-					fileFlags.showOpenLayoutDialog = false;
                 	snprintf(path, sizeof(path), "%s", "");
                 }
 			}
@@ -278,44 +224,4 @@ namespace dnf_composer::user_interface
 	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Q))
 	        std::exit(0);
     }
-
-    void MainWindow::handleOpenLayoutDialog(const char* path)
-    {
-	    if (std::filesystem::exists(path))
-	    {
-	        if (std::filesystem::path(path).extension() == ".ini")
-	        {
-	            const std::string iniFilePathStorage = path;
-	            auto io = ImGui::GetIO();
-	            io.IniFilename = iniFilePathStorage.c_str();
-	            ImGui::LoadIniSettingsFromDisk(io.IniFilename);
-	            log(tools::logger::LogLevel::INFO, "Layout file loaded successfully.");
-	        }
-	        else
-	        {
-	            log(tools::logger::LogLevel::ERROR, "File is not a .ini file.");
-	        }
-	    }
-	    else
-	    {
-	        log(tools::logger::LogLevel::ERROR, "File does not exist.");
-	    }
-    }
-
-	void MainWindow::toggleFixedLayout() const
-	{
-		if (interfaceFlags.fixedLayout)
-		{
-			imgui_kit::setGlobalWindowFlags(ImGuiWindowFlags_NoMove |
-										   ImGuiWindowFlags_NoCollapse |
-										   ImGuiWindowFlags_NoResize);
-
-			log(tools::logger::LogLevel::INFO, "Fixed layout enabled - windows are locked in place.");
-		}
-		else
-		{
-			imgui_kit::setGlobalWindowFlags(0);
-			log(tools::logger::LogLevel::INFO, "Flexible layout enabled - windows can be moved freely.");
-		}
-	}
 }
