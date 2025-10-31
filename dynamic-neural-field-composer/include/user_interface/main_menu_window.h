@@ -25,7 +25,7 @@ namespace dnf_composer::user_interface
 
     struct LayoutProperties
     {
-        float guiScale = 80.0f/100.0f;
+        float guiScale = 70.0f/100.0f;
 
         const float margin = 20.0f;
         const float radius = 10.0f;

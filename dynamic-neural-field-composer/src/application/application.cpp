@@ -7,8 +7,10 @@
 
 namespace dnf_composer
 {
-	Application::Application(const std::shared_ptr<Simulation>& simulation, const std::shared_ptr<Visualization>& visualization)
-		: simulation(simulation ? simulation : std::make_shared<Simulation>("default", 1.0, 0.0, 0.0)),
+	Application::Application(const std::shared_ptr<Simulation>& simulation,
+		const std::shared_ptr<Visualization>& visualization)
+		: simulation(simulation ? simulation : std::make_shared<Simulation>("default",
+			1.0, 0.0, 0.0)),
 		visualization(visualization ? visualization : std::make_shared<Visualization>(this->simulation)),
 		guiActive(true)
 	{
@@ -66,11 +68,11 @@ namespace dnf_composer
 		using namespace imgui_kit;
 		const WindowParameters winParams{ "Dynamic Neural Field Composer" };
 		const FontParameters fontParams({
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf", 18},
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 18},
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 24},
-		 											{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 30},
-													{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 18},
+		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf", 18},
+		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 18},
+		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 24},
+		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 30},
+			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 18},
 		});
 		const StyleParameters styleParams{Theme::Light, imgui_kit::colours::White};
 #ifdef _WIN32
@@ -78,7 +80,8 @@ namespace dnf_composer
 #else
 		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.png" };
 #endif
-		const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR) + "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
+		const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR)
+			+ "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
 		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, bgParams };
 
 		gui = std::make_shared<UserInterface>(guiParameters);
@@ -107,7 +110,8 @@ namespace dnf_composer
 
 		if (io.Fonts->Fonts.size() < g_FontCount)
 		{
-			tools::logger::log(tools::logger::FATAL, "Not enough fonts in the font stack. Please add more fonts to the font stack.");
+			tools::logger::log(tools::logger::FATAL, "Not enough fonts in the font stack."
+											" Please add more fonts to the font stack.");
 			throw Exception(ErrorCode::APP_INIT);
 		}
 
@@ -182,13 +186,13 @@ namespace dnf_composer
 
 	    // ----- Palette -----
 	    // Core brand / accent (from sidebar highlight)
-	    constexpr auto ACCENT         = ImVec4(64/255.f, 163/255.f, 130/255.f, 1.0f);   // #40A382  :contentReference[oaicite:2]{index=2}
+	    constexpr auto ACCENT         = ImVec4(64/255.f, 163/255.f, 130/255.f, 1.0f);   // #40A382
 	    constexpr auto ACCENT_HOVER   = ImVec4(64/255.f, 163/255.f, 130/255.f, 0.85f);
 	    constexpr auto ACCENT_ACTIVE  = ImVec4(64/255.f, 163/255.f, 130/255.f, 1.0f);
 
 	    // Light chrome (from zones drawing)
-		constexpr auto PANEL_LIGHT    = ImVec4(245/255.f, 247/255.f, 250/255.f, 1.0f);  // sidebar bg  :contentReference[oaicite:3]{index=3}
-	    constexpr auto BORDER_LIGHT   = ImVec4(225/255.f, 229/255.f, 235/255.f, 1.0f);  // subtle border :contentReference[oaicite:4]{index=4}
+		constexpr auto PANEL_LIGHT    = ImVec4(245/255.f, 247/255.f, 250/255.f, 1.0f);  // sidebar bg
+	    constexpr auto BORDER_LIGHT   = ImVec4(225/255.f, 229/255.f, 235/255.f, 1.0f);  // subtle border
 	    constexpr auto CARD_BG        = ImVec4(1.00f, 1.00f, 1.00f, 0.96f);             // matches white cards
 	    constexpr auto WINDOW_BG      = ImVec4(0.95f, 0.97f, 0.98f, 0.90f);             // soft wash over bg image
 	    constexpr auto TEXT           = imgui_kit::colours::Gray;              // dark, crisp
@@ -207,7 +211,7 @@ namespace dnf_composer
 
 	    // Windows / areas
 	    c[ImGuiCol_WindowBg]             = WINDOW_BG;
-	    c[ImGuiCol_ChildBg]              = ImVec4(0,0,0,0);         // children are drawn as part of your custom zones
+	    c[ImGuiCol_ChildBg]              = ImVec4(0,0,0,0); // children are drawn as part of your custom zones
 	    c[ImGuiCol_PopupBg]              = ImVec4(1,1,1,0.98f);
 
 	    // Borders

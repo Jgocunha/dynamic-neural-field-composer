@@ -74,5 +74,6 @@ namespace dnf_composer::user_interface
 		void handlePinInteractions() const;
 		void handleLinkInteractions() const;
 		static size_t getNodeId(const std::shared_ptr<element::Element>& element);
+		static void drawPinBubble(const ImVec2& center, float r, ImU32 fill, ImU32 border);
 	};
 }
