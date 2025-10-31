@@ -43,7 +43,7 @@ namespace dnf_composer::user_interface
         nodeGraphWindow = std::make_unique<NodeGraphWindow>(simulation);
         logWindow = std::make_unique<imgui_kit::LogWindow>();
         mainAreaSize = {ImVec2(0, 0), ImVec2(0, 0)};
-        selectedSidebarTab = 0;
+        selectedSidebarTab = 6;
     }
 
     void MainMenuWindow::render()
@@ -177,16 +177,16 @@ namespace dnf_composer::user_interface
                 switch (selectedSidebarTab)
                 {
                 case 0: renderBuild(); break;
-                default: break;
                     // case 1: adjust_tab(); break;
                     // case 2: evaluate_tab(); break;
                     // case 3: learning_tab(); break;
                     // case 4: monitoring_tab(); break;
                     // case 5: overview_tab(); break;
-                    // case 6: node_graph_tab(); break;
+                case 6: renderNodeGraph(); break;
                     // case 7: plotting_tab(); break;
                     // case 8: ui_tab(); break;
                     // case 9: simulation_tab(); break;
+                default: break;
                 }
             }
             ImGui::EndChild();
@@ -451,6 +451,37 @@ namespace dnf_composer::user_interface
             }
             widgets::Card::endCard();
         }
+    }
+
+    void MainMenuWindow::renderNodeGraph() const
+    {
+        // Main area rect
+        const ImVec2 mainMin = std::get<0>(mainAreaSize);
+        const ImVec2 mainMax = std::get<1>(mainAreaSize);
+
+        // Outer/inner margin (match build view)
+        const float m = 16.0f * layoutProperties.guiScale;
+
+        const ImVec2 pos(mainMin.x + m, mainMin.y + m);
+        const float  W  = (mainMax.x - mainMin.x) - m * 2.0f;
+        const float  H  = (mainMax.y - mainMin.y) - m * 2.0f;
+
+        // One big card that occupies the whole main area
+        const widgets::Card card("##node_graph_full", pos, ImVec2(W, H), "Node graph");
+        if (card.beginCard(layoutProperties.guiScale))
+        {
+            // Body: keep it clipped to the card and prevent accidental docking here
+            ImGui::BeginChild("##node_graph_body", ImVec2(0,0), false,
+                              ImGuiWindowFlags_NoBackground |
+                              ImGuiWindowFlags_NoSavedSettings |
+                              ImGuiWindowFlags_NoDocking);
+
+            // Your existing node-graph renderer
+            nodeGraphWindow->renderGraph();
+
+            ImGui::EndChild();
+        }
+        widgets::Card::endCard();
     }
 
 }
