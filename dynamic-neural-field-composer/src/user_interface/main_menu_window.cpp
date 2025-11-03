@@ -542,7 +542,49 @@ namespace dnf_composer::user_interface
                     });
                 }
             };
+
+            // // Ensure one plot per field-coupling
+            // auto ensurePlotsForFCs = [&]()
+            // {
+            //     std::unordered_set<std::string> existing;
+            //     for (const auto& [plotPtr, dataVec] : visualization->getPlots())
+            //     {
+            //         if (!dataVec.empty())
+            //             existing.insert(dataVec.front().first);
+            //     }
+            //
+            //     for (const auto& e : simulation->getElements())
+            //     {
+            //         if (e->getLabel() != element::ElementLabel::FIELD_COUPLING) continue;
+            //         const std::string fc_name = e->getUniqueName();
+            //         if (existing.contains(fc_name)) continue;
+            //
+            //         const double dx = e->getStepSize();
+            //         const double xMax = e->getMaxSpatialDimension();
+            //         const double yMax = std::abs(xMax - e->getComponent("weights").size());
+            //
+            //         PlotCommonParameters common{
+            //             PlotType::HEATMAP,
+            //             PlotDimensions{0.0, xMax, 0.0, yMax, dx, dx},
+            //             PlotAnnotations{fc_name, "Source spatial location", "Target spatial location"}
+            //         };
+            //         HeatmapParameters parameters{};
+            //         visualization->plot(common, parameters, {
+            //             {fc_name, "weights"},
+            //         });
+            //     }
+            // };
+        //     visualization->plot(
+        //     PlotCommonParameters{
+        //         PlotType::HEATMAP,
+        //         PlotDimensions{0.0, 280, 0.0, 280, 1.0, 1.0},
+        //         PlotAnnotations{"stkl past-present coupling", "stkl present spatial location", "stkl past spatial location"} },
+        //         HeatmapParameters{},
+        //     { {fc_1->getUniqueName(), "weights"} }
+        // );
+
             ensurePlotsForNFs();
+            //ensurePlotsForFCs();
 
             visualization->setWindowIdSuffix("plotting");
             visualization->render();
