@@ -43,7 +43,7 @@ namespace dnf_composer::user_interface
         nodeGraphWindow = std::make_unique<NodeGraphWindow>(simulation);
         logWindow = std::make_unique<imgui_kit::LogWindow>();
         mainAreaSize = {ImVec2(0, 0), ImVec2(0, 0)};
-        selectedSidebarTab = 6;
+        selectedSidebarTab = 0;
     }
 
     void MainMenuWindow::render()
@@ -184,7 +184,14 @@ namespace dnf_composer::user_interface
                     // case 5: overview_tab(); break;
                 case 6: renderNodeGraph(); break;
                     // case 7: plotting_tab(); break;
-                    // case 8: ui_tab(); break;
+                     case 8:
+                        {
+                         // show the ui scale in percentage to user
+                         float pct = layoutProperties.guiScale*100.0f;
+                         ImGui::SetNextItemWidth(160 * layoutProperties.guiScale);
+                         if (ImGui::SliderFloat("UI Scale", &pct, 50.0f, 200.0f, "%.0f%%"))
+                             layoutProperties.guiScale = pct/100.0f;
+                     }break;
                     // case 9: simulation_tab(); break;
                 default: break;
                 }
@@ -282,7 +289,7 @@ namespace dnf_composer::user_interface
         }
     }
 
-    void MainMenuWindow::renderBuild() const
+   void MainMenuWindow::renderBuild() const
     {
         const ImVec2 mainMin = std::get<0>(mainAreaSize);
         const ImVec2 mainMax = std::get<1>(mainAreaSize);
@@ -292,59 +299,56 @@ namespace dnf_composer::user_interface
         const float  W  = (mainMax.x - mainMin.x) - m * 2.0f;
         const float  H  = (mainMax.y - mainMin.y) - m * 2.0f;
 
-        //  Column widths (A+B fixed-ish, C gets the rest)
         const float colGap = m;
-        const float colA   = 420.0f * layoutProperties.guiScale;  // Simulation control
-        const float colB   = 350.0f * layoutProperties.guiScale;  // Element control
-        const float colC   = ImMax(420.0f * layoutProperties.guiScale,
-                                   W - colA - colB - 2.0f*colGap); // the right column gets the remainder
+        const float rowGap = m;
 
-        // Safety: if the window is too small, clamp so we at least draw something
+        // Responsive column width distribution (percentages)
+        constexpr float simRatio   = 0.25f;  // 33% of width
+        constexpr float elemRatio  = 0.20f;  // 27% of width
+        constexpr float plotsRatio = 1.0f - simRatio - elemRatio; // remaining %
+
+        const float colA = W * simRatio;    // Simulation control
+        const float colB = W * elemRatio;   // Element control
+        const float colC = W * plotsRatio;  // Right column (plots + node + logs)
+
+        // Safety guard for very narrow windows
         if (colC < 220.0f * layoutProperties.guiScale) return;
 
-        //  Row heights inside Column C (right)
-        const float rowGap = m;
+        // Vertical distribution in the right column
         const float plotsH = H * 0.55f;                      // Plots ~55%
         const float nodeH  = H * 0.27f;                      // Node graph ~27%
-        const float logsH  = H - plotsH - nodeH - 2.0f*rowGap; // remaining ~18%
+        const float logsH  = H - plotsH - nodeH - 2.0f * rowGap; // remaining ~18%
 
         ImVec2 p = pos;
 
         // =========================
-        // Column A: Simulation control (tall)
+        // Column A: Simulation control
         // =========================
         {
             const widgets::Card cardA("##card_sim", p, ImVec2(colA, H), "Simulation control");
             if (cardA.beginCard(layoutProperties.guiScale))
             {
                 simulationWindow->renderSimulationParametersCard();
-                ImGui::Spacing();
-                ImGui::Spacing();
+                ImGui::Spacing(); ImGui::Spacing();
                 simulationWindow->renderSimulationControlsCard();
-                ImGui::Spacing();
-                ImGui::Spacing();
+                ImGui::Spacing(); ImGui::Spacing();
                 simulationWindow->renderRunForIterationsCard();
-                ImGui::Spacing();
-                ImGui::Spacing();
+                ImGui::Spacing(); ImGui::Spacing();
                 simulationWindow->renderAddElementCard();
-                ImGui::Spacing();
-                ImGui::Spacing();
+                ImGui::Spacing(); ImGui::Spacing();
                 simulationWindow->renderRemoveElementCard();
-                ImGui::Spacing();
-                ImGui::Spacing();
+                ImGui::Spacing(); ImGui::Spacing();
                 simulationWindow->renderSetInteractionCard();
-                ImGui::Spacing();
-                ImGui::Spacing();
+                ImGui::Spacing(); ImGui::Spacing();
                 simulationWindow->renderLogElementParametersCard();
-                ImGui::Spacing();
-                ImGui::Spacing();
+                ImGui::Spacing(); ImGui::Spacing();
                 simulationWindow->renderExportElementComponentCard();
             }
             widgets::Card::endCard();
         }
 
         // =========================
-        // Column B: Element control (tall)
+        // Column B: Element control
         // =========================
         p.x += colA + colGap;
         {
@@ -357,47 +361,42 @@ namespace dnf_composer::user_interface
         }
 
         // =========================
-        // Column C: Right stack
+        // Column C: Plots + Node + Logs
         // =========================
         p.x += colB + colGap;
         {
             // --- Plots card ----------------------------------------------------------
             const widgets::Card cardC1("##card_plots", p, ImVec2(colC, plotsH), "Plots");
-            if (cardC1.beginCard(layoutProperties.guiScale)) {
-                ImGui::BeginChild("##plots_card_body", ImVec2(0,0), false,
+            if (cardC1.beginCard(layoutProperties.guiScale))
+            {
+                ImGui::BeginChild("##plots_card_body", ImVec2(0, 0), false,
                                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings);
-                //  Transparent dock background (fixes the dark fill) ---
-                ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, ImVec4(0,0,0,0));
+                ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, ImVec4(0, 0, 0, 0));
 
-                // 1) Local dock space that lives INSIDE this card -> plot cannot escape the card
                 ImGuiID dock_id = ImGui::GetID("PlotsCardDockSpace");
                 ImGuiWindowClass plots_class{};
                 plots_class.ClassId = ImHashStr("PlotsCardOnly");
                 plots_class.DockingAllowUnclassed = false;
 
-                ImGuiDockNodeFlags dock_flags =
-                    ImGuiDockNodeFlags_AutoHideTabBar;
-                ImGui::DockSpace(dock_id, ImVec2(0,0), dock_flags, &plots_class);
+                ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_AutoHideTabBar;
+                ImGui::DockSpace(dock_id, ImVec2(0, 0), dock_flags, &plots_class);
+                ImGui::PopStyleColor();
 
-                ImGui::PopStyleColor(); // DockingEmptyBg
-
-
-                // --- Ensure a plot exists for every neural field -----------------
-                auto ensurePlotsForNFs = [&](){
-                    // collect existing “owners” (one plot per NF) from your Visualization/Plot layer
+                // Ensure one plot per neural field
+                auto ensurePlotsForNFs = [&]()
+                {
                     std::unordered_set<std::string> existing;
-                    for (const auto& [plotPtr, dataVec] : visualization->getPlots()) {
-                        if (!dataVec.empty()) {
-                            // The first pair's .first is the element's unique name
+                    for (const auto& [plotPtr, dataVec] : visualization->getPlots())
+                    {
+                        if (!dataVec.empty())
                             existing.insert(dataVec.front().first);
-                        }
                     }
 
                     for (const auto& e : simulation->getElements())
                     {
                         if (e->getLabel() != element::ElementLabel::NEURAL_FIELD) continue;
                         const std::string nf_name = e->getUniqueName();
-                        if (existing.contains(nf_name)) continue;   // already has a plot
+                        if (existing.contains(nf_name)) continue;
 
                         const double dx = e->getStepSize();
                         const double xMax = e->getMaxSpatialDimension();
@@ -405,24 +404,21 @@ namespace dnf_composer::user_interface
 
                         PlotCommonParameters common{
                             PlotType::LINE_PLOT,
-                            PlotDimensions{0, xMax, yMin, -yMin, dx, 1.0}, // ranges auto-fit
-                            PlotAnnotations{ nf_name, "Spatial location", "Amplitude" }
+                            PlotDimensions{0, xMax, yMin, -yMin, dx, 1.0},
+                            PlotAnnotations{nf_name, "Spatial location", "Amplitude"}
                         };
-                        LinePlotParameters line{ 3.0, true };
-                        visualization->plot(
-                            common, line,
-                            { { nf_name, "activation" },
-                              { nf_name, "input" },
-                              { nf_name, "output" } }
-                        );
+                        LinePlotParameters line{3.0, true};
+                        visualization->plot(common, line, {
+                            {nf_name, "activation"},
+                            {nf_name, "input"},
+                            {nf_name, "output"}
+                        });
                     }
                 };
-                ensurePlotsForNFs();   // call every frame; it’s inexpensive
+                ensurePlotsForNFs();
 
-
-                // 3) Constrain visualization plot windows to this dock space, render, then clear
                 visualization->setDockTarget(dock_id, plots_class);
-                visualization->render();   // this opens "Plot #id" windows, now docked in the card
+                visualization->render();
                 visualization->clearDockTarget();
 
                 ImGui::EndChild();
@@ -452,6 +448,7 @@ namespace dnf_composer::user_interface
             widgets::Card::endCard();
         }
     }
+
 
     void MainMenuWindow::renderNodeGraph() const
     {

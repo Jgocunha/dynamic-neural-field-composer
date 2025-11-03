@@ -29,7 +29,6 @@ namespace dnf_composer::user_interface
         ImGuiWindowFlags_AlwaysVerticalScrollbar |
         ImGuiWindowFlags_NoSavedSettings;
 
-		//ImGui::SameLine();
 		widgets::renderHelpMarker("Left click and drag or double-click to change element parameter values.");
 	    ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
 
@@ -38,29 +37,30 @@ namespace dnf_composer::user_interface
 	    for (const auto& e : simulation->getElements())
 	        byType[e->getLabel()].push_back(e);
 
-	    const float ui     = ImGui::GetIO().FontGlobalScale;
 	    const float innerW = ImGui::GetContentRegionAvail().x;
 
 	    // panel width: fill the card minus a margin
+		const float ui = ImGui::GetIO().FontGlobalScale;
 	    const float panelW = ImMax(200.0f * ui, innerW - 16.0f * ui);
 
-	    auto PanelHeightFor = [&](element::ElementLabel type) -> float
-	    {
-	        // tweak per type so everything fits nicely
-	        switch (type)
-	        {
-	            case element::ElementLabel::NORMAL_NOISE:        return 50.0f  * ui; // 1
-	            case element::ElementLabel::NEURAL_FIELD:        return 90.0f  * ui; // 2
-	            case element::ElementLabel::GAUSS_STIMULUS:      return 160.0f * ui; // 3
-	            case element::ElementLabel::GAUSS_KERNEL:        return 160.0f * ui; // 3
-				case element::ElementLabel::FIELD_COUPLING:		return 200.0f * ui; // 5
-	            case element::ElementLabel::MEXICAN_HAT_KERNEL:  return 240.0f * ui; // 6
+		auto PanelHeightFor = [&](const element::ElementLabel type) -> float
+		{
+			const float scale = 0.75f + 0.35f * std::pow(ui, 1.3f);
+			auto h = [&](const float base) { return base * scale; };
 
-	            case element::ElementLabel::OSCILLATORY_KERNEL:  return 180.0f * ui;
-	            case element::ElementLabel::GAUSS_FIELD_COUPLING:return 200.0f * ui;
-	            default:                                         return 140.0f * ui;
-	        }
-	    };
+			switch (type)
+			{
+				case element::ElementLabel::NORMAL_NOISE:         return h(40.0f); //1
+				case element::ElementLabel::NEURAL_FIELD:         return h(75.0f); //2
+				case element::ElementLabel::GAUSS_STIMULUS:       return h(140.0f);//4
+				case element::ElementLabel::GAUSS_KERNEL:         return h(140.0f);//4
+				case element::ElementLabel::FIELD_COUPLING:       return h(175.0f);//5
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:   return h(205.0f);//6
+				case element::ElementLabel::OSCILLATORY_KERNEL:   return h(180.0f); //?
+				case element::ElementLabel::GAUSS_FIELD_COUPLING: return h(200.0f); //?
+				default:                                          return h(140.0f); //?
+			}
+		};
 
 	    for (const auto& [label, elems] : byType)
 	    {
@@ -77,10 +77,9 @@ namespace dnf_composer::user_interface
 	            const ImVec4 tint = getColorForElementType(label);
 	            const ImVec2 size(panelW, PanelHeightFor(label));
 
-	            // draw panel first (behind) then render the editor inside it
+	            // draw a panel first (behind), then render the editor inside it
 	            PanelScope scope = beginElementPanel(tint, size);
 	            {
-	                // keep your editors unchanged:
 	                switchElementToModify(e);   // draws inputs at p.rect.Min + pad
 	            }
 	            endElementPanel(scope);
@@ -180,38 +179,38 @@ namespace dnf_composer::user_interface
 	}
 
 	void ElementWindow::modifyElementNeuralField(const std::shared_ptr<element::Element>& element)
-{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
-		const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
-		element::NeuralFieldParameters nfp = neuralField->getParameters();
-
-		auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
-		auto tau = static_cast<float>(nfp.tau);
-
-		std::string label = "##" + element->getUniqueName() + "Resting level";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Resting level");
-
-		label = "##" + element->getUniqueName() + "Tau";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f);
-		ImGui::SameLine(); ImGui::Text("Tau");
-
-	static constexpr double epsilon = 1e-6;
-	if (std::abs(restingLevel - static_cast<float>(nfp.startingRestingLevel)) > epsilon)
 	{
-		nfp.startingRestingLevel = restingLevel;
-		neuralField->setParameters(nfp);
-	}
+			const float ui = ImGui::GetIO().FontGlobalScale;
 
-	if (std::abs(tau - static_cast<float>(nfp.tau)) > epsilon)
-	{
-		nfp.tau = tau;
-		neuralField->setParameters(nfp);
+			const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
+			element::NeuralFieldParameters nfp = neuralField->getParameters();
+
+			auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
+			auto tau = static_cast<float>(nfp.tau);
+
+			std::string label = "##" + element->getUniqueName() + "Resting level";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f);
+			ImGui::SameLine(); ImGui::Text("Resting level");
+
+			label = "##" + element->getUniqueName() + "Tau";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f);
+			ImGui::SameLine(); ImGui::Text("Tau");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(restingLevel - static_cast<float>(nfp.startingRestingLevel)) > epsilon)
+		{
+			nfp.startingRestingLevel = restingLevel;
+			neuralField->setParameters(nfp);
+		}
+
+		if (std::abs(tau - static_cast<float>(nfp.tau)) > epsilon)
+		{
+			nfp.tau = tau;
+			neuralField->setParameters(nfp);
+		}
 	}
-}
 
 	void ElementWindow::modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element)
 	{
@@ -748,7 +747,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	ImVec4 ElementWindow::getColorForElementType(element::ElementLabel label)
+	ImVec4 ElementWindow::getColorForElementType(const element::ElementLabel label)
 	{
 		switch (label)
 		{
@@ -775,47 +774,57 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	std::string ElementWindow::getIconForElementType(element::ElementLabel label)
-	{
-		switch (label)
-		{
-		case element::ElementLabel::NEURAL_FIELD:
-			return " ";
-		case element::ElementLabel::GAUSS_STIMULUS:
-			return " ";
-		case element::ElementLabel::FIELD_COUPLING:
-			return " ";
-		case element::ElementLabel::GAUSS_KERNEL:
-			return " ";
-		case element::ElementLabel::MEXICAN_HAT_KERNEL:
-			return " ";
-		case element::ElementLabel::NORMAL_NOISE:
-			return " ";
-		case element::ElementLabel::GAUSS_FIELD_COUPLING:
-			return " ";
-		case element::ElementLabel::OSCILLATORY_KERNEL:
-			return " ";
-		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
-			return " ";
-		default:
-			return "? ";  // Question mark
-		}
-	}
-
-	std::string ElementWindow::getElementTypeDisplayName(element::ElementLabel label)
+	std::string ElementWindow::getElementTypeDisplayName(const element::ElementLabel label)
 	{
 		switch (label)
 		{
 		case element::ElementLabel::NEURAL_FIELD: return "Neural Fields";
-		case element::ElementLabel::GAUSS_STIMULUS: return "Gauss Stimuli";
+		case element::ElementLabel::GAUSS_STIMULUS: return "Gaussian Stimuli";
 		case element::ElementLabel::FIELD_COUPLING: return "Field Couplings";
-		case element::ElementLabel::GAUSS_KERNEL: return "Gauss Kernels";
+		case element::ElementLabel::GAUSS_KERNEL: return "Gaussian Kernels";
 		case element::ElementLabel::MEXICAN_HAT_KERNEL: return "Mexican Hat Kernels";
 		case element::ElementLabel::NORMAL_NOISE: return "Normal Noise";
-		case element::ElementLabel::GAUSS_FIELD_COUPLING: return "Gauss Field Couplings";
+		case element::ElementLabel::GAUSS_FIELD_COUPLING: return "Gaussian Field Couplings";
 		case element::ElementLabel::OSCILLATORY_KERNEL: return "Oscillatory Kernels";
-		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gauss Kernels";
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gaussian Kernels";
 		default: return "Unknown Elements";
 		}
+	}
+
+	PanelScope ElementWindow::beginElementPanel(const ImVec4& baseColor, const ImVec2& size)
+	{
+		// Draw background first, then place the cursor inside for content
+
+		PanelScope p{};
+		p.ui       = ImGui::GetIO().FontGlobalScale;
+		p.rounding = 12.0f * p.ui;
+		p.pad      = ImVec2(10.0f * p.ui, 8.0f * p.ui);
+
+		// soft fill/border from base color
+		p.fill   = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.18f));
+		p.border = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.35f));
+
+		// fixed rect from the current cursor (screen coords)
+		const ImVec2 topLeft = ImGui::GetCursorScreenPos();
+		const auto bottomRight = ImVec2(topLeft.x + size.x, topLeft.y + size.y);
+		p.rect = ImRect(topLeft, bottomRight);
+
+		// draw the panel *behind* content
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+		dl->AddRectFilled(p.rect.Min, p.rect.Max, p.fill, p.rounding);
+		dl->AddRect      (p.rect.Min, p.rect.Max, p.border, p.rounding, 0, 1.5f * p.ui);
+
+		// move the cursor inside, honoring padding, then start the content group
+		const auto innerPos = ImVec2(p.rect.Min.x + p.pad.x, p.rect.Min.y + p.pad.y);
+		ImGui::SetCursorScreenPos(innerPos);
+		ImGui::BeginGroup();
+		return p;
+	}
+
+	void ElementWindow::endElementPanel(const PanelScope& p)
+	{
+		ImGui::EndGroup();
+		// advance cursor to just below the panel, keeping normal flow
+		ImGui::SetCursorScreenPos(ImVec2(p.rect.Min.x, p.rect.Max.y + 6.0f * p.ui));
 	}
 }
