@@ -294,8 +294,8 @@ namespace dnf_composer::user_interface
 
         //  Column widths (A+B fixed-ish, C gets the rest)
         const float colGap = m;
-        const float colA   = 620.0f * layoutProperties.guiScale;  // Simulation control
-        const float colB   = 450.0f * layoutProperties.guiScale;  // Element control
+        const float colA   = 420.0f * layoutProperties.guiScale;  // Simulation control
+        const float colB   = 350.0f * layoutProperties.guiScale;  // Element control
         const float colC   = ImMax(420.0f * layoutProperties.guiScale,
                                    W - colA - colB - 2.0f*colGap); // the right column gets the remainder
 

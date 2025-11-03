@@ -12,6 +12,8 @@
 #include "elements/field_coupling.h"
 #include "elements/oscillatory_kernel.h"
 #include "widgets.h"
+#include "user_interface/node_utilities/builders.h"
+#include "user_interface/node_utilities/widgets.h"
 
 namespace dnf_composer::user_interface
 {
@@ -74,6 +76,6 @@ namespace dnf_composer::user_interface
 		void handlePinInteractions() const;
 		void handleLinkInteractions() const;
 		static size_t getNodeId(const std::shared_ptr<element::Element>& element);
-		static void drawPinBubble(const ImVec2& center, float r, ImU32 fill, ImU32 border);
+		//static void drawPinBubble(const ImVec2& center, float r, ImU32 fill, ImU32 border);
 	};
 }

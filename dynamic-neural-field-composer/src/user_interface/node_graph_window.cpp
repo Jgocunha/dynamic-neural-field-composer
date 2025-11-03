@@ -1,6 +1,6 @@
 #include "user_interface/node_graph_window.h"
 
-
+#include "application/application.h"
 
 
 namespace dnf_composer::user_interface
@@ -98,6 +98,11 @@ namespace dnf_composer::user_interface
 									| ImGuiWindowFlags_NoScrollbar
 									| ImGuiWindowFlags_NoScrollWithMouse;
 
+		//namespace ed   = ImNodeEditor;                   // your alias
+		namespace util = ax::NodeEditor::Utilities;      // builder & widgets live here
+		//using ax::Widgets::IconType;                     // for pin icons
+
+
 		if (ImGui::Begin("Node Graph Window", nullptr, flags))
 		{
 			ImNodeEditor::SetCurrentEditor(context);
@@ -149,19 +154,21 @@ namespace dnf_composer::user_interface
 		//  {
 		// 	renderElementNodeConnections(element);
 		//  }
+
+		// Option 2
 		for (const auto& element : simulation->getElements())
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, imgui_kit::colours::White);
 
 			const size_t nodeId = std::hash<std::string>{}(element->getUniqueName());
-			ImNodeEditor::BeginNode(nodeId);
-			setNodeStyle(element);                // Push x1 var + x2 colors
+			//ImNodeEditor::BeginNode(nodeId);
+			//setNodeStyle(element);                // Push x1 var + x2 colors
 			renderElementNode(element);
-			ImNodeEditor::PopStyleColor(2);       // <<< pop NodeBg & NodeBorder
-			ImNodeEditor::PopStyleVar(1);         // <<< pop NodeRounding
+			//ImNodeEditor::PopStyleColor(2);       // <<< pop NodeBg & NodeBorder
+			//ImNodeEditor::PopStyleVar(1);         // <<< pop NodeRounding
 
 			ImGui::PopStyleColor();
-			ImNodeEditor::EndNode();
+			//ImNodeEditor::EndNode();
 		}
 
 		for (const auto& element : simulation->getElements())
@@ -183,10 +190,71 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderElementNode(const std::shared_ptr<element::Element>& element)
 	{
-		renderElementNodeHeader(element);
-		renderElementCommonParameters(element);
-		renderElementSpecificParameters(element);
-		renderElementPins(element);
+		// Start point and Option 2
+		//renderElementNodeHeader(element);
+		// renderElementCommonParameters(element);
+		// renderElementSpecificParameters(element);
+		// renderElementPins(element);
+
+
+		namespace ed   = ImNodeEditor;                   // your alias
+		namespace util = ax::NodeEditor::Utilities;      // builder & widgets live here
+		using ax::Widgets::IconType;                     // for pin icons
+
+		const ed::NodeId id = getNodeId(element);
+		const ImU32 header_u32 = getHeaderColorForElementType(element->getLabel());
+		const ImVec4 header    = ImGui::ColorConvertU32ToFloat4(header_u32);
+
+		util::BlueprintNodeBuilder builder{reinterpret_cast<ImTextureID>(nullptr), 256, 64};
+
+		// 1) begin node
+		builder.Begin(id);
+
+		// 2) header bar
+		builder.Header(header);
+		{
+			ImGui::PushFont(g_BoldFont);
+			widgets::Spring(0); // Cannot resolve the symbol 'Spring'
+			ImGui::TextUnformatted(element->getElementCommonParameters().identifiers.uniqueName.c_str());
+			widgets::Spring(1); // Cannot resolve the symbol 'Spring'
+			ImGui::Dummy(ImVec2(0, 24));     // keep height like the example
+			widgets::Spring(0); // // Cannot resolve the symbol 'Spring'
+			ImGui::PopFont();
+		}
+		builder.EndHeader();
+
+		// 3) INPUTS (left)
+		{
+			const ed::PinId inPin = startingInputPinId + element->getUniqueIdentifier();
+			builder.Input(inPin);
+			ax::Widgets::Icon(ImVec2(16,16), IconType::RoundSquare, /*filled?*/ false,
+							  ImColor(86,173,230), ImColor(32,32,32));   // blue bubble
+			widgets::Spring(0); // // Cannot resolve the symbol 'Spring'
+			ImGui::TextUnformatted("Input");
+			builder.EndInput();
+		}
+
+		// 4) MIDDLE content (your existing info panel)
+		builder.Middle();
+		{
+			renderElementCommonParameters(element);
+			ImGui::Dummy(ImVec2(0,4));
+			renderElementSpecificParameters(element);
+		}
+
+		// 5) OUTPUTS (right)
+		{
+			const ed::PinId outPin = startingOutputPinId + element->getUniqueIdentifier();
+			builder.Output(outPin);
+			ImGui::TextUnformatted("Output");
+			widgets::Spring(0); // Cannot resolve the symbol 'Spring'
+			ax::Widgets::Icon(ImVec2(16,16), IconType::Grid, /*filled?*/ false,
+							  ImColor(255,153,90), ImColor(32,32,32));   // orange bubble
+			builder.EndOutput();
+		}
+
+		// 6) end node
+		builder.End();
 	}
 
 
@@ -250,7 +318,6 @@ namespace dnf_composer::user_interface
 		// push content below the header
 		ImGui::Dummy(ImVec2(0, h - ImGui::GetTextLineHeight()));
 	}
-
 
 	void NodeGraphWindow::renderElementCommonParameters(const std::shared_ptr<element::Element>& element)
 	{
@@ -383,6 +450,7 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderElementPins(const std::shared_ptr<element::Element>& element)
 	{
+		// // Start point
 		// // Begin an input pin for the node with a unique identifier
 		// ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(), ImNodeEditor::PinKind::Input);
 		// // Align the input pin to the left
@@ -400,53 +468,57 @@ namespace dnf_composer::user_interface
 		// ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
 		// ImGui::Text("Output");
 		// ImNodeEditor::EndPin();
-		constexpr float bubbleR = 6.0f;
 
-		// INPUT
-		ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
-							   ImNodeEditor::PinKind::Input);
-		ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
-		ImGui::BeginGroup();
-		{
-			ImVec2 min = ImGui::GetCursorScreenPos();
+		// // Option 2
+		// constexpr float bubbleR = 6.0f;
+		//
+		// // INPUT
+		// ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
+		// 					   ImNodeEditor::PinKind::Input);
+		// ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
+		// ImGui::BeginGroup();
+		// {
+		// 	ImVec2 min = ImGui::GetCursorScreenPos();
+		//
+		// 	// bubble center = (min.x + bubbleR, min.y + lineHeight*0.5)
+		// 	ImVec2 bubbleCenter(min.x + bubbleR, min.y + ImGui::GetTextLineHeight() * 0.5f);
+		// 	drawPinBubble(bubbleCenter, bubbleR,
+		// 				  IM_COL32(70,180,255,255), IM_COL32(25,60,90,255));
+		//
+		// 	ImGui::Dummy(ImVec2(bubbleR * 2.0f + 6.0f, 0.0f));
+		// 	ImGui::SameLine();
+		// 	ImGui::TextUnformatted("Input");
+		// }
+		// ImGui::EndGroup();
+		// ImNodeEditor::EndPin();
+		//
+		// ImGui::SameLine();
+		// ImGui::Dummy(ImVec2(60.0f, 0.0f));   // spacing like the example
+		// ImGui::SameLine();
+		//
+		// // OUTPUT
+		// ImNodeEditor::BeginPin(startingOutputPinId + element->getUniqueIdentifier(),
+		// 					   ImNodeEditor::PinKind::Output);
+		// ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
+		// ImGui::BeginGroup();
+		// {
+		// 	ImGui::TextUnformatted("Output");
+		// 	ImGui::SameLine();
+		//
+		// 	const ImVec2 min = ImGui::GetCursorScreenPos();
+		// 	const float  w   = ImGui::CalcTextSize("Output").x;
+		//
+		// 	const ImVec2 bubbleCenter(min.x + w + bubbleR + 6.0f,
+		// 						min.y + ImGui::GetTextLineHeight() * 0.5f);
+		// 	drawPinBubble(bubbleCenter, bubbleR,
+		// 				  IM_COL32(255,120,120,255), IM_COL32(90,40,40,255));
+		//
+		// 	ImGui::Dummy(ImVec2(w + bubbleR * 2.0f + 8.0f, 0.0f));
+		// }
+		// ImGui::EndGroup();
+		// ImNodeEditor::EndPin();
 
-			// bubble center = (min.x + bubbleR, min.y + lineHeight*0.5)
-			ImVec2 bubbleCenter(min.x + bubbleR, min.y + ImGui::GetTextLineHeight() * 0.5f);
-			drawPinBubble(bubbleCenter, bubbleR,
-						  IM_COL32(70,180,255,255), IM_COL32(25,60,90,255));
 
-			ImGui::Dummy(ImVec2(bubbleR * 2.0f + 6.0f, 0.0f));
-			ImGui::SameLine();
-			ImGui::TextUnformatted("Input");
-		}
-		ImGui::EndGroup();
-		ImNodeEditor::EndPin();
-
-		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(60.0f, 0.0f));   // spacing like the example
-		ImGui::SameLine();
-
-		// OUTPUT
-		ImNodeEditor::BeginPin(startingOutputPinId + element->getUniqueIdentifier(),
-							   ImNodeEditor::PinKind::Output);
-		ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
-		ImGui::BeginGroup();
-		{
-			ImGui::TextUnformatted("Output");
-			ImGui::SameLine();
-
-			const ImVec2 min = ImGui::GetCursorScreenPos();
-			const float  w   = ImGui::CalcTextSize("Output").x;
-
-			const ImVec2 bubbleCenter(min.x + w + bubbleR + 6.0f,
-								min.y + ImGui::GetTextLineHeight() * 0.5f);
-			drawPinBubble(bubbleCenter, bubbleR,
-						  IM_COL32(255,120,120,255), IM_COL32(90,40,40,255));
-
-			ImGui::Dummy(ImVec2(w + bubbleR * 2.0f + 8.0f, 0.0f));
-		}
-		ImGui::EndGroup();
-		ImNodeEditor::EndPin();
 	}
 
 	void NodeGraphWindow::renderElementNodeConnections(const std::shared_ptr<element::Element>& element)
@@ -477,6 +549,9 @@ namespace dnf_composer::user_interface
 				in->getUniqueIdentifier() + startingOutputPinId,
 				element->getUniqueIdentifier() + startingInputPinId,
 				c, thickness);
+
+			// namespace ed   = ImNodeEditor;
+			// ed::Flow(linkId, ax::NodeEditor::FlowDirection::Forward);
 		}
 	}
 
@@ -547,12 +622,12 @@ namespace dnf_composer::user_interface
 		return std::hash<std::string>{}(element->getUniqueName());
 	}
 
-	void NodeGraphWindow::drawPinBubble(const ImVec2& center, float r, ImU32 fill, ImU32 border)
-	{
-		ImDrawList* dl = ImGui::GetWindowDrawList();
-		dl->AddCircleFilled(center, r, fill, 16);
-		dl->AddCircle(center, r, border, 16, 1.0f);
-	}
+	// void NodeGraphWindow::drawPinBubble(const ImVec2& center, float r, ImU32 fill, ImU32 border)
+	// {
+	// 	ImDrawList* dl = ImGui::GetWindowDrawList();
+	// 	dl->AddCircleFilled(center, r, fill, 16);
+	// 	dl->AddCircle(center, r, border, 16, 1.0f);
+	// }
 
 }
 
