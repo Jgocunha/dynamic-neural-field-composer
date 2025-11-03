@@ -176,22 +176,15 @@ namespace dnf_composer::user_interface
 
                 switch (selectedSidebarTab)
                 {
-                case 0: renderBuild(); break;
+                    case 0: renderBuild(); break;
                     // case 1: adjust_tab(); break;
                     // case 2: evaluate_tab(); break;
                     // case 3: learning_tab(); break;
                     // case 4: monitoring_tab(); break;
                     // case 5: overview_tab(); break;
-                case 6: renderNodeGraph(); break;
-                    // case 7: plotting_tab(); break;
-                     case 8:
-                        {
-                         // show the ui scale in percentage to user
-                         float pct = layoutProperties.guiScale*100.0f;
-                         ImGui::SetNextItemWidth(160 * layoutProperties.guiScale);
-                         if (ImGui::SliderFloat("UI Scale", &pct, 50.0f, 200.0f, "%.0f%%"))
-                             layoutProperties.guiScale = pct/100.0f;
-                     }break;
+                    case 6: renderNodeGraph(); break;
+                    case 7: renderPlots(); break;
+                    //case 8: break;
                     // case 9: simulation_tab(); break;
                 default: break;
                 }
@@ -265,6 +258,12 @@ namespace dnf_composer::user_interface
              ImGui::PopStyleColor();
         }
         ImGui::EndGroup();
+
+        // // show the ui scale in percentage to user
+        // float pct = layoutProperties.guiScale*100.0f;
+        // ImGui::SetNextItemWidth(160 * layoutProperties.guiScale);
+        // if (ImGui::SliderFloat("UI Scale", &pct, 50.0f, 200.0f, "%.0f%%"))
+        //     layoutProperties.guiScale = pct/100.0f;
     }
 
     void MainMenuWindow::renderSidebarLogo() const
@@ -374,12 +373,12 @@ namespace dnf_composer::user_interface
                 ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, ImVec4(0, 0, 0, 0));
 
                 ImGuiID dock_id = ImGui::GetID("PlotsCardDockSpace");
-                ImGuiWindowClass plots_class{};
-                plots_class.ClassId = ImHashStr("PlotsCardOnly");
-                plots_class.DockingAllowUnclassed = false;
+                ImGuiWindowClass buildPlotsClass{};
+                buildPlotsClass.ClassId = ImHashStr("PlotsCardOnly");
+                buildPlotsClass.DockingAllowUnclassed = false;
 
                 ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_AutoHideTabBar;
-                ImGui::DockSpace(dock_id, ImVec2(0, 0), dock_flags, &plots_class);
+                ImGui::DockSpace(dock_id, ImVec2(0,0), dock_flags, &buildPlotsClass);
                 ImGui::PopStyleColor();
 
                 // Ensure one plot per neural field
@@ -417,9 +416,9 @@ namespace dnf_composer::user_interface
                 };
                 ensurePlotsForNFs();
 
-                visualization->setDockTarget(dock_id, plots_class);
+                visualization->setWindowIdSuffix("build");
                 visualization->render();
-                visualization->clearDockTarget();
+                visualization->clearWindowIdSuffix();
 
                 ImGui::EndChild();
             }
@@ -448,7 +447,6 @@ namespace dnf_composer::user_interface
             widgets::Card::endCard();
         }
     }
-
 
     void MainMenuWindow::renderNodeGraph() const
     {
@@ -481,4 +479,77 @@ namespace dnf_composer::user_interface
         widgets::Card::endCard();
     }
 
+    void MainMenuWindow::renderPlots() const
+    {
+        const ImVec2 mainMin = std::get<0>(mainAreaSize);
+        const ImVec2 mainMax = std::get<1>(mainAreaSize);
+
+        const float m = 16.0f * layoutProperties.guiScale;
+
+        const ImVec2 pos(mainMin.x + m, mainMin.y + m);
+        const float  W  = (mainMax.x - mainMin.x) - m * 2.0f;
+        const float  H  = (mainMax.y - mainMin.y) - m * 2.0f;
+
+        // One big card that occupies the whole main area
+        const widgets::Card card("##plots_full", pos, ImVec2(W, H), "Plots");
+        if (card.beginCard(layoutProperties.guiScale))
+        {
+            ImGui::BeginChild("##plots_body", ImVec2(0,0), false,
+                              ImGuiWindowFlags_NoBackground |
+                              ImGuiWindowFlags_NoSavedSettings);
+
+            ImGui::PushStyleColor(ImGuiCol_DockingEmptyBg, ImVec4(0, 0, 0, 0));
+
+            const ImGuiID dock_id = ImGui::GetID("PlotWindowDockSpace");
+            ImGuiWindowClass plottingPlotsClass{};
+            plottingPlotsClass.ClassId = ImHashStr("PlotsWindowOnly");
+            plottingPlotsClass.DockingAllowUnclassed = false;
+
+            constexpr ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_AutoHideTabBar;
+            ImGui::DockSpace(dock_id, ImVec2(0,0), dock_flags, &plottingPlotsClass);
+            ImGui::PopStyleColor();
+
+            // Ensure one plot per neural field
+            auto ensurePlotsForNFs = [&]()
+            {
+                std::unordered_set<std::string> existing;
+                for (const auto& [plotPtr, dataVec] : visualization->getPlots())
+                {
+                    if (!dataVec.empty())
+                        existing.insert(dataVec.front().first);
+                }
+
+                for (const auto& e : simulation->getElements())
+                {
+                    if (e->getLabel() != element::ElementLabel::NEURAL_FIELD) continue;
+                    const std::string nf_name = e->getUniqueName();
+                    if (existing.contains(nf_name)) continue;
+
+                    const double dx = e->getStepSize();
+                    const double xMax = e->getMaxSpatialDimension();
+                    const double yMin = e->getComponent("resting level")[0];
+
+                    PlotCommonParameters common{
+                        PlotType::LINE_PLOT,
+                        PlotDimensions{0, xMax, yMin, -yMin, dx, 1.0},
+                        PlotAnnotations{nf_name, "Spatial location", "Amplitude"}
+                    };
+                    LinePlotParameters line{3.0, true};
+                    visualization->plot(common, line, {
+                        {nf_name, "activation"},
+                        {nf_name, "input"},
+                        {nf_name, "output"}
+                    });
+                }
+            };
+            ensurePlotsForNFs();
+
+            visualization->setWindowIdSuffix("plotting");
+            visualization->render();
+            visualization->clearWindowIdSuffix();
+
+            ImGui::EndChild();
+        }
+        widgets::Card::endCard();
+    }
 }

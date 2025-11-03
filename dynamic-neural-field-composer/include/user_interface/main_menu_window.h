@@ -77,6 +77,7 @@ namespace dnf_composer::user_interface
         void renderSidebarLogo() const;
         void renderBuild() const;
         void renderNodeGraph() const;
+        void renderPlots() const;
     };
 
 }

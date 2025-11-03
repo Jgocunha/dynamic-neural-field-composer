@@ -16,7 +16,7 @@ namespace dnf_composer
 		PlotDimensions(const double& x_min, const double& x_max, 
 			const double& y_min, const double& y_max, 
 			const double& x_step, const double& y_step);
-		PlotDimensions(double x_step);
+		explicit PlotDimensions(double x_step);
 		bool isLegal() const;
 		std::string toString() const;
 		bool operator==(const PlotDimensions& other) const;

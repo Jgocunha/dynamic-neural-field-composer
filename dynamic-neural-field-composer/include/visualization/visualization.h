@@ -17,9 +17,7 @@ namespace dnf_composer
 	private:
 		std::shared_ptr<Simulation> simulation;
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> plots;
-		bool               hasDockTarget = false;
-		ImGuiID            dockTargetId  = 0;
-		ImGuiWindowClass   dockClass{};
+		std::string windowSuffix;
 	public:
 		explicit Visualization(const std::shared_ptr<Simulation>& simulation);
 
@@ -43,13 +41,8 @@ namespace dnf_composer
 
 		void render();
 
-		// Constrain plot windows to a specific dock space (inside the Plots card)
-		void setDockTarget(ImGuiID dock_id, const ImGuiWindowClass& cls) {
-			dockTargetId   = dock_id;
-			dockClass      = cls;
-			hasDockTarget  = true;
-		}
-		void clearDockTarget() { hasDockTarget = false; dockTargetId = 0; }
+		void setWindowIdSuffix(const std::string& s) { windowSuffix = s; }
+		void clearWindowIdSuffix() { windowSuffix.clear(); }
 	};
 }
 

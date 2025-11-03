@@ -14,10 +14,11 @@ namespace dnf_composer
 
 		this->simulation = simulation;
 		plots = {};
+		windowSuffix = {};
 		log(tools::logger::LogLevel::INFO, "Visualization object created.");
 	}
 
-	void Visualization::plot(PlotType type)
+	void Visualization::plot(const PlotType type)
 	{
 		switch (type)
 		{
@@ -92,7 +93,7 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, "Data plotted on plot with ID " + std::to_string(plotId) + ".");
 	}
 
-	void Visualization::plot(int plotId, const std::string& name, const std::string& component)
+	void Visualization::plot(const int plotId, const std::string& name, const std::string& component)
 	{
 		const std::vector<std::pair<std::string, std::string>> dataVec = { {name, component} };
 		plot(plotId, dataVec);
@@ -153,54 +154,48 @@ namespace dnf_composer
 
 	void Visualization::render()
 	{
-		for (const auto& entry : plots) 
+		for (const auto&[fst, snd] : plots)
 		{
-			std::vector<std::pair<std::string, std::string>> data = entry.second;
+			std::vector<std::pair<std::string, std::string>> data = snd;
 
-			// Check if data exists in the simulation, if not remove it from the plot
+			// Check if data exists in the simulation, if not, remove it from the plot
 			if (!std::ranges::all_of(data, [this](const std::pair<std::string, std::string>& d)
 			{
 				return simulation->componentExists(d.first, d.second);
 				}))
 			{
-				removePlot(entry.first->getUniqueIdentifier());
+				removePlot(fst->getUniqueIdentifier());
 				return;
 			}
 
-
 			std::vector<std::vector<double>*> allDataToPlotPtr;
 			allDataToPlotPtr.reserve(data.size());
-			for (const auto& d : data)
+			for (const auto&[fst, snd] : data)
 			{
-				const auto singleDataToPlotPtr = simulation->getComponentPtr(d.first, d.second);
+				const auto singleDataToPlotPtr = simulation->getComponentPtr(fst, snd);
 				allDataToPlotPtr.emplace_back(singleDataToPlotPtr);
 			}
 
 			std::vector<std::string> legends;
 			legends.reserve(data.size());
-			for (const auto& d : data)
+			for (const auto&[fst, snd] : data)
 			{
-				legends.emplace_back(d.first + " - " + d.second);
+				legends.emplace_back(fst + " - " + snd);
 			}
 
-			const int plotID = entry.first->getUniqueIdentifier();
-			const std::string plotWindowTitle = "Plot #" + std::to_string(plotID);
+			const int plotID = fst->getUniqueIdentifier();
+			const std::string visible = "Plot #" + std::to_string(plotID);
+			const std::string plotWindowTitle = visible + "##" + (windowSuffix.empty() ? "default" : windowSuffix);
 			bool open = true;
-
-			if (hasDockTarget) {
-				ImGui::SetNextWindowDockID(dockTargetId, ImGuiCond_FirstUseEver);
-				ImGui::SetNextWindowClass(&dockClass);
-			}
 
 			if (ImGui::Begin(plotWindowTitle.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar))
 			{
-				entry.first->render(allDataToPlotPtr, legends);
+				fst->render(allDataToPlotPtr, legends);
 			}
 			ImGui::End();
 
 			if (!open)
 				removePlot(plotID);
 		}
-
 	}
 }
