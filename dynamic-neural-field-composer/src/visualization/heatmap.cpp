@@ -69,7 +69,7 @@ namespace dnf_composer
 		}
 
 		const ImVec2 availableRegionSize = ImGui::GetContentRegionAvail();
-		const ImVec2 plotSize = ImVec2(availableRegionSize.x - 90.0f, availableRegionSize.y - 5.0f);
+		const ImVec2 plotSize = ImVec2(availableRegionSize.x - 65.0f, availableRegionSize.y - 5.0f);
 
 		const auto flattened_matrix = data[0];
 		const std::string uniquePlotID = commonParameters.annotations.title + "##" + std::to_string(uniqueIdentifier);
@@ -136,7 +136,8 @@ namespace dnf_composer
 
 			if (ImGui::BeginMenu("Colormap"))
 			{
-				if (ImPlot::ColormapButton(ImPlot::GetColormapName(map), ImVec2(availableRegionSize.x - 90.0f, 0.0f), map))
+				if (ImPlot::ColormapButton(ImPlot::GetColormapName(map),
+					ImVec2(availableRegionSize.x - 90.0f, 0.0f), map))
 				{
 					map = (map + 1) % ImPlot::GetColormapCount();
 					ImPlot::BustColorCache(uniquePlotID.c_str());
@@ -146,7 +147,8 @@ namespace dnf_composer
 
 			if (ImGui::BeginMenu("Scale"))
 			{
-				ImGui::DragFloatRange2("Min / Max", &scaleMin, &scaleMax, 0.01f, -20, 20);
+				ImGui::DragFloatRange2("Min / Max", &scaleMin,
+					&scaleMax, 0.01f, -20, 20);
 				heatmapParameters.scaleMin = scaleMin;
 				heatmapParameters.scaleMax = scaleMax;
 				ImGui::Checkbox("Auto scale", &autoScale);
@@ -173,7 +175,8 @@ namespace dnf_composer
 		if (ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, hm_flags)) {
 			ImPlot::PushColormap(map);
 			static constexpr ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;
-			ImPlot::SetupAxes(commonParameters.annotations.x_label.c_str(), commonParameters.annotations.y_label.c_str(), flags, flags);
+			ImPlot::SetupAxes(commonParameters.annotations.x_label.c_str(),
+				commonParameters.annotations.y_label.c_str(), flags, flags);
 
 			const std::string& label = legends[0];
 
@@ -188,10 +191,10 @@ namespace dnf_composer
 			ImPlot::EndPlot();
 		}
 
-		// Add color scale next to the heatmap
-		ImGui::SameLine();
-		ImPlot::ColormapScale("##HeatScale", scaleMin, scaleMax, ImVec2(60, plotSize.y));
-		ImPlot::PopColormap();
+		// // Add color scale next to the heatmap
+		 ImGui::SameLine();
+		 ImPlot::ColormapScale("##HeatScale", scaleMin, scaleMax, ImVec2(60, plotSize.y));
+		//ImPlot::PopColormap();
 	}
 
 }

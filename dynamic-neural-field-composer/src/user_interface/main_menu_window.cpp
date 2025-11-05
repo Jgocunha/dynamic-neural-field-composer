@@ -37,7 +37,7 @@ namespace dnf_composer::user_interface
     MainMenuWindow::MainMenuWindow(const std::shared_ptr<Simulation>& simulation)
         : simulation(simulation), logo(), layoutProperties()
     {
-        visualization = std::make_shared<Visualization>(simulation);
+        //visualization = std::make_shared<Visualization>(simulation);
         simulationWindow = std::make_unique<SimulationWindow>(simulation);
         elementWindow = std::make_unique<ElementWindow>(simulation);
         nodeGraphWindow = std::make_unique<NodeGraphWindow>(simulation);
@@ -73,7 +73,8 @@ namespace dnf_composer::user_interface
             ImGuiWindowFlags_NoSavedSettings |
             ImGuiWindowFlags_NoBringToFrontOnFocus |
             ImGuiWindowFlags_NoScrollbar |
-            ImGuiWindowFlags_NoBackground;
+            ImGuiWindowFlags_NoBackground |
+            ImGuiWindowFlags_NoDocking;
 
         layoutProperties.scale();
 
@@ -211,7 +212,6 @@ namespace dnf_composer::user_interface
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
             ImGui::Text(title);
             ImGui::PopFont();
-            ImGui::Spacing();
         };
 
         ImGui::SetCursorPos(ImVec2(10, 20));
@@ -295,15 +295,15 @@ namespace dnf_composer::user_interface
 
         const float m   = 16.0f * layoutProperties.guiScale; // outer/inner margin
         const ImVec2 pos(mainMin.x + m, mainMin.y + m);
-        const float  W  = (mainMax.x - mainMin.x) - m * 2.0f;
+        const float  W  = (mainMax.x - mainMin.x) - m * 4.0f;
         const float  H  = (mainMax.y - mainMin.y) - m * 2.0f;
 
         const float colGap = m;
         const float rowGap = m;
 
         // Responsive column width distribution (percentages)
-        constexpr float simRatio   = 0.25f;  // 33% of width
-        constexpr float elemRatio  = 0.20f;  // 27% of width
+        constexpr float simRatio   = 0.30f;  // % of width
+        constexpr float elemRatio  = 0.25f;  // % of width
         constexpr float plotsRatio = 1.0f - simRatio - elemRatio; // remaining %
 
         const float colA = W * simRatio;    // Simulation control
@@ -314,9 +314,9 @@ namespace dnf_composer::user_interface
         if (colC < 220.0f * layoutProperties.guiScale) return;
 
         // Vertical distribution in the right column
-        const float plotsH = H * 0.55f;                      // Plots ~55%
-        const float nodeH  = H * 0.27f;                      // Node graph ~27%
-        const float logsH  = H - plotsH - nodeH - 2.0f * rowGap; // remaining ~18%
+        const float plotsH = H * 0.50f; // Plots %
+        const float nodeH  = H * 0.25f; // Node graph %
+        const float logsH  = H - plotsH - nodeH - 2.0f * rowGap; // remaining %
 
         ImVec2 p = pos;
 
@@ -324,7 +324,8 @@ namespace dnf_composer::user_interface
         // Column A: Simulation control
         // =========================
         {
-            const widgets::Card cardA("##card_sim", p, ImVec2(colA, H), "Simulation control");
+            const widgets::Card cardA("##card_sim", p, ImVec2(colA, H),
+                "Simulation control");
             if (cardA.beginCard(layoutProperties.guiScale))
             {
                 simulationWindow->renderSimulationParametersCard();
@@ -351,7 +352,8 @@ namespace dnf_composer::user_interface
         // =========================
         p.x += colA + colGap;
         {
-            const widgets::Card cardB("##card_element", p, ImVec2(colB, H), "Element control");
+            const widgets::Card cardB("##card_element", p, ImVec2(colB, H),
+                "Element control");
             if (cardB.beginCard(layoutProperties.guiScale))
             {
                 elementWindow->renderElementControlCard();
@@ -365,7 +367,8 @@ namespace dnf_composer::user_interface
         p.x += colB + colGap;
         {
             // --- Plots card ----------------------------------------------------------
-            const widgets::Card cardC1("##card_plots", p, ImVec2(colC, plotsH), "Plots");
+            const widgets::Card cardC1("##card_plots", p, ImVec2(colC, plotsH),
+                "Plots");
             if (cardC1.beginCard(layoutProperties.guiScale))
             {
                 ImGui::BeginChild("##plots_card_body", ImVec2(0, 0), false,
@@ -381,41 +384,8 @@ namespace dnf_composer::user_interface
                 ImGui::DockSpace(dock_id, ImVec2(0,0), dock_flags, &buildPlotsClass);
                 ImGui::PopStyleColor();
 
-                // Ensure one plot per neural field
-                auto ensurePlotsForNFs = [&]()
-                {
-                    std::unordered_set<std::string> existing;
-                    for (const auto& [plotPtr, dataVec] : visualization->getPlots())
-                    {
-                        if (!dataVec.empty())
-                            existing.insert(dataVec.front().first);
-                    }
-
-                    for (const auto& e : simulation->getElements())
-                    {
-                        if (e->getLabel() != element::ElementLabel::NEURAL_FIELD) continue;
-                        const std::string nf_name = e->getUniqueName();
-                        if (existing.contains(nf_name)) continue;
-
-                        const double dx = e->getStepSize();
-                        const double xMax = e->getMaxSpatialDimension();
-                        const double yMin = e->getComponent("resting level")[0];
-
-                        PlotCommonParameters common{
-                            PlotType::LINE_PLOT,
-                            PlotDimensions{0, xMax, yMin, -yMin, dx, 1.0},
-                            PlotAnnotations{nf_name, "Spatial location", "Amplitude"}
-                        };
-                        LinePlotParameters line{3.0, true};
-                        visualization->plot(common, line, {
-                            {nf_name, "activation"},
-                            {nf_name, "input"},
-                            {nf_name, "output"}
-                        });
-                    }
-                };
-                ensurePlotsForNFs();
-
+                static auto visualization = std::make_shared<Visualization>(simulation);
+                addAllNeuralFieldPlotsToVisualization(visualization);
                 visualization->setWindowIdSuffix("build");
                 visualization->render();
                 visualization->clearWindowIdSuffix();
@@ -428,7 +398,8 @@ namespace dnf_composer::user_interface
 
         // Node graph (middle)
         {
-            const widgets::Card cardC2("##card_node_graph", p, ImVec2(colC, nodeH), "Node graph");
+            const widgets::Card cardC2("##card_node_graph", p, ImVec2(colC, nodeH),
+                "Node graph");
             if (cardC2.beginCard(layoutProperties.guiScale))
             {
                 nodeGraphWindow->renderGraph();
@@ -439,7 +410,8 @@ namespace dnf_composer::user_interface
 
         // Log window (bottom)
         {
-            const widgets::Card cardC3("##card_logs", p, ImVec2(colC, logsH), "Log window");
+            const widgets::Card cardC3("##card_logs", p, ImVec2(colC, logsH),
+                "Log window");
             if (cardC3.beginCard(layoutProperties.guiScale))
             {
                 imgui_kit::LogWindow::renderContent();
@@ -509,82 +481,9 @@ namespace dnf_composer::user_interface
             ImGui::DockSpace(dock_id, ImVec2(0,0), dock_flags, &plottingPlotsClass);
             ImGui::PopStyleColor();
 
-            // Ensure one plot per neural field
-            auto ensurePlotsForNFs = [&]()
-            {
-                std::unordered_set<std::string> existing;
-                for (const auto& [plotPtr, dataVec] : visualization->getPlots())
-                {
-                    if (!dataVec.empty())
-                        existing.insert(dataVec.front().first);
-                }
-
-                for (const auto& e : simulation->getElements())
-                {
-                    if (e->getLabel() != element::ElementLabel::NEURAL_FIELD) continue;
-                    const std::string nf_name = e->getUniqueName();
-                    if (existing.contains(nf_name)) continue;
-
-                    const double dx = e->getStepSize();
-                    const double xMax = e->getMaxSpatialDimension();
-                    const double yMin = e->getComponent("resting level")[0];
-
-                    PlotCommonParameters common{
-                        PlotType::LINE_PLOT,
-                        PlotDimensions{0, xMax, yMin, -yMin, dx, 1.0},
-                        PlotAnnotations{nf_name, "Spatial location", "Amplitude"}
-                    };
-                    LinePlotParameters line{3.0, true};
-                    visualization->plot(common, line, {
-                        {nf_name, "activation"},
-                        {nf_name, "input"},
-                        {nf_name, "output"}
-                    });
-                }
-            };
-
-            // // Ensure one plot per field-coupling
-            // auto ensurePlotsForFCs = [&]()
-            // {
-            //     std::unordered_set<std::string> existing;
-            //     for (const auto& [plotPtr, dataVec] : visualization->getPlots())
-            //     {
-            //         if (!dataVec.empty())
-            //             existing.insert(dataVec.front().first);
-            //     }
-            //
-            //     for (const auto& e : simulation->getElements())
-            //     {
-            //         if (e->getLabel() != element::ElementLabel::FIELD_COUPLING) continue;
-            //         const std::string fc_name = e->getUniqueName();
-            //         if (existing.contains(fc_name)) continue;
-            //
-            //         const double dx = e->getStepSize();
-            //         const double xMax = e->getMaxSpatialDimension();
-            //         const double yMax = std::abs(xMax - e->getComponent("weights").size());
-            //
-            //         PlotCommonParameters common{
-            //             PlotType::HEATMAP,
-            //             PlotDimensions{0.0, xMax, 0.0, yMax, dx, dx},
-            //             PlotAnnotations{fc_name, "Source spatial location", "Target spatial location"}
-            //         };
-            //         HeatmapParameters parameters{};
-            //         visualization->plot(common, parameters, {
-            //             {fc_name, "weights"},
-            //         });
-            //     }
-            // };
-        //     visualization->plot(
-        //     PlotCommonParameters{
-        //         PlotType::HEATMAP,
-        //         PlotDimensions{0.0, 280, 0.0, 280, 1.0, 1.0},
-        //         PlotAnnotations{"stkl past-present coupling", "stkl present spatial location", "stkl past spatial location"} },
-        //         HeatmapParameters{},
-        //     { {fc_1->getUniqueName(), "weights"} }
-        // );
-
-            ensurePlotsForNFs();
-            //ensurePlotsForFCs();
+            static auto visualization = std::make_shared<Visualization>(simulation);
+            addAllNeuralFieldPlotsToVisualization(visualization);
+            addAllFieldCouplingPlotsToVisualization(visualization);
 
             visualization->setWindowIdSuffix("plotting");
             visualization->render();
@@ -593,5 +492,69 @@ namespace dnf_composer::user_interface
             ImGui::EndChild();
         }
         widgets::Card::endCard();
+    }
+
+    void MainMenuWindow::addAllNeuralFieldPlotsToVisualization(const std::shared_ptr<Visualization>& visualization) const
+    {
+        std::unordered_set<std::string> existing;
+        for (const auto& [plotPtr, dataVec] : visualization->getPlots())
+        {
+            if (!dataVec.empty())
+                existing.insert(dataVec.front().first);
+        }
+
+        for (const auto& e : simulation->getElements())
+        {
+            if (e->getLabel() != element::ElementLabel::NEURAL_FIELD) continue;
+            const std::string nf_name = e->getUniqueName();
+            if (existing.contains(nf_name)) continue;
+
+            const double dx = e->getStepSize();
+            const double xMax = e->getMaxSpatialDimension();
+            const double yMin = e->getComponent("resting level")[0];
+
+            PlotCommonParameters common{
+                PlotType::LINE_PLOT,
+                PlotDimensions{0, xMax, yMin, -yMin, dx, 1.0},
+                PlotAnnotations{nf_name, "Spatial location", "Amplitude"}
+            };
+            LinePlotParameters line{3.0, true};
+            visualization->plot(common, line, {
+                {nf_name, "activation"},
+                {nf_name, "input"},
+                {nf_name, "output"}
+            });
+        }
+    }
+
+    void MainMenuWindow::addAllFieldCouplingPlotsToVisualization(const std::shared_ptr<Visualization>& visualization) const
+    {
+        std::unordered_set<std::string> existing;
+        for (const auto& [plotPtr, dataVec] : visualization->getPlots())
+        {
+            if (!dataVec.empty())
+                existing.insert(dataVec.front().first);
+        }
+
+        for (const auto& e : simulation->getElements())
+        {
+            if (e->getLabel() != element::ElementLabel::FIELD_COUPLING) continue;
+            const std::string fc_name = e->getUniqueName();
+            if (existing.contains(fc_name)) continue;
+
+            const double dx = 0.5;
+            const double xMax = 280;
+            const double yMax = 280;
+
+            visualization->plot(
+            PlotCommonParameters{
+                PlotType::HEATMAP,
+                PlotDimensions{0.0, 280, 0.0, 280, 1.0, 1.0},
+                PlotAnnotations{fc_name.c_str(), "Source spatial location",
+                    "Target spatial location"}},
+                HeatmapParameters{},
+            { {fc_name, "weights"} }
+            );
+        }
     }
 }

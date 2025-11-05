@@ -36,7 +36,7 @@ namespace dnf_composer
 		void removeAllPlots();
 		void removePlottingDataFromPlot(int plotId, const std::pair<std::string, std::string>& data);
 
-		std::shared_ptr<Simulation> getSimulation() const { return simulation; }
+		[[nodiscard]] std::shared_ptr<Simulation> getSimulation() const { return simulation; }
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> getPlots() { return plots; }
 
 		void render();

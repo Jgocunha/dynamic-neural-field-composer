@@ -168,7 +168,7 @@ namespace dnf_composer::user_interface::widgets
 		const float r   = 10.0f * uiScale;
 		const float pad = 22.0f * uiScale;
 		const float th  = 32.0f * uiScale;     // title bar height
-		const float titleGap = 30.0f  * uiScale;  // extra space below title
+		const float titleGap = 10.0f  * uiScale;  // extra space below title
 
 		// background
 		dl->AddRectFilled(a, b, ImGui::GetColorU32(ImGuiCol_FrameBg), r);

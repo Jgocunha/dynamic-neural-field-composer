@@ -59,7 +59,6 @@ namespace dnf_composer::user_interface
     class MainMenuWindow final : public imgui_kit::UserInterfaceWindow
     {
         std::shared_ptr<Simulation> simulation;
-        std::shared_ptr<Visualization> visualization;
         std::unique_ptr<SimulationWindow> simulationWindow;
         std::unique_ptr<ElementWindow> elementWindow;
         std::unique_ptr<NodeGraphWindow> nodeGraphWindow;
@@ -78,6 +77,8 @@ namespace dnf_composer::user_interface
         void renderBuild() const;
         void renderNodeGraph() const;
         void renderPlots() const;
+        void addAllNeuralFieldPlotsToVisualization(const std::shared_ptr<Visualization>& visualization) const;
+        void addAllFieldCouplingPlotsToVisualization(const std::shared_ptr<Visualization>& visualization) const;
     };
 
 }
