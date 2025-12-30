@@ -241,10 +241,17 @@ install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CON
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
 
+# Windows Resource Configuration ---
+if(WIN32)
+    # Point to the rc file in the resources folder
+    set(APP_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.rc")
+else()
+    set(APP_RESOURCES "")
+endif()
 
 # Main launcher
 set(LAUNCHER launcher)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer.cpp")
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer.cpp" ${APP_RESOURCES})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
 imgui::imgui
@@ -253,7 +260,7 @@ ${CMAKE_PROJECT_NAME})
 
 # Function to add example executables
 function(add_example_executable target_name source_file)
-    add_executable(${target_name} "examples/${source_file}")
+    add_executable(${target_name} "examples/${source_file}" ${APP_RESOURCES})
     target_include_directories(${target_name} PRIVATE include)
     target_link_libraries(${target_name} PRIVATE
             imgui::imgui
