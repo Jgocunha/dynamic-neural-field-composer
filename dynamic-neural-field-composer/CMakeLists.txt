@@ -241,10 +241,17 @@ install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CON
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
 
+# Windows Resource Configuration ---
+if(WIN32)
+    # Point to the rc file in the resources folder
+    set(APP_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.rc")
+else()
+    set(APP_RESOURCES "")
+endif()
 
 # Main launcher
 set(LAUNCHER launcher)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer.cpp")
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer.cpp" ${APP_RESOURCES})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
 imgui::imgui
@@ -253,7 +260,7 @@ ${CMAKE_PROJECT_NAME})
 
 # Function to add example executables
 function(add_example_executable target_name source_file)
-    add_executable(${target_name} "examples/${source_file}")
+    add_executable(${target_name} "examples/${source_file}" ${APP_RESOURCES})
     target_include_directories(${target_name} PRIVATE include)
     target_link_libraries(${target_name} PRIVATE
             imgui::imgui
@@ -268,3 +275,5 @@ add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
+add_example_executable(ex_grand_architecture ex_grand_architecture.cpp)
+add_example_executable(ex_packaging_task ex_packaging_task.cpp)

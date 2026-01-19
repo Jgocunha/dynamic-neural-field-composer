@@ -11,16 +11,15 @@ enum CharSize : size_t
 	CHAR_SIZE = 50
 };
 
-namespace dnf_composer
-{
-	namespace user_interface
+
+	namespace dnf_composer::user_interface
 	{
 		class SimulationWindow : public imgui_kit::UserInterfaceWindow
 		{
 		private:
 			std::shared_ptr<Simulation> simulation;
 		public:
-			SimulationWindow(const std::shared_ptr<Simulation>& simulation);
+			explicit SimulationWindow(const std::shared_ptr<Simulation>& simulation);
 
 			SimulationWindow(const SimulationWindow&) = delete;
 			SimulationWindow& operator=(const SimulationWindow&) = delete;
@@ -58,4 +57,4 @@ namespace dnf_composer
 			void addElementGaussFieldCoupling() const;
 		};
 	}
-}
+
