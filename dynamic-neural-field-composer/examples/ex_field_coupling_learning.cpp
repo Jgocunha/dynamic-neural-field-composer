@@ -29,7 +29,7 @@ int main()
 			element::NormalNoiseParameters{0.05});
 		const auto gs_1 = factory.createElement(element::GAUSS_STIMULUS,
 			element::ElementCommonParameters{element::ElementIdentifiers{"stimulus source field"}, input_dimensions},
-			element::GaussStimulusParameters{5, 15, 20});
+			element::GaussStimulusParameters{5, 15, 80});
 
 		const element::ElementDimensions output_dimensions{400, 1.0};
 		const auto nf_2 = factory.createElement(element::NEURAL_FIELD,
@@ -42,8 +42,11 @@ int main()
 			element::ElementCommonParameters{element::ElementIdentifiers{"normal noise output field"}, output_dimensions},
 			element::NormalNoiseParameters{0.05});
 		const auto gs_2 = factory.createElement(element::GAUSS_STIMULUS,
-			element::ElementCommonParameters{element::ElementIdentifiers{"stimulus output field"}, output_dimensions},
-			element::GaussStimulusParameters{5, 15, 40});
+			element::ElementCommonParameters{element::ElementIdentifiers{"stimulus output i field"}, output_dimensions},
+			element::GaussStimulusParameters{5, 15, 20});
+		const auto gs_3 = factory.createElement(element::GAUSS_STIMULUS,
+			element::ElementCommonParameters{element::ElementIdentifiers{"stimulus output ii field"}, output_dimensions},
+			element::GaussStimulusParameters{5, 15, 50});
 		const auto fc_1 = factory.createElement(element::FIELD_COUPLING,
 			element::ElementCommonParameters{element::ElementIdentifiers{"coupling source-output"}, output_dimensions},
 			element::FieldCouplingParameters{input_dimensions});
@@ -58,6 +61,7 @@ int main()
 
 		simulation->addElement(gs_1);
 		simulation->addElement(gs_2);
+		simulation->addElement(gs_3);
 		simulation->addElement(fc_1);
 
 		nf_1->addInput(mhk_1);
@@ -69,6 +73,7 @@ int main()
 		gk_2->addInput(nf_2);
 		nf_2->addInput(nn_2);
 		nf_2->addInput(gs_2);
+		nf_2->addInput(gs_3);
 
 		fc_1->addInput(nf_1);
 		nf_2->addInput(fc_1);
