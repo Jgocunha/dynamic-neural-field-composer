@@ -23,6 +23,7 @@ Dynamic Neural Field Composer leverages modern C++ standards to offer a robust f
 - **C++20**: Ensures compatibility with modern C++ features for optimal performance.
 - **CMake 3.15+**: For building and configuring the project.
 - **VCPKG**: Manages C++ libraries, facilitating the integration of external tools like ImGui and ImPlot.
+- **imgui-platform-kit**: A cross-platform toolkit designed to facilitate the development of user interfaces using Dear ImGui. [imgui-platform-kit](https://github.com/Jgocunha/imgui-platform-kit)
 - **DirectX 12 (Windows)** / **OpenGL (Linux)**: Essential for rendering graphical content.
 - **GLFW (Linux)**: Supports window management and various operating functions on Linux.
 
