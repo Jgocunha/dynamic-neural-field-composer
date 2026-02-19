@@ -187,7 +187,17 @@ namespace dnf_composer
 			const std::string plotWindowTitle = "Plot #" + std::to_string(plotID);
 			bool open = true;
 
-			if (ImGui::Begin(plotWindowTitle.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar))
+			// if (ImGui::Begin(plotWindowTitle.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar))
+			// {
+			// 	entry.first->render(allDataToPlotPtr, legends);
+			// }
+			// ImGui::End();
+			ImGuiWindowFlags flags =
+				ImGuiWindowFlags_NoCollapse
+				| ImGuiWindowFlags_NoTitleBar;   // hides "Plot N" header
+
+			// NOTE: removed ImGuiWindowFlags_MenuBar to remove the top bar
+			if (ImGui::Begin(plotWindowTitle.c_str(), &open, flags))
 			{
 				entry.first->render(allDataToPlotPtr, legends);
 			}
