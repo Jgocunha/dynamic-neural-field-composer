@@ -78,7 +78,7 @@ namespace dnf_composer
 
 		~Application() = default;
 	private:
-		void setGUIParameters();
+		void setGUIParameters(); 
 		static void enableKeyboardShortcuts();
 		static void appendFonts();
 	};
