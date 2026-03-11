@@ -43,7 +43,7 @@ namespace dnf_composer::user_interface
         nodeGraphWindow = std::make_unique<NodeGraphWindow>(simulation);
         logWindow = std::make_unique<imgui_kit::LogWindow>();
         mainAreaSize = {ImVec2(0, 0), ImVec2(0, 0)};
-        selectedSidebarTab = 0;
+        selectedSidebarTab = 7;
     }
 
     void MainMenuWindow::render()
