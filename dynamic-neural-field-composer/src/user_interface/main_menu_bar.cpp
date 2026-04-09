@@ -1,6 +1,7 @@
 #include "user_interface/main_menu_bar.h"
 
 #include <imgui-platform-kit/themes.h>
+#include "application/application.h"
 
 namespace dnf_composer::user_interface
 {
@@ -104,6 +105,40 @@ namespace dnf_composer::user_interface
 
         	if (ImGui::BeginMenu("Interface Settings"))
         	{
+        		static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150, 175, 200 };
+        		static constexpr int presetCount = IM_ARRAYSIZE(presets);
+
+        		// find index of current scale in presets (or nearest)
+        		const int current = static_cast<int>(Application::getUiScalePct());
+        		int currentIdx = 3; // default to 100%
+        		for (int i = 0; i < presetCount; ++i)
+        			if (presets[i] == current) { currentIdx = i; break; }
+
+        		char previewBuf[16];
+        		snprintf(previewBuf, sizeof(previewBuf), "%d%%", current);
+
+        		ImGui::Text("Zoom");
+        		ImGui::SameLine();
+        		ImGui::SetNextItemWidth(90.0f);
+        		if (ImGui::BeginCombo("##zoom", previewBuf, ImGuiComboFlags_HeightSmall))
+        		{
+        			for (int i = 0; i < presetCount; ++i)
+        			{
+        				char label[16];
+        				snprintf(label, sizeof(label), "%d%%", presets[i]);
+        				const bool selected = (presets[i] == current);
+        				if (ImGui::Selectable(label, selected))
+        					Application::setUiScalePct(static_cast<float>(presets[i]));
+        				if (selected)
+        					ImGui::SetItemDefaultFocus();
+        			}
+        			ImGui::EndCombo();
+        		}
+        		ImGui::SameLine();
+        		ImGui::TextDisabled("Ctrl + / Ctrl -");
+
+        		ImGui::Separator();
+
         		ImGui::MenuItem("Dear ImGuiStyle Editor", nullptr,
 					&advancedSettingsFlags.showToolStyleEditor);
         		ImGui::MenuItem("Dear ImGui Kit Style Editor", nullptr,
@@ -223,5 +258,21 @@ namespace dnf_composer::user_interface
 	    }
 	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Q))
 	        std::exit(0);
+
+	    // Zoom in/out through presets
+	    static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150, 175, 200 };
+	    static constexpr int presetCount = IM_ARRAYSIZE(presets);
+	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Equal)) // Ctrl++
+	    {
+	        const int cur = static_cast<int>(Application::getUiScalePct());
+	        for (int i = 0; i < presetCount - 1; ++i)
+	            if (presets[i] == cur) { Application::setUiScalePct(static_cast<float>(presets[i + 1])); break; }
+	    }
+	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Minus)) // Ctrl+-
+	    {
+	        const int cur = static_cast<int>(Application::getUiScalePct());
+	        for (int i = 1; i < presetCount; ++i)
+	            if (presets[i] == cur) { Application::setUiScalePct(static_cast<float>(presets[i - 1])); break; }
+	    }
     }
 }

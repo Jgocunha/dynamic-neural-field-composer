@@ -40,6 +40,11 @@ namespace dnf_composer
 		std::shared_ptr<Visualization> visualization;
 		std::shared_ptr<imgui_kit::UserInterface> gui;
 		bool guiActive;
+		static float uiScalePct; // user-controlled UI scale, 50–200%
+
+	public:
+		static float getUiScalePct() { return uiScalePct; }
+		static void  setUiScalePct(float pct) { uiScalePct = pct; }
 
 	public:
 		explicit Application(const std::shared_ptr<Simulation>& simulation = nullptr,
@@ -48,6 +53,7 @@ namespace dnf_composer
 		void init() const;
 		void step() const;
 		void close() const;
+		static void registerSettingsHandler();
 
 		// For window types that do not require Simulation* or Visualization* arguments
 		template<typename WindowType, typename... Args,

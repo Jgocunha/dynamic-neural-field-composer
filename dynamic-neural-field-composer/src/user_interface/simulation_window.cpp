@@ -4,8 +4,7 @@
 
 #include "user_interface/simulation_window.h"
 
-
-
+extern ImFont* g_BlackFont;
 
 namespace dnf_composer::user_interface
 {
@@ -16,9 +15,27 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::render()
 	{
-		if (ImGui::Begin("Simulation Control", nullptr, imgui_kit::getGlobalWindowFlags()))
+		ImGui::PushFont(g_BlackFont);
+		const bool open = ImGui::Begin("Simulation Control", nullptr, imgui_kit::getGlobalWindowFlags());
+		ImGui::PopFont();
+		if (open)
 		{
-			renderPanelContents();
+			//renderPanelContents();
+			renderSimulationParametersCard();
+			ImGui::Spacing(); ImGui::Spacing();
+			renderSimulationControlsCard();
+			ImGui::Spacing(); ImGui::Spacing();
+			renderRunForIterationsCard();
+			ImGui::Spacing(); ImGui::Spacing();
+			renderAddElementCard();
+			ImGui::Spacing(); ImGui::Spacing();
+			renderRemoveElementCard();
+			ImGui::Spacing(); ImGui::Spacing();
+			renderSetInteractionCard();
+			ImGui::Spacing(); ImGui::Spacing();
+			renderLogElementParametersCard();
+			ImGui::Spacing(); ImGui::Spacing();
+			renderExportElementComponentCard();
 		}
 		ImGui::End();
 	}

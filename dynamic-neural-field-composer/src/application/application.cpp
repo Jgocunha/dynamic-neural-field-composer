@@ -7,6 +7,8 @@
 
 namespace dnf_composer
 {
+	float Application::uiScalePct = 100.0f;
+
 	Application::Application(const std::shared_ptr<Simulation>& simulation,
 		const std::shared_ptr<Visualization>& visualization)
 		: simulation(simulation ? simulation : std::make_shared<Simulation>("default",
@@ -23,9 +25,41 @@ namespace dnf_composer
 	{
 		simulation->init();
 		gui->initialize();
+		registerSettingsHandler();
 		enableKeyboardShortcuts();
 		appendFonts();
 		log(tools::logger::LogLevel::INFO, "Application initialized successfully.");
+	}
+
+	void Application::registerSettingsHandler()
+	{
+		ImGuiSettingsHandler handler;
+		handler.TypeName  = "AppSettings";
+		handler.TypeHash  = ImHashStr("AppSettings");
+
+		// called when the [AppSettings] section is encountered in imgui.ini
+		handler.ReadOpenFn = [](ImGuiContext*, ImGuiSettingsHandler*, const char*) -> void*
+		{
+			return reinterpret_cast<void*>(1); // non-null signals "we own this entry"
+		};
+
+		// called for each key=value line inside the section
+		handler.ReadLineFn = [](ImGuiContext*, ImGuiSettingsHandler*, void*, const char* line)
+		{
+			float scale = 100.0f;
+			if (sscanf(line, "UiScale=%f", &scale) == 1)
+				Application::setUiScalePct(scale);
+		};
+
+		// called when ImGui writes imgui.ini to disk
+		handler.WriteAllFn = [](ImGuiContext*, ImGuiSettingsHandler* h, ImGuiTextBuffer* buf)
+		{
+			buf->appendf("[%s][Data]\n", h->TypeName);
+			buf->appendf("UiScale=%.0f\n", Application::getUiScalePct());
+			buf->appendf("\n");
+		};
+
+		ImGui::AddSettingsHandler(&handler);
 	}
 
 	void Application::step() const
@@ -33,6 +67,7 @@ namespace dnf_composer
 		simulation->step();
 		if (guiActive)
 		{
+			ImGui::GetIO().FontGlobalScale = uiScalePct / 100.0f;
 			gui->render();
 		}
 	}
@@ -210,7 +245,7 @@ namespace dnf_composer
 	    c[ImGuiCol_TextDisabled]         = TEXT_MUTED;
 
 	    // Windows / areas
-	    c[ImGuiCol_WindowBg]             = WINDOW_BG;
+	    c[ImGuiCol_WindowBg]             = CARD_BG;
 	    c[ImGuiCol_ChildBg]              = ImVec4(0,0,0,0); // children are drawn as part of your custom zones
 	    c[ImGuiCol_PopupBg]              = ImVec4(1,1,1,0.98f);
 
@@ -224,9 +259,9 @@ namespace dnf_composer
 	    c[ImGuiCol_FrameBgActive]        = ImVec4(ACCENT.x, ACCENT.y, ACCENT.z, 0.30f);
 
 	    // Title bars (kept subtle; you mainly use custom cards)
-	    c[ImGuiCol_TitleBg]              = PANEL_LIGHT;
-	    c[ImGuiCol_TitleBgActive]        = ImVec4(1,1,1,1);
-	    c[ImGuiCol_TitleBgCollapsed]     = PANEL_LIGHT;
+	    c[ImGuiCol_TitleBg]              = CARD_BG;
+	    c[ImGuiCol_TitleBgActive]        = CARD_BG;
+	    c[ImGuiCol_TitleBgCollapsed]     = CARD_BG;
 
 	    // Menubar & scrollbars
 	    c[ImGuiCol_MenuBarBg]            = PANEL_LIGHT;
