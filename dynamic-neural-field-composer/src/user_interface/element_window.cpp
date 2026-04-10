@@ -52,15 +52,16 @@ namespace dnf_composer::user_interface
 
 			switch (type)
 			{
-				case element::ElementLabel::NORMAL_NOISE:         return h(40.0f); //1
-				case element::ElementLabel::NEURAL_FIELD:         return h(75.0f); //2
-				case element::ElementLabel::GAUSS_STIMULUS:       return h(140.0f);//4
-				case element::ElementLabel::GAUSS_KERNEL:         return h(140.0f);//4
-				case element::ElementLabel::FIELD_COUPLING:       return h(175.0f);//5
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:   return h(205.0f);//6
-				case element::ElementLabel::OSCILLATORY_KERNEL:   return h(180.0f); //?
-				case element::ElementLabel::GAUSS_FIELD_COUPLING: return h(200.0f); //?
-				default:                                          return h(140.0f); //?
+				case element::ElementLabel::NORMAL_NOISE:         		return h(40.0f); //1
+				case element::ElementLabel::NEURAL_FIELD:         		return h(85.0f); //2
+				case element::ElementLabel::GAUSS_STIMULUS:       		return h(150.0f);//4
+				case element::ElementLabel::GAUSS_KERNEL:         		return h(150.0f);//4
+				case element::ElementLabel::FIELD_COUPLING:       		return h(185.0f);//5
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:   		return h(215.0f);//6
+				case element::ElementLabel::OSCILLATORY_KERNEL:   		return h(180.0f); //
+				case element::ElementLabel::GAUSS_FIELD_COUPLING: 		return h(200.0f); //
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:	return h(185.0f); //
+				default:												return h(140.0f); //?
 			}
 		};
 
