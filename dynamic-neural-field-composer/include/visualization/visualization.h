@@ -10,6 +10,7 @@
 #include "visualization/lineplot.h"
 #include "visualization/heatmap.h"
 
+
 namespace dnf_composer
 {
 	class Visualization

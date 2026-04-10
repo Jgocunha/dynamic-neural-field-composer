@@ -4,8 +4,6 @@
 
 #include "user_interface/element_window.h"
 
-#include "application/application.h"
-
 
 namespace dnf_composer::user_interface
 {

@@ -2,6 +2,7 @@
 
 #include "application/application.h"
 
+extern ImFont* g_BlackFont;
 
 namespace dnf_composer::user_interface
 {
@@ -103,15 +104,15 @@ namespace dnf_composer::user_interface
 		//using ax::Widgets::IconType;                     // for pin icons
 
 
-		if (ImGui::Begin("Node Graph Window", nullptr, flags))
+		ImGui::PushFont(g_BlackFont);
+		const bool open = ImGui::Begin("Node Graph", nullptr, imgui_kit::getGlobalWindowFlags());
+		ImGui::PopFont();
+		if (open)
 		{
 			ImNodeEditor::SetCurrentEditor(context);
-			//const auto& io = ImGui::GetIO();
 			widgets::renderHelpMarker("Visualize the elements and their interactions in the simulation.\n"
 						  "Create interactions by clicking on output pins and dragging to input pins.\n"
 						  "Delete interactions by double clicking on links.");
-			//ImGui::SameLine();
-			//ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
 			ImNodeEditor::Begin("dnf-composer node graph");
 			renderElementNodes();
 			handleInteractions();
@@ -128,8 +129,6 @@ namespace dnf_composer::user_interface
 		widgets::renderHelpMarker("Visualize the elements and their interactions in the simulation.\n"
 					  "Create interactions by clicking on output pins and dragging to input pins.\n"
 					  "Delete interactions by double clicking on links.");
-		//ImGui::SameLine();
-		//ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
 		ImNodeEditor::Begin("dnf-composer node graph");
 		renderElementNodes();
 		handleInteractions();

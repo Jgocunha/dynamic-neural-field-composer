@@ -1,7 +1,11 @@
 #include "application/application.h"
+#include "user_interface/field_metrics_window.h"
 #include "user_interface/main_menu_bar.h"
 #include "user_interface/main_menu_window.h"
+#include "user_interface/plots_window.h"
+#include "user_interface/plot_control_window.h"
 #include "user_interface/simulation_window.h"
+#include "user_interface/log_window.h"
 
 int main()
 {
@@ -17,6 +21,11 @@ int main()
 		app.addWindow<user_interface::MainMenuBar>();
 		app.addWindow<user_interface::SimulationWindow>();
 		app.addWindow<user_interface::ElementWindow>();
+		app.addWindow<user_interface::FieldMetricsWindow>();
+		app.addWindow<user_interface::PlotControlWindow>();
+		app.addWindow<user_interface::PlotsWindow>();
+		app.addWindow<user_interface::NodeGraphWindow>();
+		app.addWindow<user_interface::LogWindow>();
 
 		app.init();
 

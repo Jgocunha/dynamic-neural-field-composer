@@ -13,6 +13,9 @@
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
 #include "user_interface/widgets.h"
+#include "application/application.h"
+
+extern ImFont* g_BlackFont;
 
 namespace dnf_composer::user_interface
 {

@@ -8,6 +8,8 @@
 #include "application/application.h"
 #include "user_interface/widgets.h"
 
+extern ImFont* g_BlackFont;
+
 enum CharSize : size_t
 {
 	CHAR_SIZE = 50

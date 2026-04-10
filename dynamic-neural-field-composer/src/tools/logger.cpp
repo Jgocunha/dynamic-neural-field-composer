@@ -5,6 +5,7 @@
 #include "tools/logger.h"
 
 #include "application/application.h"
+#include "user_interface/log_window.h"
 
 namespace dnf_composer::tools::logger
 {
@@ -75,7 +76,7 @@ namespace dnf_composer::tools::logger
 
     void Logger::log_ui(const ImVec4 color, const std::string& message)
     {
-        imgui_kit::LogWindow::addLog(color, message.c_str());
+        user_interface::LogWindow::addLog(color, message.c_str());
     }
 
     void log(const LogLevel level, const std::string& message, const LogOutputMode mode)
@@ -115,7 +116,7 @@ namespace dnf_composer::tools::logger
         {
         case DEBUG:     return imgui_kit::colours::Green;
         case INFO:      return currentTextColor;
-        case WARNING:   return imgui_kit::colours::Orange;
+        case WARNING:   return imgui_kit::colours::Yellow;
         case ERROR:
         case FATAL:     return imgui_kit::colours::Red;
         default:        return currentTextColor;

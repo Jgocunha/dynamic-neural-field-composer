@@ -14,6 +14,9 @@
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/widgets.h"
+#include "application/application.h"
+
+extern ImFont* g_BlackFont;
 
 namespace dnf_composer::user_interface
 {

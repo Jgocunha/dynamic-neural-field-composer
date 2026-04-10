@@ -9,7 +9,10 @@ namespace dnf_composer::user_interface
 
 	void PlotControlWindow::render()
 	{
-		if (ImGui::Begin("Element Plot Control", nullptr, imgui_kit::getGlobalWindowFlags()))
+		ImGui::PushFont(g_BlackFont);
+		const bool open = ImGui::Begin("Element Plot Control", nullptr, imgui_kit::getGlobalWindowFlags());
+		ImGui::PopFont();
+		if (open)
 		{
 			// Add a new plot button
 			ImGui::Text("Add a new plot:"); ImGui::SameLine();

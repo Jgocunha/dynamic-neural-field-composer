@@ -4,28 +4,28 @@
 
 #include "simulation/simulation.h"
 #include "elements/neural_field.h"
+#include "application/application.h"
 
-namespace dnf_composer
+extern ImFont* g_BlackFont;
+
+namespace dnf_composer::user_interface
 {
-	namespace user_interface
+	class FieldMetricsWindow final : public imgui_kit::UserInterfaceWindow
 	{
-		class FieldMetricsWindow : public imgui_kit::UserInterfaceWindow
-		{
-		private:
-			std::shared_ptr<Simulation> simulation;
-		public:
-			FieldMetricsWindow(const std::shared_ptr<Simulation>& simulation);
+	private:
+		std::shared_ptr<Simulation> simulation;
+	public:
+		explicit FieldMetricsWindow(const std::shared_ptr<Simulation>& simulation);
 
-			FieldMetricsWindow(const FieldMetricsWindow&) = delete;
-			FieldMetricsWindow& operator=(const FieldMetricsWindow&) = delete;
-			FieldMetricsWindow(FieldMetricsWindow&&) = delete;
-			FieldMetricsWindow& operator=(FieldMetricsWindow&&) = delete;
+		FieldMetricsWindow(const FieldMetricsWindow&) = delete;
+		FieldMetricsWindow& operator=(const FieldMetricsWindow&) = delete;
+		FieldMetricsWindow(FieldMetricsWindow&&) = delete;
+		FieldMetricsWindow& operator=(FieldMetricsWindow&&) = delete;
 
-			void render() override;
-			~FieldMetricsWindow() override = default;
-		private:
-			void getNeuralFieldsAndRenderCentroids() const;
-			static void renderNeuralFieldDetails(const std::shared_ptr<element::NeuralField>& neuralField);
-		};
-	}
+		void render() override;
+		~FieldMetricsWindow() override = default;
+	private:
+		void getNeuralFieldsAndRenderCentroids() const;
+		static void renderNeuralFieldDetails(const std::shared_ptr<element::NeuralField>& neuralField);
+	};
 }

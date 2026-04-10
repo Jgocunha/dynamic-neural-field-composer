@@ -1,22 +1,18 @@
 #pragma once
 
-
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "visualization/visualization.h"
 
-namespace dnf_composer
+namespace dnf_composer::user_interface
 {
-	namespace user_interface
+	class PlotsWindow final : public imgui_kit::UserInterfaceWindow
 	{
-		class PlotsWindow : public imgui_kit::UserInterfaceWindow
-		{
-		private:
-			std::shared_ptr<Visualization> visualization;
-			std::shared_ptr<Simulation> simulation;
-		public:
-			PlotsWindow(const std::shared_ptr<Visualization>& visualization);
-			void render() override;
-		};
-	}
+	private:
+		std::shared_ptr<Visualization> visualization;
+		std::shared_ptr<Simulation> simulation;
+	public:
+		explicit PlotsWindow(const std::shared_ptr<Visualization>& visualization);
+		void render() override;
+	};
 }

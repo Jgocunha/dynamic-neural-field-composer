@@ -1,6 +1,6 @@
 #pragma once
-#include "plot_parameters.h"
 
+#include "plot_parameters.h"
 
 namespace dnf_composer
 {
@@ -12,7 +12,7 @@ namespace dnf_composer
 		PlotCommonParameters commonParameters;
 	public:
 		virtual ~Plot() = default;
-		Plot(PlotCommonParameters parameters = PlotCommonParameters());
+		explicit Plot(PlotCommonParameters parameters = PlotCommonParameters());
 
 		int getUniqueIdentifier() const;
 		PlotType getType() const;

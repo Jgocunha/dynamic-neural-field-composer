@@ -4,9 +4,12 @@
 
 #include "visualization/visualization.h"
 
-
 namespace dnf_composer
 {
+	// Declared inline in application.h; referenced here without including that header
+	// to avoid a circular dependency (application.h includes visualization.h).
+	extern ImFont* g_BlackFont;
+
 	Visualization::Visualization(const std::shared_ptr<Simulation>& simulation)
 	{
 		if (simulation == nullptr)
@@ -186,9 +189,11 @@ namespace dnf_composer
 			const int plotID = fst->getUniqueIdentifier();
 			const std::string visible = "Plot #" + std::to_string(plotID);
 			const std::string plotWindowTitle = visible + "##" + (windowSuffix.empty() ? "default" : windowSuffix);
-			bool open = true;
 
-			if (ImGui::Begin(plotWindowTitle.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar))
+			ImGui::PushFont(g_BlackFont);
+			const bool open = ImGui::Begin(plotWindowTitle.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+			ImGui::PopFont();
+			if (open)
 			{
 				fst->render(allDataToPlotPtr, legends);
 			}

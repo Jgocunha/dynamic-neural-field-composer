@@ -10,7 +10,10 @@ namespace dnf_composer::user_interface
 
 	void FieldMetricsWindow::render()
 	{
-		if (ImGui::Begin("Neural Field Monitoring", nullptr, imgui_kit::getGlobalWindowFlags()))
+		ImGui::PushFont(g_BlackFont);
+		const bool open = ImGui::Begin("Neural Field Monitoring", nullptr, imgui_kit::getGlobalWindowFlags());
+		ImGui::PopFont();
+		if (open)
 		{
 			ImGui::Text("Overview of Neural Fields:");
 			getNeuralFieldsAndRenderCentroids();

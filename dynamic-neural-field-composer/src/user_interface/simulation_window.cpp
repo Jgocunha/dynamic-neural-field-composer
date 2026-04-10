@@ -4,8 +4,6 @@
 
 #include "user_interface/simulation_window.h"
 
-extern ImFont* g_BlackFont;
-
 namespace dnf_composer::user_interface
 {
 	SimulationWindow::SimulationWindow(const std::shared_ptr<Simulation>& simulation)

@@ -108,6 +108,7 @@ set(user_interface_headers
         "include/user_interface/main_menu_bar.h"
         "include/user_interface/widgets.h"
         "include/user_interface/plots_window.h"
+        "include/user_interface/log_window.h"
         "include/user_interface/fonts/IconsFontAwesome6.h"
         "include/user_interface/fonts/fa.h"
         include/user_interface/main_menu_window.h
@@ -180,6 +181,7 @@ set(src
         "src/user_interface/main_menu_bar.cpp"
         "src/user_interface/widgets.cpp"
         "src/user_interface/plots_window.cpp"
+        "src/user_interface/log_window.cpp"
         src/user_interface/main_menu_window.cpp
         src/user_interface/node_utilities/builders.cpp
         src/user_interface/node_utilities/drawing.cpp

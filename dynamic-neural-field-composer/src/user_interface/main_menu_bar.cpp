@@ -108,7 +108,7 @@ namespace dnf_composer::user_interface
         		static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150, 175, 200 };
         		static constexpr int presetCount = IM_ARRAYSIZE(presets);
 
-        		// find index of current scale in presets (or nearest)
+        		// find index of the current scale in presets (or nearest)
         		const int current = static_cast<int>(Application::getUiScalePct());
         		int currentIdx = 3; // default to 100%
         		for (int i = 0; i < presetCount; ++i)
@@ -137,6 +137,9 @@ namespace dnf_composer::user_interface
         		ImGui::SameLine();
         		ImGui::TextDisabled("Ctrl + / Ctrl -");
 
+        		ImGui::Separator();
+        		const auto& io = ImGui::GetIO();
+        		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
         		ImGui::Separator();
 
         		ImGui::MenuItem("Dear ImGuiStyle Editor", nullptr,
