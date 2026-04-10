@@ -5,6 +5,15 @@
 #include "simulation/simulation.h"
 #include "tools/file_dialog.h"
 
+//https://github.com/stevenlovegrove/Pangolin/issues/352
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 namespace dnf_composer::user_interface
 {
 	struct FileFlags

@@ -16,9 +16,13 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::render()
 	{
-		if (ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags()))
+		ImGui::PushFont(g_BlackFont);
+		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
+		ImGui::PopFont();
+		if (open)
 		{
-			renderModifyElementParameters();
+			//renderModifyElementParameters();
+			renderElementControlCard();
 		}
 		ImGui::End();
 	}
