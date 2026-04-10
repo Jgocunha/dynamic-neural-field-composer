@@ -319,7 +319,7 @@ namespace dnf_composer::user_interface
             ImGui::InputDouble("Width",      &width,     0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude",  &amplitude, 0.0, 0.0, "%.2f");
             ImGui::InputDouble("Position",   &position,  0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);   ImGui::SameLine();
+            ImGui::Checkbox("Circular",   &circular);
             ImGui::Checkbox("Normalized", &normalized);
             ImGui::PopItemWidth();
 
@@ -349,7 +349,7 @@ namespace dnf_composer::user_interface
             ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
             ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);   ImGui::SameLine();
+            ImGui::Checkbox("Circular",   &circular);
             ImGui::Checkbox("Normalized", &normalized);
             ImGui::PopItemWidth();
 
@@ -383,7 +383,7 @@ namespace dnf_composer::user_interface
             ImGui::InputDouble("Width inh",     &widthInh,        0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude inh", &amplitudeInh,    0.0, 0.0, "%.2f");
             ImGui::InputDouble("Global amp",    &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);   ImGui::SameLine();
+            ImGui::Checkbox("Circular",   &circular);
             ImGui::Checkbox("Normalized", &normalized);
             ImGui::PopItemWidth();
 
@@ -415,7 +415,7 @@ namespace dnf_composer::user_interface
             ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
             ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
             ImGui::InputDouble("Global amp",     &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);   ImGui::SameLine();
+            ImGui::Checkbox("Circular",   &circular);
             ImGui::Checkbox("Normalized", &normalized);
             ImGui::PopItemWidth();
 
@@ -447,7 +447,7 @@ namespace dnf_composer::user_interface
             ImGui::InputDouble("Amplitude",  &amplitude,       0.0, 0.0, "%.2f");
             ImGui::InputDouble("Global amp", &amplitudeGlobal, 0.0, 0.0, "%.4f");
             ImGui::InputDouble("Time shift", &timeShift,       0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);   ImGui::SameLine();
+            ImGui::Checkbox("Circular",   &circular);
             ImGui::Checkbox("Normalized", &normalized);
             ImGui::PopItemWidth();
 
@@ -541,7 +541,7 @@ namespace dnf_composer::user_interface
             ImGui::InputDouble("Out step", &d_x_out,   0.0, 0.0, "%.2f");
             ImGui::InputInt("In size",     &x_max_in,  0, 0);
             ImGui::InputDouble("In step",  &d_x_in,    0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Normalized",  &normalized);   ImGui::SameLine();
+            ImGui::Checkbox("Normalized",  &normalized);
             ImGui::Checkbox("Circular",    &circular);
             ImGui::PopItemWidth();
 

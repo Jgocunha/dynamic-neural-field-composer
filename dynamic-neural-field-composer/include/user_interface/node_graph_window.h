@@ -11,6 +11,7 @@
 #include "elements/gauss_field_coupling.h"
 #include "elements/field_coupling.h"
 #include "elements/oscillatory_kernel.h"
+#include "elements/asymmetric_gauss_kernel.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/widgets.h"
@@ -64,21 +65,18 @@ namespace dnf_composer::user_interface
 		NodeGraphWindow& operator=(NodeGraphWindow&&) = delete;
 
 		void render() override;
-		void renderGraph() const;
+		void renderGraph() const;   // embedded variant (no Begin/End window)
 		~NodeGraphWindow() override = default;
 	private:
 		void renderElementNodes() const;
-		static void setNodeStyle(const std::shared_ptr<element::Element>& element);
 		static void renderElementNode(const std::shared_ptr<element::Element>& element);
-		static void renderElementNodeHeader(const std::shared_ptr<element::Element>& element);
-		static void renderElementCommonParameters(const std::shared_ptr<element::Element>& element);
-		static void renderElementSpecificParameters(const std::shared_ptr<element::Element>& element);
-		static void renderElementPins(const std::shared_ptr<element::Element>& element);
 		static void renderElementNodeConnections(const std::shared_ptr<element::Element>& element);
 		void handleInteractions() const;
 		void handlePinInteractions() const;
 		void handleLinkInteractions() const;
 		static size_t getNodeId(const std::shared_ptr<element::Element>& element);
-		//static void drawPinBubble(const ImVec2& center, float r, ImU32 fill, ImU32 border);
+		static void applyCanvasStyle();
+		static void restoreCanvasStyle();
+		static void renderElementTooltip(const std::shared_ptr<element::Element>& element);
 	};
 }
