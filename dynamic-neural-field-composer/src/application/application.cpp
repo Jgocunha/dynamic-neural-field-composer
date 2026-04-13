@@ -165,7 +165,7 @@ namespace dnf_composer
 		ImFontConfig icons_config;
 		icons_config.MergeMode = true; // Merge icon font to the previous font if you want to have both icons and text
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 18.0f, &icons_config, icons_ranges);
+			FA_compressed_size, 20.0f, &icons_config, icons_ranges);
 		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1]; // Get the last font added to the font stack
 
 		icons_config.MergeMode = false;

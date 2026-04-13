@@ -11,9 +11,9 @@ namespace dnf_composer::user_interface::widgets
 	void renderHelpMarker(const char* desc);
 	bool renderSidebarTab(const char* icon, const char* label, bool selected);
 	bool renderIconTileButton(const char* id, const char* icon, const char* label,
-						   const float tile, const float uiScale,
-						   const ImU32 colBg, const ImU32 colHover, const ImU32 colActive,
-						   const ImU32 colText, const ImU32 colLabel);
+						   float tile, float uiScale,
+						   ImU32 colBg, ImU32 colHover, ImU32 colActive,
+						   ImU32 colText, ImU32 colLabel);
 	inline void Spring(float weight = 1.0f, const float spacing = 0.0f)
 	{
 		ImGui::Dummy(ImVec2(spacing, 0));
@@ -52,7 +52,7 @@ namespace dnf_composer::user_interface::widgets
 		std::string title;
 	public:
 		Card(std::string  id, const ImVec2& topLeftPosition, const ImVec2& size, std::string  title);
-		bool beginCard(const float& uiScale) const; // remember to end the card
+		[[nodiscard]] bool beginCard(const float& uiScale) const; // remember to end the card
 		static void endCard();
 	};
 }

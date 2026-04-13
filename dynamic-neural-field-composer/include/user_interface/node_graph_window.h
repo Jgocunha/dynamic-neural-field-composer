@@ -17,8 +17,6 @@
 #include "user_interface/node_utilities/widgets.h"
 #include "application/application.h"
 
-extern ImFont* g_BlackFont;
-
 namespace dnf_composer::user_interface
 {
 	inline ImU32 getHeaderColorForElementType(element::ElementLabel label)

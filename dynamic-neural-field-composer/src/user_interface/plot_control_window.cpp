@@ -10,27 +10,34 @@ namespace dnf_composer::user_interface
 	void PlotControlWindow::render()
 	{
 		ImGui::PushFont(g_BlackFont);
-		const bool open = ImGui::Begin("Element Plot Control", nullptr, imgui_kit::getGlobalWindowFlags());
+		const bool open = ImGui::Begin("Plot Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 		if (open)
 		{
 			// Add a new plot button
 			ImGui::Text("Add a new plot:"); ImGui::SameLine();
 			static auto selectedPlotType = PlotType::LINE_PLOT;
-			ImGui::Combo("Plot type", reinterpret_cast<int*>(&selectedPlotType), "Line plot\0Heatmap\0\0");
+			ImGui::SetNextItemWidth(150.0f);
+			ImGui::Combo("##PlotType", reinterpret_cast<int*>(&selectedPlotType), "Line plot\0Heatmap\0\0");
 			ImGui::SameLine();
 			if (ImGui::Button("Add"))
 			{
 				visualization->plot(selectedPlotType);
 			}
 
+			const float availWidth = ImGui::GetContentRegionAvail().x;
+			const float idColWidth       = availWidth * 0.050f;
+			const float typeColWidth     = availWidth * 0.100f;
+			const float dataColWidth     = availWidth * 0.500f;
+			const float changeColWidth   = availWidth * 0.250f;
+
 			if (ImGui::BeginTable("PlotControlTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
 			{
 				// Set column headers
-				ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed, 50);
-				ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 100);
-				ImGui::TableSetupColumn("Data", ImGuiTableColumnFlags_WidthFixed, 300);
-				ImGui::TableSetupColumn("Change plotted data", ImGuiTableColumnFlags_WidthFixed, 500);
+				ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed, idColWidth);
+				ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, typeColWidth);
+				ImGui::TableSetupColumn("Data", ImGuiTableColumnFlags_WidthFixed, dataColWidth);
+				ImGui::TableSetupColumn("Change plotted data", ImGuiTableColumnFlags_WidthFixed, changeColWidth);
 				ImGui::TableHeadersRow();
 
 				// Get plots and sort them by ID
@@ -65,10 +72,14 @@ namespace dnf_composer::user_interface
 					// Add data button and popup
 					ImGui::TableSetColumnIndex(3);
 					const std::string popup_id = "AddDataPopup_" + std::to_string(plot.first->getUniqueIdentifier());
-					if (ImGui::Button(("Add data##" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
+					ImGui::PushFont(g_MediumIconsFont);
+					if (ImGui::Button((ICON_FA_CIRCLE_PLUS  "##add" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
 					{
 						ImGui::OpenPopup(popup_id.c_str());
 					}
+					ImGui::PopFont();
+
+					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add data");
 
 					if (ImGui::BeginPopup(popup_id.c_str()))
 					{
@@ -93,10 +104,13 @@ namespace dnf_composer::user_interface
 					ImGui::SameLine();
 					// Remove data button and popup
 					const std::string remove_popup_id = "RemoveDataPopup_" + std::to_string(plot.first->getUniqueIdentifier());
-					if (ImGui::Button(("Remove data##" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
+					ImGui::PushFont(g_MediumIconsFont);
+					if (ImGui::Button((ICON_FA_CIRCLE_MINUS  "##remove" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
 					{
 						ImGui::OpenPopup(remove_popup_id.c_str());
 					}
+					ImGui::PopFont();
+					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove data");
 
 					if (ImGui::BeginPopup(remove_popup_id.c_str()))
 					{
@@ -116,10 +130,13 @@ namespace dnf_composer::user_interface
 
 					ImGui::SameLine();
 					// Remove the plot button
-					if (ImGui::Button(("Remove plot##" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
+					ImGui::PushFont(g_MediumIconsFont);
+					if (ImGui::Button((ICON_FA_TRASH "##removeplot" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
 					{
 						visualization->removePlot(plot.first->getUniqueIdentifier());
 					}
+					ImGui::PopFont();
+					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove plot");
 				}
 
 			}

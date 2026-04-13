@@ -16,7 +16,9 @@ namespace dnf_composer::user_interface::widgets
 {
 	void renderHelpMarker(const char* desc)
 	{
-		ImGui::TextDisabled("(?)");
+		ImGui::PushFont(g_MediumIconsFont);
+		ImGui::TextDisabled(ICON_FA_CIRCLE_QUESTION);
+		ImGui::PopFont();
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();

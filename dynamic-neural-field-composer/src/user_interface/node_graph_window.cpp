@@ -6,6 +6,7 @@
 
 extern ImFont* g_BoldFont;
 extern ImFont* g_MediumFont;
+extern ImFont* g_BlackFont;
 
 namespace dnf_composer::user_interface
 {
@@ -101,7 +102,7 @@ namespace dnf_composer::user_interface
 			1.0f
 		};
 
-		// No border, uniform colour, tighter top padding so title sits higher
+		// No border, uniform colour, tighter top padding, so the title sits higher
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeRounding,    10.0f);
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeBorderWidth, 0.0f);
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodePadding,     ImVec4(8, 4, 8, 6));
@@ -125,7 +126,7 @@ namespace dnf_composer::user_interface
 
 			// Info icon — hover shows parameters
 			ImGui::Spacing();
-			ImGui::PushFont(g_LargeIconsFont);
+			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_CIRCLE_INFO);
 			ImGui::PopFont();
 			if (ImGui::IsItemHovered())
