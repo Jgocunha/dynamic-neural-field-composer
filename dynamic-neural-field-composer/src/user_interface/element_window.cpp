@@ -70,7 +70,7 @@ namespace dnf_composer::user_interface
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
 					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(3 + 4 * numCouplings);
+					return h(2 + 5 * numCouplings);
 				}
 				default: return h(4);
 			}
@@ -536,6 +536,8 @@ namespace dnf_composer::user_interface
 			auto amplitude = static_cast<float>(coupling.amplitude);
 			auto width = static_cast<float>(coupling.width);
 
+			ImGui::Text("from (%.1f) to (%.1f)", x_i, x_j);
+
 			label = "##" + element->getUniqueName() + "x_i" + std::to_string(couplingIndex);
 			ImGui::SetNextItemWidth(150.0f * ui);
 			ImGui::DragFloat(label.c_str(), &x_i, 0.05f, 0.0f, static_cast<float>(other_size));
@@ -577,9 +579,6 @@ namespace dnf_composer::user_interface
 				gfc->setParameters(gfcp);
 			}
 		}
-
-		// Section: Add New Coupling
-		ImGui::Separator();
 
 		// Button to open the modal
 		if (ImGui::Button("Add new coupling"))
