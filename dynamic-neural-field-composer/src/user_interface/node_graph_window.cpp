@@ -139,9 +139,12 @@ namespace dnf_composer::user_interface
 
 			// ---- Inline sparkline for all components ----
 			{
-				constexpr float plotH = 60.0f;
 				constexpr float plotW = minNodeSize;
 				constexpr float pad   = 3.0f;
+				const auto  label       = element->getLabel();
+				const bool  isWeightMap = (label == element::ElementLabel::FIELD_COUPLING ||
+				                           label == element::ElementLabel::GAUSS_FIELD_COUPLING);
+				const float plotH = isWeightMap ? plotW : 60.0f;
 
 				const ImVec2 origin = ImGui::GetCursorScreenPos();
 				const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
@@ -149,10 +152,6 @@ namespace dnf_composer::user_interface
 				ImDrawList* dl = ImGui::GetWindowDrawList();
 				dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
 				dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
-
-				const auto label = element->getLabel();
-				const bool isWeightMap = (label == element::ElementLabel::FIELD_COUPLING ||
-				                          label == element::ElementLabel::GAUSS_FIELD_COUPLING);
 
 				const auto* comps = element->getComponents();
 				if (comps && comps->count("weights"))
@@ -185,7 +184,7 @@ namespace dnf_composer::user_interface
 								const ImVec2 tl  = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
 								const ImVec2 br  = { tl.x + cellW, tl.y + cellH };
 
-								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Plasma);
+								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
 								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
 							}
 						}
