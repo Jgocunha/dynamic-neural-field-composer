@@ -39,31 +39,45 @@ namespace dnf_composer::user_interface
 	    for (const auto& e : simulation->getElements())
 	        byType[e->getLabel()].push_back(e);
 
-	    const float innerW = ImGui::GetContentRegionAvail().x;
+	    const float innerW   = ImGui::GetContentRegionAvail().x;
+		const float ui       = ImGui::GetIO().FontGlobalScale;
+		const float dragW    = 130.0f * ui;
+		const float panelPadX = 10.0f * ui; // left and right from beginElementPanel
+		const float spacingX = ImGui::GetStyle().ItemSpacing.x;
 
-	    // panel width: fill the card minus a margin
-		const float ui = ImGui::GetIO().FontGlobalScale;
-	    const float panelW = ImMax(200.0f * ui, innerW - 16.0f * ui);
-
-		auto PanelHeightFor = [&](const element::ElementLabel type) -> float
+		auto PanelHeightFor = [&](const std::shared_ptr<element::Element>& e) -> float
 		{
-			const float scale = 0.75f + 0.35f * std::pow(ui, 1.3f);
-			auto h = [&](const float base) { return base * scale; };
+			const float frameH   = ImGui::GetFrameHeight();
+			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
+			const float rowH     = frameH + spacingY;
+			const float panelPad = 2.0f * 8.0f * ui; // top and bottom padding from beginElementPanel
 
-			switch (type)
+			auto h = [&](const int rows) {
+				return rows * rowH - spacingY + panelPad;
+			};
+
+			switch (e->getLabel())
 			{
-				case element::ElementLabel::NORMAL_NOISE:         		return h(40.0f); //1
-				case element::ElementLabel::NEURAL_FIELD:         		return h(85.0f); //2
-				case element::ElementLabel::GAUSS_STIMULUS:       		return h(150.0f);//4
-				case element::ElementLabel::GAUSS_KERNEL:         		return h(150.0f);//4
-				case element::ElementLabel::FIELD_COUPLING:       		return h(185.0f);//5
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:   		return h(215.0f);//6
-				case element::ElementLabel::OSCILLATORY_KERNEL:   		return h(180.0f); //
-				case element::ElementLabel::GAUSS_FIELD_COUPLING: 		return h(200.0f); //
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:	return h(185.0f); //
-				default:												return h(140.0f); //?
+				case element::ElementLabel::NORMAL_NOISE:           return h(1);
+				case element::ElementLabel::NEURAL_FIELD:           return h(2);
+				case element::ElementLabel::GAUSS_STIMULUS:         return h(4);
+				case element::ElementLabel::GAUSS_KERNEL:           return h(4);
+				case element::ElementLabel::FIELD_COUPLING:         return h(5);
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:     return h(6);
+				case element::ElementLabel::OSCILLATORY_KERNEL:     return h(5);
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5);
+				case element::ElementLabel::GAUSS_FIELD_COUPLING:
+				{
+					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
+					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
+					return h(3 + 4 * numCouplings);
+				}
+				default: return h(4);
 			}
 		};
+
+		const float maxNaturalW = 1.0f * panelPadX + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
+		const float panelW = ImMin(maxNaturalW, innerW);
 
 	    for (const auto& [label, elems] : byType)
 	    {
@@ -78,7 +92,7 @@ namespace dnf_composer::user_interface
 	            ImGui::TextUnformatted(e->getUniqueName().c_str());
 
 	            const ImVec4 tint = getColorForElementType(label);
-	            const ImVec2 size(panelW, PanelHeightFor(label));
+	            const ImVec2 size(panelW, PanelHeightFor(e));
 
 	            // draw a panel first (behind), then render the editor inside it
 	            PanelScope scope = beginElementPanel(tint, size);
@@ -95,7 +109,6 @@ namespace dnf_composer::user_interface
 
 	    ImGui::EndChild();
 	}
-
 
 	void ElementWindow::renderModifyElementParameters() const
 	{
@@ -280,6 +293,7 @@ namespace dnf_composer::user_interface
 		bool activateLearning = fcp.isLearningActive;
 
 		std::string label = "##" + element->getUniqueName() + "Learning rule";
+		ImGui::SetNextItemWidth(150.0f * ui);
 		if (ImGui::BeginCombo(label.c_str(), LearningRuleToString.at(fcp.learningRule).c_str()))
 		{
 			for (size_t i = 0; i < LearningRuleToString.size(); ++i)
@@ -293,6 +307,7 @@ namespace dnf_composer::user_interface
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::SameLine(); ImGui::Text("Learning rule");
 
 		label = "##" + element->getUniqueName() + "Learning rate";
 		ImGui::SetNextItemWidth(150.0f * ui);

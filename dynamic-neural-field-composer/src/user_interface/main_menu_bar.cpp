@@ -105,7 +105,7 @@ namespace dnf_composer::user_interface
 
         	if (ImGui::BeginMenu("Interface Settings"))
         	{
-        		static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150, 175, 200 };
+        		static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150 };
         		static constexpr int presetCount = IM_ARRAYSIZE(presets);
 
         		// find index of the current scale in presets (or nearest)
