@@ -137,6 +137,96 @@ namespace dnf_composer::user_interface
 			}
 			ImGui::Spacing();
 
+			// ---- Inline sparkline for all components ----
+			{
+				constexpr float plotH = 60.0f;
+				constexpr float plotW = minNodeSize;
+				constexpr float pad   = 3.0f;
+
+				const ImVec2 origin = ImGui::GetCursorScreenPos();
+				const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
+
+				ImDrawList* dl = ImGui::GetWindowDrawList();
+				dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
+				dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
+
+				const auto label = element->getLabel();
+				const bool isWeightMap = (label == element::ElementLabel::FIELD_COUPLING ||
+				                          label == element::ElementLabel::GAUSS_FIELD_COUPLING);
+
+				const auto* comps = element->getComponents();
+				if (comps && comps->count("weights"))
+				{
+					const auto& weights = comps->at("weights");
+
+					if (isWeightMap && !weights.empty())
+					{
+						// Determine rows/cols from input and output sizes
+						// weights stored as weights[inputIdx * outputSize + outputIdx]
+						int cols = static_cast<int>(comps->at("output").size()); // X axis
+						int rows = static_cast<int>(comps->at("input").size());  // Y axis
+						if (cols <= 0 || rows <= 0 || cols * rows != static_cast<int>(weights.size()))
+							goto drawSparkline;
+
+						// min/max for normalisation
+						double wMin =  1e300, wMax = -1e300;
+						for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
+						const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
+
+						const float cellW = (rect.GetWidth()  - 2*pad) / float(cols);
+						const float cellH = (rect.GetHeight() - 2*pad) / float(rows);
+
+						for (int r = 0; r < rows; ++r)
+						{
+							for (int c = 0; c < cols; ++c)
+							{
+								const double v   = weights[r * cols + c];
+								const float  t   = float((v - wMin) / wRange); // 0..1
+								const ImVec2 tl  = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
+								const ImVec2 br  = { tl.x + cellW, tl.y + cellH };
+
+								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Plasma);
+								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
+							}
+						}
+						goto doneSparkline;
+					}
+				}
+
+				drawSparkline:
+				if (comps)
+				{
+					// compute global min/max across all components for shared Y scale
+					double globalMin =  1e300, globalMax = -1e300;
+					for (const auto& [name, data] : *comps)
+						for (const double v : data) { globalMin = std::min(globalMin, v); globalMax = std::max(globalMax, v); }
+					const double range = (globalMax - globalMin) < 1e-9 ? 1.0 : (globalMax - globalMin);
+
+					int colorIdx = 0;
+					for (const auto& [name, data] : *comps)
+					{
+						if (data.size() < 2) { ++colorIdx; continue; }
+						const ImVec4 colF = ImPlot::GetColormapColor(colorIdx++, ImPlotColormap_Deep);
+						const ImU32  col  = ImGui::ColorConvertFloat4ToU32(ImVec4(colF.x, colF.y, colF.z, 0.86f));
+						const int   n   = static_cast<int>(data.size());
+
+						auto toScreen = [&](int i) -> ImVec2 {
+							const float x = rect.Min.x + pad + (rect.GetWidth()  - 2*pad) * (float(i) / float(n - 1));
+							const float y = rect.Max.y - pad - (rect.GetHeight() - 2*pad) * float((data[i] - globalMin) / range);
+							return { x, y };
+						};
+
+						for (int i = 0; i < n - 1; ++i)
+							dl->AddLine(toScreen(i), toScreen(i + 1), col, 1.2f);
+					}
+				}
+
+				doneSparkline:
+				// advance cursor past the plot area
+				ImGui::Dummy(ImVec2(plotW, plotH));
+			}
+			ImGui::Spacing();
+
 			// ---- Pin row: Input (flush left) | Output (flush right) ----
 			constexpr ImVec4 pinColor = ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
 			constexpr ImVec2 iconSize = ImVec2(14, 14);
