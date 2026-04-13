@@ -155,6 +155,33 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, "Data '" + data.first + " - " + data.second + "' removed from plot " + std::to_string(plotId) + ".");
 	}
 
+	void Visualization::renderTile(int plotId)
+	{
+		const auto it = std::ranges::find_if(plots.begin(), plots.end(),
+			[plotId](const auto& p) { return p.first->getUniqueIdentifier() == plotId; });
+		if (it == plots.end()) return;
+
+		const auto& data = it->second;
+		if (!std::ranges::all_of(data, [this](const std::pair<std::string, std::string>& d)
+			{ return simulation->componentExists(d.first, d.second); }))
+		{
+			removePlot(plotId);
+			return;
+		}
+
+		std::vector<std::vector<double>*> ptrs;
+		ptrs.reserve(data.size());
+		for (const auto& [name, comp] : data)
+			ptrs.emplace_back(simulation->getComponentPtr(name, comp));
+
+		std::vector<std::string> legends;
+		legends.reserve(data.size());
+		for (const auto& [name, comp] : data)
+			legends.emplace_back(name + " - " + comp);
+
+		it->first->render(ptrs, legends);
+	}
+
 	void Visualization::render()
 	{
 		for (const auto&[fst, snd] : plots)

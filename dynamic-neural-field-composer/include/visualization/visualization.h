@@ -41,6 +41,8 @@ namespace dnf_composer
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> getPlots() { return plots; }
 
 		void render();
+		// Renders a single plot's content (no Begin/End — caller owns the window/child)
+		void renderTile(int plotId);
 
 		void setWindowIdSuffix(const std::string& s) { windowSuffix = s; }
 		void clearWindowIdSuffix() { windowSuffix.clear(); }
