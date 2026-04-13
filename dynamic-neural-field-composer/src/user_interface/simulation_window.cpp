@@ -91,7 +91,33 @@ namespace dnf_composer::user_interface
 			simulation->setDeltaT(dt);
 
 		ImGui::SameLine();
-		ImGui::TextUnformatted("ms");
+		ImGui::TextUnformatted("dt");
+
+		// // ICON_FA_ATOM  ICON_FA_STOPWATCH ICON_FA_CLOCK ICON_FA_HOURGLASS_HALF
+		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+		// ImGui::PushFont(g_MonoFont);
+		// ImGui::TextUnformatted(ICON_FA_CLOCK);
+		// ImGui::PopFont(); ImGui::SameLine();
+		// ImGui::PopStyleColor();
+
+		ImGui::Text("Sim. time (t)");
+		ImGui::SameLine();
+		ImGui::PushFont(g_MonoFont);
+		ImGui::Text("%.2f", simulation->getT());
+		ImGui::PopFont();
+
+		ImGui::SameLine();
+		const long long totalNs  = simulation->getTotalRunDuration().count();
+		const long long totalUs  = totalNs / 1'000LL;
+		const long long h        = totalUs / 3'600'000'000LL;
+		const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
+		const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
+		const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
+		ImGui::Text("Real time");
+		ImGui::SameLine();
+		ImGui::PushFont(g_MonoFont);
+		ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
+		ImGui::PopFont();
 
 		ImGui::PopID();
 	}
@@ -150,6 +176,12 @@ namespace dnf_composer::user_interface
 	    static bool  runNSteps        = false;
 	    static int   startIteration   = 0;
 
+		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+		// ImGui::PushFont(g_MonoFont);
+		// ImGui::TextUnformatted(ICON_FA_STOPWATCH);
+		// ImGui::PopFont(); ImGui::SameLine();
+		// ImGui::PopStyleColor();
+
 	    // "Run simulation for [ N ] iterations"
 	    ImGui::AlignTextToFramePadding();
 	    ImGui::TextUnformatted("Run simulation for");
@@ -206,6 +238,61 @@ namespace dnf_composer::user_interface
 	            simulation->pause();
 	            tools::logger::log(tools::logger::INFO,
 	                "Simulation has finished running " + std::to_string(iterationCount) + " steps.");
+	        }
+	    }
+
+	    // "Run simulation for [ N ] ms"
+	    static float  runMs      = 500.0f;
+	    static bool   runForMs   = false;
+	    static std::chrono::steady_clock::time_point runMsStart;
+
+	    ImGui::AlignTextToFramePadding();
+	    ImGui::TextUnformatted("Run simulation for");
+	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+	    ImGui::SetNextItemWidth(60.0f * ui);
+	    if (ImGui::InputFloat("##ms_count", &runMs, 0.0f, 0.0f, "%.0f"))
+	        if (runMs < 0.1f) runMs = 0.1f;
+
+	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+	    ImGui::AlignTextToFramePadding();
+	    ImGui::TextUnformatted("ms");
+
+	    ImGui::SameLine(0.0f, gap);
+	    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f * ui);
+	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
+	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.96f, 0.98f, 0.99f, 1.0f));
+	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.90f, 0.97f, 0.94f, 1.0f));
+	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.85f, 0.96f, 0.92f, 1.0f));
+	    ImGui::PushStyleColor(ImGuiCol_Text,          ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+
+	    ImGui::PushFont(g_MediumIconsFont);
+	    const bool clickedMs = ImGui::Button(ICON_FA_PLAY "##play_ms", iconBox);
+	    ImGui::PopFont();
+	    ImGui::PopStyleColor(4);
+	    ImGui::PopStyleVar(2);
+
+	    if (clickedMs)
+	    {
+	        if (!simulation->isInitialized())
+	            simulation->init();
+	        simulation->resume();
+	        runForMs   = true;
+	        runMsStart = std::chrono::steady_clock::now();
+	        tools::logger::log(tools::logger::INFO,
+	            "Simulation has started running for " + std::to_string(runMs) + " ms.");
+	    }
+
+	    if (runForMs)
+	    {
+	        const auto elapsed = std::chrono::duration<float, std::milli>(
+	            std::chrono::steady_clock::now() - runMsStart).count();
+	        if (elapsed >= runMs)
+	        {
+	            runForMs = false;
+	            simulation->pause();
+	            tools::logger::log(tools::logger::INFO,
+	                "Simulation has finished running for " + std::to_string(runMs) + " ms.");
 	        }
 	    }
 

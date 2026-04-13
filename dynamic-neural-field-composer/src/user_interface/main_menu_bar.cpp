@@ -78,16 +78,33 @@ namespace dnf_composer::user_interface
                 ImGui::Separator();
 
                 static auto deltaT = static_cast<float>(simulation->getDeltaT());
-                ImGui::Text("Time step (ms) ");
-                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.001f, 25.0, "%.3f");
+                ImGui::Text("Simulation time step (dt)");
+                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.001f, 25.0, "%.2f");
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     simulation->setDeltaT(deltaT);
 
                 ImGui::Separator();
 
-                ImGui::Text("Current time (ms) ");
+                ImGui::Text("Simulation time");
                 ImGui::SameLine();
-                ImGui::Text("%.3f", simulation->getT());
+                ImGui::Text("%.2f", simulation->getT());
+                ImGui::SameLine();
+                ImGui::Text(" t");
+
+                const long long stepNs = simulation->getLastStepDuration().count();
+                ImGui::Text("Real-time per step");
+                ImGui::SameLine();
+                ImGui::Text("%lld ns", stepNs);
+
+                const long long totalNs  = simulation->getTotalRunDuration().count();
+                const long long totalUs  = totalNs / 1'000LL;
+                const long long h        = totalUs / 3'600'000'000LL;
+                const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
+                const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
+                const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
+                ImGui::Text("Real time");
+                ImGui::SameLine();
+                ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
 
                 ImGui::EndMenu();
             }
