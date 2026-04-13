@@ -190,9 +190,12 @@ namespace dnf_composer
 			const std::string visible = "Plot #" + std::to_string(plotID);
 			const std::string plotWindowTitle = visible + "##" + (windowSuffix.empty() ? "default" : windowSuffix);
 
+			const float ui = ImGui::GetIO().FontGlobalScale;
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
 			ImGui::PushFont(g_BlackFont);
 			const bool open = ImGui::Begin(plotWindowTitle.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 			ImGui::PopFont();
+			ImGui::PopStyleVar();
 			if (open)
 			{
 				fst->render(allDataToPlotPtr, legends);
