@@ -63,15 +63,9 @@ namespace dnf_composer
 
 	void Heatmap::render(const std::vector<std::vector<double>*>& data, const std::vector<std::string>& legends)
 	{
-		if (data.size() != 1)
-		{
-			return;
-		}
-
 		const ImVec2 availableRegionSize = ImGui::GetContentRegionAvail();
 		const ImVec2 plotSize = ImVec2(availableRegionSize.x - 65.0f, availableRegionSize.y - 5.0f);
 
-		const auto flattened_matrix = data[0];
 		const std::string uniquePlotID = commonParameters.annotations.title + "##" + std::to_string(uniqueIdentifier);
 
 		auto x_max = static_cast<int>(commonParameters.dimensions.xMax);
@@ -158,6 +152,11 @@ namespace dnf_composer
 
 			ImGui::EndMenuBar();
 		}
+
+		if (data.size() != 1)
+			return;
+
+		const auto flattened_matrix = data[0];
 
 		if (autoScale)
 		{
