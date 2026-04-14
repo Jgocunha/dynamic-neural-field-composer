@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
@@ -7,6 +8,8 @@
 #include "application/application.h"
 
 extern ImFont* g_BlackLargeFont;
+extern ImFont* g_BoldLargeFont;
+extern ImFont* g_BoldMediumFont;
 
 namespace dnf_composer::user_interface
 {
@@ -14,18 +17,21 @@ namespace dnf_composer::user_interface
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
+
 	public:
 		explicit FieldMetricsWindow(const std::shared_ptr<Simulation>& simulation);
 
-		FieldMetricsWindow(const FieldMetricsWindow&) = delete;
+		FieldMetricsWindow(const FieldMetricsWindow&)            = delete;
 		FieldMetricsWindow& operator=(const FieldMetricsWindow&) = delete;
-		FieldMetricsWindow(FieldMetricsWindow&&) = delete;
-		FieldMetricsWindow& operator=(FieldMetricsWindow&&) = delete;
+		FieldMetricsWindow(FieldMetricsWindow&&)                 = delete;
+		FieldMetricsWindow& operator=(FieldMetricsWindow&&)      = delete;
 
 		void render() override;
 		~FieldMetricsWindow() override = default;
+
 	private:
-		void getNeuralFieldsAndRenderCentroids() const;
-		static void renderNeuralFieldDetails(const std::shared_ptr<element::NeuralField>& neuralField);
+		void renderCards() const;
+		static void renderCardContent(const std::shared_ptr<element::NeuralField>& nf,
+		                              const std::vector<element::NeuralFieldBump>&  bumps);
 	};
 }

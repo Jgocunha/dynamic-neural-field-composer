@@ -16,15 +16,15 @@ namespace dnf_composer::user_interface
 		: visualization(visualization), simulation(visualization->getSimulation())
 	{}
 
-	void PlotsWindow::recomputeLayout(int n, float availW, float availH)
+	void PlotsWindow::recomputeLayout(const int n, const float availW, const float availH)
 	{
 		if (n <= 0) { colWidths.clear(); rowHeights.clear(); return; }
 
-		const int cols = static_cast<int>(std::ceil(std::sqrt(float(n))));
+		const int cols = static_cast<int>(std::ceil(std::sqrt(static_cast<float>(n))));
 		const int rows = (n + cols - 1) / cols;
 
-		const float cellW = (availW - kSplitterThickness * float(cols - 1)) / float(cols);
-		const float cellH = (availH - kSplitterThickness * float(rows - 1)) / float(rows);
+		const float cellW = (availW - kSplitterThickness * static_cast<float>(cols - 1)) / static_cast<float>(cols);
+		const float cellH = (availH - kSplitterThickness * static_cast<float>(rows - 1)) / static_cast<float>(rows);
 
 		colWidths.assign(cols, std::max(cellW, kTileMinSize));
 		rowHeights.assign(rows, std::max(cellH, kTileMinSize));
@@ -186,7 +186,7 @@ namespace dnf_composer::user_interface
 				1.5f);
 		}
 
-		// Advance cursor past the entire tiled area so ImGui flow is correct
+		// Advance the cursor past the entire tiled area so ImGui flow is correct
 		const float totalW = colX[cols-1] + colWidths[cols-1];
 		const float totalH = rowY[rows-1] + rowHeights[rows-1];
 		ImGui::SetCursorScreenPos({ canvasOrigin.x, canvasOrigin.y + totalH });
