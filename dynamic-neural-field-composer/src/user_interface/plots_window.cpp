@@ -1,8 +1,11 @@
 #include "user_interface/plots_window.h"
+#include <algorithm>
 
 
-namespace dnf_composer { extern ImFont* g_BlackFont; }
-using dnf_composer::g_BlackFont;
+namespace dnf_composer { extern ImFont* g_BlackLargeFont; }
+namespace dnf_composer { extern ImFont* g_BlackSmallFont; }
+using dnf_composer::g_BlackLargeFont;
+using dnf_composer::g_BlackSmallFont;
 
 namespace dnf_composer::user_interface
 {
@@ -29,7 +32,7 @@ namespace dnf_composer::user_interface
 
 	void PlotsWindow::render()
 	{
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Plots", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 
@@ -59,11 +62,12 @@ namespace dnf_composer::user_interface
 		const int rows = static_cast<int>(rowHeights.size());
 		if (cols == 0 || rows == 0) return;
 
-		// Collect plot IDs in stable order
+		// Collect plot IDs sorted by ID so tiles appear in insertion order (L→R, T→B)
 		std::vector<int> ids;
 		ids.reserve(n);
 		for (const auto& [plot, _] : plots)
 			ids.push_back(plot->getUniqueIdentifier());
+		std::sort(ids.begin(), ids.end());
 
 		const ImVec2 canvasOrigin = ImGui::GetCursorScreenPos();
 		const float  ui           = ImGui::GetIO().FontGlobalScale;
@@ -100,7 +104,7 @@ namespace dnf_composer::user_interface
 					// Title in menu bar
 					if (ImGui::BeginMenuBar())
 					{
-						ImGui::PushFont(g_BlackFont);
+						ImGui::PushFont(g_BlackSmallFont);
 						ImGui::TextUnformatted(("Plot #" + std::to_string(plotId)).c_str());
 						ImGui::PopFont();
 						ImGui::EndMenuBar();

@@ -184,13 +184,13 @@ namespace dnf_composer
         }
 
 		// --- Custom bold title (above the plot) ---
-		// ImGui::PushFont(g_BoldFont);
+		// ImGui::PushFont(g_BoldLargeFont);
 		// ImGui::TextUnformatted(commonParameters.annotations.title.c_str());
 		// ImGui::PopFont();
 		// ImGui::Spacing();
 
 		// // or centered:
-		// ImGui::PushFont(g_BoldFont);
+		// ImGui::PushFont(g_BoldLargeFont);
 		// const float textWidth = ImGui::CalcTextSize(commonParameters.annotations.title.c_str()).x;
 		// const float availWidth = ImGui::GetContentRegionAvail().x;
 		// ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (availWidth - textWidth) * 0.5f);

@@ -89,13 +89,29 @@ namespace dnf_composer
 		static void appendFonts();
 	};
 
-	inline ImFont* g_LightFont;
-	inline ImFont* g_MediumFont;
-	inline ImFont* g_BoldFont;
-	inline ImFont* g_BlackFont;
-	inline ImFont* g_MonoFont;
-	inline constexpr size_t g_FontCount = 5; // icon font is not counted, since it is merged to the last added font
-	inline ImFont* g_MediumIconsFont;
-	inline ImFont* g_LargeIconsFont;
-}
+	// Text fonts — 3 sizes per weight
+	inline ImFont* g_LightMediumFont;   // Cera Pro Light  @ 18 // main font
+	inline ImFont* g_LightSmallFont;    // Cera Pro Light  @ 12
+	inline ImFont* g_LightLargeFont;    // Cera Pro Light  @ 24
 
+	inline ImFont* g_MediumSmallFont;   // Cera Pro Medium @ 12
+	inline ImFont* g_MediumMediumFont;  // Cera Pro Medium @ 18
+	inline ImFont* g_MediumLargeFont;   // Cera Pro Medium @ 24
+
+	inline ImFont* g_BoldSmallFont;     // Cera Pro Bold   @ 12
+	inline ImFont* g_BoldMediumFont;    // Cera Pro Bold   @ 18
+	inline ImFont* g_BoldLargeFont;     // Cera Pro Bold   @ 24
+
+	inline ImFont* g_BlackSmallFont;    // Cera Pro Black  @ 20
+	inline ImFont* g_BlackMediumFont;   // Cera Pro Black  @ 24
+	inline ImFont* g_BlackLargeFont;    // Cera Pro Black  @ 30
+
+	inline ImFont* g_MonoSmallFont;     // JetBrainsMono   @ 16
+	inline ImFont* g_MonoMediumFont;    // JetBrainsMono   @ 20
+	inline ImFont* g_MonoLargeFont;     // JetBrainsMono   @ 26
+
+	inline constexpr size_t g_FontCount = 15; // icon fonts not counted
+	inline ImFont* g_SmallIconsFont;    // Font Awesome @ 12
+	inline ImFont* g_MediumIconsFont;   // Font Awesome @ 20
+	inline ImFont* g_LargeIconsFont;    // Font Awesome @ 48
+}

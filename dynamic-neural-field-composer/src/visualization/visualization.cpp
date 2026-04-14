@@ -6,9 +6,7 @@
 
 namespace dnf_composer
 {
-	// Declared inline in application.h; referenced here without including that header
-	// to avoid a circular dependency (application.h includes visualization.h).
-	extern ImFont* g_BlackFont;
+	extern ImFont* g_BlackSmallFont;
 
 	Visualization::Visualization(const std::shared_ptr<Simulation>& simulation)
 	{
@@ -219,7 +217,7 @@ namespace dnf_composer
 
 			const float ui = ImGui::GetIO().FontGlobalScale;
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
-			ImGui::PushFont(g_BlackFont);
+			ImGui::PushFont(g_BlackSmallFont);
 			const bool open = ImGui::Begin(plotWindowTitle.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 			ImGui::PopFont();
 			ImGui::PopStyleVar();

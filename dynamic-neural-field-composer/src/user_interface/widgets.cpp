@@ -4,11 +4,11 @@
 
 #include "application/application.h"
 
-extern ImFont* g_LightFont;
-extern ImFont* g_MediumFont;
-extern ImFont* g_BoldFont;
-extern ImFont* g_BlackFont;
-extern ImFont* g_MonoFont;
+extern ImFont* g_LightMediumFont;
+extern ImFont* g_MediumMediumFont;
+extern ImFont* g_BoldLargeFont;
+extern ImFont* g_BlackLargeFont;
+extern ImFont* g_MonoMediumFont;
 extern ImFont* g_MediumIconsFont;
 extern ImFont* g_LargeIconsFont;
 
@@ -102,8 +102,8 @@ namespace dnf_composer::user_interface::widgets
 		ImGui::PopFont();
 
 		// Label: center using label font metrics
-		ImGui::PushFont(g_MediumFont);
-		const float text_y = centerTextY(g_MediumFont, bb.Min.y, line_h);
+		ImGui::PushFont(g_MediumMediumFont);
+		const float text_y = centerTextY(g_MediumMediumFont, bb.Min.y, line_h);
 		const float text_x = bb.Min.x + pad_x + icon_box + gap_x;
 		dl->AddText(ImVec2(text_x, text_y), ImColor(text_col), label);
 		ImGui::PopFont();
@@ -178,7 +178,7 @@ namespace dnf_composer::user_interface::widgets
 		dl->AddRect(a, b, ImGui::GetColorU32(ImGuiCol_Border), r);
 
 		// title text
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		// place title using screen coordinates, aligned with the card's inner padding
 		const float yOffset = 20.0f * ImGui::GetIO().FontGlobalScale;  // tweak value to taste
 		const ImVec2 title_pos(a.x + pad, a.y + (th - ImGui::GetTextLineHeight()) * 0.5f + yOffset);

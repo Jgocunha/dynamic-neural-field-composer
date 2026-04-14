@@ -7,7 +7,8 @@
 #include <imgui-platform-kit/user_interface_window.h>
 #include "application/application.h"
 
-extern ImFont* g_BlackFont;
+extern ImFont* g_BlackLargeFont;
+extern ImFont* g_MonoMediumFont;
 
 namespace dnf_composer::user_interface
 {

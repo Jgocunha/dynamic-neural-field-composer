@@ -207,7 +207,7 @@ namespace dnf_composer::user_interface
 
         auto Section = [&](const char* title)
         {
-            ImGui::PushFont(g_BlackFont);
+            ImGui::PushFont(g_BlackLargeFont);
             ImGui::SetCursorPosX(20);
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
             ImGui::Text(title);

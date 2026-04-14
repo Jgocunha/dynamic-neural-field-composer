@@ -4,9 +4,9 @@
 
 #include "user_interface/node_graph_window.h"
 
-extern ImFont* g_BoldFont;
-extern ImFont* g_MediumFont;
-extern ImFont* g_BlackFont;
+extern ImFont* g_BoldLargeFont;
+extern ImFont* g_MediumMediumFont;
+extern ImFont* g_BlackLargeFont;
 
 namespace dnf_composer::user_interface
 {
@@ -23,7 +23,7 @@ namespace dnf_composer::user_interface
 			| ImGuiWindowFlags_NoScrollbar
 			| ImGuiWindowFlags_NoScrollWithMouse;
 
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Node graph", nullptr, flags);
 		ImGui::PopFont();
 
@@ -120,7 +120,7 @@ namespace dnf_composer::user_interface
 			// Minimum width + title
 			static constexpr float minNodeSize = 250.0f;
 			ImGui::Dummy(ImVec2(minNodeSize, 0));
-			ImGui::PushFont(g_BlackFont);
+			ImGui::PushFont(g_BlackLargeFont);
 			ImGui::TextUnformatted(element->getUniqueName().c_str());
 			ImGui::PopFont();
 

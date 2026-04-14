@@ -6,7 +6,7 @@
 #include "elements/neural_field.h"
 #include "application/application.h"
 
-extern ImFont* g_BlackFont;
+extern ImFont* g_BlackLargeFont;
 
 namespace dnf_composer::user_interface
 {

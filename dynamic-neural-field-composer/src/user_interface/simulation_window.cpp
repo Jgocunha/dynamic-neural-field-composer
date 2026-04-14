@@ -13,7 +13,7 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::render()
 	{
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Simulation Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 		if (open)
@@ -95,14 +95,14 @@ namespace dnf_composer::user_interface
 
 		// // ICON_FA_ATOM  ICON_FA_STOPWATCH ICON_FA_CLOCK ICON_FA_HOURGLASS_HALF
 		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		// ImGui::PushFont(g_MonoFont);
+		// ImGui::PushFont(g_MonoMediumFont);
 		// ImGui::TextUnformatted(ICON_FA_CLOCK);
 		// ImGui::PopFont(); ImGui::SameLine();
 		// ImGui::PopStyleColor();
 
 		ImGui::Text("Sim. time (t)");
 		ImGui::SameLine();
-		ImGui::PushFont(g_MonoFont);
+		ImGui::PushFont(g_MonoMediumFont);
 		ImGui::Text("%.2f", simulation->getT());
 		ImGui::PopFont();
 
@@ -115,7 +115,7 @@ namespace dnf_composer::user_interface
 		const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
 		ImGui::Text("Real time");
 		ImGui::SameLine();
-		ImGui::PushFont(g_MonoFont);
+		ImGui::PushFont(g_MonoMediumFont);
 		ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
 		ImGui::PopFont();
 
@@ -177,7 +177,7 @@ namespace dnf_composer::user_interface
 	    static int   startIteration   = 0;
 
 		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		// ImGui::PushFont(g_MonoFont);
+		// ImGui::PushFont(g_MonoMediumFont);
 		// ImGui::TextUnformatted(ICON_FA_STOPWATCH);
 		// ImGui::PopFont(); ImGui::SameLine();
 		// ImGui::PopStyleColor();
@@ -305,7 +305,7 @@ namespace dnf_composer::user_interface
 		ImGui::PushID("add_element_section");
 
 		// Headline
-		ImGui::PushFont(g_BoldFont);
+		ImGui::PushFont(g_BoldLargeFont);
 		ImGui::TextUnformatted("Add elements");
 		ImGui::PopFont();
 
@@ -659,7 +659,7 @@ namespace dnf_composer::user_interface
 	    ImGui::PushID("remove_element_inline");
 
 		// Headline
-		ImGui::PushFont(g_BoldFont);
+		ImGui::PushFont(g_BoldLargeFont);
 		ImGui::TextUnformatted("Remove elements");
 		ImGui::PopFont();
 
@@ -724,7 +724,7 @@ namespace dnf_composer::user_interface
 		ImGui::PushID("set_interactions_section");
 
 	    // Headline
-	    ImGui::PushFont(g_BoldFont);
+	    ImGui::PushFont(g_BoldLargeFont);
 	    ImGui::TextUnformatted("Set interactions");
 	    ImGui::PopFont();
 
@@ -854,7 +854,7 @@ namespace dnf_composer::user_interface
 		 ImGui::PushID("export_inline");
 
 		// Headline
-		ImGui::PushFont(g_BoldFont);
+		ImGui::PushFont(g_BoldLargeFont);
 		ImGui::TextUnformatted("Export data");
 		ImGui::PopFont();
 
@@ -931,7 +931,7 @@ namespace dnf_composer::user_interface
 		ImGui::PushID("log_inline");
 
 		// Headline
-		ImGui::PushFont(g_BoldFont);
+		ImGui::PushFont(g_BoldLargeFont);
 		ImGui::TextUnformatted("Log parameters");
 		ImGui::PopFont();
 

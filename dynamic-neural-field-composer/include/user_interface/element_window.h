@@ -15,7 +15,8 @@
 #include "user_interface/widgets.h"
 #include "application/application.h"
 
-extern ImFont* g_BlackFont;
+extern ImFont* g_BlackLargeFont;
+extern ImFont* g_BoldLargeFont;
 
 namespace dnf_composer::user_interface
 {

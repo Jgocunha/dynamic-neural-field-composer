@@ -4,7 +4,6 @@
 
 #include "application/application.h"
 
-
 namespace dnf_composer
 {
 	float Application::uiScalePct = 100.0f;
@@ -103,11 +102,21 @@ namespace dnf_composer
 		using namespace imgui_kit;
 		const WindowParameters winParams{ "Dynamic Neural Field Composer" };
 		const FontParameters fontParams({
-		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf", 18},
-		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf", 18},
-		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf", 24},
-		 	{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf", 30},
-			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 18},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        18},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        12},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        24},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       12},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       18},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       24},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         12},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         18},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         24},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        20},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        24},
+			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        30},
+			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
+			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 20},
+			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 26},
 		});
 		const StyleParameters styleParams{Theme::Light, imgui_kit::colours::White};
 #ifdef _WIN32
@@ -150,29 +159,42 @@ namespace dnf_composer
 			throw Exception(ErrorCode::APP_INIT);
 		}
 
-		// Add fonts
-		g_LightFont = io.Fonts->Fonts[0];
-		g_MediumFont = io.Fonts->Fonts[1];
-		g_BoldFont = io.Fonts->Fonts[2];
-		g_BlackFont = io.Fonts->Fonts[3];
-		g_MonoFont = io.Fonts->Fonts[4];
+		// Assign text font pointers (indices match the order in setGUIParameters)
+		g_LightMediumFont  = io.Fonts->Fonts[0];
+		g_LightSmallFont   = io.Fonts->Fonts[1];
+		g_LightLargeFont   = io.Fonts->Fonts[2];
+		g_MediumSmallFont  = io.Fonts->Fonts[3];
+		g_MediumMediumFont = io.Fonts->Fonts[4];
+		g_MediumLargeFont  = io.Fonts->Fonts[5];
+		g_BoldSmallFont    = io.Fonts->Fonts[6];
+		g_BoldMediumFont   = io.Fonts->Fonts[7];
+		g_BoldLargeFont    = io.Fonts->Fonts[8];
+		g_BlackSmallFont   = io.Fonts->Fonts[9];
+		g_BlackMediumFont  = io.Fonts->Fonts[10];
+		g_BlackLargeFont   = io.Fonts->Fonts[11];
+		g_MonoSmallFont    = io.Fonts->Fonts[12];
+		g_MonoMediumFont   = io.Fonts->Fonts[13];
+		g_MonoLargeFont    = io.Fonts->Fonts[14];
 
 		// Set default font
-		io.FontDefault = g_MediumFont;
+		io.FontDefault = g_MediumMediumFont;
 
-		// Set icons font
+		// Add icon fonts (3 sizes, each standalone)
 		static constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 		ImFontConfig icons_config;
-		icons_config.MergeMode = true; // Merge icon font to the previous font if you want to have both icons and text
+		icons_config.MergeMode = false;
+
+		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
+			FA_compressed_size, 12.0f, &icons_config, icons_ranges);
+		g_SmallIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
+
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
 			FA_compressed_size, 20.0f, &icons_config, icons_ranges);
-		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1]; // Get the last font added to the font stack
+		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
-		icons_config.MergeMode = false;
-		//If you want change between icon size, you will need to create a new font
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
 			FA_compressed_size, 48.0f, &icons_config, icons_ranges);
-		g_LargeIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1]; // Get the last font added to the font stack
+		g_LargeIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->Build();
 

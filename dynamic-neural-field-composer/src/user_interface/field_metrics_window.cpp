@@ -10,7 +10,7 @@ namespace dnf_composer::user_interface
 
 	void FieldMetricsWindow::render()
 	{
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Neural Field Monitoring", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 		if (open)

@@ -4,7 +4,6 @@
 
 #include "user_interface/element_window.h"
 
-
 namespace dnf_composer::user_interface
 {
 	ElementWindow::ElementWindow(const std::shared_ptr<Simulation>& simulation)
@@ -14,7 +13,7 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::render()
 	{
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 		if (open)
@@ -81,7 +80,7 @@ namespace dnf_composer::user_interface
 
 	    for (const auto& [label, elems] : byType)
 	    {
-	        ImGui::PushFont(g_BoldFont);
+	        ImGui::PushFont(g_BoldLargeFont);
 	        ImGui::TextUnformatted(getElementTypeDisplayName(label).c_str());
 	        ImGui::PopFont();
 	        ImGui::Spacing();

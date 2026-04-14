@@ -16,7 +16,7 @@
 
 namespace dnf_composer::user_interface
 {
-	//extern ImFont* g_BlackFont;
+	//extern ImFont* g_BlackLargeFont;
 
 	class PlotsWindow final : public imgui_kit::UserInterfaceWindow
 	{

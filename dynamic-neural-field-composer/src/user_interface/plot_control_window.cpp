@@ -9,7 +9,7 @@ namespace dnf_composer::user_interface
 
 	void PlotControlWindow::render()
 	{
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Plot Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 		if (open)

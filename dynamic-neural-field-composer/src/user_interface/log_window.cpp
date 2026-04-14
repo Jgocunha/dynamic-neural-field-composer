@@ -29,11 +29,12 @@ namespace dnf_composer::user_interface
 		filter.Draw("Filter", -100.0f);
 
 		ImGui::Separator();
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.95f, 0.96f, 0.97f, 1.0f));
 		if (ImGui::BeginChild("scrolling", ImVec2(0, 0), false,
 			ImGuiWindowFlags_HorizontalScrollbar))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-			ImGui::PushFont(g_MonoFont);
+			ImGui::PushFont(g_MonoMediumFont);
 			for (const auto& [message, color] : logs)
 			{
 				if (filter.PassFilter(message.c_str()))
@@ -50,6 +51,7 @@ namespace dnf_composer::user_interface
 				ImGui::SetScrollHereY(1.0f);
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleColor();
 	}
 
 
@@ -66,7 +68,7 @@ namespace dnf_composer::user_interface
 
 	void LogWindow::draw()
 	{
-		ImGui::PushFont(g_BlackFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Logs", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 
