@@ -49,12 +49,14 @@ namespace dnf_composer::user_interface
 		const int  n     = static_cast<int>(plots.size());
 		if (n == 0) return;
 
-		// Recompute layout when plot count changes (called from both render() and StaticLayoutWindow)
+		// Recompute layout when plot count or available size changes
 		const ImVec2 avail = ImGui::GetContentRegionAvail();
-		if (n != lastPlotCount)
+		if (n != lastPlotCount || avail.x != lastAvailW || avail.y != lastAvailH)
 		{
 			recomputeLayout(n, avail.x, avail.y);
 			lastPlotCount = n;
+			lastAvailW    = avail.x;
+			lastAvailH    = avail.y;
 		}
 
 		const int cols = static_cast<int>(colWidths.size());

@@ -1,4 +1,5 @@
 #include "user_interface/plot_control_window.h"
+#include <unordered_set>
 
 
 namespace dnf_composer::user_interface
@@ -19,6 +20,44 @@ namespace dnf_composer::user_interface
 			{
 				visualization->plot(selectedPlotType);
 			}
+
+		// Quick-populate: one line plot per neural field with all its components
+		ImGui::SameLine(0, 12);
+		ImGui::PushFont(g_MediumIconsFont);
+		// Alternatives: ICON_FA_CHART_LINE, ICON_FA_BRAIN, ICON_FA_LAYER_GROUP, ICON_FA_SIGNAL
+		const bool clicked = ImGui::Button(ICON_FA_WAVE_SQUARE "##plotfields");
+		ImGui::PopFont();
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Add one line plot per neural field,\nwith all its components plotted.");
+		if (clicked)
+		{
+			// Build a set of element names already present in any existing plot
+			std::unordered_set<std::string> alreadyPlotted;
+			for (const auto& [p, data] : visualization->getPlots())
+				for (const auto& [elemName, _] : data)
+					alreadyPlotted.insert(elemName);
+
+			for (const auto& element : simulation->getElements())
+			{
+				if (element->getLabel() != element::ElementLabel::NEURAL_FIELD)
+					continue;
+				if (alreadyPlotted.count(element->getUniqueName()))
+					continue;
+				const auto* comps = element->getComponents();
+				if (!comps || comps->empty())
+					continue;
+				// Create the plot with the first component, then append the rest
+				auto it = comps->begin();
+				visualization->plot(element->getUniqueName(), it->first);
+				// Fetch the id of the plot that was just created
+				int newId = -1;
+				for (const auto& [p, _] : visualization->getPlots())
+					newId = std::max(newId, p->getUniqueIdentifier());
+				++it;
+				for (; it != comps->end(); ++it)
+					visualization->plot(newId, element->getUniqueName(), it->first);
+			}
+		}
 
 			const float availWidth = ImGui::GetContentRegionAvail().x;
 			const float idColWidth       = availWidth * 0.050f;

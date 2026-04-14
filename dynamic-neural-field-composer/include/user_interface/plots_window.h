@@ -26,6 +26,8 @@ namespace dnf_composer::user_interface
 
 		// Tiled layout state
 		int                lastPlotCount = -1;
+		float              lastAvailW    = -1.0f;
+		float              lastAvailH    = -1.0f;
 		std::vector<float> colWidths;
 		std::vector<float> rowHeights;
 

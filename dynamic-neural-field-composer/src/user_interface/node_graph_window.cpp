@@ -48,6 +48,10 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderGraph() const
 	{
+		widgets::renderHelpMarker(
+				"Visualize elements and their interactions.\n"
+				"Drag from an Output pin to an Input pin to create a connection.\n"
+				"Double-click a link to remove it.");
 		ImNodeEditor::SetCurrentEditor(context);
 		applyCanvasStyle();
 		ImNodeEditor::Begin("dnf-composer-graph");
@@ -230,21 +234,30 @@ namespace dnf_composer::user_interface
 			constexpr ImVec4 pinColor = ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
 			constexpr ImVec2 iconSize = ImVec2(14, 14);
 
+			// Source elements (no inputs by design)
+			const auto lbl = element->getLabel();
+			const bool hasInputPin =
+				lbl != element::ElementLabel::GAUSS_STIMULUS &&
+				lbl != element::ElementLabel::NORMAL_NOISE;
+
 			if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
 			{
 				ImGui::TableSetupColumn("##in",  ImGuiTableColumnFlags_WidthStretch);
 				ImGui::TableSetupColumn("##out", ImGuiTableColumnFlags_WidthStretch);
 				ImGui::TableNextRow();
 
-				// Left cell: Input pin
+				// Left cell: Input pin (source elements have none)
 				ImGui::TableSetColumnIndex(0);
-				ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
-				                       ImNodeEditor::PinKind::Input);
-				ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
-				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
-				ImGui::SameLine(0, 4);
-				ImGui::TextUnformatted("Input");
-				ImNodeEditor::EndPin();
+				if (hasInputPin)
+				{
+					ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
+					                       ImNodeEditor::PinKind::Input);
+					ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
+					ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
+					ImGui::SameLine(0, 4);
+					ImGui::TextUnformatted("Input");
+					ImNodeEditor::EndPin();
+				}
 
 				// Right cell: Output pin (right-aligned within cell)
 				ImGui::TableSetColumnIndex(1);

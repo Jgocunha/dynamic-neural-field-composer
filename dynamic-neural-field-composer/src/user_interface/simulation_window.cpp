@@ -18,7 +18,6 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 		if (open)
 		{
-			//renderPanelContents();
 			renderSimulationParametersCard();
 			ImGui::Spacing(); ImGui::Spacing();
 			renderSimulationControlsCard();
@@ -36,17 +35,6 @@ namespace dnf_composer::user_interface
 			renderExportElementComponentCard();
 		}
 		ImGui::End();
-	}
-
-	void SimulationWindow::renderPanelContents() const
-	{
-		renderSimulationControlButtons();
-		renderSimulationProperties();
-		renderAddElement();          // add elements (NeuralField, GaussStimulus, etc.)
-		renderSetInteraction();      // wire up inputs between elements
-		renderRemoveElement();       // remove elements
-		renderLogElementProperties();// log properties
-		renderExportElementComponents(); // export components
 	}
 
 	void SimulationWindow::renderSimulationParametersCard() const
@@ -68,7 +56,7 @@ namespace dnf_composer::user_interface
 		ImGui::TextUnformatted("Simulation");
 		ImGui::SameLine();
 
-		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::SetNextItemWidth(340.0f * ui);
 		const bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
 										 ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue);
 
@@ -77,7 +65,7 @@ namespace dnf_composer::user_interface
 			simulation->setUniqueIdentifier(std::string(idBuf));
 
 		// spacer between the two groups
-		ImGui::SameLine(0.0f, gap);
+		//ImGui::SameLine(0.0f, gap);
 
 		// Time step delta_t
 		ImGui::AlignTextToFramePadding();
@@ -146,19 +134,23 @@ namespace dnf_composer::user_interface
 
 		ImGui::BeginGroup();
 
-		if (widgets::renderIconTileButton("run",     ICON_FA_PLAY,         "Run",     tile, ui, cBg, cHover, cActive, cIcon, cLabel))
+		if (widgets::renderIconTileButton("run",     ICON_FA_PLAY,
+			"Run",     tile, ui, cBg, cHover, cActive, cIcon, cLabel))
 			simulation->init();
 
 		ImGui::SameLine(0.0f, gap);
-		if (widgets::renderIconTileButton("pause",   ICON_FA_PAUSE,        "Pause",   tile, ui, cBg, cHover, cActive, cIcon, cLabel))
+		if (widgets::renderIconTileButton("pause",   ICON_FA_PAUSE,
+			"Pause",   tile, ui, cBg, cHover, cActive, cIcon, cLabel))
 			simulation->pause();
 
 		ImGui::SameLine(0.0f, gap);
-		if (widgets::renderIconTileButton("resume",  ICON_FA_FORWARD_FAST, "Resume",  tile, ui, cBg, cHover, cActive, cIcon, cLabel))
+		if (widgets::renderIconTileButton("resume",  ICON_FA_FORWARD_FAST,
+			"Resume",  tile, ui, cBg, cHover, cActive, cIcon, cLabel))
 			simulation->resume();
 
 		ImGui::SameLine(0.0f, gap);
-		if (widgets::renderIconTileButton("stop",    ICON_FA_STOP,         "Stop",    tile, ui, cBg, cHover, cActive, cIcon, cLabel))
+		if (widgets::renderIconTileButton("stop",    ICON_FA_STOP,
+			"Stop",    tile, ui, cBg, cHover, cActive, cIcon, cLabel))
 			simulation->close();
 
 		ImGui::EndGroup();
@@ -299,7 +291,6 @@ namespace dnf_composer::user_interface
 	    ImGui::PopID();
 	}
 
-
 	void SimulationWindow::renderAddElementCard() const
 	{
 		ImGui::PushID("add_element_section");
@@ -331,11 +322,7 @@ namespace dnf_composer::user_interface
 		}
 
 		ImGui::Spacing();
-		ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 		const bool addRequested = ImGui::Button("Add element", ImVec2(-FLT_MIN, 0));
-		ImGui::PopStyleColor(3);
 
 		// Right column
 	    ImGui::NextColumn();
@@ -349,7 +336,7 @@ namespace dnf_composer::user_interface
 	    const float child_h = 280.0f * ImGui::GetIO().FontGlobalScale;
 
 		constexpr ImGuiWindowFlags child_flags =
-	        ImGuiWindowFlags_AlwaysVerticalScrollbar |
+	        //ImGuiWindowFlags_AlwaysVerticalScrollbar |
 	        ImGuiWindowFlags_AlwaysHorizontalScrollbar |
 	        ImGuiWindowFlags_NoSavedSettings;
 
@@ -700,15 +687,9 @@ namespace dnf_composer::user_interface
 	    const float line_h  = ImGui::GetFrameHeight();
 	    const ImVec2 iconSz(line_h + 10.0f, line_h);   // slightly not square button
 
-	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f,0.0f,0.0f,0.15f));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0f,0.0f,0.0f,0.25f));
-
 	    ImGui::PushFont(g_MediumIconsFont);
 	    const bool clicked = ImGui::Button(ICON_FA_TRASH, iconSz);
 	    ImGui::PopFont();
-
-	    ImGui::PopStyleColor(3);
 
 	    if (clicked && !selectedId.empty())
 	    {
@@ -764,9 +745,9 @@ namespace dnf_composer::user_interface
 	    ComboFromElements("Source element", selectedSource);
 
 	    ImGui::Spacing();
-		ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
+		// ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
+		// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
+		// ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 
 		const float btnW = leftW - 15.0f;                             // same width as combos
 		const float btnH = ImGui::GetFrameHeight() * 1.2f;   // a bit taller looks nicer
@@ -776,7 +757,7 @@ namespace dnf_composer::user_interface
 		ImGui::BeginDisabled(!canConnect);
 		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
 		ImGui::EndDisabled();
-		ImGui::PopStyleColor(3);
+		//ImGui::PopStyleColor(3);
 
 		if (connectPressed)
 		{
@@ -912,13 +893,9 @@ namespace dnf_composer::user_interface
 	    const float h = ImGui::GetFrameHeight();
 	    const ImVec2 iconSz(h + 10.0f, h);
 
-	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 	    ImGui::PushFont(g_MediumIconsFont);
 	    const bool exportClicked = ImGui::Button(ICON_FA_DOWNLOAD, iconSz);
 	    ImGui::PopFont();
-	    ImGui::PopStyleColor(3);
 
 	    if (exportClicked && !selectedElementId.empty() && !selectedComponent.empty())
 	        simulation->exportComponentToFile(selectedElementId, selectedComponent);
@@ -966,20 +943,15 @@ namespace dnf_composer::user_interface
 		const float h = ImGui::GetFrameHeight();
 		const ImVec2 iconSz(h + 10.0f, h);
 
-		ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 		ImGui::PushFont(g_MediumIconsFont);
 		const bool logClicked = ImGui::Button(ICON_FA_TERMINAL, iconSz);
 		ImGui::PopFont();
-		ImGui::PopStyleColor(3);
 
 		if (logClicked && !selectedId.empty())
 			if (const auto e = simulation->getElement(selectedId)) e->print();
 
 		ImGui::PopID();
 	}
-
 
 	void SimulationWindow::renderSimulationControlButtons() const
 	{

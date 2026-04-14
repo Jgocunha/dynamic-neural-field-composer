@@ -7,10 +7,12 @@ extern ImFont* g_BlackLargeFont;
 
 namespace dnf_composer::user_interface
 {
-	// ── Layout fractions (relative to total viewport) ────────────────────────
-	static constexpr float kColAFrac    = 0.14f;   // Simulation + FieldMonitoring column
-	static constexpr float kColBFrac    = 0.12f;   // Element Control column
-	// Column C = remaining width
+	// ── Left column widths (fixed pixels at UI scale = 1.0, scale with zoom) ──
+	// Both columns share the same base width so their content is never cropped.
+	// Only column C (node graph / plots / logs / plot control) stretches when
+	// the main window is resized.
+	static constexpr float kColABase = 470.0f;  // base px for Simulation + Neural Field Monitoring column
+	static constexpr float kColBBase = 360.0f;  // base px for Element Control column
 
 	static constexpr float kRowSimFrac  = 0.72f;   // Simulation Control height (of col A)
 	// Neural Field Monitoring = 1 - kRowSimFrac
@@ -104,9 +106,12 @@ namespace dnf_composer::user_interface
 		const ImVec2 total  = ImGui::GetWindowSize();
 		const float  m      = kMargin;
 
-		const float colAW = total.x * kColAFrac - m;
-		const float colBW = total.x * kColBFrac - m;
-		const float colCW = total.x - colAW - colBW - m * 4.0f;
+		// Left columns: fixed width scaled by the current UI zoom
+		const float scale  = ImGui::GetIO().FontGlobalScale;
+		const float colAW  = kColABase * scale;
+		const float colBW  = kColBBase * scale;
+		// Right column: takes whatever is left — expands/shrinks with the window
+		const float colCW  = total.x - colAW - colBW - m * 4.0f;
 
 		const float fullH = total.y - m * 2.0f;
 

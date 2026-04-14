@@ -5,6 +5,16 @@
 #include "visualization/visualization.h"
 #include "application/application.h"
 
+
+//https://github.com/stevenlovegrove/Pangolin/issues/352
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 extern ImFont* g_BlackLargeFont;
 
 namespace dnf_composer::user_interface
