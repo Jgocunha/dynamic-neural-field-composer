@@ -8,6 +8,9 @@ namespace dnf_composer
 	{
 		double scaleMin, scaleMax;
 		bool autoScale;
+		bool autoDimensions;  // infer rows/cols from data size each frame
+		int hintRows = 0;     // set by Visualization when element sizes are known
+		int hintCols = 0;
 
 		HeatmapParameters();
 		HeatmapParameters(double scaleMin, double scaleMax);
@@ -28,6 +31,7 @@ namespace dnf_composer
 
 		void setScale(double min, double max);
 		std::pair<double, double> getScale() const;
+		void setDimensionHint(int rows, int cols);
 		std::string toString() const override;
 		void render(const std::vector<std::vector<double>*>& data, const std::vector<std::string>& legends) override;
 	};

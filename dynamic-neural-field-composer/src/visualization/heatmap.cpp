@@ -1,13 +1,14 @@
 #include "visualization/heatmap.h"
+#include <cmath>
 
 namespace dnf_composer
 {
 	HeatmapParameters::HeatmapParameters()
-		: scaleMin(0), scaleMax(1), autoScale(true)
+		: scaleMin(0), scaleMax(1), autoScale(true), autoDimensions(true)
 	{}
 
 	HeatmapParameters::HeatmapParameters(double scaleMin, double scaleMax)
-		: scaleMin(scaleMin), scaleMax(scaleMax), autoScale(false)
+		: scaleMin(scaleMin), scaleMax(scaleMax), autoScale(false), autoDimensions(true)
 	{}
 
 	std::string HeatmapParameters::toString() const
@@ -49,6 +50,12 @@ namespace dnf_composer
 	std::pair<double, double> Heatmap::getScale() const
 	{
 		return { heatmapParameters.scaleMin, heatmapParameters.scaleMax };
+	}
+
+	void Heatmap::setDimensionHint(int rows, int cols)
+	{
+		heatmapParameters.hintRows = rows;
+		heatmapParameters.hintCols = cols;
 	}
 
 	std::string Heatmap::toString() const
@@ -93,18 +100,31 @@ namespace dnf_composer
 		{
 			if (ImGui::BeginMenu("Dimensions"))
 			{
-				if(ImGui::DragInt("X max", &x_max, 1, x_min, 1000))
-					commonParameters.dimensions.xMax = x_max;
-				if(ImGui::DragInt("Y max", &y_max, 1, y_min, 1000))
-					commonParameters.dimensions.yMax = y_max;
-				if(ImGui::DragInt("X min", &x_min, 1, 0, x_max))
-					commonParameters.dimensions.xMin = x_min;
-				if(ImGui::DragInt("Y min", &y_min, 1, 0, y_max))
-					commonParameters.dimensions.yMin = y_min;
-				if (ImGui::DragFloat("X step", &x_step, 0.1f, 0.1f, 1000))
-					commonParameters.dimensions.xStep = x_step;
-				if (ImGui::DragFloat("Y step", &y_step, 0.1f, 0.1f, 1000))
-					commonParameters.dimensions.yStep = y_step;
+				bool autoDim = heatmapParameters.autoDimensions;
+				if (ImGui::Checkbox("Auto-fit from data", &autoDim))
+					heatmapParameters.autoDimensions = autoDim;
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip(
+						"Automatically derive rows and columns from the\n"
+						"data size. Finds the two integer factors closest\n"
+						"to a square root (works for square and rectangular\n"
+						"weight matrices). Manual settings are ignored.");
+				if (!heatmapParameters.autoDimensions)
+				{
+					ImGui::Separator();
+					if(ImGui::DragInt("X max", &x_max, 1, x_min, 1000))
+						commonParameters.dimensions.xMax = x_max;
+					if(ImGui::DragInt("Y max", &y_max, 1, y_min, 1000))
+						commonParameters.dimensions.yMax = y_max;
+					if(ImGui::DragInt("X min", &x_min, 1, 0, x_max))
+						commonParameters.dimensions.xMin = x_min;
+					if(ImGui::DragInt("Y min", &y_min, 1, 0, y_max))
+						commonParameters.dimensions.yMin = y_min;
+					if (ImGui::DragFloat("X step", &x_step, 0.1f, 0.1f, 1000))
+						commonParameters.dimensions.xStep = x_step;
+					if (ImGui::DragFloat("Y step", &y_step, 0.1f, 0.1f, 1000))
+						commonParameters.dimensions.yStep = y_step;
+				}
 				ImGui::EndMenu();
 			}
 
@@ -167,8 +187,37 @@ namespace dnf_composer
 			scaleMax = static_cast<float>(heatmapParameters.scaleMax);
 		}
 
-		const int rows = static_cast<int>(static_cast<float>(y_max) / y_step);
-		const int cols = static_cast<int>(static_cast<float>(x_max) / x_step);
+		int rows, cols;
+		if (heatmapParameters.autoDimensions)
+		{
+			if (heatmapParameters.hintRows > 0 && heatmapParameters.hintCols > 0)
+			{
+				// Exact dimensions provided by the visualization layer (e.g. from
+				// a field coupling's input/output component sizes).
+				rows = heatmapParameters.hintRows;
+				cols = heatmapParameters.hintCols;
+			}
+			else
+			{
+				// Fallback: find the two integer factors of data size closest to
+				// each other (most square-like — works when no hint is available).
+				const int total = static_cast<int>(flattened_matrix->size());
+				rows = static_cast<int>(std::sqrt(static_cast<float>(total)));
+				while (rows > 1 && total % rows != 0)
+					--rows;
+				cols = (rows > 0) ? total / rows : total;
+			}
+			// Keep axis bounds in sync so the tick labels match the data
+			commonParameters.dimensions.yMax = rows;
+			commonParameters.dimensions.xMax = cols;
+			x_max = cols;
+			y_max = rows;
+		}
+		else
+		{
+			rows = static_cast<int>(static_cast<float>(y_max) / y_step);
+			cols = static_cast<int>(static_cast<float>(x_max) / x_step);
+		}
 
 		static constexpr ImPlotFlags hm_flags = ImPlotFlags_Crosshairs | ImPlotFlags_NoLegend;
 		if (ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, hm_flags)) {

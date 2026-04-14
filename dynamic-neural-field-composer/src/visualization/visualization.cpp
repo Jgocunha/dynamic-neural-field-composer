@@ -153,6 +153,32 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, "Data '" + data.first + " - " + data.second + "' removed from plot " + std::to_string(plotId) + ".");
 	}
 
+	// If `plot` is a Heatmap and the data contains a "weights" component,
+	// derive rows/cols from the element's "input" and "output" component sizes
+	// and pass them as a dimension hint so the heatmap renders correctly.
+	static void updateHeatmapDimensionHint(
+		const std::shared_ptr<Plot>& plot,
+		const std::vector<std::pair<std::string, std::string>>& data,
+		const std::shared_ptr<Simulation>& simulation)
+	{
+		auto* heatmap = dynamic_cast<Heatmap*>(plot.get());
+		if (!heatmap) return;
+
+		for (const auto& [elemName, compName] : data)
+		{
+			if (compName != "weights") continue;
+			// rows = input size, cols = output size
+			if (simulation->componentExists(elemName, "input") &&
+			    simulation->componentExists(elemName, "output"))
+			{
+				const int rows = static_cast<int>(simulation->getComponentPtr(elemName, "input")->size());
+				const int cols = static_cast<int>(simulation->getComponentPtr(elemName, "output")->size());
+				heatmap->setDimensionHint(rows, cols);
+			}
+			break;
+		}
+	}
+
 	void Visualization::renderTile(int plotId)
 	{
 		const auto it = std::ranges::find_if(plots.begin(), plots.end(),
@@ -166,6 +192,8 @@ namespace dnf_composer
 			removePlot(plotId);
 			return;
 		}
+
+		updateHeatmapDimensionHint(it->first, data, simulation);
 
 		std::vector<std::vector<double>*> ptrs;
 		ptrs.reserve(data.size());
@@ -223,6 +251,7 @@ namespace dnf_composer
 			ImGui::PopStyleVar();
 			if (open)
 			{
+				updateHeatmapDimensionHint(fst, data, simulation);
 				fst->render(allDataToPlotPtr, legends);
 			}
 			ImGui::End();
