@@ -22,7 +22,9 @@ namespace dnf_composer::user_interface
 			}
 
 		// Quick-populate: one line plot per neural field with all its components
-		ImGui::SameLine(0, 12);
+
+		ImGui::SameLine(0, 48);
+		ImGui::Text("Quick-populate:"); ImGui::SameLine();
 		ImGui::PushFont(g_MediumIconsFont);
 		// Alternatives: ICON_FA_CHART_LINE, ICON_FA_BRAIN, ICON_FA_LAYER_GROUP, ICON_FA_SIGNAL
 		const bool clicked = ImGui::Button(ICON_FA_WAVE_SQUARE "##plotfields");
