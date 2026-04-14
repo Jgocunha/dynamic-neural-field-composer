@@ -17,6 +17,8 @@
 
 namespace dnf_composer
 {
+	enum class UIMode { Dynamic = 0, Static = 1 };
+
 	// Base template: assumes T does not have a constructor that takes Simulation*
 	template<typename T, typename = void>
 	struct has_simulation_constructor : std::false_type {};
@@ -41,10 +43,13 @@ namespace dnf_composer
 		std::shared_ptr<imgui_kit::UserInterface> gui;
 		bool guiActive;
 		static float uiScalePct; // user-controlled UI scale, 50–200%
+		static UIMode uiMode;
 
 	public:
-		static float getUiScalePct() { return uiScalePct; }
-		static void  setUiScalePct(float pct) { uiScalePct = pct; }
+		static float  getUiScalePct()          { return uiScalePct; }
+		static void   setUiScalePct(float pct) { uiScalePct = pct; }
+		static UIMode getUIMode()              { return uiMode; }
+		static void   setUIMode(UIMode m)      { uiMode = m; }
 
 	public:
 		explicit Application(const std::shared_ptr<Simulation>& simulation = nullptr,

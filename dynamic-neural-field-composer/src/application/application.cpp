@@ -6,7 +6,8 @@
 
 namespace dnf_composer
 {
-	float Application::uiScalePct = 100.0f;
+	float   Application::uiScalePct = 100.0f;
+	UIMode  Application::uiMode     = UIMode::Dynamic;
 
 	Application::Application(const std::shared_ptr<Simulation>& simulation,
 		const std::shared_ptr<Visualization>& visualization)
@@ -48,6 +49,9 @@ namespace dnf_composer
 			float scale = 100.0f;
 			if (sscanf(line, "UiScale=%f", &scale) == 1)
 				Application::setUiScalePct(scale);
+			int mode = 0;
+			if (sscanf(line, "UIMode=%d", &mode) == 1)
+				Application::setUIMode(static_cast<UIMode>(mode));
 		};
 
 		// called when ImGui writes imgui.ini to disk
@@ -55,6 +59,7 @@ namespace dnf_composer
 		{
 			buf->appendf("[%s][Data]\n", h->TypeName);
 			buf->appendf("UiScale=%.0f\n", Application::getUiScalePct());
+			buf->appendf("UIMode=%d\n",    static_cast<int>(Application::getUIMode()));
 			buf->appendf("\n");
 		};
 
@@ -206,7 +211,7 @@ namespace dnf_composer
 
 	    style.WindowPadding         = ImVec2(14, 10);
 	    style.WindowRounding        = 8.0f;
-	    style.WindowBorderSize      = 1.0f;
+	    style.WindowBorderSize      = 0.0f;
 	    style.WindowMinSize         = ImVec2(32, 32);
 	    style.WindowTitleAlign      = ImVec2(0.0f, 0.5f); // left-aligned titles
 	    style.WindowMenuButtonPosition = ImGuiDir_None;
@@ -219,7 +224,7 @@ namespace dnf_composer
 
 	    style.FramePadding          = ImVec2(10, 6);
 	    style.FrameRounding         = 6.0f;
-	    style.FrameBorderSize       = 1.0f;
+	    style.FrameBorderSize       = 0.0f;
 
 	    style.ItemSpacing           = ImVec2(10, 8);
 	    style.ItemInnerSpacing      = ImVec2(6, 6);
@@ -267,7 +272,7 @@ namespace dnf_composer
 	    c[ImGuiCol_TextDisabled]         = TEXT_MUTED;
 
 	    // Windows / areas
-	    c[ImGuiCol_WindowBg]             = CARD_BG;
+	    c[ImGuiCol_WindowBg]             = ImVec4(1.00f, 1.00f, 1.00f, 218.0f/255.0f);
 	    c[ImGuiCol_ChildBg]              = ImVec4(0,0,0,0); // children are drawn as part of your custom zones
 	    c[ImGuiCol_PopupBg]              = ImVec4(1,1,1,0.98f);
 
@@ -281,9 +286,9 @@ namespace dnf_composer
 	    c[ImGuiCol_FrameBgActive]        = ImVec4(ACCENT.x, ACCENT.y, ACCENT.z, 0.30f);
 
 	    // Title bars (kept subtle; you mainly use custom cards)
-	    c[ImGuiCol_TitleBg]              = CARD_BG;
-	    c[ImGuiCol_TitleBgActive]        = CARD_BG;
-	    c[ImGuiCol_TitleBgCollapsed]     = CARD_BG;
+	    c[ImGuiCol_TitleBg]              = ImVec4(1.00f, 1.00f, 1.00f, 153.0f/255.0f);
+	    c[ImGuiCol_TitleBgActive]        = ImVec4(1.00f, 1.00f, 1.00f, 153.0f/255.0f);
+	    c[ImGuiCol_TitleBgCollapsed]     = ImVec4(1.00f, 1.00f, 1.00f, 153.0f/255.0f);
 
 	    // Menubar & scrollbars
 	    c[ImGuiCol_MenuBarBg]            = PANEL_LIGHT;

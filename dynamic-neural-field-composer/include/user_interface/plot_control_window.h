@@ -17,5 +17,6 @@ namespace dnf_composer::user_interface
 	public:
 		explicit PlotControlWindow(const std::shared_ptr<Visualization>& visualization);
 		void render() override;
+		void renderContent();
 	};
 }

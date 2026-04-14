@@ -30,6 +30,7 @@ namespace dnf_composer::user_interface
 		std::vector<float> rowHeights;
 
 		void recomputeLayout(int n, float availW, float availH);
+	public:
 		void renderTiles();
 
 	public:

@@ -6,6 +6,7 @@
 #include "user_interface/plot_control_window.h"
 #include "user_interface/simulation_window.h"
 #include "user_interface/log_window.h"
+#include "user_interface/static_layout_window.h"
 
 int main()
 {
@@ -17,15 +18,15 @@ int main()
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
-		//app.addWindow<user_interface::MainWindow>();
 		app.addWindow<user_interface::MainMenuBar>();
-		app.addWindow<user_interface::SimulationWindow>();
-		app.addWindow<user_interface::ElementWindow>();
-		app.addWindow<user_interface::FieldMetricsWindow>();
-		app.addWindow<user_interface::PlotControlWindow>();
-		app.addWindow<user_interface::PlotsWindow>();
-		app.addWindow<user_interface::NodeGraphWindow>();
-		app.addWindow<user_interface::LogWindow>();
+		// app.addWindow<user_interface::SimulationWindow>();
+		// app.addWindow<user_interface::ElementWindow>();
+		// app.addWindow<user_interface::FieldMetricsWindow>();
+		// app.addWindow<user_interface::PlotControlWindow>();
+		// app.addWindow<user_interface::PlotsWindow>();
+		// app.addWindow<user_interface::NodeGraphWindow>();
+		// app.addWindow<user_interface::LogWindow>();
+		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
 		app.init();
 

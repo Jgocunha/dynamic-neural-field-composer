@@ -38,16 +38,7 @@ namespace dnf_composer::user_interface
 
 		if (!open) { ImGui::End(); return; }
 
-		const int n = static_cast<int>(visualization->getPlots().size());
-
-		if (n != lastPlotCount)
-		{
-			recomputeLayout(n, ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y);
-			lastPlotCount = n;
-		}
-
-		if (n > 0)
-			renderTiles();
+		renderTiles();
 
 		ImGui::End();
 	}
@@ -57,6 +48,14 @@ namespace dnf_composer::user_interface
 		const auto plots = visualization->getPlots();
 		const int  n     = static_cast<int>(plots.size());
 		if (n == 0) return;
+
+		// Recompute layout when plot count changes (called from both render() and StaticLayoutWindow)
+		const ImVec2 avail = ImGui::GetContentRegionAvail();
+		if (n != lastPlotCount)
+		{
+			recomputeLayout(n, avail.x, avail.y);
+			lastPlotCount = n;
+		}
 
 		const int cols = static_cast<int>(colWidths.size());
 		const int rows = static_cast<int>(rowHeights.size());

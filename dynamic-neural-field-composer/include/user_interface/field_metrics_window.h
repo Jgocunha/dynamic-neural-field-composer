@@ -27,10 +27,10 @@ namespace dnf_composer::user_interface
 		FieldMetricsWindow& operator=(FieldMetricsWindow&&)      = delete;
 
 		void render() override;
+		void renderCards() const;
 		~FieldMetricsWindow() override = default;
 
 	private:
-		void renderCards() const;
 		static void renderCardContent(const std::shared_ptr<element::NeuralField>& nf,
 		                              const std::vector<element::NeuralFieldBump>&  bumps);
 	};

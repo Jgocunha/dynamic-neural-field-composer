@@ -7,15 +7,10 @@ namespace dnf_composer::user_interface
 		:visualization(visualization), simulation(visualization->getSimulation())
 	{}
 
-	void PlotControlWindow::render()
+	void PlotControlWindow::renderContent()
 	{
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Plot Control", nullptr, imgui_kit::getGlobalWindowFlags());
-		ImGui::PopFont();
-		if (open)
-		{
-			// Add a new plot button
-			ImGui::Text("Add a new plot:"); ImGui::SameLine();
+		// Add a new plot button
+		ImGui::Text("Add a new plot:"); ImGui::SameLine();
 			static auto selectedPlotType = PlotType::LINE_PLOT;
 			ImGui::SetNextItemWidth(150.0f);
 			ImGui::Combo("##PlotType", reinterpret_cast<int*>(&selectedPlotType), "Line plot\0Heatmap\0\0");
@@ -141,7 +136,15 @@ namespace dnf_composer::user_interface
 
 			}
 			ImGui::EndTable();
-		}
+	}
+
+	void PlotControlWindow::render()
+	{
+		ImGui::PushFont(g_BlackLargeFont);
+		const bool open = ImGui::Begin("Plot Control", nullptr, imgui_kit::getGlobalWindowFlags());
+		ImGui::PopFont();
+		if (open)
+			renderContent();
 		ImGui::End();
 	}
 }
