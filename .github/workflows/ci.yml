@@ -84,7 +84,7 @@ jobs:
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
         run: |
-          cmake -S . -B build \
+          cmake -S ./dynamic-neural-field-composer -B build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
