@@ -67,7 +67,7 @@ jobs:
 
       - name: Configure imgui-platform-kit
         run: |
-          cmake -S ${{ github.workspace }}/imgui-platform-kit-src \
+          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
                 -B ${{ github.workspace }}/imgui-platform-kit-src/build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
