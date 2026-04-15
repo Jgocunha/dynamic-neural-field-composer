@@ -67,7 +67,11 @@ namespace dnf_composer::user_interface
 			const float dataColWidth     = availWidth * 0.500f;
 			const float changeColWidth   = availWidth * 0.250f;
 
-			if (ImGui::BeginTable("PlotControlTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+			const float tableHeight = ImGui::GetContentRegionAvail().y;
+			if (ImGui::BeginTable("PlotControlTable", 4,
+				ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg |
+				ImGuiTableFlags_ScrollY,
+				ImVec2(0.0f, tableHeight)))
 			{
 				// Set column headers
 				ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed, idColWidth);
