@@ -71,6 +71,15 @@ app.step()  [called every frame]
 
 ## Key design decisions
 
+### UIMode and layout strategy
+
+`Application` supports two layout modes controlled by `UIMode`:
+
+- `UIMode::Dynamic` — each window is a free-floating, dockable ImGui panel
+- `UIMode::Static` — all panels are hosted inside `StaticLayoutWindow`, which arranges them in a fixed tiled layout
+
+`StaticLayoutWindow` is the preferred production layout: it owns instances of every sub-window and manages sizing/positioning in `drawPanels()`.
+
 ### Elements as nodes in a graph
 Elements form a directed graph. Each element holds references to its input elements and reads from a named component (e.g. `"output"`) during `step()`. Interactions are explicit: calling `a->addInput(b)` registers `b` as a source for `a`.
 

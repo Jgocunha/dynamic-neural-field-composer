@@ -1,11 +1,16 @@
+# dynamic-neural-field-composer
+
 <img src="./dynamic-neural-field-composer/resources/images/logo.png" alt="logo" >
 
-Dynamic Neural Field Composer - A C++ application designed for developing and simulating dynamic neural field architectures
+A C++20 library and interactive application for building and simulating **Dynamic Neural Field (DNF)** architectures.
+
 ===============================================
 
 ## Description
 
-Dynamic Neural Field Composer leverages modern C++ standards to offer a robust framework for the creation, composition, and real-time visualization of neural field dynamics. This tool is equipped with a graphical user interface that enhances user interaction, making it easier to monitor and adjust neural field behaviors and properties dynamically.
+Dynamic Neural Fields are a mathematical framework from computational neuroscience that describes how populations of neurons represent, sustain, and transform information distributed over continuous feature dimensions — such as spatial position, direction, or color. A DNF is governed by a differential equation that produces rich emergent behaviors including self-sustained activation bumps (working memory), winner-take-all selection, and sequence generation, all arising from the interplay of local excitation and surround inhibition.
+
+This library provides a complete toolkit for designing, connecting, simulating, and visualizing DNF architectures at runtime. Simulations are defined programmatically or via a visual node-graph editor, and can be saved and reloaded as JSON. Researchers use it to prototype neural field models; engineers use it to drive cognitive architectures for robotic tasks.
 
 ## Functionalities
 
@@ -18,58 +23,54 @@ Dynamic Neural Field Composer leverages modern C++ standards to offer a robust f
 - **Plotting and Visualization**: Integrated plotting tools to visualize neural activity and simulation metrics.
 - **Centroid Monitoring**: Track and display the centroid of neural activations to study stability and activity patterns.
 
-## Project Dependencies
+---
 
-- **C++20**: Ensures compatibility with modern C++ features for optimal performance.
-- **CMake 3.15+**: For building and configuring the project.
-- **VCPKG**: Manages C++ libraries, facilitating the integration of external tools like ImGui and ImPlot.
-- **imgui-platform-kit**: A cross-platform toolkit designed to facilitate the development of user interfaces using Dear ImGui. [imgui-platform-kit](https://github.com/Jgocunha/imgui-platform-kit)
-- **DirectX 12 (Windows)** / **OpenGL (Linux)**: Essential for rendering graphical content.
-- **GLFW (Linux)**: Supports window management and various operating functions on Linux.
+## Requirements
 
-The rest of the dependencies are installed automatically when running `build.bat`.  However, you must have defined the `VCPKG_ROOT` directory.
+- **CMake** 3.20 or later
+- **C++20** compiler (MSVC, GCC, or Clang)
+- **vcpkg** (set `VCPKG_ROOT` environment variable)
 
-- **Dear ImGui**: Provides the foundational GUI components.
-- **ImPlot**: Enables advanced plotting capabilities within ImGui interfaces.
-- **nlohmann_json**: Supports JSON for configuration and saving of simulation states.
+vcpkg dependencies (installed automatically):
 
-## Building and Installing
+| Package | Purpose |
+|---|---|
+| `imgui` | Immediate-mode GUI |
+| `implot` | Real-time plotting |
+| `unofficial-imgui-node-editor` | Visual node graph |
+| `nlohmann-json` | Simulation serialization |
+| `imgui-platform-kit` | Platform/window abstraction |
 
-The project includes platform-specific scripts to facilitate building and installation:
-- `build.bat`, `build.sh`: Compile the project using CMake configurations.
-- `install.bat`, `install.sh`: Install the library to your system via CMake.
+---
 
-**Note**:
-In a Linux machine you might have to:
-1. Create a build directory inside the project folder ```mkdir build```;
-2. Set ```VCPKG_ROOT``` directory as an environment variable ```export VCPKG_ROOT=/opt/vcpkg```;
-3. Confirm you have at least GCC 13+ ```g++ --version```, if not:
-    -   Install GCC 13
-    ```bash
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-    sudo apt update
-    sudo apt install gcc-13 g++-13
-    ```
-    - Set it as default (optional):
-    ```bash
-    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
-    sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
-    ```
-Before running the ```build.sh```.
+## Building
 
-## Integration into Your CMake Project
+```bash
+# Windows
+build.bat
 
-Post-installation, integrate the library into your CMake projects:
-
-```cmake
-find_package(dynamic-neural-field-composer REQUIRED)
-
-# Define your project target
-add_executable(your_target src/main.cpp)
-
-# Link against Dynamic Neural Field Composer
-target_link_libraries(your_target PRIVATE dynamic-neural-field-composer)
+# Linux / macOS
+./build.sh
 ```
+
+Or manually with CMake:
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+To install the library for use in another project:
+
+```bash
+# Windows
+install.bat
+
+# Linux / macOS
+./install.sh
+```
+
+---
 
 ## Getting started
 
@@ -78,6 +79,8 @@ target_link_libraries(your_target PRIVATE dynamic-neural-field-composer)
 3. You can run the example executables to see the library in action.
 
 The best way to get familiar with the library is to take a look at the ```examples``` folder!
+
+---
 
 ## Contributing
 

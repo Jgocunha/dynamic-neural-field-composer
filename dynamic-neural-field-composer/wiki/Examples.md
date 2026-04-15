@@ -129,8 +129,8 @@ auto visualization = std::make_shared<Visualization>(simulation);
 Application app{ simulation, visualization };
 
 // 2. Windows
-app.addWindow<user_interface::MainWindow>();
-// ... other windows
+app.addWindow<user_interface::MainMenuBar>();
+app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
 // 3. Elements
 ElementFactory factory;

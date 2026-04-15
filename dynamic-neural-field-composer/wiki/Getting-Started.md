@@ -191,10 +191,8 @@ int main()
     Application app{ simulation, visualization };
 
     // 2. Register UI windows
-    app.addWindow<user_interface::MainWindow>();
-    app.addWindow<user_interface::SimulationWindow>();
-    app.addWindow<user_interface::PlotsWindow>();
-    app.addWindow<user_interface::NodeGraphWindow>();
+    app.addWindow<user_interface::MainMenuBar>();
+    app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
     // 3. Create elements
     ElementFactory factory;

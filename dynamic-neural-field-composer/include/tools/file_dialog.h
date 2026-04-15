@@ -31,7 +31,7 @@ namespace FileDialog {
 	{
 		static int file_dialog_file_select_index = 0;
 		static int file_dialog_folder_select_index = 0;
-		static std::string file_dialog_current_path = std::string(OUTPUT_DIRECTORY);
+		static std::string file_dialog_current_path = std::string(OUTPUT_DIRECTORY) + "/simulations/";
 		//static std::string file_dialog_current_path = std::filesystem::current_path().string();
 		static std::string file_dialog_current_file;
 		static std::string file_dialog_current_folder;
@@ -68,6 +68,8 @@ namespace FileDialog {
 
 			const float ui = ImGui::GetIO().FontGlobalScale;
 			ImGui::SetNextWindowSize(ImVec2(1100.0f * ui, 450.0f * ui));
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			ImGui::SetNextWindowBgAlpha(1.0f);
 			const char* window_title = (type == FileDialogType::OpenFile ? "Select a file" : "Select a folder");
 			ImGui::Begin(window_title, nullptr, ImGuiWindowFlags_NoResize);
 

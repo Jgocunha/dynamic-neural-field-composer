@@ -21,13 +21,41 @@ Both arguments are optional. You can pass `nullptr` for either if you do not nee
 
 ---
 
-## Registering windows
+## UI mode
 
-Windows are added before `app.init()` is called. The `addWindow<T>()` template detects automatically what arguments the window type needs — you never need to pass `simulation` or `visualization` manually:
+The application supports two layout modes:
+
+| Mode | Description |
+|---|---|
+| `UIMode::Dynamic` | Each window is a free-floating, dockable ImGui panel (default) |
+| `UIMode::Static`  | All panels are embedded in a single `StaticLayoutWindow` with a fixed tiled layout |
 
 ```cpp
-app.addWindow<user_interface::MainWindow>();
-app.addWindow<imgui_kit::LogWindow>();
+Application::setUIMode(UIMode::Static);   // must be set before app.init()
+Application::setUIMode(UIMode::Dynamic);  // free-floating panels
+```
+
+The UI scale (50–200%) is also a global property:
+
+```cpp
+Application::setUiScalePct(125.0f);
+float scale = Application::getUiScalePct();
+```
+
+---
+
+## Registering windows
+
+Windows are added before `app.init()` is called. The `addWindow<T>()` template detects automatically what arguments the window type needs — you never need to pass `simulation` or `visualization` manually, except for `StaticLayoutWindow` which requires both:
+
+```cpp
+// Recommended: static composite layout
+app.addWindow<user_interface::MainMenuBar>();
+app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
+
+// Or: individual free-floating windows (dynamic layout)
+app.addWindow<user_interface::MainMenuBar>();
+app.addWindow<user_interface::LogWindow>();
 app.addWindow<user_interface::FieldMetricsWindow>();
 app.addWindow<user_interface::ElementWindow>();
 app.addWindow<user_interface::SimulationWindow>();
@@ -69,17 +97,27 @@ bool closed = app.hasGUIBeenClosed();
 
 ## Available windows
 
-### MainWindow
+### MainMenuBar
 
-Menu bar providing access to file operations (save/load simulation), layout presets, and global settings. Always include this window.
+Top-level menu bar providing access to file operations (save/load simulation), layout presets, and global settings. Always include this window.
 
 ```cpp
-app.addWindow<user_interface::MainWindow>();
+app.addWindow<user_interface::MainMenuBar>();
 ```
+
+### StaticLayoutWindow
+
+A composite window that arranges all panels — simulation controls, element inspector, field monitor, node graph, plots, plot control, and log — into a fixed tiled layout that adapts to the window size. This is the preferred layout for normal use.
+
+```cpp
+app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
+```
+
+Internally it hosts: `SimulationWindow`, `ElementWindow`, `NodeGraphWindow`, `FieldMetricsWindow`, `PlotControlWindow`, `PlotsWindow`, and `LogWindow`.
 
 ### SimulationWindow
 
-Controls for starting, pausing, stepping, and resetting the simulation. Displays current simulation time and `deltaT`.
+Controls for starting, pausing, stepping, and resetting the simulation. Each functional area (simulation parameters, run controls, element management, interaction editor) is rendered as a collapsible **Card**.
 
 ```cpp
 app.addWindow<user_interface::SimulationWindow>();
@@ -95,7 +133,7 @@ app.addWindow<user_interface::ElementWindow>();
 
 ### FieldMetricsWindow
 
-Real-time metrics for all `NeuralField` elements: bump count, centroid positions, amplitudes, widths, min/max activation, and stability status.
+Real-time metrics for all `NeuralField` elements, rendered as a responsive card grid. Each card shows the field's stability status, lowest/highest activation, bump count, and per-bump details (centroid, amplitude, width, velocity, acceleration). Cards reflow automatically when the window is resized.
 
 ```cpp
 app.addWindow<user_interface::FieldMetricsWindow>();
@@ -111,7 +149,7 @@ app.addWindow<user_interface::PlotControlWindow>();
 
 ### PlotsWindow
 
-Hosts all active `implot` charts (line plots and heatmaps) registered through `Visualization::plot()`.
+Hosts all active `implot` charts (line plots and heatmaps) registered through `Visualization::plot()`. Charts are arranged in a **tiled layout** that recomputes column widths and row heights whenever a plot is added/removed or the window is resized.
 
 ```cpp
 app.addWindow<user_interface::PlotsWindow>();
@@ -127,11 +165,70 @@ app.addWindow<user_interface::NodeGraphWindow>();
 
 ### LogWindow
 
-A scrollable log output window showing messages from the logger at all levels (DEBUG, INFO, WARNING, ERROR, FATAL).
+A scrollable, filterable log output window showing messages from the logger at all levels (DEBUG, INFO, WARNING, ERROR, FATAL).
 
 ```cpp
-app.addWindow<imgui_kit::LogWindow>();
+app.addWindow<user_interface::LogWindow>();
 ```
+
+---
+
+## Widgets
+
+Custom reusable widgets are available in the `dnf_composer::user_interface::widgets` namespace:
+
+```cpp
+#include "user_interface/widgets.h"
+```
+
+| Widget | Description |
+|---|---|
+| `renderHelpMarker(desc)` | A `(?)` tooltip trigger |
+| `renderSidebarTab(icon, label, selected)` | An icon + label sidebar tab button, returns `true` when clicked |
+| `renderIconTileButton(id, icon, label, ...)` | A large icon tile button with configurable colors |
+| `Card` | A bordered, rounded child region with a title; use `beginCard()` / `endCard()` |
+| `BeginHorizontal` / `EndHorizontal` | Group widgets in a horizontal layout |
+| `BeginVertical` / `EndVertical` | Group widgets in a vertical layout |
+
+### Card usage
+
+```cpp
+using namespace dnf_composer::user_interface::widgets;
+
+Card card{ "##my_card", pos, size, "Card Title" };
+if (card.beginCard(Application::getUiScalePct()))
+{
+    ImGui::Text("Card content here");
+    Card::endCard();
+}
+```
+
+---
+
+## Fonts
+
+The application loads the **Cera Pro** typeface in four weights (Light, Medium, Bold, Black) and three sizes, plus a **JetBrains Mono** monospace font and **Font Awesome 6** icon sets. Font globals are declared in `application.h`:
+
+| Global | Weight | Size |
+|---|---|---|
+| `g_LightMediumFont` | Light (main font) | 18 px |
+| `g_LightSmallFont` | Light | 12 px |
+| `g_LightLargeFont` | Light | 24 px |
+| `g_MediumSmallFont` | Medium | 12 px |
+| `g_MediumMediumFont` | Medium | 18 px |
+| `g_MediumLargeFont` | Medium | 24 px |
+| `g_BoldSmallFont` | Bold | 12 px |
+| `g_BoldMediumFont` | Bold | 18 px |
+| `g_BoldLargeFont` | Bold | 24 px |
+| `g_BlackSmallFont` | Black | 20 px |
+| `g_BlackMediumFont` | Black | 24 px |
+| `g_BlackLargeFont` | Black | 30 px |
+| `g_MonoSmallFont` | JetBrains Mono | 16 px |
+| `g_MonoMediumFont` | JetBrains Mono | 20 px |
+| `g_MonoLargeFont` | JetBrains Mono | 26 px |
+| `g_SmallIconsFont` | Font Awesome 6 | 12 px |
+| `g_MediumIconsFont` | Font Awesome 6 | 20 px |
+| `g_LargeIconsFont` | Font Awesome 6 | 48 px |
 
 ---
 

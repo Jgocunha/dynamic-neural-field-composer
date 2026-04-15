@@ -11,7 +11,7 @@ namespace dnf_composer::user_interface
 	// Both columns share the same base width so their content is never cropped.
 	// Only column C (node graph / plots / logs / plot control) stretches when
 	// the main window is resized.
-	static constexpr float kColABase = 470.0f;  // base px for Simulation + Neural Field Monitoring column
+	static constexpr float kColABase = 475.0f;  // base px for Simulation + Neural Field Monitoring column
 	static constexpr float kColBBase = 360.0f;  // base px for Element Control column
 
 	static constexpr float kRowSimFrac  = 0.72f;   // Simulation Control height (of col A)

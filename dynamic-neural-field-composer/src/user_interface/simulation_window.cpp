@@ -53,10 +53,10 @@ namespace dnf_composer::user_interface
 
 		// Simulation ID
 		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Simulation");
+		ImGui::TextUnformatted("Simulation ID");
 		ImGui::SameLine();
 
-		ImGui::SetNextItemWidth(340.0f * ui);
+		ImGui::SetNextItemWidth(320.0f * ui);
 		const bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
 										 ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue);
 
@@ -847,7 +847,7 @@ namespace dnf_composer::user_interface
 	    // Element combo
 	    static std::string selectedElementId;
 	    const char* elemPreview = selectedElementId.empty() ? "element" : selectedElementId.c_str();
-	    ImGui::SetNextItemWidth(180.0f * ImGui::GetIO().FontGlobalScale);
+	    ImGui::SetNextItemWidth(140.0f * ImGui::GetIO().FontGlobalScale);
 	    if (ImGui::BeginCombo("##export_elem_combo", elemPreview))
 	    {
 	        for (const auto& e : simulation->getElements())
@@ -919,7 +919,7 @@ namespace dnf_composer::user_interface
 		// Element combo
 		static std::string selectedId;
 		const char* preview = selectedId.empty() ? "element" : selectedId.c_str();
-		ImGui::SetNextItemWidth(180.0f * ImGui::GetIO().FontGlobalScale);
+		ImGui::SetNextItemWidth(140.0f * ImGui::GetIO().FontGlobalScale);
 		if (ImGui::BeginCombo("##log_elem_combo", preview))
 		{
 			for (const auto& e : simulation->getElements())

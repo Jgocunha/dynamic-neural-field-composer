@@ -65,7 +65,7 @@ namespace dnf_composer::user_interface
                 	initialized = true;
                 }
 
-                ImGui::Text("Simulation identifier");
+                ImGui::Text("Simulation ID");
             	static char idBuf[128];
             	std::snprintf(idBuf, IM_ARRAYSIZE(idBuf), "%s", simulation->getUniqueIdentifier().c_str());
             	const bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
