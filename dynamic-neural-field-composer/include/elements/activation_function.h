@@ -5,67 +5,64 @@
 #include "tools/logger.h"
 #include "tools/math.h"
 
-namespace dnf_composer
+
+namespace dnf_composer::element
 {
-	namespace element
+	enum ActivationFunctionType : int
 	{
-		enum ActivationFunctionType : int
-		{
-			SIGMOID,
-			HEAVISIDE,
-		};
+		SIGMOID,
+		HEAVISIDE,
+	};
 
-		struct ActivationFunction
-		{
-			ActivationFunctionType type;
-			ActivationFunction() = default;                                 
-			ActivationFunction(const ActivationFunction&) = default;
-			ActivationFunction& operator=(const ActivationFunction&) = delete;
-			virtual std::vector<double> operator()(const std::vector<double>& input) = 0;
-			virtual bool operator==(const ActivationFunction& other) const = 0;
-			virtual std::unique_ptr<ActivationFunction> clone() const = 0;
-			virtual std::string toString() const = 0;
-			virtual void print() const = 0;
-			virtual ~ActivationFunction() = default;
+	struct ActivationFunction
+	{
+		ActivationFunctionType type;
+		ActivationFunction() = default;
+		ActivationFunction(const ActivationFunction&) = default;
+		ActivationFunction& operator=(const ActivationFunction&) = delete;
+		virtual std::vector<double> operator()(const std::vector<double>& input) = 0;
+		[[nodiscard]] virtual std::unique_ptr<ActivationFunction> clone() const = 0;
+		[[nodiscard]] virtual std::string toString() const = 0;
+		virtual void print() const = 0;
+		virtual ~ActivationFunction() = default;
 
-		};
+	};
 
-		struct SigmoidFunction : public ActivationFunction
-		{
-			double x_shift, steepness;
+	struct SigmoidFunction final : public ActivationFunction
+	{
+		double x_shift, steepness;
 
-			SigmoidFunction(const SigmoidFunction&) = default;
-			SigmoidFunction(double x_shift, double steepness);
+		SigmoidFunction(const SigmoidFunction&) = default;
+		SigmoidFunction(double x_shift, double steepness);
 
-			std::vector<double> operator()(const std::vector<double>& input) override;
-			bool operator==(const ActivationFunction& other) const override;
-			std::unique_ptr<ActivationFunction> clone() const override;
-			std::string toString() const override;
-			void print() const override;
+		std::vector<double> operator()(const std::vector<double>& input) override;
+		bool operator==(const SigmoidFunction& other) const;
+		[[nodiscard]] std::unique_ptr<ActivationFunction> clone() const override;
+		[[nodiscard]] std::string toString() const override;
+		void print() const override;
 
-			double getSteepness() const;
-			double getXShift() const;
+		[[nodiscard]] double getSteepness() const;
+		[[nodiscard]] double getXShift() const;
 
-			~SigmoidFunction() override = default;
+		~SigmoidFunction() override = default;
 
-		};
+	};
 
-		struct HeavisideFunction : public ActivationFunction
-		{
-			double x_shift;
+	struct HeavisideFunction final : public ActivationFunction
+	{
+		double x_shift;
 
-			HeavisideFunction(const HeavisideFunction&) = default;
-			HeavisideFunction(double x_shift);
+		HeavisideFunction(const HeavisideFunction&) = default;
+		explicit HeavisideFunction(double x_shift);
 
-			std::vector<double> operator()(const std::vector<double>& input) override;
-			bool operator==(const ActivationFunction& other) const override;
-			std::unique_ptr<ActivationFunction> clone() const override;
-			std::string toString() const override;
-			void print() const override;
+		std::vector<double> operator()(const std::vector<double>& input) override;
+		bool operator==(const HeavisideFunction& other) const;
+		[[nodiscard]] std::unique_ptr<ActivationFunction> clone() const override;
+		[[nodiscard]] std::string toString() const override;
+		void print() const override;
 
-			double getXShift() const;
+		[[nodiscard]] double getXShift() const;
 
-			~HeavisideFunction() override = default;
-		};
-	}
+		~HeavisideFunction() override = default;
+	};
 }

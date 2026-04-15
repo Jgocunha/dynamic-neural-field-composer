@@ -277,3 +277,36 @@ add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
 add_example_executable(ex_grand_architecture ex_grand_architecture.cpp)
 add_example_executable(ex_packaging_task ex_packaging_task.cpp)
+
+# Tests (GTest)
+option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
+if(DNF_COMPOSER_BUILD_TESTS)
+    find_package(GTest CONFIG REQUIRED)
+    enable_testing()
+
+    add_executable(dnf_composer_tests
+            "tests/test_simulation.cpp"
+            "tests/test_activation_function.cpp"
+            "tests/test_element_parameters.cpp"
+            "tests/test_element.cpp"
+            "tests/test_gauss_stimulus.cpp"
+            "tests/test_neural_field.cpp"
+            "tests/test_kernels.cpp"
+            "tests/test_normal_noise.cpp"
+            "tests/test_gauss_field_coupling.cpp"
+            "tests/test_math.cpp"
+            "tests/test_exception.cpp"
+            "tests/test_simulation_file_manager.cpp"
+    )
+    target_include_directories(dnf_composer_tests PRIVATE include)
+    target_link_libraries(dnf_composer_tests PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            GTest::gtest
+            GTest::gtest_main
+            imgui::imgui
+            imgui-platform-kit
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(dnf_composer_tests)
+endif()
