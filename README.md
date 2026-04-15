@@ -4,7 +4,7 @@
 
 A C++20 library and interactive application for building and simulating **Dynamic Neural Field (DNF)** architectures.
 
-===============================================
+---
 
 ## Description
 
