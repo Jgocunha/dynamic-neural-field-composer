@@ -1,12 +1,10 @@
-#include "application/application.h"
-#include "user_interface/field_metrics_window.h"
-#include "user_interface/main_menu_bar.h"
-#include "user_interface/main_menu_window.h"
-#include "user_interface/plots_window.h"
-#include "user_interface/plot_control_window.h"
-#include "user_interface/simulation_window.h"
-#include "user_interface/log_window.h"
-#include "user_interface/static_layout_window.h"
+﻿// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
+
+#include "dynamic-neural-field-composer-static.h"
+
+
 
 int main()
 {
@@ -14,18 +12,12 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("fixed layout test");
+		const auto simulation = std::make_shared<Simulation>("default simulation");
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
+		// Add the windows to the application
 		app.addWindow<user_interface::MainMenuBar>();
-		// app.addWindow<user_interface::SimulationWindow>();
-		// app.addWindow<user_interface::ElementWindow>();
-		// app.addWindow<user_interface::FieldMetricsWindow>();
-		// app.addWindow<user_interface::PlotControlWindow>();
-		// app.addWindow<user_interface::PlotsWindow>();
-		// app.addWindow<user_interface::NodeGraphWindow>();
-		// app.addWindow<user_interface::LogWindow>();
 		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
 		app.init();
@@ -36,8 +28,6 @@ int main()
 		}
 
 		app.close();
-
-		return 0;
 	}
 	catch (const dnf_composer::Exception& ex)
 	{

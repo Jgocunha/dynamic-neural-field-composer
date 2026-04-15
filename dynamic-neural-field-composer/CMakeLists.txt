@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.20...3.30)
 
 project(dynamic-neural-field-composer
-        DESCRIPTION "A C++ application to simulate Dynamic Neural Field Architectures"
+        DESCRIPTION "A C++20 library and interactive application for building and simulating Dynamic Neural Field (DNF) architectures."
         LANGUAGES CXX
 )
 
@@ -111,11 +111,10 @@ set(user_interface_headers
         "include/user_interface/log_window.h"
         "include/user_interface/fonts/IconsFontAwesome6.h"
         "include/user_interface/fonts/fa.h"
-        include/user_interface/main_menu_window.h
-        include/user_interface/static_layout_window.h
-        include/user_interface/node_utilities/builders.h
-        include/user_interface/node_utilities/drawing.h
-        include/user_interface/node_utilities/widgets.h
+        "include/user_interface/static_layout_window.h"
+        "include/user_interface/node_utilities/builders.h"
+        "include/user_interface/node_utilities/drawing.h"
+        "include/user_interface/node_utilities/widgets.h"
 )
 
 set(header 
@@ -183,11 +182,10 @@ set(src
         "src/user_interface/widgets.cpp"
         "src/user_interface/plots_window.cpp"
         "src/user_interface/log_window.cpp"
-        src/user_interface/main_menu_window.cpp
-        src/user_interface/static_layout_window.cpp
-        src/user_interface/node_utilities/builders.cpp
-        src/user_interface/node_utilities/drawing.cpp
-        src/user_interface/node_utilities/widgets.cpp
+        "src/user_interface/static_layout_window.cpp"
+        "src/user_interface/node_utilities/builders.cpp"
+        "src/user_interface/node_utilities/drawing.cpp"
+        "src/user_interface/node_utilities/widgets.cpp"
 )
 
 # Define library target
@@ -255,15 +253,22 @@ install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CON
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
 
-
-# Main launcher
-set(LAUNCHER launcher)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer.cpp")
+# Main launchers
+set(LAUNCHER dnf-composer-static)
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-static.cpp")
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
 imgui::imgui
 imgui-platform-kit 
 ${CMAKE_PROJECT_NAME})
+
+set(LAUNCHER dnf-composer-dynamic)
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-dynamic.cpp")
+target_include_directories(${LAUNCHER} PRIVATE include)
+target_link_libraries(${LAUNCHER} PRIVATE
+        imgui::imgui
+        imgui-platform-kit
+        ${CMAKE_PROJECT_NAME})
 
 # Function to add example executables
 function(add_example_executable target_name source_file)
@@ -282,4 +287,3 @@ add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
-add_example_executable(ex_fixed_layout_test ex_fixed_layout_test.cpp)
