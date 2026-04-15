@@ -121,6 +121,8 @@ namespace dnf_composer
 	{
 		paused = false;
 		t = tZero;
+		accumulatedRunDuration = std::chrono::nanoseconds{ 0 };
+		runSegmentStart = std::chrono::steady_clock::now();
 		for (const auto& element : elements)
 			element->init();
 
@@ -132,13 +134,17 @@ namespace dnf_composer
 	{
 		if (paused)
 			return;
+		const auto t0 = std::chrono::steady_clock::now();
 		t += deltaT;
 		for (const auto& element : elements)
 			element->step(t, deltaT);
+		lastStepDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+			std::chrono::steady_clock::now() - t0);
 	}
 
 	void Simulation::close()
 	{
+		pause();
 		for (const auto& element : elements)
 			element->close();
 		
@@ -149,12 +155,15 @@ namespace dnf_composer
 	void Simulation::pause()
 	{
 		paused = true;
+		accumulatedRunDuration += std::chrono::duration_cast<std::chrono::nanoseconds>(
+			std::chrono::steady_clock::now() - runSegmentStart);
 		log(tools::logger::LogLevel::INFO, "Simulation paused.");
 	}
 
 	void Simulation::resume()
 	{
 		paused = false;
+		runSegmentStart = std::chrono::steady_clock::now();
 		log(tools::logger::LogLevel::INFO, "Simulation resumed.");
 	}
 
@@ -193,6 +202,24 @@ namespace dnf_composer
 			init();
 
 		while (t < simTime)
+			step();
+
+		close();
+	}
+
+	void Simulation::runForRealTime(double milliseconds)
+	{
+		if (milliseconds <= 0)
+			throw Exception(ErrorCode::SIM_RUNTIME_LESS_THAN_ZERO, static_cast<int>(milliseconds));
+
+		if (!initialized)
+			init();
+
+		const auto deadline = std::chrono::steady_clock::now()
+			+ std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+				std::chrono::duration<double, std::milli>(milliseconds));
+
+		while (std::chrono::steady_clock::now() < deadline)
 			step();
 
 		close();
@@ -381,6 +408,19 @@ namespace dnf_composer
 	double Simulation::getT() const
 	{
 		return t;
+	}
+
+	std::chrono::nanoseconds Simulation::getLastStepDuration() const
+	{
+		return lastStepDuration;
+	}
+
+	std::chrono::nanoseconds Simulation::getTotalRunDuration() const
+	{
+		if (paused)
+			return accumulatedRunDuration;
+		return accumulatedRunDuration + std::chrono::duration_cast<std::chrono::nanoseconds>(
+			std::chrono::steady_clock::now() - runSegmentStart);
 	}
 
 	bool Simulation::componentExists(const std::string& id, const std::string& componentName) const

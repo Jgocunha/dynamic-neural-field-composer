@@ -1,0 +1,53 @@
+﻿// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
+
+#include "dynamic-neural-field-composer-static.h"
+
+
+
+int main()
+{
+	try
+	{
+		using namespace dnf_composer;
+
+		const auto simulation = std::make_shared<Simulation>("default simulation");
+		const auto visualization = std::make_shared<Visualization>(simulation);
+
+		// Static layout: the entire UI is arranged in a fixed panel grid managed by
+		// StaticLayoutWindow. Plots are rendered as resizable tiles inside a dedicated
+		// plots panel (PlotWindowMode::TILED). Docking is disabled; window positions
+		// and sizes are controlled programmatically.
+		const Application app{ simulation, visualization };
+
+		// Add the windows to the application
+		app.addWindow<user_interface::MainMenuBar>();
+		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
+
+		app.init();
+
+		while (!app.hasGUIBeenClosed())
+		{
+			app.step();
+		}
+
+		app.close();
+	}
+	catch (const dnf_composer::Exception& ex)
+	{
+		const std::string errorMessage = "Exception: " + std::string(ex.what()) + " ErrorCode: " + std::to_string(static_cast<int>(ex.getErrorCode())) + ". ";
+		log(dnf_composer::tools::logger::LogLevel::FATAL, errorMessage, dnf_composer::tools::logger::LogOutputMode::CONSOLE);
+		return static_cast<int>(ex.getErrorCode());
+	}
+	catch (const std::exception& ex)
+	{
+		log(dnf_composer::tools::logger::LogLevel::FATAL, "Exception caught: " + std::string(ex.what()) + ". ", dnf_composer::tools::logger::LogOutputMode::CONSOLE);
+		return 1;
+	}
+	catch (...)
+	{
+		log(dnf_composer::tools::logger::LogLevel::FATAL, "Unknown exception occurred. ", dnf_composer::tools::logger::LogOutputMode::CONSOLE);
+		return 1;
+	}
+}

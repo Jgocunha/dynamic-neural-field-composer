@@ -4,7 +4,7 @@
 
 namespace dnf_composer
 {
-	struct LinePlotParameters : PlotSpecificParameters
+	struct LinePlotParameters final : PlotSpecificParameters
 	{
 		double lineThickness;
 		bool autoFit;
@@ -16,15 +16,15 @@ namespace dnf_composer
 	};
 
 
-	class LinePlot : public Plot
+	class LinePlot final : public Plot
 	{
 		LinePlotParameters linePlotParameters;
 	public:
-		LinePlot(const PlotCommonParameters& parameters = 
-			{ PlotType::LINE_PLOT,
-			{0.0, 100.0, -20.0, 20.0, 1.0, 1.0},
-			{"Line plot", "Spatial dimension", "Amplitude"} },
-			const LinePlotParameters& linePlotParameters = LinePlotParameters());
+		explicit LinePlot(const PlotCommonParameters& parameters =
+		                  { PlotType::LINE_PLOT,
+			                  {0.0, 100.0, -20.0, 20.0, 1.0, 1.0},
+			                  {"Line plot", "Spatial dimension", "Amplitude"} },
+		                  const LinePlotParameters& linePlotParameters = LinePlotParameters());
 
 		void setLineThickness(double lineThickness);
 		void setAutoFit(bool autoFit);

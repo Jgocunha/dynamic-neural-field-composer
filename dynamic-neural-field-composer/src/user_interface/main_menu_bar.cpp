@@ -1,51 +1,23 @@
-#include "user_interface/main_window.h"
+#include "user_interface/main_menu_bar.h"
 
 #include <imgui-platform-kit/themes.h>
+#include "application/application.h"
 
 namespace dnf_composer::user_interface
 {
-	MainWindow::MainWindow(const std::shared_ptr<Simulation>& simulation)
+	MainMenuBar::MainMenuBar(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
 	{}
 
-
-	void MainWindow::render()
+	void MainMenuBar::render()
 	{
-		renderFullscreenWindow();
 		renderMainMenuBar();
 		renderFileWindows();
 		renderAdvancedSettingsWindows();
 		handleShortcuts();
 	}
 
-    void MainWindow::renderFullscreenWindow()
-    {
-        static bool use_work_area = true;
-        static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
-		| ImGuiWindowFlags_NoMove
-		| ImGuiWindowFlags_NoResize
-		| ImGuiWindowFlags_NoBringToFrontOnFocus
-		| ImGuiWindowFlags_NoNavFocus
-		//| ImGuiWindowFlags_NoInputs           // Prevents all mouse/keyboard input
-		//| ImGuiWindowFlags_NoBackground       // Makes window background transparent
-		| ImGuiWindowFlags_NoScrollbar        // Removes scrollbars
-		| ImGuiWindowFlags_NoScrollWithMouse  // Prevents mouse wheel scrolling
-		| ImGuiWindowFlags_NoCollapse         // Prevents collapsing (redundant with NoDecoration but explicit)
-		| ImGuiWindowFlags_NoTitleBar;        // Removes title bar (redundant with NoDecoration but explicit)
-
-		const ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
-		ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
-
-		// Set window to be behind all other windows
-		//ImGui::SetNextWindowBgAlpha(0.0f); // Make background completely transparent
-
-        if (ImGui::Begin("Fullscreen window", nullptr, flags))
-        {}
-        ImGui::End();
-    }
-
-    void MainWindow::renderMainMenuBar()
+    void MainMenuBar::renderMainMenuBar()
     {
         if (ImGui::BeginMainMenuBar())
         {
@@ -93,28 +65,46 @@ namespace dnf_composer::user_interface
                 	initialized = true;
                 }
 
-                ImGui::Text("Simulation Identifier");
-                ImGui::InputText("##inline_identifier", newIdentifier, sizeof(newIdentifier));
+                ImGui::Text("Simulation identifier");
+            	static char idBuf[128];
+            	std::snprintf(idBuf, IM_ARRAYSIZE(idBuf), "%s", simulation->getUniqueIdentifier().c_str());
+            	const bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
+										 ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue);
 
-                ImGui::SameLine();
-                if (ImGui::Button("Save##menu_identifier"))
-                {
-                    simulation->setUniqueIdentifier(newIdentifier);
-                }
+            	// Commit on Enter or when losing focus after modification
+            	if (idEdited || (ImGui::IsItemDeactivatedAfterEdit()))
+            		simulation->setUniqueIdentifier(std::string(idBuf));
 
                 ImGui::Separator();
 
                 static auto deltaT = static_cast<float>(simulation->getDeltaT());
-                ImGui::Text("Time Step (deltaT) ");
-                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.001f, 25.0, "%.3f");
+                ImGui::Text("Simulation time step (dt)");
+                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.001f, 25.0, "%.2f");
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     simulation->setDeltaT(deltaT);
 
                 ImGui::Separator();
 
-                ImGui::Text("Current Time (t) ");
+                ImGui::Text("Simulation time");
                 ImGui::SameLine();
-                ImGui::Text("%.3f", simulation->getT());
+                ImGui::Text("%.2f", simulation->getT());
+                ImGui::SameLine();
+                ImGui::Text(" t");
+
+                const long long stepNs = simulation->getLastStepDuration().count();
+                ImGui::Text("Real-time per step");
+                ImGui::SameLine();
+                ImGui::Text("%lld ns", stepNs);
+
+                const long long totalNs  = simulation->getTotalRunDuration().count();
+                const long long totalUs  = totalNs / 1'000LL;
+                const long long h        = totalUs / 3'600'000'000LL;
+                const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
+                const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
+                const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
+                ImGui::Text("Real time");
+                ImGui::SameLine();
+                ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
 
                 ImGui::EndMenu();
             }
@@ -132,24 +122,41 @@ namespace dnf_composer::user_interface
 
         	if (ImGui::BeginMenu("Interface Settings"))
         	{
-        		if (ImGui::MenuItem("Load Layout", "Ctrl+L"))
-        		{
-        			FileDialog::file_dialog_open = true;
-        			fileFlags.showOpenLayoutDialog = true;
-        			FileDialog::file_dialog_open_type = FileDialog::FileDialogType::OpenFile;
-        		}
-        		if (ImGui::MenuItem("Save Layout"))
-        		{
-        			std::string savePath = std::string(PROJECT_DIR) + "/resources/layouts/"
-						+ simulation->getIdentifier() + "_layout.ini";
-        			ImGui::SaveIniSettingsToDisk(savePath.c_str());
-        			log(tools::logger::LogLevel::INFO, "Saved layout to " + savePath + ".");
-        		}
-        		if (ImGui::MenuItem("Fixed Layout", nullptr, &interfaceFlags.fixedLayout))
-        		{
-        			toggleFixedLayout();
-        		}
+        		static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150 };
+        		static constexpr int presetCount = IM_ARRAYSIZE(presets);
 
+        		// find index of the current scale in presets (or nearest)
+        		const int current = static_cast<int>(Application::getUiScalePct());
+        		int currentIdx = 3; // default to 100%
+        		for (int i = 0; i < presetCount; ++i)
+        			if (presets[i] == current) { currentIdx = i; break; }
+
+        		char previewBuf[16];
+        		snprintf(previewBuf, sizeof(previewBuf), "%d%%", current);
+
+        		ImGui::Text("Zoom");
+        		ImGui::SameLine();
+        		ImGui::SetNextItemWidth(90.0f);
+        		if (ImGui::BeginCombo("##zoom", previewBuf, ImGuiComboFlags_HeightSmall))
+        		{
+        			for (int i = 0; i < presetCount; ++i)
+        			{
+        				char label[16];
+        				snprintf(label, sizeof(label), "%d%%", presets[i]);
+        				const bool selected = (presets[i] == current);
+        				if (ImGui::Selectable(label, selected))
+        					Application::setUiScalePct(static_cast<float>(presets[i]));
+        				if (selected)
+        					ImGui::SetItemDefaultFocus();
+        			}
+        			ImGui::EndCombo();
+        		}
+        		ImGui::SameLine();
+        		ImGui::TextDisabled("Ctrl + / Ctrl -");
+
+        		ImGui::Separator();
+        		const auto& io = ImGui::GetIO();
+        		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
         		ImGui::Separator();
 
         		ImGui::MenuItem("Dear ImGuiStyle Editor", nullptr,
@@ -179,7 +186,7 @@ namespace dnf_composer::user_interface
         }
     }
 
-    void MainWindow::renderFileWindows()
+    void MainMenuBar::renderFileWindows()
     {
         static char path[500] = "";
         static char* file_dialog_buffer = path;
@@ -205,17 +212,11 @@ namespace dnf_composer::user_interface
                     fileFlags.showOpenSimulationDialog = false;
                 	snprintf(path, sizeof(path), "%s", "");
                 }
-                else if (fileFlags.showOpenLayoutDialog)
-                {
-                    handleOpenLayoutDialog(path);
-					fileFlags.showOpenLayoutDialog = false;
-                	snprintf(path, sizeof(path), "%s", "");
-                }
 			}
         }
     }
 
-    void MainWindow::renderAdvancedSettingsWindows()
+    void MainMenuBar::renderAdvancedSettingsWindows()
     {
         if (advancedSettingsFlags.showImGuiDemo)
             ImGui::ShowDemoWindow();
@@ -240,7 +241,7 @@ namespace dnf_composer::user_interface
 			imgui_kit::showImGuiKitThemeSelector(&advancedSettingsFlags.showImGuiKitStyleEditor);
     }
 
-    void MainWindow::handleShortcuts()
+    void MainMenuBar::handleShortcuts()
     {
         const ImGuiIO& io = ImGui::GetIO();
 
@@ -277,45 +278,21 @@ namespace dnf_composer::user_interface
 	    }
 	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Q))
 	        std::exit(0);
-    }
 
-    void MainWindow::handleOpenLayoutDialog(const char* path)
-    {
-	    if (std::filesystem::exists(path))
+	    // Zoom in/out through presets
+	    static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150, 175, 200 };
+	    static constexpr int presetCount = IM_ARRAYSIZE(presets);
+	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Equal)) // Ctrl++
 	    {
-	        if (std::filesystem::path(path).extension() == ".ini")
-	        {
-	            const std::string iniFilePathStorage = path;
-	            auto io = ImGui::GetIO();
-	            io.IniFilename = iniFilePathStorage.c_str();
-	            ImGui::LoadIniSettingsFromDisk(io.IniFilename);
-	            log(tools::logger::LogLevel::INFO, "Layout file loaded successfully.");
-	        }
-	        else
-	        {
-	            log(tools::logger::LogLevel::ERROR, "File is not a .ini file.");
-	        }
+	        const int cur = static_cast<int>(Application::getUiScalePct());
+	        for (int i = 0; i < presetCount - 1; ++i)
+	            if (presets[i] == cur) { Application::setUiScalePct(static_cast<float>(presets[i + 1])); break; }
 	    }
-	    else
+	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Minus)) // Ctrl+-
 	    {
-	        log(tools::logger::LogLevel::ERROR, "File does not exist.");
+	        const int cur = static_cast<int>(Application::getUiScalePct());
+	        for (int i = 1; i < presetCount; ++i)
+	            if (presets[i] == cur) { Application::setUiScalePct(static_cast<float>(presets[i - 1])); break; }
 	    }
     }
-
-	void MainWindow::toggleFixedLayout() const
-	{
-		if (interfaceFlags.fixedLayout)
-		{
-			imgui_kit::setGlobalWindowFlags(ImGuiWindowFlags_NoMove |
-										   ImGuiWindowFlags_NoCollapse |
-										   ImGuiWindowFlags_NoResize);
-
-			log(tools::logger::LogLevel::INFO, "Fixed layout enabled - windows are locked in place.");
-		}
-		else
-		{
-			imgui_kit::setGlobalWindowFlags(0);
-			log(tools::logger::LogLevel::INFO, "Flexible layout enabled - windows can be moved freely.");
-		}
-	}
 }

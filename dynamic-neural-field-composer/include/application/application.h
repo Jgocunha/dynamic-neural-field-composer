@@ -9,10 +9,16 @@
 #include "exceptions/exception.h"
 #include "simulation/simulation.h"
 #include "visualization/visualization.h"
-#include "user_interface/main_window.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
+#include "user_interface/fonts/fa.h"
+
+#define IMGUI_ENABLE_FREETYPE
+#include "user_interface/fonts/imgui_freetype.h"
 
 namespace dnf_composer
 {
+	enum class UIMode { Dynamic = 0, Static = 1 };
+
 	// Base template: assumes T does not have a constructor that takes Simulation*
 	template<typename T, typename = void>
 	struct has_simulation_constructor : std::false_type {};
@@ -36,6 +42,15 @@ namespace dnf_composer
 		std::shared_ptr<Visualization> visualization;
 		std::shared_ptr<imgui_kit::UserInterface> gui;
 		bool guiActive;
+		static float uiScalePct; // user-controlled UI scale, 50–200%
+		static UIMode uiMode;
+
+	public:
+		static float  getUiScalePct()          { return uiScalePct; }
+		static void   setUiScalePct(float pct) { uiScalePct = pct; }
+		static UIMode getUIMode()              { return uiMode; }
+		static void   setUIMode(UIMode m)      { uiMode = m; }
+
 	public:
 		explicit Application(const std::shared_ptr<Simulation>& simulation = nullptr,
 			const std::shared_ptr<Visualization>& visualization = nullptr);
@@ -43,6 +58,7 @@ namespace dnf_composer
 		void init() const;
 		void step() const;
 		void close() const;
+		static void registerSettingsHandler();
 
 		// For window types that do not require Simulation* or Visualization* arguments
 		template<typename WindowType, typename... Args,
@@ -73,9 +89,34 @@ namespace dnf_composer
 
 		~Application() = default;
 	private:
-		void setGUIParameters();
-		void loadImGuiIniFile() const;
+		void setGUIParameters(); 
 		static void enableKeyboardShortcuts();
+		static void appendFonts();
 	};
-}
 
+	// Text fonts — 3 sizes per weight
+	inline ImFont* g_LightMediumFont;   // Cera Pro Light  @ 18 // main font
+	inline ImFont* g_LightSmallFont;    // Cera Pro Light  @ 12
+	inline ImFont* g_LightLargeFont;    // Cera Pro Light  @ 24
+
+	inline ImFont* g_MediumSmallFont;   // Cera Pro Medium @ 12
+	inline ImFont* g_MediumMediumFont;  // Cera Pro Medium @ 18
+	inline ImFont* g_MediumLargeFont;   // Cera Pro Medium @ 24
+
+	inline ImFont* g_BoldSmallFont;     // Cera Pro Bold   @ 12
+	inline ImFont* g_BoldMediumFont;    // Cera Pro Bold   @ 18
+	inline ImFont* g_BoldLargeFont;     // Cera Pro Bold   @ 24
+
+	inline ImFont* g_BlackSmallFont;    // Cera Pro Black  @ 20
+	inline ImFont* g_BlackMediumFont;   // Cera Pro Black  @ 24
+	inline ImFont* g_BlackLargeFont;    // Cera Pro Black  @ 30
+
+	inline ImFont* g_MonoSmallFont;     // JetBrainsMono   @ 16
+	inline ImFont* g_MonoMediumFont;    // JetBrainsMono   @ 20
+	inline ImFont* g_MonoLargeFont;     // JetBrainsMono   @ 26
+
+	inline constexpr size_t g_FontCount = 15; // icon fonts not counted
+	inline ImFont* g_SmallIconsFont;    // Font Awesome @ 12
+	inline ImFont* g_MediumIconsFont;   // Font Awesome @ 20
+	inline ImFont* g_LargeIconsFont;    // Font Awesome @ 48
+}
