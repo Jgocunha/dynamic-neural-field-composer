@@ -19,6 +19,7 @@ namespace dnf_composer
 		std::shared_ptr<Simulation> simulation;
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> plots;
 		std::string windowSuffix;
+		PlotWindowMode plotWindowMode = PlotWindowMode::TILED;
 	public:
 		explicit Visualization(const std::shared_ptr<Simulation>& simulation);
 
@@ -46,6 +47,9 @@ namespace dnf_composer
 
 		void setWindowIdSuffix(const std::string& s) { windowSuffix = s; }
 		void clearWindowIdSuffix() { windowSuffix.clear(); }
+
+		void setPlotWindowMode(PlotWindowMode mode) { plotWindowMode = mode; }
+		[[nodiscard]] PlotWindowMode getPlotWindowMode() const { return plotWindowMode; }
 	};
 }
 

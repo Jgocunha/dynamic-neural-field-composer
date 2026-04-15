@@ -1,12 +1,7 @@
+#include "visualization/visualization.h"
 #include "application/application.h"
+#include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
-#include "user_interface/field_metrics_window.h"
-#include "user_interface/element_window.h"
-#include "user_interface/plot_control_window.h"
-#include "user_interface/simulation_window.h"
-#include "elements/element_factory.h"
-#include "user_interface/plots_window.h"
-#include "user_interface/node_graph_window.h"
 
 int main()
 {
@@ -110,14 +105,8 @@ int main()
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
-		app.addWindow<user_interface::MainWindow>();
-		app.addWindow<imgui_kit::LogWindow>();
-		app.addWindow<user_interface::FieldMetricsWindow>();
-		app.addWindow<user_interface::ElementWindow>();
-		app.addWindow<user_interface::SimulationWindow>();
-		app.addWindow<user_interface::PlotControlWindow>();
-		app.addWindow<user_interface::PlotsWindow>();
-		app.addWindow<user_interface::NodeGraphWindow>();
+		app.addWindow<user_interface::MainMenuBar>();
+		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
 		// Delete the interaction between the output field and the associative learning stimulus
 		nf_2->removeInput(gs_2->getUniqueName());

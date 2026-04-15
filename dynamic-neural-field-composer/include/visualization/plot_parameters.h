@@ -38,6 +38,15 @@ namespace dnf_composer
 		HEATMAP = 1
 	};
 
+	// Controls how plots are presented in the UI.
+	// TILED      – all plots are rendered inside a single "Plots" window as a resizable tile grid.
+	// INDIVIDUAL – each plot gets its own floating, dockable ImGui window.
+	enum class PlotWindowMode : int
+	{
+		TILED      = 0,
+		INDIVIDUAL = 1
+	};
+
 	inline const std::map<PlotType, std::string> PlotTypeToString = {
 			{PlotType::LINE_PLOT, "line plot" },
 			{PlotType::HEATMAP, "heatmap" }

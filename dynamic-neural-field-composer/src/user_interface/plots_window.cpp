@@ -32,6 +32,14 @@ namespace dnf_composer::user_interface
 
 	void PlotsWindow::render()
 	{
+		if (visualization->getPlotWindowMode() == PlotWindowMode::INDIVIDUAL)
+		{
+			// Each plot is its own floating/dockable window — no "Plots" container needed.
+			visualization->render();
+			return;
+		}
+
+		// TILED mode: all plots inside a single "Plots" window.
 		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Plots", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
