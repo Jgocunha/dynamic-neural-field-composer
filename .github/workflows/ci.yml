@@ -57,7 +57,7 @@ jobs:
             implot \
             imgui-node-editor \
             nlohmann-json \
-            catch2
+            gtest
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
