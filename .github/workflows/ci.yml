@@ -98,3 +98,78 @@ jobs:
       - name: Run tests
         working-directory: build
         run: ctest --output-on-failure --parallel $(nproc)
+
+  build-and-test-windows:
+    runs-on: windows-latest
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── vcpkg ─────────────────────────────────────────────────────────────
+      - name: Clone vcpkg
+        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - name: Bootstrap vcpkg
+        run: $VCPKG_ROOT/bootstrap-vcpkg.bat -disableMetrics
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_ROOT }}/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
+            implot \
+            imgui-node-editor \
+            nlohmann-json \
+            gtest
+
+      # ── imgui-platform-kit (from source) ───────────────────────────────────
+      - name: Clone imgui-platform-kit
+        run: |
+          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
+            ${{ github.workspace }}/imgui-platform-kit-src
+
+      - name: Configure imgui-platform-kit
+        run: |
+          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
+                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
+
+      - name: Build imgui-platform-kit
+        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --config Release --parallel
+
+      - name: Install imgui-platform-kit
+        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build --config Release
+
+      # ── Main project ───────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          cmake -S ./dynamic-neural-field-composer -B build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      # ── Tests ──────────────────────────────────────────────────────────────
+      - name: Run tests
+        working-directory: build
+        run: ctest -C Release --output-on-failure --parallel
