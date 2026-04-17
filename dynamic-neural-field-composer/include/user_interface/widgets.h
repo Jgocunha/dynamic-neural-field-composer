@@ -41,7 +41,7 @@ namespace dnf_composer::user_interface::widgets
 	inline void EndVertical()
 	{
 		ImGui::EndGroup();
-		if (ImGui::GetID(NULL) != 0) ImGui::PopID();
+		if (ImGui::GetID(static_cast<const void*>(nullptr)) != 0) ImGui::PopID();
 	}
 	class Card
 	{
