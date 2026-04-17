@@ -24,6 +24,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ── Normalize Windows paths for bash ──────────────────────────────────
+      - name: Normalize paths
+        run: |
+          echo "VCPKG_ROOT=$(echo "$VCPKG_ROOT" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "IPK_SRC=$(echo "$IPK_SRC" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "IPK_INSTALL_PREFIX=$(echo "$IPK_INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "INSTALL_PREFIX=$(echo "$INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
+
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
         run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
