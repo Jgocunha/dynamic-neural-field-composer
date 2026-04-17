@@ -140,7 +140,7 @@ jobs:
       - name: Install vcpkg packages
         run: |
           $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding,win32-binding,dx12-binding]" \
             implot \
             imgui-node-editor \
             nlohmann-json \
