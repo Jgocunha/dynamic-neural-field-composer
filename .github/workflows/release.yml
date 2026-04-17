@@ -96,13 +96,13 @@ jobs:
         run: cmake --build build --config Release --parallel
 
       - name: Install
-        run: cmake --install build --config Release
+        run: cmake --install build --config Release --prefix "$INSTALL_PREFIX"
 
       # ── Package ────────────────────────────────────────────────────────────
       - name: Create release archive
         run: |
-          cd $INSTALL_PREFIX
-          7z a $WORKSPACE/dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip .
+          cd "$INSTALL_PREFIX"
+          7z a "$WORKSPACE/dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip" .
 
       # ── Upload artifact for release job ───────────────────────────────────
       - name: Upload Windows artifact
@@ -250,6 +250,55 @@ jobs:
           name: ${{ github.ref_name }}
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            ## What's included
+
+            Each archive contains the pre-compiled library, headers, and launcher executables.
+
+            | File | Platform |
+            |------|----------|
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip` | Windows (x64) |
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz` | Linux (x64) |
+
+            ## Archive contents
+
+            ```
+            bin/       — dnf-composer-static, dnf-composer-dynamic executables
+            lib/       — compiled library (.lib / .a)
+            include/   — public headers
+            share/     — CMake config files (for find_package integration)
+            ```
+
+            ## Running the application
+
+            Extract the archive and run either launcher directly:
+
+            ```bash
+            # Dynamic layout application
+            ./bin/dnf-composer-dynamic
+
+            # Static layout application
+            ./bin/dnf-composer-static
+            ```
+
+            ## Using as a library
+
+            Point `CMAKE_PREFIX_PATH` to the extracted directory so CMake can find the package:
+
+            ```cmake
+            cmake -S your-project -B build -DCMAKE_PREFIX_PATH=/path/to/extracted
+            ```
+
+            Then in your `CMakeLists.txt`:
+
+            ```cmake
+            find_package(dynamic-neural-field-composer REQUIRED)
+            target_link_libraries(your-target PRIVATE dynamic-neural-field-composer)
+            ```
+
+            ## Changelog
+
+            Major changes to the UI.
           files: |
             dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip
             dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
