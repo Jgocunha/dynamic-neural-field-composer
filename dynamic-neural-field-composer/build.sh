@@ -6,7 +6,7 @@ export PROJECT_ROOT=$(pwd)
 echo "VCPKG_ROOT is set to: '$VCPKG_ROOT'"
 
 # Check if the VCPKG_ROOT environment variable is set
-if [ -z '$VCPKG_ROOT' ]; then
+if [ -z "$VCPKG_ROOT" ]; then
     echo "ERROR: The environment variable VCPKG_ROOT is not set."
     echo "Download and install VCPKG from https://github.com/microsoft/vcpkg#quick-start-windows."
     echo "Create an environment variable VCPKG_ROOT that points to the installation directory."
