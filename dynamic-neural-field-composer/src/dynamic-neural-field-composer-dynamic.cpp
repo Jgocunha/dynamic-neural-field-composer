@@ -2,7 +2,8 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
-#include "dynamic-neural-field-composer.h"
+#include "dynamic-neural-field-composer-dynamic.h"
+
 
 
 int main()
@@ -11,18 +12,26 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("main launcher");
+		const auto simulation = std::make_shared<Simulation>("default simulation");
 		const auto visualization = std::make_shared<Visualization>(simulation);
+
+		// Dynamic layout: each plot is its own floating, dockable ImGui window.
+		// Users can freely move, resize, and dock individual plot windows.
+		// To switch to a tiled layout (all plots inside a single "Plots" window),
+		// change this to PlotWindowMode::TILED.
+		visualization->setPlotWindowMode(PlotWindowMode::INDIVIDUAL);
+
 		const Application app{ simulation, visualization };
 
-		app.addWindow<user_interface::MainWindow>();
-		app.addWindow<imgui_kit::LogWindow>();
-		app.addWindow<user_interface::FieldMetricsWindow>();
-		app.addWindow<user_interface::ElementWindow>();
+		// Add the windows to the application
+		app.addWindow<user_interface::MainMenuBar>();
 		app.addWindow<user_interface::SimulationWindow>();
+		app.addWindow<user_interface::ElementWindow>();
+		app.addWindow<user_interface::FieldMetricsWindow>();
 		app.addWindow<user_interface::PlotControlWindow>();
 		app.addWindow<user_interface::PlotsWindow>();
 		app.addWindow<user_interface::NodeGraphWindow>();
+		app.addWindow<user_interface::LogWindow>();
 
 		app.init();
 

@@ -31,7 +31,7 @@ namespace FileDialog {
 	{
 		static int file_dialog_file_select_index = 0;
 		static int file_dialog_folder_select_index = 0;
-		static std::string file_dialog_current_path = std::string(OUTPUT_DIRECTORY);
+		static std::string file_dialog_current_path = std::string(OUTPUT_DIRECTORY) + "/simulations/";
 		//static std::string file_dialog_current_path = std::filesystem::current_path().string();
 		static std::string file_dialog_current_file;
 		static std::string file_dialog_current_folder;
@@ -66,7 +66,10 @@ namespace FileDialog {
 				initial_path_set = true;
 			}
 
-			ImGui::SetNextWindowSize(ImVec2(1000.0f, 410.0f));
+			const float ui = ImGui::GetIO().FontGlobalScale;
+			ImGui::SetNextWindowSize(ImVec2(1100.0f * ui, 450.0f * ui));
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			ImGui::SetNextWindowBgAlpha(1.0f);
 			const char* window_title = (type == FileDialogType::OpenFile ? "Select a file" : "Select a folder");
 			ImGui::Begin(window_title, nullptr, ImGuiWindowFlags_NoResize);
 
@@ -87,7 +90,13 @@ namespace FileDialog {
 
 			ImGui::Text("%s", file_dialog_current_path.c_str());
 
-			ImGui::BeginChild("Directories##1", ImVec2(200, 300), true,
+			const float dirW    = 200.0f * ui;
+			const float availW  = ImGui::GetContentRegionAvail().x;
+			const float filesW  = availW - dirW - ImGui::GetStyle().ItemSpacing.x;
+			const float btnRowH = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y + 6.0f;
+			const float listH   = ImGui::GetContentRegionAvail().y - btnRowH - ImGui::GetStyle().ItemSpacing.y;
+
+			ImGui::BeginChild("Directories##1", ImVec2(dirW, listH), true,
 				ImGuiWindowFlags_HorizontalScrollbar);
 
 			if (ImGui::Selectable("..", false, ImGuiSelectableFlags_AllowDoubleClick,
@@ -120,7 +129,7 @@ namespace FileDialog {
 
 			ImGui::SameLine();
 
-			ImGui::BeginChild("Files##1", ImVec2(760, 300), true,
+			ImGui::BeginChild("Files##1", ImVec2(filesW, listH), true,
 				ImGuiWindowFlags_HorizontalScrollbar);
 			ImGui::Columns(4);
 			static float initial_spacing_column_0 = 500.0f;
@@ -270,7 +279,7 @@ namespace FileDialog {
 
 			std::string selected_file_path = selectedPath.string();
 
-			ImGui::PushItemWidth(724);
+			ImGui::PushItemWidth(availW);
 
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
 
@@ -339,8 +348,12 @@ namespace FileDialog {
 				}
 				ImGui::EndPopup();
 			}
+			const float cancelW  = ImGui::CalcTextSize("Cancel").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+			const float chooseW  = ImGui::CalcTextSize("Choose").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+			const float btnGap   = ImGui::GetStyle().ItemSpacing.x;
+			const float rightPad = ImGui::GetStyle().WindowPadding.x;
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 160);
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - rightPad - chooseW - btnGap - cancelW);
 
 			static auto reset_everything = [&]() {
 				file_dialog_file_select_index = 0;

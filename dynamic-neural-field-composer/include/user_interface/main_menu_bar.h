@@ -5,6 +5,15 @@
 #include "simulation/simulation.h"
 #include "tools/file_dialog.h"
 
+//https://github.com/stevenlovegrove/Pangolin/issues/352
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 namespace dnf_composer::user_interface
 {
 	struct FileFlags
@@ -26,37 +35,25 @@ namespace dnf_composer::user_interface
 		bool showImGuiKitStyleEditor = false;
 	};
 
-	struct InterfaceFlags
-	{
-		bool dockingEnabled = true;
-		bool fixedLayout = false;
-	};
-
-	class MainWindow : public imgui_kit::UserInterfaceWindow
+	class MainMenuBar final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
 		AdvancedSettingsFlags advancedSettingsFlags;
 		FileFlags fileFlags;
-		InterfaceFlags interfaceFlags;
 	public:
-		explicit MainWindow(const std::shared_ptr<Simulation>& simulation);
-		MainWindow(const MainWindow&) = delete;
-		MainWindow& operator=(const MainWindow&) = delete;
-		MainWindow(MainWindow&&) = delete;
-		MainWindow& operator=(MainWindow&&) = delete;
+		explicit MainMenuBar(const std::shared_ptr<Simulation>& simulation);
+		MainMenuBar(const MainMenuBar&) = delete;
+		MainMenuBar& operator=(const MainMenuBar&) = delete;
+		MainMenuBar(MainMenuBar&&) = delete;
+		MainMenuBar& operator=(MainMenuBar&&) = delete;
 
 		void render() override;
-		~MainWindow() override = default;
+		~MainMenuBar() override = default;
 	private:
-		static void renderFullscreenWindow();
 		void renderMainMenuBar();
 		void renderFileWindows();
 		void renderAdvancedSettingsWindows();
 		void handleShortcuts();
-		static void handleOpenLayoutDialog(const char* path);
-		void toggleFixedLayout() const;
-	public:
-		[[nodiscard]] bool isFixedLayout() const { return interfaceFlags.fixedLayout; }
 	};
 }

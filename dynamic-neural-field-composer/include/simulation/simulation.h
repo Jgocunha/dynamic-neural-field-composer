@@ -37,6 +37,7 @@ namespace dnf_composer
 		void init();
 		void step();
 		void run(double runTime);
+		void runForRealTime(double milliseconds);
 		void close();
 		void pause();
 		void resume();
@@ -67,6 +68,8 @@ namespace dnf_composer
 		double getDeltaT() const;
 		double getTZero() const;
 		double getT() const;
+		std::chrono::nanoseconds getLastStepDuration() const;
+		std::chrono::nanoseconds getTotalRunDuration() const;  // wall time since last init()
 
 		bool componentExists(const std::string& id, const std::string& componentName) const;
 
@@ -75,6 +78,9 @@ namespace dnf_composer
 		bool isInitialized() const;
 
 		~Simulation() = default;
+		std::chrono::nanoseconds lastStepDuration{ 0 };
+		std::chrono::nanoseconds accumulatedRunDuration{ 0 };
+		std::chrono::steady_clock::time_point runSegmentStart{};
 	private:
 		void generateUniqueIdentifier();
 	};

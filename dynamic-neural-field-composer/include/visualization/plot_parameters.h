@@ -16,7 +16,7 @@ namespace dnf_composer
 		PlotDimensions(const double& x_min, const double& x_max, 
 			const double& y_min, const double& y_max, 
 			const double& x_step, const double& y_step);
-		PlotDimensions(double x_step);
+		explicit PlotDimensions(double x_step);
 		bool isLegal() const;
 		std::string toString() const;
 		bool operator==(const PlotDimensions& other) const;
@@ -38,6 +38,15 @@ namespace dnf_composer
 		HEATMAP = 1
 	};
 
+	// Controls how plots are presented in the UI.
+	// TILED      – all plots are rendered inside a single "Plots" window as a resizable tile grid.
+	// INDIVIDUAL – each plot gets its own floating, dockable ImGui window.
+	enum class PlotWindowMode : int
+	{
+		TILED      = 0,
+		INDIVIDUAL = 1
+	};
+
 	inline const std::map<PlotType, std::string> PlotTypeToString = {
 			{PlotType::LINE_PLOT, "line plot" },
 			{PlotType::HEATMAP, "heatmap" }
@@ -57,6 +66,7 @@ namespace dnf_composer
 
 	struct PlotSpecificParameters
 	{
+		virtual ~PlotSpecificParameters() = default;
 		PlotSpecificParameters() = default;
 		virtual std::string toString() const = 0;
 	};

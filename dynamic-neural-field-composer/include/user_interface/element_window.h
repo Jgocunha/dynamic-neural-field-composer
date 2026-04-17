@@ -12,9 +12,23 @@
 #include "elements/gauss_field_coupling.h"
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
+#include "user_interface/widgets.h"
+#include "application/application.h"
+
+extern ImFont* g_BlackLargeFont;
+extern ImFont* g_BoldLargeFont;
 
 namespace dnf_composer::user_interface
 {
+	struct PanelScope
+	{
+		ImRect rect;          // fixed rectangle of the panel (screen coords)
+		float  ui{};
+		ImU32  fill{}, border{};
+		float  rounding{};
+		ImVec2 pad{};
+	};
+
 	class ElementWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
@@ -28,9 +42,10 @@ namespace dnf_composer::user_interface
 		ElementWindow& operator=(ElementWindow&&) = delete;
 
 		void render() override;
+		void renderElementControlCard() const;
+		void renderModifyElementParameters() const;
 		~ElementWindow() override = default;
 	private:
-		void renderModifyElementParameters() const;
 		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
 		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element) ;
 		static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
@@ -42,7 +57,8 @@ namespace dnf_composer::user_interface
 		static void modifyElementOscillatoryKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);
-		static std::string getIconForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
+		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);
+		static void endElementPanel(const PanelScope& p);
 	};
 }
