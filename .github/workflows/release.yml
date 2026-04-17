@@ -12,6 +12,7 @@ jobs:
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-windows
+      IPK_SRC: ${{ github.workspace }}/imgui-platform-kit-src
       IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
       INSTALL_PREFIX: ${{ github.workspace }}/install
 
@@ -48,23 +49,21 @@ jobs:
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
-        run: |
-          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
-            ${{ github.workspace }}/imgui-platform-kit-src
+        run: git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
 
       - name: Configure imgui-platform-kit
         run: |
-          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
-                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
+          cmake -S $IPK_SRC/imgui-platform-kit \
+                -B $IPK_SRC/build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
 
       - name: Build imgui-platform-kit
-        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --config Release --parallel
+        run: cmake --build $IPK_SRC/build --config Release --parallel
 
       - name: Install imgui-platform-kit
-        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build --config Release
+        run: cmake --install $IPK_SRC/build --config Release
 
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
