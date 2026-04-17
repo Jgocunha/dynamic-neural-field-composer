@@ -152,10 +152,10 @@ namespace dnf_composer
 		cfg.OversampleH = 2;          // 2 is often crisper than 3 at small sizes
 		cfg.OversampleV = 2;
 		cfg.PixelSnapH  = true;       // snap glyphs to the pixel boundary for crispness
-		cfg.FontBuilderFlags = ImGuiFreeTypeBuilderFlags_LightHinting   // gentle hinting (good for UI)
+		cfg.FontLoaderFlags = ImGuiFreeTypeBuilderFlags_LightHinting   // gentle hinting (good for UI)
 							 | ImGuiFreeTypeBuilderFlags_Bitmap;        // keep bitmap rendering (fast)
 		// If you want *maximum* crispness at small sizes (old-school look), try:
-		 cfg.FontBuilderFlags = ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
+		 cfg.FontLoaderFlags = ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
 
 		if (io.Fonts->Fonts.size() < g_FontCount)
 		{

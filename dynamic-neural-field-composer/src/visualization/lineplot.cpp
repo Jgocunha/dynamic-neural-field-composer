@@ -5,7 +5,7 @@
 namespace dnf_composer
 {
 	LinePlotParameters::LinePlotParameters()
-		: lineThickness(8.0), autoFit(true)
+		: lineThickness(2.0), autoFit(true)
 	{}
 
 	LinePlotParameters::LinePlotParameters(double lineThickness, bool autoFit)
@@ -97,79 +97,72 @@ namespace dnf_composer
 		snprintf(xLabelBuffer, sizeof(xLabelBuffer), "%s", x_label.c_str());
 		snprintf(yLabelBuffer, sizeof(yLabelBuffer), "%s", y_label.c_str());
 
-        // if (ImGui::BeginMenuBar())
-        // {
-		// 	if (ImGui::BeginMenu("Dimensions"))
-		// 	{
-		// 		if (ImGui::DragFloat("X max", &x_max, 0.1f, x_min, 1000))
-		// 		{
-		// 			commonParameters.dimensions.xMax = x_max;
-		// 			whereDimensionsChangedByUser = true;
-		// 		}
-		// 		if (ImGui::DragFloat("Y max", &y_max, 0.1f, y_min, 1000))
-		// 		{
-		// 			commonParameters.dimensions.yMax = y_max;
-		// 			whereDimensionsChangedByUser = true;
-		// 		}
-		// 		if (ImGui::DragFloat("X min", &x_min, 0.1f, -1000, x_max))
-		// 		{
-		// 			commonParameters.dimensions.xMin = x_min;
-		// 			whereDimensionsChangedByUser = true;
-		// 		}
-		// 		if (ImGui::DragFloat("Y min", &y_min, 0.1f, -10000, y_max))
-		// 		{
-		// 			commonParameters.dimensions.yMin = y_min;
-		// 			whereDimensionsChangedByUser = true;
-		// 		}
-		// 		if (ImGui::DragFloat("X step", &x_step, 0.1f, 0.1f, 1000))
-		// 		{
-		// 			commonParameters.dimensions.xStep = x_step;
-		// 			whereDimensionsChangedByUser = true;
-		// 		}
+        if (ImGui::BeginMenuBar())
+        {
+			if (ImGui::BeginMenu("Dimensions"))
+			{
+				if (ImGui::DragFloat("X max", &x_max, 0.1f, x_min, 1000))
+				{
+					commonParameters.dimensions.xMax = x_max;
+					whereDimensionsChangedByUser = true;
+				}
+				if (ImGui::DragFloat("Y max", &y_max, 0.1f, y_min, 1000))
+				{
+					commonParameters.dimensions.yMax = y_max;
+					whereDimensionsChangedByUser = true;
+				}
+				if (ImGui::DragFloat("X min", &x_min, 0.1f, -1000, x_max))
+				{
+					commonParameters.dimensions.xMin = x_min;
+					whereDimensionsChangedByUser = true;
+				}
+				if (ImGui::DragFloat("Y min", &y_min, 0.1f, -10000, y_max))
+				{
+					commonParameters.dimensions.yMin = y_min;
+					whereDimensionsChangedByUser = true;
+				}
+				if (ImGui::DragFloat("X step", &x_step, 0.1f, 0.1f, 1000))
+				{
+					commonParameters.dimensions.xStep = x_step;
+					whereDimensionsChangedByUser = true;
+				}
 
-		// 		if (ImGui::Checkbox("Auto-fit", &autoFit))
-		// 			linePlotParameters.autoFit = autoFit;
-		// 		ImGui::EndMenu();
-		// 	}
+				if (ImGui::Checkbox("Auto-fit", &autoFit))
+					linePlotParameters.autoFit = autoFit;
+				ImGui::EndMenu();
+			}
 
-		// 	if (ImGui::BeginMenu("Annotations"))
-		// 	{
-		// 		if (ImGui::InputText("Title", titleBuffer, sizeof(titleBuffer)))
-		// 		{
-		// 			title = titleBuffer;
-		// 			commonParameters.annotations.title = title;
-		// 		}
-		// 		if (ImGui::InputText("X label", xLabelBuffer, sizeof(xLabelBuffer)))
-		// 		{
-		// 			x_label = xLabelBuffer;
-		// 			commonParameters.annotations.x_label = x_label;
-		// 		}
-		// 		if (ImGui::InputText("Y label", yLabelBuffer, sizeof(yLabelBuffer)))
-		// 		{
-		// 			y_label = yLabelBuffer;
-		// 			commonParameters.annotations.y_label = y_label;
-		// 		}
-		// 		ImGui::EndMenu();
-		// 	}
+			if (ImGui::BeginMenu("Annotations"))
+			{
+				if (ImGui::InputText("Title", titleBuffer, sizeof(titleBuffer)))
+				{
+					title = titleBuffer;
+					commonParameters.annotations.title = title;
+				}
+				if (ImGui::InputText("X label", xLabelBuffer, sizeof(xLabelBuffer)))
+				{
+					x_label = xLabelBuffer;
+					commonParameters.annotations.x_label = x_label;
+				}
+				if (ImGui::InputText("Y label", yLabelBuffer, sizeof(yLabelBuffer)))
+				{
+					y_label = yLabelBuffer;
+					commonParameters.annotations.y_label = y_label;
+				}
+				ImGui::EndMenu();
+			}
 
-        //     if (ImGui::BeginMenu("Colormap"))
-        //     {
-        //         ImPlot::ShowColormapSelector("##ColormapSelector");
-        //         ImGui::EndMenu();
-        //     }
+            if (ImGui::BeginMenu("Line Thickness"))
+            {
+                ImGui::SliderFloat("##LineWeight", &lineWeight, 0.1f, 10.0f);
+				linePlotParameters.lineThickness = lineWeight;
+                ImGui::EndMenu();
+            }
 
-        //     if (ImGui::BeginMenu("Line Thickness"))
-        //     {
-        //         ImGui::SliderFloat("##LineWeight", &lineWeight, 0.1f, 10.0f);
-		// 		linePlotParameters.lineThickness = lineWeight;
-        //         ImGui::EndMenu();
-        //     }
+            ImGui::EndMenuBar();
+        }
 
-        //     ImGui::EndMenuBar();
-        // }
-
-		ImPlotStyle& style = ImPlot::GetStyle();
-		style.LineWeight = static_cast<float>(linePlotParameters.lineThickness);
+		const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, static_cast<float>(linePlotParameters.lineThickness) };
 
         if (linePlotParameters.autoFit) {
             flags |= ImPlotFlags_Equal;
@@ -241,7 +234,7 @@ namespace dnf_composer
                 shiftedXValues[i] = (i + 1) * commonParameters.dimensions.xStep;
             }
 
-            ImPlot::PlotLine(label.c_str(), shiftedXValues.data(), line_data.data(), static_cast<int>(line_data.size()));
+            ImPlot::PlotLine(label.c_str(), shiftedXValues.data(), line_data.data(), static_cast<int>(line_data.size()), lineSpec);
         }
 
 		ImPlot::EndPlot();

@@ -288,7 +288,7 @@ TEST(CalculateVectorAvg, KnownAverage)
 
 TEST(CalculateVectorAvg, EmptyVectorIsDefault)
 {
-    constexpr std::vector<double> v;
+    const std::vector<double> v;
     EXPECT_DOUBLE_EQ(calculateVectorAvg(v), 0.0);
 }
 
@@ -410,7 +410,7 @@ TEST(HebbLearningRule, WeightsAreUpdated)
 TEST(HebbLearningRule, EmptyInputThrows)
 {
     std::vector<double> weights{ 0.0 };
-    constexpr std::vector<double> input;
+    const std::vector<double> input;
     const std::vector<double> output{ 1.0 };
     EXPECT_THROW(hebbLearningRule(weights, input, output, 0.1), std::invalid_argument);
 }

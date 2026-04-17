@@ -84,11 +84,12 @@ namespace dnf_composer::user_interface::widgets
 		}
 
 		// lamba to a center text vertically within a bounding box
-		auto centerTextY = [](const ImFont* font, const float y0, const float h) noexcept -> float
+		auto centerTextY = [](const ImFont* font, const float y0, const float h) -> float
 		{
-			// in ImGui: height = Ascent - Descent, AddText expects pos.y == top
+			// in ImGui 1.92+: Ascent/Descent live on ImFontBaked, not ImFont
 			if (!font) return y0;
-			const float text_h = font->Ascent - font->Descent;
+			ImFontBaked* baked = const_cast<ImFont*>(font)->GetFontBaked(font->LegacySize);
+			const float text_h = baked ? (baked->Ascent - baked->Descent) : font->LegacySize;
 			return y0 + (h - text_h) * 0.5f;
 		};
 

@@ -227,7 +227,7 @@ namespace dnf_composer::user_interface
         if (advancedSettingsFlags.showToolDebugLog)
             ImGui::ShowDebugLogWindow(&advancedSettingsFlags.showToolDebugLog);
         if (advancedSettingsFlags.showToolIdStackTool)
-			ImGui::ShowStackToolWindow(&advancedSettingsFlags.showToolIdStackTool);
+			ImGui::ShowIDStackToolWindow(&advancedSettingsFlags.showToolIdStackTool);
         if (advancedSettingsFlags.showToolStyleEditor)
         {
 	        ImGui::Begin("Dear ImGui Style Editor", 
