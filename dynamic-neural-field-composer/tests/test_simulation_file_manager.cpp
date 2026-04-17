@@ -67,14 +67,16 @@ protected:
 
     void SetUp() override
     {
-        tempDir = (fs::temp_directory_path() / "dnf_sfm_tests").string();
+        const auto* info = ::testing::UnitTest::GetInstance()->current_test_info();
+        tempDir = (fs::temp_directory_path() / "dnf_sfm_tests" / info->name()).string();
         tempDir += "/";
         fs::create_directories(tempDir);
     }
 
     void TearDown() override
     {
-        fs::remove_all(fs::temp_directory_path() / "dnf_sfm_tests");
+        std::error_code ec;
+        fs::remove_all(tempDir, ec);
     }
 };
 
