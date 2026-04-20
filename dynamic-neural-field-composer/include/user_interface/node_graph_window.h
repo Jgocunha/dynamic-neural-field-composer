@@ -62,6 +62,11 @@ namespace dnf_composer::user_interface
 		// on the frame after their first render (when we can read their actual position).
 		mutable std::unordered_set<size_t>          positionedNodeIds_;
 		mutable std::unordered_map<size_t, ImVec2>  pendingInitialPositions_;
+
+		// Node inspector panel state.
+		mutable size_t  selectedNodeId_ = 0;
+		mutable ImVec2  inspectorPos_   = {};
+		mutable ImVec2  inspectorSize_  = {};
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -80,6 +85,8 @@ namespace dnf_composer::user_interface
 		void handleInteractions() const;
 		void handlePinInteractions() const;
 		void handleLinkInteractions() const;
+		void handleNodeSelection() const;
+		void renderNodeInspectorPopup() const;
 		static size_t getNodeId(const std::shared_ptr<element::Element>& element);
 		static int    getColumnForElement(element::ElementLabel label);
 		static void applyCanvasStyle();

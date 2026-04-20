@@ -3,6 +3,8 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
 #include "user_interface/node_graph_window.h"
+#include "user_interface/element_window.h"
+#include <implot.h>
 
 extern ImFont* g_BoldLargeFont;
 extern ImFont* g_MediumMediumFont;
@@ -32,7 +34,13 @@ namespace dnf_composer::user_interface
 			widgets::renderHelpMarker(
 				"Visualize elements and their interactions.\n"
 				"Drag from an Output pin to an Input pin to create a connection.\n"
-				"Double-click a link to remove it.");
+				"Double-click a link to remove it.\n"
+				"Right-click a node to inspect and edit its parameters.");
+
+			// Capture canvas top-left and height *after* the help marker,
+			// so the inspector panel aligns exactly with the node editor canvas.
+			const ImVec2 canvasOrigin = ImGui::GetCursorScreenPos();
+			const float  canvasH      = ImGui::GetContentRegionAvail().y;
 
 			ImNodeEditor::SetCurrentEditor(context);
 			applyCanvasStyle();
@@ -42,8 +50,19 @@ namespace dnf_composer::user_interface
 			ImNodeEditor::End();
 			restoreCanvasStyle();
 			ImNodeEditor::SetCurrentEditor(nullptr);
+
+			// Compute the inspector panel bounds every frame so it tracks
+			// the node graph window if it is moved or resized.
+			const ImVec2 ngPos  = ImGui::GetWindowPos();
+			const ImVec2 ngSize = ImGui::GetWindowSize();
+			const float  inspW  = std::max(280.0f, ngSize.x * 0.25f);
+			inspectorPos_  = ImVec2(ngPos.x + ngSize.x - inspW, canvasOrigin.y);
+			inspectorSize_ = ImVec2(inspW, canvasH);
 		}
 		ImGui::End();
+
+		// Inspector is a separate top-level window — must be rendered outside Begin/End.
+		renderNodeInspectorPopup();
 	}
 
 	void NodeGraphWindow::renderGraph() const
@@ -51,7 +70,14 @@ namespace dnf_composer::user_interface
 		widgets::renderHelpMarker(
 				"Visualize elements and their interactions.\n"
 				"Drag from an Output pin to an Input pin to create a connection.\n"
-				"Double-click a link to remove it.");
+				"Double-click a link to remove it.\n"
+				"Right-click a node to inspect and edit its parameters.");
+
+		// Capture canvas top-left and height *after* the help marker,
+		// so the inspector panel aligns exactly with the node editor canvas.
+		const ImVec2 canvasOrigin = ImGui::GetCursorScreenPos();
+		const float  canvasH      = ImGui::GetContentRegionAvail().y;
+
 		ImNodeEditor::SetCurrentEditor(context);
 		applyCanvasStyle();
 		ImNodeEditor::Begin("dnf-composer-graph");
@@ -60,6 +86,17 @@ namespace dnf_composer::user_interface
 		ImNodeEditor::End();
 		restoreCanvasStyle();
 		ImNodeEditor::SetCurrentEditor(nullptr);
+
+		// Compute the inspector panel bounds every frame so it tracks
+		// the host window if it is moved or resized.
+		const ImVec2 ngPos  = ImGui::GetWindowPos();
+		const ImVec2 ngSize = ImGui::GetWindowSize();
+		const float  inspW  = std::max(280.0f, ngSize.x * 0.25f);
+		inspectorPos_  = ImVec2(ngPos.x + ngSize.x - inspW, canvasOrigin.y);
+		inspectorSize_ = ImVec2(inspW, canvasH);
+
+		// Inspector is a separate top-level window — must be rendered outside Begin/End.
+		renderNodeInspectorPopup();
 	}
 
 	void NodeGraphWindow::applyCanvasStyle()
@@ -375,6 +412,7 @@ namespace dnf_composer::user_interface
 	{
 		handlePinInteractions();
 		handleLinkInteractions();
+		handleNodeSelection();
 	}
 
 	void NodeGraphWindow::handlePinInteractions() const
@@ -424,6 +462,98 @@ namespace dnf_composer::user_interface
 		if (srcId < 0 || dstId < 0 || srcId > maxIdx || dstId > maxIdx) return;
 
 		simulation->getElement(dstId)->removeInput(srcId);
+	}
+
+	void NodeGraphWindow::handleNodeSelection() const
+	{
+		const ImNodeEditor::NodeId hovered = ImNodeEditor::GetHoveredNode();
+		if (!hovered) return;
+		if (!ImGui::IsMouseClicked(ImGuiMouseButton_Right)) return;
+
+		const size_t id = hovered.Get();
+		selectedNodeId_ = (selectedNodeId_ == id) ? 0 : id;  // toggle on repeated right-click
+	}
+
+	void NodeGraphWindow::renderNodeInspectorPopup() const
+	{
+		if (!selectedNodeId_) return;
+
+		// Find the element whose node ID matches the stored selection.
+		std::shared_ptr<element::Element> element;
+		for (const auto& el : simulation->getElements())
+		{
+			if (getNodeId(el) == selectedNodeId_) { element = el; break; }
+		}
+		if (!element) { selectedNodeId_ = 0; return; }
+
+		constexpr ImGuiWindowFlags inspectorFlags =
+			ImGuiWindowFlags_NoCollapse      |
+			ImGuiWindowFlags_NoSavedSettings |
+			ImGuiWindowFlags_NoResize        |
+			ImGuiWindowFlags_NoMove;
+
+		// Reposition and resize every frame so the panel tracks the node graph window.
+		ImGui::SetNextWindowPos (inspectorPos_,  ImGuiCond_Always);
+		ImGui::SetNextWindowSize(inspectorSize_, ImGuiCond_Always);
+
+		bool open = true;
+		ImGui::PushFont(g_BlackLargeFont);
+		const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, inspectorFlags);
+		ImGui::PopFont();
+
+		if (visible)
+		{
+			ImGui::BeginChild("##insp_scroll", ImVec2(0, 0), false);
+
+			// ---- Plot ----
+			const auto* comps = element->getComponents();
+			if (comps && !comps->empty())
+			{
+				const auto lbl         = element->getLabel();
+				const bool isWeightMap = (lbl == element::ElementLabel::FIELD_COUPLING ||
+				                          lbl == element::ElementLabel::GAUSS_FIELD_COUPLING);
+				const float plotW = ImGui::GetContentRegionAvail().x;
+				const float plotH = isWeightMap ? plotW : plotW * 0.6f;
+
+				if (ImPlot::BeginPlot("##insp", ImVec2(plotW, plotH)))
+				{
+					ImPlot::SetupAxes(nullptr, nullptr,
+						ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+
+					if (isWeightMap && comps->contains("output"))
+					{
+						const auto& out = comps->at("output");
+						std::vector<float> xs(out.size()), ys(out.size());
+						for (int i = 0; i < static_cast<int>(out.size()); ++i)
+						{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(out[i]); }
+						ImPlot::PlotLine("output", xs.data(), ys.data(), static_cast<int>(xs.size()));
+					}
+					else
+					{
+						for (const auto& [name, data] : *comps)
+						{
+							if (data.size() < 2) continue;
+							std::vector<float> xs(data.size()), ys(data.size());
+							for (int i = 0; i < static_cast<int>(data.size()); ++i)
+							{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(data[i]); }
+							ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()));
+						}
+					}
+
+					ImPlot::EndPlot();
+				}
+				ImGui::Separator();
+			}
+
+			// ---- Editable parameters ----
+			ElementWindow::switchElementToModify(element);
+
+			ImGui::EndChild();
+		}
+
+		// Closed via the X button — clear selection.
+		if (!open) selectedNodeId_ = 0;
+		ImGui::End();
 	}
 
 	// -------------------------------------------------------------------------
