@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_map>
+#include <unordered_set>
+
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
@@ -14,7 +17,7 @@
 #include "elements/asymmetric_gauss_kernel.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
-#include "user_interface/node_utilities/widgets.h"
+#include "user_interface/node_utilities/node_widgets.h"
 #include "application/application.h"
 
 namespace dnf_composer::user_interface
@@ -54,6 +57,11 @@ namespace dnf_composer::user_interface
 		static constexpr uint16_t startingInputPinId = 1000;
 		static constexpr uint16_t startingOutputPinId = 2000;
 		static constexpr uint16_t startingLinkId = 3000;
+
+		// Initial-layout state: nodes not yet seen this session get a grid position
+		// on the frame after their first render (when we can read their actual position).
+		mutable std::unordered_set<size_t>          positionedNodeIds_;
+		mutable std::unordered_map<size_t, ImVec2>  pendingInitialPositions_;
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -73,6 +81,7 @@ namespace dnf_composer::user_interface
 		void handlePinInteractions() const;
 		void handleLinkInteractions() const;
 		static size_t getNodeId(const std::shared_ptr<element::Element>& element);
+		static int    getColumnForElement(element::ElementLabel label);
 		static void applyCanvasStyle();
 		static void restoreCanvasStyle();
 		static void renderElementTooltip(const std::shared_ptr<element::Element>& element);

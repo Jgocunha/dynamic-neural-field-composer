@@ -115,7 +115,7 @@ set(user_interface_headers
         "include/user_interface/static_layout_window.h"
         "include/user_interface/node_utilities/builders.h"
         "include/user_interface/node_utilities/drawing.h"
-        "include/user_interface/node_utilities/widgets.h"
+        "include/user_interface/node_utilities/node_widgets.h"
 )
 
 set(header 
@@ -186,7 +186,7 @@ set(src
         "src/user_interface/static_layout_window.cpp"
         "src/user_interface/node_utilities/builders.cpp"
         "src/user_interface/node_utilities/drawing.cpp"
-        "src/user_interface/node_utilities/widgets.cpp"
+        "src/user_interface/node_utilities/node_widgets.cpp"
 )
 
 # Define library target

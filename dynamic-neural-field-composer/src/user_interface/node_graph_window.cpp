@@ -82,8 +82,69 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderElementNodes() const
 	{
+		// Apply initial positions queued in the previous frame.
+		// SetNodePosition must be called before BeginNode to take effect this frame.
+		for (const auto& [nodeId, pos] : pendingInitialPositions_)
+			ImNodeEditor::SetNodePosition(nodeId, pos);
+		pendingInitialPositions_.clear();
+
 		for (const auto& element : simulation->getElements())
 			renderElementNode(element);
+
+		// After nodes have been submitted, we can read their actual canvas positions.
+		// Any node still sitting at the origin (0,0) has no saved layout —
+		// queue a grid position so it spreads out on the next frame.
+		constexpr float colSpacing = 300.0f;
+		constexpr float rowSpacing = 250.0f;
+		constexpr float baseX     =  50.0f;
+		constexpr float baseY     =  50.0f;
+		constexpr int   maxRows   =   5;
+
+		// Compute how many physical columns each type-group needs (ceil(count / maxRows)),
+		// then assign cumulative x offsets so overflow columns never collide with the
+		// next group's base column.
+		//
+		// columnCounts is derived from the *current* simulation's elements only, so it
+		// resets naturally whenever a different simulation is loaded — no stale state
+		// from a previously loaded (possibly larger) simulation bleeds through.
+		const auto& elements = simulation->getElements();
+		std::array<int, 4> groupCount    = {};
+		std::array<int, 4> columnCounts  = {};   // already-positioned nodes per group
+		for (const auto& el : elements)
+		{
+			const int g = getColumnForElement(el->getLabel());
+			++groupCount[g];
+			if (positionedNodeIds_.contains(getNodeId(el)))
+				++columnCounts[g];
+		}
+
+		std::array<float, 4> groupBaseX = {};
+		float curX = baseX;
+		for (int g = 0; g < 4; ++g)
+		{
+			groupBaseX[g] = curX;
+			const int cols = std::max(1, (groupCount[g] + maxRows - 1) / maxRows);
+			curX += cols * colSpacing;
+		}
+
+		for (const auto& element : elements)
+		{
+			const size_t nodeId = getNodeId(element);
+			if (!positionedNodeIds_.contains(nodeId))
+			{
+				const ImVec2 pos = ImNodeEditor::GetNodePosition(nodeId);
+				if (std::abs(pos.x) < 1.0f && std::abs(pos.y) < 1.0f)
+				{
+					const int g      = getColumnForElement(element->getLabel());
+					const int rowIdx = columnCounts[g]++;
+					const int col    = rowIdx / maxRows;
+					const int row    = rowIdx % maxRows;
+					pendingInitialPositions_[nodeId] =
+						ImVec2(groupBaseX[g] + col * colSpacing, baseY + row * rowSpacing);
+				}
+				positionedNodeIds_.insert(nodeId);
+			}
+		}
 
 		for (const auto& element : simulation->getElements())
 			renderElementNodeConnections(element);
@@ -372,6 +433,30 @@ namespace dnf_composer::user_interface
 	size_t NodeGraphWindow::getNodeId(const std::shared_ptr<element::Element>& element)
 	{
 		return std::hash<std::string>{}(element->getUniqueName());
+	}
+
+	// Returns a column index (0–3) for the topology-aware initial layout.
+	// Signal flow: sources (0) → kernels (1) → couplings (2) → fields (3)
+	int NodeGraphWindow::getColumnForElement(const element::ElementLabel label)
+	{
+		switch (label)
+		{
+		case element::ElementLabel::GAUSS_STIMULUS:
+		case element::ElementLabel::NORMAL_NOISE:
+			return 0;
+		case element::ElementLabel::GAUSS_KERNEL:
+		case element::ElementLabel::MEXICAN_HAT_KERNEL:
+		case element::ElementLabel::OSCILLATORY_KERNEL:
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
+			return 1;
+		case element::ElementLabel::FIELD_COUPLING:
+		case element::ElementLabel::GAUSS_FIELD_COUPLING:
+			return 2;
+		case element::ElementLabel::NEURAL_FIELD:
+			return 3;
+		default:
+			return 1;
+		}
 	}
 
 	void NodeGraphWindow::renderElementTooltip(const std::shared_ptr<element::Element>& element)
