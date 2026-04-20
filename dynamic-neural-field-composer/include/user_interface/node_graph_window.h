@@ -48,7 +48,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	class NodeGraphWindow : public imgui_kit::UserInterfaceWindow
+	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
@@ -58,7 +58,7 @@ namespace dnf_composer::user_interface
 		static constexpr uint16_t startingOutputPinId = 2000;
 		static constexpr uint16_t startingLinkId = 3000;
 
-		// Initial-layout state: nodes not yet seen this session get a grid position
+		// Initial-layout state: nodes not yet seen in this session get a grid position
 		// on the frame after their first render (when we can read their actual position).
 		mutable std::unordered_set<size_t>          positionedNodeIds_;
 		mutable std::unordered_map<size_t, ImVec2>  pendingInitialPositions_;
