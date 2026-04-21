@@ -44,9 +44,9 @@ namespace dnf_composer::user_interface
 		void render() override;
 		void renderElementControlCard() const;
 		void renderModifyElementParameters() const;
+		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
 		~ElementWindow() override = default;
 	private:
-		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
 		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element) ;
 		static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element);

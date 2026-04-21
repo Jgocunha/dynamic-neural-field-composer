@@ -115,7 +115,7 @@ set(user_interface_headers
         "include/user_interface/static_layout_window.h"
         "include/user_interface/node_utilities/builders.h"
         "include/user_interface/node_utilities/drawing.h"
-        "include/user_interface/node_utilities/widgets.h"
+        "include/user_interface/node_utilities/node_widgets.h"
 )
 
 set(header 
@@ -186,7 +186,7 @@ set(src
         "src/user_interface/static_layout_window.cpp"
         "src/user_interface/node_utilities/builders.cpp"
         "src/user_interface/node_utilities/drawing.cpp"
-        "src/user_interface/node_utilities/widgets.cpp"
+        "src/user_interface/node_utilities/node_widgets.cpp"
 )
 
 # Define library target
@@ -254,9 +254,18 @@ install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CON
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
 
+# Embed the application icon into each executable on Windows via the .rc file.
+# On Linux the window icon is set at runtime (see application.cpp IconParameters);
+# there is no equivalent binary embedding for ELF executables.
+if(WIN32)
+    set(DNF_ICON_RC "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.rc")
+else()
+    set(DNF_ICON_RC "")
+endif()
+
 # Main launchers
 set(LAUNCHER dnf-composer-static)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-static.cpp")
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-static.cpp" ${DNF_ICON_RC})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
 imgui::imgui
@@ -265,7 +274,7 @@ ${CMAKE_PROJECT_NAME})
 install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 
 set(LAUNCHER dnf-composer-dynamic)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-dynamic.cpp")
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-dynamic.cpp" ${DNF_ICON_RC})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
         imgui::imgui
@@ -275,7 +284,7 @@ install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_D
 
 # Function to add example executables
 function(add_example_executable target_name source_file)
-    add_executable(${target_name} "examples/${source_file}")
+    add_executable(${target_name} "examples/${source_file}" ${DNF_ICON_RC})
     target_include_directories(${target_name} PRIVATE include)
     target_link_libraries(${target_name} PRIVATE
             imgui::imgui
