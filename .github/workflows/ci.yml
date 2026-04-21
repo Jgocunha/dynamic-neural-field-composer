@@ -115,7 +115,7 @@ jobs:
 
       # ── Coverage report (Debug matrix entry only) ──────────────────────────
       - name: Generate coverage report
-        if: matrix.coverage
+        if: matrix.coverage && github.event_name == 'push'
         run: |
           gcovr \
             --root ${{ github.workspace }}/dynamic-neural-field-composer \
@@ -130,7 +130,7 @@ jobs:
             -o coverage.xml
 
       - name: Upload coverage to Codecov
-        if: matrix.coverage
+        if: matrix.coverage && github.event_name == 'push'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

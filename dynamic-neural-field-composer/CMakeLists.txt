@@ -307,18 +307,28 @@ if(DNF_COMPOSER_BUILD_TESTS)
     enable_testing()
 
     add_executable(dnf_composer_tests
-            "tests/test_simulation.cpp"
-            "tests/test_activation_function.cpp"
-            "tests/test_element_parameters.cpp"
-            "tests/test_element.cpp"
-            "tests/test_gauss_stimulus.cpp"
-            "tests/test_neural_field.cpp"
-            "tests/test_kernels.cpp"
-            "tests/test_normal_noise.cpp"
-            "tests/test_gauss_field_coupling.cpp"
-            "tests/test_math.cpp"
-            "tests/test_exception.cpp"
-            "tests/test_simulation_file_manager.cpp"
+            # elements
+            "tests/elements/test_activation_function.cpp"
+            "tests/elements/test_element.cpp"
+            "tests/elements/test_element_factory.cpp"
+            "tests/elements/test_field_coupling.cpp"
+            "tests/elements/test_gauss_field_coupling.cpp"
+            "tests/elements/test_gauss_stimulus.cpp"
+            "tests/elements/test_kernels.cpp"
+            "tests/elements/test_neural_field.cpp"
+            "tests/elements/test_normal_noise.cpp"
+            # simulation
+            "tests/simulation/test_simulation.cpp"
+            "tests/simulation/test_simulation_extended.cpp"
+            "tests/simulation/test_simulation_file_manager.cpp"
+            # tools
+            "tests/tools/test_logger.cpp"
+            "tests/tools/test_math.cpp"
+            "tests/tools/test_utils.cpp"
+            # element_parameters
+            "tests/element_parameters/test_element_parameters.cpp"
+            # exceptions
+            "tests/exceptions/test_exception.cpp"
     )
     target_include_directories(dnf_composer_tests PRIVATE include)
     target_link_libraries(dnf_composer_tests PRIVATE
