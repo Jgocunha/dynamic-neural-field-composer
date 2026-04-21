@@ -3,7 +3,6 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
 #include "user_interface/simulation_window.h"
-#include <algorithm>
 
 namespace dnf_composer::user_interface
 {

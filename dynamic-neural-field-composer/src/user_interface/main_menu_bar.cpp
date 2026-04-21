@@ -1,8 +1,5 @@
 #include "user_interface/main_menu_bar.h"
-#include <algorithm>
 
-#include <imgui-platform-kit/themes.h>
-#include "application/application.h"
 
 namespace dnf_composer::user_interface
 {
