@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
-
+#include <implot.h>
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
@@ -19,6 +19,8 @@
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"
 #include "application/application.h"
+#include "user_interface/element_window.h"
+
 
 namespace dnf_composer::user_interface
 {

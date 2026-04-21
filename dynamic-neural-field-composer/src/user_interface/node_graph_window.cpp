@@ -3,8 +3,6 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
 #include "user_interface/node_graph_window.h"
-#include "user_interface/element_window.h"
-#include <implot.h>
 
 extern ImFont* g_BoldLargeFont;
 extern ImFont* g_MediumMediumFont;
@@ -35,7 +33,7 @@ namespace dnf_composer::user_interface
 				"Visualize elements and their interactions.\n"
 				"Drag from an Output pin to an Input pin to create a connection.\n"
 				"Double-click a link to remove it.\n"
-				"Right-click a node to inspect and edit its parameters.");
+				"Double-click a node to inspect and edit its parameters.");
 
 			// Capture canvas top-left and height *after* the help marker,
 			// so the inspector panel aligns exactly with the node editor canvas.
@@ -71,7 +69,7 @@ namespace dnf_composer::user_interface
 				"Visualize elements and their interactions.\n"
 				"Drag from an Output pin to an Input pin to create a connection.\n"
 				"Double-click a link to remove it.\n"
-				"Right-click a node to inspect and edit its parameters.");
+				"Double-click a node to inspect and edit its parameters.");
 
 		// Capture canvas top-left and height *after* the help marker,
 		// so the inspector panel aligns exactly with the node editor canvas.
@@ -256,20 +254,16 @@ namespace dnf_composer::user_interface
 				dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
 
 				const auto* comps = element->getComponents();
-				if (comps && comps->count("weights"))
+				bool drewHeatmap = false;
+
+				if (isWeightMap && comps && comps->count("weights"))
 				{
 					const auto& weights = comps->at("weights");
+					const int cols = comps->count("output") ? static_cast<int>(comps->at("output").size()) : 0;
+					const int rows = comps->count("input")  ? static_cast<int>(comps->at("input").size())  : 0;
 
-					if (isWeightMap && !weights.empty())
+					if (cols > 0 && rows > 0 && cols * rows == static_cast<int>(weights.size()))
 					{
-						// Determine rows/cols from input and output sizes
-						// weights stored as weights[inputIdx * outputSize + outputIdx]
-						int cols = static_cast<int>(comps->at("output").size()); // X axis
-						int rows = static_cast<int>(comps->at("input").size());  // Y axis
-						if (cols <= 0 || rows <= 0 || cols * rows != static_cast<int>(weights.size()))
-							goto drawSparkline;
-
-						// min/max for normalisation
 						double wMin =  1e300, wMax = -1e300;
 						for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
 						const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
@@ -282,22 +276,19 @@ namespace dnf_composer::user_interface
 							for (int c = 0; c < cols; ++c)
 							{
 								const double v   = weights[r * cols + c];
-								const float  t   = float((v - wMin) / wRange); // 0..1
+								const float  t   = float((v - wMin) / wRange);
 								const ImVec2 tl  = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
 								const ImVec2 br  = { tl.x + cellW, tl.y + cellH };
-
 								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
 								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
 							}
 						}
-						goto doneSparkline;
+						drewHeatmap = true;
 					}
 				}
 
-				drawSparkline:
-				if (comps)
+				if (!drewHeatmap && !isWeightMap && comps)
 				{
-					// compute global min/max across all components for shared Y scale
 					double globalMin =  1e300, globalMax = -1e300;
 					for (const auto& [name, data] : *comps)
 						for (const double v : data) { globalMin = std::min(globalMin, v); globalMax = std::max(globalMax, v); }
@@ -318,11 +309,10 @@ namespace dnf_composer::user_interface
 						};
 
 						for (int i = 0; i < n - 1; ++i)
-							dl->AddLine(toScreen(i), toScreen(i + 1), col, 1.2f);
+							dl->AddLine(toScreen(i), toScreen(i + 1), col, 1.8f);
 					}
 				}
 
-				doneSparkline:
 				// advance cursor past the plot area
 				ImGui::Dummy(ImVec2(plotW, plotH));
 			}
@@ -467,11 +457,13 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::handleNodeSelection() const
 	{
 		const ImNodeEditor::NodeId hovered = ImNodeEditor::GetHoveredNode();
-		if (!hovered) return;
-		if (!ImGui::IsMouseClicked(ImGuiMouseButton_Right)) return;
 
-		const size_t id = hovered.Get();
-		selectedNodeId_ = (selectedNodeId_ == id) ? 0 : id;  // toggle on repeated right-click
+		// Double left-click on a node opens (or toggles) the inspector.
+		if (hovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		{
+			const size_t id = hovered.Get();
+			selectedNodeId_ = (selectedNodeId_ == id) ? 0 : id;
+		}
 	}
 
 	void NodeGraphWindow::renderNodeInspectorPopup() const
@@ -503,7 +495,8 @@ namespace dnf_composer::user_interface
 
 		if (visible)
 		{
-			ImGui::BeginChild("##insp_scroll", ImVec2(0, 0), false);
+			ImGui::BeginChild("##insp_scroll", ImVec2(0, 0), false,
+				ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
 			// ---- Plot ----
 			const auto* comps = element->getComponents();
@@ -515,21 +508,56 @@ namespace dnf_composer::user_interface
 				const float plotW = ImGui::GetContentRegionAvail().x;
 				const float plotH = isWeightMap ? plotW : plotW * 0.6f;
 
-				if (ImPlot::BeginPlot("##insp", ImVec2(plotW, plotH)))
-				{
-					ImPlot::SetupAxes(nullptr, nullptr,
-						ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+				const bool hasWeights = isWeightMap &&
+					comps->contains("weights") && !comps->at("weights").empty() &&
+					comps->contains("input")   && comps->contains("output");
 
-					if (isWeightMap && comps->contains("output"))
+				if (hasWeights)
+				{
+					const auto& weights = comps->at("weights");
+					const int rows = static_cast<int>(comps->at("input").size());
+					const int cols = static_cast<int>(comps->at("output").size());
+
+					if (rows > 0 && cols > 0 && rows * cols == static_cast<int>(weights.size()))
 					{
-						const auto& out = comps->at("output");
-						std::vector<float> xs(out.size()), ys(out.size());
-						for (int i = 0; i < static_cast<int>(out.size()); ++i)
-						{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(out[i]); }
-						ImPlot::PlotLine("output", xs.data(), ys.data(), static_cast<int>(xs.size()));
+						constexpr float pad = 3.0f;
+						// Reserve space first so the child window clip rect covers the full area.
+						const ImVec2 origin = ImGui::GetCursorScreenPos();
+						ImGui::Dummy(ImVec2(plotW, plotH));
+						const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
+
+						ImDrawList* dl = ImGui::GetWindowDrawList();
+						dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
+						dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
+
+						double wMin =  1e300, wMax = -1e300;
+						for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
+						const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
+
+						const float cellW = (rect.GetWidth()  - 2*pad) / float(cols);
+						const float cellH = (rect.GetHeight() - 2*pad) / float(rows);
+
+						for (int r = 0; r < rows; ++r)
+						{
+							for (int c = 0; c < cols; ++c)
+							{
+								const double v  = weights[r * cols + c];
+								const float  t  = float((v - wMin) / wRange);
+								const ImVec2 tl = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
+								const ImVec2 br = { tl.x + cellW, tl.y + cellH };
+								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
+								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
+							}
+						}
 					}
-					else
+				}
+				else if (!isWeightMap)
+				{
+					if (ImPlot::BeginPlot("##insp", ImVec2(plotW, plotH)))
 					{
+						ImPlot::SetupAxes(nullptr, nullptr,
+							ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+
 						for (const auto& [name, data] : *comps)
 						{
 							if (data.size() < 2) continue;
@@ -538,9 +566,9 @@ namespace dnf_composer::user_interface
 							{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(data[i]); }
 							ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()));
 						}
-					}
 
-					ImPlot::EndPlot();
+						ImPlot::EndPlot();
+					}
 				}
 				ImGui::Separator();
 			}
