@@ -124,10 +124,10 @@ TEST_F(SimulationFileManagerTest, SavedFileIsValidJson)
     std::ifstream file(tempDir + "save-valid-json.json");
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
-    EXPECT_NO_THROW(file >> parsed);
-    EXPECT_TRUE(parsed.is_object());
-    EXPECT_TRUE(parsed.contains("elements"));
-    EXPECT_TRUE(parsed["elements"].is_array());
+    ASSERT_NO_THROW(file >> parsed);
+    ASSERT_TRUE(parsed.is_object());
+    ASSERT_TRUE(parsed.contains("elements"));
+    ASSERT_TRUE(parsed["elements"].is_array());
 }
 
 TEST_F(SimulationFileManagerTest, SavedFileContainsMetadataFields)
@@ -142,6 +142,7 @@ TEST_F(SimulationFileManagerTest, SavedFileContainsMetadataFields)
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
+    ASSERT_TRUE(parsed.is_object());
 
     ASSERT_TRUE(parsed.contains("identifier"));
     ASSERT_TRUE(parsed.contains("deltaT"));
@@ -194,6 +195,9 @@ TEST_F(SimulationFileManagerTest, SavedFileContainsAllElements)
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
+    ASSERT_TRUE(parsed.is_object());
+    ASSERT_TRUE(parsed.contains("elements"));
+    ASSERT_TRUE(parsed["elements"].is_array());
 
     EXPECT_EQ(static_cast<int>(parsed["elements"].size()), 4);
 }
@@ -211,6 +215,9 @@ TEST_F(SimulationFileManagerTest, SavePreservesElementUniqueNames)
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
+    ASSERT_TRUE(parsed.is_object());
+    ASSERT_TRUE(parsed.contains("elements"));
+    ASSERT_TRUE(parsed["elements"].is_array());
 
     std::vector<std::string> names;
     for (const auto& el : parsed["elements"])
@@ -236,6 +243,9 @@ TEST_F(SimulationFileManagerTest, SavePreservesInteractions)
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
+    ASSERT_TRUE(parsed.is_object());
+    ASSERT_TRUE(parsed.contains("elements"));
+    ASSERT_TRUE(parsed["elements"].is_array());
 
     bool foundInteraction = false;
     for (const auto& el : parsed["elements"])
@@ -263,6 +273,9 @@ TEST_F(SimulationFileManagerTest, SaveEmptySimulationCreatesEmptyArray)
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
+    ASSERT_TRUE(parsed.is_object());
+    ASSERT_TRUE(parsed.contains("elements"));
+    ASSERT_TRUE(parsed["elements"].is_array());
 
     EXPECT_EQ(static_cast<int>(parsed["elements"].size()), 0);
 }
