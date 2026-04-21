@@ -130,6 +130,54 @@ TEST_F(SimulationFileManagerTest, SavedFileIsValidJson)
     EXPECT_TRUE(parsed["elements"].is_array());
 }
 
+TEST_F(SimulationFileManagerTest, SavedFileContainsMetadataFields)
+{
+    const auto sim = createSimulation("my-sim-id", 2.5, 0.0, 0.0);
+    sim->addElement(makeField("nf 1"));
+
+    const SimulationFileManager sfm{ sim, tempDir };
+    sfm.saveElementsToJson();
+
+    std::ifstream file(tempDir + "my-sim-id.json");
+    nlohmann::json parsed;
+    file >> parsed;
+
+    ASSERT_TRUE(parsed.contains("identifier"));
+    ASSERT_TRUE(parsed.contains("deltaT"));
+    EXPECT_EQ(parsed["identifier"].get<std::string>(), "my-sim-id");
+    EXPECT_DOUBLE_EQ(parsed["deltaT"].get<double>(), 2.5);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesSimulationIdentifier)
+{
+    const auto simA = createSimulation("rt-identifier", 1.0, 0.0, 0.0);
+    simA->addElement(makeField("nf 1"));
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("placeholder", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-identifier.json" };
+    sfmLoad.loadElementsFromJson();
+
+    EXPECT_EQ(simB->getUniqueIdentifier(), "rt-identifier");
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesDeltaT)
+{
+    const auto simA = createSimulation("rt-deltat", 3.7, 0.0, 0.0);
+    simA->addElement(makeField("nf 1"));
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("placeholder", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-deltat.json" };
+    sfmLoad.loadElementsFromJson();
+
+    EXPECT_DOUBLE_EQ(simB->getDeltaT(), 3.7);
+}
+
 TEST_F(SimulationFileManagerTest, SavedFileContainsAllElements)
 {
     const auto sim = createSimulation("save-all-elements", 1.0, 0.0, 0.0);

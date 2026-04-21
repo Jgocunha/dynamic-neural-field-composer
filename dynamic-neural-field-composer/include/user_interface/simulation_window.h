@@ -21,6 +21,7 @@ namespace dnf_composer::user_interface
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
+		mutable double editableDt_;
 	public:
 		explicit SimulationWindow(const std::shared_ptr<Simulation>& simulation);
 

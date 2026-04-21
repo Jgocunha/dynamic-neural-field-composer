@@ -8,7 +8,7 @@
 namespace dnf_composer::user_interface
 {
 	SimulationWindow::SimulationWindow(const std::shared_ptr<Simulation>& simulation)
-		: simulation(simulation)
+		: simulation(simulation), editableDt_(simulation->getDeltaT())
 	{
 	}
 
@@ -46,7 +46,6 @@ namespace dnf_composer::user_interface
 		const float gap = ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
 
 		const std::string id   = simulation->getIdentifier();
-		static double dt = simulation->getDeltaT();
 
 		// keep local editable buffers
 		static char idBuf[128];
@@ -74,14 +73,15 @@ namespace dnf_composer::user_interface
 		ImGui::SameLine();
 
 		ImGui::SetNextItemWidth(65.0f * ui);
-		ImGui::InputDouble("##dt_ms", &dt, 0.0, 0.0, "%.2f");
+		ImGui::InputDouble("##dt_ms", &editableDt_, 0.0, 0.0, "%.2f");
 		if (ImGui::IsItemDeactivatedAfterEdit())
 		{
-			dt = std::max(dt, 0.1);
-			simulation->setDeltaT(dt);
+			if (std::isfinite(editableDt_) && editableDt_ > 0.0)
+				simulation->setDeltaT(editableDt_);
+			editableDt_ = simulation->getDeltaT();  // revert to last valid value on invalid input
 		}
 		else if (!ImGui::IsItemActive())
-			dt = simulation->getDeltaT();  // keep in sync when not editing
+			editableDt_ = simulation->getDeltaT();  // keep in sync when not editing
 
 		ImGui::SameLine();
 		ImGui::TextUnformatted("dt");
