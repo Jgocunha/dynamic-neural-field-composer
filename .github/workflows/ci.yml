@@ -281,9 +281,12 @@ jobs:
           gcovr \
             --root ${{ github.workspace }}/dynamic-neural-field-composer \
             --object-directory ${{ github.workspace }}/build \
+            --gcov-executable gcov-13 \
             --exclude '.*vcpkg.*' \
             --exclude '.*/tests/.*' \
             --exclude '.*/imgui-platform-kit.*' \
+            --exclude-directories '.*CMakeFiles.*' \
+            --gcov-ignore-errors=no_working_dir_found \
             --xml \
             -o coverage.xml
 
