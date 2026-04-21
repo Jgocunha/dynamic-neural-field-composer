@@ -139,8 +139,9 @@ TEST_F(SimulationFileManagerTest, SavedFileContainsMetadataFields)
     sfm.saveElementsToJson();
 
     std::ifstream file(tempDir + "my-sim-id.json");
+    ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
-    file >> parsed;
+    ASSERT_NO_THROW(file >> parsed);
 
     ASSERT_TRUE(parsed.contains("identifier"));
     ASSERT_TRUE(parsed.contains("deltaT"));
@@ -190,8 +191,9 @@ TEST_F(SimulationFileManagerTest, SavedFileContainsAllElements)
     sfm.saveElementsToJson();
 
     std::ifstream file(tempDir + "save-all-elements.json");
+    ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
-    file >> parsed;
+    ASSERT_NO_THROW(file >> parsed);
 
     EXPECT_EQ(static_cast<int>(parsed["elements"].size()), 4);
 }
@@ -206,8 +208,9 @@ TEST_F(SimulationFileManagerTest, SavePreservesElementUniqueNames)
     sfm.saveElementsToJson();
 
     std::ifstream file(tempDir + "save-names.json");
+    ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
-    file >> parsed;
+    ASSERT_NO_THROW(file >> parsed);
 
     std::vector<std::string> names;
     for (const auto& el : parsed["elements"])
@@ -230,8 +233,9 @@ TEST_F(SimulationFileManagerTest, SavePreservesInteractions)
     sfm.saveElementsToJson();
 
     std::ifstream file(tempDir + "save-interactions.json");
+    ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
-    file >> parsed;
+    ASSERT_NO_THROW(file >> parsed);
 
     bool foundInteraction = false;
     for (const auto& el : parsed["elements"])
@@ -256,8 +260,9 @@ TEST_F(SimulationFileManagerTest, SaveEmptySimulationCreatesEmptyArray)
     sfm.saveElementsToJson();
 
     std::ifstream file(tempDir + "save-empty.json");
+    ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
-    file >> parsed;
+    ASSERT_NO_THROW(file >> parsed);
 
     EXPECT_EQ(static_cast<int>(parsed["elements"].size()), 0);
 }

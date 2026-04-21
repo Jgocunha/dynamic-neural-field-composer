@@ -1,7 +1,11 @@
 #pragma once
 
 #include <imgui-platform-kit/user_interface_window.h>
+#include <algorithm>
+#include <imgui-platform-kit/themes.h>
+#include <cmath>
 
+#include "application/application.h"
 #include "simulation/simulation.h"
 #include "tools/file_dialog.h"
 
