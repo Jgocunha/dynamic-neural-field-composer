@@ -1,4 +1,5 @@
 #include "user_interface/main_menu_bar.h"
+#include <algorithm>
 
 #include <imgui-platform-kit/themes.h>
 #include "application/application.h"
@@ -79,9 +80,12 @@ namespace dnf_composer::user_interface
 
                 static auto deltaT = static_cast<float>(simulation->getDeltaT());
                 ImGui::Text("Simulation time step (dt)");
-                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.001f, 25.0, "%.2f");
+                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.1f, 25.0, "%.2f");
                 if (ImGui::IsItemDeactivatedAfterEdit())
+                {
+                    deltaT = std::max(deltaT, 0.1f);
                     simulation->setDeltaT(deltaT);
+                }
 
                 ImGui::Separator();
 

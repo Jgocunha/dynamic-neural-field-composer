@@ -3,6 +3,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
 #include "user_interface/simulation_window.h"
+#include <algorithm>
 
 namespace dnf_composer::user_interface
 {
@@ -45,7 +46,7 @@ namespace dnf_composer::user_interface
 		const float gap = ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
 
 		const std::string id   = simulation->getIdentifier();
-		double      dt   = simulation->getDeltaT();
+		static double dt = simulation->getDeltaT();
 
 		// keep local editable buffers
 		static char idBuf[128];
@@ -73,10 +74,14 @@ namespace dnf_composer::user_interface
 		ImGui::SameLine();
 
 		ImGui::SetNextItemWidth(65.0f * ui);
-		const bool dtEdited = ImGui::InputDouble("##dt_ms", &dt, 0.0, 0.0, "%.2f");
-
-		if (dtEdited || ImGui::IsItemDeactivatedAfterEdit())
+		ImGui::InputDouble("##dt_ms", &dt, 0.0, 0.0, "%.2f");
+		if (ImGui::IsItemDeactivatedAfterEdit())
+		{
+			dt = std::max(dt, 0.1);
 			simulation->setDeltaT(dt);
+		}
+		else if (!ImGui::IsItemActive())
+			dt = simulation->getDeltaT();  // keep in sync when not editing
 
 		ImGui::SameLine();
 		ImGui::TextUnformatted("dt");
