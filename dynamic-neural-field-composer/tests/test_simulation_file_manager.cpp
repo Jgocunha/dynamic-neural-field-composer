@@ -125,7 +125,9 @@ TEST_F(SimulationFileManagerTest, SavedFileIsValidJson)
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     EXPECT_NO_THROW(file >> parsed);
-    EXPECT_TRUE(parsed.is_array());
+    EXPECT_TRUE(parsed.is_object());
+    EXPECT_TRUE(parsed.contains("elements"));
+    EXPECT_TRUE(parsed["elements"].is_array());
 }
 
 TEST_F(SimulationFileManagerTest, SavedFileContainsAllElements)
@@ -143,7 +145,7 @@ TEST_F(SimulationFileManagerTest, SavedFileContainsAllElements)
     nlohmann::json parsed;
     file >> parsed;
 
-    EXPECT_EQ(static_cast<int>(parsed.size()), 4);
+    EXPECT_EQ(static_cast<int>(parsed["elements"].size()), 4);
 }
 
 TEST_F(SimulationFileManagerTest, SavePreservesElementUniqueNames)
@@ -160,7 +162,7 @@ TEST_F(SimulationFileManagerTest, SavePreservesElementUniqueNames)
     file >> parsed;
 
     std::vector<std::string> names;
-    for (const auto& el : parsed)
+    for (const auto& el : parsed["elements"])
         names.push_back(el["uniqueName"].get<std::string>());
 
     EXPECT_NE(std::find(names.begin(), names.end(), "my neural field"), names.end());
@@ -184,7 +186,7 @@ TEST_F(SimulationFileManagerTest, SavePreservesInteractions)
     file >> parsed;
 
     bool foundInteraction = false;
-    for (const auto& el : parsed)
+    for (const auto& el : parsed["elements"])
     {
         if (el["uniqueName"] == "gk 1" && !el["inputs"].empty())
         {
@@ -209,7 +211,7 @@ TEST_F(SimulationFileManagerTest, SaveEmptySimulationCreatesEmptyArray)
     nlohmann::json parsed;
     file >> parsed;
 
-    EXPECT_EQ(static_cast<int>(parsed.size()), 0);
+    EXPECT_EQ(static_cast<int>(parsed["elements"].size()), 0);
 }
 
 // ---------------------------------------------------------------------------
