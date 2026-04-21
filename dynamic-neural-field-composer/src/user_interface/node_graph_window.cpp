@@ -217,11 +217,66 @@ namespace dnf_composer::user_interface
 		// Putting all content here forces Input/Output pins to appear below it.
 		builder.Header(bodyVec4);
 		{
-			// Minimum width + title
+			// Fixed node width — name is clipped and scrolls on hover.
 			static constexpr float minNodeSize = 250.0f;
+			static constexpr float scrollSpeed  = 50.0f;  // px / sec
+			static constexpr float scrollDelay  = 0.5f;   // sec pause before scrolling
+			static constexpr float scrollPause  = 1.0f;   // sec pause after full scroll
+			static std::unordered_map<size_t, double> s_hoverStart;
+
 			ImGui::Dummy(ImVec2(minNodeSize, 0));
+
 			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::TextUnformatted(element->getUniqueName().c_str());
+			{
+				const std::string& name  = element->getUniqueName();
+				const float        lineH = ImGui::GetTextLineHeight();
+				const float        textW = ImGui::CalcTextSize(name.c_str()).x;
+				// Leave room for node padding on the right so the clip aligns with the body edge.
+				constexpr float nodePad = 16.0f;
+				const float     availW  = minNodeSize - nodePad;
+
+				if (textW <= availW)
+				{
+					ImGui::TextUnformatted(name.c_str());
+				}
+				else
+				{
+					const ImVec2 origin = ImGui::GetCursorScreenPos();
+					// Reserve the fixed slot — IsItemHovered() reads this rect.
+					ImGui::Dummy(ImVec2(availW, lineH));
+
+					const size_t id      = getNodeId(element);
+					const double now     = ImGui::GetTime();
+					const float  overflow = textW - availW;
+					float        offsetX  = 0.0f;
+
+					if (ImGui::IsItemHovered())
+					{
+						if (!s_hoverStart.contains(id))
+							s_hoverStart[id] = now;
+
+						const float elapsed = static_cast<float>(now - s_hoverStart.at(id));
+						if (elapsed > scrollDelay)
+						{
+							const float scrollTime = elapsed - scrollDelay;
+							const float cycleDur   = overflow / scrollSpeed + scrollPause;
+							const float phase      = std::fmod(scrollTime, cycleDur);
+							offsetX = -std::min(phase * scrollSpeed, overflow);
+						}
+					}
+					else
+					{
+						s_hoverStart.erase(id);
+					}
+
+					ImGui::PushClipRect(origin, ImVec2(origin.x + availW, origin.y + lineH), true);
+					ImGui::GetWindowDrawList()->AddText(
+						ImVec2(origin.x + offsetX, origin.y),
+						ImGui::GetColorU32(ImGuiCol_Text),
+						name.c_str());
+					ImGui::PopClipRect();
+				}
+			}
 			ImGui::PopFont();
 
 			// Info icon — hover shows parameters
