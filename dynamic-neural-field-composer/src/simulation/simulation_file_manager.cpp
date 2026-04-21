@@ -1,4 +1,5 @@
 #include "simulation/simulation_file_manager.h"
+#include <filesystem>
 
 
 namespace dnf_composer
@@ -23,7 +24,7 @@ namespace dnf_composer
         root["deltaT"]     = simulation->getDeltaT();
         root["elements"]   = elementsJson;
 
-        const std::string path = filePath + simulation->getUniqueIdentifier() + ".json";
+        const std::string path = (std::filesystem::path(filePath) / (simulation->getUniqueIdentifier() + ".json")).string();
         std::ofstream file(path);
         if (file.is_open()) {
             file << root.dump(4);
@@ -58,14 +59,36 @@ namespace dnf_composer
         {
             elementsJson = root;
         }
+        else if (root.is_object())
+        {
+            const json& elems = root.contains("elements") ? root["elements"] : json::array();
+            if (!elems.is_array())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: \"elements\" is not an array: " + filePath);
+                return;
+            }
+            elementsJson = elems;
+
+            if (root.contains("identifier") && root["identifier"].is_string())
+                simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
+            else if (root.contains("identifier"))
+                log(tools::logger::ERROR, "Invalid simulation file: \"identifier\" is not a string: " + filePath);
+
+            if (root.contains("deltaT") && root["deltaT"].is_number())
+            {
+                const double dt = root["deltaT"].get<double>();
+                if (std::isfinite(dt) && dt > 0.0)
+                    simulation->setDeltaT(dt);
+                else
+                    log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a valid positive number: " + filePath);
+            }
+            else if (root.contains("deltaT"))
+                log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a number: " + filePath);
+        }
         else
         {
-            elementsJson = root.value("elements", json::array());
-
-            if (root.contains("identifier"))
-                simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
-            if (root.contains("deltaT"))
-                simulation->setDeltaT(root["deltaT"].get<double>());
+            log(tools::logger::ERROR, "Invalid simulation file: unexpected JSON root type: " + filePath);
+            return;
         }
 
         log(tools::logger::INFO, "Simulation loaded from: " + filePath);

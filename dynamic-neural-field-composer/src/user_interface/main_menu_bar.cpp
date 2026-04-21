@@ -83,8 +83,9 @@ namespace dnf_composer::user_interface
                 ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.1f, 25.0, "%.2f");
                 if (ImGui::IsItemDeactivatedAfterEdit())
                 {
-                    deltaT = std::max(deltaT, 0.1f);
-                    simulation->setDeltaT(deltaT);
+                    if (std::isfinite(deltaT) && deltaT > 0.0f)
+                        simulation->setDeltaT(deltaT);
+                    deltaT = static_cast<float>(simulation->getDeltaT());  // revert to last valid value on invalid input
                 }
 
                 ImGui::Separator();
