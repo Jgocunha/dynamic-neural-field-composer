@@ -14,6 +14,8 @@ namespace dnf_composer
 		{
 			commonParameters.identifiers.label = ElementLabel::GAUSS_KERNEL;
 			components["kernel"] = std::vector<double>(commonParameters.dimensionParameters.size);
+			if (parameters.outputFieldDimensions.has_value())
+				components["output"].resize(parameters.outputFieldDimensions->size, 0.0);
 		}
 
 		void GaussKernel::init()
@@ -48,7 +50,10 @@ namespace dnf_composer
 			 
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
-			std::ranges::fill(components["output"], 0.0);
+			if (parameters.outputFieldDimensions.has_value())
+				components["output"].assign(parameters.outputFieldDimensions->size, 0.0);
+			else
+				std::ranges::fill(components["output"], 0.0);
 		}
 
 		void GaussKernel::step(double t, double deltaT)
@@ -66,8 +71,19 @@ namespace dnf_composer
 			else
 				convolution = tools::math::conv_same(components["input"], components["kernel"]);
 
-			for (int i = 0; i < components["output"].size(); i++)
-				components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+			if (parameters.outputFieldDimensions.has_value() &&
+				parameters.outputFieldDimensions->size != commonParameters.dimensionParameters.size)
+			{
+				std::vector<double> fullConvolution(commonParameters.dimensionParameters.size);
+				for (int i = 0; i < static_cast<int>(fullConvolution.size()); i++)
+					fullConvolution[i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+				components["output"] = tools::math::resample(fullConvolution, parameters.outputFieldDimensions->size);
+			}
+			else
+			{
+				for (int i = 0; i < static_cast<int>(components["output"].size()); i++)
+					components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+			}
 		}
 
 		std::string GaussKernel::toString() const

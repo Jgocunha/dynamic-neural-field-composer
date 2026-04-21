@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <array>
+#include <optional>
 
 #include "kernel.h"
 #include "tools/math.h"
@@ -29,15 +30,18 @@ namespace dnf_composer
 			double amplitudeGlobal;
 			bool circular;
 			bool normalized;
+			std::optional<ElementDimensions> outputFieldDimensions;
 
 			MexicanHatKernelParameters(double widthExc = 2.5, double amplitudeExc = 11.0,
 				double widthInh = 5.0, double amplitudeInh = 15.0,
 				double amplitudeGlobal = -0.1,
-				bool circular = true, bool normalized = true)
+				bool circular = true, bool normalized = true,
+				std::optional<ElementDimensions> outputDims = std::nullopt)
 				: widthExc(widthExc), amplitudeExc(amplitudeExc),
 				widthInh(widthInh), amplitudeInh(amplitudeInh),
 				amplitudeGlobal(amplitudeGlobal),
-				circular(circular), normalized(normalized)
+				circular(circular), normalized(normalized),
+				outputFieldDimensions(outputDims)
 			{}
 
 			bool operator==(const MexicanHatKernelParameters& other) const
@@ -50,7 +54,8 @@ namespace dnf_composer
 					std::abs(amplitudeInh - other.amplitudeInh) < epsilon &&
 					std::abs(amplitudeGlobal - other.amplitudeGlobal) < epsilon &&
 					circular == other.circular &&
-					normalized == other.normalized;
+					normalized == other.normalized &&
+					outputFieldDimensions == other.outputFieldDimensions;
 			}
 
 			std::string toString() const override
@@ -64,8 +69,10 @@ namespace dnf_composer
 					<< "Amplitude inh.: " << amplitudeInh << ", "
 					<< "Amplitude glob.: " << amplitudeGlobal << ", "
 					<< "Circular: " << (circular ? "true" : "false") << ", "
-					<< "Normalized: " << (normalized ? "true" : "false")
-					<< "]";
+					<< "Normalized: " << (normalized ? "true" : "false");
+				if (outputFieldDimensions.has_value())
+					result << ", Output size: " << outputFieldDimensions->size;
+				result << "]";
 				return result.str();
 			}
 		};

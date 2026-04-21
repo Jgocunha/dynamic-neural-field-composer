@@ -453,4 +453,23 @@ namespace dnf_composer::tools::math
 				flat_matrix[i * cols + j] = static_cast<T>(matrix[i][j]);
 		return flat_matrix;
 	}
+
+	// Linear interpolation resampling from input.size() to outputSize.
+	template<typename T>
+	std::vector<T> resample(const std::vector<T>& input, int outputSize)
+	{
+		if (input.empty() || outputSize <= 0) return {};
+		const int N = static_cast<int>(input.size());
+		if (N == outputSize) return input;
+		std::vector<T> out(outputSize);
+		for (int i = 0; i < outputSize; ++i)
+		{
+			const double pos = static_cast<double>(i) * (N - 1) / (outputSize - 1);
+			const int lo = static_cast<int>(pos);
+			const int hi = std::min(lo + 1, N - 1);
+			const double t = pos - lo;
+			out[i] = input[lo] * (1.0 - t) + input[hi] * t;
+		}
+		return out;
+	}
 }

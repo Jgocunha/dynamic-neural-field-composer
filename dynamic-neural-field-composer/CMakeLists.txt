@@ -299,6 +299,7 @@ add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
+add_example_executable(ex_cross_dimension_kernels ex_cross_dimension_kernels.cpp)
 
 # Tests (GTest)
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
@@ -315,6 +316,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_gauss_field_coupling.cpp"
             "tests/elements/test_gauss_stimulus.cpp"
             "tests/elements/test_kernels.cpp"
+            "tests/elements/test_kernel_cross_dimension.cpp"
             "tests/elements/test_neural_field.cpp"
             "tests/elements/test_normal_noise.cpp"
             # simulation

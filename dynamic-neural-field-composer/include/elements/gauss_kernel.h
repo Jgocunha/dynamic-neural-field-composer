@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <optional>
 
 #include "tools/math.h"
 #include "kernel.h"
@@ -17,11 +18,14 @@ namespace dnf_composer
 			double amplitudeGlobal;
 			bool circular;
 			bool normalized;
+			std::optional<ElementDimensions> outputFieldDimensions;
 
 			GaussKernelParameters(double width = 3.0, double amp = 3.0, double ampGlobal = -0.01,
-				bool circular = true, bool normalized = true)
+				bool circular = true, bool normalized = true,
+				std::optional<ElementDimensions> outputDims = std::nullopt)
 				: width(width), amplitude(amp), amplitudeGlobal(ampGlobal),
-					circular(circular), normalized(normalized)
+					circular(circular), normalized(normalized),
+					outputFieldDimensions(outputDims)
 			{}
 
 			bool operator==(const GaussKernelParameters& other) const {
@@ -31,7 +35,8 @@ namespace dnf_composer
 					std::abs(amplitude - other.amplitude) < epsilon &&
 					std::abs(amplitudeGlobal - other.amplitudeGlobal) < epsilon &&
 					circular == other.circular &&
-					normalized == other.normalized;
+					normalized == other.normalized &&
+					outputFieldDimensions == other.outputFieldDimensions;
 			}
 
 			std::string toString() const override
@@ -43,8 +48,10 @@ namespace dnf_composer
 					<< "Amplitude: " << amplitude << ", "
 					<< "Amplitude global: " << amplitudeGlobal << ", "
 					<< "Circular: " << (circular ? "true" : "false") << ", "
-					<< "Normalized: " << (normalized ? "true" : "false")
-					<< "]";
+					<< "Normalized: " << (normalized ? "true" : "false");
+				if (outputFieldDimensions.has_value())
+					result << ", Output size: " << outputFieldDimensions->size;
+				result << "]";
 				return result.str();
 			}
 		};

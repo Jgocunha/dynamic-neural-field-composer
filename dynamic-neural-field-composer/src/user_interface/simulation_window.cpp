@@ -419,11 +419,25 @@ namespace dnf_composer::user_interface
             static double amplitudeGlobal = -0.01;
             static bool   circular        = true;
             static bool   normalized      = true;
+            static int    out_x_max       = 100;
+            static double out_d_x         = 1.0;
 
             ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
             ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputInt("Size",           &x_max,           0, 0);
+            ImGui::InputInt("Out size",       &out_x_max,       0, 0);
+            ImGui::PopItemWidth();
+            ImGui::SameLine();
+            widgets::renderHelpMarker(
+                "Output field size for cross-dimension coupling.\n"
+                "Set this to the size of the destination field when connecting\n"
+                "fields of different spatial dimensions via this kernel.\n"
+                "The kernel convolves in input space, then linearly resamples\n"
+                "the result to the output size before passing it downstream.\n"
+                "Leave equal to 'Size' (default) for standard same-dimension coupling.");
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputDouble("Step",        &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Out step",    &out_d_x,         0.0, 0.0, "%.2f");
             ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
             ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
@@ -433,7 +447,11 @@ namespace dnf_composer::user_interface
 
             if (addRequested)
             {
-                const element::GaussKernelParameters gkp{ width, amplitude, amplitudeGlobal, circular, normalized };
+                const std::optional<element::ElementDimensions> outputDims =
+                    (out_x_max != x_max)
+                    ? std::make_optional<element::ElementDimensions>(out_x_max, out_d_x)
+                    : std::nullopt;
+                const element::GaussKernelParameters gkp{ width, amplitude, amplitudeGlobal, circular, normalized, outputDims };
                 const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
                 simulation->addElement(std::make_shared<element::GaussKernel>(common, gkp));
             }
@@ -451,11 +469,25 @@ namespace dnf_composer::user_interface
             static double amplitudeGlobal = -0.1;
             static bool   circular        = true;
             static bool   normalized      = true;
+            static int    out_x_max       = 100;
+            static double out_d_x         = 1.0;
 
             ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
             ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputInt("Size",             &x_max,           0, 0);
+            ImGui::InputInt("Out size",         &out_x_max,       0, 0);
+            ImGui::PopItemWidth();
+            ImGui::SameLine();
+            widgets::renderHelpMarker(
+                "Output field size for cross-dimension coupling.\n"
+                "Set this to the size of the destination field when connecting\n"
+                "fields of different spatial dimensions via this kernel.\n"
+                "The kernel convolves in input space, then linearly resamples\n"
+                "the result to the output size before passing it downstream.\n"
+                "Leave equal to 'Size' (default) for standard same-dimension coupling.");
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputDouble("Step",          &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Out step",      &out_d_x,         0.0, 0.0, "%.2f");
             ImGui::InputDouble("Width exc",     &widthExc,        0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude exc", &amplitudeExc,    0.0, 0.0, "%.2f");
             ImGui::InputDouble("Width inh",     &widthInh,        0.0, 0.0, "%.2f");
@@ -467,7 +499,11 @@ namespace dnf_composer::user_interface
 
             if (addRequested)
             {
-                const element::MexicanHatKernelParameters mhkp{ widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized };
+                const std::optional<element::ElementDimensions> outputDims =
+                    (out_x_max != x_max)
+                    ? std::make_optional<element::ElementDimensions>(out_x_max, out_d_x)
+                    : std::nullopt;
+                const element::MexicanHatKernelParameters mhkp{ widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized, outputDims };
                 const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
                 simulation->addElement(std::make_shared<element::MexicanHatKernel>(common, mhkp));
             }
@@ -484,11 +520,25 @@ namespace dnf_composer::user_interface
             static double amplitudeGlobal = -0.01;
             static bool   circular        = true;
             static bool   normalized      = false;
+            static int    out_x_max       = 100;
+            static double out_d_x         = 1.0;
 
             ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
             ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputInt("Size",              &x_max,           0, 0);
+            ImGui::InputInt("Out size",          &out_x_max,       0, 0);
+            ImGui::PopItemWidth();
+            ImGui::SameLine();
+            widgets::renderHelpMarker(
+                "Output field size for cross-dimension coupling.\n"
+                "Set this to the size of the destination field when connecting\n"
+                "fields of different spatial dimensions via this kernel.\n"
+                "The kernel convolves in input space, then linearly resamples\n"
+                "the result to the output size before passing it downstream.\n"
+                "Leave equal to 'Size' (default) for standard same-dimension coupling.");
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputDouble("Step",           &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Out step",       &out_d_x,         0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
             ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
             ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
@@ -499,7 +549,11 @@ namespace dnf_composer::user_interface
 
             if (addRequested)
             {
-                const element::OscillatoryKernelParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized };
+                const std::optional<element::ElementDimensions> outputDims =
+                    (out_x_max != x_max)
+                    ? std::make_optional<element::ElementDimensions>(out_x_max, out_d_x)
+                    : std::nullopt;
+                const element::OscillatoryKernelParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized, outputDims };
                 const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
                 simulation->addElement(std::make_shared<element::OscillatoryKernel>(common, okp));
             }
