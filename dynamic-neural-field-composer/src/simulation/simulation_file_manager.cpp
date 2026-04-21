@@ -14,49 +14,62 @@ namespace dnf_composer
 
 	void SimulationFileManager::saveElementsToJson() const
 	{
-        json elementsJson;
-
+        json elementsJson = json::array();
 		for (const auto& element : simulation->getElements())
-		{
-            json elementJson;
-            elementJson = elementToJson(element);
-            elementsJson.emplace_back(elementJson);
-        }
+            elementsJson.emplace_back(elementToJson(element));
 
-        // Write the JSON to a file
-        std::ofstream file(filePath + simulation->getUniqueIdentifier() + ".json");
+        json root;
+        root["identifier"] = simulation->getUniqueIdentifier();
+        root["deltaT"]     = simulation->getDeltaT();
+        root["elements"]   = elementsJson;
+
+        const std::string path = filePath + simulation->getUniqueIdentifier() + ".json";
+        std::ofstream file(path);
         if (file.is_open()) {
-            file << elementsJson.dump(4); // Add indentation for readability
-            log(tools::logger::INFO, "Elements saved to: " + filePath + simulation->getUniqueIdentifier() + ".json.");
+            file << root.dump(4);
+            log(tools::logger::INFO, "Simulation saved to: " + path);
         }
         else {
-            log(tools::logger::ERROR, "Unable to open file to save elements: " + filePath + simulation->getUniqueIdentifier() + ".json.");
+            log(tools::logger::ERROR, "Unable to open file to save simulation: " + path);
         }
 	}
 
     void SimulationFileManager::loadElementsFromJson() const
     {
-        // Open the JSON file for reading
         std::ifstream file(filePath);
         if (!file.is_open()) {
-            log(tools::logger::ERROR, "Unable to open file to load elements: " + filePath + ".");
+            log(tools::logger::ERROR, "Unable to open file to load simulation: " + filePath + ".");
             return;
         }
 
-        // Read the JSON content
-        json elementsJson;
+        json root;
         try {
-            file >> elementsJson;
+            file >> root;
         }
         catch (const std::exception& e) {
-            log(tools::logger::ERROR, "Error reading JSON file: " + std::string(e.what()) + "");
+            log(tools::logger::ERROR, "Error reading JSON file: " + std::string(e.what()));
             return;
         }
 
-        log(tools::logger::INFO, "Elements loaded from: " + filePath);
+        // Backwards-compatible: old format is a bare array of elements.
+        // New format is an object with metadata + "elements" array.
+        json elementsJson;
+        if (root.is_array())
+        {
+            elementsJson = root;
+        }
+        else
+        {
+            elementsJson = root.value("elements", json::array());
 
+            if (root.contains("identifier"))
+                simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
+            if (root.contains("deltaT"))
+                simulation->setDeltaT(root["deltaT"].get<double>());
+        }
+
+        log(tools::logger::INFO, "Simulation loaded from: " + filePath);
         jsonToElements(elementsJson);
-
     }
 
     json SimulationFileManager::elementToJson(const std::shared_ptr<element::Element>& element)
