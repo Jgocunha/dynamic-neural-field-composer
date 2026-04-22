@@ -7,13 +7,13 @@
 #include <fstream>
 #include <chrono>
 
-
-
 namespace dnf_composer::tools::utils
 {
 	int countNumOfLinesInFile(const std::string& filename);
 
 	bool saveVectorToFile(const std::vector<double>& vector, const std::string& filename);
+
+	std::string replaceForwardSlashesWithBackslashes(const std::string& str);
 
 	template <typename T>
 	void resizeMatrix(std::vector<std::vector<T>>& matrix, int newRowSize, int newColSize)
@@ -55,5 +55,3 @@ namespace dnf_composer::tools::utils
 #endif
 	}
 }
-
-
