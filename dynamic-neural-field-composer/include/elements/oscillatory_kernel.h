@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "kernel.h"
 #include "tools/math.h"
 
@@ -15,13 +17,16 @@ namespace dnf_composer
 			double amplitudeGlobal;
 			bool circular;
 			bool normalized;
+			std::optional<ElementDimensions> outputFieldDimensions;
 
 			OscillatoryKernelParameters(double amplitude = 1.0, double decay = 0.08,
 				double zeroCrossings = 0.3, double amplitudeGlobal = -0.01,
-				bool circular = true, bool normalized = false)
+				bool circular = true, bool normalized = false,
+				std::optional<ElementDimensions> outputDims = std::nullopt)
 				: amplitude(amplitude), decay(decay),
 				zeroCrossings(zeroCrossings), amplitudeGlobal(amplitudeGlobal),
-				circular(circular), normalized(normalized)
+				circular(circular), normalized(normalized),
+				outputFieldDimensions(outputDims)
 			{
 				// zero crossings must be in the range [0, 1]
 				if (zeroCrossings < 0.0)
@@ -42,7 +47,8 @@ namespace dnf_composer
 					std::abs(zeroCrossings - other.zeroCrossings) < epsilon &&
 					std::abs(amplitudeGlobal - other.amplitudeGlobal) < epsilon &&
 					circular == other.circular &&
-					normalized == other.normalized;
+					normalized == other.normalized &&
+					outputFieldDimensions == other.outputFieldDimensions;
 			}
 
 			std::string toString() const override
@@ -55,8 +61,10 @@ namespace dnf_composer
 					<< "Zero crossings: " << zeroCrossings << ", "
 					<< "Amplitude global: " << amplitudeGlobal << ", "
 					<< "Circular: " << (circular ? "true" : "false") << ", "
-					<< "Normalized: " << (normalized ? "true" : "false")
-					<< "]";
+					<< "Normalized: " << (normalized ? "true" : "false");
+				if (outputFieldDimensions.has_value())
+					result << ", Output size: " << outputFieldDimensions->size;
+				result << "]";
 				return result.str();
 			}
 		};
@@ -65,6 +73,7 @@ namespace dnf_composer
 		{
 		private:
 			OscillatoryKernelParameters parameters;
+			std::vector<double> scratchConvolution;
 		public:
 			OscillatoryKernel(const ElementCommonParameters& elementCommonParameters,
 				OscillatoryKernelParameters ok_parameters);

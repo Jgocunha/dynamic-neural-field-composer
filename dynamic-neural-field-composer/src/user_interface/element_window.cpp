@@ -461,7 +461,6 @@ namespace dnf_composer::user_interface
 		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
 		ImGui::SameLine(); ImGui::Text("Normalized");
 
-
 		static constexpr double epsilon = 1e-6;
 		if(std::abs(amplitudeExc - static_cast<float>(mhkp.amplitudeExc)) > epsilon ||
 			std::abs(widthExc - static_cast<float>(mhkp.widthExc)) > epsilon ||
@@ -683,7 +682,6 @@ namespace dnf_composer::user_interface
 		label = "##" + element->getUniqueName() + "Normalized";
 		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
 		ImGui::SameLine(); ImGui::Text("Normalized");
-
 
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude - static_cast<float>(okp.amplitude)) > epsilon ||
