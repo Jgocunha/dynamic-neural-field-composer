@@ -371,3 +371,93 @@ params.addCoupling(GaussCoupling{ 80.0, 80.0, 1.0, 5.0 });
 |---|---|
 | `"weights"` | Flattened coupling weight matrix |
 | `"output"` | Weighted projection from the source field |
+
+---
+
+## BoostStimulus
+
+A spatially uniform external input — the same constant value is added to every position of a connected field. Unlike `GaussStimulus` (which is spatially localized), `BoostStimulus` raises or lowers the entire field's activation level, making it useful for global gain control, resting-level shifts, or task-condition gating.
+
+**Label:** `BOOST_STIMULUS`
+
+### Parameters
+
+```cpp
+BoostStimulusParameters{
+    double amplitude = 5.0,
+    bool   isActive  = true
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `amplitude` | `5.0` | Constant value broadcast to all field positions |
+| `isActive` | `true` | When `false` the output is zeroed — acts as an on/off gate |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"output"` | Uniform vector of `amplitude` (or zeros when inactive) |
+
+### Usage note
+
+`setParameters()` calls `init()` internally, so the output vector is updated immediately — no need to wait for the next `step()` call.
+
+---
+
+## MemoryTrace
+
+A second-layer dynamics element that accumulates a persistent trace of supra-threshold neural field activity. It builds up slowly where the connected field is active and decays slowly everywhere else, producing a representation of the history of peak activations.
+
+**Label:** `MEMORY_TRACE`
+
+### Dynamics
+
+At each time step the trace follows a dual-rate Euler integration:
+
+```
+if input[i] > threshold:
+    output[i] += deltaT * (1/tauBuild) * (-output[i] + input[i])   // builds toward input
+else:
+    output[i] += deltaT * (1/tauDecay) * (-output[i])              // decays toward 0
+```
+
+The trace should receive the **sigmoid output** (`"output"` component) of a `NeuralField` as its input, not the raw activation, so that the threshold check operates on an already-thresholded signal.
+
+### Parameters
+
+```cpp
+MemoryTraceParameters{
+    double tauBuild  = 100.0,
+    double tauDecay  = 1000.0,
+    double threshold = 0.5
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `tauBuild` | `100.0` | Time constant for building the trace at active locations — smaller values make the trace grow faster |
+| `tauDecay` | `1000.0` | Time constant for decay at inactive locations — larger values make the trace persist longer |
+| `threshold` | `0.5` | Input level above which a location is considered active and the trace builds; below it the trace decays |
+
+Both time constants should be much larger than the neural field's `tau` (typically 20–100) so that the trace evolves on a slower, learning timescale.
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"output"` | Accumulated memory trace at each field position (values in [0, 1] when driven by sigmoid output) |
+| `"input"` | Summed input from connected elements |
+
+### Typical wiring
+
+```cpp
+// Field output drives the trace; trace feeds back into the field as a weak excitatory input
+memTrace->addInput(field, "output");   // trace reads sigmoid output of the field
+field->addInput(memTrace);             // field receives the trace as input (scaled by a coupling)
+```
+
+### Usage note
+
+`setParameters()` does **not** call `init()` — the accumulated trace is preserved when parameters are changed at runtime. Call `init()` explicitly if you want to reset the trace to zero.

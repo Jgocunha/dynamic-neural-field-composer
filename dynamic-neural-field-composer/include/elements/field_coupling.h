@@ -25,7 +25,7 @@ namespace dnf_composer
 
 	namespace element
 	{
-		struct FieldCouplingParameters : ElementSpecificParameters
+		struct FieldCouplingParameters final : ElementSpecificParameters
 		{
 			ElementDimensions inputFieldDimensions;
 			LearningRule learningRule;
@@ -33,9 +33,9 @@ namespace dnf_composer
 			double learningRate;
 			bool isLearningActive;
 
-			FieldCouplingParameters(const ElementDimensions& inputFieldDimensions = ElementDimensions{},
-				LearningRule learningRule = LearningRule::HEBB,
-				double scalar = 1.0, double learningRate = 0.01)
+			explicit FieldCouplingParameters(const ElementDimensions& inputFieldDimensions = ElementDimensions{},
+				const LearningRule learningRule = LearningRule::HEBB,
+				const double scalar = 1.0, const double learningRate = 0.01)
 					: inputFieldDimensions(inputFieldDimensions),
 				learningRule(learningRule), scalar(scalar),
 				learningRate(learningRate), isLearningActive(false)
@@ -52,7 +52,7 @@ namespace dnf_composer
 					std::abs(learningRate - other.learningRate) < epsilon;
 			}
 
-			std::string toString() const override
+			[[nodiscard]] std::string toString() const override
 			{
 				std::ostringstream result;
 				result << std::fixed << std::setprecision(2);
@@ -66,7 +66,7 @@ namespace dnf_composer
 			}
 		};
 
-		class FieldCoupling : public Element
+		class FieldCoupling final : public Element
 		{
 		protected:
 			FieldCouplingParameters parameters;

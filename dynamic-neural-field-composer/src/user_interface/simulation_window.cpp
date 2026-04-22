@@ -692,6 +692,56 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::BOOST_STIMULUS:
+        {
+            static char   id[CHAR_SIZE] = "boost stimulus";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double amplitude     = 5.0;
+            static bool   isActive      = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size",         &x_max,     0, 0);
+            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Active",       &isActive);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::BoostStimulusParameters bsp{ amplitude, isActive };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::BoostStimulus>(common, bsp));
+            }
+            break;
+        }
+        case element::ElementLabel::MEMORY_TRACE:
+        {
+            static char   id[CHAR_SIZE] = "memory trace";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double tauBuild      = 100.0;
+            static double tauDecay      = 1000.0;
+            static double threshold     = 0.5;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size",          &x_max,     0, 0);
+            ImGui::InputDouble("Step",       &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau build",  &tauBuild,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau decay",  &tauDecay,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Threshold",  &threshold, 0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::MemoryTraceParameters mtp{ tauBuild, tauDecay, threshold };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::MemoryTrace>(common, mtp));
+            }
+            break;
+        }
         default:
             break;
         }
@@ -1351,7 +1401,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::GaussStimulusParameters gsp = { sigma, amplitude, position, circular, normalized};
+			const element::GaussStimulusParameters gsp( sigma, amplitude, position, circular, normalized);
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::GaussStimulus> gaussStimulus(new element::GaussStimulus ({id, dimensions}, gsp));
 			simulation->addElement(gaussStimulus);
@@ -1373,10 +1423,10 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::NormalNoiseParameters nnp = { amplitude };
+			const element::NormalNoiseParameters nnp( amplitude );
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::NormalNoise> normalNoise( new element::NormalNoise({ id, dimensions}, nnp));
-			const element::GaussKernelParameters gkp = { 0.25, 0.2 };
+			const element::GaussKernelParameters gkp( 0.25, 0.2 );
 			const std::shared_ptr<element::GaussKernel> gaussKernelNormalNoise(new element::GaussKernel({ std::string(id) + " gauss kernel", dimensions }, gkp));
 			simulation->addElement(normalNoise);
 			simulation->addElement(gaussKernelNormalNoise);
@@ -1419,7 +1469,7 @@ namespace dnf_composer::user_interface
 
 		if(ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::FieldCouplingParameters fcp = { {in_x_max, in_d_x}, learningRule, scalar, learningRate };
+			const element::FieldCouplingParameters fcp( element::ElementDimensions{in_x_max, in_d_x}, learningRule, scalar, learningRate );
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::FieldCoupling> fieldCoupling(new element::FieldCoupling({ id, dimensions }, fcp));
 			simulation->addElement(fieldCoupling);
@@ -1455,7 +1505,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::GaussFieldCouplingParameters gfcp = { {in_x_max, in_d_x}, normalized, circular, {{x_i, x_j, amplitude, width}} };
+			const element::GaussFieldCouplingParameters gfcp( element::ElementDimensions{in_x_max, in_d_x}, normalized, circular, {{x_i, x_j, amplitude, width}} );
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::GaussFieldCoupling> gaussCoupling(new element::GaussFieldCoupling({ id, dimensions }, gfcp));
 			simulation->addElement(gaussCoupling);
@@ -1485,7 +1535,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::GaussKernelParameters gkp = { sigma, amplitude, amplitudeGlobal, circular, normalized};
+			const element::GaussKernelParameters gkp( sigma, amplitude, amplitudeGlobal, circular, normalized);
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::GaussKernel> gaussKernel(new element::GaussKernel({ id, dimensions }, gkp));
 			simulation->addElement(gaussKernel);
@@ -1520,7 +1570,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::MexicanHatKernelParameters mhkp = { sigmaExc, amplitudeExc, sigmaInh, amplitudeInh , amplitudeGlobal, circular, normalized};
+			const element::MexicanHatKernelParameters mhkp( sigmaExc, amplitudeExc, sigmaInh, amplitudeInh, amplitudeGlobal, circular, normalized);
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::MexicanHatKernel> mexicanHatKernel(new element::MexicanHatKernel({ id, dimensions }, mhkp));
 			simulation->addElement(mexicanHatKernel);

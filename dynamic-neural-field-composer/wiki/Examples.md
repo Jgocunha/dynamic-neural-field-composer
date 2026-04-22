@@ -97,24 +97,48 @@ A task-specific simulation modelling a packaging or manipulation scenario using 
 
 ---
 
-## ex_simulation_file_manager
+## ex_cross_dimension_kernels
 
-**Source:** `examples/ex_simulation_file_manager.cpp`
-**Executable:** `ex_simulation_file_manager`
+**Source:** `examples/ex_cross_dimension_kernels.cpp`
+**Executable:** `ex_cross_dimension_kernels`
 
-Demonstrates every way to persist and restore a simulation. The example runs two phases before opening the GUI:
+Demonstrates kernels that couple two neural fields of different spatial dimensions. A cross-dimension kernel projects activity from a source field onto a target field of different size, enabling multi-scale or heterogeneous field architectures.
 
-**Phase 1 — explicit `SimulationFileManager` API**
-1. A small architecture (neural field + Mexican-hat kernel + Gaussian stimulus + noise) is built programmatically.
-2. `SimulationFileManager::saveElementsToJson()` writes it to `data/simulations/single-field-demo.json`.
-3. `SimulationFileManager::loadElementsFromJson()` reads the file into a fresh simulation.
+**Key concepts:** cross-dimension coupling, kernel resampling, multi-scale DNF architectures
 
-**Phase 2 — `Simulation` convenience methods**
-4. `sim->save(dir)` re-saves the same architecture (equivalent to the SFM call, but without needing to instantiate `SimulationFileManager` directly).
-5. `sim->read(filePath)` loads it back in one call — internally it clears the simulation, calls `loadElementsFromJson`, and then calls `init()`.
-6. The bundled `and-test.json` architecture is loaded via `sim->read()` and run interactively with three activation plots.
+---
 
-**Key concepts:** `SimulationFileManager` explicit API, `Simulation::save` / `Simulation::read` convenience methods, JSON-based persistence, loading pre-built architectures from file
+## ex_boost_stimulus
+
+**Source:** `examples/ex_boost_stimulus.cpp`
+**Executable:** `ex_boost_stimulus`
+
+Demonstrates the `BoostStimulus` element as a global gain control mechanism. The boost raises the entire field's resting level, pushing it closer to or above the detection threshold without providing any spatial information.
+
+**Architecture:**
+- One `NeuralField` with a `MexicanHatKernel` for lateral interactions
+- One `GaussStimulus` providing a localized spatial input
+- One `BoostStimulus` providing a spatially uniform activation boost
+- `NormalNoise` for sub-threshold fluctuations
+
+**Key concepts:** global input vs. spatial input, resting-level control, on/off gating with `isActive`, how a boost interacts with detection threshold
+
+---
+
+## ex_memory_trace
+
+**Source:** `examples/ex_memory_trace.cpp`
+**Executable:** `ex_memory_trace`
+
+Demonstrates the `MemoryTrace` element as a working memory mechanism. A `GaussStimulus` drives the neural field into a self-sustained peak; the stimulus can then be turned off at runtime by setting its amplitude to zero via the element parameter panel. After it is removed, the memory trace retains an excitatory footprint that facilitates re-activation at the same location.
+
+**Architecture:**
+- One `NeuralField` with a `MexicanHatKernel` for lateral interactions and `NormalNoise`
+- One `GaussStimulus` as a transient cue
+- One `MemoryTrace` receiving the field's sigmoid output
+- One `GaussKernel` projecting the memory trace back into the field as weak excitatory input
+
+**Key concepts:** dual-timescale learning, working memory through trace feedback, `tauBuild` / `tauDecay` parameter tuning, history-dependent field dynamics
 
 ---
 

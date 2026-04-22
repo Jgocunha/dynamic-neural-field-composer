@@ -90,6 +90,8 @@ The `ElementLabel` enum identifies element types and is used by `ElementFactory`
 | `NORMAL_NOISE` | `"normal noise"` | `NormalNoise` |
 | `FIELD_COUPLING` | `"field coupling"` | `FieldCoupling` |
 | `GAUSS_FIELD_COUPLING` | `"gauss field coupling"` | `GaussFieldCoupling` |
+| `BOOST_STIMULUS` | `"boost stimulus"` | `BoostStimulus` |
+| `MEMORY_TRACE` | `"memory trace"` | `MemoryTrace` |
 
 ---
 

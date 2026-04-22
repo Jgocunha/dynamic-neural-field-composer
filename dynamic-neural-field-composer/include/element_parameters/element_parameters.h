@@ -15,6 +15,7 @@ namespace dnf_composer
 			UNINITIALIZED,
 			NEURAL_FIELD,
 			GAUSS_STIMULUS,
+			BOOST_STIMULUS,
 			GAUSS_KERNEL,
 			MEXICAN_HAT_KERNEL,
 			OSCILLATORY_KERNEL,
@@ -22,12 +23,14 @@ namespace dnf_composer
 			NORMAL_NOISE,
 			FIELD_COUPLING,
 			GAUSS_FIELD_COUPLING,
+			MEMORY_TRACE,
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
 			{UNINITIALIZED, "uninitialized" },
 			{NEURAL_FIELD, "neural field" },
 			{GAUSS_STIMULUS, "gauss stimulus" },
+			{BOOST_STIMULUS, "boost stimulus" },
 			{GAUSS_FIELD_COUPLING, "gauss field coupling" },
 			{FIELD_COUPLING, "field coupling" },
 			{GAUSS_KERNEL, "gauss kernel" },
@@ -35,6 +38,7 @@ namespace dnf_composer
 			{OSCILLATORY_KERNEL, "oscillatory kernel"},
 			{ASYMMETRIC_GAUSS_KERNEL, "asymmetric gauss kernel"},
 			{NORMAL_NOISE, "normal noise" },
+			{MEMORY_TRACE, "memory trace" },
 		};
 
 		struct ElementDimensions
