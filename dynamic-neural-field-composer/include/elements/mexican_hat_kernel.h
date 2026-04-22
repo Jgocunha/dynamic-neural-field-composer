@@ -81,6 +81,7 @@ namespace dnf_composer
 		{
 		private:
 			MexicanHatKernelParameters parameters;
+			std::vector<double> scratchConvolution;
 		public:
 			MexicanHatKernel(const ElementCommonParameters& elementCommonParameters,
 				MexicanHatKernelParameters mhk_parameters);

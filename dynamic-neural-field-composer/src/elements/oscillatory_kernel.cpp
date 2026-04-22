@@ -56,6 +56,7 @@ namespace dnf_composer
 				}
 			}
 
+			scratchConvolution.assign(commonParameters.dimensionParameters.size, 0.0);
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
 			if (parameters.outputFieldDimensions.has_value())
@@ -83,10 +84,9 @@ namespace dnf_composer
 			if (parameters.outputFieldDimensions.has_value() &&
 				parameters.outputFieldDimensions->size != commonParameters.dimensionParameters.size)
 			{
-				std::vector<double> fullConvolution(commonParameters.dimensionParameters.size);
-				for (int i = 0; i < static_cast<int>(fullConvolution.size()); i++)
-					fullConvolution[i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
-				components["output"] = tools::math::resample(fullConvolution, parameters.outputFieldDimensions->size);
+				for (int i = 0; i < static_cast<int>(scratchConvolution.size()); i++)
+					scratchConvolution[i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+				tools::math::resampleInto(scratchConvolution, components["output"]);
 			}
 			else
 			{

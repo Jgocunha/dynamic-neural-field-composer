@@ -60,6 +60,7 @@ namespace dnf_composer
 		{
 		private:
 			GaussKernelParameters parameters;
+			std::vector<double> scratchConvolution;
 		public:
 			GaussKernel(const ElementCommonParameters& elementCommonParameters, GaussKernelParameters parameters);
 

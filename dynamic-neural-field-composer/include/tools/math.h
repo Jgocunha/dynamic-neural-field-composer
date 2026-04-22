@@ -461,6 +461,7 @@ namespace dnf_composer::tools::math
 		if (input.empty() || outputSize <= 0) return {};
 		const int N = static_cast<int>(input.size());
 		if (N == outputSize) return input;
+		if (outputSize == 1) return { input[N / 2] };
 		std::vector<T> out(outputSize);
 		for (int i = 0; i < outputSize; ++i)
 		{
@@ -471,5 +472,24 @@ namespace dnf_composer::tools::math
 			out[i] = input[lo] * (1.0 - t) + input[hi] * t;
 		}
 		return out;
+	}
+
+	// In-place variant: writes into a pre-sized output buffer to avoid heap allocation.
+	template<typename T>
+	void resampleInto(const std::vector<T>& input, std::vector<T>& output)
+	{
+		const int N = static_cast<int>(input.size());
+		const int outputSize = static_cast<int>(output.size());
+		if (input.empty() || outputSize <= 0) return;
+		if (N == outputSize) { std::copy(input.begin(), input.end(), output.begin()); return; }
+		if (outputSize == 1) { output[0] = input[N / 2]; return; }
+		for (int i = 0; i < outputSize; ++i)
+		{
+			const double pos = static_cast<double>(i) * (N - 1) / (outputSize - 1);
+			const int lo = static_cast<int>(pos);
+			const int hi = std::min(lo + 1, N - 1);
+			const double t = pos - lo;
+			output[i] = input[lo] * (1.0 - t) + input[hi] * t;
+		}
 	}
 }

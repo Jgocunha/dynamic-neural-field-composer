@@ -96,6 +96,16 @@ TEST(ResampleTest, ZeroOutputSizeReturnsEmpty)
     EXPECT_TRUE(tools::math::resample(v, 0).empty());
 }
 
+TEST(ResampleTest, SingleOutputSizeReturnsCenterSample)
+{
+    // outputSize == 1 must not divide by (outputSize - 1) == 0
+    const std::vector<double> v{ 10.0, 20.0, 30.0, 40.0 };
+    const auto result = tools::math::resample(v, 1);
+    ASSERT_EQ(result.size(), 1u);
+    // center index: N/2 == 2 → v[2] == 30.0
+    EXPECT_DOUBLE_EQ(result[0], v[v.size() / 2]);
+}
+
 // ---------------------------------------------------------------------------
 // GaussKernel cross-dimension
 // ---------------------------------------------------------------------------

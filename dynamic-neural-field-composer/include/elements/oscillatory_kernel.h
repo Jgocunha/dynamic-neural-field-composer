@@ -73,6 +73,7 @@ namespace dnf_composer
 		{
 		private:
 			OscillatoryKernelParameters parameters;
+			std::vector<double> scratchConvolution;
 		public:
 			OscillatoryKernel(const ElementCommonParameters& elementCommonParameters,
 				OscillatoryKernelParameters ok_parameters);

@@ -447,12 +447,14 @@ namespace dnf_composer::user_interface
 
             if (addRequested)
             {
+                const element::ElementDimensions inDims{ x_max, d_x };
+                const element::ElementDimensions outDims{ out_x_max, out_d_x };
                 const std::optional<element::ElementDimensions> outputDims =
-                    (out_x_max != x_max)
-                    ? std::make_optional<element::ElementDimensions>(out_x_max, out_d_x)
+                    (outDims.size != inDims.size)
+                    ? std::make_optional(outDims)
                     : std::nullopt;
                 const element::GaussKernelParameters gkp{ width, amplitude, amplitudeGlobal, circular, normalized, outputDims };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                const element::ElementCommonParameters common{ std::string(id), inDims };
                 simulation->addElement(std::make_shared<element::GaussKernel>(common, gkp));
             }
             break;
@@ -499,12 +501,14 @@ namespace dnf_composer::user_interface
 
             if (addRequested)
             {
+                const element::ElementDimensions inDims{ x_max, d_x };
+                const element::ElementDimensions outDims{ out_x_max, out_d_x };
                 const std::optional<element::ElementDimensions> outputDims =
-                    (out_x_max != x_max)
-                    ? std::make_optional<element::ElementDimensions>(out_x_max, out_d_x)
+                    (outDims.size != inDims.size)
+                    ? std::make_optional(outDims)
                     : std::nullopt;
                 const element::MexicanHatKernelParameters mhkp{ widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized, outputDims };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                const element::ElementCommonParameters common{ std::string(id), inDims };
                 simulation->addElement(std::make_shared<element::MexicanHatKernel>(common, mhkp));
             }
             break;
@@ -549,12 +553,14 @@ namespace dnf_composer::user_interface
 
             if (addRequested)
             {
+                const element::ElementDimensions inDims{ x_max, d_x };
+                const element::ElementDimensions outDims{ out_x_max, out_d_x };
                 const std::optional<element::ElementDimensions> outputDims =
-                    (out_x_max != x_max)
-                    ? std::make_optional<element::ElementDimensions>(out_x_max, out_d_x)
+                    (outDims.size != inDims.size)
+                    ? std::make_optional(outDims)
                     : std::nullopt;
                 const element::OscillatoryKernelParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized, outputDims };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                const element::ElementCommonParameters common{ std::string(id), inDims };
                 simulation->addElement(std::make_shared<element::OscillatoryKernel>(common, okp));
             }
             break;
