@@ -1,14 +1,15 @@
 ﻿cmake_minimum_required(VERSION 3.20...3.30)
 
 project(dynamic-neural-field-composer
-        DESCRIPTION "A C++ application to simulate Dynamic Neural Field Architectures"
+        DESCRIPTION "A C++20 library and interactive application for building and simulating Dynamic Neural Field (DNF) architectures."
         LANGUAGES CXX
 )
 
 # Define library version
 set(DNF_COMPOSER_VERSION_MAJOR 1 CACHE STRING "major version" FORCE)
 set(DNF_COMPOSER_VERSION_MINOR 0 CACHE STRING "minor version" FORCE)
-set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR} CACHE STRING "version" FORCE)
+set(DNF_COMPOSER_VERSION_PATCH 0 CACHE STRING "patch version" FORCE)
+set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR}.${DNF_COMPOSER_VERSION_PATCH} CACHE STRING "version" FORCE)
 
 set(DNF_COMPOSER_LIB_PREFIX "release")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -77,7 +78,8 @@ set(elements_headers
         "include/elements/normal_noise.h"
         "include/elements/oscillatory_kernel.h"
         "include/elements/asymmetric_gauss_kernel.h"
-        "include/elements/kernel_coupling.h"
+        "include/elements/boost_stimulus.h"
+        "include/elements/memory_trace.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -106,9 +108,16 @@ set(user_interface_headers
         "include/user_interface/plot_control_window.h"
         "include/user_interface/simulation_window.h"
         "include/user_interface/node_graph_window.h"
-        "include/user_interface/main_window.h"
+        "include/user_interface/main_menu_bar.h"
         "include/user_interface/widgets.h"
         "include/user_interface/plots_window.h"
+        "include/user_interface/log_window.h"
+        "include/user_interface/fonts/IconsFontAwesome6.h"
+        "include/user_interface/fonts/fa.h"
+        "include/user_interface/static_layout_window.h"
+        "include/user_interface/node_utilities/builders.h"
+        "include/user_interface/node_utilities/drawing.h"
+        "include/user_interface/node_utilities/node_widgets.h"
 )
 
 set(header 
@@ -149,7 +158,8 @@ set(src
         "src/elements/neural_field.cpp"
         "src/elements/normal_noise.cpp"
         "src/elements/asymmetric_gauss_kernel.cpp"
-        "src/elements/kernel_coupling.cpp"
+        "src/elements/boost_stimulus.cpp"
+        "src/elements/memory_trace.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -173,9 +183,14 @@ set(src
         "src/user_interface/field_metrics_window.cpp"
         "src/user_interface/element_window.cpp"
         "src/user_interface/node_graph_window.cpp"
-        "src/user_interface/main_window.cpp"
+        "src/user_interface/main_menu_bar.cpp"
         "src/user_interface/widgets.cpp"
         "src/user_interface/plots_window.cpp"
+        "src/user_interface/log_window.cpp"
+        "src/user_interface/static_layout_window.cpp"
+        "src/user_interface/node_utilities/builders.cpp"
+        "src/user_interface/node_utilities/drawing.cpp"
+        "src/user_interface/node_utilities/node_widgets.cpp"
 )
 
 # Define library target
@@ -243,19 +258,37 @@ install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CON
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
 
+# Embed the application icon into each executable on Windows via the .rc file.
+# On Linux the window icon is set at runtime (see application.cpp IconParameters);
+# there is no equivalent binary embedding for ELF executables.
+if(WIN32)
+    set(DNF_ICON_RC "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.rc")
+else()
+    set(DNF_ICON_RC "")
+endif()
 
-# Main launcher
-set(LAUNCHER launcher)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer.cpp")
+# Main launchers
+set(LAUNCHER dnf-composer-static)
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-static.cpp" ${DNF_ICON_RC})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
 imgui::imgui
-imgui-platform-kit 
+imgui-platform-kit
 ${CMAKE_PROJECT_NAME})
+install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
+
+set(LAUNCHER dnf-composer-dynamic)
+add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-dynamic.cpp" ${DNF_ICON_RC})
+target_include_directories(${LAUNCHER} PRIVATE include)
+target_link_libraries(${LAUNCHER} PRIVATE
+        imgui::imgui
+        imgui-platform-kit
+        ${CMAKE_PROJECT_NAME})
+install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 
 # Function to add example executables
 function(add_example_executable target_name source_file)
-    add_executable(${target_name} "examples/${source_file}")
+    add_executable(${target_name} "examples/${source_file}" ${DNF_ICON_RC})
     target_include_directories(${target_name} PRIVATE include)
     target_link_libraries(${target_name} PRIVATE
             imgui::imgui
@@ -270,4 +303,52 @@ add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
-add_example_executable(test_kernel_dimensionality test_kernel_dimensionality.cpp)
+add_example_executable(ex_cross_dimension_kernels ex_cross_dimension_kernels.cpp)
+add_example_executable(ex_boost_stimulus ex_boost_stimulus.cpp)
+add_example_executable(ex_memory_trace ex_memory_trace.cpp)
+
+# Tests (GTest)
+option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
+if(DNF_COMPOSER_BUILD_TESTS)
+    find_package(GTest CONFIG REQUIRED)
+    enable_testing()
+
+    add_executable(dnf_composer_tests
+            # elements
+            "tests/elements/test_activation_function.cpp"
+            "tests/elements/test_element.cpp"
+            "tests/elements/test_element_factory.cpp"
+            "tests/elements/test_field_coupling.cpp"
+            "tests/elements/test_gauss_field_coupling.cpp"
+            "tests/elements/test_gauss_stimulus.cpp"
+            "tests/elements/test_kernels.cpp"
+            "tests/elements/test_kernel_cross_dimension.cpp"
+            "tests/elements/test_neural_field.cpp"
+            "tests/elements/test_normal_noise.cpp"
+            "tests/elements/test_boost_stimulus.cpp"
+            "tests/elements/test_memory_trace.cpp"
+            # simulation
+            "tests/simulation/test_simulation.cpp"
+            "tests/simulation/test_simulation_extended.cpp"
+            "tests/simulation/test_simulation_file_manager.cpp"
+            # tools
+            "tests/tools/test_logger.cpp"
+            "tests/tools/test_math.cpp"
+            "tests/tools/test_utils.cpp"
+            # element_parameters
+            "tests/element_parameters/test_element_parameters.cpp"
+            # exceptions
+            "tests/exceptions/test_exception.cpp"
+    )
+    target_include_directories(dnf_composer_tests PRIVATE include)
+    target_link_libraries(dnf_composer_tests PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            GTest::gtest
+            GTest::gtest_main
+            imgui::imgui
+            imgui-platform-kit
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(dnf_composer_tests)
+endif()

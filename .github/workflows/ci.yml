@@ -1,0 +1,220 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test-linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - build_type: Release
+            coverage: false
+          - build_type: Debug
+            coverage: true
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-linux
+      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── System dependencies ────────────────────────────────────────────────
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-13 g++-13 \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libglfw3-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxext-dev \
+            gcovr
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+
+      # ── vcpkg ─────────────────────────────────────────────────────────────
+      - name: Clone vcpkg
+        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - name: Bootstrap vcpkg
+        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_ROOT }}/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
+            implot \
+            imgui-node-editor \
+            nlohmann-json \
+            gtest
+
+      # ── imgui-platform-kit (from source) ───────────────────────────────────
+      - name: Clone imgui-platform-kit
+        run: |
+          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
+            ${{ github.workspace }}/imgui-platform-kit-src
+
+      - name: Configure imgui-platform-kit
+        run: |
+          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
+                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
+                -DCMAKE_CXX_COMPILER=g++-13 \
+                -DCMAKE_C_COMPILER=gcc-13
+
+      - name: Build imgui-platform-kit
+        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(nproc)
+
+      - name: Install imgui-platform-kit
+        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
+
+      # ── Main project ───────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          COVERAGE_FLAGS=""
+          if [ "${{ matrix.coverage }}" = "true" ]; then
+            COVERAGE_FLAGS="-DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage"
+          fi
+          cmake -S ./dynamic-neural-field-composer -B build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
+                -DCMAKE_CXX_COMPILER=g++-13 \
+                -DCMAKE_C_COMPILER=gcc-13 \
+                $COVERAGE_FLAGS
+
+      - name: Build
+        run: cmake --build build --parallel $(nproc)
+
+      # ── Tests ──────────────────────────────────────────────────────────────
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure --parallel $(nproc)
+
+      # ── Coverage report (Debug matrix entry only) ──────────────────────────
+      - name: Generate coverage report
+        if: matrix.coverage && github.event_name == 'push'
+        run: |
+          gcovr \
+            --root ${{ github.workspace }}/dynamic-neural-field-composer \
+            --object-directory ${{ github.workspace }}/build \
+            --gcov-executable gcov-13 \
+            --exclude '.*vcpkg.*' \
+            --exclude '.*/tests/.*' \
+            --exclude '.*/imgui-platform-kit.*' \
+            --exclude-directories '.*CMakeFiles.*' \
+            --gcov-ignore-errors=no_working_dir_found \
+            --xml \
+            -o coverage.xml
+
+      - name: Upload coverage to Codecov
+        if: matrix.coverage && github.event_name == 'push'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          flags: unittests
+          fail_ci_if_error: true
+
+  build-and-test-windows:
+    runs-on: windows-latest
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+      IPK_SRC: ${{ github.workspace }}/imgui-platform-kit-src
+      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Normalize Windows paths for bash ──────────────────────────────────
+      - name: Normalize paths
+        run: |
+          echo "VCPKG_ROOT=$(echo "$VCPKG_ROOT" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "IPK_SRC=$(echo "$IPK_SRC" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "IPK_INSTALL_PREFIX=$(echo "$IPK_INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
+
+      # ── vcpkg ─────────────────────────────────────────────────────────────
+      - name: Clone vcpkg
+        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - name: Bootstrap vcpkg
+        run: $VCPKG_ROOT/bootstrap-vcpkg.bat -disableMetrics
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_ROOT }}/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding,win32-binding,dx12-binding]" \
+            implot \
+            imgui-node-editor \
+            nlohmann-json \
+            gtest
+
+      # ── imgui-platform-kit (from source) ───────────────────────────────────
+      - name: Clone imgui-platform-kit
+        run: git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
+
+      - name: Configure imgui-platform-kit
+        run: |
+          cmake -S $IPK_SRC/imgui-platform-kit \
+                -B $IPK_SRC/build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
+
+      - name: Build imgui-platform-kit
+        run: cmake --build $IPK_SRC/build --config Release --parallel
+
+      - name: Install imgui-platform-kit
+        run: cmake --install $IPK_SRC/build --config Release
+
+      # ── Main project ───────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          cmake -S ./dynamic-neural-field-composer -B build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      # ── Tests ──────────────────────────────────────────────────────────────
+      - name: Run tests
+        working-directory: build
+        run: ctest -C Release --output-on-failure --parallel

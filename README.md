@@ -1,84 +1,64 @@
+# dynamic-neural-field-composer
+
+[![CI](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml)
+[![Release](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer)](https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest)
+[![codecov](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg)](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer)
+
 <img src="./dynamic-neural-field-composer/resources/images/logo.png" alt="logo" >
 
-Dynamic Neural Field Composer - A C++ application designed for developing and simulating dynamic neural field architectures
-===============================================
+A C++20 library and interactive application for building and simulating **Dynamic Neural Field (DNF)** architectures.
 
-## Description
+---
 
-Dynamic Neural Field Composer leverages modern C++ standards to offer a robust framework for the creation, composition, and real-time visualization of neural field dynamics. This tool is equipped with a graphical user interface that enhances user interaction, making it easier to monitor and adjust neural field behaviors and properties dynamically.
+## About
 
-## Functionalities
+Dynamic Neural Fields model how neuron populations represent and transform information over continuous dimensions (position, direction, color). They produce emergent behaviours — working memory, winner-take-all selection, sequence generation — from local excitation and surround inhibition.
 
-- **Flexible Element Management**: Dynamically add, modify, and remove neural field elements during simulations.
-- **Advanced Simulation Controls**: Initiate, pause, and step through simulations with precise timing control.
-- **Interactive GUI**: Utilize integrated GUI controls for managing simulations and visualizing data in real time.
-- **Data Export and Logging**: Export neural field data and configurations, facilitating detailed analysis and reproducibility.
-- **Extensible Architecture**: Easily extend with new neural field models, learning rules, or simulation protocols.
-- **Learning and Adaptation**: Implement learning algorithms to adjust synaptic weights based on predefined or dynamic rules.
-- **Plotting and Visualization**: Integrated plotting tools to visualize neural activity and simulation metrics.
-- **Centroid Monitoring**: Track and display the centroid of neural activations to study stability and activity patterns.
+This library lets you design, connect, simulate, and visualize DNF architectures at runtime, either programmatically or through a visual node-graph editor. Simulations can be saved and reloaded as JSON.
 
-## Project Dependencies
+---
 
-- **C++20**: Ensures compatibility with modern C++ features for optimal performance.
-- **CMake 3.15+**: For building and configuring the project.
-- **VCPKG**: Manages C++ libraries, facilitating the integration of external tools like ImGui and ImPlot.
-- **imgui-platform-kit**: A cross-platform toolkit designed to facilitate the development of user interfaces using Dear ImGui. [imgui-platform-kit](https://github.com/Jgocunha/imgui-platform-kit)
-- **DirectX 12 (Windows)** / **OpenGL (Linux)**: Essential for rendering graphical content.
-- **GLFW (Linux)**: Supports window management and various operating functions on Linux.
+## Requirements
 
-The rest of the dependencies are installed automatically when running `build.bat`.  However, you must have defined the `VCPKG_ROOT` directory.
+- CMake 3.20+
+- C++20 compiler (MSVC, GCC 13+, or Clang)
+- [vcpkg](https://github.com/microsoft/vcpkg) with `VCPKG_ROOT` set
 
-- **Dear ImGui**: Provides the foundational GUI components.
-- **ImPlot**: Enables advanced plotting capabilities within ImGui interfaces.
-- **nlohmann_json**: Supports JSON for configuration and saving of simulation states.
+Dependencies are installed automatically via vcpkg: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `imgui-platform-kit`.
 
-## Building and Installing
+---
 
-The project includes platform-specific scripts to facilitate building and installation:
-- `build.bat`, `build.sh`: Compile the project using CMake configurations.
-- `install.bat`, `install.sh`: Install the library to your system via CMake.
+## Building
 
-**Note**:
-In a Linux machine you might have to:
-1. Create a build directory inside the project folder ```mkdir build```;
-2. Set ```VCPKG_ROOT``` directory as an environment variable ```export VCPKG_ROOT=/opt/vcpkg```;
-3. Confirm you have at least GCC 13+ ```g++ --version```, if not:
-    -   Install GCC 13
-    ```bash
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-    sudo apt update
-    sudo apt install gcc-13 g++-13
-    ```
-    - Set it as default (optional):
-    ```bash
-    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
-    sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
-    ```
-Before running the ```build.sh```.
+```bash
+# Windows
+build.bat
 
-## Integration into Your CMake Project
-
-Post-installation, integrate the library into your CMake projects:
-
-```cmake
-find_package(dynamic-neural-field-composer REQUIRED)
-
-# Define your project target
-add_executable(your_target src/main.cpp)
-
-# Link against Dynamic Neural Field Composer
-target_link_libraries(your_target PRIVATE dynamic-neural-field-composer)
+# Linux / macOS
+./build.sh
 ```
 
-## Getting started
+To install the library for use in another project:
 
-1. Clone this repository to your local machine using Git.
-2. Run the ```build.bat``` file. This will install all the necessary dependencies and build the project. Make sure you have VCPKG installed and the VCPKG_ROOT environment variable defined.
-3. You can run the example executables to see the library in action.
+```bash
+# Windows
+install.bat
 
-The best way to get familiar with the library is to take a look at the ```examples``` folder!
+# Linux / macOS
+./install.sh
+```
+
+---
+
+## Getting Started
+
+Clone the repo, run the build script, then explore the `examples/` folder to see the library in action.
+
+For detailed setup, usage guides, and API reference, see the **[Wiki](https://github.com/Jgocunha/dynamic-neural-field-composer/wiki)**.
+
+---
 
 ## Contributing
 
-Contributions to the Dynamic Neural Field Composer are welcomed. Whether it involves fixing bugs, adding new features, or improving the documentation, your help is appreciated to make this project even better.
+Bug fixes, new features, and documentation improvements are all welcome. Feel free to open an issue or submit a pull request.

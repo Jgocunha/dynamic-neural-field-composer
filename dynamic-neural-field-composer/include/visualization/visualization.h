@@ -10,6 +10,7 @@
 #include "visualization/lineplot.h"
 #include "visualization/heatmap.h"
 
+
 namespace dnf_composer
 {
 	class Visualization
@@ -17,8 +18,10 @@ namespace dnf_composer
 	private:
 		std::shared_ptr<Simulation> simulation;
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> plots;
+		std::string windowSuffix;
+		PlotWindowMode plotWindowMode = PlotWindowMode::TILED;
 	public:
-		Visualization(const std::shared_ptr<Simulation>& simulation);
+		explicit Visualization(const std::shared_ptr<Simulation>& simulation);
 
 		void plot(PlotType type = PlotType::LINE_PLOT);
 
@@ -35,10 +38,18 @@ namespace dnf_composer
 		void removeAllPlots();
 		void removePlottingDataFromPlot(int plotId, const std::pair<std::string, std::string>& data);
 
-		std::shared_ptr<Simulation> getSimulation() const { return simulation; }
+		[[nodiscard]] std::shared_ptr<Simulation> getSimulation() const { return simulation; }
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> getPlots() { return plots; }
 
 		void render();
+		// Renders a single plot's content (no Begin/End — caller owns the window/child)
+		void renderTile(int plotId);
+
+		void setWindowIdSuffix(const std::string& s) { windowSuffix = s; }
+		void clearWindowIdSuffix() { windowSuffix.clear(); }
+
+		void setPlotWindowMode(PlotWindowMode mode) { plotWindowMode = mode; }
+		[[nodiscard]] PlotWindowMode getPlotWindowMode() const { return plotWindowMode; }
 	};
 }
 

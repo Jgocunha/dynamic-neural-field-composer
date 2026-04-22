@@ -2,9 +2,10 @@
 
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <filesystem>
+#include <cmath>
 
 #include "./simulation/simulation.h"
-
 #include "elements/neural_field.h"
 #include "elements/gauss_kernel.h"
 #include "elements/mexican_hat_kernel.h"
@@ -13,6 +14,9 @@
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_field_coupling.h"
 #include "elements/oscillatory_kernel.h"
+#include "elements/asymmetric_gauss_kernel.h"
+#include "elements/boost_stimulus.h"
+#include "elements/memory_trace.h"
 
 namespace dnf_composer
 {

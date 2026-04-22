@@ -1,9 +1,11 @@
 #include "visualization/lineplot.h"
 
+#include "application/application.h"
+
 namespace dnf_composer
 {
 	LinePlotParameters::LinePlotParameters()
-		: lineThickness(3.0), autoFit(true)
+		: lineThickness(2.0), autoFit(true)
 	{}
 
 	LinePlotParameters::LinePlotParameters(double lineThickness, bool autoFit)
@@ -150,12 +152,6 @@ namespace dnf_composer
 				ImGui::EndMenu();
 			}
 
-            if (ImGui::BeginMenu("Colormap"))
-            {
-                ImPlot::ShowColormapSelector("##ColormapSelector");
-                ImGui::EndMenu();
-            }
-
             if (ImGui::BeginMenu("Line Thickness"))
             {
                 ImGui::SliderFloat("##LineWeight", &lineWeight, 0.1f, 10.0f);
@@ -166,8 +162,7 @@ namespace dnf_composer
             ImGui::EndMenuBar();
         }
 
-		ImPlotStyle& style = ImPlot::GetStyle();
-		style.LineWeight = static_cast<float>(linePlotParameters.lineThickness);
+		const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, static_cast<float>(linePlotParameters.lineThickness) };
 
         if (linePlotParameters.autoFit) {
             flags |= ImPlotFlags_Equal;
@@ -181,9 +176,30 @@ namespace dnf_composer
             );
         }
 
-        if (!ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, flags)) {
-            return; 
-        }
+		// --- Custom bold title (above the plot) ---
+		// ImGui::PushFont(g_BoldLargeFont);
+		// ImGui::TextUnformatted(commonParameters.annotations.title.c_str());
+		// ImGui::PopFont();
+		// ImGui::Spacing();
+
+		// // or centered:
+		// ImGui::PushFont(g_BoldLargeFont);
+		// const float textWidth = ImGui::CalcTextSize(commonParameters.annotations.title.c_str()).x;
+		// const float availWidth = ImGui::GetContentRegionAvail().x;
+		// ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (availWidth - textWidth) * 0.5f);
+		// ImGui::TextUnformatted(commonParameters.annotations.title.c_str());
+		// ImGui::PopFont();
+		// ImGui::Spacing();
+
+		// const std::string plotInternalID = "##" + uniquePlotID;
+  //
+  //       if (!ImPlot::BeginPlot(plotInternalID.c_str(), plotSize, flags)) {
+  //           return;
+  //       }
+
+		if (!ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, flags)) {
+			return;
+		}
 
         if (linePlotParameters.autoFit) {
             ImPlot::SetupAxes(
@@ -218,7 +234,7 @@ namespace dnf_composer
                 shiftedXValues[i] = (i + 1) * commonParameters.dimensions.xStep;
             }
 
-            ImPlot::PlotLine(label.c_str(), shiftedXValues.data(), line_data.data(), static_cast<int>(line_data.size()));
+            ImPlot::PlotLine(label.c_str(), shiftedXValues.data(), line_data.data(), static_cast<int>(line_data.size()), lineSpec);
         }
 
 		ImPlot::EndPlot();

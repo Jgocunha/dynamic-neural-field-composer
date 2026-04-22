@@ -70,6 +70,18 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const AsymmetricGaussKernelParameters*>(&elementSpecificParameters);
 					return std::make_shared<AsymmetricGaussKernel>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::BOOST_STIMULUS] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const BoostStimulusParameters*>(&elementSpecificParameters);
+					return std::make_shared<BoostStimulus>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::MEMORY_TRACE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const MemoryTraceParameters*>(&elementSpecificParameters);
+					return std::make_shared<MemoryTrace>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -109,6 +121,10 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), OscillatoryKernelParameters());
 					case ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 						return creator->second(ElementCommonParameters(type), AsymmetricGaussKernelParameters());
+					case ElementLabel::BOOST_STIMULUS:
+						return creator->second(ElementCommonParameters(type), BoostStimulusParameters());
+					case ElementLabel::MEMORY_TRACE:
+						return creator->second(ElementCommonParameters(type), MemoryTraceParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

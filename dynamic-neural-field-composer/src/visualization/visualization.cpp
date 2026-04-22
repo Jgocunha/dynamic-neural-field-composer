@@ -4,9 +4,10 @@
 
 #include "visualization/visualization.h"
 
-
 namespace dnf_composer
 {
+	extern ImFont* g_BlackSmallFont;
+
 	Visualization::Visualization(const std::shared_ptr<Simulation>& simulation)
 	{
 		if (simulation == nullptr)
@@ -14,10 +15,11 @@ namespace dnf_composer
 
 		this->simulation = simulation;
 		plots = {};
+		windowSuffix = {};
 		log(tools::logger::LogLevel::INFO, "Visualization object created.");
 	}
 
-	void Visualization::plot(PlotType type)
+	void Visualization::plot(const PlotType type)
 	{
 		switch (type)
 		{
@@ -92,7 +94,7 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, "Data plotted on plot with ID " + std::to_string(plotId) + ".");
 	}
 
-	void Visualization::plot(int plotId, const std::string& name, const std::string& component)
+	void Visualization::plot(const int plotId, const std::string& name, const std::string& component)
 	{
 		const std::vector<std::pair<std::string, std::string>> dataVec = { {name, component} };
 		plot(plotId, dataVec);
@@ -151,51 +153,111 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, "Data '" + data.first + " - " + data.second + "' removed from plot " + std::to_string(plotId) + ".");
 	}
 
+	// If `plot` is a Heatmap and the data contains a "weights" component,
+	// derive rows/cols from the element's "input" and "output" component sizes
+	// and pass them as a dimension hint so the heatmap renders correctly.
+	static void updateHeatmapDimensionHint(
+		const std::shared_ptr<Plot>& plot,
+		const std::vector<std::pair<std::string, std::string>>& data,
+		const std::shared_ptr<Simulation>& simulation)
+	{
+		auto* heatmap = dynamic_cast<Heatmap*>(plot.get());
+		if (!heatmap) return;
+
+		for (const auto& [elemName, compName] : data)
+		{
+			if (compName != "weights") continue;
+			// rows = input size, cols = output size
+			if (simulation->componentExists(elemName, "input") &&
+			    simulation->componentExists(elemName, "output"))
+			{
+				const int rows = static_cast<int>(simulation->getComponentPtr(elemName, "input")->size());
+				const int cols = static_cast<int>(simulation->getComponentPtr(elemName, "output")->size());
+				heatmap->setDimensionHint(rows, cols);
+			}
+			break;
+		}
+	}
+
+	void Visualization::renderTile(int plotId)
+	{
+		const auto it = std::ranges::find_if(plots.begin(), plots.end(),
+			[plotId](const auto& p) { return p.first->getUniqueIdentifier() == plotId; });
+		if (it == plots.end()) return;
+
+		const auto& data = it->second;
+		if (!std::ranges::all_of(data, [this](const std::pair<std::string, std::string>& d)
+			{ return simulation->componentExists(d.first, d.second); }))
+		{
+			removePlot(plotId);
+			return;
+		}
+
+		updateHeatmapDimensionHint(it->first, data, simulation);
+
+		std::vector<std::vector<double>*> ptrs;
+		ptrs.reserve(data.size());
+		for (const auto& [name, comp] : data)
+			ptrs.emplace_back(simulation->getComponentPtr(name, comp));
+
+		std::vector<std::string> legends;
+		legends.reserve(data.size());
+		for (const auto& [name, comp] : data)
+			legends.emplace_back(name + " - " + comp);
+
+		it->first->render(ptrs, legends);
+	}
+
 	void Visualization::render()
 	{
-		for (const auto& entry : plots) 
+		for (const auto&[fst, snd] : plots)
 		{
-			std::vector<std::pair<std::string, std::string>> data = entry.second;
+			std::vector<std::pair<std::string, std::string>> data = snd;
 
-			// Check if data exists in the simulation, if not remove it from the plot
+			// Check if data exists in the simulation, if not, remove it from the plot
 			if (!std::ranges::all_of(data, [this](const std::pair<std::string, std::string>& d)
 			{
 				return simulation->componentExists(d.first, d.second);
 				}))
 			{
-				removePlot(entry.first->getUniqueIdentifier());
+				removePlot(fst->getUniqueIdentifier());
 				return;
 			}
 
-
 			std::vector<std::vector<double>*> allDataToPlotPtr;
 			allDataToPlotPtr.reserve(data.size());
-			for (const auto& d : data)
+			for (const auto&[fst, snd] : data)
 			{
-				const auto singleDataToPlotPtr = simulation->getComponentPtr(d.first, d.second);
+				const auto singleDataToPlotPtr = simulation->getComponentPtr(fst, snd);
 				allDataToPlotPtr.emplace_back(singleDataToPlotPtr);
 			}
 
 			std::vector<std::string> legends;
 			legends.reserve(data.size());
-			for (const auto& d : data)
+			for (const auto&[fst, snd] : data)
 			{
-				legends.emplace_back(d.first + " - " + d.second);
+				legends.emplace_back(fst + " - " + snd);
 			}
 
-			const int plotID = entry.first->getUniqueIdentifier();
-			const std::string plotWindowTitle = "Plot #" + std::to_string(plotID);
-			bool open = true;
+			const int plotID = fst->getUniqueIdentifier();
+			const std::string visible = "Plot #" + std::to_string(plotID);
+			const std::string plotWindowTitle = visible + "##" + (windowSuffix.empty() ? "default" : windowSuffix);
 
-			if (ImGui::Begin(plotWindowTitle.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar))
+			const float ui = ImGui::GetIO().FontGlobalScale;
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
+			ImGui::PushFont(g_BlackSmallFont);
+			const bool open = ImGui::Begin(plotWindowTitle.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+			ImGui::PopFont();
+			ImGui::PopStyleVar();
+			if (open)
 			{
-				entry.first->render(allDataToPlotPtr, legends);
+				updateHeatmapDimensionHint(fst, data, simulation);
+				fst->render(allDataToPlotPtr, legends);
 			}
 			ImGui::End();
 
 			if (!open)
 				removePlot(plotID);
 		}
-
 	}
 }

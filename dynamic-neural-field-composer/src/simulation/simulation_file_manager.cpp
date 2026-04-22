@@ -14,49 +14,91 @@ namespace dnf_composer
 
 	void SimulationFileManager::saveElementsToJson() const
 	{
-        json elementsJson;
-
+        json elementsJson = json::array();
 		for (const auto& element : simulation->getElements())
-		{
-            json elementJson;
-            elementJson = elementToJson(element);
-            elementsJson.emplace_back(elementJson);
-        }
+            elementsJson.emplace_back(elementToJson(element));
 
-        // Write the JSON to a file
-        std::ofstream file(filePath + simulation->getUniqueIdentifier() + ".json");
+        json root;
+        root["identifier"] = simulation->getUniqueIdentifier();
+        root["deltaT"]     = simulation->getDeltaT();
+        root["elements"]   = elementsJson;
+
+        const std::string path = (std::filesystem::path(filePath) / (simulation->getUniqueIdentifier() + ".json")).string();
+        std::ofstream file(path);
         if (file.is_open()) {
-            file << elementsJson.dump(4); // Add indentation for readability
-            log(tools::logger::INFO, "Elements saved to: " + filePath + simulation->getUniqueIdentifier() + ".json.");
+            file << root.dump(4);
+            log(tools::logger::INFO, "Simulation saved to: " + path);
         }
         else {
-            log(tools::logger::ERROR, "Unable to open file to save elements: " + filePath + simulation->getUniqueIdentifier() + ".json.");
+            log(tools::logger::ERROR, "Unable to open file to save simulation: " + path);
         }
 	}
 
     void SimulationFileManager::loadElementsFromJson() const
     {
-        // Open the JSON file for reading
         std::ifstream file(filePath);
         if (!file.is_open()) {
-            log(tools::logger::ERROR, "Unable to open file to load elements: " + filePath + ".");
+            log(tools::logger::ERROR, "Unable to open file to load simulation: " + filePath + ".");
             return;
         }
 
-        // Read the JSON content
-        json elementsJson;
+        json root;
         try {
-            file >> elementsJson;
+            file >> root;
         }
         catch (const std::exception& e) {
-            log(tools::logger::ERROR, "Error reading JSON file: " + std::string(e.what()) + "");
+            log(tools::logger::ERROR, "Error reading JSON file: " + std::string(e.what()));
             return;
         }
 
-        log(tools::logger::INFO, "Elements loaded from: " + filePath);
+        // Backwards-compatible: old format is a bare array of elements.
+        // New format is an object with metadata + "elements" array.
+        json elementsJson;
+        if (root.is_array())
+        {
+            elementsJson = root;
+        }
+        else if (root.is_object())
+        {
+            const json& elems = root.contains("elements") ? root["elements"] : json::array();
+            if (!elems.is_array())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: \"elements\" is not an array: " + filePath);
+                return;
+            }
+            elementsJson = elems;
 
+            if (root.contains("identifier") && root["identifier"].is_string())
+                simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
+            else if (root.contains("identifier"))
+                log(tools::logger::ERROR, "Invalid simulation file: \"identifier\" is not a string: " + filePath);
+
+            if (root.contains("deltaT") && root["deltaT"].is_number())
+            {
+                const double dt = root["deltaT"].get<double>();
+                if (std::isfinite(dt) && dt > 0.0)
+                    simulation->setDeltaT(dt);
+                else
+                    log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a valid positive number: " + filePath);
+            }
+            else if (root.contains("deltaT"))
+                log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a number: " + filePath);
+        }
+        else
+        {
+            log(tools::logger::ERROR, "Invalid simulation file: unexpected JSON root type: " + filePath);
+            return;
+        }
+
+        log(tools::logger::INFO, "Simulation loaded from: " + filePath);
         jsonToElements(elementsJson);
+    }
 
+    static element::ElementLabel elementLabelFromString(const std::string& s)
+    {
+        for (const auto& [k, v] : element::ElementLabelToString)
+            if (v == s) return k;
+        return element::UNINITIALIZED;
     }
 
     json SimulationFileManager::elementToJson(const std::shared_ptr<element::Element>& element)
@@ -201,7 +243,24 @@ namespace dnf_composer
 		        elementJson["normalized"] = oscillatoryKernelParameters.normalized;
 	        }
             break;
-        default: 
+        case element::BOOST_STIMULUS:
+        {
+            const auto boostStimulus = std::dynamic_pointer_cast<element::BoostStimulus>(element);
+            const auto boostStimulusParameters = boostStimulus->getParameters();
+            elementJson["amplitude"] = boostStimulusParameters.amplitude;
+            elementJson["isActive"] = boostStimulusParameters.isActive;
+        }
+        break;
+        case element::MEMORY_TRACE:
+        {
+            const auto memoryTrace = std::dynamic_pointer_cast<element::MemoryTrace>(element);
+            const auto memoryTraceParameters = memoryTrace->getParameters();
+            elementJson["tauBuild"]  = memoryTraceParameters.tauBuild;
+            elementJson["tauDecay"]  = memoryTraceParameters.tauDecay;
+            elementJson["threshold"] = memoryTraceParameters.threshold;
+        }
+        break;
+        default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
             break;
@@ -217,11 +276,12 @@ namespace dnf_composer
         {
 	        // Parse common parameters
 	        const std::string uniqueName = elementJson["uniqueName"];
-	        const std::tuple<element::ElementLabel, std::string> label = elementJson["label"];
+	        const std::string labelStr = elementJson["label"][1].get<std::string>();
+	        const element::ElementLabel elementLabel = elementLabelFromString(labelStr);
 	        const int x_max = elementJson["x_max"];
 	        const double d_x = elementJson["d_x"];
 
-	        switch (get<0>(label))
+	        switch (elementLabel)
 	    	{
 	        case element::NEURAL_FIELD: 
 	            {
@@ -367,11 +427,36 @@ namespace dnf_composer
 			        simulation->addElement(kernel);
 		        }
             break;
-	        default:
-	        case element::UNINITIALIZED:
-                tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
-            break;
-	        }
+        case element::BOOST_STIMULUS:
+        {
+            const double amplitude = elementJson["amplitude"];
+            const bool isActive = elementJson["isActive"];
+
+            auto boostStimulus = std::make_shared<element::BoostStimulus>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::BoostStimulusParameters(amplitude, isActive)
+            );
+            simulation->addElement(boostStimulus);
+        }
+        break;
+        case element::MEMORY_TRACE:
+        {
+            const double tauBuild  = elementJson["tauBuild"];
+            const double tauDecay  = elementJson["tauDecay"];
+            const double threshold = elementJson["threshold"];
+
+            auto memoryTrace = std::make_shared<element::MemoryTrace>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::MemoryTraceParameters(tauBuild, tauDecay, threshold)
+            );
+            simulation->addElement(memoryTrace);
+        }
+        break;
+	    default:
+	    case element::UNINITIALIZED:
+            tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
+        break;
+	    }
     }
 
 	    // Iterate to create interactions

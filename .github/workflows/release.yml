@@ -1,0 +1,304 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+      IPK_SRC: ${{ github.workspace }}/imgui-platform-kit-src
+      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+      INSTALL_PREFIX: ${{ github.workspace }}/install
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Normalize Windows paths for bash ──────────────────────────────────
+      - name: Normalize paths
+        run: |
+          echo "VCPKG_ROOT=$(echo "$VCPKG_ROOT" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "IPK_SRC=$(echo "$IPK_SRC" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "IPK_INSTALL_PREFIX=$(echo "$IPK_INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "INSTALL_PREFIX=$(echo "$INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "WORKSPACE=$(echo "${{ github.workspace }}" | tr '\\' '/')" >> "$GITHUB_ENV"
+
+      # ── vcpkg ─────────────────────────────────────────────────────────────
+      - name: Clone vcpkg
+        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - name: Bootstrap vcpkg
+        run: $VCPKG_ROOT/bootstrap-vcpkg.bat -disableMetrics
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_ROOT }}/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding,win32-binding,dx12-binding]" \
+            implot \
+            imgui-node-editor \
+            nlohmann-json \
+            gtest
+
+      # ── imgui-platform-kit (from source) ───────────────────────────────────
+      - name: Clone imgui-platform-kit
+        run: git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
+
+      - name: Configure imgui-platform-kit
+        run: |
+          cmake -S $IPK_SRC/imgui-platform-kit \
+                -B $IPK_SRC/build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
+
+      - name: Build imgui-platform-kit
+        run: cmake --build $IPK_SRC/build --config Release --parallel
+
+      - name: Install imgui-platform-kit
+        run: cmake --install $IPK_SRC/build --config Release
+
+      # ── Main project ───────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          cmake -S ./dynamic-neural-field-composer -B build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
+                -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+                -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
+                -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
+                -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
+                -DDNF_COMPOSER_BUILD_TESTS=OFF
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Install
+        run: cmake --install build --config Release --prefix "$INSTALL_PREFIX"
+
+      # ── Package ────────────────────────────────────────────────────────────
+      - name: Create release archive
+        run: |
+          cd "$INSTALL_PREFIX"
+          7z a "$WORKSPACE/dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip" .
+
+      # ── Upload artifact for release job ───────────────────────────────────
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip
+
+  release-linux:
+    runs-on: ubuntu-latest
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-linux
+      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+      INSTALL_PREFIX: ${{ github.workspace }}/install
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── System dependencies ────────────────────────────────────────────────
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-13 g++-13 \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libglfw3-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxext-dev
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+
+      # ── vcpkg ─────────────────────────────────────────────────────────────
+      - name: Clone vcpkg
+        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - name: Bootstrap vcpkg
+        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_ROOT }}/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
+            implot \
+            imgui-node-editor \
+            nlohmann-json \
+            gtest
+
+      # ── imgui-platform-kit (from source) ───────────────────────────────────
+      - name: Clone imgui-platform-kit
+        run: |
+          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
+            ${{ github.workspace }}/imgui-platform-kit-src
+
+      - name: Configure imgui-platform-kit
+        run: |
+          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
+                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
+                -DCMAKE_CXX_COMPILER=g++-13 \
+                -DCMAKE_C_COMPILER=gcc-13
+
+      - name: Build imgui-platform-kit
+        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(nproc)
+
+      - name: Install imgui-platform-kit
+        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
+
+      # ── Main project ───────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          cmake -S ./dynamic-neural-field-composer -B build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
+                -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+                -DCMAKE_CXX_COMPILER=g++-13 \
+                -DCMAKE_C_COMPILER=gcc-13 \
+                -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
+                -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
+                -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
+                -DDNF_COMPOSER_BUILD_TESTS=OFF
+
+      - name: Build
+        run: cmake --build build --parallel $(nproc)
+
+      - name: Install
+        run: cmake --install build
+
+      # ── Package ────────────────────────────────────────────────────────────
+      - name: Create release archive
+        run: |
+          cd $INSTALL_PREFIX
+          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz .
+
+      # ── Upload artifact for release job ───────────────────────────────────
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
+
+  # ── GitHub Release (after both builds succeed) ──────────────────────────
+  create-release:
+    needs: [release-windows, release-linux]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-x64
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-x64
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            ## What's included
+
+            Each archive contains the pre-compiled library, headers, and launcher executables.
+
+            | File | Platform |
+            |------|----------|
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip` | Windows (x64) |
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz` | Linux (x64) |
+
+            ## Archive contents
+
+            ```
+            bin/       — dnf-composer-static, dnf-composer-dynamic executables
+            lib/       — compiled library (.lib / .a)
+            include/   — public headers
+            share/     — CMake config files (for find_package integration)
+            ```
+
+            ## Running the application
+
+            Extract the archive and run either launcher directly:
+
+            ```bash
+            # Dynamic layout application
+            ./bin/dnf-composer-dynamic
+
+            # Static layout application
+            ./bin/dnf-composer-static
+            ```
+
+            ## Using as a library
+
+            Point `CMAKE_PREFIX_PATH` to the extracted directory so CMake can find the package:
+
+            ```cmake
+            cmake -S your-project -B build -DCMAKE_PREFIX_PATH=/path/to/extracted
+            ```
+
+            Then in your `CMakeLists.txt`:
+
+            ```cmake
+            find_package(dynamic-neural-field-composer REQUIRED)
+            target_link_libraries(your-target PRIVATE dynamic-neural-field-composer)
+            ```
+
+            ## Changelog
+
+            Major changes to the UI.
+          files: |
+            dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip
+            dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
