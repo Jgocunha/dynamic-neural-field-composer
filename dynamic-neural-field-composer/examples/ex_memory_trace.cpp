@@ -16,7 +16,7 @@ int main()
 		app.addWindow<user_interface::MainMenuBar>();
 		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
-		// Gauss stimulus — localized input applied transiently
+		// Gauss stimulus — localized input; set amplitude to 0 via the parameter panel to simulate removal
 		const auto gscp = element::ElementCommonParameters{ "Gauss stimulus" };
 		const auto gsp = element::GaussStimulusParameters{ 5.0, 12.0, 50.0 };
 		const auto gs = std::make_shared<element::GaussStimulus>(gscp, gsp);

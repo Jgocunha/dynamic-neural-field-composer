@@ -130,7 +130,7 @@ Demonstrates the `BoostStimulus` element as a global gain control mechanism. The
 **Source:** `examples/ex_memory_trace.cpp`
 **Executable:** `ex_memory_trace`
 
-Demonstrates the `MemoryTrace` element as a working memory mechanism. A transient stimulus drives the neural field into a self-sustained peak; after the stimulus is removed, the memory trace retains an excitatory footprint that facilitates re-activation at the same location.
+Demonstrates the `MemoryTrace` element as a working memory mechanism. A `GaussStimulus` drives the neural field into a self-sustained peak; the stimulus can then be turned off at runtime by setting its amplitude to zero via the element parameter panel. After it is removed, the memory trace retains an excitatory footprint that facilitates re-activation at the same location.
 
 **Architecture:**
 - One `NeuralField` with a `MexicanHatKernel` for lateral interactions and `NormalNoise`

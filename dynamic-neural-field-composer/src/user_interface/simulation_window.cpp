@@ -1401,7 +1401,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::GaussStimulusParameters gsp = { sigma, amplitude, position, circular, normalized};
+			const element::GaussStimulusParameters gsp( sigma, amplitude, position, circular, normalized);
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::GaussStimulus> gaussStimulus(new element::GaussStimulus ({id, dimensions}, gsp));
 			simulation->addElement(gaussStimulus);
@@ -1423,10 +1423,10 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::NormalNoiseParameters nnp = { amplitude };
+			const element::NormalNoiseParameters nnp( amplitude );
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::NormalNoise> normalNoise( new element::NormalNoise({ id, dimensions}, nnp));
-			const element::GaussKernelParameters gkp = { 0.25, 0.2 };
+			const element::GaussKernelParameters gkp( 0.25, 0.2 );
 			const std::shared_ptr<element::GaussKernel> gaussKernelNormalNoise(new element::GaussKernel({ std::string(id) + " gauss kernel", dimensions }, gkp));
 			simulation->addElement(normalNoise);
 			simulation->addElement(gaussKernelNormalNoise);
@@ -1469,7 +1469,7 @@ namespace dnf_composer::user_interface
 
 		if(ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::FieldCouplingParameters fcp = { {in_x_max, in_d_x}, learningRule, scalar, learningRate };
+			const element::FieldCouplingParameters fcp( element::ElementDimensions{in_x_max, in_d_x}, learningRule, scalar, learningRate );
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::FieldCoupling> fieldCoupling(new element::FieldCoupling({ id, dimensions }, fcp));
 			simulation->addElement(fieldCoupling);
@@ -1505,7 +1505,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::GaussFieldCouplingParameters gfcp = { {in_x_max, in_d_x}, normalized, circular, {{x_i, x_j, amplitude, width}} };
+			const element::GaussFieldCouplingParameters gfcp( element::ElementDimensions{in_x_max, in_d_x}, normalized, circular, {{x_i, x_j, amplitude, width}} );
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::GaussFieldCoupling> gaussCoupling(new element::GaussFieldCoupling({ id, dimensions }, gfcp));
 			simulation->addElement(gaussCoupling);
@@ -1535,7 +1535,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::GaussKernelParameters gkp = { sigma, amplitude, amplitudeGlobal, circular, normalized};
+			const element::GaussKernelParameters gkp( sigma, amplitude, amplitudeGlobal, circular, normalized);
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::GaussKernel> gaussKernel(new element::GaussKernel({ id, dimensions }, gkp));
 			simulation->addElement(gaussKernel);
@@ -1570,7 +1570,7 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::MexicanHatKernelParameters mhkp = { sigmaExc, amplitudeExc, sigmaInh, amplitudeInh , amplitudeGlobal, circular, normalized};
+			const element::MexicanHatKernelParameters mhkp( sigmaExc, amplitudeExc, sigmaInh, amplitudeInh, amplitudeGlobal, circular, normalized);
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::MexicanHatKernel> mexicanHatKernel(new element::MexicanHatKernel({ id, dimensions }, mhkp));
 			simulation->addElement(mexicanHatKernel);
