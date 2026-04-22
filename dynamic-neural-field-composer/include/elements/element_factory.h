@@ -14,25 +14,21 @@
 #include "elements/boost_stimulus.h"
 #include "elements/memory_trace.h"
 
-namespace dnf_composer
+namespace dnf_composer::element
 {
-    namespace element
-    {
-	    class ElementFactory
-	    {
-	    private:
-	        std::unordered_map<ElementLabel, std::function<std::shared_ptr<Element>(
-												const ElementCommonParameters&, 
-												const ElementSpecificParameters&)>> elementCreators;
-	    public:
-			ElementFactory();
-			std::shared_ptr<Element> createElement(ElementLabel type, 
-				const ElementCommonParameters& elementCommonParameters, 
-				const ElementSpecificParameters& elementSpecificParameters);
-			std::shared_ptr<Element> createElement(ElementLabel type);
-	    private:
-			void setupElementCreators();
-	    };
-    }
-    
+	class ElementFactory
+	{
+	private:
+		std::unordered_map<ElementLabel, std::function<std::shared_ptr<Element>(
+			                   const ElementCommonParameters&,
+			                   const ElementSpecificParameters&)>> elementCreators;
+	public:
+		ElementFactory();
+		std::shared_ptr<Element> createElement(ElementLabel type,
+		                                       const ElementCommonParameters& elementCommonParameters,
+		                                       const ElementSpecificParameters& elementSpecificParameters);
+		std::shared_ptr<Element> createElement(ElementLabel type);
+	private:
+		void setupElementCreators();
+	};
 }
