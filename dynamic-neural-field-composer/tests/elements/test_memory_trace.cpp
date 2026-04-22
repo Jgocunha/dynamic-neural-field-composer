@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "elements/memory_trace.h"
+#include "elements/boost_stimulus.h"
 #include "exceptions/exception.h"
 
 using namespace dnf_composer;
@@ -117,16 +118,17 @@ TEST(MemoryTraceStep, ZeroInputFullyDecaysOverTime)
 
 TEST(MemoryTraceStep, AboveThresholdInputBuildsTrace)
 {
-    MemoryTrace mt(makeCP("mt", 10), makeMTP(100.0, 1000.0, 0.5));
-    mt.init();
+    // BoostStimulus provides a uniform above-threshold input via the normal input pipeline
+    auto bs = std::make_shared<BoostStimulus>(makeCP("bs", 10), BoostStimulusParameters{1.0, true});
+    bs->init();
+    bs->step(0.0, 1.0);
 
-    // Manually set input above threshold (simulates connected field output)
-    auto* inComp = mt.getComponentPtr("input");
-    std::fill(inComp->begin(), inComp->end(), 1.0);
+    auto mt = std::make_shared<MemoryTrace>(makeCP("mt", 10), makeMTP(100.0, 1000.0, 0.5));
+    mt->addInput(bs);
+    mt->init();
+    mt->step(0.0, 1.0);
 
-    mt.step(0.0, 1.0);
-
-    const auto result = mt.getComponent("output");
+    const auto result = mt->getComponent("output");
     for (const double v : result)
     {
         // With deltaT=1, tauBuild=100, output starts at 0, input=1:
@@ -137,37 +139,41 @@ TEST(MemoryTraceStep, AboveThresholdInputBuildsTrace)
 
 TEST(MemoryTraceStep, TraceConvergesToInputAmplitude)
 {
-    MemoryTrace mt(makeCP("mt", 5), makeMTP(10.0, 1000.0, 0.5));
-    mt.init();
+    auto bs = std::make_shared<BoostStimulus>(makeCP("bs", 5), BoostStimulusParameters{0.8, true});
+    bs->init();
+    bs->step(0.0, 1.0);
 
-    auto* inComp = mt.getComponentPtr("input");
-    std::fill(inComp->begin(), inComp->end(), 0.8);
+    auto mt = std::make_shared<MemoryTrace>(makeCP("mt", 5), makeMTP(10.0, 1000.0, 0.5));
+    mt->addInput(bs);
+    mt->init();
 
     for (int i = 0; i < 500; ++i)
-        mt.step(static_cast<double>(i), 1.0);
+        mt->step(static_cast<double>(i), 1.0);
 
-    const auto result = mt.getComponent("output");
+    const auto result = mt->getComponent("output");
     for (const double v : result)
         EXPECT_NEAR(v, 0.8, 0.01);
 }
 
 TEST(MemoryTraceStep, BelowThresholdInputDecaysNotBuilds)
 {
-    MemoryTrace mt(makeCP("mt", 10), makeMTP(100.0, 1000.0, 0.5));
-    mt.init();
+    // BoostStimulus at 0.3 — below the 0.5 threshold — so decay branch is taken
+    auto bs = std::make_shared<BoostStimulus>(makeCP("bs", 10), BoostStimulusParameters{0.3, true});
+    bs->init();
+    bs->step(0.0, 1.0);
 
-    auto* out = mt.getComponentPtr("output");
+    auto mt = std::make_shared<MemoryTrace>(makeCP("mt", 10), makeMTP(100.0, 1000.0, 0.5));
+    mt->addInput(bs);
+    mt->init();
+
+    auto* out = mt->getComponentPtr("output");
     std::fill(out->begin(), out->end(), 1.0);
 
-    // Input below threshold
-    auto* inComp = mt.getComponentPtr("input");
-    std::fill(inComp->begin(), inComp->end(), 0.3);
+    mt->step(0.0, 1.0);
 
-    mt.step(0.0, 1.0);
-
-    const auto result = mt.getComponent("output");
+    const auto result = mt->getComponent("output");
     for (const double v : result)
-        EXPECT_LT(v, 1.0);   // should have decayed, not built
+        EXPECT_LT(v, 1.0);   // decay branch taken: trace decreases
 }
 
 // ---------------------------------------------------------------------------

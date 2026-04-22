@@ -278,11 +278,12 @@ namespace dnf_composer
         {
 	        // Parse common parameters
 	        const std::string uniqueName = elementJson["uniqueName"];
-	        const std::tuple<element::ElementLabel, std::string> label = elementJson["label"];
+	        const std::string labelStr = elementJson["label"][1].get<std::string>();
+	        const element::ElementLabel elementLabel = elementLabelFromString(labelStr);
 	        const int x_max = elementJson["x_max"];
 	        const double d_x = elementJson["d_x"];
 
-	        switch (get<0>(label))
+	        switch (elementLabel)
 	    	{
 	        case element::NEURAL_FIELD: 
 	            {
