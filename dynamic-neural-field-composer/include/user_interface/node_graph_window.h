@@ -15,6 +15,7 @@
 #include "elements/field_coupling.h"
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
+#include "elements/boost_stimulus.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"
@@ -45,6 +46,8 @@ namespace dnf_composer::user_interface
 			return IM_COL32(175, 133, 187, 255);  // Dusty Rose
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 			return IM_COL32(148, 178, 182, 255);  // Soft Teal
+		case element::ElementLabel::BOOST_STIMULUS:
+			return IM_COL32(242, 209, 83, 255);   // Warm Yellow
 		default:
 			return IM_COL32(127, 127, 127, 255);  // Neutral Gray
 		}

@@ -11,6 +11,7 @@
 #include "simulation/simulation.h"
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
+#include "elements/boost_stimulus.h"
 
 namespace dnf_composer
 {

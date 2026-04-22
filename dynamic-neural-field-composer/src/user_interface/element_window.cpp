@@ -65,6 +65,7 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::MEXICAN_HAT_KERNEL:     return h(6);
 				case element::ElementLabel::OSCILLATORY_KERNEL:     return h(5);
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5);
+				case element::ElementLabel::BOOST_STIMULUS:         return h(2);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
@@ -183,6 +184,9 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 			modifyElementAsymmetricGaussKernel(element);
+			break;
+		case element::ElementLabel::BOOST_STIMULUS:
+			modifyElementBoostStimulus(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -761,6 +765,35 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementBoostStimulus(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto boostStimulus = std::dynamic_pointer_cast<element::BoostStimulus>(element);
+		element::BoostStimulusParameters bsp = boostStimulus->getParameters();
+
+		auto amplitude = static_cast<float>(bsp.amplitude);
+		bool isActive = bsp.isActive;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "IsActive";
+		ImGui::Checkbox(label.c_str(), &isActive);
+		ImGui::SameLine(); ImGui::Text("Active");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(bsp.amplitude)) > epsilon ||
+			isActive != bsp.isActive)
+		{
+			bsp.amplitude = amplitude;
+			bsp.isActive = isActive;
+			boostStimulus->setParameters(bsp);
+		}
+	}
+
 	ImVec4 ElementWindow::getColorForElementType(const element::ElementLabel label)
 	{
 		switch (label)
@@ -783,6 +816,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.686f, 0.522f, 0.733f, 1.0f);  // Dusty Rose
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 			return ImVec4(0.580f, 0.698f, 0.714f, 1.0f);  // Soft Teal
+		case element::ElementLabel::BOOST_STIMULUS:
+			return ImVec4(0.949f, 0.820f, 0.325f, 1.0f);  // Warm Yellow
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -801,6 +836,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_FIELD_COUPLING: return "Gaussian Field Couplings";
 		case element::ElementLabel::OSCILLATORY_KERNEL: return "Oscillatory Kernels";
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gaussian Kernels";
+		case element::ElementLabel::BOOST_STIMULUS: return "Boost Stimuli";
 		default: return "Unknown Elements";
 		}
 	}

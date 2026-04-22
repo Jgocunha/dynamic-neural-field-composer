@@ -238,7 +238,15 @@ namespace dnf_composer
 		        elementJson["normalized"] = oscillatoryKernelParameters.normalized;
 	        }
             break;
-        default: 
+        case element::BOOST_STIMULUS:
+        {
+            const auto boostStimulus = std::dynamic_pointer_cast<element::BoostStimulus>(element);
+            const auto boostStimulusParameters = boostStimulus->getParameters();
+            elementJson["amplitude"] = boostStimulusParameters.amplitude;
+            elementJson["isActive"] = boostStimulusParameters.isActive;
+        }
+        break;
+        default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
             break;
@@ -404,11 +412,23 @@ namespace dnf_composer
 			        simulation->addElement(kernel);
 		        }
             break;
-	        default:
-	        case element::UNINITIALIZED:
-                tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
-            break;
-	        }
+        case element::BOOST_STIMULUS:
+        {
+            const double amplitude = elementJson["amplitude"];
+            const bool isActive = elementJson["isActive"];
+
+            auto boostStimulus = std::make_shared<element::BoostStimulus>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::BoostStimulusParameters(amplitude, isActive)
+            );
+            simulation->addElement(boostStimulus);
+        }
+        break;
+	    default:
+	    case element::UNINITIALIZED:
+            tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
+        break;
+	    }
     }
 
 	    // Iterate to create interactions

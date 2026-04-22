@@ -14,6 +14,8 @@
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_field_coupling.h"
 #include "elements/oscillatory_kernel.h"
+#include "elements/asymmetric_gauss_kernel.h"
+#include "elements/boost_stimulus.h"
 
 namespace dnf_composer
 {

@@ -692,6 +692,30 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::BOOST_STIMULUS:
+        {
+            static char   id[CHAR_SIZE] = "boost stimulus";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double amplitude     = 5.0;
+            static bool   isActive      = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size",         &x_max,     0, 0);
+            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Active",       &isActive);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::BoostStimulusParameters bsp{ amplitude, isActive };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::BoostStimulus>(common, bsp));
+            }
+            break;
+        }
         default:
             break;
         }

@@ -381,7 +381,8 @@ namespace dnf_composer::user_interface
 			const auto lbl = element->getLabel();
 			const bool hasInputPin =
 				lbl != element::ElementLabel::GAUSS_STIMULUS &&
-				lbl != element::ElementLabel::NORMAL_NOISE;
+				lbl != element::ElementLabel::NORMAL_NOISE &&
+				lbl != element::ElementLabel::BOOST_STIMULUS;
 
 			if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
 			{
@@ -656,6 +657,7 @@ namespace dnf_composer::user_interface
 		{
 		case element::ElementLabel::GAUSS_STIMULUS:
 		case element::ElementLabel::NORMAL_NOISE:
+		case element::ElementLabel::BOOST_STIMULUS:
 			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
@@ -757,6 +759,14 @@ namespace dnf_composer::user_interface
 		{
 			const auto nn = std::dynamic_pointer_cast<element::NormalNoise>(element);
 			ImGui::Text("Amplitude: %.4f", nn->getParameters().amplitude);
+			break;
+		}
+		case element::ElementLabel::BOOST_STIMULUS:
+		{
+			const auto bs = std::dynamic_pointer_cast<element::BoostStimulus>(element);
+			const auto& p = bs->getParameters();
+			ImGui::Text("Amplitude: %.2f", p.amplitude);
+			ImGui::Text("Active: %s",      p.isActive ? "true" : "false");
 			break;
 		}
 		case element::ElementLabel::FIELD_COUPLING:
