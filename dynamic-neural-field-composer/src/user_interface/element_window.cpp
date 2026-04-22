@@ -66,6 +66,7 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::OSCILLATORY_KERNEL:     return h(5);
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5);
 				case element::ElementLabel::BOOST_STIMULUS:         return h(2);
+				case element::ElementLabel::MEMORY_TRACE:           return h(3);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
@@ -187,6 +188,9 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::BOOST_STIMULUS:
 			modifyElementBoostStimulus(element);
+			break;
+		case element::ElementLabel::MEMORY_TRACE:
+			modifyElementMemoryTrace(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -794,6 +798,44 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto memoryTrace = std::dynamic_pointer_cast<element::MemoryTrace>(element);
+		element::MemoryTraceParameters mtp = memoryTrace->getParameters();
+
+		auto tauBuild  = static_cast<float>(mtp.tauBuild);
+		auto tauDecay  = static_cast<float>(mtp.tauDecay);
+		auto threshold = static_cast<float>(mtp.threshold);
+
+		std::string label = "##" + element->getUniqueName() + "TauBuild";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &tauBuild, 1.0f, 1.0f, 10000.0f);
+		ImGui::SameLine(); ImGui::Text("Tau build");
+
+		label = "##" + element->getUniqueName() + "TauDecay";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &tauDecay, 5.0f, 1.0f, 100000.0f);
+		ImGui::SameLine(); ImGui::Text("Tau decay");
+
+		label = "##" + element->getUniqueName() + "Threshold";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &threshold, 0.01f, -2.0f, 2.0f);
+		ImGui::SameLine(); ImGui::Text("Threshold");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(tauBuild  - static_cast<float>(mtp.tauBuild))  > epsilon ||
+			std::abs(tauDecay  - static_cast<float>(mtp.tauDecay))  > epsilon ||
+			std::abs(threshold - static_cast<float>(mtp.threshold)) > epsilon)
+		{
+			mtp.tauBuild  = tauBuild;
+			mtp.tauDecay  = tauDecay;
+			mtp.threshold = threshold;
+			memoryTrace->setParameters(mtp);
+		}
+	}
+
 	ImVec4 ElementWindow::getColorForElementType(const element::ElementLabel label)
 	{
 		switch (label)
@@ -818,6 +860,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.580f, 0.698f, 0.714f, 1.0f);  // Soft Teal
 		case element::ElementLabel::BOOST_STIMULUS:
 			return ImVec4(0.949f, 0.820f, 0.325f, 1.0f);  // Warm Yellow
+		case element::ElementLabel::MEMORY_TRACE:
+			return ImVec4(0.431f, 0.627f, 0.549f, 1.0f);  // Sage Green
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -837,6 +881,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::OSCILLATORY_KERNEL: return "Oscillatory Kernels";
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gaussian Kernels";
 		case element::ElementLabel::BOOST_STIMULUS: return "Boost Stimuli";
+		case element::ElementLabel::MEMORY_TRACE:  return "Memory Traces";
 		default: return "Unknown Elements";
 		}
 	}

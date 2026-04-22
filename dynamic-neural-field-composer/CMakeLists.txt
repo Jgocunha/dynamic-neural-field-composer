@@ -79,6 +79,7 @@ set(elements_headers
         "include/elements/oscillatory_kernel.h"
         "include/elements/asymmetric_gauss_kernel.h"
         "include/elements/boost_stimulus.h"
+        "include/elements/memory_trace.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -158,6 +159,7 @@ set(src
         "src/elements/normal_noise.cpp"
         "src/elements/asymmetric_gauss_kernel.cpp"
         "src/elements/boost_stimulus.cpp"
+        "src/elements/memory_trace.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -303,6 +305,7 @@ add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
 add_example_executable(ex_cross_dimension_kernels ex_cross_dimension_kernels.cpp)
 add_example_executable(ex_boost_stimulus ex_boost_stimulus.cpp)
+add_example_executable(ex_memory_trace ex_memory_trace.cpp)
 
 # Tests (GTest)
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
@@ -323,6 +326,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_neural_field.cpp"
             "tests/elements/test_normal_noise.cpp"
             "tests/elements/test_boost_stimulus.cpp"
+            "tests/elements/test_memory_trace.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"
             "tests/simulation/test_simulation_extended.cpp"

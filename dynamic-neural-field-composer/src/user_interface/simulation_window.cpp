@@ -716,6 +716,32 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::MEMORY_TRACE:
+        {
+            static char   id[CHAR_SIZE] = "memory trace";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double tauBuild      = 100.0;
+            static double tauDecay      = 1000.0;
+            static double threshold     = 0.5;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size",          &x_max,     0, 0);
+            ImGui::InputDouble("Step",       &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau build",  &tauBuild,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau decay",  &tauDecay,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Threshold",  &threshold, 0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::MemoryTraceParameters mtp{ tauBuild, tauDecay, threshold };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::MemoryTrace>(common, mtp));
+            }
+            break;
+        }
         default:
             break;
         }

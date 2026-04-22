@@ -76,6 +76,12 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const BoostStimulusParameters*>(&elementSpecificParameters);
 					return std::make_shared<BoostStimulus>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::MEMORY_TRACE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const MemoryTraceParameters*>(&elementSpecificParameters);
+					return std::make_shared<MemoryTrace>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -117,6 +123,8 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), AsymmetricGaussKernelParameters());
 					case ElementLabel::BOOST_STIMULUS:
 						return creator->second(ElementCommonParameters(type), BoostStimulusParameters());
+					case ElementLabel::MEMORY_TRACE:
+						return creator->second(ElementCommonParameters(type), MemoryTraceParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

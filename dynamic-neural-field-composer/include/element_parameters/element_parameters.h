@@ -23,6 +23,7 @@ namespace dnf_composer
 			NORMAL_NOISE,
 			FIELD_COUPLING,
 			GAUSS_FIELD_COUPLING,
+			MEMORY_TRACE,
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -37,6 +38,7 @@ namespace dnf_composer
 			{OSCILLATORY_KERNEL, "oscillatory kernel"},
 			{ASYMMETRIC_GAUSS_KERNEL, "asymmetric gauss kernel"},
 			{NORMAL_NOISE, "normal noise" },
+			{MEMORY_TRACE, "memory trace" },
 		};
 
 		struct ElementDimensions

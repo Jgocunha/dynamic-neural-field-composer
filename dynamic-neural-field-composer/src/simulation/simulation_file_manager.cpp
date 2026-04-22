@@ -94,6 +94,13 @@ namespace dnf_composer
         jsonToElements(elementsJson);
     }
 
+    static element::ElementLabel elementLabelFromString(const std::string& s)
+    {
+        for (const auto& [k, v] : element::ElementLabelToString)
+            if (v == s) return k;
+        return element::UNINITIALIZED;
+    }
+
     json SimulationFileManager::elementToJson(const std::shared_ptr<element::Element>& element)
     {
         json elementJson;
@@ -244,6 +251,15 @@ namespace dnf_composer
             const auto boostStimulusParameters = boostStimulus->getParameters();
             elementJson["amplitude"] = boostStimulusParameters.amplitude;
             elementJson["isActive"] = boostStimulusParameters.isActive;
+        }
+        break;
+        case element::MEMORY_TRACE:
+        {
+            const auto memoryTrace = std::dynamic_pointer_cast<element::MemoryTrace>(element);
+            const auto memoryTraceParameters = memoryTrace->getParameters();
+            elementJson["tauBuild"]  = memoryTraceParameters.tauBuild;
+            elementJson["tauDecay"]  = memoryTraceParameters.tauDecay;
+            elementJson["threshold"] = memoryTraceParameters.threshold;
         }
         break;
         default:
@@ -422,6 +438,19 @@ namespace dnf_composer
                 element::BoostStimulusParameters(amplitude, isActive)
             );
             simulation->addElement(boostStimulus);
+        }
+        break;
+        case element::MEMORY_TRACE:
+        {
+            const double tauBuild  = elementJson["tauBuild"];
+            const double tauDecay  = elementJson["tauDecay"];
+            const double threshold = elementJson["threshold"];
+
+            auto memoryTrace = std::make_shared<element::MemoryTrace>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::MemoryTraceParameters(tauBuild, tauDecay, threshold)
+            );
+            simulation->addElement(memoryTrace);
         }
         break;
 	    default:

@@ -663,6 +663,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
 		case element::ElementLabel::OSCILLATORY_KERNEL:
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
+		case element::ElementLabel::MEMORY_TRACE:
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
@@ -767,6 +768,15 @@ namespace dnf_composer::user_interface
 			const auto& p = bs->getParameters();
 			ImGui::Text("Amplitude: %.2f", p.amplitude);
 			ImGui::Text("Active: %s",      p.isActive ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::MEMORY_TRACE:
+		{
+			const auto mt = std::dynamic_pointer_cast<element::MemoryTrace>(element);
+			const auto& p = mt->getParameters();
+			ImGui::Text("Tau build: %.2f",  p.tauBuild);
+			ImGui::Text("Tau decay: %.2f",  p.tauDecay);
+			ImGui::Text("Threshold: %.2f",  p.threshold);
 			break;
 		}
 		case element::ElementLabel::FIELD_COUPLING:

@@ -13,6 +13,7 @@
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
+#include "elements/memory_trace.h"
 #include "user_interface/widgets.h"
 #include "application/application.h"
 
@@ -58,6 +59,7 @@ namespace dnf_composer::user_interface
 		static void modifyElementOscillatoryKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementBoostStimulus(const std::shared_ptr<element::Element>& element);
+		static void modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
 		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);
