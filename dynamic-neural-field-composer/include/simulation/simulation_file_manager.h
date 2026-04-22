@@ -17,6 +17,11 @@
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
 #include "elements/memory_trace.h"
+#include "elements/neural_field_2d.h"
+#include "elements/gauss_stimulus_2d.h"
+#include "elements/gauss_kernel_2d.h"
+#include "elements/mexican_hat_kernel_2d.h"
+#include "elements/normal_noise_2d.h"
 
 namespace dnf_composer
 {

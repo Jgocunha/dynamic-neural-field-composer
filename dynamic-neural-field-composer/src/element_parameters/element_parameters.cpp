@@ -10,13 +10,23 @@ namespace dnf_composer
 	namespace element
 	{
 		ElementDimensions::ElementDimensions(int x_max, double d_x)
-			: x_max(x_max), size(static_cast<int>(std::round(x_max / d_x))), d_x(d_x)
+			: x_max(x_max), y_max(1), d_x(d_x), d_y(1.0),
+			  size_x(static_cast<int>(std::round(x_max / d_x))), size_y(1),
+			  size(static_cast<int>(std::round(x_max / d_x)))
+		{}
+
+		ElementDimensions::ElementDimensions(int x_max, int y_max, double d_x, double d_y)
+			: x_max(x_max), y_max(y_max), d_x(d_x), d_y(d_y),
+			  size_x(static_cast<int>(std::round(x_max / d_x))),
+			  size_y(static_cast<int>(std::round(y_max / d_y))),
+			  size(static_cast<int>(std::round(x_max / d_x)) * static_cast<int>(std::round(y_max / d_y)))
 		{}
 
 		bool ElementDimensions::operator==(const ElementDimensions& other) const
 		{
 			constexpr double epsilon = 1e-6;
-			return x_max == other.x_max && std::abs(d_x - other.d_x) < epsilon;
+			return x_max == other.x_max && y_max == other.y_max &&
+			       std::abs(d_x - other.d_x) < epsilon && std::abs(d_y - other.d_y) < epsilon;
 		}
 
 		void ElementDimensions::print() const
@@ -27,12 +37,13 @@ namespace dnf_composer
 		std::string ElementDimensions::toString() const
 		{
 			std::ostringstream result;
-			result << std::fixed << std::setprecision(2); 
+			result << std::fixed << std::setprecision(2);
 			result << "Dimensions: ["
 				<< "x_max: " << x_max << ", "
-				<< "d_x: " << d_x << ", "
-				<< "Samples: " << size
-				<< "]";
+				<< "d_x: " << d_x;
+			if (size_y > 1)
+				result << ", y_max: " << y_max << ", d_y: " << d_y;
+			result << ", Samples: " << size << "]";
 			return result.str();
 		}
 

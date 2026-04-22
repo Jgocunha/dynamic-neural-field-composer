@@ -67,6 +67,11 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5);
 				case element::ElementLabel::BOOST_STIMULUS:         return h(2);
 				case element::ElementLabel::MEMORY_TRACE:           return h(3);
+				case element::ElementLabel::NEURAL_FIELD_2D:        return h(2);
+				case element::ElementLabel::GAUSS_STIMULUS_2D:      return h(5);
+				case element::ElementLabel::GAUSS_KERNEL_2D:        return h(4);
+				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:  return h(6);
+				case element::ElementLabel::NORMAL_NOISE_2D:        return h(1);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
@@ -191,6 +196,21 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::MEMORY_TRACE:
 			modifyElementMemoryTrace(element);
+			break;
+		case element::ElementLabel::NEURAL_FIELD_2D:
+			modifyElementNeuralField2D(element);
+			break;
+		case element::ElementLabel::GAUSS_STIMULUS_2D:
+			modifyElementGaussStimulus2D(element);
+			break;
+		case element::ElementLabel::GAUSS_KERNEL_2D:
+			modifyElementGaussKernel2D(element);
+			break;
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+			modifyElementMexicanHatKernel2D(element);
+			break;
+		case element::ElementLabel::NORMAL_NOISE_2D:
+			modifyElementNormalNoise2D(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -836,6 +856,222 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementNeuralField2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const auto nf = std::dynamic_pointer_cast<element::NeuralField2D>(element);
+		element::NeuralField2DParameters p = nf->getParameters();
+
+		auto tau           = static_cast<float>(p.tau);
+		auto restingLevel  = static_cast<float>(p.startingRestingLevel);
+
+		std::string label = "##" + element->getUniqueName() + "Tau";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 1000.0f);
+		ImGui::SameLine(); ImGui::Text("Tau");
+
+		label = "##" + element->getUniqueName() + "RestingLevel";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Resting level");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(tau - static_cast<float>(p.tau)) > epsilon ||
+			std::abs(restingLevel - static_cast<float>(p.startingRestingLevel)) > epsilon)
+		{
+			p.tau = tau;
+			p.startingRestingLevel = restingLevel;
+			nf->setParameters(p);
+		}
+	}
+
+	void ElementWindow::modifyElementGaussStimulus2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const auto gs = std::dynamic_pointer_cast<element::GaussStimulus2D>(element);
+		element::GaussStimulusParameters2D p = gs->getParameters();
+
+		auto width      = static_cast<float>(p.width);
+		auto amplitude  = static_cast<float>(p.amplitude);
+		auto posX       = static_cast<float>(p.position_x);
+		auto posY       = static_cast<float>(p.position_y);
+		bool circular   = p.circular;
+		bool normalized = p.normalized;
+
+		std::string label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 100.0f);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.5f, -50.0f, 50.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "PosX";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &posX, 0.5f, 0.0f, 1000.0f);
+		ImGui::SameLine(); ImGui::Text("Position x");
+
+		label = "##" + element->getUniqueName() + "PosY";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &posY, 0.5f, 0.0f, 1000.0f);
+		ImGui::SameLine(); ImGui::Text("Position y");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+		ImGui::SameLine();
+		label = "##" + element->getUniqueName() + "Normalized";
+		ImGui::Checkbox(label.c_str(), &normalized);
+		ImGui::SameLine(); ImGui::Text("Normalized");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(width - static_cast<float>(p.width)) > epsilon ||
+			std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
+			std::abs(posX - static_cast<float>(p.position_x)) > epsilon ||
+			std::abs(posY - static_cast<float>(p.position_y)) > epsilon ||
+			circular != p.circular || normalized != p.normalized)
+		{
+			p.width = width; p.amplitude = amplitude;
+			p.position_x = posX; p.position_y = posY;
+			p.circular = circular; p.normalized = normalized;
+			gs->setParameters(p);
+		}
+	}
+
+	void ElementWindow::modifyElementGaussKernel2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const auto gk = std::dynamic_pointer_cast<element::GaussKernel2D>(element);
+		element::GaussKernel2DParameters p = gk->getParameters();
+
+		auto width           = static_cast<float>(p.width);
+		auto amplitude       = static_cast<float>(p.amplitude);
+		auto amplitudeGlobal = static_cast<float>(p.amplitudeGlobal);
+		bool circular   = p.circular;
+		bool normalized = p.normalized;
+
+		std::string label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 100.0f);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -50.0f, 50.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "AmplitudeGlobal";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.001f, -1.0f, 1.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude global");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+		ImGui::SameLine();
+		label = "##" + element->getUniqueName() + "Normalized";
+		ImGui::Checkbox(label.c_str(), &normalized);
+		ImGui::SameLine(); ImGui::Text("Normalized");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(width - static_cast<float>(p.width)) > epsilon ||
+			std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
+			std::abs(amplitudeGlobal - static_cast<float>(p.amplitudeGlobal)) > epsilon ||
+			circular != p.circular || normalized != p.normalized)
+		{
+			p.width = width; p.amplitude = amplitude;
+			p.amplitudeGlobal = amplitudeGlobal;
+			p.circular = circular; p.normalized = normalized;
+			gk->setParameters(p);
+		}
+	}
+
+	void ElementWindow::modifyElementMexicanHatKernel2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const auto mhk = std::dynamic_pointer_cast<element::MexicanHatKernel2D>(element);
+		element::MexicanHatKernel2DParameters p = mhk->getParameters();
+
+		auto widthExc        = static_cast<float>(p.widthExc);
+		auto amplitudeExc    = static_cast<float>(p.amplitudeExc);
+		auto widthInh        = static_cast<float>(p.widthInh);
+		auto amplitudeInh    = static_cast<float>(p.amplitudeInh);
+		auto amplitudeGlobal = static_cast<float>(p.amplitudeGlobal);
+		bool circular   = p.circular;
+		bool normalized = p.normalized;
+
+		std::string label = "##" + element->getUniqueName() + "WidthExc";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &widthExc, 0.1f, 0.1f, 100.0f);
+		ImGui::SameLine(); ImGui::Text("Width exc");
+
+		label = "##" + element->getUniqueName() + "AmpExc";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitudeExc, 0.1f, -50.0f, 50.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude exc");
+
+		label = "##" + element->getUniqueName() + "WidthInh";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &widthInh, 0.1f, 0.1f, 100.0f);
+		ImGui::SameLine(); ImGui::Text("Width inh");
+
+		label = "##" + element->getUniqueName() + "AmpInh";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitudeInh, 0.1f, -50.0f, 50.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude inh");
+
+		label = "##" + element->getUniqueName() + "AmpGlobal";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.001f, -1.0f, 1.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude global");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+		ImGui::SameLine();
+		label = "##" + element->getUniqueName() + "Normalized";
+		ImGui::Checkbox(label.c_str(), &normalized);
+		ImGui::SameLine(); ImGui::Text("Normalized");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(widthExc - static_cast<float>(p.widthExc)) > epsilon ||
+			std::abs(amplitudeExc - static_cast<float>(p.amplitudeExc)) > epsilon ||
+			std::abs(widthInh - static_cast<float>(p.widthInh)) > epsilon ||
+			std::abs(amplitudeInh - static_cast<float>(p.amplitudeInh)) > epsilon ||
+			std::abs(amplitudeGlobal - static_cast<float>(p.amplitudeGlobal)) > epsilon ||
+			circular != p.circular || normalized != p.normalized)
+		{
+			p.widthExc = widthExc; p.amplitudeExc = amplitudeExc;
+			p.widthInh = widthInh; p.amplitudeInh = amplitudeInh;
+			p.amplitudeGlobal = amplitudeGlobal;
+			p.circular = circular; p.normalized = normalized;
+			mhk->setParameters(p);
+		}
+	}
+
+	void ElementWindow::modifyElementNormalNoise2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const auto nn = std::dynamic_pointer_cast<element::NormalNoise2D>(element);
+		element::NormalNoise2DParameters p = nn->getParameters();
+
+		auto amplitude = static_cast<float>(p.amplitude);
+
+		const std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.001f, 0.0f, 10.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon)
+		{
+			p.amplitude = amplitude;
+			nn->setParameters(p);
+		}
+	}
+
 	ImVec4 ElementWindow::getColorForElementType(const element::ElementLabel label)
 	{
 		switch (label)
@@ -862,6 +1098,16 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.949f, 0.820f, 0.325f, 1.0f);  // Warm Yellow
 		case element::ElementLabel::MEMORY_TRACE:
 			return ImVec4(0.431f, 0.627f, 0.549f, 1.0f);  // Sage Green
+		case element::ElementLabel::NEURAL_FIELD_2D:
+			return ImVec4(0.365f, 0.529f, 0.718f, 1.0f);  // Steel Blue
+		case element::ElementLabel::GAUSS_STIMULUS_2D:
+			return ImVec4(0.690f, 0.525f, 0.380f, 1.0f);  // Warm Tan
+		case element::ElementLabel::GAUSS_KERNEL_2D:
+			return ImVec4(0.420f, 0.667f, 0.510f, 1.0f);  // Mint Green
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+			return ImVec4(0.706f, 0.494f, 0.576f, 1.0f);  // Dusty Mauve
+		case element::ElementLabel::NORMAL_NOISE_2D:
+			return ImVec4(0.600f, 0.600f, 0.600f, 1.0f);  // Light Gray
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -882,6 +1128,11 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gaussian Kernels";
 		case element::ElementLabel::BOOST_STIMULUS: return "Boost Stimuli";
 		case element::ElementLabel::MEMORY_TRACE:  return "Memory Traces";
+		case element::ElementLabel::NEURAL_FIELD_2D: return "Neural Fields 2D";
+		case element::ElementLabel::GAUSS_STIMULUS_2D: return "Gauss Stimuli 2D";
+		case element::ElementLabel::GAUSS_KERNEL_2D: return "Gauss Kernels 2D";
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D: return "Mexican Hat Kernels 2D";
+		case element::ElementLabel::NORMAL_NOISE_2D: return "Normal Noise 2D";
 		default: return "Unknown Elements";
 		}
 	}

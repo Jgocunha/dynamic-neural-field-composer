@@ -14,6 +14,11 @@
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
 #include "elements/memory_trace.h"
+#include "elements/neural_field_2d.h"
+#include "elements/gauss_stimulus_2d.h"
+#include "elements/gauss_kernel_2d.h"
+#include "elements/mexican_hat_kernel_2d.h"
+#include "elements/normal_noise_2d.h"
 #include "user_interface/widgets.h"
 #include "application/application.h"
 
@@ -60,6 +65,11 @@ namespace dnf_composer::user_interface
 		static void modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementBoostStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element);
+		static void modifyElementNeuralField2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementGaussStimulus2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementGaussKernel2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementMexicanHatKernel2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementNormalNoise2D(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
 		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);

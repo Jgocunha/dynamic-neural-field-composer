@@ -1,0 +1,121 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
+
+#include "elements/mexican_hat_kernel_2d.h"
+
+namespace dnf_composer
+{
+	namespace element
+	{
+		MexicanHatKernel2D::MexicanHatKernel2D(const ElementCommonParameters& elementCommonParameters,
+			const MexicanHatKernel2DParameters& parameters)
+			: Element(elementCommonParameters), parameters(parameters)
+		{
+			commonParameters.identifiers.label = ElementLabel::MEXICAN_HAT_KERNEL_2D;
+		}
+
+		void MexicanHatKernel2D::init()
+		{
+			const int size_x = commonParameters.dimensionParameters.size_x;
+			const int size_y = commonParameters.dimensionParameters.size_y;
+
+			auto buildKernel = [&](double width, std::array<int,2>& rangeX, std::array<int,2>& rangeY,
+			                       std::vector<int>& extX, std::vector<int>& extY,
+			                       std::vector<double>& kx, std::vector<double>& ky)
+			{
+				rangeX = tools::math::computeKernelRange(width, cutOffFactor, size_x, parameters.circular);
+				rangeY = tools::math::computeKernelRange(width, cutOffFactor, size_y, parameters.circular);
+				if (parameters.circular)
+				{
+					extX = tools::math::createExtendedIndex(size_x, rangeX);
+					extY = tools::math::createExtendedIndex(size_y, rangeY);
+				}
+				else { extX.clear(); extY.clear(); }
+
+				const int kx_size = rangeX[0] + rangeX[1] + 1;
+				std::vector<int> rxVec(kx_size);
+				std::iota(rxVec.begin(), rxVec.end(), -static_cast<int>(rangeX[0]));
+
+				const int ky_size = rangeY[0] + rangeY[1] + 1;
+				std::vector<int> ryVec(ky_size);
+				std::iota(ryVec.begin(), ryVec.end(), -static_cast<int>(rangeY[0]));
+
+				if (parameters.normalized)
+				{
+					kx = tools::math::gaussNorm(rxVec, 0.0, width);
+					ky = tools::math::gaussNorm(ryVec, 0.0, width);
+				}
+				else
+				{
+					kx = tools::math::gauss(rxVec, 0.0, width);
+					ky = tools::math::gauss(ryVec, 0.0, width);
+				}
+			};
+
+			buildKernel(parameters.widthExc,
+				kernelRangeExc_x, kernelRangeExc_y,
+				extIndexExc_x, extIndexExc_y,
+				kernelExc_x, kernelExc_y);
+
+			buildKernel(parameters.widthInh,
+				kernelRangeInh_x, kernelRangeInh_y,
+				extIndexInh_x, extIndexInh_y,
+				kernelInh_x, kernelInh_y);
+
+			for (auto& v : kernelExc_x) v *= parameters.amplitudeExc;
+			for (auto& v : kernelExc_y) v *= parameters.amplitudeExc;
+			for (auto& v : kernelInh_x) v *= parameters.amplitudeInh;
+			for (auto& v : kernelInh_y) v *= parameters.amplitudeInh;
+
+			fullSum = 0.0;
+			std::ranges::fill(components["input"], 0.0);
+			std::ranges::fill(components["output"], 0.0);
+		}
+
+		void MexicanHatKernel2D::step(double t, double deltaT)
+		{
+			updateInput();
+
+			fullSum = std::accumulate(components["input"].begin(), components["input"].end(), 0.0);
+
+			const int size_x = commonParameters.dimensionParameters.size_x;
+			const int size_y = commonParameters.dimensionParameters.size_y;
+
+			const auto excOut = tools::math::conv2d_separable(
+				components["input"], kernelExc_x, kernelExc_y,
+				size_x, size_y, extIndexExc_x, extIndexExc_y);
+
+			const auto inhOut = tools::math::conv2d_separable(
+				components["input"], kernelInh_x, kernelInh_y,
+				size_x, size_y, extIndexInh_x, extIndexInh_y);
+
+			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
+				components["output"][i] = excOut[i] - inhOut[i] + parameters.amplitudeGlobal * fullSum;
+		}
+
+		std::string MexicanHatKernel2D::toString() const
+		{
+			std::string result = "Mexican hat kernel 2D element\n";
+			result += commonParameters.toString() + '\n';
+			result += parameters.toString();
+			return result;
+		}
+
+		std::shared_ptr<Element> MexicanHatKernel2D::clone() const
+		{
+			return std::make_shared<MexicanHatKernel2D>(*this);
+		}
+
+		void MexicanHatKernel2D::setParameters(const MexicanHatKernel2DParameters& p)
+		{
+			parameters = p;
+			init();
+		}
+
+		MexicanHatKernel2DParameters MexicanHatKernel2D::getParameters() const
+		{
+			return parameters;
+		}
+	}
+}

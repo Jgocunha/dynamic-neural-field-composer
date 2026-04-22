@@ -491,4 +491,70 @@ namespace dnf_composer::tools::math
 			output[i] = input[lo] * (1.0 - t) + input[hi] * t;
 		}
 	}
+
+	// Separable 2D convolution.
+	// field is stored row-major: field[x * size_y + y].
+	// Applies kernel_x along the x-axis and kernel_y along the y-axis using two 1D passes.
+	// extIndex_x / extIndex_y are the circular extension indices produced by createExtendedIndex
+	// (pass empty vectors for non-circular mode).
+	template<typename T>
+	std::vector<T> conv2d_separable(
+		const std::vector<T>& field,
+		const std::vector<T>& kernel_x,
+		const std::vector<T>& kernel_y,
+		int size_x, int size_y,
+		const std::vector<int>& extIndex_x,
+		const std::vector<int>& extIndex_y)
+	{
+		const bool circular_x = !extIndex_x.empty();
+		const bool circular_y = !extIndex_y.empty();
+
+		// y-pass: convolve each row along the y-axis
+		std::vector<T> tmp(size_x * size_y, T());
+		for (int x = 0; x < size_x; ++x)
+		{
+			// extract row
+			std::vector<T> row(size_y);
+			for (int y = 0; y < size_y; ++y)
+				row[y] = field[x * size_y + y];
+
+			std::vector<T> convRow;
+			if (circular_y)
+			{
+				const auto extRow = obtainCircularVector(extIndex_y, row);
+				convRow = conv_valid(extRow, kernel_y);
+			}
+			else
+			{
+				convRow = conv_same(row, kernel_y);
+			}
+			for (int y = 0; y < size_y; ++y)
+				tmp[x * size_y + y] = convRow[y];
+		}
+
+		// x-pass: convolve each column along the x-axis
+		std::vector<T> result(size_x * size_y, T());
+		for (int y = 0; y < size_y; ++y)
+		{
+			// extract column
+			std::vector<T> col(size_x);
+			for (int x = 0; x < size_x; ++x)
+				col[x] = tmp[x * size_y + y];
+
+			std::vector<T> convCol;
+			if (circular_x)
+			{
+				const auto extCol = obtainCircularVector(extIndex_x, col);
+				convCol = conv_valid(extCol, kernel_x);
+			}
+			else
+			{
+				convCol = conv_same(col, kernel_x);
+			}
+			for (int x = 0; x < size_x; ++x)
+				result[x * size_y + y] = convCol[x];
+		}
+
+		return result;
+	}
 }

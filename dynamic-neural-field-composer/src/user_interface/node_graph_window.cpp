@@ -299,7 +299,12 @@ namespace dnf_composer::user_interface
 				const auto  label       = element->getLabel();
 				const bool  isWeightMap = (label == element::ElementLabel::FIELD_COUPLING ||
 				                           label == element::ElementLabel::GAUSS_FIELD_COUPLING);
-				const float plotH = isWeightMap ? plotW : 60.0f;
+				const bool  is2DField   = (label == element::ElementLabel::NEURAL_FIELD_2D ||
+				                           label == element::ElementLabel::GAUSS_STIMULUS_2D ||
+				                           label == element::ElementLabel::GAUSS_KERNEL_2D ||
+				                           label == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
+				                           label == element::ElementLabel::NORMAL_NOISE_2D);
+				const float plotH = (isWeightMap || is2DField) ? plotW : 60.0f;
 
 				const ImVec2 origin = ImGui::GetCursorScreenPos();
 				const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
@@ -342,7 +347,41 @@ namespace dnf_composer::user_interface
 					}
 				}
 
-				if (!drewHeatmap && !isWeightMap && comps)
+				if (!drewHeatmap && is2DField && comps && !comps->empty())
+				{
+					const auto& dp = element->getElementCommonParameters().dimensionParameters;
+					const int rows = dp.size_x;
+					const int cols = dp.size_y;
+					if (rows > 0 && cols > 0)
+					{
+						const auto& firstComp = comps->begin()->second;
+						if (static_cast<int>(firstComp.size()) == rows * cols)
+						{
+							double wMin =  1e300, wMax = -1e300;
+							for (const double v : firstComp) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
+							const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
+
+							const float cellW = (rect.GetWidth()  - 2*pad) / float(cols);
+							const float cellH = (rect.GetHeight() - 2*pad) / float(rows);
+
+							for (int r = 0; r < rows; ++r)
+							{
+								for (int c = 0; c < cols; ++c)
+								{
+									const double v   = firstComp[r * cols + c];
+									const float  t   = float((v - wMin) / wRange);
+									const ImVec2 tl  = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
+									const ImVec2 br  = { tl.x + cellW, tl.y + cellH };
+									const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
+									dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
+								}
+							}
+							drewHeatmap = true;
+						}
+					}
+				}
+
+				if (!drewHeatmap && !isWeightMap && !is2DField && comps)
 				{
 					double globalMin =  1e300, globalMax = -1e300;
 					for (const auto& [name, data] : *comps)
@@ -382,7 +421,9 @@ namespace dnf_composer::user_interface
 			const bool hasInputPin =
 				lbl != element::ElementLabel::GAUSS_STIMULUS &&
 				lbl != element::ElementLabel::NORMAL_NOISE &&
-				lbl != element::ElementLabel::BOOST_STIMULUS;
+				lbl != element::ElementLabel::BOOST_STIMULUS &&
+				lbl != element::ElementLabel::GAUSS_STIMULUS_2D &&
+				lbl != element::ElementLabel::NORMAL_NOISE_2D;
 
 			if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
 			{
@@ -561,8 +602,13 @@ namespace dnf_composer::user_interface
 				const auto lbl         = element->getLabel();
 				const bool isWeightMap = (lbl == element::ElementLabel::FIELD_COUPLING ||
 				                          lbl == element::ElementLabel::GAUSS_FIELD_COUPLING);
+				const bool is2DField   = (lbl == element::ElementLabel::NEURAL_FIELD_2D ||
+				                          lbl == element::ElementLabel::GAUSS_STIMULUS_2D ||
+				                          lbl == element::ElementLabel::GAUSS_KERNEL_2D ||
+				                          lbl == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
+				                          lbl == element::ElementLabel::NORMAL_NOISE_2D);
 				const float plotW = ImGui::GetContentRegionAvail().x;
-				const float plotH = isWeightMap ? plotW : plotW * 0.6f;
+				const float plotH = (isWeightMap || is2DField) ? plotW : plotW * 0.6f;
 
 				const bool hasWeights = isWeightMap &&
 					comps->contains("weights") && !comps->at("weights").empty() &&
@@ -601,6 +647,43 @@ namespace dnf_composer::user_interface
 								const float  t  = float((v - wMin) / wRange);
 								const ImVec2 tl = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
 								const ImVec2 br = { tl.x + cellW, tl.y + cellH };
+								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
+								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
+							}
+						}
+					}
+				}
+				else if (is2DField && !comps->empty())
+				{
+					const auto& dp   = element->getElementCommonParameters().dimensionParameters;
+					const int   rows = dp.size_x;
+					const int   cols = dp.size_y;
+					const auto& data = comps->begin()->second;
+					if (rows > 0 && cols > 0 && static_cast<int>(data.size()) == rows * cols)
+					{
+						constexpr float pad = 3.0f;
+						const ImVec2 origin = ImGui::GetCursorScreenPos();
+						ImGui::Dummy(ImVec2(plotW, plotH));
+						const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
+						ImDrawList* dl = ImGui::GetWindowDrawList();
+						dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
+						dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
+
+						double wMin =  1e300, wMax = -1e300;
+						for (const double v : data) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
+						const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
+
+						const float cellW = (rect.GetWidth()  - 2*pad) / float(cols);
+						const float cellH = (rect.GetHeight() - 2*pad) / float(rows);
+
+						for (int r = 0; r < rows; ++r)
+						{
+							for (int c = 0; c < cols; ++c)
+							{
+								const double v   = data[r * cols + c];
+								const float  t   = float((v - wMin) / wRange);
+								const ImVec2 tl  = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
+								const ImVec2 br  = { tl.x + cellW, tl.y + cellH };
 								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
 								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
 							}
@@ -658,17 +741,22 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_STIMULUS:
 		case element::ElementLabel::NORMAL_NOISE:
 		case element::ElementLabel::BOOST_STIMULUS:
+		case element::ElementLabel::GAUSS_STIMULUS_2D:
+		case element::ElementLabel::NORMAL_NOISE_2D:
 			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
 		case element::ElementLabel::OSCILLATORY_KERNEL:
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 		case element::ElementLabel::MEMORY_TRACE:
+		case element::ElementLabel::GAUSS_KERNEL_2D:
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 			return 2;
 		case element::ElementLabel::NEURAL_FIELD:
+		case element::ElementLabel::NEURAL_FIELD_2D:
 			return 3;
 		default:
 			return 1;
@@ -798,6 +886,57 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
 			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
 			ImGui::Text("Couplings: %zu",     p.couplings.size());
+			break;
+		}
+		case element::ElementLabel::NEURAL_FIELD_2D:
+		{
+			const auto nf = std::dynamic_pointer_cast<element::NeuralField2D>(element);
+			const auto& p = nf->getParameters();
+			ImGui::Text("Tau: %.2f", p.tau);
+			ImGui::Text("Resting level: %.2f", p.startingRestingLevel);
+			ImGui::Text("Activation fn: %s", p.activationFunction->toString().c_str());
+			break;
+		}
+		case element::ElementLabel::GAUSS_STIMULUS_2D:
+		{
+			const auto gs = std::dynamic_pointer_cast<element::GaussStimulus2D>(element);
+			const auto& p = gs->getParameters();
+			ImGui::Text("Width: %.2f",       p.width);
+			ImGui::Text("Amplitude: %.2f",   p.amplitude);
+			ImGui::Text("Position x: %.2f",  p.position_x);
+			ImGui::Text("Position y: %.2f",  p.position_y);
+			ImGui::Text("Circular: %s",      p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",    p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::GAUSS_KERNEL_2D:
+		{
+			const auto gk = std::dynamic_pointer_cast<element::GaussKernel2D>(element);
+			const auto& p = gk->getParameters();
+			ImGui::Text("Width: %.2f",        p.width);
+			ImGui::Text("Amplitude: %.2f",    p.amplitude);
+			ImGui::Text("Global amp: %.4f",   p.amplitudeGlobal);
+			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+		{
+			const auto mh = std::dynamic_pointer_cast<element::MexicanHatKernel2D>(element);
+			const auto& p = mh->getParameters();
+			ImGui::Text("Width exc: %.2f",    p.widthExc);
+			ImGui::Text("Amplitude exc: %.2f",p.amplitudeExc);
+			ImGui::Text("Width inh: %.2f",    p.widthInh);
+			ImGui::Text("Amplitude inh: %.2f",p.amplitudeInh);
+			ImGui::Text("Global amp: %.4f",   p.amplitudeGlobal);
+			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::NORMAL_NOISE_2D:
+		{
+			const auto nn = std::dynamic_pointer_cast<element::NormalNoise2D>(element);
+			ImGui::Text("Amplitude: %.4f", nn->getParameters().amplitude);
 			break;
 		}
 		default:

@@ -24,6 +24,11 @@ namespace dnf_composer
 			FIELD_COUPLING,
 			GAUSS_FIELD_COUPLING,
 			MEMORY_TRACE,
+			NEURAL_FIELD_2D,
+			GAUSS_STIMULUS_2D,
+			GAUSS_KERNEL_2D,
+			MEXICAN_HAT_KERNEL_2D,
+			NORMAL_NOISE_2D,
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -39,14 +44,21 @@ namespace dnf_composer
 			{ASYMMETRIC_GAUSS_KERNEL, "asymmetric gauss kernel"},
 			{NORMAL_NOISE, "normal noise" },
 			{MEMORY_TRACE, "memory trace" },
+			{NEURAL_FIELD_2D, "neural field 2d" },
+			{GAUSS_STIMULUS_2D, "gauss stimulus 2d" },
+			{GAUSS_KERNEL_2D, "gauss kernel 2d" },
+			{MEXICAN_HAT_KERNEL_2D, "mexican hat kernel 2d" },
+			{NORMAL_NOISE_2D, "normal noise 2d" },
 		};
 
 		struct ElementDimensions
 		{
-			int x_max, size;
-			double d_x;
+			int x_max, y_max;
+			double d_x, d_y;
+			int size_x, size_y, size;  // size = size_x * size_y
 
-			ElementDimensions(int x_max = 100, double d_x = 1.0);
+			ElementDimensions(int x_max = 100, double d_x = 1.0);                         // 1D
+			ElementDimensions(int x_max, int y_max, double d_x, double d_y);              // 2D
 			bool operator==(const ElementDimensions& other) const;
 			void print() const;
 			std::string toString() const;

@@ -742,6 +742,148 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::NEURAL_FIELD_2D:
+        {
+            static char   id[CHAR_SIZE] = "neural field 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double tau = 25.0, restingLevel = -5.0;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",            &x_max,       0, 0);
+            ImGui::InputInt("Y size",            &y_max,       0, 0);
+            ImGui::InputDouble("X step",         &d_x,         0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",         &d_y,         0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau",            &tau,         0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Resting level",  &restingLevel,0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::NeuralField2DParameters nfp{ tau, restingLevel, element::SigmoidFunction(0.0, 10.0) };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::NeuralField2D>(common, nfp));
+            }
+            break;
+        }
+        case element::ElementLabel::GAUSS_STIMULUS_2D:
+        {
+            static char   id[CHAR_SIZE] = "gauss stimulus 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double width = 5.0, amplitude = 15.0;
+            static double pos_x = 25.0, pos_y = 25.0;
+            static bool   circular = true, normalized = false;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Position x",&pos_x,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Position y",&pos_y,     0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::GaussStimulusParameters2D gsp( width, amplitude, pos_x, pos_y, circular, normalized );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::GaussStimulus2D>(common, gsp));
+            }
+            break;
+        }
+        case element::ElementLabel::GAUSS_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE] = "gauss kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double width = 3.0, amplitude = 3.0, amplitudeGlobal = -0.01;
+            static bool   circular = true, normalized = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",              &x_max,           0, 0);
+            ImGui::InputInt("Y size",              &y_max,           0, 0);
+            ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",            &width,           0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude",        &amplitude,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::GaussKernel2DParameters gkp( width, amplitude, amplitudeGlobal, circular, normalized );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::GaussKernel2D>(common, gkp));
+            }
+            break;
+        }
+        case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE] = "mexican hat kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double widthExc = 2.5, amplitudeExc = 11.0;
+            static double widthInh = 5.0, amplitudeInh = 15.0;
+            static double amplitudeGlobal = -0.1;
+            static bool   circular = true, normalized = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",              &x_max,           0, 0);
+            ImGui::InputInt("Y size",              &y_max,           0, 0);
+            ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width exc",        &widthExc,        0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude exc",    &amplitudeExc,    0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width inh",        &widthInh,        0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude inh",    &amplitudeInh,    0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::MexicanHatKernel2DParameters mhkp( widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::MexicanHatKernel2D>(common, mhkp));
+            }
+            break;
+        }
+        case element::ElementLabel::NORMAL_NOISE_2D:
+        {
+            static char   id[CHAR_SIZE] = "normal noise 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude = 0.2;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::NormalNoise2DParameters nnp( amplitude );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::NormalNoise2D>(common, nnp));
+            }
+            break;
+        }
         default:
             break;
         }

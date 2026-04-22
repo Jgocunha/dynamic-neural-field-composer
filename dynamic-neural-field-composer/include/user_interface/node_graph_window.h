@@ -17,6 +17,11 @@
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
 #include "elements/memory_trace.h"
+#include "elements/neural_field_2d.h"
+#include "elements/gauss_stimulus_2d.h"
+#include "elements/gauss_kernel_2d.h"
+#include "elements/mexican_hat_kernel_2d.h"
+#include "elements/normal_noise_2d.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"
@@ -51,6 +56,16 @@ namespace dnf_composer::user_interface
 			return IM_COL32(242, 209, 83, 255);   // Warm Yellow
 		case element::ElementLabel::MEMORY_TRACE:
 			return IM_COL32(110, 160, 140, 255);  // Sage Green
+		case element::ElementLabel::NEURAL_FIELD_2D:
+			return IM_COL32(70, 110, 175, 255);   // Deeper Blue
+		case element::ElementLabel::GAUSS_STIMULUS_2D:
+			return IM_COL32(105, 175, 105, 255);  // Deeper Sage Green
+		case element::ElementLabel::GAUSS_KERNEL_2D:
+			return IM_COL32(175, 48, 48, 255);    // Deeper Muted Red
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+			return IM_COL32(138, 105, 175, 255);  // Deeper Lavender
+		case element::ElementLabel::NORMAL_NOISE_2D:
+			return IM_COL32(207, 132, 68, 255);   // Deeper Warm Orange
 		default:
 			return IM_COL32(127, 127, 127, 255);  // Neutral Gray
 		}
