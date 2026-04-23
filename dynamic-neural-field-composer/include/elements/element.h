@@ -80,7 +80,7 @@ namespace dnf_composer::element
 
 		int getMaxSpatialDimension() const;
 
-		/// @brief Return the number of spatial samples (size = x_max / d_x).
+		/// @brief Return the number of spatial samples (size = round(x_max / d_x)).
 		int getSize() const;
 
 		/// @brief Return the spatial resolution (d_x).
