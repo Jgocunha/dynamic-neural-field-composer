@@ -8,11 +8,16 @@
 
 namespace dnf_composer::element
 {
+	/// @brief Parameters for a spatially homogeneous boost stimulus.
+	/// @ingroup elements
 	struct BoostStimulusParameters final : ElementSpecificParameters
 	{
-		double amplitude;
-		bool isActive;
+		double amplitude; ///< Uniform input value applied across the entire field.
+		bool isActive;    ///< If false, the stimulus outputs zero regardless of amplitude.
 
+		/// @brief Construct a BoostStimulus parameter set.
+		/// @param amplitude  Homogeneous input amplitude (default 5.0).
+		/// @param isActive   Whether the stimulus is currently active (default true).
 		explicit BoostStimulusParameters(const double amplitude = 5.0, const bool isActive = true)
 			: amplitude(amplitude), isActive(isActive)
 		{}
@@ -36,11 +41,22 @@ namespace dnf_composer::element
 		}
 	};
 
+	/// @brief Spatially uniform (homogeneous) input stimulus.
+	///
+	/// Adds a constant value to every point of the receiving neural field, effectively
+	/// shifting the field's resting level. A non-zero boost can push a sub-threshold
+	/// field into the detection regime, making it sensitive to weak localized inputs
+	/// that would otherwise be ignored.
+	///
+	/// @ingroup elements
 	class BoostStimulus final : public Element
 	{
 	private:
 		BoostStimulusParameters parameters;
 	public:
+		/// @brief Construct a BoostStimulus.
+		/// @param elementCommonParameters  Name, label, and spatial dimensions.
+		/// @param parameters               Stimulus-specific parameters.
 		BoostStimulus(const ElementCommonParameters& elementCommonParameters,
 		              const BoostStimulusParameters& parameters);
 

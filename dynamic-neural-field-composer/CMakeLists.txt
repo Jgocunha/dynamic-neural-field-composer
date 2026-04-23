@@ -308,6 +308,17 @@ add_example_executable(ex_boost_stimulus ex_boost_stimulus.cpp)
 add_example_executable(ex_memory_trace ex_memory_trace.cpp)
 add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)
 
+# Documentation (Doxygen)
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+if(DOXYGEN_FOUND)
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+endif()
+
 # Tests (GTest)
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
 if(DNF_COMPOSER_BUILD_TESTS)
