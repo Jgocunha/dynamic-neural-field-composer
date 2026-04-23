@@ -51,7 +51,7 @@ int main()
 		const auto nf   = std::make_shared<element::NeuralField>(nfcp, nfp);
 
 		const auto gkcp = element::ElementCommonParameters{ "selection kernel" };
-		const auto gkp  = element::GaussKernelParameters{ 5.0, 3.0, -0.025, true, true };
+		const auto gkp  = element::GaussKernelParameters{ 3.0, 5.0, -0.25, true, true };
 		const auto gk   = std::make_shared<element::GaussKernel>(gkcp, gkp);
 
 		// ── Normal noise ──────────────────────────────────────────────────────
