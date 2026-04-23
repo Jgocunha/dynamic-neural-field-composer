@@ -91,16 +91,32 @@ cmake --build build/debug --config Debug
 
 ---
 
-## Running the launcher
+## Running the application
 
-The `launcher` executable opens the full interactive GUI application.
+Two pre-built executables are produced by the build:
+
+### Static layout (`dnf-composer-static`)
+
+A single self-contained window with all panels docked in a fixed layout. Best for quickly building and running a simulation without any configuration.
 
 ```bash
 # Windows (Release)
-build\x64-release\Release\launcher.exe
+build\x64-release\Release\dnf-composer-static.exe
 
 # Linux
-./build/launcher
+./build/dnf-composer-static
+```
+
+### Dynamic layout (`dnf-composer-dynamic`)
+
+A fully dockable ImGui application. Windows can be rearranged, detached, and dragged to secondary monitors, giving you complete control over the layout at runtime.
+
+```bash
+# Windows (Release)
+build\x64-release\Release\dnf-composer-dynamic.exe
+
+# Linux
+./build/dnf-composer-dynamic
 ```
 
 ### First steps in the GUI
@@ -115,7 +131,7 @@ build\x64-release\Release\launcher.exe
 
 ## Running the examples
 
-Eight example executables are built alongside the launcher:
+Eight example executables are built alongside the application:
 
 ```bash
 # Windows
