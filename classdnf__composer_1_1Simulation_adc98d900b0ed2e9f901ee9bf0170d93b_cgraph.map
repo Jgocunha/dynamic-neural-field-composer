@@ -1,0 +1,13 @@
+<map id="dnf_composer::Simulation::run" name="dnf_composer::Simulation::run">
+<area shape="rect" id="Node000001" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="5,77,227,102"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a62cc626df0de91c4eef6db88e34a6080" title="Release resources of all elements and reset timing state." alt="" coords="275,5,467,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,74,276,46,278,51,168,79"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="275,69,467,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="227,87,261,87,261,92,227,92"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="275,133,467,173"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="168,100,278,127,276,132,167,105"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#a19103585fab0d6a554634db1cd33b1bb" title="Pause the simulation (subsequent step() calls are no&#45;ops)." alt="" coords="515,5,707,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="467,23,501,23,501,28,467,28"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="533,69,688,109"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="467,87,520,87,520,92,467,92"/>
+</map>

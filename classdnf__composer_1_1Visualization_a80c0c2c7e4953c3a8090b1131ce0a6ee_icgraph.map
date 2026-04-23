@@ -1,0 +1,7 @@
+<map id="dnf_composer::Visualization::removePlot" name="dnf_composer::Visualization::removePlot">
+<area shape="rect" id="Node000001" title="Remove the plot with the given plotId." alt="" coords="260,37,467,77"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Visualization.html#a4120843cb7f862565a5bdcc9e855628f" title="Render all plots (creates ImGui windows or child regions as appropriate)." alt="" coords="5,5,212,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="246,45,212,41,213,36,247,40"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Visualization.html#ab975004429a0a13107b131e21597833e" title="Render a single plot&#39;s content without creating an ImGui window (caller owns the region)." alt="" coords="5,69,212,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="247,75,213,79,212,74,246,69"/>
+</map>

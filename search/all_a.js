@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['kbumplinesh_0',['kBumpLinesH',['../namespacednf__composer_1_1user__interface.html#a44063d280d2b3de7abf7dc4442ed3fda',1,'dnf_composer::user_interface']]],
+  ['kcardbg_1',['kCardBg',['../namespacednf__composer_1_1user__interface.html#abba5c52e4c225a500dd50968329edba8',1,'dnf_composer::user_interface']]],
+  ['kcardborder_2',['kCardBorder',['../namespacednf__composer_1_1user__interface.html#ae1ee46fcbcd48226e6c0aa10ec2741c8',1,'dnf_composer::user_interface']]],
+  ['kcardbordsz_3',['kCardBordSz',['../namespacednf__composer_1_1user__interface.html#abd6ad9e6b7c7b730f65e1acdfa0819b4',1,'dnf_composer::user_interface']]],
+  ['kcardgap_4',['kCardGap',['../namespacednf__composer_1_1user__interface.html#a909f7c008001860b45cc7b5716afd128',1,'dnf_composer::user_interface']]],
+  ['kcardminw_5',['kCardMinW',['../namespacednf__composer_1_1user__interface.html#a9737c5c58c997d13a5ae0434b77ce561',1,'dnf_composer::user_interface']]],
+  ['kcardround_6',['kCardRound',['../namespacednf__composer_1_1user__interface.html#a59e1ccc40ebb7ccd87a9cb530d20383b',1,'dnf_composer::user_interface']]],
+  ['kcolabase_7',['kColABase',['../namespacednf__composer_1_1user__interface.html#a27ba5eaee61a692beadec1097b318aeb',1,'dnf_composer::user_interface']]],
+  ['kcolbbase_8',['kColBBase',['../namespacednf__composer_1_1user__interface.html#a0d02a52b2abd82f968ac4f6d941ba610',1,'dnf_composer::user_interface']]],
+  ['kernel_9',['kernel',['../classdnf__composer_1_1element_1_1Kernel.html',1,'dnf_composer::element::Kernel'],['../classdnf__composer_1_1element_1_1Kernel.html#abd739dc8c58472ab554d17a3195f0412',1,'dnf_composer::element::Kernel::Kernel()']]],
+  ['kernel_2ecpp_10',['kernel.cpp',['../kernel_8cpp.html',1,'']]],
+  ['kernel_2eh_11',['kernel.h',['../kernel_8h.html',1,'']]],
+  ['kernelrange_12',['kernelRange',['../classdnf__composer_1_1element_1_1Kernel.html#a21bfe5104e2b8711d063b60218452955',1,'dnf_composer::element::Kernel']]],
+  ['klogsfrac_13',['kLogsFrac',['../namespacednf__composer_1_1user__interface.html#a41d9e4ebeeb4e59dabe4c06507075cf6',1,'dnf_composer::user_interface']]],
+  ['kmargin_14',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
+  ['knamelineh_15',['kNameLineH',['../namespacednf__composer_1_1user__interface.html#a1874f044a0b5d5ce08008dc42d70b8b0',1,'dnf_composer::user_interface']]],
+  ['kpadv_16',['kPadV',['../namespacednf__composer_1_1user__interface.html#a87e6dc87f52810a78ca4526c415b3836',1,'dnf_composer::user_interface']]],
+  ['krounding_17',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
+  ['krownodefrac_18',['kRowNodeFrac',['../namespacednf__composer_1_1user__interface.html#a339738766778ca7af92acab4c564821f',1,'dnf_composer::user_interface']]],
+  ['krowpltfrac_19',['kRowPltFrac',['../namespacednf__composer_1_1user__interface.html#a75467bceb807c9b5f2c331320b9c713a',1,'dnf_composer::user_interface']]],
+  ['krowsimfrac_20',['kRowSimFrac',['../namespacednf__composer_1_1user__interface.html#acc07d3547b3258d509dd963f85131c22',1,'dnf_composer::user_interface']]],
+  ['kseph_21',['kSepH',['../namespacednf__composer_1_1user__interface.html#aea10c24138e62862e9295dbf1bca4ffc',1,'dnf_composer::user_interface']]],
+  ['ksplitterthickness_22',['kSplitterThickness',['../namespacednf__composer_1_1user__interface.html#aad78dd5c1c1f126f021a580887fe20e1',1,'dnf_composer::user_interface']]],
+  ['ktextlineh_23',['kTextLineH',['../namespacednf__composer_1_1user__interface.html#a42bf6a4e9db699ff4a80326b404a71f8',1,'dnf_composer::user_interface']]],
+  ['ktileminsize_24',['kTileMinSize',['../namespacednf__composer_1_1user__interface.html#aaa4dbec4e95bccf0202d4b5359122383',1,'dnf_composer::user_interface']]]
+];

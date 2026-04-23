@@ -1,0 +1,9 @@
+<map id="dnf_composer::Simulation::init" name="dnf_composer::Simulation::init">
+<area shape="rect" id="Node000001" title="Initialize all registered elements. Must be called before step()." alt="" coords="275,63,467,103"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="20,5,212,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="267,62,205,48,206,43,268,57"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="5,70,227,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="261,85,227,85,227,80,261,80"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="20,120,212,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="268,108,206,123,205,117,267,103"/>
+</map>

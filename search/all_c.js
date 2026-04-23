@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['main_0',['main',['../dynamic-neural-field-composer-static_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;dynamic-neural-field-composer-static.cpp'],['../dynamic-neural-field-composer-dynamic_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;dynamic-neural-field-composer-dynamic.cpp']]],
+  ['main_5fmenu_5fbar_2ecpp_1',['main_menu_bar.cpp',['../main__menu__bar_8cpp.html',1,'']]],
+  ['main_5fmenu_5fbar_2eh_2',['main_menu_bar.h',['../main__menu__bar_8h.html',1,'']]],
+  ['mainmenubar_3',['mainmenubar',['../classdnf__composer_1_1user__interface_1_1MainMenuBar.html',1,'dnf_composer::user_interface::MainMenuBar'],['../classdnf__composer_1_1user__interface_1_1MainMenuBar.html#af348b6376d63e1da72715d15b029c737',1,'dnf_composer::user_interface::MainMenuBar::MainMenuBar(MainMenuBar &amp;&amp;)=delete'],['../classdnf__composer_1_1user__interface_1_1MainMenuBar.html#acbf3a32e7cdbfb7d4afbc6b4f46ca872',1,'dnf_composer::user_interface::MainMenuBar::MainMenuBar(const MainMenuBar &amp;)=delete'],['../classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a2144b104a3c36e6ec95ef8f633b15b46',1,'dnf_composer::user_interface::MainMenuBar::MainMenuBar(const std::shared_ptr&lt; Simulation &gt; &amp;simulation)']]],
+  ['math_2ecpp_4',['math.cpp',['../math_8cpp.html',1,'']]],
+  ['math_2eh_5',['math.h',['../math_8h.html',1,'']]],
+  ['memory_5ftrace_6',['MEMORY_TRACE',['../group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666',1,'dnf_composer::element']]],
+  ['memory_5ftrace_2ecpp_7',['memory_trace.cpp',['../memory__trace_8cpp.html',1,'']]],
+  ['memory_5ftrace_2eh_8',['memory_trace.h',['../memory__trace_8h.html',1,'']]],
+  ['memorymanager_9',['MemoryManager',['../structImGui__ImplFreeType__Data.html#af4fa56e9f3b0aad3768bac671825c288',1,'ImGui_ImplFreeType_Data']]],
+  ['memorytrace_10',['memorytrace',['../classdnf__composer_1_1element_1_1MemoryTrace.html',1,'dnf_composer::element::MemoryTrace'],['../classdnf__composer_1_1element_1_1MemoryTrace.html#a5fbcc99105d784f45439599f2402a03f',1,'dnf_composer::element::MemoryTrace::MemoryTrace()']]],
+  ['memorytraceparameters_11',['memorytraceparameters',['../structdnf__composer_1_1element_1_1MemoryTraceParameters.html#a6483da8d928a61d6a1d06d4f8d6f0f06',1,'dnf_composer::element::MemoryTraceParameters::MemoryTraceParameters()'],['../structdnf__composer_1_1element_1_1MemoryTraceParameters.html',1,'dnf_composer::element::MemoryTraceParameters']]],
+  ['message_12',['message',['../structdnf__composer_1_1user__interface_1_1LogEntry.html#a742e01ea0f102739fa5914e0d8dc2a2b',1,'dnf_composer::user_interface::LogEntry']]],
+  ['mexican_5fhat_5fkernel_13',['MEXICAN_HAT_KERNEL',['../group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809',1,'dnf_composer::element']]],
+  ['mexican_5fhat_5fkernel_2ecpp_14',['mexican_hat_kernel.cpp',['../mexican__hat__kernel_8cpp.html',1,'']]],
+  ['mexican_5fhat_5fkernel_2eh_15',['mexican_hat_kernel.h',['../mexican__hat__kernel_8h.html',1,'']]],
+  ['mexican_5fhat_5fkernel_5fparameters_2ecpp_16',['mexican_hat_kernel_parameters.cpp',['../mexican__hat__kernel__parameters_8cpp.html',1,'']]],
+  ['mexican_5fhat_5fkernel_5fparameters_2eh_17',['mexican_hat_kernel_parameters.h',['../mexican__hat__kernel__parameters_8h.html',1,'']]],
+  ['mexicanhatkernel_18',['mexicanhatkernel',['../classdnf__composer_1_1element_1_1MexicanHatKernel.html#aa033d5d9553672f8a582fb7258ffe9a3',1,'dnf_composer::element::MexicanHatKernel::MexicanHatKernel()'],['../classdnf__composer_1_1element_1_1MexicanHatKernel.html',1,'dnf_composer::element::MexicanHatKernel']]],
+  ['mexicanhatkernelparameters_19',['mexicanhatkernelparameters',['../structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html#a1355e9a54f7250b77bc556261d0ebf98',1,'dnf_composer::element::MexicanHatKernelParameters::MexicanHatKernelParameters(double widthExc, double amplitudeExc, double widthInh, double amplitudeInh, bool circular=true, bool normalized=true)'],['../structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html#adb4d7469ab709d47f379cdfe9f9baea6',1,'dnf_composer::element::MexicanHatKernelParameters::MexicanHatKernelParameters(const double widthExc=2.5, const double amplitudeExc=11.0, const double widthInh=5.0, const double amplitudeInh=15.0, const double amplitudeGlobal=-0.1, const bool circular=true, const bool normalized=true, const std::optional&lt; ElementDimensions &gt; &amp;outputDims=std::nullopt)'],['../structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html',1,'dnf_composer::element::MexicanHatKernelParameters']]],
+  ['middle_20',['Middle',['../structax_1_1NodeEditor_1_1Utilities_1_1BlueprintNodeBuilder.html#a59e9bed810806239a4bf4480040694b7',1,'ax::NodeEditor::Utilities::BlueprintNodeBuilder']]]
+];

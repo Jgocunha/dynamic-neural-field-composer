@@ -1,0 +1,25 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structdnf__composer_1_1element_1_1ElementSpecificParameters.html" title="Abstract base for all element&#45;specific parameter structs." alt="" coords="5,325,213,365"/>
+<area shape="rect" id="Node000001" href="$structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html" title="Parameters for an asymmetric (shifted) Gaussian convolution kernel." alt="" coords="261,5,525,45"/>
+<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="116,311,133,255,162,186,203,115,230,83,260,55,279,43,282,48,263,59,233,87,208,118,166,188,138,257,121,313"/>
+<area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1BoostStimulusParameters.html" title="Parameters for a spatially homogeneous boost stimulus." alt="" coords="294,69,493,109"/>
+<area shape="poly" id="edge4_Node000000_Node000002" title=" " alt="" coords="121,311,142,267,172,215,211,163,234,140,260,119,293,102,295,107,263,124,238,144,215,167,176,218,146,270,126,314"/>
+<area shape="rect" id="Node000003" href="$structdnf__composer_1_1element_1_1FieldCouplingParameters.html" title="Parameters for a learned full&#45;matrix field coupling." alt="" coords="297,133,489,173"/>
+<area shape="poly" id="edge5_Node000000_Node000003" title=" " alt="" coords="129,312,183,246,219,212,260,183,296,167,298,172,263,188,223,216,187,250,134,316"/>
+<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html" title="Parameters for a sparse Gaussian field coupling (fixed projection)." alt="" coords="277,197,509,237"/>
+<area shape="poly" id="edge6_Node000000_Node000004" title=" " alt="" coords="146,315,198,280,260,247,294,235,296,240,262,252,201,284,149,319"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1GaussKernelParameters.html" title="Parameters for a Gaussian lateral interaction kernel." alt="" coords="301,261,486,301"/>
+<area shape="poly" id="edge7_Node000000_Node000005" title=" " alt="" coords="211,320,303,299,305,304,213,325"/>
+<area shape="rect" id="Node000006" href="$structdnf__composer_1_1element_1_1GaussStimulusParameters.html" title="Parameters for a Gaussian&#45;shaped external stimulus." alt="" coords="293,325,494,365"/>
+<area shape="poly" id="edge8_Node000000_Node000006" title=" " alt="" coords="227,343,292,343,292,348,227,348"/>
+<area shape="rect" id="Node000007" href="$structdnf__composer_1_1element_1_1MemoryTraceParameters.html" title="Parameters governing MemoryTrace build&#45;up and decay dynamics." alt="" coords="297,389,489,429"/>
+<area shape="poly" id="edge9_Node000000_Node000007" title=" " alt="" coords="213,366,305,387,303,392,211,371"/>
+<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html" title="Parameters for a Mexican&#45;hat lateral interaction kernel." alt="" coords="282,453,505,493"/>
+<area shape="poly" id="edge10_Node000000_Node000008" title=" " alt="" coords="149,371,201,407,262,439,296,451,294,456,260,444,198,411,146,376"/>
+<area shape="rect" id="Node000009" href="$structdnf__composer_1_1element_1_1NeuralFieldParameters.html" title="Parameters that govern a NeuralField&#39;s dynamics." alt="" coords="304,517,483,557"/>
+<area shape="poly" id="edge11_Node000000_Node000009" title=" " alt="" coords="134,375,187,441,223,475,263,503,305,521,303,526,260,508,219,479,183,444,129,378"/>
+<area shape="rect" id="Node000010" href="$structdnf__composer_1_1element_1_1NormalNoiseParameters.html" title="Parameters for an additive normal&#45;noise input." alt="" coords="299,581,488,621"/>
+<area shape="poly" id="edge12_Node000000_Node000010" title=" " alt="" coords="126,377,146,421,176,472,215,524,238,547,263,567,300,585,297,590,260,572,234,551,211,528,172,475,142,423,121,379"/>
+<area shape="rect" id="Node000011" href="$structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html" title="Parameters for an oscillatory (damped&#45;cosine) convolution kernel." alt="" coords="286,645,501,685"/>
+<area shape="poly" id="edge13_Node000000_Node000011" title=" " alt="" coords="121,378,138,434,166,502,208,572,233,604,263,631,287,645,284,650,260,635,230,608,203,575,162,505,133,435,116,379"/>
+</map>

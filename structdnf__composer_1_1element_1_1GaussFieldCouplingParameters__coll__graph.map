@@ -1,0 +1,11 @@
+<map id="dnf_composer::element::GaussFieldCouplingParameters" name="dnf_composer::element::GaussFieldCouplingParameters">
+<area shape="rect" id="Node000001" title="Parameters for a sparse Gaussian field coupling (fixed projection)." alt="" coords="221,491,463,631"/>
+<area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1ElementSpecificParameters.html" title="Abstract base for all element&#45;specific parameter structs." alt="" coords="5,268,233,408"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,416,274,489,271,492,197,420"/>
+<area shape="rect" id="Node000003" href="$structdnf__composer_1_1element_1_1ElementDimensions.html" title="Spatial discretization of a one&#45;dimensional field." alt="" coords="257,248,427,428"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="345,428,345,474,339,474,339,428"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="451,298,647,378"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="545,379,532,424,521,447,507,468,478,496,474,492,503,465,516,445,527,422,540,378"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1GaussCoupling.html" title="A single sparse Gaussian point&#45;coupling between two spatial locations." alt="" coords="465,5,633,185"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="551,185,551,282,546,282,546,185"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structdnf__composer_1_1element_1_1ActivationFunction.html" title="Abstract base for activation functions applied to a neural field." alt="" coords="5,37,181,77"/>
+<area shape="rect" id="Node000001" href="$structdnf__composer_1_1element_1_1HeavisideFunction.html" title="Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0." alt="" coords="229,5,405,45"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="194,40,229,35,229,41,195,45"/>
+<area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1SigmoidFunction.html" title="Logistic sigmoid: output = 1 / (1 + exp(&#45;steepness * (x &#45; x_shift)))." alt="" coords="229,69,405,109"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="195,69,229,74,229,79,194,74"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="dnf_composer::Application::init" name="dnf_composer::Application::init">
+<area shape="rect" id="Node000001" title="Initialize the GUI and all registered windows. Call once before step()." alt="" coords="5,101,200,141"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Application.html#a24c2fd485519f3eb60859afcca994d72" title="Register the application&#39;s ImGui settings handler (for persistence)." alt="" coords="248,101,443,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,119,234,119,234,124,200,124"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Application.html#a9e40cde6d898b2e3cd8de3805659f7da" title=" " alt="" coords="491,5,685,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="388,99,490,55,510,47,511,52,492,60,390,104"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Application.html#a5d44fa04caa6256d1abaca0398ece286" title=" " alt="" coords="491,69,685,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="443,106,477,101,477,107,443,111"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Application.html#a3451e29528070821cf8a7a4807685e60" title=" " alt="" coords="491,133,685,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="443,132,477,136,477,141,443,137"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Application.html#a527c4e705f610b5efeee26a26e05a655" title=" " alt="" coords="491,197,685,237"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="390,139,492,183,511,190,510,195,490,188,388,144"/>
+</map>

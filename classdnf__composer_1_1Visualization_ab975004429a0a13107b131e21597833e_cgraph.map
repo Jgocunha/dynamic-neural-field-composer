@@ -1,0 +1,11 @@
+<map id="dnf_composer::Visualization::renderTile" name="dnf_composer::Visualization::renderTile">
+<area shape="rect" id="Node000001" title="Render a single plot&#39;s content without creating an ImGui window (caller owns the region)." alt="" coords="5,37,212,77"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Visualization.html#a80c0c2c7e4953c3a8090b1131ce0a6ee" title="Remove the plot with the given plotId." alt="" coords="270,5,477,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="212,42,256,37,257,42,212,48"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer.html#a4c2031cd1248fcbb3a6ac4e79c90bfae" title=" " alt="" coords="260,69,487,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="212,67,247,71,246,77,212,72"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Visualization.html#a9eeec085b8cf06f948ca997f0b3ca7b2" title="Add a blank plot of the given type." alt="" coords="535,5,741,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="477,23,521,23,521,28,477,28"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Heatmap.html#abb9ee95c205cce9349cf9f1e51d90ede" title=" " alt="" coords="547,69,729,109"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="487,87,533,87,533,92,487,92"/>
+</map>

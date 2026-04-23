@@ -1,0 +1,13 @@
+<map id="dnf_composer::element::GaussKernel::step" name="dnf_composer::element::GaussKernel::step">
+<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,133,181,173"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a384e37867853468a2ab2f1ec45bf2e43" title=" " alt="" coords="254,5,409,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="116,131,166,93,228,55,244,48,246,53,231,60,169,97,120,135"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ab20d3ab488a94e0088c4bd53d8deac9c" title=" " alt="" coords="254,69,409,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="168,131,243,110,244,115,169,136"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#a82c852ff9a51203bb51445e709dd22e1" title=" " alt="" coords="229,133,433,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="182,151,216,151,216,156,182,156"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#ae470bf545f26f68babb6ce2731349b52" title=" " alt="" coords="252,197,411,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="169,171,244,191,243,196,168,176"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="243,261,419,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="120,171,169,209,231,247,246,254,244,259,228,252,166,214,116,176"/>
+</map>

@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['scalar_0',['scalar',['../structdnf__composer_1_1element_1_1FieldCouplingParameters.html#ac223f6cd62b66198e0e88b7e6bf2205c',1,'dnf_composer::element::FieldCouplingParameters']]],
+  ['scalemax_1',['scaleMax',['../structdnf__composer_1_1HeatmapParameters.html#a11360ca14ae0ff2ae2f3663df47c78de',1,'dnf_composer::HeatmapParameters']]],
+  ['scalemin_2',['scaleMin',['../structdnf__composer_1_1HeatmapParameters.html#a8397f2e1901f2dc2bc2210680d42c86a',1,'dnf_composer::HeatmapParameters']]],
+  ['showimguidemo_3',['showImGuiDemo',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#afa9c6f6ddf4e837ac8f3c51712beba89',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['showimguikitstyleeditor_4',['showImGuiKitStyleEditor',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#add1781e72291f990db96ebae75dfaed7',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['showimplotdemo_5',['showImPlotDemo',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#a4a6a835e64144111d9d0cea5c8079cc7',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['showopenlayoutdialog_6',['showOpenLayoutDialog',['../structdnf__composer_1_1user__interface_1_1FileFlags.html#af9ddc591c6a339bafe32a720a599e3e9',1,'dnf_composer::user_interface::FileFlags']]],
+  ['showopensimulationdialog_7',['showOpenSimulationDialog',['../structdnf__composer_1_1user__interface_1_1FileFlags.html#a514019dbf2c50f32e11217ecbc14e21b',1,'dnf_composer::user_interface::FileFlags']]],
+  ['showsavesimulationdialog_8',['showSaveSimulationDialog',['../structdnf__composer_1_1user__interface_1_1FileFlags.html#a8cc3db3cbb8e62eda0dbd1a0bd3d0fad',1,'dnf_composer::user_interface::FileFlags']]],
+  ['showtoolabout_9',['showToolAbout',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#a6716f7bf82a549f8262caed09a2e15c5',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['showtooldebuglog_10',['showToolDebugLog',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#a6d689d43bcaacd83ec62e9c0903915f9',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['showtoolidstacktool_11',['showToolIdStackTool',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#a885e5753fea6dec7c5689e36297315de',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['showtoolmetrics_12',['showToolMetrics',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#ae313732d8c5e6d37d6efcabe844f81b2',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['showtoolstyleeditor_13',['showToolStyleEditor',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#afead4c3eb4a0d4ccdb1b3ef8a6a9c46b',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
+  ['size_14',['size',['../structdnf__composer_1_1element_1_1ElementDimensions.html#a0a811c3580e4db4a561bed0e9ad08283',1,'dnf_composer::element::ElementDimensions']]],
+  ['stable_15',['stable',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#aa38389f0d65c300b3ff8ab336a98936e',1,'dnf_composer::element::NeuralFieldState']]],
+  ['startingrestinglevel_16',['startingRestingLevel',['../structdnf__composer_1_1element_1_1NeuralFieldParameters.html#acf66b24e1ca4f5b8cd9b4ee602ef24fc',1,'dnf_composer::element::NeuralFieldParameters']]],
+  ['startposition_17',['startPosition',['../structdnf__composer_1_1element_1_1NeuralFieldBump.html#a6c6aeb22d2c435113284d107d2b7845e',1,'dnf_composer::element::NeuralFieldBump']]],
+  ['state_18',['state',['../classdnf__composer_1_1element_1_1NeuralField.html#a0560005ad3840942788c65bcb99338cb',1,'dnf_composer::element::NeuralField']]],
+  ['steepness_19',['steepness',['../structdnf__composer_1_1element_1_1SigmoidFunction.html#af6082dd216777f5282cf2bddfccc9ce8',1,'dnf_composer::element::SigmoidFunction']]]
+];
