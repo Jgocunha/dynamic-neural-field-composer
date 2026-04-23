@@ -74,7 +74,7 @@ $(function() {
   <div class="headertitle"><div class="title">dynamic-neural-field-composer </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2dynamic-neural-field-composer_2dynamic-neural-field-composer_2README"></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml/badge.svg" alt="Release" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" class="inline"/></a> <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="codecov" style="pointer-events: none;" class="inline"/></a></p>
+<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2dynamic-neural-field-composer_2dynamic-neural-field-composer_2README"></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml/badge.svg" alt="Release" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" class="inline"/></a> <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="codecov" style="pointer-events: none;" class="inline"/></a> <a href="https://jgocunha.github.io/dynamic-neural-field-composer/"><img src="https://img.shields.io/badge/docs-doxygen-blue" alt="Docs" class="inline"/></a></p>
 <div class="image">
 <img src="logo.png" alt=""/>
 <div class="caption">
@@ -85,6 +85,7 @@ logo</div></div>
 About</h1>
 <p>Dynamic Neural Fields model how neuron populations represent and transform information over continuous dimensions (position, direction, color). They produce emergent behaviours — working memory, winner-take-all selection, sequence generation — from local excitation and surround inhibition.</p>
 <p>This library lets you design, connect, simulate, and visualize DNF architectures at runtime, either programmatically or through a visual node-graph editor. Simulations can be saved and reloaded as JSON.</p>
+<p>It is built with real-time performance in mind, and straightforward to embed in any C++ application. The GUI is powered by <a href="https://github.com/ocornut/imgui">Dear ImGui</a>, keeping it fast and lightweight.</p>
 <hr  />
 <h1><a class="anchor" id="autotoc_md4"></a>
 Requirements</h1>
@@ -111,8 +112,13 @@ Building</h1>
 </div><!-- fragment --><hr  />
 <h1><a class="anchor" id="autotoc_md8"></a>
 Getting Started</h1>
-<p>Clone the repo, run the build script, then explore the <code>examples/</code> folder to see the library in action.</p>
-<p>For detailed setup, usage guides, and API reference, see the <b><a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki">Wiki</a></b>.</p>
+<p>Clone the repo and run the build script. Two pre-built executables are produced:</p>
+<ul>
+<li>**<code>dnf-composer-static</code>** — a single self-contained window with all panels docked in a fixed layout. Best for quickly building and running a simulation without any configuration.</li>
+<li>**<code>dnf-composer-dynamic</code>** — a fully dockable ImGui application. Windows can be rearranged, detached, and dragged to secondary monitors, giving you complete control over the layout at runtime.</li>
+</ul>
+<p>You can also write your own executable, link against the library, and choose exactly which windows to render and which architecture to load or define in code. Creating a custom launcher is straightforward — see the <b><a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki/How-to-Create-and-Run-Your-Own-Example-Executable">Wiki</a></b> for a step-by-step guide.</p>
+<p>Explore the <code>examples/</code> folder for ready-to-run architectures.</p>
 <hr  />
 <h1><a class="anchor" id="autotoc_md10"></a>
 Contributing</h1>
