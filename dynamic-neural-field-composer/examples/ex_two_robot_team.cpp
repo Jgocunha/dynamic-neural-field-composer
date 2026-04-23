@@ -3,6 +3,27 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Two Robot Team example
+//
+// A DFT architecture for a two-robot collaborative task. One robot perceives
+// the other robot's motion (STS field) and two classes of objects (small / large).
+// Separate working-memory fields hold object representations; goal fields
+// integrate object location and motion context to select an appropriate action
+// for each object class. Inhibitory cross-coupling between the goal fields
+// prevents both robots from acting on the same object simultaneously.
+//
+// Architecture (simplified):
+//   other robot motion stimulus --> STS motion field
+//   small object stimuli        --> WM small object field
+//   large object stimulus       --> WM large object field
+//   STS field + WM small --> small object goal field --> small object action execution field
+//   STS field + WM large --> large object goal field --> large object action execution field
+//   large object goal field --(inhibition)--> small object action execution field
+//
+// Try it:
+//   - Activate the other-robot motion stimulus: it boosts the large-object goal
+//     and suppresses the small-object action, simulating complementary role assignment.
+//   - Remove the other robot stimulus to allow independent selection.
 
 int main()
 {

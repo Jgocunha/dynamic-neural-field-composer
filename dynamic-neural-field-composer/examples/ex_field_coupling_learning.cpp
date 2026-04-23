@@ -3,6 +3,25 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Field Coupling Learning example
+//
+// Demonstrates Hebbian associative learning in a FieldCoupling element.
+// A source field (200 nodes) is stimulated at position 80; an output field
+// (400 nodes) receives two teaching stimuli at positions 20 and 50.
+// During the learning phase the FieldCoupling weight matrix is updated
+// according to the chosen learning rule (HEBB by default). After learning,
+// the teaching stimulus is removed and the output field is driven solely
+// by the learned coupling from the source.
+//
+// Architecture (learning phase):
+//   stimulus_src --> source field <--> MexicanHatKernel
+//   stimulus_out_i + stimulus_out_ii --> output field <--> GaussKernel
+//   source field --> FieldCoupling --> output field   (weights updated)
+//
+// Try it:
+//   - Inspect the coupling weight heatmap before and after learning.
+//   - Change the learning rate or rule (HEBB / OJA) and compare weight patterns.
+
 int main()
 {
 	try

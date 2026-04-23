@@ -23,7 +23,7 @@
                 "neural field"
             ],
             "restingLevel": -10.0,
-            "tau": 10.0,
+            "tau": 25.0,
             "uniqueName": "nf 1",
             "x_max": 100
         },
@@ -36,15 +36,15 @@
             "d_x": 1.0,
             "inputs": [
                 [
-                    "nn 2",
-                    "output"
-                ],
-                [
                     "gk 1-2",
                     "output"
                 ],
                 [
-                    "mhk 2",
+                    "gk 2",
+                    "output"
+                ],
+                [
+                    "nn 2",
                     "output"
                 ]
             ],
@@ -53,12 +53,12 @@
                 "neural field"
             ],
             "restingLevel": -10.0,
-            "tau": 2500.0,
+            "tau": 25.0,
             "uniqueName": "nf 2",
             "x_max": 100
         },
         {
-            "amplitude": 3.0,
+            "amplitude": 5.0,
             "amplitudeGlobal": 0.0,
             "circular": true,
             "d_x": 1.0,
@@ -74,7 +74,47 @@
             ],
             "normalized": true,
             "uniqueName": "gk 1",
-            "width": 5.0,
+            "width": 3.0,
+            "x_max": 100
+        },
+        {
+            "amplitude": 20.0,
+            "amplitudeGlobal": 0.0,
+            "circular": true,
+            "d_x": 1.0,
+            "inputs": [
+                [
+                    "nf 2",
+                    "output"
+                ]
+            ],
+            "label": [
+                4,
+                "gauss kernel"
+            ],
+            "normalized": true,
+            "uniqueName": "gk 2",
+            "width": 6.0,
+            "x_max": 100
+        },
+        {
+            "amplitude": 10.0,
+            "amplitudeGlobal": 0.0,
+            "circular": true,
+            "d_x": 1.0,
+            "inputs": [
+                [
+                    "nf 1",
+                    "output"
+                ]
+            ],
+            "label": [
+                4,
+                "gauss kernel"
+            ],
+            "normalized": true,
+            "uniqueName": "gk 1-2",
+            "width": 3.0,
             "x_max": 100
         },
         {
@@ -98,49 +138,7 @@
             ],
             "uniqueName": "nn 2",
             "x_max": 100
-        },
-        {
-            "amplitude": 15.0,
-            "amplitudeGlobal": 0.0,
-            "circular": true,
-            "d_x": 1.0,
-            "inputs": [
-                [
-                    "nf 1",
-                    "output"
-                ]
-            ],
-            "label": [
-                4,
-                "gauss kernel"
-            ],
-            "normalized": true,
-            "uniqueName": "gk 1-2",
-            "width": 5.0,
-            "x_max": 100
-        },
-        {
-            "amplitudeExc": 20.0,
-            "amplitudeGlobal": -0.10000000149011612,
-            "amplitudeInh": 15.0,
-            "circular": true,
-            "d_x": 1.0,
-            "inputs": [
-                [
-                    "nf 2",
-                    "output"
-                ]
-            ],
-            "label": [
-                5,
-                "mexican hat kernel"
-            ],
-            "normalized": true,
-            "uniqueName": "mhk 2",
-            "widthExc": 3.0,
-            "widthInh": 10.0,
-            "x_max": 100
         }
     ],
-    "identifier": "timing"
+    "identifier": "working-memory"
 }

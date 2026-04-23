@@ -24,7 +24,7 @@ namespace dnf_composer::user_interface
 			| ImGuiWindowFlags_NoScrollWithMouse;
 
 		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Node graph", nullptr, flags);
+		const bool open = ImGui::Begin("Node Graph", nullptr, flags);
 		ImGui::PopFont();
 
 		if (open)
@@ -545,12 +545,15 @@ namespace dnf_composer::user_interface
 		ImGui::SetNextWindowSize(inspectorSize_, ImGuiCond_Always);
 
 		bool open = true;
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
 		ImGui::PushFont(g_BlackLargeFont);
 		const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, inspectorFlags);
 		ImGui::PopFont();
+		ImGui::PopStyleColor();
 
 		if (visible)
 		{
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
 			ImGui::BeginChild("##insp_scroll", ImVec2(0, 0), false,
 				ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
@@ -633,6 +636,7 @@ namespace dnf_composer::user_interface
 			ElementWindow::switchElementToModify(element);
 
 			ImGui::EndChild();
+			ImGui::PopStyleColor();
 		}
 
 		// Closed via the X button — clear selection.

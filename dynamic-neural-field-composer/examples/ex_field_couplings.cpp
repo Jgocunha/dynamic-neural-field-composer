@@ -3,6 +3,24 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Field Couplings example
+//
+// Three neural fields representing a spatial-temporal ordinal sequence
+// (past / present / next) connected in a chain via FieldCoupling elements.
+// Each coupling learns the spatial transformation from one field to the next,
+// allowing an activation pattern in the past field to predict the pattern
+// that will appear in the present and next fields.
+//
+// Architecture:
+//   stimulus_past   --> past field   (MexicanHat) --> FieldCoupling --> present field
+//   stimulus_present --> present field (GaussKernel) --> FieldCoupling --> next field
+//   stimulus_next   --> next field   (MexicanHat)
+//
+// Try it:
+//   - Observe how activation in the past field propagates forward through
+//     the learned couplings to the present and next fields.
+//   - Inspect the coupling weight heatmaps to see the learned mappings.
+
 int main()
 {
 	try

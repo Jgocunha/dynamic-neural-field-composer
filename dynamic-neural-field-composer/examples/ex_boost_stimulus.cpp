@@ -3,6 +3,24 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Boost Stimulus example
+//
+// Demonstrates the BoostStimulus element, which applies a uniform (spatially
+// homogeneous) input across the entire neural field. Combined with a localized
+// GaussStimulus and a MexicanHatKernel, this shows how a global boost can
+// raise the field's effective resting level, pushing a sub-threshold localized
+// input over the detection threshold.
+//
+// Architecture:
+//   BoostStimulus + GaussStimulus --> NeuralField <--> MexicanHatKernel
+//                                         ^
+//                                    NormalNoise
+//
+// Try it:
+//   - Set boost amplitude to 0: the localized stimulus alone cannot sustain a peak.
+//   - Increase boost amplitude gradually: observe the field tip into detection.
+//   - Once detected, reduce boost back to 0: the self-excitation sustains the peak.
+
 int main()
 {
 	try
