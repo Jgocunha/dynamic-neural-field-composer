@@ -12,6 +12,16 @@
 #include <vector>
 #include <string>
 
+// Grand Architecture example
+//
+// Scalability stress test: programmatically creates 100 neural fields, each
+// with a GaussKernel for self-excitation and a NormalNoise input. A random
+// subset of fields are connected to each other via additional GaussKernels
+// to form a large, densely coupled network.
+//
+// The primary purpose is to validate simulator performance and UI responsiveness
+// (Node Graph, Field Metrics, Plots) at high element counts.
+
 int main()
 {
 	try

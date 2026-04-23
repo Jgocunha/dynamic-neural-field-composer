@@ -3,6 +3,26 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Memory Trace example
+//
+// Demonstrates persistent spatial working memory using a MemoryTrace element.
+// A localized stimulus drives the neural field to detection; the MemoryTrace
+// slowly accumulates the field's output. When the stimulus is removed, the
+// trace feeds back through a GaussKernel, sustaining the peak at the memorized
+// location even in the absence of external input.
+//
+// Architecture:
+//   GaussStimulus --> NeuralField <--> MexicanHatKernel
+//                         |                 ^
+//                         v                 |
+//                    MemoryTrace --> GaussKernel (feedback)
+//
+// Try it:
+//   - Run the simulation; observe the field form a peak at the stimulus location.
+//   - Set the stimulus amplitude to 0 (via Element Control): the MemoryTrace
+//     sustains the peak through the feedback kernel.
+//   - Increase the trace decay rate to see how quickly memory fades.
+
 int main()
 {
 	try

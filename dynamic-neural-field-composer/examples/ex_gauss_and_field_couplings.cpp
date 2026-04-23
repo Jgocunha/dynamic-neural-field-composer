@@ -3,6 +3,24 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Gauss and Field Couplings example
+//
+// Four independent pairs of neural fields (each pair: input + output) connected
+// by different coupling strategies:
+//   Pair 1 & 3 — GaussFieldCoupling: sparse point-to-point Gaussian mapping
+//                defined by explicit (input_pos, output_pos, sigma_in, sigma_out) pairs.
+//   Pair 2 & 4 — FieldCoupling: full learned weight matrix, using HEBB (pair 2)
+//                and OJA (pair 4) learning rules.
+//
+// All four pairs run simultaneously, letting you compare the coupling types
+// side-by-side. Each pair includes its own stimuli, kernel, and noise elements.
+//
+// Try it:
+//   - Compare the weight heatmaps: GaussFieldCoupling shows fixed Gaussian blobs;
+//     FieldCoupling starts random and shapes itself through learning.
+//   - Move stimuli to different positions to see how GaussFieldCoupling
+//     remaps versus the learned coupling.
+
 int main()
 {
     try

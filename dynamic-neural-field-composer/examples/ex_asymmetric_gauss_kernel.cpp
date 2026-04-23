@@ -3,6 +3,22 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Asymmetric Gauss Kernel example
+//
+// A single neural field with an AsymmetricGaussKernel for self-excitation.
+// Unlike a symmetric kernel, the asymmetric variant has different rise and
+// fall widths, which creates a directional bias: activated peaks drift
+// along the field dimension over time.
+//
+// Architecture:
+//   GaussStimulus --> NeuralField <--> AsymmetricGaussKernel
+//                         ^
+//                    NormalNoise
+//
+// Try it:
+//   - Observe the peak drifting in one direction after stimulus onset.
+//   - Flip the kernel's asymmetry parameter to reverse the drift direction.
+//   - Compare against a standard GaussKernel to see the symmetry difference.
 
 int main()
 {
