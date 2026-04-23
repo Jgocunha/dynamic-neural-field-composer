@@ -26,8 +26,9 @@ var searchData=
   ['drawing_2ecpp_23',['drawing.cpp',['../drawing_8cpp.html',1,'']]],
   ['drawing_2eh_24',['drawing.h',['../drawing_8h.html',1,'']]],
   ['dynamic_25',['Dynamic',['../namespacednf__composer.html#ac1b7e166770b0692e5b6e2ed84407c04a971fd8cc345d8bd9f92e9f7d88fdf20c',1,'dnf_composer']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2ecpp_26',['dynamic-neural-field-composer-dynamic.cpp',['../dynamic-neural-field-composer-dynamic_8cpp.html',1,'']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2eh_27',['dynamic-neural-field-composer-dynamic.h',['../dynamic-neural-field-composer-dynamic_8h.html',1,'']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2ecpp_28',['dynamic-neural-field-composer-static.cpp',['../dynamic-neural-field-composer-static_8cpp.html',1,'']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2eh_29',['dynamic-neural-field-composer-static.h',['../dynamic-neural-field-composer-static_8h.html',1,'']]]
+  ['dynamic_20neural_20field_20composer_26',['dynamic-neural-field-composer',['../index.html',1,'']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2ecpp_27',['dynamic-neural-field-composer-dynamic.cpp',['../dynamic-neural-field-composer-dynamic_8cpp.html',1,'']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2eh_28',['dynamic-neural-field-composer-dynamic.h',['../dynamic-neural-field-composer-dynamic_8h.html',1,'']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2ecpp_29',['dynamic-neural-field-composer-static.cpp',['../dynamic-neural-field-composer-static_8cpp.html',1,'']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2eh_30',['dynamic-neural-field-composer-static.h',['../dynamic-neural-field-composer-static_8h.html',1,'']]]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Dynamic Neural Field Composer: Main Page</title>
+<title>Dynamic Neural Field Composer: dynamic-neural-field-composer</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,6 +20,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="logo-simple.png"/></td>
   <td id="projectalign">
    <div id="projectname">Dynamic Neural Field Composer<span id="projectnumber">&#160;1.0.0</span>
    </div>
@@ -69,10 +70,54 @@ $(function() {
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">Dynamic Neural Field Composer Documentation</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">dynamic-neural-field-composer </div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2dynamic-neural-field-composer_2dynamic-neural-field-composer_2README"></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml/badge.svg" alt="Release" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" class="inline"/></a> <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="codecov" style="pointer-events: none;" class="inline"/></a></p>
+<div class="image">
+<img src="logo.png" alt=""/>
+<div class="caption">
+logo</div></div>
+    <p>A C++20 library and interactive application for building and simulating <b>Dynamic Neural Field (DNF)</b> architectures.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md2"></a>
+About</h1>
+<p>Dynamic Neural Fields model how neuron populations represent and transform information over continuous dimensions (position, direction, color). They produce emergent behaviours — working memory, winner-take-all selection, sequence generation — from local excitation and surround inhibition.</p>
+<p>This library lets you design, connect, simulate, and visualize DNF architectures at runtime, either programmatically or through a visual node-graph editor. Simulations can be saved and reloaded as JSON.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md4"></a>
+Requirements</h1>
+<ul>
+<li>CMake 3.20+</li>
+<li>C++20 compiler (MSVC, GCC 13+, or Clang)</li>
+<li><a href="https://github.com/microsoft/vcpkg">vcpkg</a> with <code>VCPKG_ROOT</code> set</li>
+</ul>
+<p>Dependencies are installed automatically via vcpkg: <code>imgui</code>, <code>implot</code>, <code>imgui-node-editor</code>, <code>nlohmann-json</code>, <code>imgui-platform-kit</code>.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md6"></a>
+Building</h1>
+<div class="fragment"><div class="line"># Windows</div>
+<div class="line">build.bat</div>
+<div class="line"> </div>
+<div class="line"># Linux / macOS</div>
+<div class="line">./build.sh</div>
+</div><!-- fragment --><p>To install the library for use in another project:</p>
+<div class="fragment"><div class="line"># Windows</div>
+<div class="line">install.bat</div>
+<div class="line"> </div>
+<div class="line"># Linux / macOS</div>
+<div class="line">./install.sh</div>
+</div><!-- fragment --><hr  />
+<h1><a class="anchor" id="autotoc_md8"></a>
+Getting Started</h1>
+<p>Clone the repo, run the build script, then explore the <code>examples/</code> folder to see the library in action.</p>
+<p>For detailed setup, usage guides, and API reference, see the <b><a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki">Wiki</a></b>.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md10"></a>
+Contributing</h1>
+<p>Bug fixes, new features, and documentation improvements are all welcome. Feel free to open an issue or submit a pull request. </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

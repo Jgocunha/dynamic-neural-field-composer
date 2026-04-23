@@ -11,10 +11,11 @@ var searchData=
   ['boost_5fstimulus_8',['BOOST_STIMULUS',['../group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceaaf2ba3f96fbd176c0d3493391559401f',1,'dnf_composer::element']]],
   ['boost_5fstimulus_2ecpp_9',['boost_stimulus.cpp',['../boost__stimulus_8cpp.html',1,'']]],
   ['boost_5fstimulus_2eh_10',['boost_stimulus.h',['../boost__stimulus_8h.html',1,'']]],
-  ['booststimulus_11',['booststimulus',['../classdnf__composer_1_1element_1_1BoostStimulus.html#a54599c22cf962a39a4ee15b1b0ae4fe5',1,'dnf_composer::element::BoostStimulus::BoostStimulus()'],['../classdnf__composer_1_1element_1_1BoostStimulus.html',1,'dnf_composer::element::BoostStimulus']]],
+  ['booststimulus_11',['booststimulus',['../classdnf__composer_1_1element_1_1BoostStimulus.html',1,'dnf_composer::element::BoostStimulus'],['../classdnf__composer_1_1element_1_1BoostStimulus.html#a54599c22cf962a39a4ee15b1b0ae4fe5',1,'dnf_composer::element::BoostStimulus::BoostStimulus()']]],
   ['booststimulusparameters_12',['booststimulusparameters',['../structdnf__composer_1_1element_1_1BoostStimulusParameters.html#a895db533315b0c247751313eaefe9ef9',1,'dnf_composer::element::BoostStimulusParameters::BoostStimulusParameters()'],['../structdnf__composer_1_1element_1_1BoostStimulusParameters.html',1,'dnf_composer::element::BoostStimulusParameters']]],
   ['border_13',['border',['../structdnf__composer_1_1user__interface_1_1PanelScope.html#a4826f0008e4acc50e413bad58a43c824',1,'dnf_composer::user_interface::PanelScope']]],
   ['builders_2ecpp_14',['builders.cpp',['../builders_8cpp.html',1,'']]],
   ['builders_2eh_15',['builders.h',['../builders_8h.html',1,'']]],
-  ['bumps_16',['bumps',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a9c80026fe61974236ac4ca1cc282caa1',1,'dnf_composer::element::NeuralFieldState']]]
+  ['building_16',['Building',['../index.html#autotoc_md6',1,'']]],
+  ['bumps_17',['bumps',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a9c80026fe61974236ac4ca1cc282caa1',1,'dnf_composer::element::NeuralFieldState']]]
 ];
