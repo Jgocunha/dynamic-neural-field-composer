@@ -72,10 +72,7 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
-		/// @brief Replace the trace parameters at runtime.
 		void setParameters(const MemoryTraceParameters& parameters);
-
-		/// @brief Return a copy of the current trace parameters.
 		MemoryTraceParameters getParameters() const;
 	};
 }

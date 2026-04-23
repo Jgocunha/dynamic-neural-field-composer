@@ -21,7 +21,6 @@ namespace dnf_composer::element
 		double fullSum;                 ///< Spatial integral of the kernel (used for global inhibition baseline).
 		int cutOfFactor;                ///< Controls how far from the centre the kernel is truncated.
 	public:
-		/// @brief Construct a kernel element with the given common parameters.
 		Kernel(const ElementCommonParameters& elementCommonParameters);
 		~Kernel() override = default;
 

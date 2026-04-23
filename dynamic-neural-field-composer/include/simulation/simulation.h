@@ -78,7 +78,6 @@ namespace dnf_composer
 		/// @brief Pause the simulation (subsequent @c step() calls are no-ops).
 		void pause();
 
-		/// @brief Resume a paused simulation.
 		void resume();
 
 		/// @brief Remove all elements and reset the simulation to its initial state.
@@ -92,8 +91,6 @@ namespace dnf_composer
 		/// @param readPath  Source file path; if empty, a default path is used.
 		void read(const std::string& readPath = {});
 
-		/// @brief Register an element with the simulation.
-		/// @param element  The element to add.
 		void addElement(const std::shared_ptr<element::Element>& element);
 
 		/// @brief Remove and destroy the element with the given unique name.
@@ -112,16 +109,9 @@ namespace dnf_composer
 		void createInteraction(const std::string& stimulusElementId, const std::string& stimulusComponent,
 			const std::string& receivingElementId) const;
 
-		/// @brief Set a new unique identifier / name for the simulation.
 		void setUniqueIdentifier(const std::string& id);
-
-		/// @brief Set the integration step size.
 		void setDeltaT(double deltaT);
-
-		/// @brief Return a copy of the element registry.
 		std::vector<std::shared_ptr<element::Element>> getElements() const;
-
-		/// @brief Return the simulation's unique identifier string.
 		std::string getUniqueIdentifier() const;
 
 		/// @brief Retrieve an element by its unique name. Throws if not found.
@@ -132,34 +122,23 @@ namespace dnf_composer
 		/// @param index  Zero-based index into the element list.
 		std::shared_ptr<element::Element> getElement(int index) const;
 
-		/// @brief Return a copy of the named component vector of the given element.
 		std::vector<double> getComponent(const std::string& id, const std::string& componentName) const;
-
-		/// @brief Return a pointer to the named component vector of the given element.
 		std::vector<double>* getComponentPtr(const std::string& id, const std::string& componentName) const;
-
-		/// @brief Return the number of registered elements.
 		int getNumberOfElements() const;
 
 		/// @brief Return all elements that list @p specifiedElement as an input.
 		/// @param specifiedElement  Name of the element to search for.
 		/// @param inputComponent    Component name to match (default "output").
-		std::vector < std::shared_ptr<element::Element>> getElementsThatHaveSpecifiedElementAsInput(const std::string& specifiedElement,
-		                                                                                            const std::string& inputComponent = "output") const;
+		std::vector<std::shared_ptr<element::Element>> getElementsThatHaveSpecifiedElementAsInput(const std::string& specifiedElement,
+		                                                                                           const std::string& inputComponent = "output") const;
 
-		/// @brief Return the highest unique numeric identifier currently in use.
 		int getHighestElementIndex() const;
 
 		/// @brief Return the simulation's unique identifier (alias for @c getUniqueIdentifier()).
 		std::string getIdentifier() const;
 
-		/// @brief Return the current integration step size.
 		double getDeltaT() const;
-
-		/// @brief Return the start time.
 		double getTZero() const;
-
-		/// @brief Return the current simulation time.
 		double getT() const;
 
 		/// @brief Return the wall-clock duration of the most recent @c step() call.
@@ -168,7 +147,6 @@ namespace dnf_composer
 		/// @brief Return total wall-clock time since the last @c init() call.
 		std::chrono::nanoseconds getTotalRunDuration() const;
 
-		/// @brief Return true if the named component exists on the given element.
 		bool componentExists(const std::string& id, const std::string& componentName) const;
 
 		/// @brief Write the named component to a CSV file in the output directory.

@@ -11,7 +11,6 @@
 
 namespace dnf_composer::element
 {
-	/// @brief Tag enum for the two supported activation function types.
 	enum ActivationFunctionType : int
 	{
 		SIGMOID,    ///< Logistic sigmoid.
@@ -33,10 +32,7 @@ namespace dnf_composer::element
 		/// @brief Apply the activation function to @p input and return the result.
 		virtual std::vector<double> operator()(const std::vector<double>& input) = 0;
 
-		/// @brief Return a polymorphic deep copy.
 		[[nodiscard]] virtual std::unique_ptr<ActivationFunction> clone() const = 0;
-
-		/// @brief Return a human-readable description.
 		[[nodiscard]] virtual std::string toString() const = 0;
 
 		virtual void print() const = 0;

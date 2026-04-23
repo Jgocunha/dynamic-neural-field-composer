@@ -24,25 +24,12 @@ namespace dnf_composer
 		/// @param parameters  Type, dimensions, and annotations (defaults to LINE_PLOT with default ranges).
 		explicit Plot(PlotCommonParameters parameters = PlotCommonParameters());
 
-		/// @brief Return the plot's unique numeric identifier.
 		int getUniqueIdentifier() const;
-
-		/// @brief Return the plot type (LINE_PLOT, HEATMAP, …).
 		PlotType getType() const;
-
-		/// @brief Return the current axis dimension settings.
 		PlotDimensions getDimensions() const;
-
-		/// @brief Return the current annotation (title, axis labels).
 		PlotAnnotations getAnnotations() const;
-
-		/// @brief Update the axis dimension settings.
 		void setDimensions(const PlotDimensions& dimensions);
-
-		/// @brief Update the annotation strings.
 		void setAnnotations(const PlotAnnotations& annotations);
-
-		/// @brief Return a human-readable description of the plot.
 		virtual std::string toString() const = 0;
 
 		/// @brief Render the plot using the provided data and legends.

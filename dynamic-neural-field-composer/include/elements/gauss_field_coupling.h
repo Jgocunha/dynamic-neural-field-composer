@@ -127,13 +127,8 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
-		/// @brief Return a copy of the current coupling parameters.
 		GaussFieldCouplingParameters getParameters() const;
-
-		/// @brief Replace the coupling parameters at runtime.
 		void setParameters(const GaussFieldCouplingParameters& gfc_parameters);
-
-		/// @brief Return the spatial dimensions of the source (input) field.
 		ElementDimensions getInputFieldDimensions() const;
 	private:
 		void updateOutput();

@@ -31,7 +31,6 @@ namespace dnf_composer
 			MEMORY_TRACE,            ///< MemoryTrace.
 		};
 
-		/// @brief Maps every ElementLabel to its human-readable name.
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
 			{UNINITIALIZED, "uninitialized" },
 			{NEURAL_FIELD, "neural field" },
@@ -124,7 +123,6 @@ namespace dnf_composer
 		{
 			ElementSpecificParameters() = default;
 			virtual ~ElementSpecificParameters() = default;
-			/// @brief Return a human-readable summary of the parameters.
 			virtual std::string toString() const = 0;
 			void print() const;
 		};

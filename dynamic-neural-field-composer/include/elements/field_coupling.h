@@ -106,23 +106,18 @@ namespace dnf_composer
 			std::string toString() const override;
 			std::shared_ptr<Element> clone() const override;
 
-			/// @brief Set the learning rate η.
 			void setLearningRate(double learningRate);
 
 			/// @brief Enable or disable online weight updates.
 			/// @param learning  True to activate learning.
 			void setLearning(bool learning);
 
-			/// @brief Replace the coupling parameters at runtime.
 			void setParameters(const FieldCouplingParameters& fcp);
 
 			/// @brief Set the directory used for @c readWeights() / @c writeWeights().
 			void setWeightsDirectory(const std::string& dir);
 
-			/// @brief Return a copy of the current coupling parameters.
 			FieldCouplingParameters getParameters() const;
-
-			/// @brief Return the current weights directory path.
 			std::string getWeightsDirectory() const;
 
 			/// @brief Load the weight matrix from a binary file in @c weightsDirectory.

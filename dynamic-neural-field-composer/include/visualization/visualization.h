@@ -95,14 +95,8 @@ namespace dnf_composer
 
 		/// @brief Set a suffix appended to all ImGui window IDs to avoid collisions.
 		void setWindowIdSuffix(const std::string& s) { windowSuffix = s; }
-
-		/// @brief Clear the window ID suffix.
 		void clearWindowIdSuffix() { windowSuffix.clear(); }
-
-		/// @brief Set the layout mode for plot windows.
 		void setPlotWindowMode(PlotWindowMode mode) { plotWindowMode = mode; }
-
-		/// @brief Return the current layout mode.
 		[[nodiscard]] PlotWindowMode getPlotWindowMode() const { return plotWindowMode; }
 	};
 }

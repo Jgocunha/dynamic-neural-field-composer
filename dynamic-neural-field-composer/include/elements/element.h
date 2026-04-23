@@ -44,18 +44,13 @@ namespace dnf_composer::element
 		/// @param deltaT  Integration step size.
 		virtual void step(double t, double deltaT) = 0;
 
-		/// @brief Return a deep copy of this element.
 		virtual std::shared_ptr<Element> clone() const = 0;
 
 		virtual ~Element() = default;
 
-		/// @brief Return a human-readable description of the element and its parameters.
 		virtual std::string toString() const = 0;
 
-		/// @brief Release any resources held by the element.
 		void close();
-
-		/// @brief Print a description to the log.
 		void print() const;
 
 		/// @brief Register @p inputElement as an upstream source for this element.
@@ -64,19 +59,10 @@ namespace dnf_composer::element
 		virtual void addInput(const std::shared_ptr<Element>& inputElement,
 		                      const std::string& inputComponent = "output");
 
-		/// @brief Remove the input element identified by @p inputElementId.
 		void removeInput(const std::string& inputElementId);
-
-		/// @brief Remove the input element with the given unique numeric ID.
 		void removeInput(int uniqueId);
-
-		/// @brief Remove all registered input elements.
 		void removeInputs();
-
-		/// @brief Return true if an input from @p inputElementName / @p inputComponent exists.
 		bool hasInput(const std::string& inputElementName, const std::string& inputComponent);
-
-		/// @brief Return true if an input from element @p inputElementId / @p inputComponent exists.
 		bool hasInput(int inputElementId, const std::string& inputComponent);
 
 		/// @brief Pull data from all registered input elements into this element's components.
@@ -88,16 +74,10 @@ namespace dnf_composer::element
 		/// @brief Deregister this element as an input of the element with @p uniqueId.
 		void removeOutput(int uniqueId);
 
-		/// @brief Remove all registered downstream outputs.
 		void removeOutputs();
-
-		/// @brief Return true if a downstream output to @p outputElementName / @p outputComponent exists.
 		bool hasOutput(const std::string& outputElementName, const std::string& outputComponent);
-
-		/// @brief Return true if a downstream output to element @p outputElementId / @p outputComponent exists.
 		bool hasOutput(int outputElementId, const std::string& outputComponent);
 
-		/// @brief Return the largest spatial dimension (x_max).
 		int getMaxSpatialDimension() const;
 
 		/// @brief Return the number of spatial samples (size = x_max / d_x).
@@ -106,44 +86,28 @@ namespace dnf_composer::element
 		/// @brief Return the spatial resolution (d_x).
 		double getStepSize() const;
 
-		/// @brief Return a copy of the element's common parameters.
 		ElementCommonParameters getElementCommonParameters() const;
-
-		/// @brief Return the element's numeric unique identifier.
 		int getUniqueIdentifier() const;
-
-		/// @brief Return the element's unique name string.
 		std::string getUniqueName() const;
-
-		/// @brief Return the element's type label.
 		ElementLabel getLabel() const;
-
-		/// @brief Return true if this element has at least one registered output.
 		bool hasOutput() const;
-
-		/// @brief Return true if this element has at least one registered input.
 		bool hasInput() const;
 
 		/// @brief Return a copy of the named component vector.
 		/// @param componentName  E.g. "activation", "output", "input".
 		std::vector<double> getComponent(const std::string& componentName);
 
-		/// @brief Return a pointer to the named component vector.
 		std::vector<double>* getComponentPtr(const std::string& componentName);
-
-		/// @brief Return the names of all registered components.
 		std::vector<std::string> getComponentList() const;
 
 		/// @brief Return a read-only pointer to the full components map.
 		const std::unordered_map<std::string, std::vector<double>>* getComponents() const;
 
-		/// @brief Return all registered input elements.
 		std::vector<std::shared_ptr<Element>> getInputs();
 
 		/// @brief Return all inputs mapped to the component name they expose.
 		std::unordered_map<std::shared_ptr<Element>, std::string> getInputsAndComponents();
 
-		/// @brief Return all registered downstream output elements.
 		std::vector<std::shared_ptr<Element>> getOutputs();
 	};
 }

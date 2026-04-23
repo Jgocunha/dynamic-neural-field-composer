@@ -53,10 +53,7 @@ namespace dnf_composer::element
 		std::shared_ptr<Element> clone() const override;
 		std::string toString() const override;
 
-		/// @brief Replace the noise parameters at runtime.
 		void setParameters(NormalNoiseParameters parameters);
-
-		/// @brief Return a copy of the current noise parameters.
 		NormalNoiseParameters getParameters() const;
 	};
 }

@@ -115,10 +115,7 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
-		/// @brief Replace the kernel parameters at runtime.
 		void setParameters(const MexicanHatKernelParameters& mhk_parameters);
-
-		/// @brief Return a copy of the current kernel parameters.
 		MexicanHatKernelParameters getParameters() const;
 	};
 }

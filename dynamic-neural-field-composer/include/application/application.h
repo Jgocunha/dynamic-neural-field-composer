@@ -65,10 +65,10 @@ namespace dnf_composer
 		static UIMode uiMode;    ///< Current UI layout mode.
 
 	public:
-		static float  getUiScalePct()          { return uiScalePct; }          ///< Return current UI scale.
-		static void   setUiScalePct(float pct) { uiScalePct = pct; }           ///< Set UI scale (50–200%).
-		static UIMode getUIMode()              { return uiMode; }               ///< Return current UI mode.
-		static void   setUIMode(UIMode m)      { uiMode = m; }                 ///< Switch UI mode.
+		static float  getUiScalePct()          { return uiScalePct; }
+		static void   setUiScalePct(float pct) { uiScalePct = pct; }
+		static UIMode getUIMode()              { return uiMode; }
+		static void   setUIMode(UIMode m)      { uiMode = m; }
 
 	public:
 		/// @brief Construct an Application.
@@ -83,7 +83,6 @@ namespace dnf_composer
 		/// @brief Advance the simulation by one step and render all windows.
 		void step() const;
 
-		/// @brief Shut down the GUI and release resources.
 		void close() const;
 
 		/// @brief Register the application's ImGui settings handler (for persistence).
@@ -118,7 +117,6 @@ namespace dnf_composer
 		/// @brief Return true if the user has closed the main window.
 		[[nodiscard]] bool hasGUIBeenClosed() const;
 
-		/// @brief Return true if the GUI is currently active and rendering.
 		[[nodiscard]] bool isGUIActive() const;
 
 		~Application() = default;

@@ -192,17 +192,12 @@ namespace dnf_composer::element
 		/// @param threshold  New threshold value (default 0.895).
 		void setThresholdForStability(const double threshold) { state.thresholdForStability = threshold; }
 
-		/// @brief Replace the field's dynamics parameters at runtime.
 		void setParameters(const NeuralFieldParameters& parameters);
-
-		/// @brief Return a copy of the current dynamics parameters.
 		NeuralFieldParameters getParameters() const;
-
-		/// @brief Return true if the field has converged to a stable state.
 		bool isStable() const;
 
-		double getLowestActivation() const { return state.lowestActivation; }   ///< Return the minimum activation.
-		double getHighestActivation() const { return state.highestActivation; } ///< Return the maximum activation.
+		double getLowestActivation() const { return state.lowestActivation; }
+		double getHighestActivation() const { return state.highestActivation; }
 
 		/// @brief Return all currently detected above-threshold bumps.
 		std::vector<NeuralFieldBump> getBumps() const { return state.bumps; }
@@ -210,7 +205,7 @@ namespace dnf_composer::element
 		/// @brief Return the registered self-excitation kernel, if any.
 		std::shared_ptr<Kernel> getSelfExcitationKernel() const;
 
-		double getStabilityThreshold() const { return state.thresholdForStability; } ///< Return the stability threshold.
+		double getStabilityThreshold() const { return state.thresholdForStability; }
 	protected:
 		void calculateActivation(double t, double deltaT);
 		void calculateOutput();

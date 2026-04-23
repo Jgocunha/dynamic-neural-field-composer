@@ -80,10 +80,7 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
-		/// @brief Replace the stimulus parameters at runtime (e.g. to change amplitude or position).
 		void setParameters(const GaussStimulusParameters& parameters);
-
-		/// @brief Return a copy of the current stimulus parameters.
 		GaussStimulusParameters getParameters() const;
 	};
 }
