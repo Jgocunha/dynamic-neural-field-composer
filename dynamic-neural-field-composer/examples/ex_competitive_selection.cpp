@@ -29,7 +29,7 @@ int main()
 		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
 		// ── Option stimuli ────────────────────────────────────────────────────
-		// Three options at positions 25, 50, 75 with graded amplitudes.
+		// Three options at positions 25, 50, 75.
 		// Amplitudes are intentionally the same so small changes shift the winner.
 		const auto sAcp = element::ElementCommonParameters{ "option A stimulus" };
 		const auto sAp  = element::GaussStimulusParameters{ 3.0, 5.0, 25.0 };
