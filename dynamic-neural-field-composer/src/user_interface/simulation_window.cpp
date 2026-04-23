@@ -14,10 +14,14 @@ namespace dnf_composer::user_interface
 	void SimulationWindow::render()
 	{
 		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Simulation Control", nullptr, imgui_kit::getGlobalWindowFlags());
+		const bool open = ImGui::Begin("Simulation Control", nullptr,
+			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		ImGui::PopFont();
 		if (open)
 		{
+			constexpr ImGuiWindowFlags childFlags =
+				ImGuiWindowFlags_NoSavedSettings;
+			ImGui::BeginChild("##sim_scroll", ImVec2(0, 0), false, childFlags);
 			renderSimulationParametersCard();
 			ImGui::Spacing(); ImGui::Spacing();
 			renderSimulationControlsCard();
@@ -33,6 +37,7 @@ namespace dnf_composer::user_interface
 			renderLogElementParametersCard();
 			ImGui::Spacing(); ImGui::Spacing();
 			renderExportElementComponentCard();
+			ImGui::EndChild();
 		}
 		ImGui::End();
 	}

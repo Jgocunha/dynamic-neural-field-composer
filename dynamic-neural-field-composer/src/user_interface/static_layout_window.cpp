@@ -143,8 +143,7 @@ namespace dnf_composer::user_interface
 
 	void StaticLayoutWindow::panelSimulation(ImVec2 pos, ImVec2 size) const
 	{
-		// Scrollable — content taller than the panel
-		if (beginPanelScrollable("##sl_sim", pos, size))
+		if (beginPanelFixed("##sl_sim", pos, size))
 		{
 			ImGui::PushFont(g_BlackLargeFont);
 			ImGui::Text("Simulation Control");
@@ -152,21 +151,28 @@ namespace dnf_composer::user_interface
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			simulationWindow->renderSimulationParametersCard();
-			ImGui::Spacing();
-			simulationWindow->renderSimulationControlsCard();
-			ImGui::Spacing();
-			simulationWindow->renderRunForIterationsCard();
-			ImGui::Spacing();
-			simulationWindow->renderAddElementCard();
-			ImGui::Spacing();
-			simulationWindow->renderRemoveElementCard();
-			ImGui::Spacing();
-			simulationWindow->renderSetInteractionCard();
-			ImGui::Spacing();
-			simulationWindow->renderLogElementParametersCard();
-			ImGui::Spacing();
-			simulationWindow->renderExportElementComponentCard();
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			if (ImGui::BeginChild("##sl_sim_scroll", ImVec2(0, 0), false,
+				ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NoSavedSettings))
+			{
+				simulationWindow->renderSimulationParametersCard();
+				ImGui::Spacing();
+				simulationWindow->renderSimulationControlsCard();
+				ImGui::Spacing();
+				simulationWindow->renderRunForIterationsCard();
+				ImGui::Spacing();
+				simulationWindow->renderAddElementCard();
+				ImGui::Spacing();
+				simulationWindow->renderRemoveElementCard();
+				ImGui::Spacing();
+				simulationWindow->renderSetInteractionCard();
+				ImGui::Spacing();
+				simulationWindow->renderLogElementParametersCard();
+				ImGui::Spacing();
+				simulationWindow->renderExportElementComponentCard();
+			}
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
 		}
 		endPanel();
 	}
