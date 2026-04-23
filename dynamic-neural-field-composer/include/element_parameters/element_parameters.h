@@ -51,8 +51,8 @@ namespace dnf_composer
 		struct ElementDimensions
 		{
 			int x_max;  ///< Spatial extent: field runs from 0 to x_max.
-			int size;   ///< Number of samples: size = x_max / d_x.
-			double d_x; ///< Spatial resolution (step size between samples).
+			int size;   ///< Number of samples: size = round(x_max / d_x); typically x_max is an exact multiple of d_x.
+			double d_x; ///< Spatial resolution (step size between samples); expected to divide x_max exactly in normal use.
 
 			/// @brief Construct dimensions from extent and resolution.
 			/// @param x_max  Upper spatial bound (default 100).
