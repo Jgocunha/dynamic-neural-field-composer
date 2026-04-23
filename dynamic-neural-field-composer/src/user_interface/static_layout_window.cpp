@@ -209,7 +209,7 @@ namespace dnf_composer::user_interface
 		if (beginPanelFixed("##sl_node", pos, size))
 		{
 			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::Text("Node graph");
+			ImGui::Text("Node Graph");
 			ImGui::PopFont();
 			ImGui::Separator();
 

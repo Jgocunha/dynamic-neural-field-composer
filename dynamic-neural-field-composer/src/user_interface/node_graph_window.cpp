@@ -24,7 +24,7 @@ namespace dnf_composer::user_interface
 			| ImGuiWindowFlags_NoScrollWithMouse;
 
 		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Node graph", nullptr, flags);
+		const bool open = ImGui::Begin("Node Graph", nullptr, flags);
 		ImGui::PopFont();
 
 		if (open)
