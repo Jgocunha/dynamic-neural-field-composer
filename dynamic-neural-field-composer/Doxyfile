@@ -4,7 +4,12 @@ PROJECT_NUMBER         = 1.0.0
 
 OUTPUT_DIRECTORY       = docs/
 
-INPUT                  = include/ src/
+USE_MDFILE_AS_MAINPAGE = ../README.md
+
+PROJECT_LOGO           = resources/images/logo-simple.png
+
+INPUT                  = ../README.md include/ src/
+IMAGE_PATH             = ../
 RECURSIVE              = YES
 FILE_PATTERNS          = *.h *.cpp
 
