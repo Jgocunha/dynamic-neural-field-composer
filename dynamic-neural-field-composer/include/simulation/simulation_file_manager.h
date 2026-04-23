@@ -33,22 +33,36 @@ namespace dnf_composer
 	/// This allows pre-designed or evolved architectures to be saved and replayed
 	/// without re-implementing them in code.
 	///
+	/// The optional path supplied to this manager has different behavior depending
+	/// on the operation:
+	/// - if non-empty, it is treated as the JSON file path to save to or load from;
+	/// - if empty, saving uses the default output location and generated file name,
+	///   while loading expects a concrete JSON file path to be resolvable.
+	///
 	/// @ingroup simulation_io
 	class SimulationFileManager
 	{
 	private:
 		std::shared_ptr<Simulation> simulation; ///< The simulation to serialize/deserialize.
-		std::string filePath;                   ///< Absolute path to the JSON file.
+		std::string filePath;                   ///< Optional JSON file path override; if empty, save uses the default output location and generated file name.
 	public:
 		/// @brief Construct a SimulationFileManager.
 		/// @param simulation  The simulation instance to read into or write from.
-		/// @param filePath    Path to the JSON file (empty = default location).
+		/// @param filePath    Optional JSON file path. When non-empty, it is the file
+		///                    used for both save and load operations. When empty,
+		///                    saveElementsToJson() writes to the default output
+		///                    location using a generated `<identifier>.json` file
+		///                    name, while loadElementsFromJson() expects a concrete
+		///                    JSON file path to be available at the resolved path.
 		SimulationFileManager(const std::shared_ptr<Simulation>& simulation, const std::string& filePath = {});
 
-		/// @brief Serialize all elements and their connections to the JSON file.
+		/// @brief Serialize all elements and their connections to a JSON file.
+		///        If `filePath` is empty, the output file is created in the default
+		///        location using a generated `<identifier>.json` name.
 		void saveElementsToJson() const;
 
-		/// @brief Deserialize elements and connections from the JSON file into the simulation.
+		/// @brief Deserialize elements and connections from a JSON file into the simulation.
+		///        `filePath` should resolve to a concrete JSON file to open.
 		void loadElementsFromJson() const;
 
 	private:
