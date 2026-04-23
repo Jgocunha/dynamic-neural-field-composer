@@ -6,7 +6,7 @@
 // Competitive Selection example
 //
 // Three localized stimuli (options A, B, C) feed a single selection field.
-// A Mexican-hat kernel provides local self-excitation and broad lateral
+// A Gaussian kernel provides broad lateral
 // inhibition — only the option whose input crosses threshold first forms a
 // stable peak; the others are suppressed (winner-takes-all).
 //
@@ -36,7 +36,7 @@ int main()
 		const auto sA   = std::make_shared<element::GaussStimulus>(sAcp, sAp);
 
 		const auto sBcp = element::ElementCommonParameters{ "option B stimulus" };
-		const auto sBp  = element::GaussStimulusParameters{ 3.0, 5.0, 50.0 };
+		const auto sBp  = element::GaussStimulusParameters{ 3.0, 8.0, 50.0 };
 		const auto sB   = std::make_shared<element::GaussStimulus>(sBcp, sBp);
 
 		const auto sCcp = element::ElementCommonParameters{ "option C stimulus" };
