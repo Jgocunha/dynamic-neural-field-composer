@@ -20,7 +20,8 @@ jobs:
 
       - name: Get version from git tag
         run: |
-          VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          VERSION="${TAG#v}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Generate Doxyfile from template
