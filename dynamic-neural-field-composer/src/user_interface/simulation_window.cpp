@@ -88,7 +88,7 @@ namespace dnf_composer::user_interface
 			editableDt_ = simulation->getDeltaT();  // keep in sync when not editing
 
 		ImGui::SameLine();
-		ImGui::TextUnformatted("dt");
+		ImGui::TextUnformatted("\xce\x94t");  // Δt
 
 		// // ICON_FA_ATOM  ICON_FA_STOPWATCH ICON_FA_CLOCK ICON_FA_HOURGLASS_HALF
 		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
@@ -309,45 +309,37 @@ namespace dnf_composer::user_interface
 		ImGui::TextUnformatted("Add elements");
 		ImGui::PopFont();
 
-	    ImGui::Columns(2, nullptr, false);
-
-		// Left column
 		ImGui::TextUnformatted("Select type");
 
-		// Make the combo span the whole column width
-		ImGui::SetNextItemWidth(-FLT_MIN);          // or ImGui::PushItemWidth(-FLT_MIN);
 		static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
-		const char* current = element::ElementLabelToString.at(selected).c_str();
-		if (ImGui::BeginCombo("##element_type", current))
+
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
 		{
-			for (const auto& [fst, snd] : element::ElementLabelToString)
+			for (const auto& [lbl, name] : element::ElementLabelToString)
 			{
-				if (fst == element::ElementLabel::UNINITIALIZED) continue;
-				const bool is_selected = (selected == fst);
-				if (ImGui::Selectable(snd.c_str(), is_selected)) selected = fst;
-				if (is_selected) ImGui::SetItemDefaultFocus();
+				if (lbl == element::ElementLabel::UNINITIALIZED) continue;
+				const bool is_sel = (selected == lbl);
+				if (ImGui::Selectable(name.c_str(), is_sel)) selected = lbl;
+				if (is_sel) ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
 		}
 
 		ImGui::Spacing();
-		const bool addRequested = ImGui::Button("Add element", ImVec2(-FLT_MIN, 0));
+		ImGui::TextUnformatted("Define parameters");
 
-		// Right column
-	    ImGui::NextColumn();
-	    ImGui::TextUnformatted("Define parameters");
-
-	    // Fixed-size, scrollable pane for parameters
-	    // (tweak the height multiplier if you want more/less visible rows)
-	    const float col_w   = ImGui::GetColumnWidth();
-	    const float pad_w   = ImGui::GetStyle().ItemSpacing.x * 1.0f;
-	    const float child_w = col_w - pad_w; // fill the column width
-	    const float child_h = 280.0f * ImGui::GetIO().FontGlobalScale;
+		const float child_w = ImGui::GetContentRegionAvail().x;
+		const float child_h = 250.0f * ImGui::GetIO().FontGlobalScale;
 
 		constexpr ImGuiWindowFlags child_flags =
-	        //ImGuiWindowFlags_AlwaysVerticalScrollbar |
-	        ImGuiWindowFlags_AlwaysHorizontalScrollbar |
 	        ImGuiWindowFlags_NoSavedSettings;
+
+		// addRequested is set by the button rendered below, persisted via static.
+		static bool s_addRequested = false;
+		const bool addRequested = s_addRequested;
+		s_addRequested = false;
 
 	    if (ImGui::BeginChild("##params_scroll", ImVec2(child_w, child_h), true, child_flags))
 	    {
@@ -751,14 +743,17 @@ namespace dnf_composer::user_interface
             break;
         }
 
-	        // (Optional) ensure a small extra width, so a horizontal bar is always usable
-	        // ImGui::Dummy(ImVec2(child_w + 120.0f, 0));
-	    }
-	    ImGui::EndChild();
-
-	    ImGui::Columns(1);
-	    ImGui::PopID();
 	}
+	ImGui::EndChild();
+
+	ImGui::Spacing();
+	const float addBtnW = ImGui::GetContentRegionAvail().x;
+	const float addBtnH = ImGui::GetFrameHeight() * 1.2f;
+	if (ImGui::Button("Add element", ImVec2(addBtnW, addBtnH)))
+		s_addRequested = true;
+
+	ImGui::PopID();
+}
 
 	void SimulationWindow::renderRemoveElementCard() const
 	{
@@ -868,8 +863,8 @@ namespace dnf_composer::user_interface
 		// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
 		// ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 
-		const float btnW = leftW - 15.0f;                             // same width as combos
-		const float btnH = ImGui::GetFrameHeight() * 1.2f;   // a bit taller looks nicer
+		const float btnW = ImGui::GetContentRegionAvail().x;
+		const float btnH = ImGui::GetFrameHeight() * 1.2f;
 
 		// Disable until both target & source are chosen
 		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
@@ -895,9 +890,8 @@ namespace dnf_composer::user_interface
 		ImGui::SameLine();
 		widgets::renderHelpMarker("You can disconnect elements by pressing the 'unlink' buttons.");
 
-	    const float listH = 210.0f * ImGui::GetIO().FontGlobalScale;
+	    const float listH = 120.0f * ImGui::GetIO().FontGlobalScale;
 	    ImGui::BeginChild("##connections_scroll", ImVec2(0, listH), true,
-	                      ImGuiWindowFlags_AlwaysVerticalScrollbar |
 	                      ImGuiWindowFlags_NoSavedSettings);
 
 	    if (!selectedTarget.empty())

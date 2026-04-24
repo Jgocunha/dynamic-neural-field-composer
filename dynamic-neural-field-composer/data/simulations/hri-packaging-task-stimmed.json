@@ -1,5 +1,5 @@
 {
-    "deltaT": 25.0,
+    "deltaT": 1.0,
     "elements": [
         {
             "activationFunction": {
@@ -14,15 +14,15 @@
                     "output"
                 ],
                 [
+                    "gauss stimulus b",
+                    "output"
+                ],
+                [
                     "mhk 1",
                     "output"
                 ],
                 [
                     "gauss stimulus a",
-                    "output"
-                ],
-                [
-                    "gauss stimulus b",
                     "output"
                 ]
             ],
@@ -209,6 +209,10 @@
                     "output"
                 ],
                 [
+                    "gk cg 3 - 4 24",
+                    "output"
+                ],
+                [
                     "gk 4",
                     "output"
                 ],
@@ -218,10 +222,6 @@
                 ],
                 [
                     "gk cg 1 - 4 34",
-                    "output"
-                ],
-                [
-                    "gk cg 3 - 4 24",
                     "output"
                 ]
             ],

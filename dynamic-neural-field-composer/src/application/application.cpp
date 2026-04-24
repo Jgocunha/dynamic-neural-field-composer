@@ -224,7 +224,7 @@ namespace dnf_composer
 
 	    style.FramePadding          = ImVec2(10, 6);
 	    style.FrameRounding         = 6.0f;
-	    style.FrameBorderSize       = 0.0f;
+	    style.FrameBorderSize       = 1.0f;
 
 	    style.ItemSpacing           = ImVec2(10, 8);
 	    style.ItemInnerSpacing      = ImVec2(6, 6);

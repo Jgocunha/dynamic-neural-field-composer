@@ -124,12 +124,12 @@ namespace dnf_composer::user_interface
 
         	if (ImGui::BeginMenu("Interface Settings"))
         	{
-        		static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150 };
+        		static constexpr int presets[] = { 80, 90, 100, 110, 125, 150 };
         		static constexpr int presetCount = IM_ARRAYSIZE(presets);
 
         		// find index of the current scale in presets (or nearest)
         		const int current = static_cast<int>(Application::getUiScalePct());
-        		int currentIdx = 3; // default to 100%
+        		int currentIdx = 2; // default to 100%
         		for (int i = 0; i < presetCount; ++i)
         			if (presets[i] == current) { currentIdx = i; break; }
 
@@ -184,6 +184,21 @@ namespace dnf_composer::user_interface
                     &advancedSettingsFlags.showToolAbout);
                 ImGui::EndMenu();
             }
+
+            // Right-aligned version string
+            {
+                char verBuf[16];
+                snprintf(verBuf, sizeof(verBuf), "V %d.%d",
+                         DNF_COMPOSER_VERSION_MAJOR, DNF_COMPOSER_VERSION_MINOR);
+                const float textW = ImGui::CalcTextSize(verBuf).x;
+                const float avail = ImGui::GetContentRegionAvail().x;
+                if (avail > textW + 8.0f)
+                {
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - textW - 4.0f);
+                    ImGui::TextDisabled("%s", verBuf);
+                }
+            }
+
             ImGui::EndMainMenuBar();
         }
     }
@@ -282,7 +297,7 @@ namespace dnf_composer::user_interface
 	        std::exit(0);
 
 	    // Zoom in/out through presets
-	    static constexpr int presets[] = { 50, 80, 90, 100, 110, 125, 150, 175, 200 };
+	    static constexpr int presets[] = { 80, 90, 100, 110, 125, 150, 175, 200 };
 	    static constexpr int presetCount = IM_ARRAYSIZE(presets);
 	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Equal)) // Ctrl++
 	    {

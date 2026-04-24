@@ -6,6 +6,13 @@
 
 namespace dnf_composer::user_interface
 {
+	std::shared_ptr<element::Element> ElementWindow::s_focusedElement_ = nullptr;
+
+	void ElementWindow::setFocusedElement(const std::shared_ptr<element::Element>& element)
+	{
+		s_focusedElement_ = element;
+	}
+
 	ElementWindow::ElementWindow(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
 	{
@@ -27,29 +34,24 @@ namespace dnf_composer::user_interface
 	void ElementWindow::renderElementControlCard() const
 	{
 		constexpr ImGuiWindowFlags childFlags =
-        ImGuiWindowFlags_AlwaysVerticalScrollbar |
         ImGuiWindowFlags_NoSavedSettings;
 
 		widgets::renderHelpMarker("Left click and drag or double-click to change element parameter values.");
 	    ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
 
-	    // group elements by type
-	    std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
-	    for (const auto& e : simulation->getElements())
-	        byType[e->getLabel()].push_back(e);
-
-	    const float innerW   = ImGui::GetContentRegionAvail().x;
-		const float ui       = ImGui::GetIO().FontGlobalScale;
-		const float dragW    = 130.0f * ui;
-		const float panelPadX = 10.0f * ui; // left and right from beginElementPanel
-		const float spacingX = ImGui::GetStyle().ItemSpacing.x;
+		// Layout metrics (must be computed before the Selected elements section uses them)
+	    const float innerW    = ImGui::GetContentRegionAvail().x;
+		const float ui        = ImGui::GetIO().FontGlobalScale;
+		const float dragW     = 130.0f * ui;
+		const float panelPadX = 10.0f * ui;
+		const float spacingX  = ImGui::GetStyle().ItemSpacing.x;
 
 		auto PanelHeightFor = [&](const std::shared_ptr<element::Element>& e) -> float
 		{
 			const float frameH   = ImGui::GetFrameHeight();
 			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
 			const float rowH     = frameH + spacingY;
-			const float panelPad = 2.0f * 8.0f * ui; // top and bottom padding from beginElementPanel
+			const float panelPad = 2.0f * 8.0f * ui;
 
 			auto h = [&](const int rows) {
 				return rows * rowH - spacingY + panelPad;
@@ -79,6 +81,45 @@ namespace dnf_composer::user_interface
 
 		const float maxNaturalW = 1.0f * panelPadX + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
 		const float panelW = ImMin(maxNaturalW, innerW);
+
+		// Validate focused element still belongs to this simulation
+		if (s_focusedElement_)
+		{
+			bool stillValid = false;
+			for (const auto& e : simulation->getElements())
+				if (e == s_focusedElement_) { stillValid = true; break; }
+			if (!stillValid) s_focusedElement_ = nullptr;
+		}
+
+		// Selected elements section — shows the most recently double-clicked node
+		if (s_focusedElement_)
+		{
+			ImGui::PushID("##sel_focused");
+			ImGui::PushFont(g_BoldLargeFont);
+			ImGui::TextUnformatted("Selected Elements");
+			ImGui::PopFont();
+			ImGui::Spacing();
+
+			ImGui::TextUnformatted(s_focusedElement_->getUniqueName().c_str());
+			const ImVec4 tint = getColorForElementType(s_focusedElement_->getLabel());
+			const ImVec2 selSize(panelW, PanelHeightFor(s_focusedElement_));
+			PanelScope scope = beginElementPanel(tint, selSize);
+			{
+				ImGui::PushItemWidth(dragW);
+				switchElementToModify(s_focusedElement_);
+				ImGui::PopItemWidth();
+			}
+			endElementPanel(scope);
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+			ImGui::PopID();
+		}
+
+	    // group elements by type
+	    std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
+	    for (const auto& e : simulation->getElements())
+	        byType[e->getLabel()].push_back(e);
 
 	    for (const auto& [label, elems] : byType)
 	    {

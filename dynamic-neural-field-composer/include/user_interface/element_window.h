@@ -35,6 +35,7 @@ namespace dnf_composer::user_interface
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
+		static std::shared_ptr<element::Element> s_focusedElement_;
 	public:
 		explicit ElementWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -47,6 +48,7 @@ namespace dnf_composer::user_interface
 		void renderElementControlCard() const;
 		void renderModifyElementParameters() const;
 		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
+		static void setFocusedElement(const std::shared_ptr<element::Element>& element);
 		~ElementWindow() override = default;
 	private:
 		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element) ;

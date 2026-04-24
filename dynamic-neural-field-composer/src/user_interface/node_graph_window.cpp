@@ -5,7 +5,6 @@
 #include "user_interface/node_graph_window.h"
 
 extern ImFont* g_BoldLargeFont;
-extern ImFont* g_MediumMediumFont;
 extern ImFont* g_BlackLargeFont;
 
 namespace dnf_composer::user_interface
@@ -33,12 +32,7 @@ namespace dnf_composer::user_interface
 				"Visualize elements and their interactions.\n"
 				"Drag from an Output pin to an Input pin to create a connection.\n"
 				"Double-click a link to remove it.\n"
-				"Double-click a node to inspect and edit its parameters.");
-
-			// Capture canvas top-left and height *after* the help marker,
-			// so the inspector panel aligns exactly with the node editor canvas.
-			const ImVec2 canvasOrigin = ImGui::GetCursorScreenPos();
-			const float  canvasH      = ImGui::GetContentRegionAvail().y;
+				"Double-click a node to open/close its plot card.");
 
 			ImNodeEditor::SetCurrentEditor(context);
 			applyCanvasStyle();
@@ -49,18 +43,16 @@ namespace dnf_composer::user_interface
 			restoreCanvasStyle();
 			ImNodeEditor::SetCurrentEditor(nullptr);
 
-			// Compute the inspector panel bounds every frame so it tracks
-			// the node graph window if it is moved or resized.
+			// Record node graph window bounds for plot card clamping.
 			const ImVec2 ngPos  = ImGui::GetWindowPos();
 			const ImVec2 ngSize = ImGui::GetWindowSize();
-			const float  inspW  = std::max(280.0f, ngSize.x * 0.25f);
-			inspectorPos_  = ImVec2(ngPos.x + ngSize.x - inspW, canvasOrigin.y);
-			inspectorSize_ = ImVec2(inspW, canvasH);
+			ngBoundsMin_ = ngPos;
+			ngBoundsMax_ = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
 		}
 		ImGui::End();
 
-		// Inspector is a separate top-level window — must be rendered outside Begin/End.
-		renderNodeInspectorPopup();
+		// Plot cards are separate top-level windows — must be rendered outside Begin/End.
+		renderNodePlotCards();
 	}
 
 	void NodeGraphWindow::renderGraph() const
@@ -69,12 +61,7 @@ namespace dnf_composer::user_interface
 				"Visualize elements and their interactions.\n"
 				"Drag from an Output pin to an Input pin to create a connection.\n"
 				"Double-click a link to remove it.\n"
-				"Double-click a node to inspect and edit its parameters.");
-
-		// Capture canvas top-left and height *after* the help marker,
-		// so the inspector panel aligns exactly with the node editor canvas.
-		const ImVec2 canvasOrigin = ImGui::GetCursorScreenPos();
-		const float  canvasH      = ImGui::GetContentRegionAvail().y;
+				"Double-click a node to open/close its plot card.");
 
 		ImNodeEditor::SetCurrentEditor(context);
 		applyCanvasStyle();
@@ -85,16 +72,14 @@ namespace dnf_composer::user_interface
 		restoreCanvasStyle();
 		ImNodeEditor::SetCurrentEditor(nullptr);
 
-		// Compute the inspector panel bounds every frame so it tracks
-		// the host window if it is moved or resized.
+		// Record node graph window bounds for plot card clamping.
 		const ImVec2 ngPos  = ImGui::GetWindowPos();
 		const ImVec2 ngSize = ImGui::GetWindowSize();
-		const float  inspW  = std::max(280.0f, ngSize.x * 0.25f);
-		inspectorPos_  = ImVec2(ngPos.x + ngSize.x - inspW, canvasOrigin.y);
-		inspectorSize_ = ImVec2(inspW, canvasH);
+		ngBoundsMin_ = ngPos;
+		ngBoundsMax_ = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
 
-		// Inspector is a separate top-level window — must be rendered outside Begin/End.
-		renderNodeInspectorPopup();
+		// Plot cards are separate top-level windows — must be rendered outside Begin/End.
+		renderNodePlotCards();
 	}
 
 	void NodeGraphWindow::applyCanvasStyle()
@@ -513,135 +498,161 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::handleNodeSelection() const
 	{
 		const ImNodeEditor::NodeId hovered = ImNodeEditor::GetHoveredNode();
+		if (!hovered || !ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) return;
 
-		// Double left-click on a node opens (or toggles) the inspector.
-		if (hovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-		{
-			const size_t id = hovered.Get();
-			selectedNodeId_ = (selectedNodeId_ == id) ? 0 : id;
-		}
-	}
+		const size_t id = hovered.Get();
 
-	void NodeGraphWindow::renderNodeInspectorPopup() const
-	{
-		if (!selectedNodeId_) return;
-
-		// Find the element whose node ID matches the stored selection.
+		// Find the element associated with this node.
 		std::shared_ptr<element::Element> element;
 		for (const auto& el : simulation->getElements())
+			if (getNodeId(el) == id) { element = el; break; }
+		if (!element) return;
+
+		// Open a plot card for this node (never close on re-click).
+		if (!plotCards_.contains(id))
 		{
-			if (getNodeId(el) == selectedNodeId_) { element = el; break; }
+			PlotCardState state;
+			const float midX = ngBoundsMin_.x + (ngBoundsMax_.x - ngBoundsMin_.x) * 0.5f;
+			const float midY = ngBoundsMin_.y + (ngBoundsMax_.y - ngBoundsMin_.y) * 0.5f;
+			state.initialPos = ImVec2(midX - state.size.x * 0.5f, midY - state.size.y * 0.5f);
+			plotCards_[id] = state;
 		}
-		if (!element) { selectedNodeId_ = 0; return; }
 
-		constexpr ImGuiWindowFlags inspectorFlags =
-			ImGuiWindowFlags_NoCollapse      |
-			ImGuiWindowFlags_NoSavedSettings |
-			ImGuiWindowFlags_NoResize        |
-			ImGuiWindowFlags_NoMove;
+		// Notify the element control window.
+		ElementWindow::setFocusedElement(element);
+	}
 
-		// Reposition and resize every frame so the panel tracks the node graph window.
-		ImGui::SetNextWindowPos (inspectorPos_,  ImGuiCond_Always);
-		ImGui::SetNextWindowSize(inspectorSize_, ImGuiCond_Always);
-
-		bool open = true;
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, inspectorFlags);
-		ImGui::PopFont();
-		ImGui::PopStyleColor();
-
-		if (visible)
+	void NodeGraphWindow::renderNodePlotCards() const
+	{
+		for (auto it = plotCards_.begin(); it != plotCards_.end(); )
 		{
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
-			ImGui::BeginChild("##insp_scroll", ImVec2(0, 0), false,
-				ImGuiWindowFlags_AlwaysVerticalScrollbar);
+			const size_t nodeId = it->first;
+			PlotCardState& state = it->second;
 
-			// ---- Plot ----
-			const auto* comps = element->getComponents();
-			if (comps && !comps->empty())
+			// Find the element for this node.
+			std::shared_ptr<element::Element> element;
+			for (const auto& el : simulation->getElements())
+				if (getNodeId(el) == nodeId) { element = el; break; }
+			if (!element) { it = plotCards_.erase(it); continue; }
+
+			constexpr ImGuiWindowFlags cardFlags =
+				ImGuiWindowFlags_NoCollapse      |
+				ImGuiWindowFlags_NoDocking       |
+				ImGuiWindowFlags_NoSavedSettings |
+				ImGuiWindowFlags_MenuBar;
+
+			if (state.isFirstFrame)
 			{
-				const auto lbl         = element->getLabel();
-				const bool isWeightMap = (lbl == element::ElementLabel::FIELD_COUPLING ||
-				                          lbl == element::ElementLabel::GAUSS_FIELD_COUPLING);
+				ImGui::SetNextWindowPos (state.initialPos, ImGuiCond_Always);
+				ImGui::SetNextWindowSize(state.size,       ImGuiCond_Always);
+				state.isFirstFrame = false;
+			}
+
+			bool open = true;
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
+			ImGui::PushFont(g_BlackLargeFont);
+			const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, cardFlags);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+
+			if (visible)
+			{
+				// Menu bar: Dimensions | Annotations | Line thickness
+				if (ImGui::BeginMenuBar())
+				{
+					if (ImGui::BeginMenu("Dimensions"))
+					{
+						ImGui::Checkbox("Auto-fit", &state.autoFit);
+						if (!state.autoFit)
+						{
+							ImGui::InputDouble("X min", &state.xMin, 0, 0, "%.1f");
+							ImGui::InputDouble("X max", &state.xMax, 0, 0, "%.1f");
+							ImGui::InputDouble("Y min", &state.yMin, 0, 0, "%.1f");
+							ImGui::InputDouble("Y max", &state.yMax, 0, 0, "%.1f");
+						}
+						ImGui::EndMenu();
+					}
+					if (ImGui::BeginMenu("Annotations"))
+					{
+						ImGui::InputText("X label", state.xLabel, sizeof(state.xLabel));
+						ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
+						ImGui::EndMenu();
+					}
+					if (ImGui::BeginMenu("Line thickness"))
+					{
+						ImGui::SliderFloat("##lt", &state.lineThickness, 0.1f, 10.0f, "%.1f");
+						ImGui::EndMenu();
+					}
+					ImGui::EndMenuBar();
+				}
+
+				// Plot content
+				const auto* comps = element->getComponents();
+				const auto  lbl   = element->getLabel();
+				const bool  isWM  = (lbl == element::ElementLabel::FIELD_COUPLING ||
+				                     lbl == element::ElementLabel::GAUSS_FIELD_COUPLING);
 				const float plotW = ImGui::GetContentRegionAvail().x;
-				const float plotH = isWeightMap ? plotW : plotW * 0.6f;
+				const float plotH = ImGui::GetContentRegionAvail().y;
 
-				const bool hasWeights = isWeightMap &&
-					comps->contains("weights") && !comps->at("weights").empty() &&
-					comps->contains("input")   && comps->contains("output");
-
-				if (hasWeights)
+				if (isWM && comps && comps->contains("weights"))
 				{
 					const auto& weights = comps->at("weights");
-					const int rows = static_cast<int>(comps->at("input").size());
-					const int cols = static_cast<int>(comps->at("output").size());
+					const int rows = comps->contains("input")  ? static_cast<int>(comps->at("input").size())  : 0;
+					const int cols = comps->contains("output") ? static_cast<int>(comps->at("output").size()) : 0;
 
 					if (rows > 0 && cols > 0 && rows * cols == static_cast<int>(weights.size()))
 					{
 						constexpr float pad = 3.0f;
-						// Reserve space first so the child window clip rect covers the full area.
 						const ImVec2 origin = ImGui::GetCursorScreenPos();
 						ImGui::Dummy(ImVec2(plotW, plotH));
 						const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
 
 						ImDrawList* dl = ImGui::GetWindowDrawList();
-						dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
-						dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
-
 						double wMin =  1e300, wMax = -1e300;
 						for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
 						const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
-
-						const float cellW = (rect.GetWidth()  - 2*pad) / float(cols);
-						const float cellH = (rect.GetHeight() - 2*pad) / float(rows);
+						const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
+						const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);
 
 						for (int r = 0; r < rows; ++r)
-						{
 							for (int c = 0; c < cols; ++c)
 							{
-								const double v  = weights[r * cols + c];
-								const float  t  = float((v - wMin) / wRange);
-								const ImVec2 tl = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
-								const ImVec2 br = { tl.x + cellW, tl.y + cellH };
+								const float  t  = static_cast<float>((weights[r*cols+c] - wMin) / wRange);
+								const ImVec2 tl = { rect.Min.x + pad + c*cellW, rect.Max.y - pad - (r+1)*cellH };
 								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
-								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
+								dl->AddRectFilled(tl, { tl.x+cellW, tl.y+cellH },
+								                  ImGui::ColorConvertFloat4ToU32(col));
 							}
-						}
 					}
 				}
-				else if (!isWeightMap)
+				else if (!isWM && comps)
 				{
-					if (ImPlot::BeginPlot("##insp", ImVec2(plotW, plotH)))
+					const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+					const std::string plotTitle = element->getUniqueName() + " components";
+					if (ImPlot::BeginPlot(plotTitle.c_str(), ImVec2(plotW, plotH)))
 					{
-						ImPlot::SetupAxes(nullptr, nullptr,
-							ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+						ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+						if (!state.autoFit)
+							ImPlot::SetupAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax);
 
 						for (const auto& [name, data] : *comps)
 						{
 							if (data.size() < 2) continue;
 							std::vector<float> xs(data.size()), ys(data.size());
 							for (int i = 0; i < static_cast<int>(data.size()); ++i)
-							{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(data[i]); }
+								{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(data[i]); }
+							//ImPlot::SetNextLineStyle(IMPLOT_AUTO_COL, state.lineThickness);
 							ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()));
 						}
-
 						ImPlot::EndPlot();
 					}
 				}
-				ImGui::Separator();
 			}
 
-			// ---- Editable parameters ----
-			ElementWindow::switchElementToModify(element);
-
-			ImGui::EndChild();
-			ImGui::PopStyleColor();
+			if (!open) { it = plotCards_.erase(it); ImGui::End(); continue; }
+			ImGui::End();
+			++it;
 		}
-
-		// Closed via the X button — clear selection.
-		if (!open) selectedNodeId_ = 0;
-		ImGui::End();
 	}
 
 	// -------------------------------------------------------------------------
