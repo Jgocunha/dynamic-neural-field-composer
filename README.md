@@ -5,6 +5,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer)](https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest)
 [![codecov](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg)](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer)
 [![Docs](https://img.shields.io/badge/docs-doxygen-blue)](https://jgocunha.github.io/dynamic-neural-field-composer/)
+[![Wiki](https://img.shields.io/badge/wiki-github-blue)](https://github.com/Jgocunha/dynamic-neural-field-composer/wiki)
 
 ![logo](./dynamic-neural-field-composer/resources/images/logo.png)
 
