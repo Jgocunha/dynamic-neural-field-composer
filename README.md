@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg)](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer)
 [![Docs](https://img.shields.io/badge/docs-doxygen-blue)](https://jgocunha.github.io/dynamic-neural-field-composer/)
 
-![logo](./dynamic-neural-field-composer/resources/images/logo.png)
+<img src="./dynamic-neural-field-composer/resources/images/logo.png" width="600" alt="logo">
 
 A C++20 library and interactive application for building and simulating **Dynamic Neural Field (DNF)** architectures.
 

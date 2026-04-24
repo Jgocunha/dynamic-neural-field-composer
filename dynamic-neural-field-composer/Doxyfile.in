@@ -1,6 +1,6 @@
 PROJECT_NAME           = "Dynamic Neural Field Composer"
-PROJECT_BRIEF          = "A C++ framework for Dynamic Field Theory simulations"
-PROJECT_NUMBER         = 1.0.0
+PROJECT_BRIEF          = "A C++ application designed for developing Dynamic Neural Field Architectures."
+PROJECT_NUMBER         = @DNF_COMPOSER_VERSION@
 
 OUTPUT_DIRECTORY       = docs/
 
@@ -20,6 +20,7 @@ EXTRACT_STATIC         = YES
 GENERATE_HTML          = YES
 GENERATE_LATEX         = NO
 HTML_OUTPUT            = html
+HTML_EXTRA_STYLESHEET  = resources/doxygen-custom.css
 
 HAVE_DOT               = YES
 DOT_IMAGE_FORMAT       = svg

@@ -18,6 +18,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y doxygen graphviz
 
+      - name: Get version from git tag
+        run: |
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Generate Doxyfile from template
+        working-directory: dynamic-neural-field-composer
+        run: sed "s/@DNF_COMPOSER_VERSION@/$VERSION/g" Doxyfile.in > Doxyfile
+
       - name: Generate documentation
         working-directory: dynamic-neural-field-composer
         run: doxygen Doxyfile

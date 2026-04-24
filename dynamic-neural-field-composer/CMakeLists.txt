@@ -6,7 +6,7 @@ project(dynamic-neural-field-composer
 )
 
 # Define library version
-set(DNF_COMPOSER_VERSION_MAJOR 1 CACHE STRING "major version" FORCE)
+set(DNF_COMPOSER_VERSION_MAJOR 2 CACHE STRING "major version" FORCE)
 set(DNF_COMPOSER_VERSION_MINOR 0 CACHE STRING "minor version" FORCE)
 set(DNF_COMPOSER_VERSION_PATCH 0 CACHE STRING "patch version" FORCE)
 set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR}.${DNF_COMPOSER_VERSION_PATCH} CACHE STRING "version" FORCE)
@@ -309,10 +309,15 @@ add_example_executable(ex_memory_trace ex_memory_trace.cpp)
 add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)
 
 # Documentation (Doxygen)
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    @ONLY
+)
 find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if(DOXYGEN_FOUND)
     add_custom_target(docs
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM
