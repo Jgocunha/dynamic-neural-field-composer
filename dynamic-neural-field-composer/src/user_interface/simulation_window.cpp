@@ -97,24 +97,24 @@ namespace dnf_composer::user_interface
 		// ImGui::PopFont(); ImGui::SameLine();
 		// ImGui::PopStyleColor();
 
-		ImGui::Text("Sim. time (t)");
-		ImGui::SameLine();
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%.2f", simulation->getT());
-		ImGui::PopFont();
-
-		ImGui::SameLine();
-		const long long totalNs  = simulation->getTotalRunDuration().count();
-		const long long totalUs  = totalNs / 1'000LL;
-		const long long h        = totalUs / 3'600'000'000LL;
-		const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
-		const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
-		const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
-		ImGui::Text("Real time");
-		ImGui::SameLine();
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
-		ImGui::PopFont();
+		// ImGui::Text("Sim. time (t)");
+		// ImGui::SameLine();
+		// ImGui::PushFont(g_MonoMediumFont);
+		// ImGui::Text("%.2f", simulation->getT());
+		// ImGui::PopFont();
+		//
+		// ImGui::SameLine();
+		// const long long totalNs  = simulation->getTotalRunDuration().count();
+		// const long long totalUs  = totalNs / 1'000LL;
+		// const long long h        = totalUs / 3'600'000'000LL;
+		// const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
+		// const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
+		// const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
+		// ImGui::Text("Real time");
+		// ImGui::SameLine();
+		// ImGui::PushFont(g_MonoMediumFont);
+		// ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
+		// ImGui::PopFont();
 
 		ImGui::PopID();
 	}
@@ -859,30 +859,8 @@ namespace dnf_composer::user_interface
 	    ComboFromElements("Source element", selectedSource);
 
 	    ImGui::Spacing();
-		// ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 
-		const float btnW = ImGui::GetContentRegionAvail().x;
-		const float btnH = ImGui::GetFrameHeight() * 1.2f;
 
-		// Disable until both target & source are chosen
-		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
-		ImGui::BeginDisabled(!canConnect);
-		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
-		ImGui::EndDisabled();
-		//ImGui::PopStyleColor(3);
-
-		if (connectPressed)
-		{
-			const auto target = simulation->getElement(selectedTarget);
-			const auto input  = simulation->getElement(selectedSource);
-			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
-			{
-				target->addInput(input);
-				simulation->init();
-			}
-		}
 
 	    //  Right column: current connections list (scrollable)
 	    ImGui::NextColumn();
@@ -940,6 +918,27 @@ namespace dnf_composer::user_interface
 	    ImGui::EndChild();
 
 	    ImGui::Columns(1);
+
+		const float btnW = ImGui::GetContentRegionAvail().x;
+		const float btnH = ImGui::GetFrameHeight() * 1.2f;
+
+		// Disable until both target & source are chosen
+		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
+		ImGui::BeginDisabled(!canConnect);
+		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
+		ImGui::EndDisabled();
+
+		if (connectPressed)
+		{
+			const auto target = simulation->getElement(selectedTarget);
+			const auto input  = simulation->getElement(selectedSource);
+			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
+			{
+				target->addInput(input);
+				simulation->init();
+			}
+		}
+
 	    ImGui::PopID();
 	}
 

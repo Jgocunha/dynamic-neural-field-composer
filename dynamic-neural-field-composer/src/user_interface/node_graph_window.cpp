@@ -6,6 +6,7 @@
 
 extern ImFont* g_BoldLargeFont;
 extern ImFont* g_BlackLargeFont;
+extern ImFont* g_BlackSmallFont;
 
 namespace dnf_composer::user_interface
 {
@@ -549,6 +550,7 @@ namespace dnf_composer::user_interface
 			}
 
 			bool open = true;
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 2.0f));
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
 			ImGui::PushFont(g_BlackLargeFont);
 			const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, cardFlags);
@@ -649,8 +651,9 @@ namespace dnf_composer::user_interface
 				}
 			}
 
-			if (!open) { it = plotCards_.erase(it); ImGui::End(); continue; }
+			if (!open) { it = plotCards_.erase(it); ImGui::End(); ImGui::PopStyleVar(); continue; }
 			ImGui::End();
+			ImGui::PopStyleVar();
 			++it;
 		}
 	}

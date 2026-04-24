@@ -96,7 +96,7 @@ namespace dnf_composer::user_interface
 		{
 			ImGui::PushID("##sel_focused");
 			ImGui::PushFont(g_BoldLargeFont);
-			ImGui::TextUnformatted("Selected Elements");
+			ImGui::TextUnformatted("Selected Element");
 			ImGui::PopFont();
 			ImGui::Spacing();
 

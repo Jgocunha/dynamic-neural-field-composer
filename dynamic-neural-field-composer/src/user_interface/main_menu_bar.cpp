@@ -188,8 +188,8 @@ namespace dnf_composer::user_interface
             // Right-aligned version string
             {
                 char verBuf[16];
-                snprintf(verBuf, sizeof(verBuf), "V %d.%d",
-                         DNF_COMPOSER_VERSION_MAJOR, DNF_COMPOSER_VERSION_MINOR);
+                snprintf(verBuf, sizeof(verBuf), "V %d.%d.%d",
+                         DNF_COMPOSER_VERSION_MAJOR, DNF_COMPOSER_VERSION_MINOR, DNF_COMPOSER_VERSION_PATCH);
                 const float textW = ImGui::CalcTextSize(verBuf).x;
                 const float avail = ImGui::GetContentRegionAvail().x;
                 if (avail > textW + 8.0f)
@@ -297,7 +297,7 @@ namespace dnf_composer::user_interface
 	        std::exit(0);
 
 	    // Zoom in/out through presets
-	    static constexpr int presets[] = { 80, 90, 100, 110, 125, 150, 175, 200 };
+	    static constexpr int presets[] = { 80, 90, 100, 110, 125, 150 };
 	    static constexpr int presetCount = IM_ARRAYSIZE(presets);
 	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Equal)) // Ctrl++
 	    {

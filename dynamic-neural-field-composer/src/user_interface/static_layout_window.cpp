@@ -2,6 +2,7 @@
 
 #include "application/application.h"
 #include "user_interface/widgets.h"
+#include "user_interface/log_window.h"
 
 extern ImFont* g_BlackLargeFont;
 extern ImFont* g_BlackSmallFont;
@@ -152,7 +153,36 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::Separator();
 
-			nodeGraphWindow->renderGraph();
+			static bool s_logsOpen = false;
+
+			const float scale   = ImGui::GetIO().FontGlobalScale;
+			const float logH    = s_logsOpen ? 160.0f * scale : 0.0f;
+			const float headerH = ImGui::GetFrameHeightWithSpacing();
+			const float graphH  = ImGui::GetContentRegionAvail().y - logH - headerH;
+
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, std::max(graphH, 40.0f)), false,
+				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+			{
+				nodeGraphWindow->renderGraph();
+			}
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
+
+			ImGui::PushFont(g_BlackMediumFont);
+			s_logsOpen = ImGui::CollapsingHeader("Logs");
+			ImGui::PopFont();
+			if (s_logsOpen)
+			{
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+				if (ImGui::BeginChild("##ng_logs_c", ImVec2(0, logH), false,
+					ImGuiWindowFlags_NoSavedSettings))
+				{
+					LogWindow::renderContent();
+				}
+				ImGui::EndChild();
+				ImGui::PopStyleColor();
+			}
 		}
 		endPanel();
 	}
