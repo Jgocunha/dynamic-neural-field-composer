@@ -1,5 +1,5 @@
 PROJECT_NAME           = "Dynamic Neural Field Composer"
-PROJECT_BRIEF          = "A C++ application designed for developing Dynamic Neural Field Architectures."
+PROJECT_BRIEF          = "A C++20 library and interactive application for building and simulating Dynamic Neural Field (DNF) architectures."
 PROJECT_NUMBER         = @DNF_COMPOSER_VERSION@
 
 OUTPUT_DIRECTORY       = docs/
