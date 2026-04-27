@@ -229,6 +229,7 @@ namespace dnf_composer
             elementJson["normalized"] = gaussFieldCouplingParameters.normalized;
             elementJson["input_x_max"] = gaussFieldCouplingParameters.inputFieldDimensions.x_max;
             elementJson["input_d_x"] = gaussFieldCouplingParameters.inputFieldDimensions.d_x;
+            elementJson["couplings"] = json::array();
             for (const auto& coupling : gaussFieldCouplingParameters.couplings)
 				elementJson["couplings"] += {coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width};
         }
@@ -407,16 +408,18 @@ namespace dnf_composer
                 const double input_d_x = elementJson["input_d_x"];
 
                 std::vector<element::GaussCoupling> couplings;
-                couplings.reserve(elementJson["couplings"].size());
-                for (const auto& coupling : elementJson["couplings"])
+                if (elementJson.contains("couplings") && elementJson["couplings"].is_array())
                 {
-	                const double x_i = coupling[0];
-					const double x_j = coupling[1];
-                    const double amp = coupling[2];
-                    const double width = coupling[3];
-					auto gc = element::GaussCoupling(x_i, x_j, amp, width);
-					couplings.push_back(gc);
-				}
+                    couplings.reserve(elementJson["couplings"].size());
+                    for (const auto& coupling : elementJson["couplings"])
+                    {
+	                    const double x_i = coupling[0];
+					    const double x_j = coupling[1];
+                        const double amp = coupling[2];
+                        const double width = coupling[3];
+					    couplings.push_back(element::GaussCoupling(x_i, x_j, amp, width));
+				    }
+                }
 
                 auto coupling = std::make_shared<element::GaussFieldCoupling>(
 					element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),

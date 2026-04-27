@@ -788,7 +788,6 @@ namespace dnf_composer::user_interface
 		}
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 		{
-			ImGui::Text("Asymmetric Gauss kernels are not yet supported.");
 			const auto ak = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
 			if (!ak) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = ak->getParameters();
