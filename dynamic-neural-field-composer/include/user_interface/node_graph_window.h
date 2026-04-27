@@ -62,9 +62,11 @@ namespace dnf_composer::user_interface
 		ImVec2 initialPos     = {};
 		ImVec2 size           = { 380.0f, 300.0f };
 		bool   autoFit        = true;
-		float xMin = 0.f, xMax = 100.f, yMin = -20.f, yMax = 20.f;
+		float  xMin = 0.f, xMax = 100.f, yMin = -20.f, yMax = 20.f;
+		float  xStep          = 1.0f;
 		float  lineThickness  = 2.5f;
-		char   xLabel[64]     = "Spatial dimension";
+		char   title[128]     = "";
+		char   xLabel[64]     = "Spatial location";
 		char   yLabel[64]     = "Amplitude";
 	};
 

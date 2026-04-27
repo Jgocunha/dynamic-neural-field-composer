@@ -556,37 +556,38 @@ namespace dnf_composer::user_interface
 			}
 
 			bool open = true;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 2.0f));
+			const float ui = ImGui::GetIO().FontGlobalScale;
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
 			ImGui::PushFont(g_BlackLargeFont);
 			const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, cardFlags);
 			ImGui::PopFont();
 			ImGui::PopStyleColor();
+			ImGui::PopStyleVar();  // only affects title bar, not content
 
 			if (visible)
 			{
-				// Menu bar: Dimensions | Annotations | Line thickness
+				// Menu bar: Dimensions | Annotations | Line Thickness
 				if (ImGui::BeginMenuBar())
 				{
 					if (ImGui::BeginMenu("Dimensions"))
 					{
+						ImGui::DragFloat("X max",  &state.xMax,  0.1f, state.xMin, 1000.f,   "%.1f");
+						ImGui::DragFloat("Y max",  &state.yMax,  0.1f, state.yMin, 1000.f,   "%.2f");
+						ImGui::DragFloat("X min",  &state.xMin,  0.1f, -1000.f,   state.xMax, "%.1f");
+						ImGui::DragFloat("Y min",  &state.yMin,  0.1f, -10000.f,  state.yMax, "%.2f");
+						ImGui::DragFloat("X step", &state.xStep, 0.1f, 0.1f,      1000.f,    "%.1f");
 						ImGui::Checkbox("Auto-fit", &state.autoFit);
-						if (!state.autoFit)
-						{
-							ImGui::DragFloat("X min", &state.xMin, 0.5f, -10000.f, state.xMax, "%.1f");
-							ImGui::DragFloat("X max", &state.xMax, 0.5f, state.xMin, 10000.f, "%.1f");
-							ImGui::DragFloat("Y min", &state.yMin, 0.1f, -10000.f, state.yMax, "%.2f");
-							ImGui::DragFloat("Y max", &state.yMax, 0.1f, state.yMin, 10000.f, "%.2f");
-						}
 						ImGui::EndMenu();
 					}
 					if (ImGui::BeginMenu("Annotations"))
 					{
+						ImGui::InputText("Title",   state.title,  sizeof(state.title));
 						ImGui::InputText("X label", state.xLabel, sizeof(state.xLabel));
 						ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
 						ImGui::EndMenu();
 					}
-					if (ImGui::BeginMenu("Line thickness"))
+					if (ImGui::BeginMenu("Line Thickness"))
 					{
 						ImGui::SliderFloat("##lt", &state.lineThickness, 0.1f, 10.0f, "%.1f");
 						ImGui::EndMenu();
@@ -634,6 +635,17 @@ namespace dnf_composer::user_interface
 				}
 				else if (!isWM && comps)
 				{
+					if (state.title[0] == '\0')
+					{
+						const std::string defaultTitle = element->getUniqueName() + " components";
+						std::strncpy(state.title, defaultTitle.c_str(), sizeof(state.title) - 1);
+						state.title[sizeof(state.title) - 1] = '\0';
+					}
+
+					ImPlotFlags plotFlags = ImPlotFlags_Crosshairs;
+					if (state.autoFit)
+						plotFlags |= ImPlotFlags_Equal;
+
 					const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
 
 					if (!state.autoFit)
@@ -644,18 +656,22 @@ namespace dnf_composer::user_interface
 							ImPlotCond_Always);
 					}
 
-					const std::string plotTitle = element->getUniqueName() + " components";
-					if (ImPlot::BeginPlot(plotTitle.c_str(), ImVec2(plotW, plotH)))
+					const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+					if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(plotW, plotH), plotFlags))
 					{
 						ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+						ImPlot::SetupLegend(ImPlotLocation_SouthWest, ImPlotLegendFlags_None);
 
+						const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, state.lineThickness };
 						for (const auto& [name, data] : *comps)
 						{
 							if (data.size() < 2) continue;
 							std::vector<float> xs(data.size()), ys(data.size());
 							for (int i = 0; i < static_cast<int>(data.size()); ++i)
-								{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(data[i]); }
-							const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, static_cast<float>(state.lineThickness) };
+							{
+								xs[i] = static_cast<float>(i + 1) * state.xStep;
+								ys[i] = static_cast<float>(data[i]);
+							}
 							ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()), lineSpec);
 						}
 						ImPlot::EndPlot();
@@ -663,9 +679,8 @@ namespace dnf_composer::user_interface
 				}
 			}
 
-			if (!open) { it = plotCards_.erase(it); ImGui::End(); ImGui::PopStyleVar(); continue; }
+			if (!open) { it = plotCards_.erase(it); ImGui::End(); continue; }
 			ImGui::End();
-			ImGui::PopStyleVar();
 			++it;
 		}
 	}
