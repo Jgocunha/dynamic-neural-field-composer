@@ -573,10 +573,10 @@ namespace dnf_composer::user_interface
 						ImGui::Checkbox("Auto-fit", &state.autoFit);
 						if (!state.autoFit)
 						{
-							ImGui::InputDouble("X min", &state.xMin, 0, 0, "%.1f");
-							ImGui::InputDouble("X max", &state.xMax, 0, 0, "%.1f");
-							ImGui::InputDouble("Y min", &state.yMin, 0, 0, "%.1f");
-							ImGui::InputDouble("Y max", &state.yMax, 0, 0, "%.1f");
+							ImGui::DragFloat("X min", &state.xMin, 0.5f, -10000.f, state.xMax, "%.1f");
+							ImGui::DragFloat("X max", &state.xMax, 0.5f, state.xMin, 10000.f, "%.1f");
+							ImGui::DragFloat("Y min", &state.yMin, 0.1f, -10000.f, state.yMax, "%.2f");
+							ImGui::DragFloat("Y max", &state.yMax, 0.1f, state.yMin, 10000.f, "%.2f");
 						}
 						ImGui::EndMenu();
 					}
@@ -637,22 +637,17 @@ namespace dnf_composer::user_interface
 					const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
 
 					if (!state.autoFit)
-						{
-						static constexpr double safeMargin = 0.01;
+					{
 						ImPlot::SetNextAxesLimits(
-							state.xMin - safeMargin,
-							state.xMax + safeMargin,
-							state.yMin - safeMargin,
-							state.yMax + safeMargin
-						);
+							state.xMin, state.xMax,
+							state.yMin, state.yMax,
+							ImPlotCond_Always);
 					}
 
 					const std::string plotTitle = element->getUniqueName() + " components";
 					if (ImPlot::BeginPlot(plotTitle.c_str(), ImVec2(plotW, plotH)))
 					{
 						ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
-						if (!state.autoFit)
-							ImPlot::SetupAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax);
 
 						for (const auto& [name, data] : *comps)
 						{
