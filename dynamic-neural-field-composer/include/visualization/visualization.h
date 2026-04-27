@@ -22,10 +22,6 @@ namespace dnf_composer
 	/// @c render() the visualization pulls current data from the simulation and
 	/// forwards it to each plot's renderer.
 	///
-	/// Two layout modes are supported via @c setPlotWindowMode():
-	///   - @c TILED — each plot in its own ImGui window.
-	///   - (other modes as defined by PlotWindowMode).
-	///
 	/// @ingroup visualization
 	class Visualization
 	{
@@ -33,7 +29,6 @@ namespace dnf_composer
 		std::shared_ptr<Simulation> simulation;
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> plots;
 		std::string windowSuffix;
-		PlotWindowMode plotWindowMode = PlotWindowMode::TILED;
 	public:
 		/// @brief Construct a Visualization backed by the given simulation.
 		/// @param simulation  The simulation whose data will be visualized.
@@ -96,7 +91,5 @@ namespace dnf_composer
 		/// @brief Set a suffix appended to all ImGui window IDs to avoid collisions.
 		void setWindowIdSuffix(const std::string& s) { windowSuffix = s; }
 		void clearWindowIdSuffix() { windowSuffix.clear(); }
-		void setPlotWindowMode(PlotWindowMode mode) { plotWindowMode = mode; }
-		[[nodiscard]] PlotWindowMode getPlotWindowMode() const { return plotWindowMode; }
 	};
 }

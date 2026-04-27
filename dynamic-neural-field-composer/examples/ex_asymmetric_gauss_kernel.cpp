@@ -2,8 +2,6 @@
 #include "application/application.h"
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
-#include "user_interface/plots_window.h"
-
 // Asymmetric Gauss Kernel example
 //
 // A single neural field with an AsymmetricGaussKernel for self-excitation.

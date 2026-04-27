@@ -43,7 +43,6 @@ namespace dnf_composer::user_interface
 		simulationWindow = std::make_unique<SimulationWindow>(simulation);
 		elementWindow    = std::make_unique<ElementWindow>(simulation);
 		nodeGraphWindow  = std::make_unique<NodeGraphWindow>(simulation);
-		visualization->setPlotWindowMode(PlotWindowMode::INDIVIDUAL);
 		plotsWindow		= std::make_unique<PlotsWindow>(visualization);
 	}
 
