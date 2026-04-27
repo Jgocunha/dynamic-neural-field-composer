@@ -6,7 +6,7 @@
 
 namespace dnf_composer
 {
-	extern ImFont* g_BlackSmallFont;
+	extern ImFont* g_BlackLargeFont;
 
 	Visualization::Visualization(const std::shared_ptr<Simulation>& simulation)
 	{
@@ -245,7 +245,7 @@ namespace dnf_composer
 
 			const float ui = ImGui::GetIO().FontGlobalScale;
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
-			ImGui::PushFont(g_BlackSmallFont);
+			ImGui::PushFont(g_BlackLargeFont);
 			const bool open = ImGui::Begin(plotWindowTitle.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 			ImGui::PopFont();
 			ImGui::PopStyleVar();

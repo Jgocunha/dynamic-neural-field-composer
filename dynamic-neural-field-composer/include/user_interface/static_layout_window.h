@@ -8,6 +8,7 @@
 #include "user_interface/simulation_window.h"
 #include "user_interface/element_window.h"
 #include "user_interface/node_graph_window.h"
+#include "user_interface/plots_window.h"
 
 namespace dnf_composer::user_interface
 {
@@ -20,6 +21,7 @@ namespace dnf_composer::user_interface
 		std::unique_ptr<SimulationWindow>   simulationWindow;
 		std::unique_ptr<ElementWindow>      elementWindow;
 		std::unique_ptr<NodeGraphWindow>    nodeGraphWindow;
+		std::unique_ptr<PlotsWindow>		plotsWindow;
 
 	public:
 		StaticLayoutWindow(const std::shared_ptr<Simulation>&    simulation,

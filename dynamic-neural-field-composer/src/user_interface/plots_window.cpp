@@ -113,7 +113,7 @@ namespace dnf_composer::user_interface
 					// Title in menu bar
 					if (ImGui::BeginMenuBar())
 					{
-						ImGui::PushFont(g_BlackSmallFont);
+						ImGui::PushFont(g_BlackLargeFont);
 						ImGui::TextUnformatted(("Plot #" + std::to_string(plotId)).c_str());
 						ImGui::PopFont();
 						ImGui::EndMenuBar();

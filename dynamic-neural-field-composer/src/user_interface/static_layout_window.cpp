@@ -43,6 +43,8 @@ namespace dnf_composer::user_interface
 		simulationWindow = std::make_unique<SimulationWindow>(simulation);
 		elementWindow    = std::make_unique<ElementWindow>(simulation);
 		nodeGraphWindow  = std::make_unique<NodeGraphWindow>(simulation);
+		visualization->setPlotWindowMode(PlotWindowMode::INDIVIDUAL);
+		plotsWindow		= std::make_unique<PlotsWindow>(visualization);
 	}
 
 	void StaticLayoutWindow::render()
@@ -67,7 +69,10 @@ namespace dnf_composer::user_interface
 			ImGuiWindowFlags_NoDocking;
 
 		if (ImGui::Begin("##static_root", nullptr, root_flags))
+		{
 			drawPanels();
+			plotsWindow->render(); // plots are rendered outside any panel
+		}
 
 		ImGui::End();
 	}
