@@ -275,7 +275,7 @@ namespace dnf_composer::user_interface
 			showTooltip = ImGui::IsItemHovered();
 			ImGui::Spacing();
 
-			// ---- Inline sparkline for all components ----
+			// ---- Inline sparkline for all components ---- THIS SHOULD BE A FUNCTION
 			{
 				constexpr float plotW = minNodeSize;
 				constexpr float pad   = 3.0f;
@@ -594,7 +594,6 @@ namespace dnf_composer::user_interface
 					ImGui::EndMenuBar();
 				}
 
-				// Plot content
 				const auto* comps = element->getComponents();
 				const auto  lbl   = element->getLabel();
 				const bool  isWM  = (lbl == element::ElementLabel::FIELD_COUPLING ||

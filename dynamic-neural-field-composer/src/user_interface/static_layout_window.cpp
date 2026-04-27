@@ -156,12 +156,13 @@ namespace dnf_composer::user_interface
 			static bool s_logsOpen = false;
 
 			const float scale   = ImGui::GetIO().FontGlobalScale;
-			const float logH    = s_logsOpen ? 160.0f * scale : 0.0f;
-			const float headerH = ImGui::GetFrameHeightWithSpacing();
+			const float logH    = s_logsOpen ? 200.0f * scale : 0.0f;
+			const float logScrollbarH = 5.0f * scale;
+			const float headerH = ImGui::GetFrameHeightWithSpacing() + logScrollbarH;
 			const float graphH  = ImGui::GetContentRegionAvail().y - logH - headerH;
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, std::max(graphH, 40.0f)), false,
+			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, std::max(graphH, 5.0f)), false,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
 				nodeGraphWindow->renderGraph();
