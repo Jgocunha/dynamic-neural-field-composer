@@ -643,8 +643,8 @@ namespace dnf_composer::user_interface
 							std::vector<float> xs(data.size()), ys(data.size());
 							for (int i = 0; i < static_cast<int>(data.size()); ++i)
 								{ xs[i] = static_cast<float>(i); ys[i] = static_cast<float>(data[i]); }
-							//ImPlot::SetNextLineStyle(IMPLOT_AUTO_COL, state.lineThickness);
-							ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()));
+							const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, static_cast<float>(state.lineThickness) };
+							ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()), lineSpec);
 						}
 						ImPlot::EndPlot();
 					}
