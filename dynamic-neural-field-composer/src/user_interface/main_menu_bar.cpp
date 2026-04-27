@@ -297,7 +297,7 @@ namespace dnf_composer::user_interface
 	        std::exit(0);
 
 	    // Zoom in/out through presets
-	    static constexpr int presets[] = { 80, 90, 100, 110, 125, 150 };
+	    static constexpr int presets[] = { 70, 80, 90, 100, 110, 125, 150 };
 	    static constexpr int presetCount = IM_ARRAYSIZE(presets);
 	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Equal)) // Ctrl++
 	    {
