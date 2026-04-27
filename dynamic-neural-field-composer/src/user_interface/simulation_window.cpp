@@ -47,7 +47,6 @@ namespace dnf_composer::user_interface
 		ImGui::PushID("sim_params");
 
 		const float ui = ImGui::GetIO().FontGlobalScale;
-		const float gap = ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
 
 		const std::string id   = simulation->getIdentifier();
 
@@ -68,8 +67,6 @@ namespace dnf_composer::user_interface
 		if (idEdited || (ImGui::IsItemDeactivatedAfterEdit()))
 			simulation->setUniqueIdentifier(std::string(idBuf));
 
-		// spacer between the two groups
-		//ImGui::SameLine(0.0f, gap);
 
 		// Time step delta_t
 		ImGui::AlignTextToFramePadding();
@@ -89,32 +86,6 @@ namespace dnf_composer::user_interface
 
 		ImGui::SameLine();
 		ImGui::TextUnformatted("\xce\x94t");  // Δt
-
-		// // ICON_FA_ATOM  ICON_FA_STOPWATCH ICON_FA_CLOCK ICON_FA_HOURGLASS_HALF
-		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		// ImGui::PushFont(g_MonoMediumFont);
-		// ImGui::TextUnformatted(ICON_FA_CLOCK);
-		// ImGui::PopFont(); ImGui::SameLine();
-		// ImGui::PopStyleColor();
-
-		// ImGui::Text("Sim. time (t)");
-		// ImGui::SameLine();
-		// ImGui::PushFont(g_MonoMediumFont);
-		// ImGui::Text("%.2f", simulation->getT());
-		// ImGui::PopFont();
-		//
-		// ImGui::SameLine();
-		// const long long totalNs  = simulation->getTotalRunDuration().count();
-		// const long long totalUs  = totalNs / 1'000LL;
-		// const long long h        = totalUs / 3'600'000'000LL;
-		// const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
-		// const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
-		// const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
-		// ImGui::Text("Real time");
-		// ImGui::SameLine();
-		// ImGui::PushFont(g_MonoMediumFont);
-		// ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
-		// ImGui::PopFont();
 
 		ImGui::PopID();
 	}

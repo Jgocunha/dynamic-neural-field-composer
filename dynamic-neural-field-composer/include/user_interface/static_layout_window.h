@@ -34,7 +34,7 @@ namespace dnf_composer::user_interface
 		~StaticLayoutWindow() override = default;
 
 	private:
-		void drawPanels();
+		void drawPanels() const;
 
 		void panelSimulation (ImVec2 pos, ImVec2 size) const;
 		void panelElement    (ImVec2 pos, ImVec2 size) const;

@@ -11,16 +11,14 @@ extern ImFont* g_MediumIconsFont;
 
 namespace dnf_composer::user_interface
 {
-	// ── Column widths (fixed px at UI scale = 1.0, scale with zoom) ──────────
-	static constexpr float kColABase   = 475.0f;  // Simulation Control
+	// ── Column widths (fixed px at a UI scale = 1.0, scale with zoom) ──────────
+	static constexpr float kColABase   = 515.0f;  // Simulation Control
 	static constexpr float kColBBase   = 360.0f;  // Element Control (rightmost)
 	static constexpr float kStatusBarH = 40.0f;   // status bar height
 	static constexpr float kMargin     = 6.0f;
 	static constexpr float kRounding   = 8.0f;
 
-	// ── Panel helpers ─────────────────────────────────────────────────────────
-
-	static bool beginPanelFixed(const char* id, ImVec2 pos, ImVec2 size)
+	static bool beginPanelFixed(const char* id, const ImVec2 pos, const ImVec2 size)
 	{
 		ImGui::SetCursorScreenPos(pos);
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
@@ -37,7 +35,6 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 	}
 
-	// ── Constructor ───────────────────────────────────────────────────────────
 	StaticLayoutWindow::StaticLayoutWindow(
 		const std::shared_ptr<Simulation>&    simulation,
 		const std::shared_ptr<Visualization>& visualization)
@@ -48,7 +45,6 @@ namespace dnf_composer::user_interface
 		nodeGraphWindow  = std::make_unique<NodeGraphWindow>(simulation);
 	}
 
-	// ── render() ─────────────────────────────────────────────────────────────
 	void StaticLayoutWindow::render()
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -76,12 +72,11 @@ namespace dnf_composer::user_interface
 		ImGui::End();
 	}
 
-	// ── drawPanels() ──────────────────────────────────────────────────────────
-	void StaticLayoutWindow::drawPanels()
+	void StaticLayoutWindow::drawPanels() const
 	{
 		const ImVec2 origin = ImGui::GetWindowPos();
 		const ImVec2 total  = ImGui::GetWindowSize();
-		const float  m      = kMargin;
+		constexpr float  m      = kMargin;
 		const float  scale  = ImGui::GetIO().FontGlobalScale;
 
 		const float colAW   = kColABase * scale;
@@ -106,9 +101,8 @@ namespace dnf_composer::user_interface
 		panelStatusBar ({origin.x + m, y0 + fullH + m}, {total.x - m * 2.0f, statusH});
 	}
 
-	// ── Panel implementations ─────────────────────────────────────────────────
 
-	void StaticLayoutWindow::panelSimulation(ImVec2 pos, ImVec2 size) const
+	void StaticLayoutWindow::panelSimulation(const ImVec2 pos, const ImVec2 size) const
 	{
 		if (beginPanelFixed("##sl_sim", pos, size))
 		{
