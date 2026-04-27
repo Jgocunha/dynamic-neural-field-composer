@@ -180,7 +180,7 @@ namespace dnf_composer::user_interface
 		const ImU32  headerU32  = getHeaderColorForElementType(element->getLabel());
 		const ImVec4 headerVec4 = ImGui::ColorConvertU32ToFloat4(headerU32);
 
-		// Uniform pastel: blend element colour 35 % toward white
+		// Uniform pastel: blend element color 35 % toward white
 		const ImVec4 bodyVec4 = {
 			headerVec4.x * 0.35f + 0.65f,
 			headerVec4.y * 0.35f + 0.65f,
@@ -188,7 +188,7 @@ namespace dnf_composer::user_interface
 			1.0f
 		};
 
-		// No border, uniform colour, tighter top padding, so the title sits higher
+		// No border, uniform color, tighter top padding, so the title sits higher
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeRounding,    10.0f);
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeBorderWidth, 0.0f);
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodePadding,     ImVec4(8, 4, 8, 6));
@@ -198,12 +198,14 @@ namespace dnf_composer::user_interface
 		util::BlueprintNodeBuilder builder;
 		builder.Begin(nodeId);
 
+		bool showTooltip = false;
+
 		// ----- "HEADER" section used for the full node body ------------------
-		// Using the same pastel colour as NodeBg so the node is visually uniform.
+		// Using the same pastel color as NodeBg so the node is visually uniform.
 		// Putting all content here forces Input/Output pins to appear below it.
 		builder.Header(bodyVec4);
 		{
-			// Fixed node width — name is clipped and scrolls on hover.
+			// Fixed node width — the name is clipped and scrolls on hover.
 			static constexpr float minNodeSize = 250.0f;
 			static constexpr float scrollSpeed  = 50.0f;  // px / sec
 			static constexpr float scrollDelay  = 0.5f;   // sec pause before scrolling
@@ -270,12 +272,7 @@ namespace dnf_composer::user_interface
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_CIRCLE_INFO);
 			ImGui::PopFont();
-			if (ImGui::IsItemHovered())
-			{
-				ImNodeEditor::Suspend();
-				renderElementTooltip(element);
-				ImNodeEditor::Resume();
-			}
+			showTooltip = ImGui::IsItemHovered();
 			ImGui::Spacing();
 
 			// ---- Inline sparkline for all components ----
@@ -414,6 +411,15 @@ namespace dnf_composer::user_interface
 
 		ImNodeEditor::PopStyleColor(2);
 		ImNodeEditor::PopStyleVar(3);
+
+		// Suspend/Resume outside the BeginHorizontal (builder.Header) context to
+		// avoid corrupting the draw list clip-rect stack on long-name nodes.
+		if (showTooltip)
+		{
+			ImNodeEditor::Suspend();
+			renderElementTooltip(element);
+			ImNodeEditor::Resume();
+		}
 	}
 
 	void NodeGraphWindow::renderElementNodeConnections(const std::shared_ptr<element::Element>& element)
@@ -630,6 +636,18 @@ namespace dnf_composer::user_interface
 				else if (!isWM && comps)
 				{
 					const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+
+					if (!state.autoFit)
+						{
+						static constexpr double safeMargin = 0.01;
+						ImPlot::SetNextAxesLimits(
+							state.xMin - safeMargin,
+							state.xMax + safeMargin,
+							state.yMin - safeMargin,
+							state.yMax + safeMargin
+						);
+					}
+
 					const std::string plotTitle = element->getUniqueName() + " components";
 					if (ImPlot::BeginPlot(plotTitle.c_str(), ImVec2(plotW, plotH)))
 					{
@@ -709,15 +727,18 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::NEURAL_FIELD:
 		{
 			const auto nf = std::dynamic_pointer_cast<element::NeuralField>(element);
+			if (!nf) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = nf->getParameters();
 			ImGui::Text("Tau: %.2f", p.tau);
 			ImGui::Text("Resting level: %.2f", p.startingRestingLevel);
-			ImGui::Text("Activation fn: %s", p.activationFunction->toString().c_str());
+			if (p.activationFunction)
+				ImGui::Text("Activation fn: %s", p.activationFunction->toString().c_str());
 			break;
 		}
 		case element::ElementLabel::GAUSS_STIMULUS:
 		{
 			const auto gs = std::dynamic_pointer_cast<element::GaussStimulus>(element);
+			if (!gs) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = gs->getParameters();
 			ImGui::Text("Width: %.2f",     p.width);
 			ImGui::Text("Amplitude: %.2f", p.amplitude);
@@ -729,6 +750,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_KERNEL:
 		{
 			const auto gk = std::dynamic_pointer_cast<element::GaussKernel>(element);
+			if (!gk) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = gk->getParameters();
 			ImGui::Text("Width: %.2f",        p.width);
 			ImGui::Text("Amplitude: %.2f",    p.amplitude);
@@ -740,6 +762,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
 		{
 			const auto mh = std::dynamic_pointer_cast<element::MexicanHatKernel>(element);
+			if (!mh) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = mh->getParameters();
 			ImGui::Text("Width exc: %.2f",    p.widthExc);
 			ImGui::Text("Amplitude exc: %.2f",p.amplitudeExc);
@@ -753,6 +776,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::OSCILLATORY_KERNEL:
 		{
 			const auto ok = std::dynamic_pointer_cast<element::OscillatoryKernel>(element);
+			if (!ok) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = ok->getParameters();
 			ImGui::Text("Amplitude: %.2f",       p.amplitude);
 			ImGui::Text("Decay: %.4f",           p.decay);
@@ -764,7 +788,9 @@ namespace dnf_composer::user_interface
 		}
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 		{
+			ImGui::Text("Asymmetric Gauss kernels are not yet supported.");
 			const auto ak = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
+			if (!ak) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = ak->getParameters();
 			ImGui::Text("Width: %.2f",        p.width);
 			ImGui::Text("Amplitude: %.2f",    p.amplitude);
@@ -777,12 +803,14 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::NORMAL_NOISE:
 		{
 			const auto nn = std::dynamic_pointer_cast<element::NormalNoise>(element);
+			if (!nn) { ImGui::TextDisabled("(type mismatch)"); break; }
 			ImGui::Text("Amplitude: %.4f", nn->getParameters().amplitude);
 			break;
 		}
 		case element::ElementLabel::BOOST_STIMULUS:
 		{
 			const auto bs = std::dynamic_pointer_cast<element::BoostStimulus>(element);
+			if (!bs) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = bs->getParameters();
 			ImGui::Text("Amplitude: %.2f", p.amplitude);
 			ImGui::Text("Active: %s",      p.isActive ? "true" : "false");
@@ -791,6 +819,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEMORY_TRACE:
 		{
 			const auto mt = std::dynamic_pointer_cast<element::MemoryTrace>(element);
+			if (!mt) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = mt->getParameters();
 			ImGui::Text("Tau build: %.2f",  p.tauBuild);
 			ImGui::Text("Tau decay: %.2f",  p.tauDecay);
@@ -800,6 +829,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::FIELD_COUPLING:
 		{
 			const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element);
+			if (!fc) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p = fc->getParameters();
 			ImGui::Text("In dims: %d x %.2f",   p.inputFieldDimensions.x_max, p.inputFieldDimensions.d_x);
 			ImGui::Text("Rule: %s",             LearningRuleToString.at(p.learningRule).c_str());
@@ -811,6 +841,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 		{
 			const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
+			if (!gfc) { ImGui::TextDisabled("(type mismatch)"); break; }
 			const auto& p  = gfc->getParameters();
 			ImGui::Text("In dims: %d x %.2f", p.inputFieldDimensions.x_max, p.inputFieldDimensions.d_x);
 			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");

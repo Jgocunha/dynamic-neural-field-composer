@@ -245,6 +245,18 @@ namespace dnf_composer
 		        elementJson["normalized"] = oscillatoryKernelParameters.normalized;
 	        }
             break;
+        case element::ASYMMETRIC_GAUSS_KERNEL:
+        {
+            const auto kernel = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
+            const auto p = kernel->getParameters();
+            elementJson["width"]           = p.width;
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["timeShift"]       = p.timeShift;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
         case element::BOOST_STIMULUS:
         {
             const auto boostStimulus = std::dynamic_pointer_cast<element::BoostStimulus>(element);
@@ -429,6 +441,22 @@ namespace dnf_composer
 			        simulation->addElement(kernel);
 		        }
             break;
+        case element::ASYMMETRIC_GAUSS_KERNEL:
+        {
+            const double width           = elementJson["width"];
+            const double amplitude       = elementJson["amplitude"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const double timeShift       = elementJson["timeShift"];
+            const bool   circular        = elementJson["circular"];
+            const bool   normalized      = elementJson["normalized"];
+
+            auto kernel = std::make_shared<element::AsymmetricGaussKernel>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::AsymmetricGaussKernelParameters(width, amplitude, amplitudeGlobal, timeShift, circular, normalized)
+            );
+            simulation->addElement(kernel);
+        }
+        break;
         case element::BOOST_STIMULUS:
         {
             const double amplitude = elementJson["amplitude"];
