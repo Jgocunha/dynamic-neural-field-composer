@@ -258,6 +258,9 @@ install(FILES ${element_parameters_headers} DESTINATION ${DNF_COMPOSER_INC_INSTA
 # Install runtime resources (fonts, icons, images, layouts)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
 
+# Install sample data (simulation JSONs, coupling weights)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/" DESTINATION data)
+
 install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CONFIG_INSTALL_DIR}
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
@@ -304,6 +307,7 @@ function(add_example_executable target_name source_file)
             imgui::imgui
             imgui-platform-kit
             ${CMAKE_PROJECT_NAME})
+    install(TARGETS ${target_name} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 endfunction()
 
 # Define all examples
