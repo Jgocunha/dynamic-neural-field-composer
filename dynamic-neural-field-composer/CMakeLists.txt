@@ -273,21 +273,27 @@ endif()
 
 # Main launchers
 set(LAUNCHER dnf-composer-static)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-static.cpp" ${DNF_ICON_RC})
+add_executable(${LAUNCHER} WIN32 "src/dynamic-neural-field-composer-static.cpp" ${DNF_ICON_RC})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
 imgui::imgui
 imgui-platform-kit
 ${CMAKE_PROJECT_NAME})
+if(WIN32)
+    target_link_options(${LAUNCHER} PRIVATE /ENTRY:mainCRTStartup)
+endif()
 install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 
 set(LAUNCHER dnf-composer-dynamic)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-dynamic.cpp" ${DNF_ICON_RC})
+add_executable(${LAUNCHER} WIN32 "src/dynamic-neural-field-composer-dynamic.cpp" ${DNF_ICON_RC})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
         imgui::imgui
         imgui-platform-kit
         ${CMAKE_PROJECT_NAME})
+if(WIN32)
+    target_link_options(${LAUNCHER} PRIVATE /ENTRY:mainCRTStartup)
+endif()
 install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 
 # Function to add example executables
