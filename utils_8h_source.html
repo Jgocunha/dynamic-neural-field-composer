@@ -92,73 +92,78 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html">   10</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacednf__composer_1_1tools_1_1utils.html">dnf_composer::tools::utils</a></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a2b32560bde43a2406d004eb32c179978">countNumOfLinesInFile</a>(<span class="keyword">const</span> std::string&amp; filename);</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#ae3f5d4fdfbba22b62302a7609e4507e2">saveVectorToFile</a>(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; vector, <span class="keyword">const</span> std::string&amp; filename);</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    std::string <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a4bc031e8f5aab14bdb3300c871068b5d">replaceForwardSlashesWithBackslashes</a>(<span class="keyword">const</span> std::string&amp; str);</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;filesystem&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html">   11</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacednf__composer_1_1tools_1_1utils.html">dnf_composer::tools::utils</a></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="comment">// Returns the runtime install prefix (parent of bin/).</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="comment">// Falls back to the compile-time PROJECT_DIR in dev builds.</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    std::string <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc">getResourceRoot</a>();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a2b32560bde43a2406d004eb32c179978">countNumOfLinesInFile</a>(<span class="keyword">const</span> std::string&amp; filename);</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">   19</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">resizeMatrix</a>(std::vector&lt;std::vector&lt;T&gt;&gt;&amp; matrix, <span class="keywordtype">int</span> newRowSize, <span class="keywordtype">int</span> newColSize)</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        matrix.resize(newRowSize);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; newRowSize; i++)</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            matrix[i].resize(newColSize);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#ae3f5d4fdfbba22b62302a7609e4507e2">saveVectorToFile</a>(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; vector, <span class="keyword">const</span> std::string&amp; filename);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    std::string <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a4bc031e8f5aab14bdb3300c871068b5d">replaceForwardSlashesWithBackslashes</a>(<span class="keyword">const</span> std::string&amp; str);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">   23</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">resizeMatrix</a>(std::vector&lt;std::vector&lt;T&gt;&gt;&amp; matrix, <span class="keywordtype">int</span> newRowSize, <span class="keywordtype">int</span> newColSize)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        matrix.resize(newRowSize);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; newRowSize; i++)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            matrix[i].resize(newColSize);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
 </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#ac1903a87a4c1705f6410298e8141d72b">   27</a></span>    T <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#ac1903a87a4c1705f6410298e8141d72b">generateRandomNumber</a>(<span class="keyword">const</span> T&amp; min, <span class="keyword">const</span> T&amp; max)</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="comment">// Seed the random number generator with a random device</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        std::random_device rd;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        std::mt19937 gen(rd());</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="comment">// Create a uniform distribution from 1 to 2 (inclusive)</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        std::uniform_real_distribution&lt;&gt; dis(min, max);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="comment">// Generate a random integer between 1 and 2</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        T randomNum = dis(gen);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> randomNum;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#ac1903a87a4c1705f6410298e8141d72b">   31</a></span>    T <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#ac1903a87a4c1705f6410298e8141d72b">generateRandomNumber</a>(<span class="keyword">const</span> T&amp; min, <span class="keyword">const</span> T&amp; max)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="comment">// Seed the random number generator with a random device</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        std::random_device rd;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        std::mt19937 gen(rd());</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="comment">// Create a uniform distribution from 1 to 2 (inclusive)</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        std::uniform_real_distribution&lt;&gt; dis(min, max);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="comment">// Generate a random integer between 1 and 2</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        T randomNum = dis(gen);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> randomNum;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
 </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#ae0cdd9a5b819a33c8da85715120c9bd7">   40</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#ae0cdd9a5b819a33c8da85715120c9bd7">fillMatrixWithRandomValues</a>(std::vector&lt;std::vector&lt;T&gt;&gt;&amp; matrix, <span class="keywordtype">double</span> minRange = -1.0, <span class="keywordtype">double</span> maxRange = 1.0) {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        std::random_device rd;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        std::mt19937 gen(rd());</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        std::uniform_real_distribution&lt;&gt; dis(minRange, maxRange);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; row : matrix)</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; element : row)</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                element = dis(gen);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#ae0cdd9a5b819a33c8da85715120c9bd7">   44</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#ae0cdd9a5b819a33c8da85715120c9bd7">fillMatrixWithRandomValues</a>(std::vector&lt;std::vector&lt;T&gt;&gt;&amp; matrix, <span class="keywordtype">double</span> minRange = -1.0, <span class="keywordtype">double</span> maxRange = 1.0) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        std::random_device rd;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::mt19937 gen(rd());</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        std::uniform_real_distribution&lt;&gt; dis(minRange, maxRange);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; row : matrix)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; element : row)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                element = dis(gen);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
 </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">   49</a></span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">safe_localtime</a>(<span class="keyword">const</span> std::time_t* time, std::tm* result)</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> localtime_s(result, time) == 0;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordflow">return</span> localtime_r(time, result) != <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">   53</a></span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">safe_localtime</a>(<span class="keyword">const</span> std::time_t* time, std::tm* result)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">return</span> localtime_s(result, time) == 0;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                <span class="keywordflow">return</span> localtime_r(time, result) != <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
 </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
 </div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html">dnf_composer::tools::utils</a></div><div class="ttdef"><b>Definition</b> utils.h:11</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a276f23bf940a7393b0f90e5168770aa7"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">dnf_composer::tools::utils::resizeMatrix</a></div><div class="ttdeci">void resizeMatrix(std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix, int newRowSize, int newColSize)</div><div class="ttdef"><b>Definition</b> utils.h:19</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a2b32560bde43a2406d004eb32c179978"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a2b32560bde43a2406d004eb32c179978">dnf_composer::tools::utils::countNumOfLinesInFile</a></div><div class="ttdeci">int countNumOfLinesInFile(const std::string &amp;filename)</div><div class="ttdef"><b>Definition</b> utils.cpp:9</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a4bc031e8f5aab14bdb3300c871068b5d"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a4bc031e8f5aab14bdb3300c871068b5d">dnf_composer::tools::utils::replaceForwardSlashesWithBackslashes</a></div><div class="ttdeci">std::string replaceForwardSlashesWithBackslashes(const std::string &amp;str)</div><div class="ttdef"><b>Definition</b> utils.cpp:38</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a9b9ee760b745eb4a1dfabacac1c026d2"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">dnf_composer::tools::utils::safe_localtime</a></div><div class="ttdeci">bool safe_localtime(const std::time_t *time, std::tm *result)</div><div class="ttdef"><b>Definition</b> utils.h:49</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_ac1903a87a4c1705f6410298e8141d72b"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#ac1903a87a4c1705f6410298e8141d72b">dnf_composer::tools::utils::generateRandomNumber</a></div><div class="ttdeci">T generateRandomNumber(const T &amp;min, const T &amp;max)</div><div class="ttdef"><b>Definition</b> utils.h:27</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_ae0cdd9a5b819a33c8da85715120c9bd7"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#ae0cdd9a5b819a33c8da85715120c9bd7">dnf_composer::tools::utils::fillMatrixWithRandomValues</a></div><div class="ttdeci">void fillMatrixWithRandomValues(std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix, double minRange=-1.0, double maxRange=1.0)</div><div class="ttdef"><b>Definition</b> utils.h:40</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_ae3f5d4fdfbba22b62302a7609e4507e2"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#ae3f5d4fdfbba22b62302a7609e4507e2">dnf_composer::tools::utils::saveVectorToFile</a></div><div class="ttdeci">bool saveVectorToFile(const std::vector&lt; double &gt; &amp;vector, const std::string &amp;filename)</div><div class="ttdef"><b>Definition</b> utils.cpp:25</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html">dnf_composer::tools::utils</a></div><div class="ttdef"><b>Definition</b> utils.h:12</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a140c0903ddcfc3ba01218f11d31608dc"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc">dnf_composer::tools::utils::getResourceRoot</a></div><div class="ttdeci">std::string getResourceRoot()</div><div class="ttdef"><b>Definition</b> utils.cpp:16</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a276f23bf940a7393b0f90e5168770aa7"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">dnf_composer::tools::utils::resizeMatrix</a></div><div class="ttdeci">void resizeMatrix(std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix, int newRowSize, int newColSize)</div><div class="ttdef"><b>Definition</b> utils.h:23</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a2b32560bde43a2406d004eb32c179978"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a2b32560bde43a2406d004eb32c179978">dnf_composer::tools::utils::countNumOfLinesInFile</a></div><div class="ttdeci">int countNumOfLinesInFile(const std::string &amp;filename)</div><div class="ttdef"><b>Definition</b> utils.cpp:36</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a4bc031e8f5aab14bdb3300c871068b5d"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a4bc031e8f5aab14bdb3300c871068b5d">dnf_composer::tools::utils::replaceForwardSlashesWithBackslashes</a></div><div class="ttdeci">std::string replaceForwardSlashesWithBackslashes(const std::string &amp;str)</div><div class="ttdef"><b>Definition</b> utils.cpp:65</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_a9b9ee760b745eb4a1dfabacac1c026d2"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">dnf_composer::tools::utils::safe_localtime</a></div><div class="ttdeci">bool safe_localtime(const std::time_t *time, std::tm *result)</div><div class="ttdef"><b>Definition</b> utils.h:53</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_ac1903a87a4c1705f6410298e8141d72b"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#ac1903a87a4c1705f6410298e8141d72b">dnf_composer::tools::utils::generateRandomNumber</a></div><div class="ttdeci">T generateRandomNumber(const T &amp;min, const T &amp;max)</div><div class="ttdef"><b>Definition</b> utils.h:31</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_ae0cdd9a5b819a33c8da85715120c9bd7"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#ae0cdd9a5b819a33c8da85715120c9bd7">dnf_composer::tools::utils::fillMatrixWithRandomValues</a></div><div class="ttdeci">void fillMatrixWithRandomValues(std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix, double minRange=-1.0, double maxRange=1.0)</div><div class="ttdef"><b>Definition</b> utils.h:44</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1utils_html_ae3f5d4fdfbba22b62302a7609e4507e2"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1utils.html#ae3f5d4fdfbba22b62302a7609e4507e2">dnf_composer::tools::utils::saveVectorToFile</a></div><div class="ttdeci">bool saveVectorToFile(const std::vector&lt; double &gt; &amp;vector, const std::string &amp;filename)</div><div class="ttdef"><b>Definition</b> utils.cpp:52</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

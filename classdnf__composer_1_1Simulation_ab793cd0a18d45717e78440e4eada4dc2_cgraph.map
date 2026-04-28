@@ -1,7 +1,9 @@
 <map id="dnf_composer::Simulation::exportComponentToFile" name="dnf_composer::Simulation::exportComponentToFile">
-<area shape="rect" id="Node000001" title="Write the named component to a CSV file in the output directory." alt="" coords="5,37,197,77"/>
+<area shape="rect" id="Node000001" title="Write the named component to a CSV file in the output directory." alt="" coords="5,69,197,109"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="245,5,437,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,42,232,37,232,43,198,47"/>
-<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1utils.html#ae3f5d4fdfbba22b62302a7609e4507e2" title=" " alt="" coords="254,69,429,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="198,67,241,73,240,79,197,73"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,67,252,46,253,51,178,72"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title=" " alt="" coords="253,69,430,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="197,87,239,87,239,92,197,92"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1utils.html#ae3f5d4fdfbba22b62302a7609e4507e2" title=" " alt="" coords="254,133,429,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="178,107,253,127,252,132,176,112"/>
 </map>
