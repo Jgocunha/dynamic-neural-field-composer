@@ -1,4 +1,5 @@
 #include "simulation/simulation_file_manager.h"
+#include "tools/utils.h"
 
 
 namespace dnf_composer
@@ -9,7 +10,7 @@ namespace dnf_composer
 		: simulation(simulation), filePath(filePath)
 	{
         if (filePath.empty())
-            this->filePath = std::string(OUTPUT_DIRECTORY) + "/simulations/";
+            this->filePath = tools::utils::getResourceRoot() + "/data/simulations/";
 	}
 
 	void SimulationFileManager::saveElementsToJson() const

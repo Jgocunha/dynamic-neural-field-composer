@@ -3,6 +3,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
 #include "elements/field_coupling.h"
+#include "tools/utils.h"
 
 namespace dnf_composer
 {
@@ -19,7 +20,7 @@ namespace dnf_composer
 			components["weights"] = std::vector<double>(components.at("input").size()
 				* components.at("output").size());
 			std::ranges::fill(components["weights"], 0);
-			weightsDirectory = std::string(OUTPUT_DIRECTORY) + "/inter-field-synaptic-connections";
+			weightsDirectory = tools::utils::getResourceRoot() + "/data/inter-field-synaptic-connections";
 			readWeights();
 		}
 

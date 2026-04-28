@@ -4,6 +4,7 @@
 
 #include "simulation/simulation.h"
 #include "simulation/simulation_file_manager.h"
+#include "tools/utils.h"
 
 
 
@@ -463,7 +464,7 @@ namespace dnf_composer
 		const std::string timeSignature = std::format("{:%Y-%m-%d_%H-%M-%S}", localTime);
 
 		// Add the time signature to the filename
-		const std::string filename = std::string(OUTPUT_DIRECTORY) + "/exports/" + id + "_" + componentName + "_" + timeSignature + ".txt";
+		const std::string filename = tools::utils::getResourceRoot() + "/data/exports/" + id + "_" + componentName + "_" + timeSignature + ".txt";
 
 		const bool success = tools::utils::saveVectorToFile(component, filename);
 		if (success)

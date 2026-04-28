@@ -4,8 +4,35 @@
 
 #include "tools/utils.h"
 
+#ifdef _WIN32
+#  include <windows.h>
+#else
+#  include <climits>
+#  include <unistd.h>
+#endif
+
 namespace dnf_composer::tools::utils
 {
+	std::string getResourceRoot()
+	{
+		std::filesystem::path exeDir;
+#ifdef _WIN32
+		char buf[MAX_PATH];
+		GetModuleFileNameA(nullptr, buf, MAX_PATH);
+		exeDir = std::filesystem::path(buf).parent_path();
+#else
+		char buf[PATH_MAX] = {};
+		const ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+		if (len <= 0)
+			return std::string(PROJECT_DIR);
+		buf[len] = '\0';
+		exeDir = std::filesystem::path(buf).parent_path();
+#endif
+		const auto candidate = exeDir / ".." / "resources";
+		if (std::filesystem::exists(candidate))
+			return std::filesystem::weakly_canonical(exeDir / "..").string();
+		return std::string(PROJECT_DIR);
+	}
 	int countNumOfLinesInFile(const std::string& filename)
 	{
 		std::ifstream file(filename);
