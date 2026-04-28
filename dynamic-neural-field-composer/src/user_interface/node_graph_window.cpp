@@ -505,7 +505,7 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::handleNodeSelection() const
 	{
 		const ImNodeEditor::NodeId hovered = ImNodeEditor::GetHoveredNode();
-		if (!hovered || !ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) return;
+		if (!hovered) return;
 
 		const size_t id = hovered.Get();
 
@@ -515,18 +515,22 @@ namespace dnf_composer::user_interface
 			if (getNodeId(el) == id) { element = el; break; }
 		if (!element) return;
 
-		// Open a plot card for this node (never close on re-click).
-		if (!plotCards_.contains(id))
-		{
-			PlotCardState state;
-			const float midX = ngBoundsMin_.x + (ngBoundsMax_.x - ngBoundsMin_.x) * 0.5f;
-			const float midY = ngBoundsMin_.y + (ngBoundsMax_.y - ngBoundsMin_.y) * 0.5f;
-			state.initialPos = ImVec2(midX - state.size.x * 0.5f, midY - state.size.y * 0.5f);
-			plotCards_[id] = state;
-		}
+		// Single click — select element in the control panel.
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			ElementWindow::setFocusedElement(element);
 
-		// Notify the element control window.
-		ElementWindow::setFocusedElement(element);
+		// Double click — open plot card.
+		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		{
+			if (!plotCards_.contains(id))
+			{
+				PlotCardState state;
+				const float midX = ngBoundsMin_.x + (ngBoundsMax_.x - ngBoundsMin_.x) * 0.5f;
+				const float midY = ngBoundsMin_.y + (ngBoundsMax_.y - ngBoundsMin_.y) * 0.5f;
+				state.initialPos = ImVec2(midX - state.size.x * 0.5f, midY - state.size.y * 0.5f);
+				plotCards_[id] = state;
+			}
+		}
 	}
 
 	void NodeGraphWindow::renderNodePlotCards() const
