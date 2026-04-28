@@ -195,7 +195,7 @@ namespace dnf_composer::user_interface
                 if (avail > textW + 8.0f)
                 {
                     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - textW - 4.0f);
-                    ImGui::TextDisabled("%s", verBuf);
+                    ImGui::Text("%s", verBuf);
                 }
             }
 
