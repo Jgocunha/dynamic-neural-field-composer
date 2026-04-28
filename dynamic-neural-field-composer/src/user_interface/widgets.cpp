@@ -23,7 +23,7 @@ namespace dnf_composer::user_interface::widgets
 		{
 			ImGui::BeginTooltip();
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::Text(desc);
+			ImGui::TextUnformatted(desc);
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
 		}
@@ -149,7 +149,7 @@ namespace dnf_composer::user_interface::widgets
 		labelPos.x = labelX;
 
 		ImGui::SetCursorScreenPos(labelPos);
-		ImGui::Text(label);
+		ImGui::TextUnformatted(label);
 
 		ImGui::EndGroup();
 		ImGui::PopID();

@@ -275,7 +275,7 @@ namespace dnf_composer::user_interface
 			showTooltip = ImGui::IsItemHovered();
 			ImGui::Spacing();
 
-			// ---- Inline sparkline for all components ---- THIS SHOULD BE A FUNCTION
+			// ---- Inline sparkline for all components ----
 			{
 				constexpr float plotW = minNodeSize;
 				constexpr float pad   = 3.0f;

@@ -284,7 +284,6 @@ namespace dnf_composer::user_interface
 
 		static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
 
-		const float ui = ImGui::GetIO().FontGlobalScale;
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
 		{

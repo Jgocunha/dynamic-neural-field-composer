@@ -231,7 +231,7 @@ namespace dnf_composer
             elementJson["input_d_x"] = gaussFieldCouplingParameters.inputFieldDimensions.d_x;
             elementJson["couplings"] = json::array();
             for (const auto& coupling : gaussFieldCouplingParameters.couplings)
-				elementJson["couplings"] += {coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width};
+                elementJson["couplings"].push_back(json::array({coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width}));
         }
         break;
         case element::OSCILLATORY_KERNEL:
