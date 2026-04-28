@@ -56,6 +56,20 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	struct PlotCardState
+	{
+		bool   isFirstFrame   = true;
+		ImVec2 initialPos     = {};
+		ImVec2 size           = { 380.0f, 300.0f };
+		bool   autoFit        = true;
+		float  xMin = 0.f, xMax = 100.f, yMin = -20.f, yMax = 20.f;
+		float  xStep          = 1.0f;
+		float  lineThickness  = 2.5f;
+		char   title[128]     = "";
+		char   xLabel[64]     = "Spatial location";
+		char   yLabel[64]     = "Amplitude";
+	};
+
 	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
@@ -71,10 +85,12 @@ namespace dnf_composer::user_interface
 		mutable std::unordered_set<size_t>          positionedNodeIds_;
 		mutable std::unordered_map<size_t, ImVec2>  pendingInitialPositions_;
 
-		// Node inspector panel state.
-		mutable size_t  selectedNodeId_ = 0;
-		mutable ImVec2  inspectorPos_   = {};
-		mutable ImVec2  inspectorSize_  = {};
+		// Per-node floating plot cards (toggled by double-click).
+		mutable std::unordered_map<size_t, PlotCardState> plotCards_;
+
+		// Node graph panel bounds (updated every frame) for plot card clamping.
+		mutable ImVec2 ngBoundsMin_ = {};
+		mutable ImVec2 ngBoundsMax_ = {};
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -94,7 +110,7 @@ namespace dnf_composer::user_interface
 		void handlePinInteractions() const;
 		void handleLinkInteractions() const;
 		void handleNodeSelection() const;
-		void renderNodeInspectorPopup() const;
+		void renderNodePlotCards() const;
 		static size_t getNodeId(const std::shared_ptr<element::Element>& element);
 		static int    getColumnForElement(element::ElementLabel label);
 		static void applyCanvasStyle();

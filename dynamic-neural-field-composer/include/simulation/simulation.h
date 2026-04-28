@@ -155,6 +155,9 @@ namespace dnf_composer
 		/// @brief Return true if @c init() has been called and the simulation is ready.
 		bool isInitialized() const;
 
+		/// @brief Return true if the simulation is currently paused.
+		bool isPaused() const;
+
 		~Simulation() = default;
 		std::chrono::nanoseconds lastStepDuration{ 0 };
 		std::chrono::nanoseconds accumulatedRunDuration{ 0 };

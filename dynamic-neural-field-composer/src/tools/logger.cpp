@@ -115,7 +115,7 @@ namespace dnf_composer::tools::logger
         switch (level)
         {
         case DEBUG:     return imgui_kit::colours::Green;
-        case INFO:      return currentTextColor;
+        case INFO:      return imgui_kit::colours::White;
         case WARNING:   return imgui_kit::colours::Yellow;
         case ERROR:
         case FATAL:     return imgui_kit::colours::Red;

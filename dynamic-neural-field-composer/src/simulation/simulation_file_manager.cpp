@@ -229,8 +229,9 @@ namespace dnf_composer
             elementJson["normalized"] = gaussFieldCouplingParameters.normalized;
             elementJson["input_x_max"] = gaussFieldCouplingParameters.inputFieldDimensions.x_max;
             elementJson["input_d_x"] = gaussFieldCouplingParameters.inputFieldDimensions.d_x;
+            elementJson["couplings"] = json::array();
             for (const auto& coupling : gaussFieldCouplingParameters.couplings)
-				elementJson["couplings"] += {coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width};
+                elementJson["couplings"].push_back(json::array({coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width}));
         }
         break;
         case element::OSCILLATORY_KERNEL:
@@ -245,6 +246,18 @@ namespace dnf_composer
 		        elementJson["normalized"] = oscillatoryKernelParameters.normalized;
 	        }
             break;
+        case element::ASYMMETRIC_GAUSS_KERNEL:
+        {
+            const auto kernel = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
+            const auto p = kernel->getParameters();
+            elementJson["width"]           = p.width;
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["timeShift"]       = p.timeShift;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
         case element::BOOST_STIMULUS:
         {
             const auto boostStimulus = std::dynamic_pointer_cast<element::BoostStimulus>(element);
@@ -395,16 +408,18 @@ namespace dnf_composer
                 const double input_d_x = elementJson["input_d_x"];
 
                 std::vector<element::GaussCoupling> couplings;
-                couplings.reserve(elementJson["couplings"].size());
-                for (const auto& coupling : elementJson["couplings"])
+                if (elementJson.contains("couplings") && elementJson["couplings"].is_array())
                 {
-	                const double x_i = coupling[0];
-					const double x_j = coupling[1];
-                    const double amp = coupling[2];
-                    const double width = coupling[3];
-					auto gc = element::GaussCoupling(x_i, x_j, amp, width);
-					couplings.push_back(gc);
-				}
+                    couplings.reserve(elementJson["couplings"].size());
+                    for (const auto& coupling : elementJson["couplings"])
+                    {
+	                    const double x_i = coupling[0];
+					    const double x_j = coupling[1];
+                        const double amp = coupling[2];
+                        const double width = coupling[3];
+					    couplings.push_back(element::GaussCoupling(x_i, x_j, amp, width));
+				    }
+                }
 
                 auto coupling = std::make_shared<element::GaussFieldCoupling>(
 					element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -429,6 +444,22 @@ namespace dnf_composer
 			        simulation->addElement(kernel);
 		        }
             break;
+        case element::ASYMMETRIC_GAUSS_KERNEL:
+        {
+            const double width           = elementJson["width"];
+            const double amplitude       = elementJson["amplitude"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const double timeShift       = elementJson["timeShift"];
+            const bool   circular        = elementJson["circular"];
+            const bool   normalized      = elementJson["normalized"];
+
+            auto kernel = std::make_shared<element::AsymmetricGaussKernel>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::AsymmetricGaussKernelParameters(width, amplitude, amplitudeGlobal, timeShift, circular, normalized)
+            );
+            simulation->addElement(kernel);
+        }
+        break;
         case element::BOOST_STIMULUS:
         {
             const double amplitude = elementJson["amplitude"];

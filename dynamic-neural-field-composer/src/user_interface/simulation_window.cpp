@@ -47,7 +47,6 @@ namespace dnf_composer::user_interface
 		ImGui::PushID("sim_params");
 
 		const float ui = ImGui::GetIO().FontGlobalScale;
-		const float gap = ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
 
 		const std::string id   = simulation->getIdentifier();
 
@@ -68,8 +67,6 @@ namespace dnf_composer::user_interface
 		if (idEdited || (ImGui::IsItemDeactivatedAfterEdit()))
 			simulation->setUniqueIdentifier(std::string(idBuf));
 
-		// spacer between the two groups
-		//ImGui::SameLine(0.0f, gap);
 
 		// Time step delta_t
 		ImGui::AlignTextToFramePadding();
@@ -88,33 +85,7 @@ namespace dnf_composer::user_interface
 			editableDt_ = simulation->getDeltaT();  // keep in sync when not editing
 
 		ImGui::SameLine();
-		ImGui::TextUnformatted("dt");
-
-		// // ICON_FA_ATOM  ICON_FA_STOPWATCH ICON_FA_CLOCK ICON_FA_HOURGLASS_HALF
-		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		// ImGui::PushFont(g_MonoMediumFont);
-		// ImGui::TextUnformatted(ICON_FA_CLOCK);
-		// ImGui::PopFont(); ImGui::SameLine();
-		// ImGui::PopStyleColor();
-
-		ImGui::Text("Sim. time (t)");
-		ImGui::SameLine();
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%.2f", simulation->getT());
-		ImGui::PopFont();
-
-		ImGui::SameLine();
-		const long long totalNs  = simulation->getTotalRunDuration().count();
-		const long long totalUs  = totalNs / 1'000LL;
-		const long long h        = totalUs / 3'600'000'000LL;
-		const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
-		const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
-		const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
-		ImGui::Text("Real time");
-		ImGui::SameLine();
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
-		ImGui::PopFont();
+		ImGui::TextUnformatted("\xce\x94t");  // Δt
 
 		ImGui::PopID();
 	}
@@ -309,45 +280,36 @@ namespace dnf_composer::user_interface
 		ImGui::TextUnformatted("Add elements");
 		ImGui::PopFont();
 
-	    ImGui::Columns(2, nullptr, false);
-
-		// Left column
 		ImGui::TextUnformatted("Select type");
 
-		// Make the combo span the whole column width
-		ImGui::SetNextItemWidth(-FLT_MIN);          // or ImGui::PushItemWidth(-FLT_MIN);
 		static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
-		const char* current = element::ElementLabelToString.at(selected).c_str();
-		if (ImGui::BeginCombo("##element_type", current))
+
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
 		{
-			for (const auto& [fst, snd] : element::ElementLabelToString)
+			for (const auto& [lbl, name] : element::ElementLabelToString)
 			{
-				if (fst == element::ElementLabel::UNINITIALIZED) continue;
-				const bool is_selected = (selected == fst);
-				if (ImGui::Selectable(snd.c_str(), is_selected)) selected = fst;
-				if (is_selected) ImGui::SetItemDefaultFocus();
+				if (lbl == element::ElementLabel::UNINITIALIZED) continue;
+				const bool is_sel = (selected == lbl);
+				if (ImGui::Selectable(name.c_str(), is_sel)) selected = lbl;
+				if (is_sel) ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
 		}
 
 		ImGui::Spacing();
-		const bool addRequested = ImGui::Button("Add element", ImVec2(-FLT_MIN, 0));
+		ImGui::TextUnformatted("Define parameters");
 
-		// Right column
-	    ImGui::NextColumn();
-	    ImGui::TextUnformatted("Define parameters");
-
-	    // Fixed-size, scrollable pane for parameters
-	    // (tweak the height multiplier if you want more/less visible rows)
-	    const float col_w   = ImGui::GetColumnWidth();
-	    const float pad_w   = ImGui::GetStyle().ItemSpacing.x * 1.0f;
-	    const float child_w = col_w - pad_w; // fill the column width
-	    const float child_h = 280.0f * ImGui::GetIO().FontGlobalScale;
+		const float child_w = ImGui::GetContentRegionAvail().x;
+		const float child_h = 250.0f * ImGui::GetIO().FontGlobalScale;
 
 		constexpr ImGuiWindowFlags child_flags =
-	        //ImGuiWindowFlags_AlwaysVerticalScrollbar |
-	        ImGuiWindowFlags_AlwaysHorizontalScrollbar |
 	        ImGuiWindowFlags_NoSavedSettings;
+
+		// addRequested is set by the button rendered below, persisted via static.
+		static bool s_addRequested = false;
+		const bool addRequested = s_addRequested;
+		s_addRequested = false;
 
 	    if (ImGui::BeginChild("##params_scroll", ImVec2(child_w, child_h), true, child_flags))
 	    {
@@ -751,14 +713,17 @@ namespace dnf_composer::user_interface
             break;
         }
 
-	        // (Optional) ensure a small extra width, so a horizontal bar is always usable
-	        // ImGui::Dummy(ImVec2(child_w + 120.0f, 0));
-	    }
-	    ImGui::EndChild();
-
-	    ImGui::Columns(1);
-	    ImGui::PopID();
 	}
+	ImGui::EndChild();
+
+	ImGui::Spacing();
+	const float addBtnW = ImGui::GetContentRegionAvail().x;
+	const float addBtnH = ImGui::GetFrameHeight() * 1.2f;
+	if (ImGui::Button("Add element", ImVec2(addBtnW, addBtnH)))
+		s_addRequested = true;
+
+	ImGui::PopID();
+}
 
 	void SimulationWindow::renderRemoveElementCard() const
 	{
@@ -864,30 +829,8 @@ namespace dnf_composer::user_interface
 	    ComboFromElements("Source element", selectedSource);
 
 	    ImGui::Spacing();
-		// ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 
-		const float btnW = leftW - 15.0f;                             // same width as combos
-		const float btnH = ImGui::GetFrameHeight() * 1.2f;   // a bit taller looks nicer
 
-		// Disable until both target & source are chosen
-		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
-		ImGui::BeginDisabled(!canConnect);
-		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
-		ImGui::EndDisabled();
-		//ImGui::PopStyleColor(3);
-
-		if (connectPressed)
-		{
-			const auto target = simulation->getElement(selectedTarget);
-			const auto input  = simulation->getElement(selectedSource);
-			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
-			{
-				target->addInput(input);
-				simulation->init();
-			}
-		}
 
 	    //  Right column: current connections list (scrollable)
 	    ImGui::NextColumn();
@@ -895,9 +838,8 @@ namespace dnf_composer::user_interface
 		ImGui::SameLine();
 		widgets::renderHelpMarker("You can disconnect elements by pressing the 'unlink' buttons.");
 
-	    const float listH = 210.0f * ImGui::GetIO().FontGlobalScale;
+	    const float listH = 120.0f * ImGui::GetIO().FontGlobalScale;
 	    ImGui::BeginChild("##connections_scroll", ImVec2(0, listH), true,
-	                      ImGuiWindowFlags_AlwaysVerticalScrollbar |
 	                      ImGuiWindowFlags_NoSavedSettings);
 
 	    if (!selectedTarget.empty())
@@ -946,6 +888,27 @@ namespace dnf_composer::user_interface
 	    ImGui::EndChild();
 
 	    ImGui::Columns(1);
+
+		const float btnW = ImGui::GetContentRegionAvail().x;
+		const float btnH = ImGui::GetFrameHeight() * 1.2f;
+
+		// Disable until both target & source are chosen
+		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
+		ImGui::BeginDisabled(!canConnect);
+		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
+		ImGui::EndDisabled();
+
+		if (connectPressed)
+		{
+			const auto target = simulation->getElement(selectedTarget);
+			const auto input  = simulation->getElement(selectedSource);
+			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
+			{
+				target->addInput(input);
+				simulation->init();
+			}
+		}
+
 	    ImGui::PopID();
 	}
 

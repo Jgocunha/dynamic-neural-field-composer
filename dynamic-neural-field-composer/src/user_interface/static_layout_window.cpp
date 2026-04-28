@@ -2,35 +2,23 @@
 
 #include "application/application.h"
 #include "user_interface/widgets.h"
+#include "user_interface/log_window.h"
 
 extern ImFont* g_BlackLargeFont;
+extern ImFont* g_BlackSmallFont;
+extern ImFont* g_MonoMediumFont;
+extern ImFont* g_MediumIconsFont;
 
 namespace dnf_composer::user_interface
 {
-	// ── Left column widths (fixed pixels at UI scale = 1.0, scale with zoom) ──
-	// Both columns share the same base width so their content is never cropped.
-	// Only column C (node graph / plots / logs / plot control) stretches when
-	// the main window is resized.
-	static constexpr float kColABase = 475.0f;  // base px for Simulation + Neural Field Monitoring column
-	static constexpr float kColBBase = 360.0f;  // base px for Element Control column
+	// ── Column widths (fixed px at a UI scale = 1.0, scale with zoom) ──────────
+	static constexpr float kColABase   = 515.0f;  // Simulation Control
+	static constexpr float kColBBase   = 360.0f;  // Element Control (rightmost)
+	static constexpr float kStatusBarH = 40.0f;   // status bar height
+	static constexpr float kMargin     = 6.0f;
+	static constexpr float kRounding   = 8.0f;
 
-	static constexpr float kRowSimFrac  = 0.72f;   // Simulation Control height (of col A)
-	// Neural Field Monitoring = 1 - kRowSimFrac
-
-	static constexpr float kRowNodeFrac = 0.42f;   // Node graph height (of col C)
-	static constexpr float kRowPltFrac  = 0.42f;   // Plots height (of col C)
-	// Bottom strip = 1 - kRowNodeFrac - kRowPltFrac
-
-	static constexpr float kLogsFrac    = 0.55f;   // Logs width (of bottom strip)
-	// Plot Control = 1 - kLogsFrac
-
-	static constexpr float kMargin      = 6.0f;    // gap between panels (px)
-	static constexpr float kRounding    = 8.0f;    // child window rounding
-
-	// ── Panel helpers ─────────────────────────────────────────────────────────
-
-	// Non-scrollable panel (node graph, plots — manage their own scroll)
-	static bool beginPanelFixed(const char* id, ImVec2 pos, ImVec2 size)
+	static bool beginPanelFixed(const char* id, const ImVec2 pos, const ImVec2 size)
 	{
 		ImGui::SetCursorScreenPos(pos);
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
@@ -40,16 +28,6 @@ namespace dnf_composer::user_interface
 			ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	}
 
-	// Scrollable panel (simulation control, neural field monitoring)
-	static bool beginPanelScrollable(const char* id, ImVec2 pos, ImVec2 size)
-	{
-		ImGui::SetCursorScreenPos(pos);
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   kRounding);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
-		return ImGui::BeginChild(id, size, true, ImGuiWindowFlags_None);
-	}
-
 	static void endPanel()
 	{
 		ImGui::EndChild();
@@ -57,21 +35,17 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 	}
 
-	// ── Constructor ───────────────────────────────────────────────────────────
 	StaticLayoutWindow::StaticLayoutWindow(
 		const std::shared_ptr<Simulation>&    simulation,
 		const std::shared_ptr<Visualization>& visualization)
 		: simulation(simulation), visualization(visualization)
 	{
-		simulationWindow   = std::make_unique<SimulationWindow>(simulation);
-		elementWindow      = std::make_unique<ElementWindow>(simulation);
-		nodeGraphWindow    = std::make_unique<NodeGraphWindow>(simulation);
-		fieldMetricsWindow = std::make_unique<FieldMetricsWindow>(simulation);
-		plotControlWindow  = std::make_unique<PlotControlWindow>(visualization);
-		plotsWindow        = std::make_unique<PlotsWindow>(visualization);
+		simulationWindow = std::make_unique<SimulationWindow>(simulation);
+		elementWindow    = std::make_unique<ElementWindow>(simulation);
+		nodeGraphWindow  = std::make_unique<NodeGraphWindow>(simulation);
+		plotsWindow		= std::make_unique<PlotsWindow>(visualization);
 	}
 
-	// ── render() ─────────────────────────────────────────────────────────────
 	void StaticLayoutWindow::render()
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -94,54 +68,45 @@ namespace dnf_composer::user_interface
 			ImGuiWindowFlags_NoDocking;
 
 		if (ImGui::Begin("##static_root", nullptr, root_flags))
+		{
 			drawPanels();
+			plotsWindow->render(); // plots are rendered outside any panel
+		}
 
 		ImGui::End();
 	}
 
-	// ── drawPanels() ──────────────────────────────────────────────────────────
-	void StaticLayoutWindow::drawPanels()
+	void StaticLayoutWindow::drawPanels() const
 	{
 		const ImVec2 origin = ImGui::GetWindowPos();
 		const ImVec2 total  = ImGui::GetWindowSize();
-		const float  m      = kMargin;
+		constexpr float  m      = kMargin;
+		const float  scale  = ImGui::GetIO().FontGlobalScale;
 
-		// Left columns: fixed width scaled by the current UI zoom
-		const float scale  = ImGui::GetIO().FontGlobalScale;
-		const float colAW  = kColABase * scale;
-		const float colBW  = kColBBase * scale;
-		// Right column: takes whatever is left — expands/shrinks with the window
-		const float colCW  = total.x - colAW - colBW - m * 4.0f;
+		const float colAW   = kColABase * scale;
+		const float colBW   = kColBBase * scale;
+		const float statusH = kStatusBarH * scale;
 
-		const float fullH = total.y - m * 2.0f;
+		// Node graph (col C) fills the remaining horizontal space.
+		const float colCW = total.x - colAW - colBW - m * 4.0f;
 
-		const float simH  = fullH * kRowSimFrac - m * 0.5f;
-		const float nfmH  = fullH - simH - m;
+		// Full height of the three main columns; leave room for status bar + margin.
+		const float fullH = total.y - m * 2.0f - statusH - m;
 
-		const float nodeH = fullH * kRowNodeFrac - m * 0.5f;
-		const float pltH  = fullH * kRowPltFrac  - m * 0.5f;
-		const float botH  = fullH - nodeH - pltH - m * 2.0f;
-
-		const float logsW = colCW * kLogsFrac - m * 0.5f;
-		const float pctlW = colCW - logsW - m;
-
+		// Column x-positions: A (sim control) | C (node graph) | B (element control)
 		const float xA = origin.x + m;
-		const float xB = xA + colAW + m;
-		const float xC = xB + colBW + m;
+		const float xC = xA + colAW + m;
+		const float xB = xC + colCW + m;
 		const float y0 = origin.y + m;
 
-		panelSimulation  ({xA, y0},                             {colAW, simH });
-		panelFieldMonitor({xA, y0 + simH + m},                  {colAW, nfmH });
-		panelElement     ({xB, y0},                             {colBW, fullH});
-		panelNodeGraph   ({xC, y0},                             {colCW, nodeH});
-		panelPlots       ({xC, y0 + nodeH + m},                 {colCW, pltH });
-		panelLogs        ({xC, y0 + nodeH + pltH + m * 2.0f},  {logsW, botH });
-		panelPlotControl ({xC + logsW + m, y0 + nodeH + pltH + m * 2.0f}, {pctlW, botH});
+		panelSimulation({xA, y0}, {colAW, fullH});
+		panelNodeGraph ({xC, y0}, {colCW, fullH});
+		panelElement   ({xB, y0}, {colBW, fullH});
+		panelStatusBar ({origin.x + m, y0 + fullH + m}, {total.x - m * 2.0f, statusH});
 	}
 
-	// ── Panel implementations ─────────────────────────────────────────────────
 
-	void StaticLayoutWindow::panelSimulation(ImVec2 pos, ImVec2 size) const
+	void StaticLayoutWindow::panelSimulation(const ImVec2 pos, const ImVec2 size) const
 	{
 		if (beginPanelFixed("##sl_sim", pos, size))
 		{
@@ -153,7 +118,7 @@ namespace dnf_composer::user_interface
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 			if (ImGui::BeginChild("##sl_sim_scroll", ImVec2(0, 0), false,
-				ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NoSavedSettings))
+				ImGuiWindowFlags_NoSavedSettings))
 			{
 				simulationWindow->renderSimulationParametersCard();
 				ImGui::Spacing();
@@ -177,17 +142,46 @@ namespace dnf_composer::user_interface
 		endPanel();
 	}
 
-	void StaticLayoutWindow::panelFieldMonitor(ImVec2 pos, ImVec2 size) const
+	void StaticLayoutWindow::panelNodeGraph(ImVec2 pos, ImVec2 size) const
 	{
-		// Scrollable — number of cards varies
-		if (beginPanelScrollable("##sl_nfm", pos, size))
+		if (beginPanelFixed("##sl_node", pos, size))
 		{
 			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::Text("Neural Field Monitoring");
+			ImGui::Text("Node Graph");
 			ImGui::PopFont();
 			ImGui::Separator();
-			ImGui::Spacing();
-			fieldMetricsWindow->renderCards();
+
+			static bool s_logsOpen = false;
+
+			const float scale   = ImGui::GetIO().FontGlobalScale;
+			const float logH    = s_logsOpen ? 200.0f * scale : 0.0f;
+			const float logScrollbarH = 5.0f * scale;
+			const float headerH = ImGui::GetFrameHeightWithSpacing() + logScrollbarH;
+			const float graphH  = ImGui::GetContentRegionAvail().y - logH - headerH;
+
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, std::max(graphH, 5.0f)), false,
+				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+			{
+				nodeGraphWindow->renderGraph();
+			}
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
+
+			ImGui::PushFont(g_BlackMediumFont);
+			s_logsOpen = ImGui::CollapsingHeader("Logs");
+			ImGui::PopFont();
+			if (s_logsOpen)
+			{
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+				if (ImGui::BeginChild("##ng_logs_c", ImVec2(0, logH), false,
+					ImGuiWindowFlags_NoSavedSettings))
+				{
+					LogWindow::renderContent();
+				}
+				ImGui::EndChild();
+				ImGui::PopStyleColor();
+			}
 		}
 		endPanel();
 	}
@@ -202,7 +196,6 @@ namespace dnf_composer::user_interface
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			// renderElementControlCard() starts its own BeginChild — make it transparent
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 			elementWindow->renderElementControlCard();
 			ImGui::PopStyleColor();
@@ -210,62 +203,99 @@ namespace dnf_composer::user_interface
 		endPanel();
 	}
 
-	void StaticLayoutWindow::panelNodeGraph(ImVec2 pos, ImVec2 size) const
+	void StaticLayoutWindow::panelStatusBar(ImVec2 pos, ImVec2 size) const
 	{
-		if (beginPanelFixed("##sl_node", pos, size))
+		if (beginPanelFixed("##sl_status", pos, size))
 		{
-			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::Text("Node Graph");
+			const std::string simId = simulation->getIdentifier();
+			const bool running = simulation->isInitialized() && !simulation->isPaused();
+			const bool paused  = simulation->isInitialized() &&  simulation->isPaused();
+
+			const ImVec4 dotColor = running ? ImVec4(0.20f, 0.75f, 0.20f, 1.0f)
+			                      : paused  ? ImVec4(0.90f, 0.70f, 0.10f, 1.0f)
+			                                : ImVec4(0.75f, 0.20f, 0.20f, 1.0f);
+			const char* stateStr  = running ? "Running" : paused ? "Paused" : "Stopped";
+
+			// ── Logo (left-most) ───────────────────────────────────────────────
+			// ImGui::AlignTextToFramePadding();
+			// ImGui::PushFont(g_MediumIconsFont);
+			// ImGui::TextUnformatted(ICON_FA_ATOM);
+			// ImGui::PopFont();
+			// ImGui::SameLine(0, 8);
+
+			// ── Simulation name in bold-black small font ───────────────────────
+			ImGui::PushFont(g_BlackSmallFont);
+			const std::string identifier = simId + ".dnf";
+			ImGui::TextUnformatted(identifier.c_str());
 			ImGui::PopFont();
-			ImGui::Separator();
+			ImGui::SameLine(0, 20);
 
-			// Call renderGraph() directly — the outer ##sl_node child window already
-			// provides a clip rect for this region, and imgui-node-editor creates its
-			// own internal BeginChild for the canvas. Adding an extra intermediate
-			// child caused the canvas origin to go stale when the panel was moved.
-			nodeGraphWindow->renderGraph();
-		}
-		endPanel();
-	}
+			// ── State dot + state label ────────────────────────────────────────
+			ImGui::TextColored(dotColor, "\xe2\x97\x8f");  // U+25CF BLACK CIRCLE
+			ImGui::SameLine(0, 4);
+			ImGui::TextUnformatted(stateStr);
+			ImGui::SameLine(0, 14);
 
-	void StaticLayoutWindow::panelPlots(ImVec2 pos, ImVec2 size)
-	{
-		if (beginPanelFixed("##sl_plots", pos, size))
-		{
-			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::Text("Plots");
+			// ── Δt ────────────────────────────────────────────────────────────
+			ImGui::TextUnformatted("\xce\x94t");
+			ImGui::SameLine(0, 4);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::Text("%.1f", simulation->getDeltaT());
 			ImGui::PopFont();
-			ImGui::Separator();
+			ImGui::SameLine(0, 14);
 
-			// Use PlotsWindow tiled renderer — recomputes layout internally when
-			// plot count changes; respects child boundaries, no floating Begin() calls.
-			plotsWindow->renderTiles();
-		}
-		endPanel();
-	}
-
-	void StaticLayoutWindow::panelLogs(ImVec2 pos, ImVec2 size) const
-	{
-		if (beginPanelFixed("##sl_logs", pos, size))
-		{
-			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::Text("Logs");
+			// ── Sim. time ─────────────────────────────────────────────────────
+			ImGui::TextUnformatted("Sim. time");
+			ImGui::SameLine(0, 4);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::Text("%.0f", simulation->getT());
 			ImGui::PopFont();
-			ImGui::Separator();
-			LogWindow::renderContent();
-		}
-		endPanel();
-	}
+			ImGui::SameLine(0, 4);
+			ImGui::TextUnformatted("iter.");
+			ImGui::SameLine(0, 14);
 
-	void StaticLayoutWindow::panelPlotControl(ImVec2 pos, ImVec2 size) const
-	{
-		if (beginPanelFixed("##sl_pctl", pos, size))
-		{
-			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::Text("Plot Control");
+			// ── Real time ─────────────────────────────────────────────────────
+			const long long totalUs = simulation->getTotalRunDuration().count() / 1000LL;
+			const long long hh  = totalUs / 3'600'000'000LL;
+			const long long mm  = (totalUs % 3'600'000'000LL) / 60'000'000LL;
+			const long long ss  = (totalUs % 60'000'000LL)    / 1'000'000LL;
+			const long long ms  = (totalUs % 1'000'000LL)     / 1'000LL;
+			ImGui::TextUnformatted("Real time");
+			ImGui::SameLine(0, 4);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::Text("%lldh%lldm%llds%lldms", hh, mm, ss, ms);
 			ImGui::PopFont();
-			ImGui::Separator();
-			plotControlWindow->renderContent();
+
+			// ── FPS + Zoom — right-flushed ────────────────────────────────────
+			char fpsBuf[32], zoomBuf[16];
+			std::snprintf(fpsBuf,  sizeof(fpsBuf),  "%.1f", ImGui::GetIO().Framerate);
+			std::snprintf(zoomBuf, sizeof(zoomBuf), "%d%%",  static_cast<int>(Application::getUiScalePct()));
+
+			const float sep  = 14.0f;
+			const float rW   =
+				ImGui::CalcTextSize("FPS ").x + ImGui::CalcTextSize(fpsBuf).x  + sep +
+				ImGui::CalcTextSize("Zoom ").x + ImGui::CalcTextSize(zoomBuf).x +
+				ImGui::GetStyle().WindowPadding.x;
+
+			const float rightX = ImGui::GetWindowWidth() - rW;
+			const float curX   = ImGui::GetCursorPosX();
+			if (rightX > curX + sep)
+				ImGui::SameLine(rightX);
+			else
+				ImGui::SameLine(0, sep);
+
+			ImGui::TextUnformatted("FPS");
+			ImGui::SameLine(0, 4);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::TextUnformatted(fpsBuf);
+			ImGui::PopFont();
+			ImGui::SameLine(0, sep);
+
+			ImGui::TextUnformatted("Zoom");
+			ImGui::SameLine(0, 4);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::TextUnformatted(zoomBuf);
+			ImGui::PopFont();
 		}
 		endPanel();
 	}

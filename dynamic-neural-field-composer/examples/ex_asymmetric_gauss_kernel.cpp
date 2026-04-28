@@ -2,7 +2,6 @@
 #include "application/application.h"
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
-
 // Asymmetric Gauss Kernel example
 //
 // A single neural field with an AsymmetricGaussKernel for self-excitation.
@@ -28,10 +27,6 @@ int main()
 
 		const auto simulation = std::make_shared<Simulation>("example asymmetric gauss kernel", 10.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
-		const Application app{ simulation, visualization };
-
-		app.addWindow<user_interface::MainMenuBar>();
-		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
 		const auto gscp_1 = element::ElementCommonParameters{ "Gauss stimulus" };
 		const auto gsp_1 = element::GaussStimulusParameters{ 5, 15, 20 };
@@ -65,7 +60,12 @@ int main()
 								{gs_1->getUniqueName(), "output"}, });
 		visualization->plot({ {gk_1->getUniqueName(), "kernel"} });
 		visualization->plot({ {gk_1->getUniqueName(), "output"} });
-		
+
+		const Application app{ simulation, visualization };
+
+		app.addWindow<user_interface::MainMenuBar>();
+		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
+
 		app.init();
 
 		while (!app.hasGUIBeenClosed())

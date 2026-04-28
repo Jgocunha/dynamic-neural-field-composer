@@ -439,6 +439,11 @@ namespace dnf_composer
 		return initialized;
 	}
 
+	bool Simulation::isPaused() const
+	{
+		return paused;
+	}
+
 	void Simulation::generateUniqueIdentifier()
 	{
 		const auto now = std::chrono::system_clock::now();

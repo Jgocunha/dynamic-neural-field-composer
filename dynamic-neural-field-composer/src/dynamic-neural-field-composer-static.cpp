@@ -15,10 +15,6 @@ int main()
 		const auto simulation = std::make_shared<Simulation>("default simulation");
 		const auto visualization = std::make_shared<Visualization>(simulation);
 
-		// Static layout: the entire UI is arranged in a fixed panel grid managed by
-		// StaticLayoutWindow. Plots are rendered as resizable tiles inside a dedicated
-		// plots panel (PlotWindowMode::TILED). Docking is disabled; window positions
-		// and sizes are controlled programmatically.
 		const Application app{ simulation, visualization };
 
 		// Add the windows to the application

@@ -17,7 +17,7 @@ namespace dnf_composer::user_interface::widgets
 	void renderHelpMarker(const char* desc)
 	{
 		ImGui::PushFont(g_MediumIconsFont);
-		ImGui::TextDisabled(ICON_FA_CIRCLE_QUESTION);
+		ImGui::Text(ICON_FA_CIRCLE_QUESTION);
 		ImGui::PopFont();
 		if (ImGui::IsItemHovered())
 		{
@@ -149,9 +149,7 @@ namespace dnf_composer::user_interface::widgets
 		labelPos.x = labelX;
 
 		ImGui::SetCursorScreenPos(labelPos);
-		ImGui::PushStyleColor(ImGuiCol_Text, colLabel);
 		ImGui::TextUnformatted(label);
-		ImGui::PopStyleColor();
 
 		ImGui::EndGroup();
 		ImGui::PopID();
