@@ -263,7 +263,9 @@ jobs:
             ## Archive contents
 
             ```
-            bin/       — dnf-composer-static, dnf-composer-dynamic executables
+            bin/       — dnf-composer-static, dnf-composer-dynamic, and all ex_* example executables
+            data/      — example simulation JSON files and coupling weight files
+            resources/ — fonts, icons, and UI assets
             lib/       — compiled library (.lib / .a)
             include/   — public headers
             share/     — CMake config files (for find_package integration)
@@ -298,7 +300,7 @@ jobs:
 
             ## Changelog
 
-            Major changes to the UI.
+            Refer to the [CHANGELOG.md](CHANGELOG.md) file for a detailed list of changes.
           files: |
             dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip
             dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
