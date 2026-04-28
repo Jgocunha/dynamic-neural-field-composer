@@ -4,6 +4,38 @@
 
 #include "application/application.h"
 
+#include <filesystem>
+#ifdef _WIN32
+#  include <windows.h>
+#else
+#  include <unistd.h>
+#  include <climits>
+#endif
+
+namespace {
+    // Returns the root directory that contains the resources/ folder.
+    // Installed layout: exe lives in bin/, resources are at ../resources/.
+    // Dev build fallback: compile-time PROJECT_DIR points to the source tree.
+    std::string getResourceRoot()
+    {
+        std::filesystem::path exeDir;
+#ifdef _WIN32
+        char buf[MAX_PATH];
+        GetModuleFileNameA(nullptr, buf, MAX_PATH);
+        exeDir = std::filesystem::path(buf).parent_path();
+#else
+        char buf[PATH_MAX] = {};
+        readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+        exeDir = std::filesystem::path(buf).parent_path();
+#endif
+        const auto candidate = exeDir / ".." / "resources";
+        if (std::filesystem::exists(candidate))
+            return std::filesystem::weakly_canonical(exeDir / "..").string();
+
+        return std::string(PROJECT_DIR);
+    }
+}
+
 namespace dnf_composer
 {
 	float   Application::uiScalePct = 100.0f;
@@ -105,31 +137,32 @@ namespace dnf_composer
 	void Application::setGUIParameters()
 	{
 		using namespace imgui_kit;
+		const std::string root = getResourceRoot();
 		const WindowParameters winParams{ "Dynamic Neural Field Composer" };
 		const FontParameters fontParams({
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        18},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        12},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       12},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       18},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         12},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         18},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        20},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        30},
-			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
-			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 20},
-			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 26},
+			{root + "/resources/fonts/Cera Pro Light.ttf",        18},
+			{root + "/resources/fonts/Cera Pro Light.ttf",        12},
+			{root + "/resources/fonts/Cera Pro Light.ttf",        24},
+			{root + "/resources/fonts/Cera Pro Medium.ttf",       12},
+			{root + "/resources/fonts/Cera Pro Medium.ttf",       18},
+			{root + "/resources/fonts/Cera Pro Medium.ttf",       24},
+			{root + "/resources/fonts/Cera Pro Bold.ttf",         12},
+			{root + "/resources/fonts/Cera Pro Bold.ttf",         18},
+			{root + "/resources/fonts/Cera Pro Bold.ttf",         24},
+			{root + "/resources/fonts/Cera Pro Black.ttf",        20},
+			{root + "/resources/fonts/Cera Pro Black.ttf",        24},
+			{root + "/resources/fonts/Cera Pro Black.ttf",        30},
+			{root + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
+			{root + "/resources/fonts/JetBrainsMono-Regular.ttf", 20},
+			{root + "/resources/fonts/JetBrainsMono-Regular.ttf", 26},
 		});
 		const StyleParameters styleParams{Theme::Light, imgui_kit::colours::White};
 #ifdef _WIN32
-		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.ico" };
+		const IconParameters iconParams{ root + "/resources/icons/icon.ico" };
 #else
-		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.png" };
+		const IconParameters iconParams{ root + "/resources/icons/icon.png" };
 #endif
-		const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR)
+		const BackgroundImageParameters bgParams{ root
 			+ "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
 		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, bgParams };
 
