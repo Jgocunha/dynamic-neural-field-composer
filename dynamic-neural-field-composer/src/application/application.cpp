@@ -25,7 +25,8 @@ namespace {
         exeDir = std::filesystem::path(buf).parent_path();
 #else
         char buf[PATH_MAX] = {};
-        readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+        const ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+        if (len > 0) buf[len] = '\0';
         exeDir = std::filesystem::path(buf).parent_path();
 #endif
         const auto candidate = exeDir / ".." / "resources";

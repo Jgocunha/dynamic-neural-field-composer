@@ -642,8 +642,7 @@ namespace dnf_composer::user_interface
 					if (state.title[0] == '\0')
 					{
 						const std::string defaultTitle = element->getUniqueName() + " components";
-						std::strncpy(state.title, defaultTitle.c_str(), sizeof(state.title) - 1);
-						state.title[sizeof(state.title) - 1] = '\0';
+						std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
 					}
 
 					ImPlotFlags plotFlags = ImPlotFlags_Crosshairs;
