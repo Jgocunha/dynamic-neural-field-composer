@@ -86,10 +86,11 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="static__layout__window_8h_source.html">user_interface/static_layout_window.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="application_8h_source.html">application/application.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="widgets_8h_source.html">user_interface/widgets.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="log__window_8h_source.html">user_interface/log_window.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for static_layout_window.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="static__layout__window_8cpp__incl.svg" width="4634" height="858"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="static__layout__window_8cpp__incl.svg" width="3748" height="858"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -101,10 +102,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac8c41b5cfdb82bfa0834449637757dfc" id="r_ac8c41b5cfdb82bfa0834449637757dfc"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ac8c41b5cfdb82bfa0834449637757dfc">dnf_composer::user_interface::beginPanelFixed</a> (const char *id, ImVec2 pos, ImVec2 size)</td></tr>
-<tr class="separator:ac8c41b5cfdb82bfa0834449637757dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a766c2c40d64e08d03e023c7ca7606900" id="r_a766c2c40d64e08d03e023c7ca7606900"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a766c2c40d64e08d03e023c7ca7606900">dnf_composer::user_interface::beginPanelScrollable</a> (const char *id, ImVec2 pos, ImVec2 size)</td></tr>
-<tr class="separator:a766c2c40d64e08d03e023c7ca7606900"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab340a065fe086aaed2dd6ae8f42069f0" id="r_ab340a065fe086aaed2dd6ae8f42069f0"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ab340a065fe086aaed2dd6ae8f42069f0">dnf_composer::user_interface::beginPanelFixed</a> (const char *id, const ImVec2 pos, const ImVec2 size)</td></tr>
+<tr class="separator:ab340a065fe086aaed2dd6ae8f42069f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6d342e4cc010fb3c1806665622d8dc2" id="r_af6d342e4cc010fb3c1806665622d8dc2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#af6d342e4cc010fb3c1806665622d8dc2">dnf_composer::user_interface::endPanel</a> ()</td></tr>
 <tr class="separator:af6d342e4cc010fb3c1806665622d8dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -112,22 +111,22 @@ Functions</h2></td></tr>
 Variables</h2></td></tr>
 <tr class="memitem:ae2d4e31dfa1ba6a2ff49ce8b28f5ef0a" id="r_ae2d4e31dfa1ba6a2ff49ce8b28f5ef0a"><td class="memItemLeft" align="right" valign="top">ImFont *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="static__layout__window_8cpp.html#ae2d4e31dfa1ba6a2ff49ce8b28f5ef0a">g_BlackLargeFont</a></td></tr>
 <tr class="separator:ae2d4e31dfa1ba6a2ff49ce8b28f5ef0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27ba5eaee61a692beadec1097b318aeb" id="r_a27ba5eaee61a692beadec1097b318aeb"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a27ba5eaee61a692beadec1097b318aeb">dnf_composer::user_interface::kColABase</a> = 475.0f</td></tr>
+<tr class="memitem:ad98ec47ef8b1ca8d9e64252778180583" id="r_ad98ec47ef8b1ca8d9e64252778180583"><td class="memItemLeft" align="right" valign="top">ImFont *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="static__layout__window_8cpp.html#ad98ec47ef8b1ca8d9e64252778180583">g_BlackSmallFont</a></td></tr>
+<tr class="separator:ad98ec47ef8b1ca8d9e64252778180583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab636fc3adb29080376f5836eedb97459" id="r_ab636fc3adb29080376f5836eedb97459"><td class="memItemLeft" align="right" valign="top">ImFont *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="static__layout__window_8cpp.html#ab636fc3adb29080376f5836eedb97459">g_MediumIconsFont</a></td></tr>
+<tr class="separator:ab636fc3adb29080376f5836eedb97459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4e8c7d5b0ddb0b5b625a6ed1f681d5" id="r_a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"><td class="memItemLeft" align="right" valign="top">ImFont *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="static__layout__window_8cpp.html#a3f4e8c7d5b0ddb0b5b625a6ed1f681d5">g_MonoMediumFont</a></td></tr>
+<tr class="separator:a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27ba5eaee61a692beadec1097b318aeb" id="r_a27ba5eaee61a692beadec1097b318aeb"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a27ba5eaee61a692beadec1097b318aeb">dnf_composer::user_interface::kColABase</a> = 515.0f</td></tr>
 <tr class="separator:a27ba5eaee61a692beadec1097b318aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d02a52b2abd82f968ac4f6d941ba610" id="r_a0d02a52b2abd82f968ac4f6d941ba610"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a0d02a52b2abd82f968ac4f6d941ba610">dnf_composer::user_interface::kColBBase</a> = 360.0f</td></tr>
 <tr class="separator:a0d02a52b2abd82f968ac4f6d941ba610"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41d9e4ebeeb4e59dabe4c06507075cf6" id="r_a41d9e4ebeeb4e59dabe4c06507075cf6"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a41d9e4ebeeb4e59dabe4c06507075cf6">dnf_composer::user_interface::kLogsFrac</a> = 0.55f</td></tr>
-<tr class="separator:a41d9e4ebeeb4e59dabe4c06507075cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fba05da09b3226b7b9387214790d876" id="r_a0fba05da09b3226b7b9387214790d876"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876">dnf_composer::user_interface::kMargin</a> = 6.0f</td></tr>
 <tr class="separator:a0fba05da09b3226b7b9387214790d876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1988e209df0972bf3d47aff867ec17bb" id="r_a1988e209df0972bf3d47aff867ec17bb"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb">dnf_composer::user_interface::kRounding</a> = 8.0f</td></tr>
 <tr class="separator:a1988e209df0972bf3d47aff867ec17bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a339738766778ca7af92acab4c564821f" id="r_a339738766778ca7af92acab4c564821f"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a339738766778ca7af92acab4c564821f">dnf_composer::user_interface::kRowNodeFrac</a> = 0.42f</td></tr>
-<tr class="separator:a339738766778ca7af92acab4c564821f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75467bceb807c9b5f2c331320b9c713a" id="r_a75467bceb807c9b5f2c331320b9c713a"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a75467bceb807c9b5f2c331320b9c713a">dnf_composer::user_interface::kRowPltFrac</a> = 0.42f</td></tr>
-<tr class="separator:a75467bceb807c9b5f2c331320b9c713a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc07d3547b3258d509dd963f85131c22" id="r_acc07d3547b3258d509dd963f85131c22"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#acc07d3547b3258d509dd963f85131c22">dnf_composer::user_interface::kRowSimFrac</a> = 0.72f</td></tr>
-<tr class="separator:acc07d3547b3258d509dd963f85131c22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca0b9da0c83e99184bbfe2121278c9b5" id="r_aca0b9da0c83e99184bbfe2121278c9b5"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5">dnf_composer::user_interface::kStatusBarH</a> = 40.0f</td></tr>
+<tr class="separator:aca0b9da0c83e99184bbfe2121278c9b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="ae2d4e31dfa1ba6a2ff49ce8b28f5ef0a" name="ae2d4e31dfa1ba6a2ff49ce8b28f5ef0a"></a>
@@ -141,6 +140,72 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">ImFont* g_BlackLargeFont</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad98ec47ef8b1ca8d9e64252778180583" name="ad98ec47ef8b1ca8d9e64252778180583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad98ec47ef8b1ca8d9e64252778180583">&#9670;&#160;</a></span>g_BlackSmallFont</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImFont* g_BlackSmallFont</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab636fc3adb29080376f5836eedb97459" name="ab636fc3adb29080376f5836eedb97459"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab636fc3adb29080376f5836eedb97459">&#9670;&#160;</a></span>g_MediumIconsFont</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImFont* g_MediumIconsFont</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f4e8c7d5b0ddb0b5b625a6ed1f681d5" name="a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4e8c7d5b0ddb0b5b625a6ed1f681d5">&#9670;&#160;</a></span>g_MonoMediumFont</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImFont* g_MonoMediumFont</td>
         </tr>
       </table>
   </td>

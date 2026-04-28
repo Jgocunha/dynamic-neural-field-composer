@@ -36,7 +36,7 @@ var searchData=
   ['asymmetricgausskernel_33',['asymmetricgausskernel',['../classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a26feb3d17ba3b9b1bb7ec3925ecabecb',1,'dnf_composer::element::AsymmetricGaussKernel::AsymmetricGaussKernel()'],['../classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html',1,'dnf_composer::element::AsymmetricGaussKernel']]],
   ['asymmetricgausskernelparameters_34',['asymmetricgausskernelparameters',['../structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html#a1642aaba3c187025b6e22d6fe2e2cd5c',1,'dnf_composer::element::AsymmetricGaussKernelParameters::AsymmetricGaussKernelParameters()'],['../structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html',1,'dnf_composer::element::AsymmetricGaussKernelParameters']]],
   ['autodimensions_35',['autoDimensions',['../structdnf__composer_1_1HeatmapParameters.html#aad8b54d02d052f8eb240d288dff25050',1,'dnf_composer::HeatmapParameters']]],
-  ['autofit_36',['autoFit',['../structdnf__composer_1_1LinePlotParameters.html#abefae8b7383e23ee0e612199bea66bb0',1,'dnf_composer::LinePlotParameters']]],
+  ['autofit_36',['autofit',['../structdnf__composer_1_1LinePlotParameters.html#abefae8b7383e23ee0e612199bea66bb0',1,'dnf_composer::LinePlotParameters::autoFit'],['../structdnf__composer_1_1user__interface_1_1PlotCardState.html#ab01d5dfedd7f294f6eb17670749ebcc3',1,'dnf_composer::user_interface::PlotCardState::autoFit']]],
   ['autoscale_37',['autoScale',['../structdnf__composer_1_1HeatmapParameters.html#a4f40f267ab5ab47ad388cead073be0bf',1,'dnf_composer::HeatmapParameters']]],
   ['ax_38',['ax',['../namespaceax.html',1,'']]],
   ['ax_3a_3adrawing_39',['Drawing',['../namespaceax_1_1Drawing.html',1,'ax']]],

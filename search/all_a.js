@@ -13,16 +13,11 @@ var searchData=
   ['kernel_2ecpp_10',['kernel.cpp',['../kernel_8cpp.html',1,'']]],
   ['kernel_2eh_11',['kernel.h',['../kernel_8h.html',1,'']]],
   ['kernelrange_12',['kernelRange',['../classdnf__composer_1_1element_1_1Kernel.html#a21bfe5104e2b8711d063b60218452955',1,'dnf_composer::element::Kernel']]],
-  ['klogsfrac_13',['kLogsFrac',['../namespacednf__composer_1_1user__interface.html#a41d9e4ebeeb4e59dabe4c06507075cf6',1,'dnf_composer::user_interface']]],
-  ['kmargin_14',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
-  ['knamelineh_15',['kNameLineH',['../namespacednf__composer_1_1user__interface.html#a1874f044a0b5d5ce08008dc42d70b8b0',1,'dnf_composer::user_interface']]],
-  ['kpadv_16',['kPadV',['../namespacednf__composer_1_1user__interface.html#a87e6dc87f52810a78ca4526c415b3836',1,'dnf_composer::user_interface']]],
-  ['krounding_17',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
-  ['krownodefrac_18',['kRowNodeFrac',['../namespacednf__composer_1_1user__interface.html#a339738766778ca7af92acab4c564821f',1,'dnf_composer::user_interface']]],
-  ['krowpltfrac_19',['kRowPltFrac',['../namespacednf__composer_1_1user__interface.html#a75467bceb807c9b5f2c331320b9c713a',1,'dnf_composer::user_interface']]],
-  ['krowsimfrac_20',['kRowSimFrac',['../namespacednf__composer_1_1user__interface.html#acc07d3547b3258d509dd963f85131c22',1,'dnf_composer::user_interface']]],
-  ['kseph_21',['kSepH',['../namespacednf__composer_1_1user__interface.html#aea10c24138e62862e9295dbf1bca4ffc',1,'dnf_composer::user_interface']]],
-  ['ksplitterthickness_22',['kSplitterThickness',['../namespacednf__composer_1_1user__interface.html#aad78dd5c1c1f126f021a580887fe20e1',1,'dnf_composer::user_interface']]],
-  ['ktextlineh_23',['kTextLineH',['../namespacednf__composer_1_1user__interface.html#a42bf6a4e9db699ff4a80326b404a71f8',1,'dnf_composer::user_interface']]],
-  ['ktileminsize_24',['kTileMinSize',['../namespacednf__composer_1_1user__interface.html#aaa4dbec4e95bccf0202d4b5359122383',1,'dnf_composer::user_interface']]]
+  ['kmargin_13',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
+  ['knamelineh_14',['kNameLineH',['../namespacednf__composer_1_1user__interface.html#a1874f044a0b5d5ce08008dc42d70b8b0',1,'dnf_composer::user_interface']]],
+  ['kpadv_15',['kPadV',['../namespacednf__composer_1_1user__interface.html#a87e6dc87f52810a78ca4526c415b3836',1,'dnf_composer::user_interface']]],
+  ['krounding_16',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
+  ['kseph_17',['kSepH',['../namespacednf__composer_1_1user__interface.html#aea10c24138e62862e9295dbf1bca4ffc',1,'dnf_composer::user_interface']]],
+  ['kstatusbarh_18',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
+  ['ktextlineh_19',['kTextLineH',['../namespacednf__composer_1_1user__interface.html#a42bf6a4e9db699ff4a80326b404a71f8',1,'dnf_composer::user_interface']]]
 ];

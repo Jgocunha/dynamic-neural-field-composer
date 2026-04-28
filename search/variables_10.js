@@ -14,7 +14,7 @@ var searchData=
   ['showtoolidstacktool_11',['showToolIdStackTool',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#a885e5753fea6dec7c5689e36297315de',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
   ['showtoolmetrics_12',['showToolMetrics',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#ae313732d8c5e6d37d6efcabe844f81b2',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
   ['showtoolstyleeditor_13',['showToolStyleEditor',['../structdnf__composer_1_1user__interface_1_1AdvancedSettingsFlags.html#afead4c3eb4a0d4ccdb1b3ef8a6a9c46b',1,'dnf_composer::user_interface::AdvancedSettingsFlags']]],
-  ['size_14',['size',['../structdnf__composer_1_1element_1_1ElementDimensions.html#a0a811c3580e4db4a561bed0e9ad08283',1,'dnf_composer::element::ElementDimensions']]],
+  ['size_14',['size',['../structdnf__composer_1_1element_1_1ElementDimensions.html#a0a811c3580e4db4a561bed0e9ad08283',1,'dnf_composer::element::ElementDimensions::size'],['../structdnf__composer_1_1user__interface_1_1PlotCardState.html#a26cf4e2e9d01960d42e669f21b4ea561',1,'dnf_composer::user_interface::PlotCardState::size']]],
   ['stable_15',['stable',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#aa38389f0d65c300b3ff8ab336a98936e',1,'dnf_composer::element::NeuralFieldState']]],
   ['startingrestinglevel_16',['startingRestingLevel',['../structdnf__composer_1_1element_1_1NeuralFieldParameters.html#acf66b24e1ca4f5b8cd9b4ee602ef24fc',1,'dnf_composer::element::NeuralFieldParameters']]],
   ['startposition_17',['startPosition',['../structdnf__composer_1_1element_1_1NeuralFieldBump.html#a6c6aeb22d2c435113284d107d2b7845e',1,'dnf_composer::element::NeuralFieldBump']]],

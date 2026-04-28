@@ -20,6 +20,5 @@ var searchData=
   ['imguifreetypeloaderflags_5fnoautohint_17',['ImGuiFreeTypeLoaderFlags_NoAutoHint',['../imgui__freetype_8h.html#ae4638626618a00186bcedf096a86c90daa67c0999644f10a7bc02d7ae51e30c90',1,'imgui_freetype.h']]],
   ['imguifreetypeloaderflags_5fnohinting_18',['ImGuiFreeTypeLoaderFlags_NoHinting',['../imgui__freetype_8h.html#ae4638626618a00186bcedf096a86c90dadd3d8a5956b7a9c902215eb8b94fe80b',1,'imgui_freetype.h']]],
   ['imguifreetypeloaderflags_5foblique_19',['ImGuiFreeTypeLoaderFlags_Oblique',['../imgui__freetype_8h.html#ae4638626618a00186bcedf096a86c90da565ff91016fc49559b983ebc4724c111',1,'imgui_freetype.h']]],
-  ['individual_20',['INDIVIDUAL',['../namespacednf__composer.html#ac219b085cfe9ac2511a7c808197eeadba938873bbf7fe69b2f3836e6103f2a323',1,'dnf_composer']]],
-  ['info_21',['INFO',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda43a666c6ef802ca83a0a0e89994bbc5b',1,'dnf_composer::tools::logger']]]
+  ['info_20',['INFO',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda43a666c6ef802ca83a0a0e89994bbc5b',1,'dnf_composer::tools::logger']]]
 ];

@@ -23,5 +23,6 @@ var searchData=
   ['isguiactive_20',['isGUIActive',['../classdnf__composer_1_1Application.html#a356ad65f63f3ed132d6e55b86e164d18',1,'dnf_composer::Application']]],
   ['isinitialized_21',['isInitialized',['../classdnf__composer_1_1Simulation.html#aef41788a81a53039c90b541e8d756d29',1,'dnf_composer::Simulation']]],
   ['islegal_22',['isLegal',['../structdnf__composer_1_1PlotDimensions.html#a8256b0ab7cae40976dbcd91489ba2aeb',1,'dnf_composer::PlotDimensions']]],
-  ['isstable_23',['isStable',['../classdnf__composer_1_1element_1_1NeuralField.html#af5aecf58531e326a4e4a8602c053b31f',1,'dnf_composer::element::NeuralField']]]
+  ['ispaused_23',['isPaused',['../classdnf__composer_1_1Simulation.html#ac79c31c5745a2e54cbd681bbc6575823',1,'dnf_composer::Simulation']]],
+  ['isstable_24',['isStable',['../classdnf__composer_1_1element_1_1NeuralField.html#af5aecf58531e326a4e4a8602c053b31f',1,'dnf_composer::element::NeuralField']]]
 ];

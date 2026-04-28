@@ -100,8 +100,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac02f80ac8e4a148bc34c7ccb7ed2294d" id="r_ac02f80ac8e4a148bc34c7ccb7ed2294d"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Plot.html">Plot</a> &gt;, std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#ac02f80ac8e4a148bc34c7ccb7ed2294d">getPlots</a> ()</td></tr>
 <tr class="memdesc:ac02f80ac8e4a148bc34c7ccb7ed2294d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the full plots map (plot → data sources).  <br /></td></tr>
 <tr class="separator:ac02f80ac8e4a148bc34c7ccb7ed2294d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b027221a830a6d96534a00ad86edd87" id="r_a5b027221a830a6d96534a00ad86edd87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer.html#ac219b085cfe9ac2511a7c808197eeadb">PlotWindowMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#a5b027221a830a6d96534a00ad86edd87">getPlotWindowMode</a> () const</td></tr>
-<tr class="separator:a5b027221a830a6d96534a00ad86edd87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d7940247f370f4930f08cfaeaea8261" id="r_a5d7940247f370f4930f08cfaeaea8261"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#a5d7940247f370f4930f08cfaeaea8261">getSimulation</a> () const</td></tr>
 <tr class="memdesc:a5d7940247f370f4930f08cfaeaea8261"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the underlying simulation.  <br /></td></tr>
 <tr class="separator:a5d7940247f370f4930f08cfaeaea8261"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,8 +139,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab975004429a0a13107b131e21597833e" id="r_ab975004429a0a13107b131e21597833e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#ab975004429a0a13107b131e21597833e">renderTile</a> (int plotId)</td></tr>
 <tr class="memdesc:ab975004429a0a13107b131e21597833e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render a single plot's content without creating an ImGui window (caller owns the region).  <br /></td></tr>
 <tr class="separator:ab975004429a0a13107b131e21597833e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7be691ac36069b47bc9a755c28617129" id="r_a7be691ac36069b47bc9a755c28617129"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#a7be691ac36069b47bc9a755c28617129">setPlotWindowMode</a> (<a class="el" href="namespacednf__composer.html#ac219b085cfe9ac2511a7c808197eeadb">PlotWindowMode</a> mode)</td></tr>
-<tr class="separator:a7be691ac36069b47bc9a755c28617129"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4178026c3c0c95c59ef18f5c66cca5a5" id="r_a4178026c3c0c95c59ef18f5c66cca5a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#a4178026c3c0c95c59ef18f5c66cca5a5">setWindowIdSuffix</a> (const std::string &amp;s)</td></tr>
 <tr class="memdesc:a4178026c3c0c95c59ef18f5c66cca5a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a suffix appended to all ImGui window IDs to avoid collisions.  <br /></td></tr>
 <tr class="separator:a4178026c3c0c95c59ef18f5c66cca5a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,11 +148,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages a collection of plots driven by a running <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a>. </p>
-<p><a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> owns a set of <a class="el" href="classdnf__composer_1_1Plot.html" title="Abstract base class for all renderable plots.">Plot</a> instances. Each plot is associated with one or more (element-name, component-name) data sources. On every call to <code><a class="el" href="classdnf__composer_1_1Visualization.html#a4120843cb7f862565a5bdcc9e855628f" title="Render all plots (creates ImGui windows or child regions as appropriate).">render()</a></code> the visualization pulls current data from the simulation and forwards it to each plot's renderer.</p>
-<p>Two layout modes are supported via <code><a class="el" href="classdnf__composer_1_1Visualization.html#a7be691ac36069b47bc9a755c28617129">setPlotWindowMode()</a></code>:</p><ul>
-<li><code>TILED</code> — each plot in its own ImGui window.</li>
-<li>(other modes as defined by PlotWindowMode). </li>
-</ul>
+<p><a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> owns a set of <a class="el" href="classdnf__composer_1_1Plot.html" title="Abstract base class for all renderable plots.">Plot</a> instances. Each plot is associated with one or more (element-name, component-name) data sources. On every call to <code><a class="el" href="classdnf__composer_1_1Visualization.html#a4120843cb7f862565a5bdcc9e855628f" title="Render all plots (creates ImGui windows or child regions as appropriate).">render()</a></code> the visualization pulls current data from the simulation and forwards it to each plot's renderer. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac9f7fd5746bd3febacf9a15f34a152a0" name="ac9f7fd5746bd3febacf9a15f34a152a0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9f7fd5746bd3febacf9a15f34a152a0">&#9670;&#160;</a></span>Visualization()</h2>
@@ -242,31 +234,6 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the full plots map (plot → data sources). </p>
-
-</div>
-</div>
-<a id="a5b027221a830a6d96534a00ad86edd87" name="a5b027221a830a6d96534a00ad86edd87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b027221a830a6d96534a00ad86edd87">&#9670;&#160;</a></span>getPlotWindowMode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacednf__composer.html#ac219b085cfe9ac2511a7c808197eeadb">PlotWindowMode</a> dnf_composer::Visualization::getPlotWindowMode </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>
@@ -718,32 +685,6 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Visualization_ab975004429a0a13107b131e21597833e_cgraph.svg" width="747" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
-
-</div>
-</div>
-<a id="a7be691ac36069b47bc9a755c28617129" name="a7be691ac36069b47bc9a755c28617129"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7be691ac36069b47bc9a755c28617129">&#9670;&#160;</a></span>setPlotWindowMode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dnf_composer::Visualization::setPlotWindowMode </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacednf__composer.html#ac219b085cfe9ac2511a7c808197eeadb">PlotWindowMode</a>&#160;</td>
-          <td class="paramname"><em>mode</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>
