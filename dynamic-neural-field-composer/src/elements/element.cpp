@@ -23,6 +23,14 @@ namespace dnf_composer
 			components["input"] = std::vector<double>(commonParameters.dimensionParameters.size);
 		}
 
+		void Element::changeDimensions(const ElementDimensions& newDimensions)
+		{
+			commonParameters.dimensionParameters = newDimensions;
+			for (auto& [name, vec] : components)
+				vec.assign(newDimensions.size, 0.0);
+			init();
+		}
+
 		void Element::close()
 		{
 			// views::values can be used

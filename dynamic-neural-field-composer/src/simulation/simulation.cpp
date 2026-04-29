@@ -288,7 +288,17 @@ namespace dnf_composer
 		}
 	}
 
-	void Simulation::createInteraction(const std::string& stimulusElementId, 
+	void Simulation::changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions)
+	{
+		const auto element = getElement(elementId);
+		element->removeInputs();
+		element->removeOutputs();
+		element->changeDimensions(newDimensions);
+		const std::string logMessage = "Element '" + elementId + "' resized to " + newDimensions.toString() + ".";
+		log(tools::logger::LogLevel::INFO, logMessage);
+	}
+
+	void Simulation::createInteraction(const std::string& stimulusElementId,
 		const std::string& stimulusComponent, const std::string& receivingElementId) const
 	{
 		const std::shared_ptr<element::Element> stimulusElement = getElement(stimulusElementId);

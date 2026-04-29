@@ -329,3 +329,36 @@ TEST(ElementClose, CloseDoesNotThrow)
     stim->init();
     EXPECT_NO_THROW(stim->close());
 }
+
+// ---------------------------------------------------------------------------
+// changeDimensions()
+// ---------------------------------------------------------------------------
+
+TEST(ElementChangeDimensions, ResizesComponentsToNewSize)
+{
+    const auto field = makeField("f", 100);
+    field->init();
+    field->changeDimensions(ElementDimensions{ 50 });
+    EXPECT_EQ(field->getSize(), 50);
+    EXPECT_EQ(field->getComponent("output").size(), 50u);
+    EXPECT_EQ(field->getComponent("input").size(), 50u);
+}
+
+TEST(ElementChangeDimensions, KernelResizesCorrectlyViaInit)
+{
+    const auto kernel = makeKernel("k", 100);
+    kernel->init();
+    kernel->changeDimensions(ElementDimensions{ 60 });
+    EXPECT_EQ(kernel->getSize(), 60);
+    EXPECT_EQ(kernel->getComponent("output").size(), 60u);
+}
+
+TEST(ElementChangeDimensions, ConnectionsAreNotAffected)
+{
+    const auto stim  = makeStimulus("stim", 100);
+    const auto field = makeField("field", 100);
+    field->addInput(stim, "output");
+    field->changeDimensions(ElementDimensions{ 50 });
+    // changeDimensions alone does not remove connections (Simulation::changeDimensions does)
+    EXPECT_TRUE(field->hasInput());
+}

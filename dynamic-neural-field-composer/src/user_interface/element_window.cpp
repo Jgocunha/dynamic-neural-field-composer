@@ -24,10 +24,7 @@ namespace dnf_composer::user_interface
 		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 		if (open)
-		{
-			//renderModifyElementParameters();
 			renderElementControlCard();
-		}
 		ImGui::End();
 	}
 
@@ -51,38 +48,41 @@ namespace dnf_composer::user_interface
 			const float frameH   = ImGui::GetFrameHeight();
 			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
 			const float rowH     = frameH + spacingY;
-			const float panelPad = 2.0f * 8.0f * ui;
+			const float panelPad = 3.0f * 8.0f * ui;
 
 			auto h = [&](const int rows) {
 				return rows * rowH - spacingY + panelPad;
 			};
 
+			constexpr int dimRows  = 2; // Size + Step
+			constexpr int kDimRows = 4; // Size + Step + Output Size + Output Step
+
 			switch (e->getLabel())
 			{
-				case element::ElementLabel::NORMAL_NOISE:           return h(1);
-				case element::ElementLabel::NEURAL_FIELD:           return h(2);
-				case element::ElementLabel::GAUSS_STIMULUS:         return h(4);
-				case element::ElementLabel::GAUSS_KERNEL:           return h(4);
-				case element::ElementLabel::FIELD_COUPLING:         return h(5);
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:     return h(6);
-				case element::ElementLabel::OSCILLATORY_KERNEL:     return h(5);
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5);
-				case element::ElementLabel::BOOST_STIMULUS:         return h(2);
-				case element::ElementLabel::MEMORY_TRACE:           return h(3);
+				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
+				case element::ElementLabel::NEURAL_FIELD:            return h(2  + dimRows);
+				case element::ElementLabel::GAUSS_STIMULUS:          return h(4  + dimRows);
+				case element::ElementLabel::GAUSS_KERNEL:            return h(4  + kDimRows);
+				case element::ElementLabel::FIELD_COUPLING:          return h(7  + dimRows);
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:      return h(6  + kDimRows);
+				case element::ElementLabel::OSCILLATORY_KERNEL:      return h(5  + kDimRows);
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return h(5  + kDimRows);
+				case element::ElementLabel::BOOST_STIMULUS:          return h(2  + dimRows);
+				case element::ElementLabel::MEMORY_TRACE:            return h(3  + dimRows);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
 					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(2 + 5 * numCouplings);
+					return h(4 + 5 * numCouplings + dimRows);
 				}
-				default: return h(4);
+				default: return h(4 + dimRows);
 			}
 		};
 
 		const float maxNaturalW = 1.0f * panelPadX + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
 		const float panelW = ImMin(maxNaturalW, innerW);
 
-		// Validate focused element still belongs to this simulation
+		// Validate a focused element still belongs to this simulation
 		if (s_focusedElement_)
 		{
 			bool stillValid = false;
@@ -101,6 +101,7 @@ namespace dnf_composer::user_interface
 			ImGui::Spacing();
 
 			ImGui::TextUnformatted(s_focusedElement_->getUniqueName().c_str());
+			ImGui::Spacing();
 			const ImVec4 tint = getColorForElementType(s_focusedElement_->getLabel());
 			const ImVec2 selSize(panelW, PanelHeightFor(s_focusedElement_));
 			PanelScope scope = beginElementPanel(tint, selSize);
@@ -108,6 +109,7 @@ namespace dnf_composer::user_interface
 				ImGui::PushItemWidth(dragW);
 				switchElementToModify(s_focusedElement_);
 				ImGui::PopItemWidth();
+				renderDimensionControls(s_focusedElement_);
 			}
 			endElementPanel(scope);
 			ImGui::Spacing();
@@ -136,10 +138,10 @@ namespace dnf_composer::user_interface
 	            const ImVec4 tint = getColorForElementType(label);
 	            const ImVec2 size(panelW, PanelHeightFor(e));
 
-	            // draw a panel first (behind), then render the editor inside it
 	            PanelScope scope = beginElementPanel(tint, size);
 	            {
-	                switchElementToModify(e);   // draws inputs at p.rect.Min + pad
+	                switchElementToModify(e);
+	                renderDimensionControls(e);
 	            }
 	            endElementPanel(scope);
 
@@ -185,20 +187,209 @@ namespace dnf_composer::user_interface
 
 	}
 
+	void ElementWindow::renderDimensionControls(const std::shared_ptr<element::Element>& element) const
+	{
+		const float ui     = ImGui::GetIO().FontGlobalScale;
+		const float inputW = 150.0f * ui;
+		const std::string elemId = element->getUniqueName();
+		const element::ElementLabel label = element->getLabel();
+		const bool isCoupling = label == element::ElementLabel::FIELD_COUPLING ||
+		                        label == element::ElementLabel::GAUSS_FIELD_COUPLING;
+		const bool isKernel   = label == element::ElementLabel::GAUSS_KERNEL ||
+		                        label == element::ElementLabel::MEXICAN_HAT_KERNEL ||
+		                        label == element::ElementLabel::OSCILLATORY_KERNEL ||
+		                        label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL;
+
+		static std::unordered_map<int, std::pair<float, float>> staged;
+		static std::unordered_map<int, std::pair<float, float>> stagedIn;
+		static std::unordered_map<int, std::pair<float, float>> stagedOut;
+		const int id = element->getUniqueIdentifier();
+		auto& [stagedXmax, stagedDx] = staged[id];
+
+		const auto& dim = element->getElementCommonParameters().dimensionParameters;
+		if (stagedXmax == 0.0f && stagedDx == 0.0f)
+		{
+			stagedXmax = static_cast<float>(dim.x_max);
+			stagedDx   = static_cast<float>(dim.d_x);
+		}
+
+		ImGui::Separator();
+		ImGui::PushID(("##dim_" + elemId).c_str());
+
+		ImGui::SetNextItemWidth(inputW);
+		ImGui::InputFloat("##x_max", &stagedXmax, 0.0f, 0.0f, "%.1f");
+		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+		{
+			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+			simulation->changeDimensions(elemId, newDim);
+			stagedXmax = static_cast<float>(newDim.x_max);
+			stagedDx   = static_cast<float>(newDim.d_x);
+		}
+		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out size" : "Size");
+		ImGui::SameLine();
+		widgets::renderHelpMarker(
+			"Changing the field size will disconnect all existing connections\n"
+			"to and from this element. Press Enter to commit the new size."
+		);
+
+		ImGui::SetNextItemWidth(inputW);
+		ImGui::InputFloat("##dx", &stagedDx, 0.0f, 0.0f, "%.2f");
+		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+		{
+			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+			simulation->changeDimensions(elemId, newDim);
+			stagedXmax = static_cast<float>(newDim.x_max);
+			stagedDx   = static_cast<float>(newDim.d_x);
+		}
+		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out step" : "Step");
+
+		if (isKernel)
+		{
+			auto& [stagedOutXmax, stagedOutDx] = stagedOut[id];
+
+			auto getKernelOutputDims = [&]() -> std::optional<element::ElementDimensions> {
+				if (label == element::ElementLabel::GAUSS_KERNEL)
+					return std::dynamic_pointer_cast<element::GaussKernel>(element)->getParameters().outputFieldDimensions;
+				if (label == element::ElementLabel::MEXICAN_HAT_KERNEL)
+					return std::dynamic_pointer_cast<element::MexicanHatKernel>(element)->getParameters().outputFieldDimensions;
+				if (label == element::ElementLabel::OSCILLATORY_KERNEL)
+					return std::dynamic_pointer_cast<element::OscillatoryKernel>(element)->getParameters().outputFieldDimensions;
+				if (label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL)
+					return std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element)->getParameters().outputFieldDimensions;
+				return std::nullopt;
+			};
+
+			if (stagedOutXmax == 0.0f && stagedOutDx == 0.0f)
+			{
+				const auto currentOut = getKernelOutputDims();
+				if (currentOut.has_value())
+				{
+					stagedOutXmax = static_cast<float>(currentOut->x_max);
+					stagedOutDx   = static_cast<float>(currentOut->d_x);
+				}
+				else
+				{
+					stagedOutXmax = static_cast<float>(dim.x_max);
+					stagedOutDx   = static_cast<float>(dim.d_x);
+				}
+			}
+
+			auto applyKernelOutputDim = [&]() {
+				if (stagedOutXmax <= 0.0f || stagedOutDx <= 0.0f) return;
+				const element::ElementDimensions newOutDim(static_cast<int>(stagedOutXmax), static_cast<double>(stagedOutDx));
+				const bool squareMode = (newOutDim.x_max == element->getMaxSpatialDimension() &&
+				                        std::abs(newOutDim.d_x - element->getStepSize()) < 1e-9);
+				const std::optional<element::ElementDimensions> newOptOut =
+					squareMode ? std::nullopt : std::make_optional(newOutDim);
+				element->removeInputs();
+				element->removeOutputs();
+				if (label == element::ElementLabel::GAUSS_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::GaussKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				else if (label == element::ElementLabel::MEXICAN_HAT_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::MexicanHatKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				else if (label == element::ElementLabel::OSCILLATORY_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::OscillatoryKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				else if (label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				const auto finalOut = getKernelOutputDims();
+				if (finalOut.has_value())
+				{
+					stagedOutXmax = static_cast<float>(finalOut->x_max);
+					stagedOutDx   = static_cast<float>(finalOut->d_x);
+				}
+				else
+				{
+					stagedOutXmax = static_cast<float>(element->getElementCommonParameters().dimensionParameters.x_max);
+					stagedOutDx   = static_cast<float>(element->getElementCommonParameters().dimensionParameters.d_x);
+				}
+			};
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##out_x_max", &stagedOutXmax, 0.0f, 0.0f, "%.1f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyKernelOutputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("Output Size");
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##out_dx", &stagedOutDx, 0.0f, 0.0f, "%.2f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyKernelOutputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("Output Step");
+		}
+
+		if (isCoupling)
+		{
+			auto& [stagedInXmax, stagedInDx] = stagedIn[id];
+
+			element::ElementDimensions currentInputDim{};
+			if (label == element::ElementLabel::FIELD_COUPLING)
+			{
+				const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element);
+				currentInputDim = fc->getParameters().inputFieldDimensions;
+			}
+			else
+			{
+				const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
+				currentInputDim = gfc->getInputFieldDimensions();
+			}
+
+			if (stagedInXmax == 0.0f && stagedInDx == 0.0f)
+			{
+				stagedInXmax = static_cast<float>(currentInputDim.x_max);
+				stagedInDx   = static_cast<float>(currentInputDim.d_x);
+			}
+
+			auto applyInputDim = [&]() {
+				if (stagedInXmax <= 0.0f || stagedInDx <= 0.0f) return;
+				const element::ElementDimensions newInDim(static_cast<int>(stagedInXmax), static_cast<double>(stagedInDx));
+				element->removeInputs();
+				element->removeOutputs();
+				if (label == element::ElementLabel::FIELD_COUPLING)
+					std::dynamic_pointer_cast<element::FieldCoupling>(element)->changeInputDimensions(newInDim);
+				else
+					std::dynamic_pointer_cast<element::GaussFieldCoupling>(element)->changeInputDimensions(newInDim);
+				stagedInXmax = static_cast<float>(newInDim.x_max);
+				stagedInDx   = static_cast<float>(newInDim.d_x);
+			};
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##in_x_max", &stagedInXmax, 0.0f, 0.0f, "%.1f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("In size");
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##in_dx", &stagedInDx, 0.0f, 0.0f, "%.2f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("In step");
+		}
+
+		ImGui::PopID();
+	}
+
 	void ElementWindow::switchElementToModify(const std::shared_ptr<element::Element>& element)
 	{
 		const std::string elementId = element->getUniqueName();
-		const element::ElementLabel label = element->getLabel();
+		static bool missingElementAcknowledged = false;
 
-		// Set text color based on the element label
-		//ImVec4 elementColor = getColorForElementType(label);
-		//ImGui::PushStyleColor(ImGuiCol_Text, elementColor);
-		//ImGui::SeparatorText((getIconForElementType(label) + " " + elementId).c_str());
-		//ImGui::PopStyleColor();
-
-		//ImGui::SeparatorText( ("Element " + elementId).c_str() );
-
-		switch (label)
+		switch (const element::ElementLabel label = element->getLabel())
 		{
 		case element::ElementLabel::NEURAL_FIELD:
 			modifyElementNeuralField(element);
@@ -236,8 +427,12 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::UNINITIALIZED:
 			break;
 		default:
-			log(tools::logger::LogLevel::ERROR, "There is a missing element in the "
-			    "TreeNode in simulation window.");
+			if (!missingElementAcknowledged)
+			{
+				log(tools::logger::LogLevel::ERROR, "There is a missing element in the "
+					"TreeNode in simulation window.");
+				missingElementAcknowledged = true;
+			}
 			break;
 		}
 	}

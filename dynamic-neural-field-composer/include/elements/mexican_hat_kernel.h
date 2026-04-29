@@ -97,6 +97,10 @@ namespace dnf_composer::element
 	/// Produces local excitation and surround inhibition in one pass, making it the
 	/// natural choice for selection and working-memory fields.
 	///
+	/// When @c MexicanHatKernelParameters::outputFieldDimensions is set, the convolution
+	/// result is resampled to the specified output size, enabling connections between
+	/// fields of different spatial dimensions.
+	///
 	/// @ingroup elements
 	class MexicanHatKernel final : public Kernel
 	{

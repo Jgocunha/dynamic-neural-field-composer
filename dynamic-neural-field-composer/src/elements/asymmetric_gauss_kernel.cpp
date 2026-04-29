@@ -10,6 +10,8 @@ namespace dnf_composer
 		{
 			commonParameters.identifiers.label = ElementLabel::ASYMMETRIC_GAUSS_KERNEL;
 			components["kernel"] = std::vector<double>(commonParameters.dimensionParameters.size);
+			if (parameters.outputFieldDimensions.has_value())
+				components["output"].resize(parameters.outputFieldDimensions->size, 0.0);
 		}
 
 		void AsymmetricGaussKernel::init()
@@ -57,9 +59,13 @@ namespace dnf_composer
                 components["kernel"][i] = parameters.amplitude * gauss[i] + parameters.timeShift * gaussDerivative[i];
             }
 
+            scratchConvolution.assign(commonParameters.dimensionParameters.size, 0.0);
             fullSum = 0.0;
             std::ranges::fill(components["input"], 0.0);
-            std::ranges::fill(components["output"], 0.0);
+            if (parameters.outputFieldDimensions.has_value())
+                components["output"].assign(parameters.outputFieldDimensions->size, 0.0);
+            else
+                std::ranges::fill(components["output"], 0.0);
 		}
 
 		void AsymmetricGaussKernel::step(double t, double deltaT)
@@ -85,9 +91,17 @@ namespace dnf_composer
                 convolution = tools::math::conv_same(components["input"], components["kernel"]);
             }
 
-            for (int i = 0; i < components["output"].size(); i++)
+            if (parameters.outputFieldDimensions.has_value() &&
+                parameters.outputFieldDimensions->size != commonParameters.dimensionParameters.size)
             {
-                components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+                for (int i = 0; i < static_cast<int>(scratchConvolution.size()); i++)
+                    scratchConvolution[i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+                tools::math::resampleInto(scratchConvolution, components["output"]);
+            }
+            else
+            {
+                for (int i = 0; i < static_cast<int>(components["output"].size()); i++)
+                    components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
             }
 		}
 

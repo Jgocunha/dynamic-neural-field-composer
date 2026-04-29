@@ -102,6 +102,11 @@ namespace dnf_composer
 		/// @param newElement          Replacement element.
 		void resetElement(const std::string& idOfElementToReset, const std::shared_ptr<element::Element>& newElement);
 
+		/// @brief Disconnect all connections from @p elementId and resize it to @p newDimensions.
+		/// @param elementId      Unique name of the element to resize.
+		/// @param newDimensions  New spatial discretization.
+		void changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions);
+
 		/// @brief Wire @p stimulusElementId's @p stimulusComponent as input to @p receivingElementId.
 		/// @param stimulusElementId   Source element name.
 		/// @param stimulusComponent   Component name on the source (e.g. "output").

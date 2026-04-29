@@ -69,6 +69,10 @@ namespace dnf_composer::element
 	/// baseline (@c amplitudeGlobal * fullSum). The result is stored in the "output"
 	/// component and fed forward to the receiving neural field.
 	///
+	/// When @c GaussKernelParameters::outputFieldDimensions is set, the convolution
+	/// result is resampled to the specified output size, enabling connections between
+	/// fields of different spatial dimensions.
+	///
 	/// @ingroup elements
 	class GaussKernel final : public Kernel
 	{
