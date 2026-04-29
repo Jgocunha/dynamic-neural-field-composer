@@ -34,31 +34,33 @@
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html" target="_top" xlink:title="Parameters for an asymmetric (shifted) Gaussian convolution kernel.">
-<polygon fill="white" stroke="transparent" points="205,-202.5 0,-202.5 0,-37.5 205,-37.5 205,-202.5"/>
-<text text-anchor="start" x="12" y="-190" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="start" x="12" y="-179" font-family="Helvetica,sans-Serif" font-size="10.00">::AsymmetricGaussKernelParameters</text>
-<text text-anchor="start" x="4.5" y="-164" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-164" font-family="Helvetica,sans-Serif" font-size="10.00">amplitude</text>
-<text text-anchor="start" x="4.5" y="-149" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-149" font-family="Helvetica,sans-Serif" font-size="10.00">amplitudeGlobal</text>
-<text text-anchor="start" x="4.5" y="-134" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-134" font-family="Helvetica,sans-Serif" font-size="10.00">circular</text>
-<text text-anchor="start" x="4.5" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">normalized</text>
-<text text-anchor="start" x="4.5" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">timeShift</text>
-<text text-anchor="start" x="4.5" y="-89" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-89" font-family="Helvetica,sans-Serif" font-size="10.00">width</text>
-<text text-anchor="start" x="4.5" y="-74" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-74" font-family="Helvetica,sans-Serif" font-size="10.00">AsymmetricGaussKernelParameters()</text>
-<text text-anchor="start" x="4.5" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">operator==()</text>
-<text text-anchor="start" x="4.5" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
-<polygon fill="#666666" stroke="#666666" points="0.5,-174 0.5,-174 205.5,-174 205.5,-174 0.5,-174"/>
-<polygon fill="#666666" stroke="#666666" points="0.5,-84 0.5,-84 15.5,-84 15.5,-84 0.5,-84"/>
-<polygon fill="#666666" stroke="#666666" points="15.5,-84 15.5,-84 205.5,-84 205.5,-84 15.5,-84"/>
-<polygon fill="none" stroke="#666666" points="0,-37.5 0,-202.5 205,-202.5 205,-37.5 0,-37.5"/>
+<polygon fill="white" stroke="transparent" points="205,-210 0,-210 0,-30 205,-30 205,-210"/>
+<text text-anchor="start" x="12" y="-198" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="start" x="12" y="-187" font-family="Helvetica,sans-Serif" font-size="10.00">::AsymmetricGaussKernelParameters</text>
+<text text-anchor="start" x="4.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">amplitude</text>
+<text text-anchor="start" x="4.5" y="-157" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-157" font-family="Helvetica,sans-Serif" font-size="10.00">amplitudeGlobal</text>
+<text text-anchor="start" x="4.5" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">circular</text>
+<text text-anchor="start" x="4.5" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">normalized</text>
+<text text-anchor="start" x="4.5" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">outputFieldDimensions</text>
+<text text-anchor="start" x="4.5" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">timeShift</text>
+<text text-anchor="start" x="4.5" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">width</text>
+<text text-anchor="start" x="4.5" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">AsymmetricGaussKernelParameters()</text>
+<text text-anchor="start" x="4.5" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">operator==()</text>
+<text text-anchor="start" x="4.5" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="17.5" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
+<polygon fill="#666666" stroke="#666666" points="0.5,-182 0.5,-182 205.5,-182 205.5,-182 0.5,-182"/>
+<polygon fill="#666666" stroke="#666666" points="0.5,-77 0.5,-77 15.5,-77 15.5,-77 0.5,-77"/>
+<polygon fill="#666666" stroke="#666666" points="15.5,-77 15.5,-77 205.5,-77 205.5,-77 15.5,-77"/>
+<polygon fill="none" stroke="#666666" points="0,-30 0,-210 205,-210 205,-30 0,-30"/>
 </a>
 </g>
 </g>
@@ -66,7 +68,7 @@
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M909.62,-325.18C726.25,-319.39 333.41,-300.17 213.5,-240 195.19,-230.81 178.35,-217.29 163.62,-202.61"/>
+<path fill="none" stroke="#63b8ff" d="M909.62,-325.18C726.25,-319.39 333.41,-300.17 213.5,-240 198.35,-232.4 184.2,-221.82 171.42,-210.08"/>
 <polygon fill="none" stroke="#63b8ff" points="909.69,-328.68 919.8,-325.49 909.91,-321.68 909.69,-328.68"/>
 </a>
 </g>

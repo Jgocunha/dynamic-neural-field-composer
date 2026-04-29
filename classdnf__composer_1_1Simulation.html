@@ -104,6 +104,9 @@ Collaboration diagram for dnf_composer::Simulation:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a905144400bd506ef8e195be468aedcd5" id="r_a905144400bd506ef8e195be468aedcd5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a905144400bd506ef8e195be468aedcd5">addElement</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt; &amp;element)</td></tr>
 <tr class="separator:a905144400bd506ef8e195be468aedcd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25e8c5e2e105b2a3cf853d21824e33c0" id="r_a25e8c5e2e105b2a3cf853d21824e33c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0">changeDimensions</a> (const std::string &amp;elementId, const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">element::ElementDimensions</a> &amp;newDimensions)</td></tr>
+<tr class="memdesc:a25e8c5e2e105b2a3cf853d21824e33c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnect all connections from <code>elementId</code> and resize it to <code>newDimensions</code>.  <br /></td></tr>
+<tr class="separator:a25e8c5e2e105b2a3cf853d21824e33c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77e7b52a61fe632c8a1dd4c607a433c7" id="r_a77e7b52a61fe632c8a1dd4c607a433c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a77e7b52a61fe632c8a1dd4c607a433c7">clean</a> ()</td></tr>
 <tr class="memdesc:a77e7b52a61fe632c8a1dd4c607a433c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all elements and reset the simulation to its initial state.  <br /></td></tr>
 <tr class="separator:a77e7b52a61fe632c8a1dd4c607a433c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -388,6 +391,48 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a25e8c5e2e105b2a3cf853d21824e33c0" name="a25e8c5e2e105b2a3cf853d21824e33c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25e8c5e2e105b2a3cf853d21824e33c0">&#9670;&#160;</a></span>changeDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::Simulation::changeDimensions </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>elementId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">element::ElementDimensions</a> &amp;&#160;</td>
+          <td class="paramname"><em>newDimensions</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disconnect all connections from <code>elementId</code> and resize it to <code>newDimensions</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">elementId</td><td>Unique name of the element to resize. </td></tr>
+    <tr><td class="paramname">newDimensions</td><td>New spatial discretization. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a25e8c5e2e105b2a3cf853d21824e33c0_cgraph.svg" width="443" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="a77e7b52a61fe632c8a1dd4c607a433c7" name="a77e7b52a61fe632c8a1dd4c607a433c7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a77e7b52a61fe632c8a1dd4c607a433c7">&#9670;&#160;</a></span>clean()</h2>
 
@@ -667,7 +712,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a860f418ff5193deb9ae8f4a791a5f391_icgraph.svg" width="443" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a860f418ff5193deb9ae8f4a791a5f391_icgraph.svg" width="443" height="371"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

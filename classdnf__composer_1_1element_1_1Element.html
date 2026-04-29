@@ -91,7 +91,7 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::Element:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__inherit__graph.svg" width="1596" height="1255"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__inherit__graph.svg" width="1620" height="1255"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::Element:</div>
@@ -104,6 +104,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aed78b4e2f69bf55673030220bbef6650" id="r_aed78b4e2f69bf55673030220bbef6650"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650">addInput</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &amp;inputElement, const std::string &amp;inputComponent=&quot;output&quot;)</td></tr>
 <tr class="memdesc:aed78b4e2f69bf55673030220bbef6650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element.  <br /></td></tr>
 <tr class="separator:aed78b4e2f69bf55673030220bbef6650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab061ce821963cb81da964bd34ead0214" id="r_ab061ce821963cb81da964bd34ead0214"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions)</td></tr>
+<tr class="memdesc:ab061ce821963cb81da964bd34ead0214"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize all components to <code>newDimensions</code> and re-initialize.  <br /></td></tr>
+<tr class="separator:ab061ce821963cb81da964bd34ead0214"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3e54722d31878dabd8bccdd181109f8" id="r_ae3e54722d31878dabd8bccdd181109f8"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#ae3e54722d31878dabd8bccdd181109f8">clone</a> () const =0</td></tr>
 <tr class="separator:ae3e54722d31878dabd8bccdd181109f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a135e752ac46936d2dad51d13d3ac3f20" id="r_a135e752ac46936d2dad51d13d3ac3f20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a135e752ac46936d2dad51d13d3ac3f20">close</a> ()</td></tr>
@@ -311,6 +314,48 @@ Protected Attributes</h2></td></tr>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_aed78b4e2f69bf55673030220bbef6650_cgraph.svg" width="434" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="ab061ce821963cb81da964bd34ead0214" name="ab061ce821963cb81da964bd34ead0214"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab061ce821963cb81da964bd34ead0214">&#9670;&#160;</a></span>changeDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::Element::changeDimensions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;&#160;</td>
+          <td class="paramname"><em>newDimensions</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resize all components to <code>newDimensions</code> and re-initialize. </p>
+<dl class="section note"><dt>Note</dt><dd>Does not remove connections — call <a class="el" href="classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0" title="Disconnect all connections from elementId and resize it to newDimensions.">Simulation::changeDimensions</a> to disconnect neighbours before resizing. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newDimensions</td><td>New spatial discretization. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented in <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a388fed7e504ed30765199aeb5a21650c">dnf_composer::element::FieldCoupling</a>, and <a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a108ed838e6171d3ff2275b2d01099494">dnf_composer::element::GaussFieldCoupling</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_ab061ce821963cb81da964bd34ead0214_cgraph.svg" width="451" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -792,6 +837,11 @@ Here is the caller graph for this function:</div>
 <p>Initialize the element (called once before the simulation loop). </p>
 
 <p>Implemented in <a class="el" href="classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83">dnf_composer::element::AsymmetricGaussKernel</a>, <a class="el" href="classdnf__composer_1_1element_1_1BoostStimulus.html#af6eebdce36c90377b53c395a3e76c62b">dnf_composer::element::BoostStimulus</a>, <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a5877186a9f20ab2329297690c57d16da">dnf_composer::element::FieldCoupling</a>, <a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#af9329fd9e8be90a4177c5c1769b52864">dnf_composer::element::GaussFieldCoupling</a>, <a class="el" href="classdnf__composer_1_1element_1_1GaussKernel.html#a287d7d8ff2d471d38fc915b73c0422bd">dnf_composer::element::GaussKernel</a>, <a class="el" href="classdnf__composer_1_1element_1_1GaussStimulus.html#a3677ed68684c7cd362e7e54f42fafb06">dnf_composer::element::GaussStimulus</a>, <a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html#a8dd3513ae84b164fe73dd9aa4f494e6d">dnf_composer::element::MemoryTrace</a>, <a class="el" href="classdnf__composer_1_1element_1_1MexicanHatKernel.html#ad80d75e45cea14a7d222559ae88d0c48">dnf_composer::element::MexicanHatKernel</a>, <a class="el" href="classdnf__composer_1_1element_1_1NeuralField.html#a052a2addfa52d2ebbad36c0c65b03ff2">dnf_composer::element::NeuralField</a>, <a class="el" href="classdnf__composer_1_1element_1_1NormalNoise.html#a418e48d15a26b15cb9109c2975bab1c5">dnf_composer::element::NormalNoise</a>, and <a class="el" href="classdnf__composer_1_1element_1_1OscillatoryKernel.html#a47f6325fe52fd6baabe982c590867e7d">dnf_composer::element::OscillatoryKernel</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_af09ce7373b714e18c46783bacf4add15_icgraph.svg" width="451" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>

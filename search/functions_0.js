@@ -8,5 +8,5 @@ var searchData=
   ['addwindow_5',['addwindow',['../classdnf__composer_1_1Application.html#aedaf722db0d9f7dc3a2e6822b52a8534',1,'dnf_composer::Application::addWindow(Args &amp;&amp;... args) const'],['../classdnf__composer_1_1Application.html#aedaf722db0d9f7dc3a2e6822b52a8534',1,'dnf_composer::Application::addWindow(Args &amp;&amp;... args) const'],['../classdnf__composer_1_1Application.html#aedaf722db0d9f7dc3a2e6822b52a8534',1,'dnf_composer::Application::addWindow(Args &amp;&amp;... args) const']]],
   ['application_6',['Application',['../classdnf__composer_1_1Application.html#a9db1d7cb8f79a12f988c195258316f43',1,'dnf_composer::Application']]],
   ['asymmetricgausskernel_7',['AsymmetricGaussKernel',['../classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a26feb3d17ba3b9b1bb7ec3925ecabecb',1,'dnf_composer::element::AsymmetricGaussKernel']]],
-  ['asymmetricgausskernelparameters_8',['AsymmetricGaussKernelParameters',['../structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html#a1642aaba3c187025b6e22d6fe2e2cd5c',1,'dnf_composer::element::AsymmetricGaussKernelParameters']]]
+  ['asymmetricgausskernelparameters_8',['AsymmetricGaussKernelParameters',['../structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html#a418c5037487d09e927dce64ee1203a2e',1,'dnf_composer::element::AsymmetricGaussKernelParameters']]]
 ];

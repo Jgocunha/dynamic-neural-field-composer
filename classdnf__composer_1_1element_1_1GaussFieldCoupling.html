@@ -90,12 +90,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::GaussFieldCoupling:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__inherit__graph.svg" width="258" height="767"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__inherit__graph.svg" width="258" height="807"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::GaussFieldCoupling:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__coll__graph.svg" width="728" height="1588"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__coll__graph.svg" width="728" height="1628"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -103,6 +103,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8f7bc15f1c04b96168537918190bcd9f" id="r_a8f7bc15f1c04b96168537918190bcd9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a8f7bc15f1c04b96168537918190bcd9f">addCoupling</a> (const <a class="el" href="structdnf__composer_1_1element_1_1GaussCoupling.html">GaussCoupling</a> &amp;coupling)</td></tr>
 <tr class="memdesc:a8f7bc15f1c04b96168537918190bcd9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a new point-coupling at runtime.  <br /></td></tr>
 <tr class="separator:a8f7bc15f1c04b96168537918190bcd9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a108ed838e6171d3ff2275b2d01099494" id="r_a108ed838e6171d3ff2275b2d01099494"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a108ed838e6171d3ff2275b2d01099494">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions) override</td></tr>
+<tr class="memdesc:a108ed838e6171d3ff2275b2d01099494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
+<tr class="separator:a108ed838e6171d3ff2275b2d01099494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a011959c9655f8768d27b19fe039eba00" id="r_a011959c9655f8768d27b19fe039eba00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a011959c9655f8768d27b19fe039eba00">changeInputDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newInputDimensions)</td></tr>
+<tr class="memdesc:a011959c9655f8768d27b19fe039eba00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
+<tr class="separator:a011959c9655f8768d27b19fe039eba00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a350dc1b1affe055403becc2c63f8b567" id="r_a350dc1b1affe055403becc2c63f8b567"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a350dc1b1affe055403becc2c63f8b567">clone</a> () const override</td></tr>
 <tr class="separator:a350dc1b1affe055403becc2c63f8b567"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3b957f2b9c17ee8b7fc1200c05eb3c6" id="r_aa3b957f2b9c17ee8b7fc1200c05eb3c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#aa3b957f2b9c17ee8b7fc1200c05eb3c6">GaussFieldCoupling</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">ElementCommonParameters</a> &amp;elementCommonParameters, const <a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html">GaussFieldCouplingParameters</a> &amp;gfc_parameters)</td></tr>
@@ -282,6 +288,66 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a108ed838e6171d3ff2275b2d01099494" name="a108ed838e6171d3ff2275b2d01099494"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a108ed838e6171d3ff2275b2d01099494">&#9670;&#160;</a></span>changeDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::GaussFieldCoupling::changeDimensions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;&#160;</td>
+          <td class="paramname"><em>newDimensions</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
+
+<p>Reimplemented from <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214">dnf_composer::element::Element</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling_a108ed838e6171d3ff2275b2d01099494_cgraph.svg" width="624" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a011959c9655f8768d27b19fe039eba00" name="a011959c9655f8768d27b19fe039eba00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a011959c9655f8768d27b19fe039eba00">&#9670;&#160;</a></span>changeInputDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::GaussFieldCoupling::changeInputDimensions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;&#160;</td>
+          <td class="paramname"><em>newInputDimensions</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling_a011959c9655f8768d27b19fe039eba00_cgraph.svg" width="635" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="a350dc1b1affe055403becc2c63f8b567" name="a350dc1b1affe055403becc2c63f8b567"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a350dc1b1affe055403becc2c63f8b567">&#9670;&#160;</a></span>clone()</h2>
 
@@ -377,7 +443,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling_af9329fd9e8be90a4177c5c1769b52864_icgraph.svg" width="422" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling_af9329fd9e8be90a4177c5c1769b52864_icgraph.svg" width="432" height="223"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

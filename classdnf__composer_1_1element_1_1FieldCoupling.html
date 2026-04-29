@@ -91,16 +91,22 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::FieldCoupling:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling__inherit__graph.svg" width="258" height="927"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling__inherit__graph.svg" width="258" height="867"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::FieldCoupling:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling__coll__graph.svg" width="1055" height="1674"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling__coll__graph.svg" width="1055" height="1614"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a388fed7e504ed30765199aeb5a21650c" id="r_a388fed7e504ed30765199aeb5a21650c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a388fed7e504ed30765199aeb5a21650c">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions) override</td></tr>
+<tr class="memdesc:a388fed7e504ed30765199aeb5a21650c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
+<tr class="separator:a388fed7e504ed30765199aeb5a21650c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a908b9209bc0dabbd9d856d9b18151be8" id="r_a908b9209bc0dabbd9d856d9b18151be8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a908b9209bc0dabbd9d856d9b18151be8">changeInputDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newInputDimensions)</td></tr>
+<tr class="memdesc:a908b9209bc0dabbd9d856d9b18151be8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
+<tr class="separator:a908b9209bc0dabbd9d856d9b18151be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dc53b29ed5d5de7692640b1dbd23613" id="r_a5dc53b29ed5d5de7692640b1dbd23613"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a5dc53b29ed5d5de7692640b1dbd23613">clearWeights</a> ()</td></tr>
 <tr class="memdesc:a5dc53b29ed5d5de7692640b1dbd23613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the weight matrix to all zeros.  <br /></td></tr>
 <tr class="separator:a5dc53b29ed5d5de7692640b1dbd23613"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -286,6 +292,66 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a388fed7e504ed30765199aeb5a21650c" name="a388fed7e504ed30765199aeb5a21650c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a388fed7e504ed30765199aeb5a21650c">&#9670;&#160;</a></span>changeDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::FieldCoupling::changeDimensions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;&#160;</td>
+          <td class="paramname"><em>newDimensions</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
+
+<p>Reimplemented from <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214">dnf_composer::element::Element</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_a388fed7e504ed30765199aeb5a21650c_cgraph.svg" width="486" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a908b9209bc0dabbd9d856d9b18151be8" name="a908b9209bc0dabbd9d856d9b18151be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a908b9209bc0dabbd9d856d9b18151be8">&#9670;&#160;</a></span>changeInputDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::FieldCoupling::changeInputDimensions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;&#160;</td>
+          <td class="paramname"><em>newInputDimensions</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_a908b9209bc0dabbd9d856d9b18151be8_cgraph.svg" width="442" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="a5dc53b29ed5d5de7692640b1dbd23613" name="a5dc53b29ed5d5de7692640b1dbd23613"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5dc53b29ed5d5de7692640b1dbd23613">&#9670;&#160;</a></span>clearWeights()</h2>
 
@@ -392,6 +458,11 @@ Here is the call graph for this function:</div>
 <p>Initialize the element (called once before the simulation loop). </p>
 
 <p>Implements <a class="el" href="classdnf__composer_1_1element_1_1Element.html#af09ce7373b714e18c46783bacf4add15">dnf_composer::element::Element</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_a5877186a9f20ab2329297690c57d16da_icgraph.svg" width="486" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>

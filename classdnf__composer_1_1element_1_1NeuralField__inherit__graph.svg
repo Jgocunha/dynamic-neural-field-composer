@@ -84,24 +84,24 @@
 <text text-anchor="start" x="4.5" y="-552.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="17.5" y="-552.5" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
 <text text-anchor="start" x="4.5" y="-537.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-537.5" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text text-anchor="start" x="17.5" y="-537.5" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
 <text text-anchor="start" x="4.5" y="-522.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-522.5" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
+<text text-anchor="start" x="17.5" y="-522.5" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
 <text text-anchor="start" x="4.5" y="-507.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-507.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
+<text text-anchor="start" x="17.5" y="-507.5" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
 <text text-anchor="start" x="4.5" y="-492.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-492.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
+<text text-anchor="start" x="17.5" y="-492.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
 <text text-anchor="start" x="4.5" y="-477.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-477.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
+<text text-anchor="start" x="17.5" y="-477.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
 <text text-anchor="start" x="4.5" y="-462.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-462.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
+<text text-anchor="start" x="17.5" y="-462.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
 <text text-anchor="start" x="4.5" y="-447.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-447.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
+<text text-anchor="start" x="17.5" y="-447.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
 <text text-anchor="start" x="4.5" y="-432.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-432.5" font-family="Helvetica,sans-Serif" font-size="10.00">getElementCommonParameters()</text>
+<text text-anchor="start" x="17.5" y="-432.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
 <text text-anchor="start" x="4.5" y="-417.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-417.5" font-family="Helvetica,sans-Serif" font-size="10.00">getInputs()</text>
-<text text-anchor="start" x="17.5" y="-402.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 26 more...</text>
+<text text-anchor="start" x="17.5" y="-417.5" font-family="Helvetica,sans-Serif" font-size="10.00">getElementCommonParameters()</text>
+<text text-anchor="start" x="17.5" y="-402.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 27 more...</text>
 <polygon fill="#666666" stroke="#666666" points="0.5,-622.5 0.5,-622.5 185.5,-622.5 185.5,-622.5 0.5,-622.5"/>
 <polygon fill="#666666" stroke="#666666" points="0.5,-562.5 0.5,-562.5 15.5,-562.5 15.5,-562.5 0.5,-562.5"/>
 <polygon fill="#666666" stroke="#666666" points="15.5,-562.5 15.5,-562.5 185.5,-562.5 185.5,-562.5 15.5,-562.5"/>

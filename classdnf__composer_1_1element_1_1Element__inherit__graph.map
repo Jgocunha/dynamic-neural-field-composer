@@ -1,29 +1,29 @@
 <map id="dnf_composer::element::Element" name="dnf_composer::element::Element">
-<area shape="rect" id="Node000001" title="Abstract base class for all simulation elements." alt="" coords="677,133,923,473"/>
+<area shape="rect" id="Node000001" title="Abstract base class for all simulation elements." alt="" coords="701,133,947,473"/>
 <area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1BoostStimulus.html" title="Spatially uniform (homogeneous) input stimulus." alt="" coords="5,661,173,861"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="664,323,550,346,487,363,423,384,359,411,297,442,240,480,187,523,161,554,140,588,124,625,112,662,107,660,119,623,136,586,157,551,183,519,236,475,295,438,357,406,421,379,485,358,548,341,662,317"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full&#45;matrix learned coupling between two neural fields." alt="" coords="198,561,370,961"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="665,350,593,380,519,418,447,466,383,523,354,563,350,560,379,520,443,462,516,414,591,375,663,345"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html" title="Sparse Gaussian field coupling with a fixed, user&#45;defined projection." alt="" coords="394,641,595,881"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="670,444,610,523,575,582,546,642,541,640,571,579,606,520,666,441"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1GaussStimulus.html" title="Localized Gaussian input stimulus applied to a neural field." alt="" coords="620,661,788,861"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="764,488,728,661,722,660,759,486"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1Kernel.html" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="812,661,980,861"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="841,486,878,660,872,661,836,488"/>
-<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1MemoryTrace.html" title="Persistent spatial memory that accumulates and decays field activity." alt="" coords="1004,661,1172,861"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="934,438,994,520,1031,590,1059,660,1054,662,1026,592,990,523,930,441"/>
-<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1NeuralField.html" title="Continuous attractor neural field — the core DFT building block." alt="" coords="1197,521,1398,1001"/>
-<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="937,354,1000,385,1066,423,1129,468,1186,519,1198,534,1194,537,1182,523,1126,472,1063,427,998,390,935,359"/>
-<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1NormalNoise.html" title="Additive Gaussian noise source for neural fields." alt="" coords="1423,661,1591,861"/>
-<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="938,318,1050,342,1113,359,1176,380,1240,407,1301,438,1359,476,1411,519,1438,551,1459,586,1476,623,1489,660,1484,662,1471,625,1455,588,1434,554,1407,523,1356,480,1298,443,1237,412,1174,385,1111,364,1049,347,936,323"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="717,5,883,85"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="803,99,803,133,797,133,797,99"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html" title="Spatially shifted Gaussian kernel that induces directional peak drift." alt="" coords="493,1049,691,1249"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="872,875,844,942,825,974,802,1003,778,1022,756,1031,732,1038,705,1052,693,1060,690,1056,703,1047,730,1033,754,1026,776,1018,798,999,820,971,839,940,867,873"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1GaussKernel.html" title="Gaussian convolution kernel providing local excitation and optional global inhibition." alt="" coords="716,1049,884,1249"/>
-<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="871,875,827,1050,822,1049,866,874"/>
-<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html" title="Difference&#45;of&#45;Gaussians convolution kernel for DFT lateral interactions." alt="" coords="908,1049,1076,1249"/>
-<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="926,874,970,1049,965,1050,921,875"/>
-<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html" title="Damped&#45;cosine convolution kernel for oscillatory field dynamics." alt="" coords="1100,1049,1268,1249"/>
-<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="925,873,953,940,972,971,994,999,1017,1017,1039,1025,1062,1032,1089,1047,1101,1056,1098,1060,1087,1052,1060,1037,1037,1030,1014,1022,990,1003,967,974,948,942,920,875"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="687,320,568,342,503,359,435,381,368,407,303,439,242,478,187,523,161,554,140,588,124,625,111,662,106,660,119,623,135,586,157,550,183,519,239,474,301,435,366,402,434,376,501,354,567,337,686,315"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full&#45;matrix learned coupling between two neural fields." alt="" coords="198,591,394,931"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="689,351,618,381,543,420,471,467,407,523,381,556,358,593,354,590,376,553,403,519,468,463,541,415,616,376,687,346"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html" title="Sparse Gaussian field coupling with a fixed, user&#45;defined projection." alt="" coords="418,621,619,901"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="694,444,634,523,605,571,579,622,574,619,600,569,630,520,690,441"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1GaussStimulus.html" title="Localized Gaussian input stimulus applied to a neural field." alt="" coords="644,661,812,861"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="788,488,752,661,746,660,783,486"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1Kernel.html" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="836,661,1004,861"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="865,486,902,660,896,661,860,488"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1MemoryTrace.html" title="Persistent spatial memory that accumulates and decays field activity." alt="" coords="1028,661,1196,861"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="958,438,1018,520,1055,590,1083,660,1078,662,1050,592,1014,523,954,441"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1NeuralField.html" title="Continuous attractor neural field — the core DFT building block." alt="" coords="1221,521,1422,1001"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="961,354,1024,385,1090,423,1153,468,1210,519,1222,534,1218,537,1206,523,1150,472,1087,427,1022,390,959,359"/>
+<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1NormalNoise.html" title="Additive Gaussian noise source for neural fields." alt="" coords="1447,661,1615,861"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="962,318,1074,342,1137,359,1200,380,1264,407,1325,438,1383,476,1435,519,1462,551,1483,586,1500,623,1513,660,1508,662,1495,625,1479,588,1458,554,1431,523,1380,480,1322,443,1261,412,1198,385,1135,364,1073,347,960,323"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="741,5,907,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="827,99,827,133,821,133,821,99"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html" title="Spatially shifted Gaussian kernel that induces directional peak drift." alt="" coords="517,1049,715,1249"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="896,875,868,942,849,974,826,1003,802,1022,780,1031,756,1038,729,1052,717,1060,714,1056,727,1047,754,1033,778,1026,800,1018,822,999,844,971,863,940,891,873"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1GaussKernel.html" title="Gaussian convolution kernel providing local excitation and optional global inhibition." alt="" coords="740,1049,908,1249"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="895,875,851,1050,846,1049,890,874"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html" title="Difference&#45;of&#45;Gaussians convolution kernel for DFT lateral interactions." alt="" coords="932,1049,1100,1249"/>
+<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="950,874,994,1049,989,1050,945,875"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html" title="Damped&#45;cosine convolution kernel for oscillatory field dynamics." alt="" coords="1124,1049,1292,1249"/>
+<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="949,873,977,940,996,971,1018,999,1041,1017,1063,1025,1086,1032,1113,1047,1125,1056,1122,1060,1111,1052,1084,1037,1061,1030,1038,1022,1014,1003,991,974,972,942,944,875"/>
 </map>

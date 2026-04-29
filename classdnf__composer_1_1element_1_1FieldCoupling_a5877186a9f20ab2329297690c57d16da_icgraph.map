@@ -1,0 +1,7 @@
+<map id="dnf_composer::element::FieldCoupling::init" name="dnf_composer::element::FieldCoupling::init">
+<area shape="rect" id="Node000001" title="Initialize the element (called once before the simulation loop)." alt="" coords="304,41,480,81"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a388fed7e504ed30765199aeb5a21650c" title="Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions an..." alt="" coords="5,5,256,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="290,50,256,45,257,40,291,45"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a908b9209bc0dabbd9d856d9b18151be8" title="Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions an..." alt="" coords="27,70,234,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="291,78,235,86,234,80,290,73"/>
+</map>

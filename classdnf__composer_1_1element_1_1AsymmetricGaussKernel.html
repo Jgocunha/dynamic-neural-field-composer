@@ -132,6 +132,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aed78b4e2f69bf55673030220bbef6650 inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_aed78b4e2f69bf55673030220bbef6650"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650">addInput</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &amp;inputElement, const std::string &amp;inputComponent=&quot;output&quot;)</td></tr>
 <tr class="memdesc:aed78b4e2f69bf55673030220bbef6650 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element.  <br /></td></tr>
 <tr class="separator:aed78b4e2f69bf55673030220bbef6650 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab061ce821963cb81da964bd34ead0214 inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_ab061ce821963cb81da964bd34ead0214"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions)</td></tr>
+<tr class="memdesc:ab061ce821963cb81da964bd34ead0214 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize all components to <code>newDimensions</code> and re-initialize.  <br /></td></tr>
+<tr class="separator:ab061ce821963cb81da964bd34ead0214 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a135e752ac46936d2dad51d13d3ac3f20 inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_a135e752ac46936d2dad51d13d3ac3f20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a135e752ac46936d2dad51d13d3ac3f20">close</a> ()</td></tr>
 <tr class="separator:a135e752ac46936d2dad51d13d3ac3f20 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b6bb1265bb1229b5ae34765008e9f4d inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_a7b6bb1265bb1229b5ae34765008e9f4d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7b6bb1265bb1229b5ae34765008e9f4d">Element</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">ElementCommonParameters</a> &amp;parameters)</td></tr>
@@ -235,7 +238,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Spatially shifted Gaussian kernel that induces directional peak drift. </p>
-<p>By offsetting the centre of the self-excitation Gaussian by <code>timeShift</code> positions, the kernel breaks spatial symmetry: a localized activation peak will be pulled toward higher (positive shift) or lower (negative shift) spatial positions each time step, producing smooth motion across the field. </p>
+<p>By offsetting the centre of the self-excitation Gaussian by <code>timeShift</code> positions, the kernel breaks spatial symmetry: a localized activation peak will be pulled toward higher (positive shift) or lower (negative shift) spatial positions each time step, producing smooth motion across the field.</p>
+<p>When <code><a class="el" href="structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html#a3b5aa772f3d68c223e4d33d9da989f5f" title="Override output field size for cross-dimension kernels.">AsymmetricGaussKernelParameters::outputFieldDimensions</a></code> is set, the convolution result is resampled to the specified output size, enabling connections between fields of different spatial dimensions. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a26feb3d17ba3b9b1bb7ec3925ecabecb" name="a26feb3d17ba3b9b1bb7ec3925ecabecb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a26feb3d17ba3b9b1bb7ec3925ecabecb">&#9670;&#160;</a></span>AsymmetricGaussKernel()</h2>
@@ -428,7 +432,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1AsymmetricGaussKernel_afa45a45ca8acb0432937de3b1563ba82_cgraph.svg" width="490" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1AsymmetricGaussKernel_afa45a45ca8acb0432937de3b1563ba82_cgraph.svg" width="490" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

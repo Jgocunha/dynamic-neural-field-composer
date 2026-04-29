@@ -1,13 +1,15 @@
 <map id="dnf_composer::Simulation::getElement" name="dnf_composer::Simulation::getElement">
-<area shape="rect" id="Node000001" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="245,133,437,173"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#af2cbdd9d53809ca631ccb66c2fe615f0" title=" " alt="" coords="5,5,197,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="302,127,253,93,196,60,168,48,170,43,199,55,256,88,305,123"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#acb26d62a62480a829e32e693cd89b99c" title="Wire stimulusElementId&#39;s stimulusComponent as input to receivingElementId." alt="" coords="5,69,197,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="252,132,176,112,178,107,253,127"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#ab793cd0a18d45717e78440e4eada4dc2" title="Write the named component to a CSV file in the output directory." alt="" coords="5,133,197,173"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="232,156,197,156,197,151,232,151"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#a6670671e5363dcd90296fac622a94b73" title=" " alt="" coords="5,197,197,237"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="253,180,178,200,176,195,252,174"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#a2ab758857ee20d0aafc7b8bf25930135" title=" " alt="" coords="5,261,197,301"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="305,184,256,218,199,252,170,264,168,259,196,247,253,214,302,180"/>
+<area shape="rect" id="Node000001" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="245,165,437,205"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0" title="Disconnect all connections from elementId and resize it to newDimensions." alt="" coords="5,5,197,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="312,157,261,108,229,82,196,60,172,48,174,43,199,55,233,78,264,104,315,153"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#af2cbdd9d53809ca631ccb66c2fe615f0" title=" " alt="" coords="5,69,197,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="285,162,196,124,164,112,166,107,198,119,287,157"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#acb26d62a62480a829e32e693cd89b99c" title="Wire stimulusElementId&#39;s stimulusComponent as input to receivingElementId." alt="" coords="5,133,197,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="231,173,197,169,198,163,232,168"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#ab793cd0a18d45717e78440e4eada4dc2" title="Write the named component to a CSV file in the output directory." alt="" coords="5,197,197,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="232,203,198,207,197,202,231,197"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#a6670671e5363dcd90296fac622a94b73" title=" " alt="" coords="5,261,197,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="287,214,198,252,166,264,164,259,196,247,285,209"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1Simulation.html#a2ab758857ee20d0aafc7b8bf25930135" title=" " alt="" coords="5,325,197,365"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="315,217,264,267,233,293,199,316,174,328,172,323,196,311,229,289,261,263,312,213"/>
 </map>
