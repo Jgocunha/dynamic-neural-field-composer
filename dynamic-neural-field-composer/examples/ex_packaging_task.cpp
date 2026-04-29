@@ -13,6 +13,7 @@
 #include <string>
 
 #include "simulation/simulation_file_manager.h"
+#include "tools/utils.h"
 
 // Packaging Task example
 //
@@ -37,7 +38,7 @@ int main()
 	        std::make_shared<Simulation>("packaging task control architecture", 5.0);
 
 	    const SimulationFileManager sfm(sim,
-	      std::string(OUTPUT_DIRECTORY) + "/simulations/solution 15233 generation 32 species 2 fitness 0.950102.json");
+	      dnf_composer::tools::utils::getResourceRoot() + "/data/simulations/solution 15233 generation 32 species 2 fitness 0.950102.json");
 	    sfm.loadElementsFromJson();
 
 	    auto visualization = std::make_shared<Visualization>(sim);

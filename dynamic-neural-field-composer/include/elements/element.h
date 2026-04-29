@@ -39,6 +39,12 @@ namespace dnf_composer::element
 		/// @brief Initialize the element (called once before the simulation loop).
 		virtual void init() = 0;
 
+		/// @brief Resize all components to @p newDimensions and re-initialize.
+		/// @note Does not remove connections — call Simulation::changeDimensions to
+		///       disconnect neighbours before resizing.
+		/// @param newDimensions  New spatial discretization.
+		virtual void changeDimensions(const ElementDimensions& newDimensions);
+
 		/// @brief Advance the element by one time step.
 		/// @param t       Current simulation time.
 		/// @param deltaT  Integration step size.

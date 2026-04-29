@@ -7,8 +7,8 @@ project(dynamic-neural-field-composer
 
 # Define library version
 set(DNF_COMPOSER_VERSION_MAJOR 2 CACHE STRING "major version" FORCE)
-set(DNF_COMPOSER_VERSION_MINOR 0 CACHE STRING "minor version" FORCE)
-set(DNF_COMPOSER_VERSION_PATCH 0 CACHE STRING "patch version" FORCE)
+set(DNF_COMPOSER_VERSION_MINOR 1 CACHE STRING "minor version" FORCE)
+set(DNF_COMPOSER_VERSION_PATCH 2 CACHE STRING "patch version" FORCE)
 set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR}.${DNF_COMPOSER_VERSION_PATCH} CACHE STRING "version" FORCE)
 
 set(DNF_COMPOSER_LIB_PREFIX "release")
@@ -358,6 +358,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_normal_noise.cpp"
             "tests/elements/test_boost_stimulus.cpp"
             "tests/elements/test_memory_trace.cpp"
+            "tests/elements/test_change_dimensions.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"
             "tests/simulation/test_simulation_extended.cpp"

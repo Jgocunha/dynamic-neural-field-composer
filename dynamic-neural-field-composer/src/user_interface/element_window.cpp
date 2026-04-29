@@ -4,6 +4,9 @@
 
 #include "user_interface/element_window.h"
 
+#include <unordered_map>
+#include <cmath>
+
 namespace dnf_composer::user_interface
 {
 	std::shared_ptr<element::Element> ElementWindow::s_focusedElement_ = nullptr;
@@ -101,6 +104,8 @@ namespace dnf_composer::user_interface
 			ImGui::Spacing();
 
 			ImGui::TextUnformatted(s_focusedElement_->getUniqueName().c_str());
+			renderDimensionControls(s_focusedElement_);
+			ImGui::Spacing();
 			const ImVec4 tint = getColorForElementType(s_focusedElement_->getLabel());
 			const ImVec2 selSize(panelW, PanelHeightFor(s_focusedElement_));
 			PanelScope scope = beginElementPanel(tint, selSize);
@@ -183,6 +188,50 @@ namespace dnf_composer::user_interface
 			ImGui::PopStyleColor(2);
 		}
 
+	}
+
+	void ElementWindow::renderDimensionControls(const std::shared_ptr<element::Element>& element) const
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const float dragW = 100.0f * ui;
+		const std::string elemId = element->getUniqueName();
+
+		static std::unordered_map<int, std::pair<float, float>> staged;
+		const int id = element->getUniqueIdentifier();
+		auto& [stagedXmax, stagedDx] = staged[id];
+
+		const auto& dim = element->getElementCommonParameters().dimensionParameters;
+		if (stagedXmax == 0.0f && stagedDx == 0.0f)
+		{
+			stagedXmax = static_cast<float>(dim.x_max);
+			stagedDx   = static_cast<float>(dim.d_x);
+		}
+
+		ImGui::PushID(("##dim_" + elemId).c_str());
+
+		ImGui::SetNextItemWidth(dragW);
+		ImGui::DragFloat("##x_max", &stagedXmax, 1.0f, 1.0f, 1000.0f);
+		ImGui::SameLine(); ImGui::TextUnformatted("x_max");
+
+		ImGui::SetNextItemWidth(dragW);
+		ImGui::DragFloat("##dx", &stagedDx, 0.01f, 0.01f, 10.0f);
+		ImGui::SameLine(); ImGui::TextUnformatted("d_x");
+
+		const int previewSize = static_cast<int>(std::round(stagedXmax / stagedDx));
+		ImGui::TextDisabled("size: %d", previewSize);
+
+		if (element->hasInput() || element->hasOutput())
+			ImGui::TextDisabled("Applying will remove all connections.");
+
+		if (ImGui::Button("Apply##dim"))
+		{
+			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+			simulation->changeDimensions(elemId, newDim);
+			stagedXmax = static_cast<float>(newDim.x_max);
+			stagedDx   = static_cast<float>(newDim.d_x);
+		}
+
+		ImGui::PopID();
 	}
 
 	void ElementWindow::switchElementToModify(const std::shared_ptr<element::Element>& element)
