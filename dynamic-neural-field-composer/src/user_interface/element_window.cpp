@@ -60,25 +60,28 @@ namespace dnf_composer::user_interface
 				return rows * rowH - spacingY + panelPad;
 			};
 
+			// Every card gains: separator + Out size + Out step = +3 rows
+			constexpr int dimRows = 3;
+
 			switch (e->getLabel())
 			{
-				case element::ElementLabel::NORMAL_NOISE:           return h(1);
-				case element::ElementLabel::NEURAL_FIELD:           return h(2);
-				case element::ElementLabel::GAUSS_STIMULUS:         return h(4);
-				case element::ElementLabel::GAUSS_KERNEL:           return h(4);
-				case element::ElementLabel::FIELD_COUPLING:         return h(5);
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:     return h(6);
-				case element::ElementLabel::OSCILLATORY_KERNEL:     return h(5);
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5);
-				case element::ElementLabel::BOOST_STIMULUS:         return h(2);
-				case element::ElementLabel::MEMORY_TRACE:           return h(3);
+				case element::ElementLabel::NORMAL_NOISE:           return h(1  + dimRows);
+				case element::ElementLabel::NEURAL_FIELD:           return h(2  + dimRows);
+				case element::ElementLabel::GAUSS_STIMULUS:         return h(4  + dimRows);
+				case element::ElementLabel::GAUSS_KERNEL:           return h(4  + dimRows);
+				case element::ElementLabel::FIELD_COUPLING:         return h(7  + dimRows);
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:     return h(6  + dimRows);
+				case element::ElementLabel::OSCILLATORY_KERNEL:     return h(5  + dimRows);
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5  + dimRows);
+				case element::ElementLabel::BOOST_STIMULUS:         return h(2  + dimRows);
+				case element::ElementLabel::MEMORY_TRACE:           return h(3  + dimRows);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
 					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(2 + 5 * numCouplings);
+					return h(4 + 5 * numCouplings + dimRows);
 				}
-				default: return h(4);
+				default: return h(4 + dimRows);
 			}
 		};
 
@@ -104,7 +107,6 @@ namespace dnf_composer::user_interface
 			ImGui::Spacing();
 
 			ImGui::TextUnformatted(s_focusedElement_->getUniqueName().c_str());
-			renderDimensionControls(s_focusedElement_);
 			ImGui::Spacing();
 			const ImVec4 tint = getColorForElementType(s_focusedElement_->getLabel());
 			const ImVec2 selSize(panelW, PanelHeightFor(s_focusedElement_));
@@ -113,6 +115,7 @@ namespace dnf_composer::user_interface
 				ImGui::PushItemWidth(dragW);
 				switchElementToModify(s_focusedElement_);
 				ImGui::PopItemWidth();
+				renderDimensionControls(s_focusedElement_);
 			}
 			endElementPanel(scope);
 			ImGui::Spacing();
@@ -141,10 +144,10 @@ namespace dnf_composer::user_interface
 	            const ImVec4 tint = getColorForElementType(label);
 	            const ImVec2 size(panelW, PanelHeightFor(e));
 
-	            // draw a panel first (behind), then render the editor inside it
 	            PanelScope scope = beginElementPanel(tint, size);
 	            {
-	                switchElementToModify(e);   // draws inputs at p.rect.Min + pad
+	                switchElementToModify(e);
+	                renderDimensionControls(e);
 	            }
 	            endElementPanel(scope);
 
@@ -192,11 +195,15 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::renderDimensionControls(const std::shared_ptr<element::Element>& element) const
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-		const float dragW = 100.0f * ui;
+		const float ui     = ImGui::GetIO().FontGlobalScale;
+		const float inputW = 150.0f * ui;
 		const std::string elemId = element->getUniqueName();
+		const element::ElementLabel label = element->getLabel();
+		const bool isCoupling = label == element::ElementLabel::FIELD_COUPLING ||
+		                        label == element::ElementLabel::GAUSS_FIELD_COUPLING;
 
 		static std::unordered_map<int, std::pair<float, float>> staged;
+		static std::unordered_map<int, std::pair<float, float>> stagedIn;
 		const int id = element->getUniqueIdentifier();
 		auto& [stagedXmax, stagedDx] = staged[id];
 
@@ -207,28 +214,91 @@ namespace dnf_composer::user_interface
 			stagedDx   = static_cast<float>(dim.d_x);
 		}
 
+		ImGui::Separator();
 		ImGui::PushID(("##dim_" + elemId).c_str());
 
-		ImGui::SetNextItemWidth(dragW);
-		ImGui::DragFloat("##x_max", &stagedXmax, 1.0f, 1.0f, 1000.0f);
-		ImGui::SameLine(); ImGui::TextUnformatted("x_max");
-
-		ImGui::SetNextItemWidth(dragW);
-		ImGui::DragFloat("##dx", &stagedDx, 0.01f, 0.01f, 10.0f);
-		ImGui::SameLine(); ImGui::TextUnformatted("d_x");
-
-		const int previewSize = static_cast<int>(std::round(stagedXmax / stagedDx));
-		ImGui::TextDisabled("size: %d", previewSize);
-
-		if (element->hasInput() || element->hasOutput())
-			ImGui::TextDisabled("Applying will remove all connections.");
-
-		if (ImGui::Button("Apply##dim"))
+		ImGui::SetNextItemWidth(inputW);
+		ImGui::InputFloat("##x_max", &stagedXmax, 0.0f, 0.0f, "%.1f");
+		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
 		{
 			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
 			simulation->changeDimensions(elemId, newDim);
 			stagedXmax = static_cast<float>(newDim.x_max);
 			stagedDx   = static_cast<float>(newDim.d_x);
+		}
+		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out size" : "Size");
+		ImGui::SameLine();
+		widgets::renderHelpMarker(
+			"Changing the field size will disconnect all existing connections\n"
+			"to and from this element. Press Enter to commit the new size."
+		);
+
+		ImGui::SetNextItemWidth(inputW);
+		ImGui::InputFloat("##dx", &stagedDx, 0.0f, 0.0f, "%.2f");
+		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+		{
+			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+			simulation->changeDimensions(elemId, newDim);
+			stagedXmax = static_cast<float>(newDim.x_max);
+			stagedDx   = static_cast<float>(newDim.d_x);
+		}
+		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out step" : "Step");
+
+		if (isCoupling)
+		{
+			auto& [stagedInXmax, stagedInDx] = stagedIn[id];
+
+			element::ElementDimensions currentInputDim{};
+			if (label == element::ElementLabel::FIELD_COUPLING)
+			{
+				const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element);
+				currentInputDim = fc->getParameters().inputFieldDimensions;
+			}
+			else
+			{
+				const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
+				currentInputDim = gfc->getInputFieldDimensions();
+			}
+
+			if (stagedInXmax == 0.0f && stagedInDx == 0.0f)
+			{
+				stagedInXmax = static_cast<float>(currentInputDim.x_max);
+				stagedInDx   = static_cast<float>(currentInputDim.d_x);
+			}
+
+			auto applyInputDim = [&]() {
+				if (stagedInXmax <= 0.0f || stagedInDx <= 0.0f) return;
+				const element::ElementDimensions newInDim(static_cast<int>(stagedInXmax), static_cast<double>(stagedInDx));
+				element->removeInputs();
+				element->removeOutputs();
+				if (label == element::ElementLabel::FIELD_COUPLING)
+				{
+					const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element);
+					auto fcp = fc->getParameters();
+					fcp.inputFieldDimensions = newInDim;
+					fc->setParameters(fcp);
+				}
+				else
+				{
+					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
+					auto gfcp = gfc->getParameters();
+					gfcp.inputFieldDimensions = newInDim;
+					gfc->setParameters(gfcp);
+				}
+				element->init();
+				stagedInXmax = static_cast<float>(newInDim.x_max);
+				stagedInDx   = static_cast<float>(newInDim.d_x);
+			};
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##in_x_max", &stagedInXmax, 0.0f, 0.0f, "%.1f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("In size");
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##in_dx", &stagedInDx, 0.0f, 0.0f, "%.2f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("In step");
 		}
 
 		ImGui::PopID();
