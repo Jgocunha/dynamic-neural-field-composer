@@ -1,5 +1,9 @@
 #pragma once
 
+
+#include <unordered_map>
+#include <cmath>
+
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
