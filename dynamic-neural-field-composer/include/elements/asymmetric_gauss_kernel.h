@@ -72,6 +72,10 @@ namespace dnf_composer::element
 	/// will be pulled toward higher (positive shift) or lower (negative shift)
 	/// spatial positions each time step, producing smooth motion across the field.
 	///
+	/// When @c AsymmetricGaussKernelParameters::outputFieldDimensions is set, the
+	/// convolution result is resampled to the specified output size, enabling
+	/// connections between fields of different spatial dimensions.
+	///
 	/// @ingroup elements
 	class AsymmetricGaussKernel final : public Kernel
 	{

@@ -84,6 +84,10 @@ namespace dnf_composer::element
 	/// This produces alternating excitatory and inhibitory bands at increasing distances,
 	/// which can generate wave-like or rhythmic activity patterns in a neural field.
 	///
+	/// When @c OscillatoryKernelParameters::outputFieldDimensions is set, the convolution
+	/// result is resampled to the specified output size, enabling connections between
+	/// fields of different spatial dimensions.
+	///
 	/// @ingroup elements
 	class OscillatoryKernel final : public Kernel
 	{
