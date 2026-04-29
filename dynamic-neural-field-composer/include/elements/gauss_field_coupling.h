@@ -127,6 +127,16 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
+		/// @brief Resize the output field dimensions and rebuild the weight matrix.
+		/// Preserves input field dimensions and clears weights. Connections are not
+		/// removed — call removeInputs()/removeOutputs() first if needed.
+		void changeDimensions(const ElementDimensions& newDimensions) override;
+
+		/// @brief Resize the input field dimensions and rebuild the weight matrix.
+		/// Preserves output field dimensions and clears weights. Connections are not
+		/// removed — call removeInputs()/removeOutputs() first if needed.
+		void changeInputDimensions(const ElementDimensions& newInputDimensions);
+
 		GaussFieldCouplingParameters getParameters() const;
 		void setParameters(const GaussFieldCouplingParameters& gfc_parameters);
 		ElementDimensions getInputFieldDimensions() const;

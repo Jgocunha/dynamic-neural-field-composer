@@ -101,6 +101,24 @@ namespace dnf_composer
 			return parameters;
 		}
 
+		void GaussFieldCoupling::changeDimensions(const ElementDimensions& newDimensions)
+		{
+			commonParameters.dimensionParameters = newDimensions;
+			const int inputSize = static_cast<int>(components["input"].size());
+			components["output"].assign(newDimensions.size, 0.0);
+			components["weights"].assign(inputSize * newDimensions.size, 0.0);
+			init();
+		}
+
+		void GaussFieldCoupling::changeInputDimensions(const ElementDimensions& newInputDimensions)
+		{
+			parameters.inputFieldDimensions = newInputDimensions;
+			const int outputSize = static_cast<int>(components["output"].size());
+			components["input"].assign(newInputDimensions.size, 0.0);
+			components["weights"].assign(newInputDimensions.size * outputSize, 0.0);
+			init();
+		}
+
 		void GaussFieldCoupling::setParameters(const GaussFieldCouplingParameters& gfc_parameters)
 		{
 			parameters = gfc_parameters;

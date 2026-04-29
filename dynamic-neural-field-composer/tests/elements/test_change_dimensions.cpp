@@ -240,6 +240,31 @@ TEST(ChangeDimensions, FieldCoupling_OutputResizes)
     EXPECT_CHANGE_DIMENSIONS(el, 60);
 }
 
+TEST(ChangeDimensions, FieldCoupling_BuffersConsistentAfterOutputResize)
+{
+    // inSize=100, outSize=100 → change output to 60
+    const auto el = makeFieldCoupling(100, 100);
+    el->init();
+    EXPECT_NO_THROW(el->changeDimensions(dim(60)));
+    EXPECT_EQ(el->getSize(), 60);
+    EXPECT_EQ(el->getComponent("output").size(), 60u);
+    EXPECT_EQ(el->getComponent("input").size(),  100u);              // input dim preserved
+    EXPECT_EQ(el->getComponent("weights").size(), 100u * 60u);       // weight matrix is inSize × outSize
+    EXPECT_NO_THROW(el->step(0.0, 1.0));
+}
+
+TEST(ChangeDimensions, FieldCoupling_BuffersConsistentAfterInputResize)
+{
+    // inSize=100, outSize=100 → change input to 50
+    const auto el = makeFieldCoupling(100, 100);
+    el->init();
+    EXPECT_NO_THROW(el->changeInputDimensions(dim(50)));
+    EXPECT_EQ(el->getComponent("input").size(),   50u);              // input resized
+    EXPECT_EQ(el->getComponent("output").size(),  100u);             // output preserved
+    EXPECT_EQ(el->getComponent("weights").size(), 50u * 100u);       // weight matrix rebuilt
+    EXPECT_NO_THROW(el->step(0.0, 1.0));
+}
+
 // ---------------------------------------------------------------------------
 // GaussFieldCoupling
 // ---------------------------------------------------------------------------
@@ -248,6 +273,31 @@ TEST(ChangeDimensions, GaussFieldCoupling_OutputResizes)
 {
     const auto el = makeGaussFieldCoupling(100, 100);
     EXPECT_CHANGE_DIMENSIONS(el, 80);
+}
+
+TEST(ChangeDimensions, GaussFieldCoupling_BuffersConsistentAfterOutputResize)
+{
+    // inSize=100, outSize=100 → change output to 80
+    const auto el = makeGaussFieldCoupling(100, 100);
+    el->init();
+    EXPECT_NO_THROW(el->changeDimensions(dim(80)));
+    EXPECT_EQ(el->getSize(), 80);
+    EXPECT_EQ(el->getComponent("output").size(),  80u);
+    EXPECT_EQ(el->getComponent("input").size(),   100u);             // input dim preserved
+    EXPECT_EQ(el->getComponent("weights").size(), 100u * 80u);       // weight matrix is inSize × outSize
+    EXPECT_NO_THROW(el->step(0.0, 1.0));
+}
+
+TEST(ChangeDimensions, GaussFieldCoupling_BuffersConsistentAfterInputResize)
+{
+    // inSize=100, outSize=100 → change input to 40
+    const auto el = makeGaussFieldCoupling(100, 100);
+    el->init();
+    EXPECT_NO_THROW(el->changeInputDimensions(dim(40)));
+    EXPECT_EQ(el->getComponent("input").size(),   40u);              // input resized
+    EXPECT_EQ(el->getComponent("output").size(),  100u);             // output preserved
+    EXPECT_EQ(el->getComponent("weights").size(), 40u * 100u);       // weight matrix rebuilt
+    EXPECT_NO_THROW(el->step(0.0, 1.0));
 }
 
 // ---------------------------------------------------------------------------

@@ -277,8 +277,10 @@ namespace dnf_composer::user_interface
 			auto applyKernelOutputDim = [&]() {
 				if (stagedOutXmax <= 0.0f || stagedOutDx <= 0.0f) return;
 				const element::ElementDimensions newOutDim(static_cast<int>(stagedOutXmax), static_cast<double>(stagedOutDx));
+				const bool squareMode = (newOutDim.x_max == element->getMaxSpatialDimension() &&
+				                        std::abs(newOutDim.d_x - element->getStepSize()) < 1e-9);
 				const std::optional<element::ElementDimensions> newOptOut =
-					(newOutDim.size != element->getSize()) ? std::make_optional(newOutDim) : std::nullopt;
+					squareMode ? std::nullopt : std::make_optional(newOutDim);
 				element->removeInputs();
 				element->removeOutputs();
 				if (label == element::ElementLabel::GAUSS_KERNEL)
@@ -361,20 +363,9 @@ namespace dnf_composer::user_interface
 				element->removeInputs();
 				element->removeOutputs();
 				if (label == element::ElementLabel::FIELD_COUPLING)
-				{
-					const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element);
-					auto fcp = fc->getParameters();
-					fcp.inputFieldDimensions = newInDim;
-					fc->setParameters(fcp);
-				}
+					std::dynamic_pointer_cast<element::FieldCoupling>(element)->changeInputDimensions(newInDim);
 				else
-				{
-					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
-					auto gfcp = gfc->getParameters();
-					gfcp.inputFieldDimensions = newInDim;
-					gfc->setParameters(gfcp);
-				}
-				element->init();
+					std::dynamic_pointer_cast<element::GaussFieldCoupling>(element)->changeInputDimensions(newInDim);
 				stagedInXmax = static_cast<float>(newInDim.x_max);
 				stagedInDx   = static_cast<float>(newInDim.d_x);
 			};

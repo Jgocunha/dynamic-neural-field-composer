@@ -30,9 +30,9 @@ namespace dnf_composer::tools::utils
 			buf[len] = '\0';
 			exeDir = std::filesystem::path(buf).parent_path();
 #endif
-			const auto parent = exeDir / "..";
+			const auto parent = std::filesystem::weakly_canonical(exeDir / "..");
 			if (std::filesystem::exists(parent / "resources"))
-				return (parent).string();
+				return parent.string();
 			return std::string(PROJECT_DIR);
 		}();
 		return cached;
