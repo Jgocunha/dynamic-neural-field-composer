@@ -73,4 +73,4 @@ Explore the `examples/` folder for ready-to-run architectures.
 
 ## Contributing
 
-Bug fixes, new features, and documentation improvements are all welcome. Feel free to open an issue or submit a pull request.
+Bug fixes, new features, and documentation improvements are all welcome. If you have a bug, issue, or suggestion, see [CONTRIBUTING.md](CONTRIBUTING.md) for how to report it and how to submit a pull request.
