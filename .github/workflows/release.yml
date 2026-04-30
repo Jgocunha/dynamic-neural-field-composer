@@ -54,7 +54,8 @@ jobs:
             implot \
             imgui-node-editor \
             nlohmann-json \
-            gtest
+            gtest \
+            catch2
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
@@ -162,7 +163,8 @@ jobs:
             implot \
             imgui-node-editor \
             nlohmann-json \
-            gtest
+            gtest \
+            catch2
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
@@ -225,9 +227,115 @@ jobs:
           name: linux-x64
           path: dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
 
-  # ── GitHub Release (after both builds succeed) ──────────────────────────
+  release-macos:
+    runs-on: macos-latest
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+      INSTALL_PREFIX: ${{ github.workspace }}/install
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Detect architecture and set vcpkg triplet ──────────────────────────
+      - name: Set vcpkg triplet
+        id: arch
+        run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "arm64" ]; then
+            echo "VCPKG_DEFAULT_TRIPLET=arm64-osx" >> "$GITHUB_ENV"
+            echo "macos_arch=arm64" >> "$GITHUB_OUTPUT"
+          else
+            echo "VCPKG_DEFAULT_TRIPLET=x64-osx" >> "$GITHUB_ENV"
+            echo "macos_arch=x64" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── vcpkg ─────────────────────────────────────────────────────────────
+      - name: Clone vcpkg
+        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - name: Bootstrap vcpkg
+        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_ROOT }}/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('build_macos.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
+            implot \
+            imgui-node-editor \
+            nlohmann-json \
+            gtest \
+            catch2
+
+      # ── imgui-platform-kit (from source) ───────────────────────────────────
+      - name: Clone imgui-platform-kit
+        run: |
+          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
+            ${{ github.workspace }}/imgui-platform-kit-src
+
+      - name: Configure imgui-platform-kit
+        run: |
+          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
+                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
+
+      - name: Build imgui-platform-kit
+        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(sysctl -n hw.logicalcpu)
+
+      - name: Install imgui-platform-kit
+        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
+
+      # ── Main project ───────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          cmake -S ./dynamic-neural-field-composer -B build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
+                -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+                -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
+                -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
+                -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
+                -DDNF_COMPOSER_BUILD_TESTS=OFF
+
+      - name: Build
+        run: cmake --build build --parallel $(sysctl -n hw.logicalcpu)
+
+      - name: Install
+        run: cmake --install build
+
+      # ── Package ────────────────────────────────────────────────────────────
+      - name: Create release archive
+        run: |
+          cd $INSTALL_PREFIX
+          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ steps.arch.outputs.macos_arch }}.tar.gz .
+
+      # ── Upload artifact for release job ───────────────────────────────────
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ steps.arch.outputs.macos_arch }}
+          path: dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ steps.arch.outputs.macos_arch }}.tar.gz
+
+  # ── GitHub Release (after all builds succeed) ──────────────────────────
   create-release:
-    needs: [release-windows, release-linux]
+    needs: [release-windows, release-linux, release-macos]
     runs-on: ubuntu-latest
 
     permissions:
@@ -244,6 +352,12 @@ jobs:
         with:
           name: linux-x64
 
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: macos-*
+          merge-multiple: true
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -259,6 +373,8 @@ jobs:
             |------|----------|
             | `dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip` | Windows (x64) |
             | `dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz` | Linux (x64) |
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz` | macOS (Apple Silicon) |
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-macos-x64.tar.gz` | macOS (Intel) |
 
             ## Archive contents
 
@@ -304,3 +420,4 @@ jobs:
           files: |
             dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip
             dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
+            dynamic-neural-field-composer-${{ github.ref_name }}-macos-*.tar.gz
