@@ -470,8 +470,11 @@ namespace dnf_composer
 		const std::shared_ptr<element::Element> foundElement = getElement(id);
 		const std::vector<double> component = foundElement->getComponent(componentName);
 
-		const std::chrono::zoned_time localTime{std::chrono::current_zone(), std::chrono::system_clock::now()};
-		const std::string timeSignature = std::format("{:%Y-%m-%d_%H-%M-%S}", localTime);
+		const auto now = std::chrono::system_clock::now();
+		const auto time_t = std::chrono::system_clock::to_time_t(now);
+		std::ostringstream timeOss;
+		timeOss << std::put_time(std::localtime(&time_t), "%Y-%m-%d_%H-%M-%S");
+		const std::string timeSignature = timeOss.str();
 
 		// Add the time signature to the filename
 		const std::string filename = tools::utils::getResourceRoot() + "/data/exports/" + id + "_" + componentName + "_" + timeSignature + ".txt";
