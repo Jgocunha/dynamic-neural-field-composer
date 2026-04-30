@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "tools/profiling.h"
+﻿#include "tools/profiling.h"
 
 
 namespace dnf_composer
@@ -36,4 +32,3 @@ namespace dnf_composer
 		}
 	}
 }
-
