@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "user_interface/element_window.h"
+﻿#include "user_interface/element_window.h"
 
 namespace dnf_composer::user_interface
 {
@@ -91,7 +87,7 @@ namespace dnf_composer::user_interface
 			if (!stillValid) s_focusedElement_ = nullptr;
 		}
 
-		// Selected elements section — shows the most recently single-clicked node
+		// Selected elements section â€” shows the most recently single-clicked node
 		if (s_focusedElement_)
 		{
 			ImGui::PushID("##sel_focused");

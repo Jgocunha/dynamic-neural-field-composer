@@ -1,6 +1,7 @@
 # dynamic-neural-field-composer
 
 [![CI](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml)
+[![Static Analysis](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml)
 [![Release](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml)
 [![Latest Release](https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer)](https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest)
 [![codecov](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg)](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer)

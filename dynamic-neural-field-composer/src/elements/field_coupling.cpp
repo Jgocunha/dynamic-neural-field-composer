@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "elements/field_coupling.h"
+﻿#include "elements/field_coupling.h"
 #include "tools/utils.h"
 
 namespace dnf_composer

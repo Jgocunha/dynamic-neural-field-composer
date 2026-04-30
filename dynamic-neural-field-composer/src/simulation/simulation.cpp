@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "simulation/simulation.h"
+﻿#include "simulation/simulation.h"
 #include "simulation/simulation_file_manager.h"
 #include "tools/utils.h"
 
@@ -498,4 +494,3 @@ namespace dnf_composer
 		return elements;
 	}
 }
-

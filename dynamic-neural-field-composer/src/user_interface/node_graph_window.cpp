@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "user_interface/node_graph_window.h"
+﻿#include "user_interface/node_graph_window.h"
 
 extern ImFont* g_BoldLargeFont;
 extern ImFont* g_BlackLargeFont;
@@ -52,7 +48,7 @@ namespace dnf_composer::user_interface
 		}
 		ImGui::End();
 
-		// Plot cards are separate top-level windows — must be rendered outside Begin/End.
+		// Plot cards are separate top-level windows â€” must be rendered outside Begin/End.
 		renderNodePlotCards();
 	}
 
@@ -79,7 +75,7 @@ namespace dnf_composer::user_interface
 		ngBoundsMin_ = ngPos;
 		ngBoundsMax_ = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
 
-		// Plot cards are separate top-level windows — must be rendered outside Begin/End.
+		// Plot cards are separate top-level windows â€” must be rendered outside Begin/End.
 		renderNodePlotCards();
 	}
 
@@ -113,7 +109,7 @@ namespace dnf_composer::user_interface
 			renderElementNode(element);
 
 		// After nodes have been submitted, we can read their actual canvas positions.
-		// Any node still sitting at the origin (0,0) has no saved layout —
+		// Any node still sitting at the origin (0,0) has no saved layout â€”
 		// queue a grid position so it spreads out on the next frame.
 		constexpr float colSpacing = 300.0f;
 		constexpr float rowSpacing = 250.0f;
@@ -126,7 +122,7 @@ namespace dnf_composer::user_interface
 		// next group's base column.
 		//
 		// columnCounts is derived from the *current* simulation's elements only, so it
-		// resets naturally whenever a different simulation is loaded — no stale state
+		// resets naturally whenever a different simulation is loaded â€” no stale state
 		// from a previously loaded (possibly larger) simulation bleeds through.
 		const auto& elements = simulation->getElements();
 		std::array<int, 4> groupCount    = {};
@@ -205,7 +201,7 @@ namespace dnf_composer::user_interface
 		// Putting all content here forces Input/Output pins to appear below it.
 		builder.Header(bodyVec4);
 		{
-			// Fixed node width — the name is clipped and scrolls on hover.
+			// Fixed node width â€” the name is clipped and scrolls on hover.
 			static constexpr float minNodeSize = 250.0f;
 			static constexpr float scrollSpeed  = 50.0f;  // px / sec
 			static constexpr float scrollDelay  = 0.5f;   // sec pause before scrolling
@@ -230,7 +226,7 @@ namespace dnf_composer::user_interface
 				else
 				{
 					const ImVec2 origin = ImGui::GetCursorScreenPos();
-					// Reserve the fixed slot — IsItemHovered() reads this rect.
+					// Reserve the fixed slot â€” IsItemHovered() reads this rect.
 					ImGui::Dummy(ImVec2(availW, lineH));
 
 					const size_t id      = getNodeId(element);
@@ -267,7 +263,7 @@ namespace dnf_composer::user_interface
 			}
 			ImGui::PopFont();
 
-			// Info icon — hover shows parameters
+			// Info icon â€” hover shows parameters
 			ImGui::Spacing();
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_CIRCLE_INFO);
@@ -515,11 +511,11 @@ namespace dnf_composer::user_interface
 			if (getNodeId(el) == id) { element = el; break; }
 		if (!element) return;
 
-		// Single click — select element in the control panel.
+		// Single click â€” select element in the control panel.
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			ElementWindow::setFocusedElement(element);
 
-		// Double click — open plot card.
+		// Double click â€” open plot card.
 		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
 			if (!plotCards_.contains(id))
@@ -697,8 +693,8 @@ namespace dnf_composer::user_interface
 		return std::hash<std::string>{}(element->getUniqueName());
 	}
 
-	// Returns a column index (0–3) for the topology-aware initial layout.
-	// Signal flow: sources (0) → kernels (1) → couplings (2) → fields (3)
+	// Returns a column index (0â€“3) for the topology-aware initial layout.
+	// Signal flow: sources (0) â†’ kernels (1) â†’ couplings (2) â†’ fields (3)
 	int NodeGraphWindow::getColumnForElement(const element::ElementLabel label)
 	{
 		switch (label)
