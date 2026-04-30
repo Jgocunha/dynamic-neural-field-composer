@@ -218,3 +218,83 @@ jobs:
       - name: Run tests
         working-directory: build
         run: ctest -C Release --output-on-failure --parallel
+
+  build-and-test-macos:
+    runs-on: macos-latest
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Detect architecture and set vcpkg triplet ──────────────────────────
+      - name: Set vcpkg triplet
+        run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "arm64" ]; then
+            echo "VCPKG_DEFAULT_TRIPLET=arm64-osx" >> "$GITHUB_ENV"
+          else
+            echo "VCPKG_DEFAULT_TRIPLET=x64-osx" >> "$GITHUB_ENV"
+          fi
+
+      # ── vcpkg ─────────────────────────────────────────────────────────────
+      - name: Clone vcpkg
+        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - name: Bootstrap vcpkg
+        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_ROOT }}/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('build_macos.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
+            implot \
+            imgui-node-editor \
+            nlohmann-json \
+            gtest
+
+      # ── imgui-platform-kit (from source) ───────────────────────────────────
+      - name: Clone imgui-platform-kit
+        run: |
+          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
+            ${{ github.workspace }}/imgui-platform-kit-src
+
+      - name: Configure imgui-platform-kit
+        run: |
+          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
+                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
+
+      - name: Build imgui-platform-kit
+        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(sysctl -n hw.logicalcpu)
+
+      - name: Install imgui-platform-kit
+        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
+
+      # ── Main project ───────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: |
+          cmake -S ./dynamic-neural-field-composer -B build \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX
+
+      - name: Build
+        run: cmake --build build --parallel $(sysctl -n hw.logicalcpu)
+
+      # ── Tests ──────────────────────────────────────────────────────────────
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure --parallel $(sysctl -n hw.logicalcpu)
