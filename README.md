@@ -26,7 +26,7 @@ It is built with real-time performance in mind, and straightforward to embed in 
 ## Requirements
 
 - CMake 3.20+
-- C++20 compiler (MSVC, GCC 13+, Clang 13+, or Apple Clang 13+)
+- C++20 compiler (MSVC, GCC 11+, Clang 13+, or Apple Clang 13+)
 - [vcpkg](https://github.com/microsoft/vcpkg) with `VCPKG_ROOT` set
 
 Dependencies are installed automatically via vcpkg: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `imgui-platform-kit`.

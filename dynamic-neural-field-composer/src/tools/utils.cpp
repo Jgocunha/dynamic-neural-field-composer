@@ -28,9 +28,15 @@ namespace dnf_composer::tools::utils
 #elif defined(__APPLE__)
 			char buf[PATH_MAX] = {};
 			uint32_t size = sizeof(buf);
-			if (_NSGetExecutablePath(buf, &size) != 0)
-				return std::string(PROJECT_DIR);
-			exeDir = std::filesystem::path(buf).parent_path();
+			if (_NSGetExecutablePath(buf, &size) != 0) {
+				// buf was too small; size now holds the required length
+				std::string dynbuf(size, '\0');
+				if (_NSGetExecutablePath(dynbuf.data(), &size) != 0)
+					return std::string(PROJECT_DIR);
+				exeDir = std::filesystem::path(dynbuf).parent_path();
+			} else {
+				exeDir = std::filesystem::path(buf).parent_path();
+			}
 #else
 			char buf[PATH_MAX] = {};
 			const ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);

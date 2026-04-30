@@ -213,6 +213,10 @@ find_package(unofficial-imgui-node-editor CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
+# OpenGL must be found before importing imgui-platform-kit so that the
+# OpenGL::GL target exists when CMake resolves its exported link interface.
+find_package(OpenGL REQUIRED)
+
 # Setup imgui-platform-kit
 find_package(imgui-platform-kit REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui-platform-kit)

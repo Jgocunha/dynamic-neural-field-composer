@@ -75,7 +75,7 @@ chmod +x build_macos.sh
 ./build_macos.sh
 ```
 
-The script auto-detects your architecture (`arm64-osx` for Apple Silicon, `x64-osx` for Intel), installs the correct vcpkg packages (OpenGL + GLFW bindings), and builds into `build/macos-release/`.
+The script auto-detects your architecture (`arm64-osx` for Apple Silicon, `x64-osx` for Intel), installs the correct vcpkg packages (OpenGL + GLFW bindings), clones and installs imgui-platform-kit from source, and builds into `build/macos-release/`.
 
 ### Manual CMake build
 
