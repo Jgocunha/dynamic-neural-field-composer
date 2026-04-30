@@ -36,7 +36,7 @@ jobs:
           $VCPKG_ROOT/vcpkg install \
             "imgui[docking-experimental,core,opengl3-binding,glfw-binding]:x64-linux" \
             "implot:x64-linux" \
-            "unofficial-imgui-node-editor:x64-linux" \
+            "imgui-node-editor:x64-linux" \
             "nlohmann-json:x64-linux" \
             "gtest:x64-linux" \
             "catch2:x64-linux"

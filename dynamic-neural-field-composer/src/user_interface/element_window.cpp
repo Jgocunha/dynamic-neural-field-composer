@@ -87,7 +87,7 @@ namespace dnf_composer::user_interface
 			if (!stillValid) s_focusedElement_ = nullptr;
 		}
 
-		// Selected elements section â€” shows the most recently single-clicked node
+		// Selected elements section - shows the most recently single-clicked node
 		if (s_focusedElement_)
 		{
 			ImGui::PushID("##sel_focused");

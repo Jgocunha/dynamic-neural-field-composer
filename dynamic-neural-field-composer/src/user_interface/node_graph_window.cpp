@@ -75,7 +75,7 @@ namespace dnf_composer::user_interface
 		ngBoundsMin_ = ngPos;
 		ngBoundsMax_ = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
 
-		// Plot cards are separate top-level windows â€” must be rendered outside Begin/End.
+		// Plot cards are separate top-level windows must be rendered outside Begin/End.
 		renderNodePlotCards();
 	}
 
@@ -693,8 +693,8 @@ namespace dnf_composer::user_interface
 		return std::hash<std::string>{}(element->getUniqueName());
 	}
 
-	// Returns a column index (0â€“3) for the topology-aware initial layout.
-	// Signal flow: sources (0) â†’ kernels (1) â†’ couplings (2) â†’ fields (3)
+	// Returns a column index for the topology-aware initial layout.
+	// Signal flow: sources (0) - kernels (1) - couplings (2) - fields (3)
 	int NodeGraphWindow::getColumnForElement(const element::ElementLabel label)
 	{
 		switch (label)

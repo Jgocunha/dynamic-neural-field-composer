@@ -81,7 +81,7 @@ namespace dnf_composer::user_interface
 			editableDt_ = simulation->getDeltaT();  // keep in sync when not editing
 
 		ImGui::SameLine();
-		ImGui::TextUnformatted("\xce\x94t");  // Î”t
+		ImGui::TextUnformatted("\xce\x94t");  // delta t
 
 		ImGui::PopID();
 	}
@@ -168,7 +168,7 @@ namespace dnf_composer::user_interface
 	    const float tile = 36.0f * ui;                       // compact square
 	    const ImVec2 iconBox(tile, tile);
 
-	    // soft â€œtileâ€
+	    // soft tile styling
 	    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f * ui);
 	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
 	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.96f, 0.98f, 0.99f, 1.0f));
