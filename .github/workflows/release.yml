@@ -228,29 +228,27 @@ jobs:
           path: dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
 
   release-macos:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            arch: arm64
+            vcpkg_triplet: arm64-osx
+          - os: macos-13
+            arch: x64
+            vcpkg_triplet: x64-osx
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.vcpkg_triplet }}
       IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
       INSTALL_PREFIX: ${{ github.workspace }}/install
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # ── Detect architecture and set vcpkg triplet ──────────────────────────
-      - name: Set vcpkg triplet
-        id: arch
-        run: |
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "arm64" ]; then
-            echo "VCPKG_DEFAULT_TRIPLET=arm64-osx" >> "$GITHUB_ENV"
-            echo "macos_arch=arm64" >> "$GITHUB_OUTPUT"
-          else
-            echo "VCPKG_DEFAULT_TRIPLET=x64-osx" >> "$GITHUB_ENV"
-            echo "macos_arch=x64" >> "$GITHUB_OUTPUT"
-          fi
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
@@ -324,14 +322,14 @@ jobs:
       - name: Create release archive
         run: |
           cd $INSTALL_PREFIX
-          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ steps.arch.outputs.macos_arch }}.tar.gz .
+          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ matrix.arch }}.tar.gz .
 
       # ── Upload artifact for release job ───────────────────────────────────
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: macos-${{ steps.arch.outputs.macos_arch }}
-          path: dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ steps.arch.outputs.macos_arch }}.tar.gz
+          name: macos-${{ matrix.arch }}
+          path: dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ matrix.arch }}.tar.gz
 
   # ── GitHub Release (after all builds succeed) ──────────────────────────
   create-release:
