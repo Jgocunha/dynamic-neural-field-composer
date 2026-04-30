@@ -16,7 +16,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang clang-tidy cmake
+          sudo apt-get install -y clang clang-tidy cmake \
+            libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
 
       - name: Set up vcpkg
         run: |
@@ -27,7 +28,7 @@ jobs:
       - name: Cache vcpkg packages
         uses: actions/cache@v4
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
+          path: ~/vcpkg/installed
           key: vcpkg-clang-tidy-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/build.sh') }}
           restore-keys: vcpkg-clang-tidy-${{ runner.os }}-
 
