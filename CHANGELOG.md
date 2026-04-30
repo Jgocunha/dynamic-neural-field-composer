@@ -1,6 +1,30 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2.3.1] - 2026-04-30
+
+### Added
+- `CONTRIBUTING.md` — dev setup, code style (Clean Code principles), test/Doxygen/wiki
+  expectations, PR checklist, and release process
+- GitHub issue templates for bug reports and feature requests
+- GitHub PR template
+
+### Build
+- clang-tidy static analysis: new `.github/workflows/static-analysis.yml` job runs
+  `run-clang-tidy` on Ubuntu on every push and PR to `main`; `.clang-tidy` config enables
+  `bugprone-*`, `modernize-*`, `readability-*`, `clang-analyzer-*`, and `performance-*`
+- `CMAKE_EXPORT_COMPILE_COMMANDS ON` added to `CMakeLists.txt` to produce
+  `compile_commands.json` on Unix generators (required by clang-tidy)
+- macOS release matrix extended to include `macos-13` (Intel x64), producing both
+  `macos-arm64.tar.gz` and `macos-x64.tar.gz` release artifacts
+- vcpkg cache key for macOS release jobs now includes the triplet to prevent
+  cross-architecture cache collisions
+- PVS-Studio licence header comments removed from all source files
+
+### Documentation
+- README Static Analysis badge added
+- README Contributing section links to `CONTRIBUTING.md`
+
 ## [2.3.0] - 2026-04-30
 
 ### Added
