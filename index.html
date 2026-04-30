@@ -92,7 +92,7 @@ About</h1>
 Requirements</h1>
 <ul>
 <li>CMake 3.20+</li>
-<li>C++20 compiler (MSVC, GCC 13+, or Clang)</li>
+<li>C++20 compiler (MSVC, GCC 11+, Clang 13+, or Apple Clang 13+)</li>
 <li><a href="https://github.com/microsoft/vcpkg">vcpkg</a> with <code>VCPKG_ROOT</code> set</li>
 </ul>
 <p>Dependencies are installed automatically via vcpkg: <code>imgui</code>, <code>implot</code>, <code>imgui-node-editor</code>, <code>nlohmann-json</code>, <code>imgui-platform-kit</code>.</p>
@@ -102,8 +102,11 @@ Building</h1>
 <div class="fragment"><div class="line"># Windows</div>
 <div class="line">build.bat</div>
 <div class="line"> </div>
-<div class="line"># Linux / macOS</div>
+<div class="line"># Linux</div>
 <div class="line">./build.sh</div>
+<div class="line"> </div>
+<div class="line"># macOS (auto-detects Apple Silicon vs Intel)</div>
+<div class="line">./build_macos.sh</div>
 </div><!-- fragment --><p>To install the library for use in another project:</p>
 <div class="fragment"><div class="line"># Windows</div>
 <div class="line">install.bat</div>
