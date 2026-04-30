@@ -1,6 +1,35 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2.3.0] - 2026-04-30
+
+### Added
+- macOS support: builds on Apple Silicon (`arm64-osx`) and Intel (`x64-osx`) via a new
+  `build_macos.sh` script that auto-detects architecture, installs vcpkg dependencies, and
+  builds imgui-platform-kit from source
+- CI job `build-and-test-macos` on `macos-latest` covering configure, build, and test
+- Release workflow `release-macos` job producing
+  `dynamic-neural-field-composer-<version>-macos-<arch>.tar.gz` artifacts
+
+### Fixed
+- `getResourceRoot()` on macOS now uses `_NSGetExecutablePath` (with dynamic-buffer retry)
+  instead of the Linux-only `readlink("/proc/self/exe")`
+- `exportComponentToFile` timestamp replaced `std::chrono::zoned_time` / `std::format`
+  (unsupported on Apple Clang) with portable `localtime` / `put_time`
+- `LogWindow::addLog` annotation corrected from `IM_FMTARGS(3)` to `IM_FMTARGS(2)` —
+  Apple Clang rejects the wrong index for `static` functions
+- `find_package(OpenGL REQUIRED)` added before `find_package(imgui-platform-kit)` so the
+  `OpenGL::GL` target is defined when CMake resolves the kit's exported link interface
+
+### Build
+- `catch2` added to vcpkg install in all CI and release jobs (required by imgui-platform-kit)
+- vcpkg cache key for the macOS CI job now includes the resolved triplet to prevent
+  cross-architecture cache pollution
+
+### Documentation
+- README and wiki Getting Started updated for macOS prerequisites, build steps, and binary paths
+- GCC minimum version aligned to `GCC 11+` across README and wiki
+
 ## [2.2.0] - 2026-04-29
 
 ### Added
