@@ -6,6 +6,9 @@
 
 #ifdef _WIN32
 #  include <windows.h>
+#elif defined(__APPLE__)
+#  include <mach-o/dyld.h>
+#  include <climits>
 #else
 #  include <climits>
 #  include <unistd.h>
@@ -22,6 +25,18 @@ namespace dnf_composer::tools::utils
 			char buf[MAX_PATH];
 			GetModuleFileNameA(nullptr, buf, MAX_PATH);
 			exeDir = std::filesystem::path(buf).parent_path();
+#elif defined(__APPLE__)
+			char buf[PATH_MAX] = {};
+			uint32_t size = sizeof(buf);
+			if (_NSGetExecutablePath(buf, &size) != 0) {
+				// buf was too small; size now holds the required length
+				std::string dynbuf(size, '\0');
+				if (_NSGetExecutablePath(dynbuf.data(), &size) != 0)
+					return std::string(PROJECT_DIR);
+				exeDir = std::filesystem::path(dynbuf).parent_path();
+			} else {
+				exeDir = std::filesystem::path(buf).parent_path();
+			}
 #else
 			char buf[PATH_MAX] = {};
 			const ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);

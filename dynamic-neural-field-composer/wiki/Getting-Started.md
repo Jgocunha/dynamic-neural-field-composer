@@ -4,7 +4,7 @@
 
 | Requirement | Minimum version | Notes |
 |---|---|---|
-| C++ compiler | C++20 | MSVC 2022, GCC 11+, Clang 13+ |
+| C++ compiler | C++20 | MSVC 2022, GCC 11+, Clang 13+, Apple Clang 13+ (Xcode 13+) |
 | CMake | 3.20 | |
 | vcpkg | Any recent | Set `VCPKG_ROOT` environment variable |
 
@@ -18,6 +18,12 @@ sudo apt update && sudo apt install gcc-13 g++-13
 # Optionally set as default:
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+```
+
+**macOS only:** Xcode Command Line Tools are required. Install them with:
+
+```bash
+xcode-select --install
 ```
 
 ### vcpkg dependencies
@@ -53,14 +59,23 @@ Binaries land in:
 - `build/x64-release/Release/`
 - `build/x64-debug/Debug/`
 
-### Linux / macOS — using the provided script
+### Linux — using the provided script
 
 ```bash
 chmod +x build.sh
 ./build.sh
 ```
 
-The script installs vcpkg packages for Linux (using OpenGL + GLFW bindings instead of DirectX), then configures and builds with `make`.
+The script installs vcpkg packages for Linux (OpenGL + GLFW bindings), then configures and builds with `make`.
+
+### macOS — using the provided script
+
+```bash
+chmod +x build_macos.sh
+./build_macos.sh
+```
+
+The script auto-detects your architecture (`arm64-osx` for Apple Silicon, `x64-osx` for Intel), installs the correct vcpkg packages (OpenGL + GLFW bindings), clones and installs imgui-platform-kit from source, and builds into `build/macos-release/`.
 
 ### Manual CMake build
 
@@ -105,6 +120,9 @@ build\x64-release\Release\dnf-composer-static.exe
 
 # Linux
 ./build/dnf-composer-static
+
+# macOS
+./build/macos-release/dnf-composer-static
 ```
 
 ### Dynamic layout (`dnf-composer-dynamic`)
@@ -117,6 +135,9 @@ build\x64-release\Release\dnf-composer-dynamic.exe
 
 # Linux
 ./build/dnf-composer-dynamic
+
+# macOS
+./build/macos-release/dnf-composer-dynamic
 ```
 
 ### First steps in the GUI
@@ -142,6 +163,10 @@ build\x64-release\Release\ex_complementary_action_selection.exe
 # Linux
 ./build/ex_field_couplings
 ./build/ex_complementary_action_selection
+
+# macOS
+./build/macos-release/ex_field_couplings
+./build/macos-release/ex_complementary_action_selection
 ```
 
 See [Examples](Examples) for a description of each.
@@ -185,6 +210,7 @@ ctest --build-config Release --output-on-failure
 # Or run the test executable directly
 build\x64-release\Release\dnf_composer_tests.exe   # Windows
 ./build/dnf_composer_tests                          # Linux
+./build/macos-release/dnf_composer_tests            # macOS
 ```
 
 ---
