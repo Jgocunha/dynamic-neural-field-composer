@@ -228,21 +228,11 @@ jobs:
           path: dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
 
   release-macos:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            arch: arm64
-            vcpkg_triplet: arm64-osx
-          - os: macos-13
-            arch: x64
-            vcpkg_triplet: x64-osx
+    runs-on: macos-latest
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-      VCPKG_DEFAULT_TRIPLET: ${{ matrix.vcpkg_triplet }}
+      VCPKG_DEFAULT_TRIPLET: arm64-osx
       IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
       INSTALL_PREFIX: ${{ github.workspace }}/install
 
@@ -261,8 +251,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ matrix.vcpkg_triplet }}-${{ hashFiles('build_macos.sh') }}
-          restore-keys: vcpkg-${{ runner.os }}-${{ matrix.vcpkg_triplet }}-
+          key: vcpkg-${{ runner.os }}-arm64-osx-${{ hashFiles('build_macos.sh') }}
+          restore-keys: vcpkg-${{ runner.os }}-arm64-osx-
 
       - name: Install vcpkg packages
         run: |
@@ -322,14 +312,14 @@ jobs:
       - name: Create release archive
         run: |
           cd $INSTALL_PREFIX
-          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ matrix.arch }}.tar.gz .
+          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz .
 
       # ── Upload artifact for release job ───────────────────────────────────
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: macos-${{ matrix.arch }}
-          path: dynamic-neural-field-composer-${{ github.ref_name }}-macos-${{ matrix.arch }}.tar.gz
+          name: macos-arm64
+          path: dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz
 
   # ── GitHub Release (after all builds succeed) ──────────────────────────
   create-release:
@@ -372,7 +362,6 @@ jobs:
             | `dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip` | Windows (x64) |
             | `dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz` | Linux (x64) |
             | `dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz` | macOS (Apple Silicon) |
-            | `dynamic-neural-field-composer-${{ github.ref_name }}-macos-x64.tar.gz` | macOS (Intel) |
 
             ## Archive contents
 

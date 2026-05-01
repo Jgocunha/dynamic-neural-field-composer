@@ -15,10 +15,8 @@ All notable changes to this project will be documented in this file.
   `bugprone-*`, `modernize-*`, `readability-*`, `clang-analyzer-*`, and `performance-*`
 - `CMAKE_EXPORT_COMPILE_COMMANDS ON` added to `CMakeLists.txt` to produce
   `compile_commands.json` on Unix generators (required by clang-tidy)
-- macOS release matrix extended to include `macos-13` (Intel x64), producing both
-  `macos-arm64.tar.gz` and `macos-x64.tar.gz` release artifacts
-- vcpkg cache key for macOS release jobs now includes the triplet to prevent
-  cross-architecture cache collisions
+- macOS release artifact is now `macos-arm64.tar.gz` (Apple Silicon only); Intel (`macos-13`)
+  runners were dropped due to GitHub Actions deprecation and chronic queue exhaustion
 - PVS-Studio licence header comments removed from all source files
 
 ### Documentation
