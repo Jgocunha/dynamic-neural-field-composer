@@ -226,6 +226,23 @@ namespace dnf_composer::tools::math
 		return s;
 	}
 
+	/// @brief AbsSigmoid: rational approximation of the logistic sigmoid.
+	///
+	/// Formula: s(x) = 0.5 * (1 + beta * (x - x0) / (1 + beta * |x - x0|))
+	///
+	/// Equivalent to cedar's AbsSigmoid(beta, theta=x0). At beta >= 20 virtually
+	/// indistinguishable from the ExpSigmoid but avoids std::exp() entirely.
+	template <typename T>
+	std::vector<T> absSigmoid(const std::vector<T>& x, T beta, T x0)
+	{
+		std::vector<T> s(x.size());
+		for (std::size_t i = 0; i < s.size(); ++i) {
+			const T diff = x[i] - x0;
+			s[i] = static_cast<T>(0.5) * (1 + beta * diff / (1 + beta * std::abs(diff)));
+		}
+		return s;
+	}
+
 	template<typename T>
 	std::vector<T> heaviside(const std::vector<T>& x, T threshold)
 	{

@@ -17,18 +17,19 @@ namespace dnf_composer
 		/// @ingroup element_parameters
 		enum ElementLabel : int
 		{
-			UNINITIALIZED,           ///< Default / not yet assigned.
-			NEURAL_FIELD,            ///< NeuralField.
-			GAUSS_STIMULUS,          ///< GaussStimulus.
-			BOOST_STIMULUS,          ///< BoostStimulus.
-			GAUSS_KERNEL,            ///< GaussKernel.
-			MEXICAN_HAT_KERNEL,      ///< MexicanHatKernel.
-			OSCILLATORY_KERNEL,      ///< OscillatoryKernel.
-			ASYMMETRIC_GAUSS_KERNEL, ///< AsymmetricGaussKernel.
-			NORMAL_NOISE,            ///< NormalNoise.
-			FIELD_COUPLING,          ///< FieldCoupling.
-			GAUSS_FIELD_COUPLING,    ///< GaussFieldCoupling.
-			MEMORY_TRACE,            ///< MemoryTrace.
+			UNINITIALIZED,              ///< Default / not yet assigned.
+			NEURAL_FIELD,               ///< NeuralField.
+			GAUSS_STIMULUS,             ///< GaussStimulus.
+			BOOST_STIMULUS,             ///< BoostStimulus.
+			GAUSS_KERNEL,               ///< GaussKernel.
+			MEXICAN_HAT_KERNEL,         ///< MexicanHatKernel.
+			OSCILLATORY_KERNEL,         ///< OscillatoryKernel.
+			ASYMMETRIC_GAUSS_KERNEL,    ///< AsymmetricGaussKernel.
+			NORMAL_NOISE,               ///< NormalNoise.
+			CORRELATED_NORMAL_NOISE,    ///< CorrelatedNormalNoise (spatially correlated, cedar-compatible).
+			FIELD_COUPLING,             ///< FieldCoupling.
+			GAUSS_FIELD_COUPLING,       ///< GaussFieldCoupling.
+			MEMORY_TRACE,               ///< MemoryTrace.
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -43,6 +44,7 @@ namespace dnf_composer
 			{OSCILLATORY_KERNEL, "oscillatory kernel"},
 			{ASYMMETRIC_GAUSS_KERNEL, "asymmetric gauss kernel"},
 			{NORMAL_NOISE, "normal noise" },
+			{CORRELATED_NORMAL_NOISE, "correlated normal noise" },
 			{MEMORY_TRACE, "memory trace" },
 		};
 

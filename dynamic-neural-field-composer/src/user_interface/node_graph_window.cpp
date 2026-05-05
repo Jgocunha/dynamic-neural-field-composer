@@ -361,6 +361,7 @@ namespace dnf_composer::user_interface
 			const bool hasInputPin =
 				lbl != element::ElementLabel::GAUSS_STIMULUS &&
 				lbl != element::ElementLabel::NORMAL_NOISE &&
+				lbl != element::ElementLabel::CORRELATED_NORMAL_NOISE &&
 				lbl != element::ElementLabel::BOOST_STIMULUS;
 
 			if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
@@ -701,6 +702,7 @@ namespace dnf_composer::user_interface
 		{
 		case element::ElementLabel::GAUSS_STIMULUS:
 		case element::ElementLabel::NORMAL_NOISE:
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
 		case element::ElementLabel::BOOST_STIMULUS:
 			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
@@ -812,6 +814,16 @@ namespace dnf_composer::user_interface
 			const auto nn = std::dynamic_pointer_cast<element::NormalNoise>(element);
 			if (!nn) { ImGui::TextDisabled("(type mismatch)"); break; }
 			ImGui::Text("Amplitude: %.4f", nn->getParameters().amplitude);
+			break;
+		}
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+		{
+			const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise>(element);
+			if (!cnn) { ImGui::TextDisabled("(type mismatch)"); break; }
+			const auto& p = cnn->getParameters();
+			ImGui::Text("Amplitude: %.4f", p.amplitude);
+			ImGui::Text("Width: %.2f",     p.width);
+			ImGui::Text("Circular: %s",    p.circular ? "true" : "false");
 			break;
 		}
 		case element::ElementLabel::BOOST_STIMULUS:

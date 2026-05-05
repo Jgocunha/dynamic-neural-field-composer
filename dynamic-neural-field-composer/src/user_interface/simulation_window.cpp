@@ -311,37 +311,50 @@ namespace dnf_composer::user_interface
 	    {
 	        switch (selected)
 	        {
-	        case element::ElementLabel::NEURAL_FIELD:
-	        {
-	            static char   id[CHAR_SIZE] = "neural field u";
-	            static int    x_max         = 100;
-	            static double d_x           = 1.0;
-	            static double resting       = -10.0;
-	            static double tau           = 25.0;
-	            static double sigmoid_k     = 5.0;
+        case element::ElementLabel::NEURAL_FIELD:
+        {
+            static char   id[CHAR_SIZE] = "neural field u";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double resting       = -10.0;
+            static double tau           = 25.0;
+            static int    actFnType     = element::SIGMOID;
+            static double xShift        = 0.0;
+            static double steepness     = 5.0;
+            static double absBeta       = 100.0;
+            static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size", &x_max, 0, 0);
+            ImGui::InputDouble("Step", &d_x, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Resting level", &resting, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Time scale", &tau, 0.0, 0.0, "%.2f");
+            ImGui::Combo("Activation fn.", &actFnType, actFnNames, 3);
+            ImGui::InputDouble("X shift", &xShift, 0.0, 0.0, "%.2f");
+            if (actFnType == element::SIGMOID)
+                ImGui::InputDouble("Steepness", &steepness, 0.0, 0.0, "%.2f");
+            else if (actFnType == element::ABSSIGMOID)
+                ImGui::InputDouble("Beta", &absBeta, 0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
 
-		        	ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-		        	ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale); // adjust width to taste
-		        	ImGui::InputInt("Size", &x_max, 0, 0);
-		        	ImGui::InputDouble("Step", &d_x, 0.0, 0.0, "%.2f");
-		        	ImGui::InputDouble("Resting level", &resting, 0.0, 0.0, "%.2f");
-		        	ImGui::InputDouble("Time scale", &tau, 0.0, 0.0, "%.2f");
-		        	ImGui::InputDouble("Sigmoid steepness", &sigmoid_k, 0.0, 0.0, "%.2f");
-		        	ImGui::PopItemWidth();
-
-	            if (addRequested)
-	            {
-	                const element::SigmoidFunction activation{ 0, sigmoid_k };
-	                const element::NeuralFieldParameters nfp{ tau, resting, activation };
-	                const element::ElementIdentifiers ids{ id };
-	                const element::ElementDimensions  dims{ x_max, d_x };
-	                const element::ElementCommonParameters common{ ids, dims };
-	                const auto nf = std::make_shared<element::NeuralField>(common, nfp);
-	                simulation->addElement(nf);
-	            }
-	            break;
-	        }
+            if (addRequested)
+            {
+                std::unique_ptr<element::ActivationFunction> af;
+                if (actFnType == element::SIGMOID)
+                    af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
+                else if (actFnType == element::HEAVISIDE)
+                    af = std::make_unique<element::HeavisideFunction>(xShift);
+                else
+                    af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+                const element::NeuralFieldParameters nfp{ tau, resting, *af };
+                const element::ElementIdentifiers ids{ id };
+                const element::ElementDimensions  dims{ x_max, d_x };
+                const element::ElementCommonParameters common{ ids, dims };
+                simulation->addElement(std::make_shared<element::NeuralField>(common, nfp));
+            }
+            break;
+        }
         case element::ElementLabel::GAUSS_STIMULUS:
         {
             static char   id[CHAR_SIZE] = "gauss stimulus";
@@ -579,6 +592,32 @@ namespace dnf_composer::user_interface
                 const element::NormalNoiseParameters nnp{ amplitude };
                 const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
                 simulation->addElement(std::make_shared<element::NormalNoise>(common, nnp));
+            }
+            break;
+        }
+        case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+        {
+            static char   id[CHAR_SIZE] = "correlated normal noise";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double amplitude     = 0.05;
+            static double width         = 2.0;
+            static bool   circular      = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size",         &x_max,     0, 0);
+            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+            ImGui::Checkbox("Circular", &circular);
+
+            if (addRequested)
+            {
+                const element::CorrelatedNormalNoiseParameters cnnp{ amplitude, width, circular };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::CorrelatedNormalNoise>(common, cnnp));
             }
             break;
         }
@@ -1252,6 +1291,9 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::NORMAL_NOISE:
 				addElementNormalNoise();
 				break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+				addElementCorrelatedNormalNoise();
+				break;
 			case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				addElementGaussFieldCoupling();
 				break;
@@ -1323,22 +1365,33 @@ namespace dnf_composer::user_interface
 		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
 		static double tau = 25;
 		ImGui::InputDouble("tau", &tau, 1.0f, 10.0f, "%.2f");
-		static double sigmoidSteepness = 5.0f;
-		ImGui::InputDouble("sigmoid steepness", &sigmoidSteepness, 1.0f, 10.0f, "%.2f");
 		static double restingLevel = -10.0f;
 		ImGui::InputDouble("resting level", &restingLevel, 1.0f, 10.0f, "%.2f");
+		static int actFnType = element::SIGMOID;
+		static double xShift = 0.0;
+		static double steepness = 5.0;
+		static double absBeta = 100.0;
+		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		ImGui::Combo("activation fn.", &actFnType, actFnNames, 3);
+		ImGui::InputDouble("x shift", &xShift, 0.0, 0.0, "%.2f");
+		if (actFnType == element::SIGMOID)
+			ImGui::InputDouble("steepness", &steepness, 1.0f, 10.0f, "%.2f");
+		else if (actFnType == element::ABSSIGMOID)
+			ImGui::InputDouble("beta", &absBeta, 1.0f, 10.0f, "%.2f");
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::SigmoidFunction activationFunction{ 0, sigmoidSteepness };
-			const element::NeuralFieldParameters nfp = { tau, restingLevel, activationFunction };
-
-			const element::ElementIdentifiers neuralFieldIdentifiers{id};
-			const element::ElementDimensions neuralFieldDimensions{ x_max, d_x };
-			const element::ElementCommonParameters commonParameters{ neuralFieldIdentifiers, neuralFieldDimensions };
-
-			const std::shared_ptr<element::NeuralField> neuralField(new element::NeuralField(commonParameters, nfp));
-			simulation->addElement(neuralField);
+			std::unique_ptr<element::ActivationFunction> af;
+			if (actFnType == element::SIGMOID)
+				af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
+			else if (actFnType == element::HEAVISIDE)
+				af = std::make_unique<element::HeavisideFunction>(xShift);
+			else
+				af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+			const element::NeuralFieldParameters nfp{ tau, restingLevel, *af };
+			const element::ElementCommonParameters commonParameters{ element::ElementIdentifiers{id},
+				element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::NeuralField>(commonParameters, nfp));
 		}
 		ImGui::PopID();
 	}
@@ -1396,6 +1449,31 @@ namespace dnf_composer::user_interface
 			simulation->addElement(gaussKernelNormalNoise);
 			simulation->createInteraction(id, "output", std::string(id) + " gauss kernel");
 			simulation->createInteraction(std::string(id) + " gauss kernel", "output", id);
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementCorrelatedNormalNoise() const
+	{
+		ImGui::PushID("correlated normal noise");
+		static char id[CHAR_SIZE] = "correlated normal noise a";
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		static int x_max = 100;
+		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
+		static double d_x = 1.0;
+		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
+		static double amplitude = 0.05;
+		ImGui::InputDouble("amplitude", &amplitude, 0.01f, 1.0f, "%.4f");
+		static double width = 2.0;
+		ImGui::InputDouble("width", &width, 0.1, 1.0, "%.2f");
+		static bool circular = true;
+		ImGui::Checkbox("circular", &circular);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			const element::CorrelatedNormalNoiseParameters cnnp{ amplitude, width, circular };
+			const element::ElementDimensions dimensions{ x_max, d_x };
+			simulation->addElement(std::make_shared<element::CorrelatedNormalNoise>(element::ElementCommonParameters{ id, dimensions }, cnnp));
 		}
 		ImGui::PopID();
 	}

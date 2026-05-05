@@ -238,3 +238,68 @@ TEST(NeuralFieldBumps, NoBumpsAtRestingLevel)
     f->step(1.0, 1.0);
     EXPECT_TRUE(f->getBumps().empty());
 }
+
+// ---------------------------------------------------------------------------
+// AbsSigmoidFunction as activation function
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldAbsSigmoid, ConstructionAndStepDoNotThrow)
+{
+    const AbsSigmoidFunction sig{ 0.0, 100.0 };
+    const NeuralFieldParameters nfp{ 25.0, -5.0, sig };
+    const ElementCommonParameters cp{ std::string("f"), 100 };
+    const auto f = std::make_shared<NeuralField>(cp, nfp);
+    EXPECT_NO_THROW(f->init());
+    EXPECT_NO_THROW(f->step(0.0, 1.0));
+}
+
+TEST(NeuralFieldAbsSigmoid, OutputNearZeroAtRestingLevel)
+{
+    // AbsSigmoid(0, beta=100): at x=-5 output ≈ 0 (deeply sub-threshold)
+    const AbsSigmoidFunction sig{ 0.0, 100.0 };
+    const NeuralFieldParameters nfp{ 25.0, -5.0, sig };
+    const ElementCommonParameters cp{ std::string("f"), 100 };
+    const auto f = std::make_shared<NeuralField>(cp, nfp);
+    f->init();
+    f->step(0.0, 1.0);
+    for (const auto out = f->getComponent("output"); const double v : out)
+        EXPECT_LT(v, 0.1);
+}
+
+TEST(NeuralFieldAbsSigmoid, RisesWithStrongStimulus)
+{
+    Simulation sim("abs-sigmoid-test", 1.0, 0.0, 0.0);
+
+    const AbsSigmoidFunction sig{ 0.0, 100.0 };
+    const NeuralFieldParameters nfp{ 25.0, -5.0, sig };
+    const ElementCommonParameters cp{ std::string("field"), 100 };
+    const auto field = std::make_shared<NeuralField>(cp, nfp);
+
+    const auto stim = makeStimulus("stim", 50.0, 30.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    const double initMax = field->getHighestActivation();
+    for (int i = 0; i < 50; ++i)
+        sim.step();
+
+    EXPECT_GT(field->getHighestActivation(), initMax);
+}
+
+TEST(NeuralFieldAbsSigmoid, GetSetParametersRoundtrip)
+{
+    const AbsSigmoidFunction sig{ 0.5, 50.0 };
+    const NeuralFieldParameters nfp{ 20.0, -3.0, sig };
+    const ElementCommonParameters cp{ std::string("f"), 50 };
+    NeuralField f(cp, nfp);
+    const auto got = f.getParameters();
+    EXPECT_DOUBLE_EQ(got.tau, 20.0);
+    EXPECT_DOUBLE_EQ(got.startingRestingLevel, -3.0);
+    // Verify the stored function is AbsSigmoidFunction
+    const auto* stored = dynamic_cast<const AbsSigmoidFunction*>(got.activationFunction.get());
+    ASSERT_NE(stored, nullptr);
+    EXPECT_NEAR(stored->getXShift(), 0.5, 1e-9);
+    EXPECT_NEAR(stored->getBeta(),   50.0, 1e-9);
+}

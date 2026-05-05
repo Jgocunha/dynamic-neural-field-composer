@@ -81,6 +81,7 @@ set(elements_headers
         "include/elements/asymmetric_gauss_kernel.h"
         "include/elements/boost_stimulus.h"
         "include/elements/memory_trace.h"
+        "include/elements/correlated_normal_noise.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -161,6 +162,7 @@ set(src
         "src/elements/asymmetric_gauss_kernel.cpp"
         "src/elements/boost_stimulus.cpp"
         "src/elements/memory_trace.cpp"
+        "src/elements/correlated_normal_noise.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -255,6 +257,7 @@ install(FILES ${simulation_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/
 install(FILES ${visualization_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/visualization)
 install(FILES ${application_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/application)
 install(FILES ${elements_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/elements)
+install(FILES "include/elements/correlated_normal_noise.h" DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/elements)
 install(FILES ${tools_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/tools)
 install(FILES ${exceptions_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/exceptions)
 install(FILES ${user_interface_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/user_interface)
@@ -361,6 +364,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_kernel_cross_dimension.cpp"
             "tests/elements/test_neural_field.cpp"
             "tests/elements/test_normal_noise.cpp"
+            "tests/elements/test_correlated_normal_noise.cpp"
             "tests/elements/test_boost_stimulus.cpp"
             "tests/elements/test_memory_trace.cpp"
             "tests/elements/test_change_dimensions.cpp"
