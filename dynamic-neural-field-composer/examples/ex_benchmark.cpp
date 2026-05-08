@@ -44,6 +44,9 @@ int main()
     sim->addElement(nf);
     nf->addInput(gs);
 
+    nf->setComputeStateMetrics(false);
+    sim->setMeasureStepDuration(false);
+
     sim->init();
 
     // --- Warmup -----------------------------------------------------------------
