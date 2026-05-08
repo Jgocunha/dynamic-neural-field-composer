@@ -164,109 +164,83 @@ namespace dnf_composer
 
 		void NeuralField::updateState(double deltaT)
 		{
-			//calculateCentroid();
-			updateMinMaxActivation();
-			updateBumps(deltaT);
-			checkStability();
-		}
+			const std::size_t n = static_cast<std::size_t>(commonParameters.dimensionParameters.size);
 
-		void NeuralField::checkStability()
-		{
-			const double currentActivationSum = tools::math::calculateVectorSum(components["activation"]);
-			const double currentActivationAvg = tools::math::calculateVectorAvg(components["activation"]);
-			const double currentActivationNorm = tools::math::calculateVectorNorm(components["activation"]);
-
-			// this function is done like this, instead of comparing to a previously saved vector of activation,
-			// because it is simply faster and takes up less memory.
-			if (std::abs(currentActivationSum - state.previousActivationSum) < state.thresholdForStability)
+			// One pass over act_: compute sum, sumSq (for norm), min, max simultaneously.
+			// Replaces 5 separate O(N) passes that each also did a string hash-map lookup.
+			double sum = 0.0, sumSq = 0.0;
+			double vmin = act_[0], vmax = act_[0];
+			for (std::size_t i = 0; i < n; ++i)
 			{
-				if (std::abs(currentActivationAvg - state.previousActivationAvg) < state.thresholdForStability)
-				{
-					if(std::abs(currentActivationNorm - state.previousActivationNorm) < state.thresholdForStability)
-					{
-						state.previousActivationSum = currentActivationSum;
-						state.previousActivationAvg = currentActivationAvg;
-						state.previousActivationNorm = currentActivationNorm;
-						state.stable = true;
-						return;
-					}
-				}
+				const double v = act_[i];
+				sum   += v;
+				sumSq += v * v;
+				if (v < vmin) vmin = v;
+				if (v > vmax) vmax = v;
 			}
+			const double norm = std::sqrt(sumSq);
+			const double avg  = sum / static_cast<double>(n);
 
-			state.previousActivationSum = currentActivationSum;
-			state.previousActivationAvg = currentActivationAvg;
-			state.previousActivationNorm = currentActivationNorm;
-			state.stable = false;
+			state.lowestActivation  = vmin;
+			state.highestActivation = vmax;
 
-			// also valid and simpler approach
-			/*static double previousHighestActivation = parameters.startingRestingLevel;
-			if (std::fabs(state.highestActivation - previousHighestActivation) < state.thresholdForStability)
-				state.stable = true;
-			else
-				state.stable = false;
-			previousHighestActivation = state.highestActivation;*/
-		}
+			state.stable =
+				std::abs(sum  - state.previousActivationSum)  < state.thresholdForStability &&
+				std::abs(avg  - state.previousActivationAvg)  < state.thresholdForStability &&
+				std::abs(norm - state.previousActivationNorm) < state.thresholdForStability;
 
-		void NeuralField::updateMinMaxActivation()
-		{
-			if (components["activation"].empty())
-				return;
-			state.lowestActivation = *std::ranges::min_element(components["activation"]);
-			state.highestActivation = *std::ranges::max_element(components["activation"]);
+			state.previousActivationSum  = sum;
+			state.previousActivationAvg  = avg;
+			state.previousActivationNorm = norm;
+
+			updateBumps(deltaT);
 		}
 
 		void NeuralField::updateBumps(double deltaT)
 		{
-			const auto oldBumps = state.bumps;
+			prevBumps_.swap(state.bumps); // O(1): reuse existing allocation, no heap alloc
 			state.bumps.clear();
 
-			constexpr double activationThreshold = 0.00001; // Define a threshold for what counts as a 'bump'
+			constexpr double activationThreshold = 0.00001;
+			const int sz = commonParameters.dimensionParameters.size;
 			bool inBump = false;
 			NeuralFieldBump currentBump(0, 0, 0, 0, 0);
 
-			for (int i = 0; i < commonParameters.dimensionParameters.size; ++i)
+			for (int i = 0; i < sz; ++i)
 			{
-				double activation = components["activation"][i];
+				const double activation = act_[i];
 				if (activation > activationThreshold && !inBump)
 				{
-					// Start of a new bump
 					inBump = true;
-
-					currentBump = NeuralFieldBump(); // Reset the bump !
-
+					currentBump = NeuralFieldBump();
 					currentBump.startPosition = (i + 1) * commonParameters.dimensionParameters.d_x;
 					currentBump.amplitude = activation;
 					currentBump.width = 1;
 				}
 				else if (activation > activationThreshold && inBump)
 				{
-					// Continue the current bump
 					currentBump.amplitude = std::max(currentBump.amplitude, activation);
 					currentBump.width++;
 				}
 				else if (inBump)
 				{
-					// End of current bump
 					currentBump.width -= 1;
 					currentBump.width *= commonParameters.dimensionParameters.d_x;
 					currentBump.endPosition = i * commonParameters.dimensionParameters.d_x;
 					currentBump.centroid = ((currentBump.startPosition + currentBump.endPosition) / 2);
 
-					// in state.bumps find a bump with the same centroid
-					static constexpr double epsilon = 2.0;//1e-6;
-					const auto it = std::find_if(oldBumps.begin(), oldBumps.end(),
+					static constexpr double epsilon = 2.0;
+					const auto it = std::find_if(prevBumps_.begin(), prevBumps_.end(),
 						[&currentBump](const NeuralFieldBump& bump) {
 							return std::abs(bump.centroid - currentBump.centroid) < epsilon;
 						});
-					if (it != oldBumps.end()) 
+					if (it != prevBumps_.end())
 					{
-						// if the bump is found, update it
 						currentBump.velocity = (currentBump.centroid - it->centroid) / deltaT;
 						currentBump.acceleration = (currentBump.velocity - it->velocity) / deltaT;
 					}
 					else
 					{
-						// if the bump is not found, set the velocity and acceleration to zero
 						currentBump.velocity = 0.0;
 						currentBump.acceleration = 0.0;
 					}
@@ -276,56 +250,46 @@ namespace dnf_composer
 				}
 			}
 
-			// If the last element ended in a bump
 			if (inBump)
 				state.bumps.push_back(currentBump);
 
 			// Check if the first and last bumps are connected (wrap-around)
-			if (!state.bumps.empty() && components["activation"].front() > 
-				activationThreshold && components["activation"].back() > activationThreshold)
+			if (!state.bumps.empty() && act_[0] > activationThreshold && act_[sz - 1] > activationThreshold)
 			{
-				// Get the first and the last bump
 				const auto& firstBump = state.bumps.front();
 				const auto& lastBump = state.bumps.back();
 
-				// Only merge if they are different bumps
 				if (&firstBump != &lastBump)
 				{
-					// Create a new bump that combines the properties of the first and last bump
 					NeuralFieldBump newBump;
 					newBump.startPosition = lastBump.startPosition;
 					newBump.endPosition = firstBump.endPosition;
 					newBump.amplitude = std::max(firstBump.amplitude, lastBump.amplitude);
-					newBump.width = commonParameters.dimensionParameters.x_max - 
+					newBump.width = commonParameters.dimensionParameters.x_max -
 						(newBump.startPosition - newBump.endPosition);
 					newBump.centroid = fmod(
-						((newBump.startPosition + newBump.endPosition + 
-							commonParameters.dimensionParameters.x_max) / 2.0), 
-							commonParameters.dimensionParameters.x_max);
+						((newBump.startPosition + newBump.endPosition +
+							commonParameters.dimensionParameters.x_max) / 2.0),
+						commonParameters.dimensionParameters.x_max);
 
-					// in state.bumps find a bump with the same centroid
-					static constexpr double epsilon = 2.0;// 1e-6;
-					const auto it = std::find_if(oldBumps.begin(), oldBumps.end(),
+					static constexpr double epsilon = 2.0;
+					const auto it = std::find_if(prevBumps_.begin(), prevBumps_.end(),
 						[&newBump](const NeuralFieldBump& bump) {
 							return std::abs(bump.centroid - newBump.centroid) < epsilon;
 						});
-					if (it != oldBumps.end()) {
-						// if the bump is found, update it
+					if (it != prevBumps_.end())
+					{
 						newBump.velocity = (newBump.centroid - it->centroid) / deltaT;
 						newBump.acceleration = (newBump.velocity - it->velocity) / deltaT;
 					}
 					else
 					{
-						// if the bump is not found, set the velocity and acceleration to zero
 						newBump.velocity = 0.0;
 						newBump.acceleration = 0.0;
 					}
 
-					// Remove the first and last bump
-					state.bumps.pop_back(); // remove last
-					state.bumps.erase(state.bumps.begin()); // remove first
-
-					// Add the new merged bump
+					state.bumps.pop_back();
+					state.bumps.erase(state.bumps.begin());
 					state.bumps.push_back(newBump);
 				}
 			}

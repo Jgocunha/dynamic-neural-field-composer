@@ -183,6 +183,7 @@ namespace dnf_composer::element
 		double* rest_ = nullptr; ///< components["resting level"].data()
 
 		bool computeStateMetrics_ = true; ///< When false, skip stability/bump/min-max updates.
+		std::vector<NeuralFieldBump> prevBumps_; ///< Scratch buffer for updateBumps — avoids per-step allocation.
 	public:
 		/// @brief Construct a neural field.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.
@@ -223,8 +224,6 @@ namespace dnf_composer::element
 		void calculateActivation(double t, double deltaT);
 		void calculateOutput();
 		void updateState(double deltaT);
-		void checkStability();
-		void updateMinMaxActivation();
 		void updateBumps(double deltaT);
 	};
 }
