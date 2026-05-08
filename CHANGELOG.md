@@ -18,6 +18,14 @@ All notable changes to this project will be documented in this file.
   accumulates directly into the output component, eliminating a full-field temporary copy per step
 
 ### Fixed
+- `Simulation::addElement()` did not call `element->init()` after emplacing the element; adding a
+  `NeuralField` (or any element with raw-pointer members assigned only in `init()`) through the GUI
+  while the simulation was running left `act_`, `inp_`, and `rest_` as `nullptr`, causing an access
+  violation (exit code `0xC0000005`) on the next `step()` call. Fixed by calling `element->init()`
+  immediately after `elements.emplace_back(element)`
+- `data/exports/` was absent from packed releases because CMake's `install(DIRECTORY ...)` silently
+  skips empty directories; added a `.gitkeep` placeholder so the folder is present in all release
+  archives alongside `data/simulations/` and `data/inter-field-synaptic-connections/`
 - `GaussStimulus::init()` reassigned `components["input"]` with `= std::vector<double>(...)`,
   freeing the allocation that `inputPtr_` still referenced; subsequent `updateInput()` wrote
   through a dangling pointer causing heap corruption (visible as `SIGABRT` on macOS).
