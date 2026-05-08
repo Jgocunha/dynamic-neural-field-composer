@@ -136,20 +136,29 @@ namespace dnf_composer
 			inputs.clear();
 		}
 
+		void Element::buildInputCache()
+		{
+			auto& inputVec = components["input"];
+			inputPtr_  = inputVec.data();
+			inputSize_ = inputVec.size();
+
+			cachedInputs_.clear();
+			cachedInputs_.reserve(inputs.size());
+			for (const auto& [elem, compName] : inputs)
+			{
+				const auto& compVec = elem->components.at(compName);
+				cachedInputs_.push_back({compVec.data(), compVec.size()});
+			}
+		}
+
 		void Element::updateInput()
 		{
-			std::ranges::fill(components["input"], 0);
-
-			for (const auto& input_pair : inputs) 
-			{
-				const auto inputElement = input_pair.first;
-				auto inputElementComponent = input_pair.second;
-				auto& inputElementComponents = inputElement->components;
-				const auto& inputElementComponentValue = inputElementComponents.at(inputElementComponent);
-
-				for (size_t i = 0; i < inputElementComponentValue.size(); i++)
-					components["input"][i] += inputElementComponentValue[i];
-			}
+			if (!inputPtr_)
+				buildInputCache();
+			std::fill(inputPtr_, inputPtr_ + inputSize_, 0.0);
+			for (const auto& ci : cachedInputs_)
+				for (std::size_t i = 0; i < ci.size; ++i)
+					inputPtr_[i] += ci.src[i];
 		}
 
 		int Element::getMaxSpatialDimension() const

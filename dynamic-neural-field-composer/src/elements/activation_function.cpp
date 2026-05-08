@@ -16,8 +16,14 @@ namespace dnf_composer::element
 
 	void SigmoidFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
 	{
-		for (std::size_t i = 0; i < input.size(); ++i)
-			out[i] = 1.0 / (1.0 + std::exp(-steepness * (input[i] - x_shift)));
+		const float s  = static_cast<float>(steepness);
+		const float xs = static_cast<float>(x_shift);
+		const std::size_t n = input.size();
+		for (std::size_t i = 0; i < n; ++i)
+		{
+			const float x = static_cast<float>(input[i]);
+			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(-s * (x - xs))));
+		}
 	}
 
 	bool SigmoidFunction::operator==(const SigmoidFunction& other) const

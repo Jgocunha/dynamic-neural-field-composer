@@ -31,6 +31,11 @@ namespace dnf_composer::element
 		std::unordered_map<std::string, std::vector<double>> components;    ///< Named data arrays (e.g. "output").
 		std::unordered_map<std::shared_ptr<Element>, std::string> inputs;   ///< Upstream elements and the component they expose.
 		std::unordered_map<std::shared_ptr<Element>, std::string> outputs;  ///< Downstream elements that read this element's output.
+	private:
+		struct CachedInput { const double* src; std::size_t size; };
+		std::vector<CachedInput> cachedInputs_;
+		double*     inputPtr_  = nullptr;
+		std::size_t inputSize_ = 0;
 	public:
 		/// @brief Construct an element with the given common parameters.
 		/// @param parameters  Name, label, and spatial dimensions.
@@ -73,6 +78,9 @@ namespace dnf_composer::element
 
 		/// @brief Pull data from all registered input elements into this element's components.
 		void updateInput();
+
+		/// @brief Cache raw pointers to input component data. Call after all element init()s complete.
+		void buildInputCache();
 
 		/// @brief Deregister this element as an input of @p outputElementId.
 		void removeOutput(const std::string& outputElementId);

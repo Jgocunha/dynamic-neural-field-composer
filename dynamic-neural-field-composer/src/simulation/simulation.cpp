@@ -122,6 +122,8 @@ namespace dnf_composer
 		runSegmentStart = std::chrono::steady_clock::now();
 		for (const auto& element : elements)
 			element->init();
+		for (const auto& element : elements)
+			element->buildInputCache();
 
 		initialized = true;
 		tools::logger::log(tools::logger::LogLevel::INFO, "Simulation initialized.");
