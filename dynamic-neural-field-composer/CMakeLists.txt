@@ -328,6 +328,7 @@ add_example_executable(ex_cross_dimension_kernels ex_cross_dimension_kernels.cpp
 add_example_executable(ex_boost_stimulus ex_boost_stimulus.cpp)
 add_example_executable(ex_memory_trace ex_memory_trace.cpp)
 add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)
+add_example_executable(ex_benchmark ex_benchmark.cpp)
 
 # Documentation (Doxygen)
 configure_file(
