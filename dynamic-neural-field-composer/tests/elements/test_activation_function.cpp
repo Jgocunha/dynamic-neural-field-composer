@@ -168,3 +168,129 @@ TEST(HeavisideFunction, ToStringIsNonEmpty)
     HeavisideFunction h{ 0.0 };
     EXPECT_FALSE(h.toString().empty());
 }
+
+// ---------------------------------------------------------------------------
+// AbsSigmoidFunction
+// ---------------------------------------------------------------------------
+
+TEST(AbsSigmoidFunction, ConstructionStoresParameters)
+{
+    const AbsSigmoidFunction a{ 2.0, 50.0 };
+    EXPECT_DOUBLE_EQ(a.getXShift(), 2.0);
+    EXPECT_DOUBLE_EQ(a.getBeta(), 50.0);
+}
+
+TEST(AbsSigmoidFunction, OutputAtShiftIsHalf)
+{
+    // sigma(x_shift) = 0.5*(1 + beta*0/(1+beta*0)) = 0.5
+    AbsSigmoidFunction a{ 3.0, 100.0 };
+    const std::vector<double> input{ 3.0 };
+    const auto out = a(input);
+    EXPECT_NEAR(out[0], 0.5, 1e-12);
+}
+
+TEST(AbsSigmoidFunction, OutputInUnitInterval)
+{
+    AbsSigmoidFunction a{ 0.0, 20.0 };
+    const std::vector<double> input{ -100.0, -1.0, 0.0, 1.0, 100.0 };
+    for (const auto out = a(input); double v : out)
+    {
+        EXPECT_GE(v, 0.0);
+        EXPECT_LE(v, 1.0);
+    }
+}
+
+TEST(AbsSigmoidFunction, MonotonicallyIncreasing)
+{
+    AbsSigmoidFunction a{ 0.0, 10.0 };
+    const std::vector<double> input{ -5.0, -1.0, 0.0, 1.0, 5.0 };
+    const auto out = a(input);
+    for (size_t i = 1; i < out.size(); ++i)
+        EXPECT_GT(out[i], out[i - 1]);
+}
+
+TEST(AbsSigmoidFunction, LargePositiveInputApproachesOne)
+{
+    AbsSigmoidFunction a{ 0.0, 100.0 };
+    const std::vector<double> input{ 1000.0 };
+    const auto out = a(input);
+    EXPECT_NEAR(out[0], 1.0, 1e-3);
+}
+
+TEST(AbsSigmoidFunction, LargeNegativeInputApproachesZero)
+{
+    AbsSigmoidFunction a{ 0.0, 100.0 };
+    const std::vector<double> input{ -1000.0 };
+    const auto out = a(input);
+    EXPECT_NEAR(out[0], 0.0, 1e-3);
+}
+
+TEST(AbsSigmoidFunction, HighBetaApproachesHeaviside)
+{
+    // At beta=1e6 the rational sigmoid should be indistinguishable from a step
+    AbsSigmoidFunction a{ 0.0, 1e6 };
+    const std::vector<double> input{ -0.01, 0.01 };
+    const auto out = a(input);
+    EXPECT_NEAR(out[0], 0.0, 1e-3);
+    EXPECT_NEAR(out[1], 1.0, 1e-3);
+}
+
+TEST(AbsSigmoidFunction, AgreesWithExpSigmoidAtOriginAndAsymptotes)
+{
+    // Both sigmoid families share: output=0.5 at u=x_shift, output→0 as u→-∞, output→1 as u→+∞.
+    // They differ in the transition shape (rational vs exponential), so pointwise agreement
+    // is only expected at u=x_shift and at large |u|.
+    AbsSigmoidFunction absSig{ 0.0, 50.0 };
+    SigmoidFunction expSig{ 0.0, 50.0 };
+    const std::vector<double> atOrigin{ 0.0 };
+    const auto absAtOrigin = absSig(atOrigin);
+    const auto expAtOrigin = expSig(atOrigin);
+    EXPECT_NEAR(absAtOrigin[0], expAtOrigin[0], 1e-6);  // both = 0.5 at u=0
+
+    const std::vector<double> atSaturation{ -100.0, 100.0 };
+    const auto absAtSat = absSig(atSaturation);
+    const auto expAtSat = expSig(atSaturation);
+    EXPECT_NEAR(absAtSat[0], 0.0, 1e-3);
+    EXPECT_NEAR(absAtSat[1], 1.0, 1e-3);
+    EXPECT_NEAR(expAtSat[0], 0.0, 1e-3);
+    EXPECT_NEAR(expAtSat[1], 1.0, 1e-3);
+}
+
+TEST(AbsSigmoidFunction, OutputSizeMatchesInputSize)
+{
+    AbsSigmoidFunction a{ 0.0, 10.0 };
+    const std::vector<double> input(60, 0.5);
+    const auto out = a(input);
+    EXPECT_EQ(out.size(), input.size());
+}
+
+TEST(AbsSigmoidFunction, EqualityOperatorSameParameters)
+{
+    const AbsSigmoidFunction a{ 1.0, 50.0 };
+    const AbsSigmoidFunction b{ 1.0, 50.0 };
+    EXPECT_TRUE(a == b);
+}
+
+TEST(AbsSigmoidFunction, EqualityOperatorDifferentParameters)
+{
+    const AbsSigmoidFunction a{ 1.0, 50.0 };
+    const AbsSigmoidFunction b{ 2.0, 50.0 };
+    EXPECT_FALSE(a == b);
+}
+
+TEST(AbsSigmoidFunction, CloneProducesSameOutput)
+{
+    AbsSigmoidFunction a{ 1.5, 30.0 };
+    const auto clone = a.clone();
+    const std::vector<double> input{ -2.0, 0.0, 1.5, 5.0 };
+    const auto cloneOut = (*clone)(input);
+    const auto directOut = a(input);
+    for (size_t i = 0; i < input.size(); ++i)
+        EXPECT_DOUBLE_EQ(cloneOut[i], directOut[i]);
+}
+
+TEST(AbsSigmoidFunction, ToStringIsNonEmpty)
+{
+    const AbsSigmoidFunction a{ 0.0, 100.0 };
+    EXPECT_FALSE(a.toString().empty());
+}

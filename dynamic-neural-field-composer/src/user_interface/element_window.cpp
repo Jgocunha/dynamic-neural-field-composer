@@ -19,8 +19,9 @@ namespace dnf_composer::user_interface
 		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
-		if (open)
+		if (open) {
 			renderElementControlCard();
+		}
 		ImGui::End();
 	}
 
@@ -35,8 +36,8 @@ namespace dnf_composer::user_interface
 		// Layout metrics (must be computed before the Selected elements section uses them)
 	    const float innerW    = ImGui::GetContentRegionAvail().x;
 		const float ui        = ImGui::GetIO().FontGlobalScale;
-		const float dragW     = 130.0f * ui;
-		const float panelPadX = 10.0f * ui;
+		const float dragW     = 130.0F * ui;
+		const float panelPadX = 10.0F * ui;
 		const float spacingX  = ImGui::GetStyle().ItemSpacing.x;
 
 		auto PanelHeightFor = [&](const std::shared_ptr<element::Element>& e) -> float
@@ -44,7 +45,7 @@ namespace dnf_composer::user_interface
 			const float frameH   = ImGui::GetFrameHeight();
 			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
 			const float rowH     = frameH + spacingY;
-			const float panelPad = 3.0f * 8.0f * ui;
+			const float panelPad = 3.0F * 8.0F * ui;
 
 			auto h = [&](const int rows) {
 				return rows * rowH - spacingY + panelPad;
@@ -56,7 +57,8 @@ namespace dnf_composer::user_interface
 			switch (e->getLabel())
 			{
 				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
-				case element::ElementLabel::NEURAL_FIELD:            return h(2  + dimRows);
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
+				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
 				case element::ElementLabel::GAUSS_STIMULUS:          return h(4  + dimRows);
 				case element::ElementLabel::GAUSS_KERNEL:            return h(4  + kDimRows);
 				case element::ElementLabel::FIELD_COUPLING:          return h(7  + dimRows);
@@ -69,22 +71,23 @@ namespace dnf_composer::user_interface
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
 					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(4 + 5 * numCouplings + dimRows);
+					return h(4 + (5 * numCouplings) + dimRows);
 				}
 				default: return h(4 + dimRows);
 			}
 		};
 
-		const float maxNaturalW = 1.0f * panelPadX + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
+		const float maxNaturalW = (1.0f * panelPadX) + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
 		const float panelW = ImMin(maxNaturalW, innerW);
 
 		// Validate a focused element still belongs to this simulation
 		if (s_focusedElement_)
 		{
 			bool stillValid = false;
-			for (const auto& e : simulation->getElements())
+			for (const auto& e : simulation->getElements()) {
 				if (e == s_focusedElement_) { stillValid = true; break; }
-			if (!stillValid) s_focusedElement_ = nullptr;
+			}
+			if (!stillValid) { s_focusedElement_ = nullptr;}
 		}
 
 		// Selected elements section - shows the most recently single-clicked node
@@ -405,6 +408,9 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::NORMAL_NOISE:
 			modifyElementNormalNoise(element);
 			break;
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+			modifyElementCorrelatedNormalNoise(element);
+			break;
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 			modifyElementGaussFieldCoupling(element);
 			break;
@@ -435,36 +441,121 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementNeuralField(const std::shared_ptr<element::Element>& element)
 	{
-			const float ui = ImGui::GetIO().FontGlobalScale;
+		const float ui = ImGui::GetIO().FontGlobalScale;
 
-			const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
-			element::NeuralFieldParameters nfp = neuralField->getParameters();
+		const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
+		element::NeuralFieldParameters nfp = neuralField->getParameters();
+		bool updated = false;
 
-			auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
-			auto tau = static_cast<float>(nfp.tau);
-
-			std::string label = "##" + element->getUniqueName() + "Resting level";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f);
-			ImGui::SameLine(); ImGui::Text("Resting level");
-
-			label = "##" + element->getUniqueName() + "Tau";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f);
-			ImGui::SameLine(); ImGui::Text("Tau");
-
-		static constexpr double epsilon = 1e-6;
-		if (std::abs(restingLevel - static_cast<float>(nfp.startingRestingLevel)) > epsilon)
+		auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
+		std::string label = "##" + element->getUniqueName() + "RestingLevel";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		if (ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f))
 		{
 			nfp.startingRestingLevel = restingLevel;
-			neuralField->setParameters(nfp);
+			updated = true;
 		}
+		ImGui::SameLine(); ImGui::Text("Resting level");
 
-		if (std::abs(tau - static_cast<float>(nfp.tau)) > epsilon)
+		auto tau = static_cast<float>(nfp.tau);
+		label = "##" + element->getUniqueName() + "Tau";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		if (ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f))
 		{
 			nfp.tau = tau;
-			neuralField->setParameters(nfp);
+			updated = true;
 		}
+		ImGui::SameLine(); ImGui::Text("Tau");
+
+		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		int actFnType = nfp.activationFunction
+			? static_cast<int>(nfp.activationFunction->type)
+			: element::SIGMOID;
+		label = "##" + element->getUniqueName() + "ActFnType";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		if (ImGui::Combo(label.c_str(), &actFnType, actFnNames, 3))
+		{
+			switch (actFnType)
+			{
+			case element::SIGMOID:    nfp.activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0); break;
+			case element::HEAVISIDE:  nfp.activationFunction = std::make_unique<element::HeavisideFunction>(0.0); break;
+			case element::ABSSIGMOID: nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(0.0, 100.0); break;
+			default: break;
+			}
+			updated = true;
+		}
+		ImGui::SameLine(); ImGui::Text("Activation fn.");
+
+		if (actFnType == element::SIGMOID)
+		{
+			const auto* sig = dynamic_cast<const element::SigmoidFunction*>(nfp.activationFunction.get());
+			auto xShift    = sig ? static_cast<float>(sig->getXShift())    : 0.0f;
+			auto steepness = sig ? static_cast<float>(sig->getSteepness()) : 10.0f;
+
+			label = "##" + element->getUniqueName() + "SigXShift";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::SigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(steepness));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("X shift");
+
+			label = "##" + element->getUniqueName() + "SigSteepness";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &steepness, 0.5f, 0.1f, 500.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::SigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(steepness));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("Steepness");
+		}
+		else if (actFnType == element::HEAVISIDE)
+		{
+			const auto* h = dynamic_cast<const element::HeavisideFunction*>(nfp.activationFunction.get());
+			auto xShift = h ? static_cast<float>(h->getXShift()) : 0.0f;
+
+			label = "##" + element->getUniqueName() + "HeavXShift";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::HeavisideFunction>(
+					static_cast<double>(xShift));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("X shift");
+		}
+		else if (actFnType == element::ABSSIGMOID)
+		{
+			const auto* abs = dynamic_cast<const element::AbsSigmoidFunction*>(nfp.activationFunction.get());
+			auto xShift = abs ? static_cast<float>(abs->getXShift()) : 0.0f;
+			auto beta   = abs ? static_cast<float>(abs->getBeta())   : 100.0f;
+
+			label = "##" + element->getUniqueName() + "AbsXShift";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(beta));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("X shift");
+
+			label = "##" + element->getUniqueName() + "AbsBeta";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &beta, 1.0f, 0.1f, 1000.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(beta));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("Beta");
+		}
+
+		if (updated)
+			neuralField->setParameters(nfp);
 	}
 
 	void ElementWindow::modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element)
@@ -740,6 +831,43 @@ namespace dnf_composer::user_interface
 		{
 			nnp.amplitude = amplitude;
 			normalNoise->setParameters(nnp);
+		}
+	}
+
+	void ElementWindow::modifyElementCorrelatedNormalNoise(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise>(element);
+		element::CorrelatedNormalNoiseParameters p = cnn->getParameters();
+
+		auto amplitude = static_cast<float>(p.amplitude);
+		auto width = static_cast<float>(p.width);
+		bool circular = p.circular;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.001f, 0.0f, 5.0f, "%.4f");
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
+		    std::abs(width - static_cast<float>(p.width)) > epsilon ||
+		    circular != p.circular)
+		{
+			p.amplitude = amplitude;
+			p.width = width;
+			p.circular = circular;
+			cnn->setParameters(p);
 		}
 	}
 
@@ -1076,6 +1204,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.337f, 0.502f, 0.749f, 1.0f);  // Soft Blue
 		case element::ElementLabel::NORMAL_NOISE:
 			return ImVec4(0.875f, 0.580f, 0.329f, 1.0f);  // Warm Orange
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+			return ImVec4(0.820f, 0.490f, 0.200f, 1.0f);  // Deep Orange
 		case element::ElementLabel::GAUSS_KERNEL:
 			return ImVec4(0.749f, 0.247f, 0.247f, 1.0f);  // Muted Red
 		case element::ElementLabel::GAUSS_STIMULUS:
@@ -1109,6 +1239,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_KERNEL: return "Gaussian Kernels";
 		case element::ElementLabel::MEXICAN_HAT_KERNEL: return "Mexican Hat Kernels";
 		case element::ElementLabel::NORMAL_NOISE: return "Normal Noise";
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE: return "Correlated Normal Noise";
 		case element::ElementLabel::GAUSS_FIELD_COUPLING: return "Gaussian Field Couplings";
 		case element::ElementLabel::OSCILLATORY_KERNEL: return "Oscillatory Kernels";
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gaussian Kernels";

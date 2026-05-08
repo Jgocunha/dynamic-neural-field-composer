@@ -10,6 +10,7 @@
 #include "elements/gauss_kernel.h"
 #include "elements/mexican_hat_kernel.h"
 #include "elements/normal_noise.h"
+#include "elements/correlated_normal_noise.h"
 #include "elements/field_coupling.h"
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_field_coupling.h"

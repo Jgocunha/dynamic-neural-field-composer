@@ -11,8 +11,8 @@ namespace dnf_composer::element
 	/// @ingroup elements
 	struct NeuralFieldParameters final : ElementSpecificParameters
 	{
-		double tau;                                        ///< Time constant of the field's relaxation dynamics.
-		double startingRestingLevel;                       ///< Homogeneous resting level (h); sub-threshold when negative.
+		double tau;                                             ///< Time constant of the field's relaxation dynamics.
+		double startingRestingLevel;                            ///< Homogeneous resting level (h); sub-threshold when negative.
 		std::unique_ptr<ActivationFunction> activationFunction; ///< Nonlinearity applied to activation to produce output.
 
 		NeuralFieldParameters& operator=(const NeuralFieldParameters& other)
@@ -39,12 +39,12 @@ namespace dnf_composer::element
 
 		/// @brief Default constructor: tau=25, restingLevel=-5, sigmoid(0, 10).
 		NeuralFieldParameters()
-			:tau(25.0), startingRestingLevel(-5.0), activationFunction(nullptr)
+			: tau(25.0), startingRestingLevel(-5.0), activationFunction(nullptr)
 		{}
 
 		/// @brief Construct with explicit tau, resting level, and activation function.
-		/// @param tau             Time constant in ms.
-		/// @param restingLevel    Homogeneous resting level h.
+		/// @param tau                 Time constant in ms.
+		/// @param restingLevel        Homogeneous resting level h.
 		/// @param activationFunction  Pointwise nonlinearity.
 		NeuralFieldParameters(double tau, double restingLevel,
 		                      const ActivationFunction& activationFunction)

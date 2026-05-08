@@ -6,6 +6,7 @@
 #include "elements/mexican_hat_kernel.h"
 #include "elements/neural_field.h"
 #include "elements/normal_noise.h"
+#include "elements/correlated_normal_noise.h"
 #include "elements/gauss_field_coupling.h"
 #include "elements/field_coupling.h"
 #include "simulation/simulation.h"

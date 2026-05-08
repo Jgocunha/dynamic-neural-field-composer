@@ -69,6 +69,7 @@ namespace dnf_composer::user_interface
 		void addElementGaussKernel() const;
 		void addElementMexicanHatKernel() const;
 		void addElementNormalNoise() const;
+		void addElementCorrelatedNormalNoise() const;
 		void addElementGaussFieldCoupling() const;
 	};
 }
