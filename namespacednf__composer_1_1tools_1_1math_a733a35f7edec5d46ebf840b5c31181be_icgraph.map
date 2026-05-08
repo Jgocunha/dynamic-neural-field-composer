@@ -1,5 +1,7 @@
 <map id="dnf_composer::tools::math::generateNormalVector" name="dnf_composer::tools::math::generateNormalVector">
-<area shape="rect" id="Node000001" title=" " alt="" coords="229,5,448,45"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1NormalNoise.html#ab11bbf272dfe2f01b63ce4120283f8d9" title="Advance the element by one time step." alt="" coords="5,5,181,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,28,182,28,182,23,216,23"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="272,37,491,77"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#a4d7c18564ba06a8bfc776f98f4ca0f7a" title="Advance the element by one time step." alt="" coords="5,5,224,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="258,45,224,41,225,36,259,40"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1NormalNoise.html#ab11bbf272dfe2f01b63ce4120283f8d9" title="Advance the element by one time step." alt="" coords="27,69,203,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="259,75,203,81,203,76,258,69"/>
 </map>

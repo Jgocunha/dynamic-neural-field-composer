@@ -73,7 +73,8 @@ $(function() {
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">Activation Functions<div class="ingroups"><a class="el" href="group__elements.html">Elements</a></div></div></div>
 </div><!--header-->
 <div class="contents">
@@ -88,18 +89,65 @@ Collaboration diagram for Activation Functions:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html">dnf_composer::element::AbsSigmoidFunction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rational (absolute-value) sigmoid — cedar's default activation function.  <a href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html">dnf_composer::element::ActivationFunction</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base for activation functions applied to a neural field.  <a href="structdnf__composer_1_1element_1_1ActivationFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1HeavisideFunction.html">dnf_composer::element::HeavisideFunction</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0.  <a href="structdnf__composer_1_1element_1_1HeavisideFunction.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heaviside step function.  <a href="structdnf__composer_1_1element_1_1HeavisideFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1SigmoidFunction.html">dnf_composer::element::SigmoidFunction</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logistic sigmoid: output = 1 / (1 + exp(-steepness * (x - x_shift))).  <a href="structdnf__composer_1_1element_1_1SigmoidFunction.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logistic (exponential) sigmoid.  <a href="structdnf__composer_1_1element_1_1SigmoidFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:gab356f7685737735093ddddf7baa05864" id="r_gab356f7685737735093ddddf7baa05864"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">dnf_composer::element::ActivationFunctionType</a> : int { <a class="el" href="group__activation__functions.html#ggab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89">dnf_composer::element::SIGMOID</a>
+, <a class="el" href="group__activation__functions.html#ggab356f7685737735093ddddf7baa05864aab6dbb79730edba202ed1381565adc2c">dnf_composer::element::HEAVISIDE</a>
+, <a class="el" href="group__activation__functions.html#ggab356f7685737735093ddddf7baa05864af4e09771e5fa851c44f2adf0f7e883c7">dnf_composer::element::ABSSIGMOID</a>
+ }</td></tr>
+<tr class="memdesc:gab356f7685737735093ddddf7baa05864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the concrete activation function type.  <a href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">More...</a><br /></td></tr>
+<tr class="separator:gab356f7685737735093ddddf7baa05864"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Pointwise nonlinearities applied to neural field activation. </p>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="gab356f7685737735093ddddf7baa05864" name="gab356f7685737735093ddddf7baa05864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab356f7685737735093ddddf7baa05864">&#9670;&#160;</a></span>ActivationFunctionType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">dnf_composer::element::ActivationFunctionType</a> : int</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Identifies the concrete activation function type. </p>
+<p>Cross-framework naming: </p><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">dnf-composer   </th><th class="markdownTableHeadNone">cedar   </th><th class="markdownTableHeadNone">cosivina    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">SIGMOID   </td><td class="markdownTableBodyNone">ExpSigmoid   </td><td class="markdownTableBodyNone">sigmoid    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">ABSSIGMOID   </td><td class="markdownTableBodyNone">AbsSigmoid   </td><td class="markdownTableBodyNone">—    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">HEAVISIDE   </td><td class="markdownTableBodyNone">HeavisideSigmoid   </td><td class="markdownTableBodyNone">—   </td></tr>
+</table>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89" name="ggab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89"></a>SIGMOID&#160;</td><td class="fielddoc"><p>Logistic (exponential) sigmoid. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggab356f7685737735093ddddf7baa05864aab6dbb79730edba202ed1381565adc2c" name="ggab356f7685737735093ddddf7baa05864aab6dbb79730edba202ed1381565adc2c"></a>HEAVISIDE&#160;</td><td class="fielddoc"><p>Binary step function. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggab356f7685737735093ddddf7baa05864af4e09771e5fa851c44f2adf0f7e883c7" name="ggab356f7685737735093ddddf7baa05864af4e09771e5fa851c44f2adf0f7e883c7"></a>ABSSIGMOID&#160;</td><td class="fielddoc"><p>Rational (absolute-value) sigmoid approximation — cedar's default. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

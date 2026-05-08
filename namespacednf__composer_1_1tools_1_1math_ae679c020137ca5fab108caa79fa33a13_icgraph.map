@@ -1,15 +1,19 @@
 <map id="dnf_composer::tools::math::gaussNorm" name="dnf_composer::tools::math::gaussNorm">
-<area shape="rect" id="Node000001" title=" " alt="" coords="571,85,725,125"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="304,17,523,57"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="565,83,482,59,484,54,566,78"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a287d7d8ff2d471d38fc915b73c0422bd" title="Initialize the element (called once before the simulation loop)." alt="" coords="325,85,501,125"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="556,107,502,107,502,102,556,102"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ad80d75e45cea14a7d222559ae88d0c48" title="Initialize the element (called once before the simulation loop)." alt="" coords="324,149,503,189"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="562,131,488,151,486,146,560,126"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="571,130,725,170"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="304,21,523,61"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="600,125,522,84,470,63,472,58,524,80,602,121"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#af15a4f2f22980b9bd2f843d3a7ec77c7" title="Initialize the element (called once before the simulation loop)." alt="" coords="307,94,519,134"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="556,139,519,133,520,128,557,133"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a287d7d8ff2d471d38fc915b73c0422bd" title="Initialize the element (called once before the simulation loop)." alt="" coords="325,162,501,202"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="557,165,502,173,501,167,556,160"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ad80d75e45cea14a7d222559ae88d0c48" title="Initialize the element (called once before the simulation loop)." alt="" coords="324,226,503,266"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="601,179,524,216,490,228,488,223,522,212,599,174"/>
 <area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#aa692c282d0b5b78e54d15664166a06eb" title=" " alt="" coords="35,5,226,60"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="290,38,226,37,226,31,290,32"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a36639a54ade8b0154ed3419f2b0e1650" title=" " alt="" coords="24,85,237,125"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="312,107,237,107,237,102,312,102"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#a4aa49909a155682d613a1f6284c90601" title=" " alt="" coords="5,149,256,189"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="310,171,256,171,256,166,310,166"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="290,40,226,38,226,33,290,35"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#a78311915d5aafe88d29c65a834482c89" title=" " alt="" coords="39,84,222,139"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="293,116,222,115,222,110,293,110"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a36639a54ade8b0154ed3419f2b0e1650" title=" " alt="" coords="24,163,237,203"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="312,185,237,185,237,180,312,180"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#a4aa49909a155682d613a1f6284c90601" title=" " alt="" coords="5,227,256,267"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="310,249,256,249,256,244,310,244"/>
 </map>

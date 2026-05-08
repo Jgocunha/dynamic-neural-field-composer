@@ -84,7 +84,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Logistic sigmoid: output = 1 / (1 + exp(-steepness * (x - x_shift))).  
+<p>Logistic (exponential) sigmoid.  
  <a href="structdnf__composer_1_1element_1_1SigmoidFunction.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="activation__function_8h_source.html">activation_function.h</a>&gt;</code></p>
@@ -136,18 +136,30 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:af6082dd216777f5282cf2bddfccc9ce8" id="r_af6082dd216777f5282cf2bddfccc9ce8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1SigmoidFunction.html#af6082dd216777f5282cf2bddfccc9ce8">steepness</a></td></tr>
-<tr class="memdesc:af6082dd216777f5282cf2bddfccc9ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slope at the inflection point.  <br /></td></tr>
+<tr class="memdesc:af6082dd216777f5282cf2bddfccc9ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slope at the inflection point (cedar/cosivina: beta).  <br /></td></tr>
 <tr class="separator:af6082dd216777f5282cf2bddfccc9ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdf0819479c5850a4c61688f207c4f68" id="r_abdf0819479c5850a4c61688f207c4f68"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1SigmoidFunction.html#abdf0819479c5850a4c61688f207c4f68">x_shift</a></td></tr>
-<tr class="memdesc:abdf0819479c5850a4c61688f207c4f68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inflection point of the sigmoid.  <br /></td></tr>
+<tr class="memdesc:abdf0819479c5850a4c61688f207c4f68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inflection point of the sigmoid (cedar: theta; cosivina: x0).  <br /></td></tr>
 <tr class="separator:abdf0819479c5850a4c61688f207c4f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html">dnf_composer::element::ActivationFunction</a></td></tr>
-<tr class="memitem:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction" id="r_aa79010e7864128b058cff51f453a74a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1element.html#ab356f7685737735093ddddf7baa05864">ActivationFunctionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html#aa79010e7864128b058cff51f453a74a9">type</a></td></tr>
+<tr class="memitem:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction" id="r_aa79010e7864128b058cff51f453a74a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">ActivationFunctionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html#aa79010e7864128b058cff51f453a74a9">type</a></td></tr>
 <tr class="memdesc:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concrete function type.  <br /></td></tr>
 <tr class="separator:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Logistic sigmoid: output = 1 / (1 + exp(-steepness * (x - x_shift))). </p>
+<div class="textblock"><p>Logistic (exponential) sigmoid. </p>
+<p>Formula: <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$ \sigma(x) = \frac{1}{1 + e^{-\mathrm{steepness}(x - x\_shift)}} $" src="form_0.png"/></picture></p>
+<p><b>Cross-framework equivalence (formula-identical):</b> </p><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Framework   </th><th class="markdownTableHeadNone">Type / call    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">dnf-composer   </td><td class="markdownTableBodyNone"><code>SigmoidFunction(x_shift, steepness)</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">cedar   </td><td class="markdownTableBodyNone"><code>ExpSigmoid(beta=steepness, theta=x_shift)</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">cosivina   </td><td class="markdownTableBodyNone"><code>sigmoid(beta=steepness, x0=x_shift)</code>   </td></tr>
+</table>
+<p>All three use the same formula. Only the parameter names differ. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad8b9d1d08316d3916bde30163ef42b41" name="ad8b9d1d08316d3916bde30163ef42b41"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad8b9d1d08316d3916bde30163ef42b41">&#9670;&#160;</a></span>SigmoidFunction() <span class="overload">[1/2]</span></h2>
@@ -429,7 +441,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Slope at the inflection point. </p>
+<p>Slope at the inflection point (cedar/cosivina: beta). </p>
 
 </div>
 </div>
@@ -445,7 +457,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Inflection point of the sigmoid. </p>
+<p>Inflection point of the sigmoid (cedar: theta; cosivina: x0). </p>
 
 </div>
 </div>

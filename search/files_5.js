@@ -1,13 +1,11 @@
 var searchData=
 [
-  ['gauss_5ffield_5fcoupling_2ecpp_0',['gauss_field_coupling.cpp',['../gauss__field__coupling_8cpp.html',1,'']]],
-  ['gauss_5ffield_5fcoupling_2eh_1',['gauss_field_coupling.h',['../gauss__field__coupling_8h.html',1,'']]],
-  ['gauss_5fkernel_2ecpp_2',['gauss_kernel.cpp',['../gauss__kernel_8cpp.html',1,'']]],
-  ['gauss_5fkernel_2eh_3',['gauss_kernel.h',['../gauss__kernel_8h.html',1,'']]],
-  ['gauss_5fkernel_5fparameters_2ecpp_4',['gauss_kernel_parameters.cpp',['../gauss__kernel__parameters_8cpp.html',1,'']]],
-  ['gauss_5fkernel_5fparameters_2eh_5',['gauss_kernel_parameters.h',['../gauss__kernel__parameters_8h.html',1,'']]],
-  ['gauss_5fstimulus_2ecpp_6',['gauss_stimulus.cpp',['../gauss__stimulus_8cpp.html',1,'']]],
-  ['gauss_5fstimulus_2eh_7',['gauss_stimulus.h',['../gauss__stimulus_8h.html',1,'']]],
-  ['gauss_5fstimulus_5fparameters_2ecpp_8',['gauss_stimulus_parameters.cpp',['../gauss__stimulus__parameters_8cpp.html',1,'']]],
-  ['gauss_5fstimulus_5fparameters_2eh_9',['gauss_stimulus_parameters.h',['../gauss__stimulus__parameters_8h.html',1,'']]]
+  ['fa_2eh_0',['fa.h',['../fa_8h.html',1,'']]],
+  ['field_5fcoupling_2ecpp_1',['field_coupling.cpp',['../field__coupling_8cpp.html',1,'']]],
+  ['field_5fcoupling_2eh_2',['field_coupling.h',['../field__coupling_8h.html',1,'']]],
+  ['field_5fcoupling_5fparameters_2ecpp_3',['field_coupling_parameters.cpp',['../field__coupling__parameters_8cpp.html',1,'']]],
+  ['field_5fcoupling_5fparameters_2eh_4',['field_coupling_parameters.h',['../field__coupling__parameters_8h.html',1,'']]],
+  ['field_5fmetrics_5fwindow_2ecpp_5',['field_metrics_window.cpp',['../field__metrics__window_8cpp.html',1,'']]],
+  ['field_5fmetrics_5fwindow_2eh_6',['field_metrics_window.h',['../field__metrics__window_8h.html',1,'']]],
+  ['file_5fdialog_2eh_7',['file_dialog.h',['../file__dialog_8h.html',1,'']]]
 ];

@@ -1,5 +1,5 @@
 <map id="dnf_composer::element::HeavisideFunction" name="dnf_composer::element::HeavisideFunction">
-<area shape="rect" id="Node000001" title="Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0." alt="" coords="6,273,175,513"/>
+<area shape="rect" id="Node000001" title="Heaviside step function." alt="" coords="6,273,175,513"/>
 <area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1ActivationFunction.html" title="Abstract base for activation functions applied to a neural field." alt="" coords="5,5,176,225"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,239,93,273,88,273,88,239"/>
 </map>

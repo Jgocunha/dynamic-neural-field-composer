@@ -86,6 +86,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html">AbsSigmoidFunction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rational (absolute-value) sigmoid — cedar's default activation function.  <a href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html">ActivationFunction</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base for activation functions applied to a neural field.  <a href="structdnf__composer_1_1element_1_1ActivationFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -100,6 +103,12 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1BoostStimulusParameters.html">BoostStimulusParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a spatially homogeneous boost stimulus.  <a href="structdnf__composer_1_1element_1_1BoostStimulusParameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html">CorrelatedNormalNoise</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spatially correlated Gaussian noise source — cedar-compatible.  <a href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html">CorrelatedNormalNoiseParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a spatially correlated Gaussian noise source.  <a href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base class for all simulation elements.  <a href="classdnf__composer_1_1element_1_1Element.html#details">More...</a><br /></td></tr>
@@ -147,7 +156,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a Gaussian-shaped external stimulus.  <a href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1HeavisideFunction.html">HeavisideFunction</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0.  <a href="structdnf__composer_1_1element_1_1HeavisideFunction.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heaviside step function.  <a href="structdnf__composer_1_1element_1_1HeavisideFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Kernel.html">Kernel</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base class for all convolution-based interaction kernels.  <a href="classdnf__composer_1_1element_1_1Kernel.html#details">More...</a><br /></td></tr>
@@ -189,15 +198,17 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for an oscillatory (damped-cosine) convolution kernel.  <a href="structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1SigmoidFunction.html">SigmoidFunction</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logistic sigmoid: output = 1 / (1 + exp(-steepness * (x - x_shift))).  <a href="structdnf__composer_1_1element_1_1SigmoidFunction.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logistic (exponential) sigmoid.  <a href="structdnf__composer_1_1element_1_1SigmoidFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ab356f7685737735093ddddf7baa05864" id="r_ab356f7685737735093ddddf7baa05864"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#ab356f7685737735093ddddf7baa05864">ActivationFunctionType</a> : int { <a class="el" href="namespacednf__composer_1_1element.html#ab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89">SIGMOID</a>
-, <a class="el" href="namespacednf__composer_1_1element.html#ab356f7685737735093ddddf7baa05864aab6dbb79730edba202ed1381565adc2c">HEAVISIDE</a>
+<tr class="memitem:gab356f7685737735093ddddf7baa05864" id="r_gab356f7685737735093ddddf7baa05864"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">ActivationFunctionType</a> : int { <a class="el" href="group__activation__functions.html#ggab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89">SIGMOID</a>
+, <a class="el" href="group__activation__functions.html#ggab356f7685737735093ddddf7baa05864aab6dbb79730edba202ed1381565adc2c">HEAVISIDE</a>
+, <a class="el" href="group__activation__functions.html#ggab356f7685737735093ddddf7baa05864af4e09771e5fa851c44f2adf0f7e883c7">ABSSIGMOID</a>
  }</td></tr>
-<tr class="separator:ab356f7685737735093ddddf7baa05864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:gab356f7685737735093ddddf7baa05864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the concrete activation function type.  <a href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">More...</a><br /></td></tr>
+<tr class="separator:gab356f7685737735093ddddf7baa05864"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac3d19ecdf631f5316e2c09003233bece" id="r_gac3d19ecdf631f5316e2c09003233bece"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__element__parameters.html#gac3d19ecdf631f5316e2c09003233bece">ElementLabel</a> : int { <br />
 &#160;&#160;<a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438">UNINITIALIZED</a>
 , <a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c">NEURAL_FIELD</a>
@@ -210,9 +221,11 @@ Enumerations</h2></td></tr>
 , <a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea0e3fbf1a2a21373892cf4420e14d39f0">ASYMMETRIC_GAUSS_KERNEL</a>
 , <br />
 &#160;&#160;<a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8">NORMAL_NOISE</a>
+, <a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becead51b87992c5e9e7fe895c0600b9b0abc">CORRELATED_NORMAL_NOISE</a>
 , <a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b">FIELD_COUPLING</a>
 , <a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772">GAUSS_FIELD_COUPLING</a>
-, <a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666">MEMORY_TRACE</a>
+, <br />
+&#160;&#160;<a class="el" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666">MEMORY_TRACE</a>
 <br />
  }</td></tr>
 <tr class="memdesc:gac3d19ecdf631f5316e2c09003233bece"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the concrete type of a simulation element.  <a href="group__element__parameters.html#gac3d19ecdf631f5316e2c09003233bece">More...</a><br /></td></tr>
@@ -223,27 +236,6 @@ Variables</h2></td></tr>
 <tr class="memitem:a1d5271ba95b4dd255c5d39620d9f805d" id="r_a1d5271ba95b4dd255c5d39620d9f805d"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="group__element__parameters.html#gac3d19ecdf631f5316e2c09003233bece">ElementLabel</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#a1d5271ba95b4dd255c5d39620d9f805d">ElementLabelToString</a></td></tr>
 <tr class="separator:a1d5271ba95b4dd255c5d39620d9f805d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="ab356f7685737735093ddddf7baa05864" name="ab356f7685737735093ddddf7baa05864"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab356f7685737735093ddddf7baa05864">&#9670;&#160;</a></span>ActivationFunctionType</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="namespacednf__composer_1_1element.html#ab356f7685737735093ddddf7baa05864">dnf_composer::element::ActivationFunctionType</a> : int</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89" name="ab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89"></a>SIGMOID&#160;</td><td class="fielddoc"><p>Logistic sigmoid. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ab356f7685737735093ddddf7baa05864aab6dbb79730edba202ed1381565adc2c" name="ab356f7685737735093ddddf7baa05864aab6dbb79730edba202ed1381565adc2c"></a>HEAVISIDE&#160;</td><td class="fielddoc"><p>Binary step function. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a1d5271ba95b4dd255c5d39620d9f805d" name="a1d5271ba95b4dd255c5d39620d9f805d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1d5271ba95b4dd255c5d39620d9f805d">&#9670;&#160;</a></span>ElementLabelToString</h2>
@@ -276,6 +268,7 @@ Variables</h2></td></tr>
 <div class="line">            {<a class="code hl_enumvalue" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea49b51c9e834add72dde3f46050731496">OSCILLATORY_KERNEL</a>, <span class="stringliteral">&quot;oscillatory kernel&quot;</span>},</div>
 <div class="line">            {<a class="code hl_enumvalue" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea0e3fbf1a2a21373892cf4420e14d39f0">ASYMMETRIC_GAUSS_KERNEL</a>, <span class="stringliteral">&quot;asymmetric gauss kernel&quot;</span>},</div>
 <div class="line">            {<a class="code hl_enumvalue" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8">NORMAL_NOISE</a>, <span class="stringliteral">&quot;normal noise&quot;</span> },</div>
+<div class="line">            {<a class="code hl_enumvalue" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becead51b87992c5e9e7fe895c0600b9b0abc">CORRELATED_NORMAL_NOISE</a>, <span class="stringliteral">&quot;correlated normal noise&quot;</span> },</div>
 <div class="line">            {<a class="code hl_enumvalue" href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666">MEMORY_TRACE</a>, <span class="stringliteral">&quot;memory trace&quot;</span> },</div>
 <div class="line">        }</div>
 <div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233becea0e3fbf1a2a21373892cf4420e14d39f0"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea0e3fbf1a2a21373892cf4420e14d39f0">dnf_composer::element::ASYMMETRIC_GAUSS_KERNEL</a></div><div class="ttdeci">@ ASYMMETRIC_GAUSS_KERNEL</div><div class="ttdoc">AsymmetricGaussKernel.</div><div class="ttdef"><b>Definition</b> element_parameters.h:27</div></div>
@@ -284,10 +277,11 @@ Variables</h2></td></tr>
 <div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233becea4b191cf2550cf1267899fc3d0698e393"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea4b191cf2550cf1267899fc3d0698e393">dnf_composer::element::GAUSS_KERNEL</a></div><div class="ttdeci">@ GAUSS_KERNEL</div><div class="ttdoc">GaussKernel.</div><div class="ttdef"><b>Definition</b> element_parameters.h:24</div></div>
 <div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8">dnf_composer::element::NORMAL_NOISE</a></div><div class="ttdeci">@ NORMAL_NOISE</div><div class="ttdoc">NormalNoise.</div><div class="ttdef"><b>Definition</b> element_parameters.h:28</div></div>
 <div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809">dnf_composer::element::MEXICAN_HAT_KERNEL</a></div><div class="ttdeci">@ MEXICAN_HAT_KERNEL</div><div class="ttdoc">MexicanHatKernel.</div><div class="ttdef"><b>Definition</b> element_parameters.h:25</div></div>
-<div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666">dnf_composer::element::MEMORY_TRACE</a></div><div class="ttdeci">@ MEMORY_TRACE</div><div class="ttdoc">MemoryTrace.</div><div class="ttdef"><b>Definition</b> element_parameters.h:31</div></div>
-<div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b">dnf_composer::element::FIELD_COUPLING</a></div><div class="ttdeci">@ FIELD_COUPLING</div><div class="ttdoc">FieldCoupling.</div><div class="ttdef"><b>Definition</b> element_parameters.h:29</div></div>
+<div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666">dnf_composer::element::MEMORY_TRACE</a></div><div class="ttdeci">@ MEMORY_TRACE</div><div class="ttdoc">MemoryTrace.</div><div class="ttdef"><b>Definition</b> element_parameters.h:32</div></div>
+<div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b">dnf_composer::element::FIELD_COUPLING</a></div><div class="ttdeci">@ FIELD_COUPLING</div><div class="ttdoc">FieldCoupling.</div><div class="ttdef"><b>Definition</b> element_parameters.h:30</div></div>
 <div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c">dnf_composer::element::NEURAL_FIELD</a></div><div class="ttdeci">@ NEURAL_FIELD</div><div class="ttdoc">NeuralField.</div><div class="ttdef"><b>Definition</b> element_parameters.h:21</div></div>
-<div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772">dnf_composer::element::GAUSS_FIELD_COUPLING</a></div><div class="ttdeci">@ GAUSS_FIELD_COUPLING</div><div class="ttdoc">GaussFieldCoupling.</div><div class="ttdef"><b>Definition</b> element_parameters.h:30</div></div>
+<div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233becead51b87992c5e9e7fe895c0600b9b0abc"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233becead51b87992c5e9e7fe895c0600b9b0abc">dnf_composer::element::CORRELATED_NORMAL_NOISE</a></div><div class="ttdeci">@ CORRELATED_NORMAL_NOISE</div><div class="ttdoc">CorrelatedNormalNoise (spatially correlated, cedar-compatible).</div><div class="ttdef"><b>Definition</b> element_parameters.h:29</div></div>
+<div class="ttc" id="agroup__element__parameters_html_ggac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772"><div class="ttname"><a href="group__element__parameters.html#ggac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772">dnf_composer::element::GAUSS_FIELD_COUPLING</a></div><div class="ttdeci">@ GAUSS_FIELD_COUPLING</div><div class="ttdoc">GaussFieldCoupling.</div><div class="ttdef"><b>Definition</b> element_parameters.h:31</div></div>
 </div><!-- fragment -->
 </div>
 </div>

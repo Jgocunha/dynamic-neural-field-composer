@@ -1,25 +1,27 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structdnf__composer_1_1element_1_1ElementSpecificParameters.html" title="Abstract base for all element&#45;specific parameter structs." alt="" coords="5,325,213,365"/>
+<area shape="rect" id="Node000000" href="$structdnf__composer_1_1element_1_1ElementSpecificParameters.html" title="Abstract base for all element&#45;specific parameter structs." alt="" coords="5,357,213,397"/>
 <area shape="rect" id="Node000001" href="$structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html" title="Parameters for an asymmetric (shifted) Gaussian convolution kernel." alt="" coords="261,5,525,45"/>
-<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="116,311,133,255,162,186,203,115,230,83,260,55,279,43,282,48,263,59,233,87,208,118,166,188,138,257,121,313"/>
+<area shape="poly" id="edge4_Node000000_Node000001" title=" " alt="" coords="114,343,129,281,157,203,176,163,199,123,227,87,260,55,278,43,281,48,263,59,231,90,204,126,181,165,162,205,134,283,119,344"/>
 <area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1BoostStimulusParameters.html" title="Parameters for a spatially homogeneous boost stimulus." alt="" coords="294,69,493,109"/>
-<area shape="poly" id="edge4_Node000000_Node000002" title=" " alt="" coords="121,311,142,267,172,215,211,163,234,140,260,119,293,102,295,107,263,124,238,144,215,167,176,218,146,270,126,314"/>
-<area shape="rect" id="Node000003" href="$structdnf__composer_1_1element_1_1FieldCouplingParameters.html" title="Parameters for a learned full&#45;matrix field coupling." alt="" coords="297,133,489,173"/>
-<area shape="poly" id="edge5_Node000000_Node000003" title=" " alt="" coords="129,312,183,246,219,212,260,183,296,167,298,172,263,188,223,216,187,250,134,316"/>
-<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html" title="Parameters for a sparse Gaussian field coupling (fixed projection)." alt="" coords="277,197,509,237"/>
-<area shape="poly" id="edge6_Node000000_Node000004" title=" " alt="" coords="146,315,198,280,260,247,294,235,296,240,262,252,201,284,149,319"/>
-<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1GaussKernelParameters.html" title="Parameters for a Gaussian lateral interaction kernel." alt="" coords="301,261,486,301"/>
-<area shape="poly" id="edge7_Node000000_Node000005" title=" " alt="" coords="211,320,303,299,305,304,213,325"/>
-<area shape="rect" id="Node000006" href="$structdnf__composer_1_1element_1_1GaussStimulusParameters.html" title="Parameters for a Gaussian&#45;shaped external stimulus." alt="" coords="293,325,494,365"/>
-<area shape="poly" id="edge8_Node000000_Node000006" title=" " alt="" coords="227,343,292,343,292,348,227,348"/>
-<area shape="rect" id="Node000007" href="$structdnf__composer_1_1element_1_1MemoryTraceParameters.html" title="Parameters governing MemoryTrace build&#45;up and decay dynamics." alt="" coords="297,389,489,429"/>
-<area shape="poly" id="edge9_Node000000_Node000007" title=" " alt="" coords="213,366,305,387,303,392,211,371"/>
-<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html" title="Parameters for a Mexican&#45;hat lateral interaction kernel." alt="" coords="282,453,505,493"/>
-<area shape="poly" id="edge10_Node000000_Node000008" title=" " alt="" coords="149,371,201,407,262,439,296,451,294,456,260,444,198,411,146,376"/>
-<area shape="rect" id="Node000009" href="$structdnf__composer_1_1element_1_1NeuralFieldParameters.html" title="Parameters that govern a NeuralField&#39;s dynamics." alt="" coords="304,517,483,557"/>
-<area shape="poly" id="edge11_Node000000_Node000009" title=" " alt="" coords="134,375,187,441,223,475,263,503,305,521,303,526,260,508,219,479,183,444,129,378"/>
-<area shape="rect" id="Node000010" href="$structdnf__composer_1_1element_1_1NormalNoiseParameters.html" title="Parameters for an additive normal&#45;noise input." alt="" coords="299,581,488,621"/>
-<area shape="poly" id="edge12_Node000000_Node000010" title=" " alt="" coords="126,377,146,421,176,472,215,524,238,547,263,567,300,585,297,590,260,572,234,551,211,528,172,475,142,423,121,379"/>
-<area shape="rect" id="Node000011" href="$structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html" title="Parameters for an oscillatory (damped&#45;cosine) convolution kernel." alt="" coords="286,645,501,685"/>
-<area shape="poly" id="edge13_Node000000_Node000011" title=" " alt="" coords="121,378,138,434,166,502,208,572,233,604,263,631,287,645,284,650,260,635,230,608,203,575,162,505,133,435,116,379"/>
+<area shape="poly" id="edge5_Node000000_Node000002" title=" " alt="" coords="118,343,137,293,167,232,207,171,232,143,260,119,293,102,295,106,263,124,236,147,211,174,171,235,142,295,123,345"/>
+<area shape="rect" id="Node000003" href="$structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html" title="Parameters for a spatially correlated Gaussian noise source." alt="" coords="265,133,522,173"/>
+<area shape="poly" id="edge6_Node000000_Node000003" title=" " alt="" coords="125,344,147,306,177,263,215,219,260,183,283,171,285,176,263,188,219,223,182,266,151,309,129,346"/>
+<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1FieldCouplingParameters.html" title="Parameters for a learned full&#45;matrix field coupling." alt="" coords="297,197,489,237"/>
+<area shape="poly" id="edge7_Node000000_Node000004" title=" " alt="" coords="136,345,190,295,224,269,260,247,296,232,298,237,263,252,227,273,194,299,140,349"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html" title="Parameters for a sparse Gaussian field coupling (fixed projection)." alt="" coords="277,261,509,301"/>
+<area shape="poly" id="edge8_Node000000_Node000005" title=" " alt="" coords="164,349,260,311,301,299,303,304,262,316,166,354"/>
+<area shape="rect" id="Node000006" href="$structdnf__composer_1_1element_1_1GaussKernelParameters.html" title="Parameters for a Gaussian lateral interaction kernel." alt="" coords="301,325,486,365"/>
+<area shape="poly" id="edge9_Node000000_Node000006" title=" " alt="" coords="227,361,300,353,301,358,227,367"/>
+<area shape="rect" id="Node000007" href="$structdnf__composer_1_1element_1_1GaussStimulusParameters.html" title="Parameters for a Gaussian&#45;shaped external stimulus." alt="" coords="293,389,494,429"/>
+<area shape="poly" id="edge10_Node000000_Node000007" title=" " alt="" coords="227,388,293,395,292,401,227,393"/>
+<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1MemoryTraceParameters.html" title="Parameters governing MemoryTrace build&#45;up and decay dynamics." alt="" coords="297,453,489,493"/>
+<area shape="poly" id="edge11_Node000000_Node000008" title=" " alt="" coords="166,401,262,439,303,451,301,456,260,444,164,406"/>
+<area shape="rect" id="Node000009" href="$structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html" title="Parameters for a Mexican&#45;hat lateral interaction kernel." alt="" coords="282,517,505,557"/>
+<area shape="poly" id="edge12_Node000000_Node000009" title=" " alt="" coords="140,406,194,456,227,481,263,503,291,515,289,520,260,508,224,486,190,460,136,410"/>
+<area shape="rect" id="Node000010" href="$structdnf__composer_1_1element_1_1NeuralFieldParameters.html" title="Parameters that govern a NeuralField&#39;s dynamics." alt="" coords="304,581,483,621"/>
+<area shape="poly" id="edge13_Node000000_Node000010" title=" " alt="" coords="129,408,151,446,182,489,219,531,263,567,305,586,303,591,260,572,215,535,177,492,147,449,125,411"/>
+<area shape="rect" id="Node000011" href="$structdnf__composer_1_1element_1_1NormalNoiseParameters.html" title="Parameters for an additive normal&#45;noise input." alt="" coords="299,645,488,685"/>
+<area shape="poly" id="edge14_Node000000_Node000011" title=" " alt="" coords="123,409,142,459,171,520,211,580,236,608,263,631,300,650,297,655,260,636,232,611,207,584,167,522,137,461,118,411"/>
+<area shape="rect" id="Node000012" href="$structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html" title="Parameters for an oscillatory (damped&#45;cosine) convolution kernel." alt="" coords="286,709,501,749"/>
+<area shape="poly" id="edge15_Node000000_Node000012" title=" " alt="" coords="119,410,134,472,162,549,181,590,204,628,231,664,263,695,287,710,284,714,260,699,227,668,199,631,176,592,157,551,129,474,114,412"/>
 </map>

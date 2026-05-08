@@ -84,7 +84,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0.  
+<p>Heaviside step function.  
  <a href="structdnf__composer_1_1element_1_1HeavisideFunction.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="activation__function_8h_source.html">activation_function.h</a>&gt;</code></p>
@@ -134,15 +134,26 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a891b10a0a993b68bfed0e8d37d18b5d1" id="r_a891b10a0a993b68bfed0e8d37d18b5d1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1HeavisideFunction.html#a891b10a0a993b68bfed0e8d37d18b5d1">x_shift</a></td></tr>
-<tr class="memdesc:a891b10a0a993b68bfed0e8d37d18b5d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Threshold; activation at or above this value maps to 1.  <br /></td></tr>
+<tr class="memdesc:a891b10a0a993b68bfed0e8d37d18b5d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Threshold; activation strictly above this value maps to 1.  <br /></td></tr>
 <tr class="separator:a891b10a0a993b68bfed0e8d37d18b5d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html">dnf_composer::element::ActivationFunction</a></td></tr>
-<tr class="memitem:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction" id="r_aa79010e7864128b058cff51f453a74a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1element.html#ab356f7685737735093ddddf7baa05864">ActivationFunctionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html#aa79010e7864128b058cff51f453a74a9">type</a></td></tr>
+<tr class="memitem:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction" id="r_aa79010e7864128b058cff51f453a74a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">ActivationFunctionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html#aa79010e7864128b058cff51f453a74a9">type</a></td></tr>
 <tr class="memdesc:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concrete function type.  <br /></td></tr>
 <tr class="separator:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0. </p>
+<div class="textblock"><p>Heaviside step function. </p>
+<p>Formula: <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$ \sigma(x) = \begin{cases} 1 &amp; x &gt; x\_shift \\ 0 &amp; x \le x\_shift \end{cases} $" src="form_1.png"/></picture></p>
+<p><b>Cross-framework equivalence:</b> </p><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Framework   </th><th class="markdownTableHeadNone">Type / call   </th><th class="markdownTableHeadNone">Note    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">dnf-composer   </td><td class="markdownTableBodyNone"><code>HeavisideFunction(x_shift)</code>   </td><td class="markdownTableBodyNone">maps 1 when x &gt; x_shift    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">cedar   </td><td class="markdownTableBodyNone"><code>HeavisideSigmoid(theta=x_shift)</code>   </td><td class="markdownTableBodyNone">identical formula (strict &gt;)    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">cosivina   </td><td class="markdownTableBodyNone">no built-in equivalent   </td><td class="markdownTableBodyNone">—   </td></tr>
+</table>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aae97dba89d01334f2871afd8cf4172c8" name="aae97dba89d01334f2871afd8cf4172c8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aae97dba89d01334f2871afd8cf4172c8">&#9670;&#160;</a></span>HeavisideFunction() <span class="overload">[1/2]</span></h2>
@@ -404,7 +415,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Threshold; activation at or above this value maps to 1. </p>
+<p>Threshold; activation strictly above this value maps to 1. </p>
 
 </div>
 </div>

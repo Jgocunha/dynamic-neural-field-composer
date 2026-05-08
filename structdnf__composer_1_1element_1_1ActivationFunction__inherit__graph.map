@@ -1,7 +1,9 @@
 <map id="dnf_composer::element::ActivationFunction" name="dnf_composer::element::ActivationFunction">
-<area shape="rect" id="Node000001" title="Abstract base for activation functions applied to a neural field." alt="" coords="101,5,271,225"/>
-<area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1HeavisideFunction.html" title="Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0." alt="" coords="5,293,175,533"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="149,239,131,294,126,292,144,238"/>
-<area shape="rect" id="Node000003" href="$structdnf__composer_1_1element_1_1SigmoidFunction.html" title="Logistic sigmoid: output = 1 / (1 + exp(&#45;steepness * (x &#45; x_shift)))." alt="" coords="199,273,367,553"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="229,237,240,272,235,274,224,239"/>
+<area shape="rect" id="Node000001" title="Abstract base for activation functions applied to a neural field." alt="" coords="211,5,381,225"/>
+<area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1AbsSigmoidFunction.html" title="Rational (absolute&#45;value) sigmoid — cedar&#39;s default activation function." alt="" coords="5,273,187,553"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="217,238,189,279,185,276,213,235"/>
+<area shape="rect" id="Node000003" href="$structdnf__composer_1_1element_1_1HeavisideFunction.html" title="Heaviside step function." alt="" coords="211,293,381,533"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="299,239,299,293,293,293,293,239"/>
+<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1SigmoidFunction.html" title="Logistic (exponential) sigmoid." alt="" coords="405,273,573,553"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="377,235,407,282,403,285,372,238"/>
 </map>

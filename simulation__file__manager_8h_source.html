@@ -96,43 +96,45 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="gauss__kernel_8h.html">elements/gauss_kernel.h</a>&quot;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="mexican__hat__kernel_8h.html">elements/mexican_hat_kernel.h</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="normal__noise_8h.html">elements/normal_noise.h</a>&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="field__coupling_8h.html">elements/field_coupling.h</a>&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="gauss__stimulus_8h.html">elements/gauss_stimulus.h</a>&quot;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="gauss__field__coupling_8h.html">elements/gauss_field_coupling.h</a>&quot;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="oscillatory__kernel_8h.html">elements/oscillatory_kernel.h</a>&quot;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="asymmetric__gauss__kernel_8h.html">elements/asymmetric_gauss_kernel.h</a>&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="boost__stimulus_8h.html">elements/boost_stimulus.h</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="memory__trace_8h.html">elements/memory_trace.h</a>&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacednf__composer.html">dnf_composer</a></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">   27</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">json</a> = nlohmann::json;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classdnf__composer_1_1SimulationFileManager.html">   43</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classdnf__composer_1_1SimulationFileManager.html">SimulationFileManager</a></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::shared_ptr&lt;Simulation&gt; simulation; </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        std::string filePath;                   </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_class" href="classdnf__composer_1_1SimulationFileManager.html">SimulationFileManager</a>(<span class="keyword">const</span> std::shared_ptr&lt;Simulation&gt;&amp; simulation, <span class="keyword">const</span> std::string&amp; filePath = {});</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classdnf__composer_1_1SimulationFileManager.html#aa72b2730b34bfd79efbf4cac5c2756bb">saveElementsToJson</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076">loadElementsFromJson</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">static</span> <a class="code hl_typedef" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">json</a> elementToJson(<span class="keyword">const</span> std::shared_ptr&lt;element::Element&gt;&amp; element);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordtype">void</span> jsonToElements(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">json</a>&amp; jsonElements) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    };</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="correlated__normal__noise_8h.html">elements/correlated_normal_noise.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="field__coupling_8h.html">elements/field_coupling.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="gauss__stimulus_8h.html">elements/gauss_stimulus.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="gauss__field__coupling_8h.html">elements/gauss_field_coupling.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="oscillatory__kernel_8h.html">elements/oscillatory_kernel.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="asymmetric__gauss__kernel_8h.html">elements/asymmetric_gauss_kernel.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="boost__stimulus_8h.html">elements/boost_stimulus.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="memory__trace_8h.html">elements/memory_trace.h</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacednf__composer.html">dnf_composer</a></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">   28</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">json</a> = nlohmann::json;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classdnf__composer_1_1SimulationFileManager.html">   44</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classdnf__composer_1_1SimulationFileManager.html">SimulationFileManager</a></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        std::shared_ptr&lt;Simulation&gt; simulation; </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        std::string filePath;                   </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_class" href="classdnf__composer_1_1SimulationFileManager.html">SimulationFileManager</a>(<span class="keyword">const</span> std::shared_ptr&lt;Simulation&gt;&amp; simulation, <span class="keyword">const</span> std::string&amp; filePath = {});</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classdnf__composer_1_1SimulationFileManager.html#aa72b2730b34bfd79efbf4cac5c2756bb">saveElementsToJson</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076">loadElementsFromJson</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">static</span> <a class="code hl_typedef" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">json</a> elementToJson(<span class="keyword">const</span> std::shared_ptr&lt;element::Element&gt;&amp; element);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordtype">void</span> jsonToElements(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">json</a>&amp; jsonElements) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    };</div>
 </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
 <div class="ttc" id="aasymmetric__gauss__kernel_8h_html"><div class="ttname"><a href="asymmetric__gauss__kernel_8h.html">asymmetric_gauss_kernel.h</a></div></div>
 <div class="ttc" id="aboost__stimulus_8h_html"><div class="ttname"><a href="boost__stimulus_8h.html">boost_stimulus.h</a></div></div>
-<div class="ttc" id="aclassdnf__composer_1_1SimulationFileManager_html"><div class="ttname"><a href="classdnf__composer_1_1SimulationFileManager.html">dnf_composer::SimulationFileManager</a></div><div class="ttdoc">Serializes and deserializes a Simulation to / from a JSON file.</div><div class="ttdef"><b>Definition</b> simulation_file_manager.h:44</div></div>
+<div class="ttc" id="aclassdnf__composer_1_1SimulationFileManager_html"><div class="ttname"><a href="classdnf__composer_1_1SimulationFileManager.html">dnf_composer::SimulationFileManager</a></div><div class="ttdoc">Serializes and deserializes a Simulation to / from a JSON file.</div><div class="ttdef"><b>Definition</b> simulation_file_manager.h:45</div></div>
 <div class="ttc" id="aclassdnf__composer_1_1SimulationFileManager_html_aa72b2730b34bfd79efbf4cac5c2756bb"><div class="ttname"><a href="classdnf__composer_1_1SimulationFileManager.html#aa72b2730b34bfd79efbf4cac5c2756bb">dnf_composer::SimulationFileManager::saveElementsToJson</a></div><div class="ttdeci">void saveElementsToJson() const</div><div class="ttdoc">Serialize all elements and their connections to a JSON file. If filePath is empty,...</div><div class="ttdef"><b>Definition</b> simulation_file_manager.cpp:16</div></div>
 <div class="ttc" id="aclassdnf__composer_1_1SimulationFileManager_html_aa94049aabb61648fa3ae24563a228076"><div class="ttname"><a href="classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076">dnf_composer::SimulationFileManager::loadElementsFromJson</a></div><div class="ttdeci">void loadElementsFromJson() const</div><div class="ttdoc">Deserialize elements and connections from a JSON file into the simulation. filePath should resolve to...</div><div class="ttdef"><b>Definition</b> simulation_file_manager.cpp:38</div></div>
+<div class="ttc" id="acorrelated__normal__noise_8h_html"><div class="ttname"><a href="correlated__normal__noise_8h.html">correlated_normal_noise.h</a></div></div>
 <div class="ttc" id="afield__coupling_8h_html"><div class="ttname"><a href="field__coupling_8h.html">field_coupling.h</a></div></div>
 <div class="ttc" id="agauss__field__coupling_8h_html"><div class="ttname"><a href="gauss__field__coupling_8h.html">gauss_field_coupling.h</a></div></div>
 <div class="ttc" id="agauss__kernel_8h_html"><div class="ttname"><a href="gauss__kernel_8h.html">gauss_kernel.h</a></div></div>
@@ -140,7 +142,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="amemory__trace_8h_html"><div class="ttname"><a href="memory__trace_8h.html">memory_trace.h</a></div></div>
 <div class="ttc" id="amexican__hat__kernel_8h_html"><div class="ttname"><a href="mexican__hat__kernel_8h.html">mexican_hat_kernel.h</a></div></div>
 <div class="ttc" id="anamespacednf__composer_html"><div class="ttname"><a href="namespacednf__composer.html">dnf_composer</a></div><div class="ttdef"><b>Definition</b> application.h:22</div></div>
-<div class="ttc" id="anamespacednf__composer_html_a54b06dee99bbe0d3b8a126cda67a92f3"><div class="ttname"><a href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">dnf_composer::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> simulation_file_manager.h:27</div></div>
+<div class="ttc" id="anamespacednf__composer_html_a54b06dee99bbe0d3b8a126cda67a92f3"><div class="ttname"><a href="namespacednf__composer.html#a54b06dee99bbe0d3b8a126cda67a92f3">dnf_composer::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> simulation_file_manager.h:28</div></div>
 <div class="ttc" id="aneural__field_8h_html"><div class="ttname"><a href="neural__field_8h.html">neural_field.h</a></div></div>
 <div class="ttc" id="anormal__noise_8h_html"><div class="ttname"><a href="normal__noise_8h.html">normal_noise.h</a></div></div>
 <div class="ttc" id="aoscillatory__kernel_8h_html"><div class="ttname"><a href="oscillatory__kernel_8h.html">oscillatory_kernel.h</a></div></div>

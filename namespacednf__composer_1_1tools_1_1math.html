@@ -84,6 +84,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:af3e5beff71ea240cadadd0a8b4a1eefd" id="r_af3e5beff71ea240cadadd0a8b4a1eefd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af3e5beff71ea240cadadd0a8b4a1eefd"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#af3e5beff71ea240cadadd0a8b4a1eefd">absSigmoid</a> (const std::vector&lt; T &gt; &amp;x, T beta, T x0)</td></tr>
+<tr class="memdesc:af3e5beff71ea240cadadd0a8b4a1eefd"><td class="mdescLeft">&#160;</td><td class="mdescRight">AbsSigmoid: rational approximation of the logistic sigmoid.  <br /></td></tr>
+<tr class="separator:af3e5beff71ea240cadadd0a8b4a1eefd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35dcf8c3860cc1855d20c0ff0594a052" id="r_a35dcf8c3860cc1855d20c0ff0594a052"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a35dcf8c3860cc1855d20c0ff0594a052"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a35dcf8c3860cc1855d20c0ff0594a052">calculateVectorAvg</a> (const std::vector&lt; T &gt; &amp;vec)</td></tr>
 <tr class="separator:a35dcf8c3860cc1855d20c0ff0594a052"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -180,6 +184,51 @@ Functions</h2></td></tr>
 <tr class="separator:a84a4dfc370130a2e03c6d9cfb7939f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="af3e5beff71ea240cadadd0a8b4a1eefd" name="af3e5beff71ea240cadadd0a8b4a1eefd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3e5beff71ea240cadadd0a8b4a1eefd">&#9670;&#160;</a></span>absSigmoid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; T &gt; dnf_composer::tools::math::absSigmoid </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>x0</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AbsSigmoid: rational approximation of the logistic sigmoid. </p>
+<p>Formula: s(x) = 0.5 * (1 + beta * (x - x0) / (1 + beta * |x - x0|))</p>
+<p>Equivalent to cedar's AbsSigmoid(beta, theta=x0). At beta &gt;= 20 virtually indistinguishable from the ExpSigmoid but avoids std::exp() entirely. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_af3e5beff71ea240cadadd0a8b4a1eefd_icgraph.svg" width="390" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="a35dcf8c3860cc1855d20c0ff0594a052" name="a35dcf8c3860cc1855d20c0ff0594a052"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a35dcf8c3860cc1855d20c0ff0594a052">&#9670;&#160;</a></span>calculateVectorAvg()</h2>
 
@@ -497,7 +546,7 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a384e37867853468a2ab2f1ec45bf2e43_icgraph.svg" width="440" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a384e37867853468a2ab2f1ec45bf2e43_icgraph.svg" width="440" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -532,7 +581,7 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_ab20d3ab488a94e0088c4bd53d8deac9c_icgraph.svg" width="440" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_ab20d3ab488a94e0088c4bd53d8deac9c_icgraph.svg" width="440" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -565,7 +614,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a67b836c5dd7641c0def85f572838361e_icgraph.svg" width="787" height="274"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a67b836c5dd7641c0def85f572838361e_icgraph.svg" width="787" height="352"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1046,7 +1095,7 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_ae679c020137ca5fab108caa79fa33a13_icgraph.svg" width="731" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_ae679c020137ca5fab108caa79fa33a13_icgraph.svg" width="731" height="274"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1069,7 +1118,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a733a35f7edec5d46ebf840b5c31181be_icgraph.svg" width="454" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a733a35f7edec5d46ebf840b5c31181be_icgraph.svg" width="496" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1284,7 +1333,7 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a82c852ff9a51203bb51445e709dd22e1_icgraph.svg" width="490" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a82c852ff9a51203bb51445e709dd22e1_icgraph.svg" width="490" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

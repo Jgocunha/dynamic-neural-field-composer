@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Heaviside step function: output = (x &gt;= x_shift) ? 1 : 0.">
+<g id="a_Node000001"><a xlink:title="Heaviside step function.">
 <polygon fill="#999999" stroke="transparent" points="127.5,-180 0.5,-180 0.5,0 127.5,0 127.5,-180"/>
 <text text-anchor="start" x="6.5" y="-168" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="start" x="16" y="-157" font-family="Helvetica,sans-Serif" font-size="10.00">::HeavisideFunction</text>
