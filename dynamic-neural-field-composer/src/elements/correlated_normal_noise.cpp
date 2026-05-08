@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "elements/correlated_normal_noise.h"
 
 //https://github.com/stevenlovegrove/Pangolin/issues/352
@@ -13,8 +15,8 @@ namespace dnf_composer::element
 {
 	CorrelatedNormalNoise::CorrelatedNormalNoise(
 		const ElementCommonParameters& elementCommonParameters,
-		const CorrelatedNormalNoiseParameters& parameters)
-		: Element(elementCommonParameters), parameters(parameters)
+		CorrelatedNormalNoiseParameters  parameters)
+		: Element(elementCommonParameters), parameters(std::move(parameters))
 	{
 		commonParameters.identifiers.label = ElementLabel::CORRELATED_NORMAL_NOISE;
 	}
@@ -25,10 +27,10 @@ namespace dnf_composer::element
 
 		const int fieldSize = commonParameters.dimensionParameters.size;
 
-		// Build a normalised Gaussian kernel for spatial correlation.
+		// Build a normalized Gaussian kernel for spatial correlation.
 		// Kernel half-width: 5 * sigma (matches GaussKernel cutoff convention).
 		const int halfWidth = std::max(1, static_cast<int>(5.0 * parameters.width));
-		const int kernelSize = 2 * halfWidth + 1;
+		const int kernelSize = (2 * halfWidth) + 1;
 
 		std::vector<int> rangeX(kernelSize);
 		std::iota(rangeX.begin(), rangeX.end(), -halfWidth);
@@ -63,8 +65,9 @@ namespace dnf_composer::element
 		}
 
 		const double scale = parameters.amplitude / std::sqrt(deltaT);
-		for (int i = 0; i < fieldSize; i++)
+		for (int i = 0; i < fieldSize; i++) {
 			components["output"][i] = scale * smoothed[i];
+		}
 	}
 
 	std::shared_ptr<Element> CorrelatedNormalNoise::clone() const

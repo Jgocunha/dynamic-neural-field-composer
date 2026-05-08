@@ -19,8 +19,9 @@ namespace dnf_composer::user_interface
 		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
-		if (open)
+		if (open) {
 			renderElementControlCard();
+		}
 		ImGui::End();
 	}
 
@@ -35,8 +36,8 @@ namespace dnf_composer::user_interface
 		// Layout metrics (must be computed before the Selected elements section uses them)
 	    const float innerW    = ImGui::GetContentRegionAvail().x;
 		const float ui        = ImGui::GetIO().FontGlobalScale;
-		const float dragW     = 130.0f * ui;
-		const float panelPadX = 10.0f * ui;
+		const float dragW     = 130.0F * ui;
+		const float panelPadX = 10.0F * ui;
 		const float spacingX  = ImGui::GetStyle().ItemSpacing.x;
 
 		auto PanelHeightFor = [&](const std::shared_ptr<element::Element>& e) -> float
@@ -44,7 +45,7 @@ namespace dnf_composer::user_interface
 			const float frameH   = ImGui::GetFrameHeight();
 			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
 			const float rowH     = frameH + spacingY;
-			const float panelPad = 3.0f * 8.0f * ui;
+			const float panelPad = 3.0F * 8.0F * ui;
 
 			auto h = [&](const int rows) {
 				return rows * rowH - spacingY + panelPad;
@@ -70,22 +71,23 @@ namespace dnf_composer::user_interface
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
 					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(4 + 5 * numCouplings + dimRows);
+					return h(4 + (5 * numCouplings) + dimRows);
 				}
 				default: return h(4 + dimRows);
 			}
 		};
 
-		const float maxNaturalW = 1.0f * panelPadX + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
+		const float maxNaturalW = (1.0f * panelPadX) + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
 		const float panelW = ImMin(maxNaturalW, innerW);
 
 		// Validate a focused element still belongs to this simulation
 		if (s_focusedElement_)
 		{
 			bool stillValid = false;
-			for (const auto& e : simulation->getElements())
+			for (const auto& e : simulation->getElements()) {
 				if (e == s_focusedElement_) { stillValid = true; break; }
-			if (!stillValid) s_focusedElement_ = nullptr;
+			}
+			if (!stillValid) { s_focusedElement_ = nullptr;}
 		}
 
 		// Selected elements section - shows the most recently single-clicked node
