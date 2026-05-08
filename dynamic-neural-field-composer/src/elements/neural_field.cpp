@@ -251,7 +251,31 @@ namespace dnf_composer
 			}
 
 			if (inBump)
+			{
+				// Bump reached the last index without dropping below threshold — finalize it.
+				currentBump.width -= 1;
+				currentBump.width *= commonParameters.dimensionParameters.d_x;
+				currentBump.endPosition = sz * commonParameters.dimensionParameters.d_x;
+				currentBump.centroid = (currentBump.startPosition + currentBump.endPosition) / 2.0;
+
+				static constexpr double epsilon = 2.0;
+				const auto it = std::find_if(prevBumps_.begin(), prevBumps_.end(),
+					[&currentBump](const NeuralFieldBump& bump) {
+						return std::abs(bump.centroid - currentBump.centroid) < epsilon;
+					});
+				if (it != prevBumps_.end())
+				{
+					currentBump.velocity     = (currentBump.centroid - it->centroid) / deltaT;
+					currentBump.acceleration = (currentBump.velocity  - it->velocity)  / deltaT;
+				}
+				else
+				{
+					currentBump.velocity     = 0.0;
+					currentBump.acceleration = 0.0;
+				}
+
 				state.bumps.push_back(currentBump);
+			}
 
 			// Check if the first and last bumps are connected (wrap-around)
 			if (!state.bumps.empty() && act_[0] > activationThreshold && act_[sz - 1] > activationThreshold)
