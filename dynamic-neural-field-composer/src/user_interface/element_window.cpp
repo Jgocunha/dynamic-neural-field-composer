@@ -843,6 +843,7 @@ namespace dnf_composer::user_interface
 
 		auto amplitude = static_cast<float>(p.amplitude);
 		auto width = static_cast<float>(p.width);
+		bool circular = p.circular;
 
 		std::string label = "##" + element->getUniqueName() + "Amplitude";
 		ImGui::SetNextItemWidth(150.0f * ui);
@@ -854,12 +855,18 @@ namespace dnf_composer::user_interface
 		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 30.0f);
 		ImGui::SameLine(); ImGui::Text("Width");
 
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
-		    std::abs(width - static_cast<float>(p.width)) > epsilon)
+		    std::abs(width - static_cast<float>(p.width)) > epsilon ||
+		    circular != p.circular)
 		{
 			p.amplitude = amplitude;
 			p.width = width;
+			p.circular = circular;
 			cnn->setParameters(p);
 		}
 	}

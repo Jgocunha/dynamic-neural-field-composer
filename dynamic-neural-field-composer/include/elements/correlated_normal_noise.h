@@ -26,7 +26,7 @@ namespace dnf_composer::element
 	struct CorrelatedNormalNoiseParameters final : ElementSpecificParameters
 	{
 		double amplitude; ///< Noise amplitude (standard deviation before convolution). Default 0.05.
-		double width;     ///< Standard deviation of the Gaussian correlation kernel (in field units). Default 1.0.
+		double width;     ///< Standard deviation of the Gaussian correlation kernel (in samples/indices). Default 1.0.
 		bool circular;    ///< Use circular (toroidal) boundary for convolution. Default true.
 
 		/// @brief Construct CorrelatedNormalNoise parameters.

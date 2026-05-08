@@ -235,7 +235,7 @@ TEST(AbsSigmoidFunction, HighBetaApproachesHeaviside)
     EXPECT_NEAR(out[1], 1.0, 1e-3);
 }
 
-TEST(AbsSigmoidFunction, AgreeswithExpSigmoidAtOriginAndAsymptotes)
+TEST(AbsSigmoidFunction, AgreesWithExpSigmoidAtOriginAndAsymptotes)
 {
     // Both sigmoid families share: output=0.5 at u=x_shift, output→0 as u→-∞, output→1 as u→+∞.
     // They differ in the transition shape (rational vs exponential), so pointwise agreement

@@ -29,12 +29,13 @@ namespace dnf_composer::element
 
 		// Build a normalized Gaussian kernel for spatial correlation.
 		// Kernel half-width: 5 * sigma (matches GaussKernel cutoff convention).
-		const int halfWidth = std::max(1, static_cast<int>(5.0 * parameters.width));
+		const double effectiveWidth = std::max(parameters.width, 1e-3);
+		const int halfWidth = std::max(1, static_cast<int>(5.0 * effectiveWidth));
 		const int kernelSize = (2 * halfWidth) + 1;
 
 		std::vector<int> rangeX(kernelSize);
 		std::iota(rangeX.begin(), rangeX.end(), -halfWidth);
-		correlationKernel = tools::math::gaussNorm(rangeX, 0.0, parameters.width);
+		correlationKernel = tools::math::gaussNorm(rangeX, 0.0, effectiveWidth);
 
 		// Precompute circular extension index for wrap-around convolution.
 		if (parameters.circular)
