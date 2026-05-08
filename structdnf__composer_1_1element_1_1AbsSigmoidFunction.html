@@ -91,12 +91,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::AbsSigmoidFunction:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1AbsSigmoidFunction__inherit__graph.svg" width="192" height="559"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1AbsSigmoidFunction__inherit__graph.svg" width="192" height="599"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::AbsSigmoidFunction:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1AbsSigmoidFunction__coll__graph.svg" width="192" height="559"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1AbsSigmoidFunction__coll__graph.svg" width="192" height="599"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -106,6 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a813df563eb34381d89a63050b223566c" id="r_a813df563eb34381d89a63050b223566c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#a813df563eb34381d89a63050b223566c">AbsSigmoidFunction</a> (double <a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#aaff20eaaded1f9f380bb04d9c01bf182">x_shift</a>, double <a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#ae49f32af130378e2a3d856475dd8bd80">beta</a>)</td></tr>
 <tr class="memdesc:a813df563eb34381d89a63050b223566c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an AbsSigmoid with the given threshold and steepness.  <br /></td></tr>
 <tr class="separator:a813df563eb34381d89a63050b223566c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8e3288363cc8ea5848e18495d1351df" id="r_ac8e3288363cc8ea5848e18495d1351df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#ac8e3288363cc8ea5848e18495d1351df">apply</a> (const std::vector&lt; double &gt; &amp;input, std::vector&lt; double &gt; &amp;out) const override</td></tr>
+<tr class="memdesc:ac8e3288363cc8ea5848e18495d1351df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the activation function in-place into a pre-allocated <code>out</code> buffer. <code>out</code> must already be sized to <code>input.size()</code>. No heap allocation occurs.  <br /></td></tr>
+<tr class="separator:ac8e3288363cc8ea5848e18495d1351df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88cf8cb2825e63a17239875e4b82c52b" id="r_a88cf8cb2825e63a17239875e4b82c52b"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html">ActivationFunction</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#a88cf8cb2825e63a17239875e4b82c52b">clone</a> () const override</td></tr>
 <tr class="separator:a88cf8cb2825e63a17239875e4b82c52b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af70312641985d22784a7c8772d9b7e15" id="r_af70312641985d22784a7c8772d9b7e15"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#af70312641985d22784a7c8772d9b7e15">getBeta</a> () const</td></tr>
@@ -252,6 +255,46 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac8e3288363cc8ea5848e18495d1351df" name="ac8e3288363cc8ea5848e18495d1351df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8e3288363cc8ea5848e18495d1351df">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::AbsSigmoidFunction::apply </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply the activation function in-place into a pre-allocated <code>out</code> buffer. <code>out</code> must already be sized to <code>input.size()</code>. No heap allocation occurs. </p>
+
+<p>Implements <a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html#a6e1118d911275ff04d241bdceacd1885">dnf_composer::element::ActivationFunction</a>.</p>
+
+</div>
+</div>
 <a id="a88cf8cb2825e63a17239875e4b82c52b" name="a88cf8cb2825e63a17239875e4b82c52b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88cf8cb2825e63a17239875e4b82c52b">&#9670;&#160;</a></span>clone()</h2>
 

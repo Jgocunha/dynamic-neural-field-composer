@@ -1,32 +1,32 @@
 <map id="dnf_composer::element::Kernel" name="dnf_composer::element::Kernel">
-<area shape="rect" id="Node000001" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="148,1171,316,1331"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="326,828,573,1108"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="336,1120,295,1172,291,1169,331,1117"/>
-<area shape="rect" id="Node000012" title=" " alt="" coords="340,1211,564,1291"/>
-<area shape="poly" id="edge13_Node000012_Node000002" title=" " alt="" coords="453,1108,454,1194,449,1194,448,1108"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="129,605,295,685"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="251,695,349,826,344,830,247,698"/>
-<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html" title="Bundles identity and spatial dimensions passed to every Element constructor." alt="" coords="319,525,545,765"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="433,766,435,804,435,812,430,812,429,804,428,766"/>
-<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementIdentifiers.html" title="Identity information for an element: numeric ID, name, and type label." alt="" coords="343,263,524,463"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="436,463,435,509,430,509,430,463"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="603,135,682,200"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="604,185,568,202,532,226,507,251,503,248,529,222,565,198,602,180"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="548,315,692,410"/>
-<area shape="poly" id="edge9_Node000009_Node000006" title=" " alt="" coords="642,200,630,299,625,299,636,200"/>
-<area shape="rect" id="Node000011" title=" " alt="" coords="507,1393,717,1503"/>
-<area shape="poly" id="edge14_Node000011_Node000006" title=" " alt="" coords="671,199,688,223,709,258,723,288,731,320,733,361,733,1252,729,1288,717,1322,699,1354,679,1382,675,1379,695,1351,712,1320,724,1287,728,1252,728,361,726,321,718,290,704,261,683,225,666,202"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="577,5,708,85"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="645,99,645,134,640,134,640,99"/>
-<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1ElementDimensions.html" title="Spatial discretization of a one&#45;dimensional field." alt="" coords="149,273,318,453"/>
-<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="249,452,258,477,271,500,286,512,307,523,305,527,283,516,267,503,253,479,244,454"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="622,410,611,618,599,727,591,771,581,805,577,814,572,812,576,803,586,770,594,726,606,617,616,410"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="327,135,484,200"/>
-<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="414,199,423,219,436,237,461,249,484,250,509,250,537,260,562,279,582,301,579,305,558,283,535,265,508,256,484,255,459,254,433,241,418,222,409,201"/>
-<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="609,1393,601,1289,590,1229,573,1172,553,1124,557,1122,579,1170,595,1228,606,1288,614,1393"/>
-<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="486,1289,550,1368,559,1379,555,1382,546,1371,482,1293"/>
+<area shape="rect" id="Node000001" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="141,1171,309,1331"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="345,828,513,1108"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="340,1106,309,1148,291,1172,287,1169,305,1145,335,1103"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="333,1211,557,1291"/>
+<area shape="poly" id="edge13_Node000012_Node000002" title=" " alt="" coords="440,1108,445,1194,440,1194,435,1108"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="122,605,289,685"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="243,696,347,845,343,848,239,699"/>
+<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html" title="Bundles identity and spatial dimensions passed to every Element constructor." alt="" coords="313,525,538,765"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="428,766,428,804,428,812,423,812,423,804,422,766"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementIdentifiers.html" title="Identity information for an element: numeric ID, name, and type label." alt="" coords="336,263,517,463"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="429,463,429,509,423,509,424,463"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="597,135,675,200"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="598,185,561,202,526,226,500,251,496,248,522,222,558,198,595,180"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="541,315,685,410"/>
+<area shape="poly" id="edge9_Node000009_Node000006" title=" " alt="" coords="635,200,623,299,618,299,630,200"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="501,1393,710,1503"/>
+<area shape="poly" id="edge14_Node000011_Node000006" title=" " alt="" coords="664,199,681,223,702,258,717,288,724,320,727,361,727,1252,722,1288,710,1322,692,1354,672,1382,668,1379,688,1351,705,1320,717,1287,721,1252,721,361,719,321,711,290,698,261,676,225,660,202"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="571,5,701,85"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="639,99,639,134,633,134,633,99"/>
+<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1ElementDimensions.html" title="Spatial discretization of a one&#45;dimensional field." alt="" coords="142,273,311,453"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="242,452,251,477,265,500,279,512,301,523,298,527,277,516,261,503,247,479,237,454"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="615,410,605,618,593,727,585,772,574,805,553,844,526,880,522,877,549,841,570,803,580,770,588,726,600,617,610,410"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="320,135,477,200"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="407,199,416,219,430,237,454,249,477,250,502,250,531,260,555,279,576,301,572,305,551,283,528,265,501,256,477,255,452,254,426,241,412,222,403,201"/>
+<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="603,1393,595,1288,584,1229,567,1172,546,1128,521,1085,525,1083,551,1125,572,1170,589,1228,600,1288,608,1393"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="479,1289,543,1368,552,1379,548,1382,539,1371,475,1293"/>
 <area shape="rect" id="Node000013" title=" " alt="" coords="5,935,144,1001"/>
-<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="82,1000,99,1069,113,1108,132,1145,140,1158,135,1161,127,1148,108,1110,94,1071,77,1001"/>
+<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="82,1001,97,1070,110,1109,128,1145,134,1156,130,1159,123,1148,105,1111,92,1071,76,1002"/>
 <area shape="rect" id="Node000014" title=" " alt="" coords="168,935,299,1001"/>
-<area shape="poly" id="edge16_Node000001_Node000014" title=" " alt="" coords="236,1001,235,1154,230,1154,231,1001"/>
+<area shape="poly" id="edge16_Node000001_Node000014" title=" " alt="" coords="235,1001,231,1154,225,1154,230,1001"/>
 </map>

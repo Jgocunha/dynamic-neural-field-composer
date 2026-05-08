@@ -91,16 +91,19 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::HeavisideFunction:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1HeavisideFunction__inherit__graph.svg" width="182" height="519"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1HeavisideFunction__inherit__graph.svg" width="182" height="559"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::HeavisideFunction:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1HeavisideFunction__coll__graph.svg" width="182" height="519"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structdnf__composer_1_1element_1_1HeavisideFunction__coll__graph.svg" width="182" height="559"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a9d41c16e0c55684d8420c8953cc20787" id="r_a9d41c16e0c55684d8420c8953cc20787"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1HeavisideFunction.html#a9d41c16e0c55684d8420c8953cc20787">apply</a> (const std::vector&lt; double &gt; &amp;input, std::vector&lt; double &gt; &amp;out) const override</td></tr>
+<tr class="memdesc:a9d41c16e0c55684d8420c8953cc20787"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the activation function in-place into a pre-allocated <code>out</code> buffer. <code>out</code> must already be sized to <code>input.size()</code>. No heap allocation occurs.  <br /></td></tr>
+<tr class="separator:a9d41c16e0c55684d8420c8953cc20787"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5794759269c3040c51dd9e5d659f36eb" id="r_a5794759269c3040c51dd9e5d659f36eb"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html">ActivationFunction</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1HeavisideFunction.html#a5794759269c3040c51dd9e5d659f36eb">clone</a> () const override</td></tr>
 <tr class="separator:a5794759269c3040c51dd9e5d659f36eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba4be75e34ba102884e581940914df78" id="r_aba4be75e34ba102884e581940914df78"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1HeavisideFunction.html#aba4be75e34ba102884e581940914df78">getXShift</a> () const</td></tr>
@@ -241,6 +244,46 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a9d41c16e0c55684d8420c8953cc20787" name="a9d41c16e0c55684d8420c8953cc20787"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d41c16e0c55684d8420c8953cc20787">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::HeavisideFunction::apply </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply the activation function in-place into a pre-allocated <code>out</code> buffer. <code>out</code> must already be sized to <code>input.size()</code>. No heap allocation occurs. </p>
+
+<p>Implements <a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html#a6e1118d911275ff04d241bdceacd1885">dnf_composer::element::ActivationFunction</a>.</p>
+
+</div>
+</div>
 <a id="a5794759269c3040c51dd9e5d659f36eb" name="a5794759269c3040c51dd9e5d659f36eb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5794759269c3040c51dd9e5d659f36eb">&#9670;&#160;</a></span>clone()</h2>
 

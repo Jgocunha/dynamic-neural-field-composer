@@ -115,10 +115,13 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a142042609f6e9ef5a276cc34f97f4420"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum activation across the field.  <br /></td></tr>
 <tr class="separator:a142042609f6e9ef5a276cc34f97f4420"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a099d5c15d3bf470dab316edd1649ebab" id="r_a099d5c15d3bf470dab316edd1649ebab"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1NeuralFieldState.html#a099d5c15d3bf470dab316edd1649ebab">previousActivationAvg</a> = 0.0</td></tr>
+<tr class="memdesc:a099d5c15d3bf470dab316edd1649ebab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activation average at the previous step — used to detect convergence.  <br /></td></tr>
 <tr class="separator:a099d5c15d3bf470dab316edd1649ebab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70ef7767e6441f3a56bbafc4d54d203c" id="r_a70ef7767e6441f3a56bbafc4d54d203c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1NeuralFieldState.html#a70ef7767e6441f3a56bbafc4d54d203c">previousActivationNorm</a> = 0.0</td></tr>
+<tr class="memdesc:a70ef7767e6441f3a56bbafc4d54d203c"><td class="mdescLeft">&#160;</td><td class="mdescRight">L2 norm of activation at the previous step — used to detect convergence.  <br /></td></tr>
 <tr class="separator:a70ef7767e6441f3a56bbafc4d54d203c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeff7becec46596dedabb3b3dbfaa5a1e" id="r_aeff7becec46596dedabb3b3dbfaa5a1e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1NeuralFieldState.html#aeff7becec46596dedabb3b3dbfaa5a1e">previousActivationSum</a> = 0.0</td></tr>
+<tr class="memdesc:aeff7becec46596dedabb3b3dbfaa5a1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activation sum at the previous step — used to detect convergence.  <br /></td></tr>
 <tr class="separator:aeff7becec46596dedabb3b3dbfaa5a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa38389f0d65c300b3ff8ab336a98936e" id="r_aa38389f0d65c300b3ff8ab336a98936e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1NeuralFieldState.html#aa38389f0d65c300b3ff8ab336a98936e">stable</a></td></tr>
 <tr class="memdesc:aa38389f0d65c300b3ff8ab336a98936e"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the activation change falls below the stability threshold.  <br /></td></tr>
@@ -269,6 +272,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Activation average at the previous step — used to detect convergence. </p>
+
 </div>
 </div>
 <a id="a70ef7767e6441f3a56bbafc4d54d203c" name="a70ef7767e6441f3a56bbafc4d54d203c"></a>
@@ -283,6 +288,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>L2 norm of activation at the previous step — used to detect convergence. </p>
+
 </div>
 </div>
 <a id="aeff7becec46596dedabb3b3dbfaa5a1e" name="aeff7becec46596dedabb3b3dbfaa5a1e"></a>
@@ -296,6 +303,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Activation sum at the previous step — used to detect convergence. </p>
 
 </div>
 </div>

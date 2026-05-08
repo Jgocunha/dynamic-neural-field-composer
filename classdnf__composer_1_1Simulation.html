@@ -146,6 +146,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8ff85237b9b0da165e32d318067ac7f9" id="r_a8ff85237b9b0da165e32d318067ac7f9"><td class="memItemLeft" align="right" valign="top">std::chrono::nanoseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a8ff85237b9b0da165e32d318067ac7f9">getLastStepDuration</a> () const</td></tr>
 <tr class="memdesc:a8ff85237b9b0da165e32d318067ac7f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the wall-clock duration of the most recent <code><a class="el" href="classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT.">step()</a></code> call.  <br /></td></tr>
 <tr class="separator:a8ff85237b9b0da165e32d318067ac7f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25514d904e7bdcce9a61dfd3d0f12dcc" id="r_a25514d904e7bdcce9a61dfd3d0f12dcc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a25514d904e7bdcce9a61dfd3d0f12dcc">getMeasureStepDuration</a> () const</td></tr>
+<tr class="separator:a25514d904e7bdcce9a61dfd3d0f12dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a7156b5a310dace0d357e0691185483" id="r_a8a7156b5a310dace0d357e0691185483"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a8a7156b5a310dace0d357e0691185483">getNumberOfElements</a> () const</td></tr>
 <tr class="separator:a8a7156b5a310dace0d357e0691185483"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e19a7d368a5656f951923bdb525e3b3" id="r_a3e19a7d368a5656f951923bdb525e3b3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a3e19a7d368a5656f951923bdb525e3b3">getT</a> () const</td></tr>
@@ -195,6 +197,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac8401b97acf0d77ac89115a9eaf72fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b16e14e6806ccdff6da5e9a91f9e117" id="r_a2b16e14e6806ccdff6da5e9a91f9e117"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a2b16e14e6806ccdff6da5e9a91f9e117">setDeltaT</a> (double <a class="el" href="classdnf__composer_1_1Simulation.html#a3886b8cc021ca084d2c933f895bac132">deltaT</a>)</td></tr>
 <tr class="separator:a2b16e14e6806ccdff6da5e9a91f9e117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa7dbecb466ef44f73d43a3654fecfb8" id="r_aaa7dbecb466ef44f73d43a3654fecfb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#aaa7dbecb466ef44f73d43a3654fecfb8">setMeasureStepDuration</a> (bool enable)</td></tr>
+<tr class="memdesc:aaa7dbecb466ef44f73d43a3654fecfb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable per-step wall-clock timing (default: enabled). Disable for headless/benchmark runs to avoid two steady_clock::now() calls per step.  <br /></td></tr>
+<tr class="separator:aaa7dbecb466ef44f73d43a3654fecfb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10b409dcb842966b3900c7f29fce3532" id="r_a10b409dcb842966b3900c7f29fce3532"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a10b409dcb842966b3900c7f29fce3532">setUniqueIdentifier</a> (const std::string &amp;id)</td></tr>
 <tr class="separator:a10b409dcb842966b3900c7f29fce3532"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c8645d635c1571f426d74071176ba9c" id="r_a2c8645d635c1571f426d74071176ba9c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a2c8645d635c1571f426d74071176ba9c">Simulation</a> (const <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &amp;other)</td></tr>
@@ -852,6 +857,31 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a25514d904e7bdcce9a61dfd3d0f12dcc" name="a25514d904e7bdcce9a61dfd3d0f12dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25514d904e7bdcce9a61dfd3d0f12dcc">&#9670;&#160;</a></span>getMeasureStepDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dnf_composer::Simulation::getMeasureStepDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a8a7156b5a310dace0d357e0691185483" name="a8a7156b5a310dace0d357e0691185483"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8a7156b5a310dace0d357e0691185483">&#9670;&#160;</a></span>getNumberOfElements()</h2>
 
@@ -1293,6 +1323,34 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa7dbecb466ef44f73d43a3654fecfb8" name="aaa7dbecb466ef44f73d43a3654fecfb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa7dbecb466ef44f73d43a3654fecfb8">&#9670;&#160;</a></span>setMeasureStepDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::Simulation::setMeasureStepDuration </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable or disable per-step wall-clock timing (default: enabled). Disable for headless/benchmark runs to avoid two steady_clock::now() calls per step. </p>
 
 </div>
 </div>

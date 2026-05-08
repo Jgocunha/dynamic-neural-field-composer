@@ -17,5 +17,6 @@ var searchData=
   ['builders_2ecpp_14',['builders.cpp',['../builders_8cpp.html',1,'']]],
   ['builders_2eh_15',['builders.h',['../builders_8h.html',1,'']]],
   ['building_16',['Building',['../index.html#autotoc_md6',1,'']]],
-  ['bumps_17',['bumps',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a9c80026fe61974236ac4ca1cc282caa1',1,'dnf_composer::element::NeuralFieldState']]]
+  ['buildinputcache_17',['buildInputCache',['../classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e',1,'dnf_composer::element::Element']]],
+  ['bumps_18',['bumps',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a9c80026fe61974236ac4ca1cc282caa1',1,'dnf_composer::element::NeuralFieldState']]]
 ];

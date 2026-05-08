@@ -12,34 +12,34 @@
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title="Abstract base class for all simulation elements.">
-<polygon fill="#999999" stroke="transparent" points="316.5,-446 131.5,-446 131.5,-236 316.5,-236 316.5,-446"/>
-<text text-anchor="start" x="166.5" y="-434" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="start" x="201" y="-423" font-family="Helvetica,sans-Serif" font-size="10.00">::Element</text>
-<text text-anchor="start" x="222.5" y="-408" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text text-anchor="start" x="136" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
-<text text-anchor="start" x="136" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
-<text text-anchor="start" x="136" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
-<text text-anchor="start" x="136" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
-<text text-anchor="start" x="136" y="-333" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-333" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
-<text text-anchor="start" x="136" y="-318" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-318" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
-<text text-anchor="start" x="136" y="-303" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-303" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
-<text text-anchor="start" x="136" y="-288" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-288" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
-<text text-anchor="start" x="136" y="-273" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-273" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
-<text text-anchor="start" x="136" y="-258" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="149" y="-258" font-family="Helvetica,sans-Serif" font-size="10.00">getElementCommonParameters()</text>
-<text text-anchor="start" x="149" y="-243" font-family="Helvetica,sans-Serif" font-size="10.00">and 27 more...</text>
-<polygon fill="#666666" stroke="#666666" points="132,-418 132,-418 317,-418 317,-418 132,-418"/>
-<polygon fill="#666666" stroke="#666666" points="132,-403 132,-403 317,-403 317,-403 132,-403"/>
-<polygon fill="none" stroke="#666666" points="131.5,-236 131.5,-446 316.5,-446 316.5,-236 131.5,-236"/>
+<polygon fill="#999999" stroke="transparent" points="287,-446 161,-446 161,-236 287,-236 287,-446"/>
+<text text-anchor="start" x="166" y="-434" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="start" x="200.5" y="-423" font-family="Helvetica,sans-Serif" font-size="10.00">::Element</text>
+<text text-anchor="start" x="222" y="-408" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text text-anchor="start" x="166" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
+<text text-anchor="start" x="166" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">buildInputCache()</text>
+<text text-anchor="start" x="166" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
+<text text-anchor="start" x="166" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text text-anchor="start" x="166" y="-333" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-333" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
+<text text-anchor="start" x="166" y="-318" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-318" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
+<text text-anchor="start" x="166" y="-303" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-303" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
+<text text-anchor="start" x="166" y="-288" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-288" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
+<text text-anchor="start" x="166" y="-273" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-273" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
+<text text-anchor="start" x="166" y="-258" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="180" y="-258" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
+<text text-anchor="start" x="180" y="-243" font-family="Helvetica,sans-Serif" font-size="10.00">and 28 more...</text>
+<polygon fill="#666666" stroke="#666666" points="161,-418 161,-418 287,-418 287,-418 161,-418"/>
+<polygon fill="#666666" stroke="#666666" points="161,-403 161,-403 287,-403 287,-403 161,-403"/>
+<polygon fill="none" stroke="#666666" points="161,-236 161,-446 287,-446 287,-236 161,-236"/>
 </a>
 </g>
 </g>
@@ -63,8 +63,8 @@
 <g id="edge12_Node000011_Node000001" class="edge">
 <title>Node1&#45;&gt;Node11</title>
 <g id="a_edge12_Node000011_Node000001"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M307.35,-235.81C317.93,-222.59 328.18,-209.78 337.15,-198.57"/>
-<polygon fill="none" stroke="#63b8ff" points="337.17,-198.53 337.8,-191.35 344.67,-189.16 344.05,-196.34 337.17,-198.53"/>
+<path fill="none" stroke="#63b8ff" d="M287.16,-261.05C304.46,-239.43 322.44,-216.95 337.04,-198.69"/>
+<polygon fill="none" stroke="#63b8ff" points="337.07,-198.66 337.7,-191.48 344.57,-189.29 343.94,-196.47 337.07,-198.66"/>
 </a>
 </g>
 <text text-anchor="middle" x="341.5" y="-210" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> +ptr</text>
@@ -88,7 +88,7 @@
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M376.2,-543.5C367.33,-519.58 354.23,-488.78 338,-464 331.57,-454.18 324.32,-444.41 316.67,-434.93"/>
+<path fill="none" stroke="#63b8ff" d="M376.2,-543.5C367.33,-519.58 354.23,-488.78 338,-464 323.55,-441.93 304.97,-420.14 287.02,-401.21"/>
 <polygon fill="none" stroke="#63b8ff" points="372.93,-544.74 379.62,-552.96 379.51,-542.37 372.93,-544.74"/>
 </a>
 </g>
@@ -318,8 +318,8 @@
 <g id="edge7_Node000001_Node000008" class="edge">
 <title>Node8&#45;&gt;Node1</title>
 <g id="a_edge7_Node000001_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M50.31,-759.21C37.67,-701.18 19.72,-582.19 59,-493 72.86,-461.53 96.88,-433.76 122.36,-410.9"/>
-<polygon fill="none" stroke="#63b8ff" points="122.37,-410.9 124.27,-403.94 131.42,-403.02 129.52,-409.98 122.37,-410.9"/>
+<path fill="none" stroke="#63b8ff" d="M50.31,-759.21C37.67,-701.18 19.72,-582.19 59,-493 78.03,-449.8 116.19,-413.57 151.03,-387.44"/>
+<polygon fill="none" stroke="#63b8ff" points="151.06,-387.42 153.54,-380.65 160.75,-380.35 158.26,-387.11 151.06,-387.42"/>
 </a>
 </g>
 <text text-anchor="middle" x="95" y="-580.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> #components</text>

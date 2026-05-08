@@ -40,34 +40,34 @@
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="classdnf__composer_1_1element_1_1Element.html" target="_top" xlink:title="Abstract base class for all simulation elements.">
-<polygon fill="white" stroke="transparent" points="330.5,-536 145.5,-536 145.5,-326 330.5,-326 330.5,-536"/>
-<text text-anchor="start" x="180.5" y="-524" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="start" x="215" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">::Element</text>
-<text text-anchor="start" x="236.5" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text text-anchor="start" x="150" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
-<text text-anchor="start" x="150" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
-<text text-anchor="start" x="150" y="-453" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-453" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
-<text text-anchor="start" x="150" y="-438" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-438" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
-<text text-anchor="start" x="150" y="-423" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-423" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
-<text text-anchor="start" x="150" y="-408" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-408" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
-<text text-anchor="start" x="150" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
-<text text-anchor="start" x="150" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
-<text text-anchor="start" x="150" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
-<text text-anchor="start" x="150" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="163" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">getElementCommonParameters()</text>
-<text text-anchor="start" x="163" y="-333" font-family="Helvetica,sans-Serif" font-size="10.00">and 27 more...</text>
-<polygon fill="#666666" stroke="#666666" points="146,-508 146,-508 331,-508 331,-508 146,-508"/>
-<polygon fill="#666666" stroke="#666666" points="146,-493 146,-493 331,-493 331,-493 146,-493"/>
-<polygon fill="none" stroke="#666666" points="145.5,-326 145.5,-536 330.5,-536 330.5,-326 145.5,-326"/>
+<polygon fill="white" stroke="transparent" points="301,-536 175,-536 175,-326 301,-326 301,-536"/>
+<text text-anchor="start" x="180" y="-524" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="start" x="214.5" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">::Element</text>
+<text text-anchor="start" x="236" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text text-anchor="start" x="180" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
+<text text-anchor="start" x="180" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">buildInputCache()</text>
+<text text-anchor="start" x="180" y="-453" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-453" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
+<text text-anchor="start" x="180" y="-438" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-438" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text text-anchor="start" x="180" y="-423" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-423" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
+<text text-anchor="start" x="180" y="-408" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-408" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
+<text text-anchor="start" x="180" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
+<text text-anchor="start" x="180" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-378" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
+<text text-anchor="start" x="180" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
+<text text-anchor="start" x="180" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="194" y="-348" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
+<text text-anchor="start" x="194" y="-333" font-family="Helvetica,sans-Serif" font-size="10.00">and 28 more...</text>
+<polygon fill="#666666" stroke="#666666" points="175,-508 175,-508 301,-508 301,-508 175,-508"/>
+<polygon fill="#666666" stroke="#666666" points="175,-493 175,-493 301,-493 301,-493 175,-493"/>
+<polygon fill="none" stroke="#666666" points="175,-326 175,-536 301,-536 301,-326 175,-326"/>
 </a>
 </g>
 </g>
@@ -125,7 +125,7 @@
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node3&#45;&gt;Node2</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M377.89,-632.83C370.24,-609.07 358.79,-578.68 344,-554 339.89,-547.14 335.38,-540.3 330.61,-533.55"/>
+<path fill="none" stroke="#63b8ff" d="M377.89,-632.83C370.24,-609.07 358.79,-578.68 344,-554 331.96,-533.9 316.49,-513.94 301.12,-496.15"/>
 <polygon fill="none" stroke="#63b8ff" points="374.61,-634.07 380.94,-642.57 381.3,-631.98 374.61,-634.07"/>
 </a>
 </g>
@@ -355,8 +355,8 @@
 <g id="edge8_Node000002_Node000009" class="edge">
 <title>Node9&#45;&gt;Node2</title>
 <g id="a_edge8_Node000002_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M49.92,-849.03C36.7,-790.74 17.93,-671.38 59,-583 75.54,-547.4 105.07,-517.18 135.43,-493.34"/>
-<polygon fill="none" stroke="#63b8ff" points="135.76,-493.09 138.11,-486.27 145.3,-485.82 142.95,-492.64 135.76,-493.09"/>
+<path fill="none" stroke="#63b8ff" d="M49.92,-849.03C36.7,-790.74 17.93,-671.38 59,-583 80.91,-535.85 125.59,-498.13 164.83,-472.18"/>
+<polygon fill="none" stroke="#63b8ff" points="164.84,-472.17 167.72,-465.56 174.93,-465.68 172.05,-472.29 164.84,-472.17"/>
 </a>
 </g>
 <text text-anchor="middle" x="95" y="-670.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> #components</text>

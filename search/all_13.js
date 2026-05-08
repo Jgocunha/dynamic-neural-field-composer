@@ -10,9 +10,8 @@ var searchData=
   ['updatebumps_7',['updateBumps',['../classdnf__composer_1_1element_1_1NeuralField.html#acd9d648c62f1ae7e454f578ef434c713',1,'dnf_composer::element::NeuralField']]],
   ['updateheatmapdimensionhint_8',['updateHeatmapDimensionHint',['../namespacednf__composer.html#a4c2031cd1248fcbb3a6ac4e79c90bfae',1,'dnf_composer']]],
   ['updateinput_9',['updateInput',['../classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a',1,'dnf_composer::element::Element']]],
-  ['updateminmaxactivation_10',['updateMinMaxActivation',['../classdnf__composer_1_1element_1_1NeuralField.html#ad9fb693f1c66a9e4df7fddef4c796406',1,'dnf_composer::element::NeuralField']]],
-  ['updatestate_11',['updateState',['../classdnf__composer_1_1element_1_1NeuralField.html#a6656f6846ca05bcf2a66394833e0170e',1,'dnf_composer::element::NeuralField']]],
-  ['userflags_12',['UserFlags',['../structImGui__ImplFreeType__FontSrcData.html#aadcf822a4661e71e111d94969b02da77',1,'ImGui_ImplFreeType_FontSrcData']]],
-  ['utils_2ecpp_13',['utils.cpp',['../utils_8cpp.html',1,'']]],
-  ['utils_2eh_14',['utils.h',['../utils_8h.html',1,'']]]
+  ['updatestate_10',['updateState',['../classdnf__composer_1_1element_1_1NeuralField.html#a6656f6846ca05bcf2a66394833e0170e',1,'dnf_composer::element::NeuralField']]],
+  ['userflags_11',['UserFlags',['../structImGui__ImplFreeType__FontSrcData.html#aadcf822a4661e71e111d94969b02da77',1,'ImGui_ImplFreeType_FontSrcData']]],
+  ['utils_2ecpp_12',['utils.cpp',['../utils_8cpp.html',1,'']]],
+  ['utils_2eh_13',['utils.h',['../utils_8h.html',1,'']]]
 ];

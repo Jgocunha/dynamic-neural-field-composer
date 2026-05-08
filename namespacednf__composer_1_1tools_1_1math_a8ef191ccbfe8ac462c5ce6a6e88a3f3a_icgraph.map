@@ -1,13 +1,7 @@
 <map id="dnf_composer::tools::math::calculateVectorSum" name="dnf_composer::tools::math::calculateVectorSum">
-<area shape="rect" id="Node000001" title=" " alt="" coords="759,37,960,77"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1NeuralField.html#ae6323cef88c0207eff5b3c2931d3ddcc" title=" " alt="" coords="507,5,711,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="745,45,710,41,711,36,745,40"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#a3677ed68684c7cd362e7e54f42fafb06" title="Initialize the element (called once before the simulation loop)." alt="" coords="521,69,697,109"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="745,75,697,81,696,76,745,69"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1NeuralField.html#a6656f6846ca05bcf2a66394833e0170e" title=" " alt="" coords="249,5,439,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="493,28,440,28,440,23,493,23"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1NeuralField.html#a06d26adf22e574e2b6c8589c0d4f996e" title="Advance the element by one time step." alt="" coords="5,5,181,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="235,28,181,28,181,23,235,23"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#af05b6b8c812a9db74fd719824bfdfaca" title=" " alt="" coords="229,69,459,109"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="507,92,459,92,459,87,507,87"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="507,5,708,45"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#a3677ed68684c7cd362e7e54f42fafb06" title="Initialize the element (called once before the simulation loop)." alt="" coords="283,5,459,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="493,28,459,28,459,23,493,23"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#af05b6b8c812a9db74fd719824bfdfaca" title=" " alt="" coords="5,5,235,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="269,28,235,28,235,23,269,23"/>
 </map>
