@@ -1,6 +1,57 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2.4.1] - 2026-05-08
+
+### Performance
+- `NeuralField::updateState()` now executes a single fused O(N) pass over the activation array
+  (via cached `act_` raw pointer) to compute sum, L2-norm, min, and max simultaneously, replacing
+  five separate O(N) passes with five string hash-map lookups each
+- `NeuralField::updateBumps()` eliminates per-step heap allocation by swapping into a persistent
+  `prevBumps_` scratch buffer (`O(1)`) instead of copying the bump vector every step
+- `Element::updateInput()` caches raw `double*` pointers to the own input buffer and each upstream
+  element's output component at `buildInputCache()` time, removing repeated string hash-map lookups
+  from the hot step path
+- `ActivationFunction::applyInPlace()` overload added; `NeuralField::calculateOutput()` and all
+  concrete activation functions updated to apply the nonlinearity without an extra buffer write
+- `GaussKernel`, `MexicanHatKernel`, `AsymmetricGaussKernel`, `OscillatoryKernel`: convolution now
+  accumulates directly into the output component, eliminating a full-field temporary copy per step
+
+### Fixed
+- `GaussStimulus::init()` reassigned `components["input"]` with `= std::vector<double>(...)`,
+  freeing the allocation that `inputPtr_` still referenced; subsequent `updateInput()` wrote
+  through a dangling pointer causing heap corruption (visible as `SIGABRT` on macOS).
+  Fixed by replacing the reassignment with `std::ranges::fill`
+- `FieldCoupling::updateOutput()` and `GaussFieldCoupling::updateOutput()` reallocated
+  `components["output"]` on every step, silently invalidating any downstream element's cached
+  input pointer. Fixed by replacing both reassignments with `std::ranges::fill`
+- `Element` input cache (`inputPtr_`, `cachedInputs_`) was not invalidated when inputs were
+  added, removed, or when dimensions changed, risking stale or dangling pointer use.
+  `inputPtr_` is now reset to `nullptr` in `addInput()`, `removeInput()` (both overloads),
+  `removeInputs()`, and `changeDimensions()`
+- `NeuralField::updateBumps()`: a bump that remained above threshold through the last field
+  index was pushed without finalizing `endPosition`, `centroid`, or scaling `width` to spatial
+  units, and without performing velocity/acceleration matching against the previous step's bumps.
+  The trailing `if (inBump)` block now fully finalizes the bump before pushing it
+
+### Added
+- `Element::setComputeStateMetrics(bool)` / `Simulation::setMeasureStepDuration(bool)`:
+  opt-out flags for headless batch runs where bump data and timing are never needed
+
+### Documentation
+- Doxygen inline comments added to `NeuralFieldState::previousActivationSum/Avg/Norm`
+- `setComputeStateMetrics()` doc comment updated to reflect the new single-pass implementation
+- `wiki/Element-Reference.md`: `AbsSigmoidFunction` added to the NeuralField activation
+  functions table
+
+### Tests
+- `NeuralFieldBumps.BumpDetectedWhenActivationAboveThreshold`
+- `NeuralFieldBumps.BumpCentroidNearStimulusPosition`
+- `NeuralFieldBumps.BumpVelocityNonZeroWhenStimulusMoves`
+- `NeuralFieldState.HighestActivationAboveRestingLevelUnderStimulus`
+- `NeuralFieldAbsSigmoid.*` suite: construction, output near zero at resting level, rises under
+  stimulus, and `getParameters`/`setParameters` round-trip with `AbsSigmoidFunction`
+
 ## [2.4.0] - 2026-05-08
 
 ### Added
