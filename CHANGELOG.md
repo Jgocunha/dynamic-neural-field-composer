@@ -1,6 +1,38 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2.4.0] - 2026-05-08
+
+### Added
+- `CorrelatedNormalNoise` element: spatially correlated Gaussian noise via convolution of white
+  noise with a normalized Gaussian kernel (parameters: `amplitude`, `width`, `circular`);
+  cedar-equivalent to `NeuralField::NoiseCorrelationKernel`
+- `AbsSigmoidFunction` activation function: rational sigmoid `σ(u) = 0.5·(1 + β·u / (1 + β·|u|))`,
+  algebraically equivalent to cedar's default `AbsSigmoid`; enables cedar-exact simulations
+- Cross-framework Doxygen equivalence tables in `activation_function.h` documenting the
+  correspondence between dnf-composer, cedar, and cosivina activation functions
+- `circular` checkbox exposed in the Element Control UI for `CorrelatedNormalNoise`
+
+### Fixed
+- Null-pointer dereference in `SimulationFileManager::jsonToElements()`: `activationFunction`
+  now defaults to `SigmoidFunction(0.0, 10.0)` when the JSON field is absent or the type is
+  unrecognised, preventing a crash on malformed simulation files
+- `CorrelatedNormalNoise::init()` now clamps `width` to a minimum of `1e-3` to prevent
+  NaN/inf when `width` is zero or near-zero
+- Duplicate `install(FILES ...)` rule for `correlated_normal_noise.h` removed from
+  `CMakeLists.txt`
+
+### Tests
+- Unit tests for `CorrelatedNormalNoise`: output size, zero amplitude, non-zero amplitude,
+  circular vs. linear convolution, and parameter round-trip via `setParameters`/`getParameters`
+- Unit tests for `AbsSigmoidFunction`: monotonicity, fixed point at `u=x_shift`, saturation
+  at high beta, output-size invariance, and equality operator
+- `NeuralField` integration tests for the AbsSigmoid activation path (detection and memory
+  instability scenarios)
+- Corrected `AbsSigmoidFunction` test: replaced the incorrect assumption that AbsSigmoid and
+  logistic sigmoid agree to `< 0.001` at `beta=50` (they do not — they are different function
+  families) with a test verifying their shared properties (equal at origin, same asymptotes)
+
 ## [2.3.1] - 2026-04-30
 
 ### Added
