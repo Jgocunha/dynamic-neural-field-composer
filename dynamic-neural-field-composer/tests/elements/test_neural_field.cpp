@@ -303,3 +303,107 @@ TEST(NeuralFieldAbsSigmoid, GetSetParametersRoundtrip)
     EXPECT_NEAR(stored->getXShift(), 0.5, 1e-9);
     EXPECT_NEAR(stored->getBeta(),   50.0, 1e-9);
 }
+
+// ---------------------------------------------------------------------------
+// getBumps — positive detection (rewritten updateBumps path)
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldBumps, BumpDetectedWhenActivationAboveThreshold)
+{
+    // Run a field with a strong enough stimulus to push activation above the bump threshold.
+    Simulation sim("bump-detect", 1.0, 0.0, 0.0);
+    const auto stim  = makeStimulus("stim", 50.0, 30.0);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+
+    const auto bumps = field->getBumps();
+    EXPECT_FALSE(bumps.empty());
+    EXPECT_GE(bumps.front().amplitude, 0.0);
+    EXPECT_GT(bumps.front().width, 0.0);
+}
+
+TEST(NeuralFieldBumps, BumpCentroidNearStimulusPosition)
+{
+    Simulation sim("bump-centroid", 1.0, 0.0, 0.0);
+    const auto stim  = makeStimulus("stim", 50.0, 30.0);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+
+    const auto bumps = field->getBumps();
+    ASSERT_FALSE(bumps.empty());
+    // Centroid should be close to the stimulus position (50)
+    EXPECT_NEAR(bumps.front().centroid, 50.0, 10.0);
+}
+
+// ---------------------------------------------------------------------------
+// getLowestActivation / getHighestActivation — with real activation gradient
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldState, HighestActivationAboveRestingLevelUnderStimulus)
+{
+    Simulation sim("hi-lo-test", 1.0, 0.0, 0.0);
+    const auto stim  = makeStimulus("stim", 50.0, 30.0);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 100; ++i)
+        sim.step();
+
+    EXPECT_GT(field->getHighestActivation(), field->getLowestActivation());
+    EXPECT_GT(field->getHighestActivation(), -5.0);
+}
+
+// ---------------------------------------------------------------------------
+// Bump velocity — non-zero when bump is driven to move
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldBumps, BumpVelocityNonZeroWhenStimulusMoves)
+{
+    // Settle at position 50, then shift stimulus 10 positions to the right.
+    // A 10-position shift keeps the bump intact (no split) while the centroid
+    // tracks the new stimulus position over ~100 time constants.
+    // We accumulate the peak velocity seen over 200 steps: if the velocity
+    // computation in updateBumps() works, at least one step must show non-zero.
+    Simulation sim("velocity-test", 1.0, 0.0, 0.0);
+    const auto stim  = makeStimulus("stim", 50.0, 30.0);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+
+    ASSERT_FALSE(field->getBumps().empty());
+
+    const auto stimCast = std::dynamic_pointer_cast<GaussStimulus>(sim.getElement("stim"));
+    ASSERT_NE(stimCast, nullptr);
+    GaussStimulusParameters gsp{ 5.0, 30.0, 60.0, true, false };
+    stimCast->setParameters(gsp);
+
+    double maxVelocity = 0.0;
+    for (int i = 0; i < 200; ++i)
+    {
+        sim.step();
+        for (const auto& b : field->getBumps())
+            maxVelocity = std::max(maxVelocity, std::abs(b.velocity));
+    }
+
+    EXPECT_GT(maxVelocity, 1e-9);
+}

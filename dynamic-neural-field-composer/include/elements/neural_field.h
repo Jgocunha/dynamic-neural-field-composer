@@ -132,9 +132,9 @@ namespace dnf_composer::element
 		double lowestActivation;            ///< Minimum activation across the field.
 		double highestActivation;           ///< Maximum activation across the field.
 		double thresholdForStability;       ///< Convergence criterion (default 0.895).
-		double previousActivationSum = 0.0;
-		double previousActivationAvg = 0.0;
-		double previousActivationNorm = 0.0;
+		double previousActivationSum  = 0.0; ///< Activation sum at the previous step — used to detect convergence.
+		double previousActivationAvg  = 0.0; ///< Activation average at the previous step — used to detect convergence.
+		double previousActivationNorm = 0.0; ///< L2 norm of activation at the previous step — used to detect convergence.
 
 		NeuralFieldState()
 			:bumps({}), stable(false), lowestActivation(0.0),
@@ -216,7 +216,9 @@ namespace dnf_composer::element
 		double getStabilityThreshold() const { return state.thresholdForStability; }
 
 		/// @brief Enable or disable per-step state-metric computation (stability, bumps, min/max).
-		/// Disable for headless/benchmark runs to skip ~600 scalar ops per step.
+		/// The default (enabled) path uses a single fused O(N) pass and is fast enough for
+		/// normal use. Disable only as an advanced micro-optimisation for headless batch runs
+		/// where bump data and stability checks are never needed.
 		/// Default: true (full state tracking enabled).
 		void setComputeStateMetrics(bool enable) { computeStateMetrics_ = enable; }
 		bool getComputeStateMetrics() const { return computeStateMetrics_; }
