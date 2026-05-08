@@ -75,7 +75,7 @@ namespace dnf_composer
 
 		void GaussFieldCoupling::updateOutput()
 		{
-			components["output"] = std::vector<double>(components["output"].size(), 0);
+			std::ranges::fill(components["output"], 0.0);
 
 			for (size_t i = 0; i < components["output"].size(); i++)
 			{
