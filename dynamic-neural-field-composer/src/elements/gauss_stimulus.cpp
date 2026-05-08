@@ -45,7 +45,7 @@ namespace dnf_composer
 				}
 			}
 
-			components["input"] = std::vector<double>(commonParameters.dimensionParameters.size);
+			std::ranges::fill(components["input"], 0.0);
 			updateInput();
 			for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
 				components["output"][i] += components["input"][i];

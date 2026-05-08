@@ -14,6 +14,18 @@ namespace dnf_composer::element
 		return tools::math::sigmoid(input, steepness, x_shift);
 	}
 
+	void SigmoidFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
+	{
+		const float s  = static_cast<float>(steepness);
+		const float xs = static_cast<float>(x_shift);
+		const std::size_t n = input.size();
+		for (std::size_t i = 0; i < n; ++i)
+		{
+			const float x = static_cast<float>(input[i]);
+			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(-s * (x - xs))));
+		}
+	}
+
 	bool SigmoidFunction::operator==(const SigmoidFunction& other) const
 	{
 		return x_shift == other.x_shift && steepness == other.steepness;
@@ -63,6 +75,12 @@ namespace dnf_composer::element
 		return tools::math::heaviside(input, x_shift);
 	}
 
+	void HeavisideFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
+	{
+		for (std::size_t i = 0; i < input.size(); ++i)
+			out[i] = (input[i] > x_shift) ? 1.0 : 0.0;
+	}
+
 	bool HeavisideFunction::operator==(const HeavisideFunction& other) const
 	{
 		return x_shift == other.x_shift;
@@ -102,6 +120,14 @@ namespace dnf_composer::element
 	std::vector<double> AbsSigmoidFunction::operator()(const std::vector<double>& input)
 	{
 		return tools::math::absSigmoid(input, beta, x_shift);
+	}
+
+	void AbsSigmoidFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
+	{
+		for (std::size_t i = 0; i < input.size(); ++i) {
+			const double diff = input[i] - x_shift;
+			out[i] = 0.5 * (1.0 + beta * diff / (1.0 + beta * std::abs(diff)));
+		}
 	}
 
 	bool AbsSigmoidFunction::operator==(const AbsSigmoidFunction& other) const

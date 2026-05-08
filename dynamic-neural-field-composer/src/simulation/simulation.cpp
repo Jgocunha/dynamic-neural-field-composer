@@ -122,6 +122,8 @@ namespace dnf_composer
 		runSegmentStart = std::chrono::steady_clock::now();
 		for (const auto& element : elements)
 			element->init();
+		for (const auto& element : elements)
+			element->buildInputCache();
 
 		initialized = true;
 		tools::logger::log(tools::logger::LogLevel::INFO, "Simulation initialized.");
@@ -131,12 +133,21 @@ namespace dnf_composer
 	{
 		if (paused)
 			return;
-		const auto t0 = std::chrono::steady_clock::now();
-		t += deltaT;
-		for (const auto& element : elements)
-			element->step(t, deltaT);
-		lastStepDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(
-			std::chrono::steady_clock::now() - t0);
+		if (measureStepDuration_)
+		{
+			const auto t0 = std::chrono::steady_clock::now();
+			t += deltaT;
+			for (const auto& element : elements)
+				element->step(t, deltaT);
+			lastStepDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+				std::chrono::steady_clock::now() - t0);
+		}
+		else
+		{
+			t += deltaT;
+			for (const auto& element : elements)
+				element->step(t, deltaT);
+		}
 	}
 
 	void Simulation::close()

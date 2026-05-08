@@ -132,9 +132,9 @@ namespace dnf_composer::element
 		double lowestActivation;            ///< Minimum activation across the field.
 		double highestActivation;           ///< Maximum activation across the field.
 		double thresholdForStability;       ///< Convergence criterion (default 0.895).
-		double previousActivationSum = 0.0;
-		double previousActivationAvg = 0.0;
-		double previousActivationNorm = 0.0;
+		double previousActivationSum  = 0.0; ///< Activation sum at the previous step — used to detect convergence.
+		double previousActivationAvg  = 0.0; ///< Activation average at the previous step — used to detect convergence.
+		double previousActivationNorm = 0.0; ///< L2 norm of activation at the previous step — used to detect convergence.
 
 		NeuralFieldState()
 			:bumps({}), stable(false), lowestActivation(0.0),
@@ -176,6 +176,14 @@ namespace dnf_composer::element
 	protected:
 		NeuralFieldParameters parameters; ///< Dynamics parameters (tau, h, activation function).
 		NeuralFieldState state;           ///< Runtime state (bumps, stability, min/max).
+	private:
+		// Cached raw pointers into component vectors — valid between init() calls, never resized during step().
+		double* act_  = nullptr; ///< components["activation"].data()
+		double* inp_  = nullptr; ///< components["input"].data()
+		double* rest_ = nullptr; ///< components["resting level"].data()
+
+		bool computeStateMetrics_ = true; ///< When false, skip stability/bump/min-max updates.
+		std::vector<NeuralFieldBump> prevBumps_; ///< Scratch buffer for updateBumps — avoids per-step allocation.
 	public:
 		/// @brief Construct a neural field.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.
@@ -206,12 +214,18 @@ namespace dnf_composer::element
 		std::shared_ptr<Kernel> getSelfExcitationKernel() const;
 
 		double getStabilityThreshold() const { return state.thresholdForStability; }
+
+		/// @brief Enable or disable per-step state-metric computation (stability, bumps, min/max).
+		/// The default (enabled) path uses a single fused O(N) pass and is fast enough for
+		/// normal use. Disable only as an advanced micro-optimisation for headless batch runs
+		/// where bump data and stability checks are never needed.
+		/// Default: true (full state tracking enabled).
+		void setComputeStateMetrics(bool enable) { computeStateMetrics_ = enable; }
+		bool getComputeStateMetrics() const { return computeStateMetrics_; }
 	protected:
 		void calculateActivation(double t, double deltaT);
 		void calculateOutput();
 		void updateState(double deltaT);
-		void checkStability();
-		void updateMinMaxActivation();
 		void updateBumps(double deltaT);
 	};
 }

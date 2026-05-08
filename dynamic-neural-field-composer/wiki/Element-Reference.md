@@ -32,6 +32,7 @@ NeuralFieldParameters{
 |---|---|---|
 | `SigmoidFunction(x_shift, steepness)` | `x_shift=0.0`, `steepness=10.0` | Smooth sigmoidal transfer function |
 | `HeavisideFunction(x_shift)` | `x_shift=0.0` | Binary threshold function |
+| `AbsSigmoidFunction(x_shift, beta)` | `x_shift=0.0`, `beta=10.0` | Algebraic sigmoid — avoids `exp`; smoother than Heaviside, faster than the exponential sigmoid at very high steepness |
 
 ### Components
 

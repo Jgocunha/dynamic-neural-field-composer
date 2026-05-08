@@ -106,7 +106,9 @@ namespace dnf_composer::element
 	{
 	private:
 		MexicanHatKernelParameters parameters;
+		std::vector<double> scratchExtended;
 		std::vector<double> scratchConvolution;
+		std::vector<double> scratchResample_;
 	public:
 		/// @brief Construct a MexicanHatKernel.
 		/// @param elementCommonParameters  Name, label, and dimensions.
