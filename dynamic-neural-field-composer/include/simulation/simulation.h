@@ -167,7 +167,13 @@ namespace dnf_composer
 		std::chrono::nanoseconds lastStepDuration{ 0 };
 		std::chrono::nanoseconds accumulatedRunDuration{ 0 };
 		std::chrono::steady_clock::time_point runSegmentStart{};
+
+		/// @brief Enable or disable per-step wall-clock timing (default: enabled).
+		/// Disable for headless/benchmark runs to avoid two steady_clock::now() calls per step.
+		void setMeasureStepDuration(bool enable) { measureStepDuration_ = enable; }
+		bool getMeasureStepDuration() const { return measureStepDuration_; }
 	private:
+		bool measureStepDuration_ = true;
 		void generateUniqueIdentifier();
 	};
 }

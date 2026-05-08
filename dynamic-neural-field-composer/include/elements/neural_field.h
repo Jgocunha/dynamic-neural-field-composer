@@ -176,6 +176,13 @@ namespace dnf_composer::element
 	protected:
 		NeuralFieldParameters parameters; ///< Dynamics parameters (tau, h, activation function).
 		NeuralFieldState state;           ///< Runtime state (bumps, stability, min/max).
+	private:
+		// Cached raw pointers into component vectors — valid between init() calls, never resized during step().
+		double* act_  = nullptr; ///< components["activation"].data()
+		double* inp_  = nullptr; ///< components["input"].data()
+		double* rest_ = nullptr; ///< components["resting level"].data()
+
+		bool computeStateMetrics_ = true; ///< When false, skip stability/bump/min-max updates.
 	public:
 		/// @brief Construct a neural field.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.
@@ -206,6 +213,12 @@ namespace dnf_composer::element
 		std::shared_ptr<Kernel> getSelfExcitationKernel() const;
 
 		double getStabilityThreshold() const { return state.thresholdForStability; }
+
+		/// @brief Enable or disable per-step state-metric computation (stability, bumps, min/max).
+		/// Disable for headless/benchmark runs to skip ~600 scalar ops per step.
+		/// Default: true (full state tracking enabled).
+		void setComputeStateMetrics(bool enable) { computeStateMetrics_ = enable; }
+		bool getComputeStateMetrics() const { return computeStateMetrics_; }
 	protected:
 		void calculateActivation(double t, double deltaT);
 		void calculateOutput();

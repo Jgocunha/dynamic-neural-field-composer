@@ -93,7 +93,9 @@ namespace dnf_composer::element
 	{
 	private:
 		OscillatoryKernelParameters parameters;
+		std::vector<double> scratchExtended;
 		std::vector<double> scratchConvolution;
+		std::vector<double> scratchResample_;
 	public:
 		/// @brief Construct an OscillatoryKernel.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.

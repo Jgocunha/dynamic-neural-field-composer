@@ -83,7 +83,9 @@ namespace dnf_composer::element
 		AsymmetricGaussKernelParameters parameters;
 		std::vector<double> gauss;
 		std::vector<double> gaussDerivative;
+		std::vector<double> scratchExtended;
 		std::vector<double> scratchConvolution;
+		std::vector<double> scratchResample_;
 	public:
 		/// @brief Construct an AsymmetricGaussKernel.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.

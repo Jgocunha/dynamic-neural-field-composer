@@ -33,6 +33,11 @@ namespace dnf_composer
 			std::ranges::fill(components["input"], 0.0);
 			std::ranges::fill(components["output"], 0.0);
 			std::ranges::fill(components["resting level"], parameters.startingRestingLevel);
+
+			act_  = components["activation"].data();
+			inp_  = components["input"].data();
+			rest_ = components["resting level"].data();
+
 			calculateOutput();
 		}
 
@@ -41,7 +46,8 @@ namespace dnf_composer
 			updateInput();
 			calculateActivation(t, deltaT);
 			calculateOutput();
-			updateState(deltaT);
+			if (computeStateMetrics_)
+				updateState(deltaT);
 		}
 
 		void NeuralField::setParameters(const NeuralFieldParameters& neuralFieldParameters)
@@ -102,16 +108,15 @@ namespace dnf_composer
 
 		void NeuralField::calculateActivation(double t, double deltaT)
 		{
-			for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
-			{
-				components["activation"][i] = components["activation"][i] + deltaT / parameters.tau *
-					(-components["activation"][i] + components["resting level"][i] + components["input"][i]);
-			}
+			const double dtOverTau = deltaT / parameters.tau;
+			const int sz = commonParameters.dimensionParameters.size;
+			for (int i = 0; i < sz; ++i)
+				act_[i] += dtOverTau * (-act_[i] + rest_[i] + inp_[i]);
 		}
 
 		void NeuralField::calculateOutput()
 		{
-			components["output"] = parameters.activationFunction->operator()(components["activation"]);
+			parameters.activationFunction->apply(components["activation"], components["output"]);
 		}
 
 		//void NeuralField::calculateCentroid()

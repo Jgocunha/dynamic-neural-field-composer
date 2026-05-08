@@ -78,7 +78,9 @@ namespace dnf_composer::element
 	{
 	private:
 		GaussKernelParameters parameters;
-		std::vector<double> scratchConvolution;
+		std::vector<double> scratchExtended;    ///< Pre-allocated circular extension of input.
+		std::vector<double> scratchConvolution; ///< Pre-allocated convolution output buffer.
+		std::vector<double> scratchResample_;   ///< Pre-allocated buffer for cross-dimension resampling (empty when unused).
 	public:
 		/// @brief Construct a GaussKernel.
 		/// @param elementCommonParameters  Name, label, and dimensions.

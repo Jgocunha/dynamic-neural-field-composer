@@ -42,6 +42,10 @@ namespace dnf_composer::element
 		/// @brief Apply the activation function to @p input and return the result.
 		virtual std::vector<double> operator()(const std::vector<double>& input) = 0;
 
+		/// @brief Apply the activation function in-place into a pre-allocated @p out buffer.
+		/// @p out must already be sized to @p input.size(). No heap allocation occurs.
+		virtual void apply(const std::vector<double>& input, std::vector<double>& out) const = 0;
+
 		[[nodiscard]] virtual std::unique_ptr<ActivationFunction> clone() const = 0;
 		[[nodiscard]] virtual std::string toString() const = 0;
 
@@ -75,6 +79,7 @@ namespace dnf_composer::element
 		SigmoidFunction(double x_shift, double steepness);
 
 		std::vector<double> operator()(const std::vector<double>& input) override;
+		void apply(const std::vector<double>& input, std::vector<double>& out) const override;
 		bool operator==(const SigmoidFunction& other) const;
 		[[nodiscard]] std::unique_ptr<ActivationFunction> clone() const override;
 		[[nodiscard]] std::string toString() const override;
@@ -108,6 +113,7 @@ namespace dnf_composer::element
 		explicit HeavisideFunction(double x_shift);
 
 		std::vector<double> operator()(const std::vector<double>& input) override;
+		void apply(const std::vector<double>& input, std::vector<double>& out) const override;
 		bool operator==(const HeavisideFunction& other) const;
 		[[nodiscard]] std::unique_ptr<ActivationFunction> clone() const override;
 		[[nodiscard]] std::string toString() const override;
@@ -152,6 +158,7 @@ namespace dnf_composer::element
 		AbsSigmoidFunction(double x_shift, double beta);
 
 		std::vector<double> operator()(const std::vector<double>& input) override;
+		void apply(const std::vector<double>& input, std::vector<double>& out) const override;
 		bool operator==(const AbsSigmoidFunction& other) const;
 		[[nodiscard]] std::unique_ptr<ActivationFunction> clone() const override;
 		[[nodiscard]] std::string toString() const override;
