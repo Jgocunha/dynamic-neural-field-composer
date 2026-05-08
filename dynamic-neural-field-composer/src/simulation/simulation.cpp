@@ -238,7 +238,7 @@ namespace dnf_composer
 		// Check if an element with the same id already exists
 		const std::string newElementName = element->getUniqueName();
 		for (const auto& existingElement : elements) {
-			if (existingElement->getUniqueName() == newElementName) 
+			if (existingElement->getUniqueName() == newElementName)
 			{
 				const std::string logMessage = "An element with the same unique name already exists '" + newElementName + "'! New element was not added.";
 				log(tools::logger::LogLevel::WARNING, logMessage);
@@ -247,6 +247,7 @@ namespace dnf_composer
 		}
 
 		elements.emplace_back(element);
+		element->init();
 
 		const std::string logMessage = "Element '" + newElementName + "' was added to the simulation.";
 		log(tools::logger::LogLevel::INFO, logMessage);
