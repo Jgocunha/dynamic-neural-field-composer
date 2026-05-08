@@ -235,16 +235,25 @@ TEST(AbsSigmoidFunction, HighBetaApproachesHeaviside)
     EXPECT_NEAR(out[1], 1.0, 1e-3);
 }
 
-TEST(AbsSigmoidFunction, ApproximatelySameasExpSigmoidAtHighBeta)
+TEST(AbsSigmoidFunction, AgreeswithExpSigmoidAtOriginAndAsymptotes)
 {
-    // AbsSigmoid and ExpSigmoid should agree to < 0.001 for beta >= 20
+    // Both sigmoid families share: output=0.5 at u=x_shift, output→0 as u→-∞, output→1 as u→+∞.
+    // They differ in the transition shape (rational vs exponential), so pointwise agreement
+    // is only expected at u=x_shift and at large |u|.
     AbsSigmoidFunction absSig{ 0.0, 50.0 };
     SigmoidFunction expSig{ 0.0, 50.0 };
-    const std::vector<double> input{ -2.0, -0.5, 0.0, 0.5, 2.0 };
-    const auto absOut = absSig(input);
-    const auto expOut = expSig(input);
-    for (size_t i = 0; i < input.size(); ++i)
-        EXPECT_NEAR(absOut[i], expOut[i], 0.001);
+    const std::vector<double> atOrigin{ 0.0 };
+    const auto absAtOrigin = absSig(atOrigin);
+    const auto expAtOrigin = expSig(atOrigin);
+    EXPECT_NEAR(absAtOrigin[0], expAtOrigin[0], 1e-6);  // both = 0.5 at u=0
+
+    const std::vector<double> atSaturation{ -100.0, 100.0 };
+    const auto absAtSat = absSig(atSaturation);
+    const auto expAtSat = expSig(atSaturation);
+    EXPECT_NEAR(absAtSat[0], 0.0, 1e-3);
+    EXPECT_NEAR(absAtSat[1], 1.0, 1e-3);
+    EXPECT_NEAR(expAtSat[0], 0.0, 1e-3);
+    EXPECT_NEAR(expAtSat[1], 1.0, 1e-3);
 }
 
 TEST(AbsSigmoidFunction, OutputSizeMatchesInputSize)
