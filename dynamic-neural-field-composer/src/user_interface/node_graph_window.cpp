@@ -304,6 +304,7 @@ namespace dnf_composer::user_interface
 				                           label == element::ElementLabel::GAUSS_KERNEL_2D ||
 				                           label == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
 				                           label == element::ElementLabel::NORMAL_NOISE_2D);
+				const bool is2DNeuralField = label == element::ElementLabel::NEURAL_FIELD_2D;
 				const float plotH = (isWeightMap || is2DField) ? plotW : 60.0f;
 
 				const ImVec2 origin = ImGui::GetCursorScreenPos();
@@ -354,7 +355,11 @@ namespace dnf_composer::user_interface
 					const int cols = dp.size_y;
 					if (rows > 0 && cols > 0)
 					{
-						const auto& firstComp = comps->begin()->second;
+						std::vector<double> firstComp = comps->begin()->second;
+						if (is2DNeuralField)
+							firstComp = comps->at("activation");
+						else
+							firstComp = comps->at("output");
 						if (static_cast<int>(firstComp.size()) == rows * cols)
 						{
 							double wMin =  1e300, wMax = -1e300;
