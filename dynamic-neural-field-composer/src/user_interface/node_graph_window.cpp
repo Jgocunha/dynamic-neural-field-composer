@@ -1,7 +1,5 @@
 ﻿#include "user_interface/node_graph_window.h"
 
-extern ImFont* g_BoldLargeFont;
-extern ImFont* g_BlackLargeFont;
 extern ImFont* g_BlackSmallFont;
 
 namespace dnf_composer::user_interface
@@ -48,7 +46,7 @@ namespace dnf_composer::user_interface
 		}
 		ImGui::End();
 
-		// Plot cards are separate top-level windows â€” must be rendered outside Begin/End.
+		// Plot cards are separate top-level windows, must be rendered outside Begin/End.
 		renderNodePlotCards();
 	}
 
@@ -83,9 +81,9 @@ namespace dnf_composer::user_interface
 	{
 		// Light background that matches the rest of the ImGui windows
 		ImNodeEditor::PushStyleColor(ImNodeEditor::StyleColor_Bg,
-			ImVec4(0.94f, 0.95f, 0.96f, 1.00f));
+			ImVec4(0.94F, 0.95F, 0.96F, 1.00F));
 		ImNodeEditor::PushStyleColor(ImNodeEditor::StyleColor_Grid,
-			ImVec4(0.80f, 0.82f, 0.85f, 0.60f));
+			ImVec4(0.80F, 0.82F, 0.85F, 0.60F));
 	}
 
 	void NodeGraphWindow::restoreCanvasStyle()
@@ -100,21 +98,25 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderElementNodes() const
 	{
 		// Apply initial positions queued in the previous frame.
-		// SetNodePosition must be called before BeginNode to take effect this frame.
+		// SetNodePosition must be called before BeginNode to take effect on this frame.
 		for (const auto& [nodeId, pos] : pendingInitialPositions_)
+		{
 			ImNodeEditor::SetNodePosition(nodeId, pos);
+		}
 		pendingInitialPositions_.clear();
 
 		for (const auto& element : simulation->getElements())
+		{
 			renderElementNode(element);
+		}
 
 		// After nodes have been submitted, we can read their actual canvas positions.
-		// Any node still sitting at the origin (0,0) has no saved layout â€”
-		// queue a grid position so it spreads out on the next frame.
-		constexpr float colSpacing = 300.0f;
-		constexpr float rowSpacing = 250.0f;
-		constexpr float baseX     =  50.0f;
-		constexpr float baseY     =  50.0f;
+		// Any node still sitting at the origin (0,0) has no saved layout
+		// queue a grid position, so it spreads out on the next frame.
+		constexpr float colSpacing = 300.0F;
+		constexpr float rowSpacing = 250.0F;
+		constexpr float baseX     =  50.0F;
+		constexpr float baseY     =  50.0F;
 		constexpr int   maxRows   =   5;
 
 		// Compute how many physical columns each type-group needs (ceil(count / maxRows)),
@@ -122,7 +124,7 @@ namespace dnf_composer::user_interface
 		// next group's base column.
 		//
 		// columnCounts is derived from the *current* simulation's elements only, so it
-		// resets naturally whenever a different simulation is loaded â€” no stale state
+		// resets naturally whenever a different simulation is loaded - no stale state
 		// from a previously loaded (possibly larger) simulation bleeds through.
 		const auto& elements = simulation->getElements();
 		std::array<int, 4> groupCount    = {};
@@ -132,7 +134,9 @@ namespace dnf_composer::user_interface
 			const int g = getColumnForElement(el->getLabel());
 			++groupCount[g];
 			if (positionedNodeIds_.contains(getNodeId(el)))
+			{
 				++columnCounts[g];
+			}
 		}
 
 		std::array<float, 4> groupBaseX = {};
@@ -141,32 +145,35 @@ namespace dnf_composer::user_interface
 		{
 			groupBaseX[g] = curX;
 			const int cols = std::max(1, (groupCount[g] + maxRows - 1) / maxRows);
-			curX += cols * colSpacing;
+			curX += static_cast<float>(cols) * colSpacing;
 		}
 
 		for (const auto& element : elements)
 		{
-			const size_t nodeId = getNodeId(element);
-			if (!positionedNodeIds_.contains(nodeId))
+			if (const size_t nodeId = getNodeId(element); !positionedNodeIds_.contains(nodeId))
 			{
-				const ImVec2 pos = ImNodeEditor::GetNodePosition(nodeId);
-				if (std::abs(pos.x) < 1.0f && std::abs(pos.y) < 1.0f)
+				if (const ImVec2 pos = ImNodeEditor::GetNodePosition(nodeId);
+					std::abs(pos.x) < 1.0F && std::abs(pos.y) < 1.0F)
 				{
 					const int g      = getColumnForElement(element->getLabel());
 					const int rowIdx = columnCounts[g]++;
 					const int col    = rowIdx / maxRows;
 					const int row    = rowIdx % maxRows;
 					pendingInitialPositions_[nodeId] =
-						ImVec2(groupBaseX[g] + col * colSpacing, baseY + row * rowSpacing);
+						ImVec2(groupBaseX[g] + (static_cast<float>(col) * colSpacing),
+							baseY + (static_cast<float>(row) * rowSpacing));
 				}
 				positionedNodeIds_.insert(nodeId);
 			}
 		}
 
 		for (const auto& element : simulation->getElements())
+		{
 			renderElementNodeConnections(element);
+		}
 	}
 
+	// Clang-Tidy: Function 'renderElementNode' has cognitive complexity of 59 (threshold 25)
 	void NodeGraphWindow::renderElementNode(const std::shared_ptr<element::Element>& element)
 	{
 		namespace util = ax::NodeEditor::Utilities;
@@ -178,15 +185,15 @@ namespace dnf_composer::user_interface
 
 		// Uniform pastel: blend element color 35 % toward white
 		const ImVec4 bodyVec4 = {
-			headerVec4.x * 0.35f + 0.65f,
-			headerVec4.y * 0.35f + 0.65f,
-			headerVec4.z * 0.35f + 0.65f,
-			1.0f
+			(headerVec4.x * 0.35F) + 0.65F,
+			(headerVec4.y * 0.35F) + 0.65F,
+			(headerVec4.z * 0.35F) + 0.65F,
+			1.0F
 		};
 
 		// No border, uniform color, tighter top padding, so the title sits higher
-		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeRounding,    10.0f);
-		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeBorderWidth, 0.0f);
+		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeRounding,    10.0F);
+		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeBorderWidth, 0.0F);
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodePadding,     ImVec4(8, 4, 8, 6));
 		ImNodeEditor::PushStyleColor(ImNodeEditor::StyleColor_NodeBg,     bodyVec4);
 		ImNodeEditor::PushStyleColor(ImNodeEditor::StyleColor_NodeBorder, bodyVec4);
@@ -201,11 +208,11 @@ namespace dnf_composer::user_interface
 		// Putting all content here forces Input/Output pins to appear below it.
 		builder.Header(bodyVec4);
 		{
-			// Fixed node width â€” the name is clipped and scrolls on hover.
-			static constexpr float minNodeSize = 250.0f;
-			static constexpr float scrollSpeed  = 50.0f;  // px / sec
-			static constexpr float scrollDelay  = 0.5f;   // sec pause before scrolling
-			static constexpr float scrollPause  = 1.0f;   // sec pause after full scroll
+			// Fixed node width - the name is clipped and scrolls on hover.
+			static constexpr float minNodeSize = 250.0F;
+			static constexpr float scrollSpeed  = 50.0F;  // px / sec
+			static constexpr float scrollDelay  = 0.5F;   // sec pause before scrolling
+			static constexpr float scrollPause  = 1.0F;   // sec pause after full scroll
 			static std::unordered_map<size_t, double> s_hoverStart;
 
 			ImGui::Dummy(ImVec2(minNodeSize, 0));
@@ -216,8 +223,8 @@ namespace dnf_composer::user_interface
 				const float        lineH = ImGui::GetTextLineHeight();
 				const float        textW = ImGui::CalcTextSize(name.c_str()).x;
 				// Leave room for node padding on the right so the clip aligns with the body edge.
-				constexpr float nodePad = 16.0f;
-				const float     availW  = minNodeSize - nodePad;
+				constexpr float nodePad = 16.0F;
+				constexpr float availW  = minNodeSize - nodePad;
 
 				if (textW <= availW)
 				{
@@ -232,18 +239,18 @@ namespace dnf_composer::user_interface
 					const size_t id      = getNodeId(element);
 					const double now     = ImGui::GetTime();
 					const float  overflow = textW - availW;
-					float        offsetX  = 0.0f;
+					float        offsetX  = 0.0F;
 
 					if (ImGui::IsItemHovered())
 					{
 						if (!s_hoverStart.contains(id))
+						{
 							s_hoverStart[id] = now;
-
-						const float elapsed = static_cast<float>(now - s_hoverStart.at(id));
-						if (elapsed > scrollDelay)
+						}
+						if (const auto elapsed = static_cast<float>(now - s_hoverStart.at(id)); elapsed > scrollDelay)
 						{
 							const float scrollTime = elapsed - scrollDelay;
-							const float cycleDur   = overflow / scrollSpeed + scrollPause;
+							const float cycleDur   = (overflow / scrollSpeed) + scrollPause;
 							const float phase      = std::fmod(scrollTime, cycleDur);
 							offsetX = -std::min(phase * scrollSpeed, overflow);
 						}
