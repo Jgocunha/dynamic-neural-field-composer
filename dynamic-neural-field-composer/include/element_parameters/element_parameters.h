@@ -30,6 +30,9 @@ namespace dnf_composer
 			MEXICAN_HAT_KERNEL_2D,
 			NORMAL_NOISE_2D,
 		OSCILLATORY_KERNEL_2D,
+		TIMED_GAUSS_STIMULUS,
+		TIMED_GAUSS_STIMULUS_2D,
+		BOOST_STIMULUS_2D,
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -51,6 +54,9 @@ namespace dnf_composer
 			{MEXICAN_HAT_KERNEL_2D, "mexican hat kernel 2d" },
 			{NORMAL_NOISE_2D, "normal noise 2d" },
 			{OSCILLATORY_KERNEL_2D, "oscillatory kernel 2d" },
+			{TIMED_GAUSS_STIMULUS, "timed gauss stimulus" },
+			{TIMED_GAUSS_STIMULUS_2D, "timed gauss stimulus 2d" },
+			{BOOST_STIMULUS_2D, "boost stimulus 2d" },
 		};
 
 		struct ElementDimensions

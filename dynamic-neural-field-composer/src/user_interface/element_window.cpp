@@ -73,6 +73,9 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:  return h(6);
 				case element::ElementLabel::NORMAL_NOISE_2D:         return h(1);
 				case element::ElementLabel::OSCILLATORY_KERNEL_2D:  return h(5);
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return h(7);
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return h(8);
+				case element::ElementLabel::BOOST_STIMULUS_2D:       return h(2);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
@@ -216,6 +219,12 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
 			modifyElementOscillatoryKernel2D(element);
 			break;
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
+			modifyElementTimedGaussStimulus(element);
+			break;
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+			modifyElementTimedGaussStimulus2D(element);
+			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
 		default:
@@ -309,6 +318,185 @@ namespace dnf_composer::user_interface
 			gsp.circular = circular;
 			gsp.normalized = normalized;
 			stimulus->setParameters(gsp);
+		}
+	}
+
+	void ElementWindow::modifyElementTimedGaussStimulus(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto stimulus = std::dynamic_pointer_cast<element::TimedGaussStimulus>(element);
+		element::TimedGaussStimulusParameters tgsp = stimulus->getParameters();
+
+		auto amplitude = static_cast<float>(tgsp.amplitude);
+		auto width     = static_cast<float>(tgsp.width);
+		auto position  = static_cast<float>(tgsp.position);
+		bool circular  = tgsp.circular;
+		bool normalized = tgsp.normalized;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0, 30);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.01f, 0, 30);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "Position";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &position, 0.1f,
+			0.0f, static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
+		ImGui::SameLine(); ImGui::Text("Position");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+		label = "##" + element->getUniqueName() + "Normalized";
+		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
+		ImGui::SameLine(); ImGui::Text("Normalized");
+
+		// On-times: display current list
+		ImGui::Text("On-times (%d):", static_cast<int>(tgsp.onTimes.size()));
+		for (int i = 0; i < static_cast<int>(tgsp.onTimes.size()); ++i)
+		{
+			ImGui::Text("  [%d] %.2f - %.2f", i, tgsp.onTimes[i].first, tgsp.onTimes[i].second);
+			ImGui::SameLine();
+			label = "X##" + element->getUniqueName() + "Del" + std::to_string(i);
+			if (ImGui::SmallButton(label.c_str()))
+			{
+				tgsp.onTimes.erase(tgsp.onTimes.begin() + i);
+				stimulus->setParameters(tgsp);
+				return;
+			}
+		}
+
+		// Add new interval
+		static float newStart = 0.0f, newEnd = 1.0f;
+		label = "##" + element->getUniqueName() + "NewStart";
+		ImGui::SetNextItemWidth(70.0f * ui);
+		ImGui::DragFloat(label.c_str(), &newStart, 0.1f, 0, 1e6f);
+		ImGui::SameLine();
+		label = "##" + element->getUniqueName() + "NewEnd";
+		ImGui::SetNextItemWidth(70.0f * ui);
+		ImGui::DragFloat(label.c_str(), &newEnd, 0.1f, 0, 1e6f);
+		ImGui::SameLine();
+		label = "Add##" + element->getUniqueName();
+		if (ImGui::SmallButton(label.c_str()) && newStart < newEnd)
+		{
+			tgsp.onTimes.emplace_back(newStart, newEnd);
+			stimulus->setParameters(tgsp);
+			return;
+		}
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(tgsp.amplitude)) > epsilon ||
+		    std::abs(width     - static_cast<float>(tgsp.width))     > epsilon ||
+		    std::abs(position  - static_cast<float>(tgsp.position))  > epsilon ||
+		    circular  != tgsp.circular ||
+		    normalized != tgsp.normalized)
+		{
+			tgsp.amplitude  = amplitude;
+			tgsp.width      = width;
+			tgsp.position   = position;
+			tgsp.circular   = circular;
+			tgsp.normalized = normalized;
+			stimulus->setParameters(tgsp);
+		}
+	}
+
+	void ElementWindow::modifyElementTimedGaussStimulus2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto stimulus = std::dynamic_pointer_cast<element::TimedGaussStimulus2D>(element);
+		element::TimedGaussStimulus2DParameters p = stimulus->getParameters();
+
+		auto amplitude  = static_cast<float>(p.amplitude);
+		auto width      = static_cast<float>(p.width);
+		auto posX       = static_cast<float>(p.position_x);
+		auto posY       = static_cast<float>(p.position_y);
+		bool circular   = p.circular;
+		bool normalized = p.normalized;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0, 30);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.01f, 0, 30);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "PosX";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &posX, 0.5f, 0.0f,
+			static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
+		ImGui::SameLine(); ImGui::Text("Position x");
+
+		label = "##" + element->getUniqueName() + "PosY";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &posY, 0.5f, 0.0f,
+			static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.y_max));
+		ImGui::SameLine(); ImGui::Text("Position y");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+		label = "##" + element->getUniqueName() + "Normalized";
+		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
+		ImGui::SameLine(); ImGui::Text("Normalized");
+
+		// On-times: display current list
+		ImGui::Text("On-times (%d):", static_cast<int>(p.onTimes.size()));
+		for (int i = 0; i < static_cast<int>(p.onTimes.size()); ++i)
+		{
+			ImGui::Text("  [%d] %.2f - %.2f", i, p.onTimes[i].first, p.onTimes[i].second);
+			ImGui::SameLine();
+			label = "X##" + element->getUniqueName() + "Del" + std::to_string(i);
+			if (ImGui::SmallButton(label.c_str()))
+			{
+				p.onTimes.erase(p.onTimes.begin() + i);
+				stimulus->setParameters(p);
+				return;
+			}
+		}
+
+		// Add new interval
+		static float newStart = 0.0f, newEnd = 1.0f;
+		label = "##" + element->getUniqueName() + "NewStart";
+		ImGui::SetNextItemWidth(70.0f * ui);
+		ImGui::DragFloat(label.c_str(), &newStart, 0.1f, 0, 1e6f);
+		ImGui::SameLine();
+		label = "##" + element->getUniqueName() + "NewEnd";
+		ImGui::SetNextItemWidth(70.0f * ui);
+		ImGui::DragFloat(label.c_str(), &newEnd, 0.1f, 0, 1e6f);
+		ImGui::SameLine();
+		label = "Add##" + element->getUniqueName();
+		if (ImGui::SmallButton(label.c_str()) && newStart < newEnd)
+		{
+			p.onTimes.emplace_back(newStart, newEnd);
+			stimulus->setParameters(p);
+			return;
+		}
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
+		    std::abs(width     - static_cast<float>(p.width))     > epsilon ||
+		    std::abs(posX      - static_cast<float>(p.position_x)) > epsilon ||
+		    std::abs(posY      - static_cast<float>(p.position_y)) > epsilon ||
+		    circular  != p.circular ||
+		    normalized != p.normalized)
+		{
+			p.amplitude   = amplitude;
+			p.width       = width;
+			p.position_x  = posX;
+			p.position_y  = posY;
+			p.circular    = circular;
+			p.normalized  = normalized;
+			stimulus->setParameters(p);
 		}
 	}
 
@@ -1162,17 +1350,21 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEMORY_TRACE:
 			return ImVec4(0.431f, 0.627f, 0.549f, 1.0f);  // Sage Green
 		case element::ElementLabel::NEURAL_FIELD_2D:
-			return ImVec4(0.365f, 0.529f, 0.718f, 1.0f);  // Steel Blue
+			return ImVec4(0.293f, 0.437f, 0.651f, 1.0f);  // Deeper Soft Blue
 		case element::ElementLabel::GAUSS_STIMULUS_2D:
-			return ImVec4(0.690f, 0.525f, 0.380f, 1.0f);  // Warm Tan
+			return ImVec4(0.433f, 0.651f, 0.433f, 1.0f);  // Deeper Sage Green
 		case element::ElementLabel::GAUSS_KERNEL_2D:
-			return ImVec4(0.420f, 0.667f, 0.510f, 1.0f);  // Mint Green
+			return ImVec4(0.651f, 0.216f, 0.216f, 1.0f);  // Deeper Muted Red
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
-			return ImVec4(0.706f, 0.494f, 0.576f, 1.0f);  // Dusty Mauve
+			return ImVec4(0.525f, 0.412f, 0.651f, 1.0f);  // Deeper Lavender
 		case element::ElementLabel::NORMAL_NOISE_2D:
-			return ImVec4(0.600f, 0.600f, 0.600f, 1.0f);  // Light Gray
+			return ImVec4(0.761f, 0.506f, 0.286f, 1.0f);  // Deeper Warm Orange
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
-			return ImVec4(0.710f, 0.545f, 0.753f, 1.0f);  // Dusty Violet
+			return ImVec4(0.596f, 0.455f, 0.639f, 1.0f);  // Deeper Dusty Rose
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
+			return ImVec4(0.380f, 0.631f, 0.380f, 1.0f);  // Darker Sage Green
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+			return ImVec4(0.314f, 0.522f, 0.314f, 1.0f);  // Deepest Sage Green
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -1199,6 +1391,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D: return "Mexican Hat Kernels 2D";
 		case element::ElementLabel::NORMAL_NOISE_2D: return "Normal Noise 2D";
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D: return "Oscillatory Kernels 2D";
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return "Timed Gaussian Stimuli";
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return "Timed Gaussian Stimuli 2D";
 		default: return "Unknown Elements";
 		}
 	}

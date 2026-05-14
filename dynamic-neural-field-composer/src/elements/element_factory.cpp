@@ -118,6 +118,24 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const OscillatoryKernel2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<OscillatoryKernel2D>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::TIMED_GAUSS_STIMULUS] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const TimedGaussStimulusParameters*>(&elementSpecificParameters);
+					return std::make_shared<TimedGaussStimulus>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::TIMED_GAUSS_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const TimedGaussStimulus2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<TimedGaussStimulus2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::BOOST_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const BoostStimulus2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<BoostStimulus2D>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -173,6 +191,12 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), NormalNoise2DParameters());
 					case ElementLabel::OSCILLATORY_KERNEL_2D:
 						return creator->second(ElementCommonParameters(type), OscillatoryKernel2DParameters());
+					case ElementLabel::TIMED_GAUSS_STIMULUS:
+						return creator->second(ElementCommonParameters(type), TimedGaussStimulusParameters());
+					case ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+						return creator->second(ElementCommonParameters(type), TimedGaussStimulus2DParameters());
+					case ElementLabel::BOOST_STIMULUS_2D:
+						return creator->second(ElementCommonParameters(type), BoostStimulus2DParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

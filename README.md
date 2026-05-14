@@ -57,30 +57,6 @@ Clone the repo, run the build script, then explore the `examples/` folder to see
 
 For detailed setup, usage guides, and API reference, see the **[Wiki](https://github.com/Jgocunha/dynamic-neural-field-composer/wiki)**.
 
----
-
-## Elements
-
-| Element | Dim | Type | Description |
-|---|---|---|---|
-| `NeuralField` | 1D | Field | Core Amari-equation field with sigmoid output, bump detection |
-| `NeuralField2D` | 2D | Field | 2D neural field with activation dynamics |
-| `GaussStimulus` | 1D | Input | Gaussian-shaped external input |
-| `GaussStimulus2D` | 2D | Input | 2D Gaussian-shaped external input |
-| `BoostStimulus` | any | Input | Constant scalar boost stimulus |
-| `NormalNoise` | 1D | Input | Gaussian random noise |
-| `NormalNoise2D` | 2D | Input | 2D Gaussian random noise |
-| `GaussKernel` | 1D | Kernel | Lateral Gaussian interaction kernel |
-| `GaussKernel2D` | 2D | Kernel | Separable 2D Gaussian interaction kernel |
-| `MexicanHatKernel` | 1D | Kernel | Difference-of-Gaussians (DoG) lateral interaction |
-| `MexicanHatKernel2D` | 2D | Kernel | Separable 2D DoG lateral interaction |
-| `OscillatoryKernel` | 1D | Kernel | Decaying-oscillation lateral interaction kernel |
-| `OscillatoryKernel2D` | 2D | Kernel | Separable 2D decaying-oscillation lateral interaction kernel |
-| `AsymmetricGaussKernel` | 1D | Kernel | Asymmetric Gaussian kernel with time-shift dynamics |
-| `KernelCoupling` | 1D/2D | Coupling | Cross-dimensional Gaussian coupling |
-| `FieldCoupling` | 1D/2D | Coupling | Learnable weight-matrix coupling (Hebb, Oja, Delta) |
-| `GaussFieldCoupling` | 1D/2D | Coupling | Structured Gaussian basis-function coupling |
-| `MemoryTrace` | 1D/2D | Memory | Build-up / decay memory trace with activation threshold |
 
 ---
 

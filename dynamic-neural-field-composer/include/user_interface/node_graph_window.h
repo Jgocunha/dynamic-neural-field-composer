@@ -23,6 +23,8 @@
 #include "elements/mexican_hat_kernel_2d.h"
 #include "elements/normal_noise_2d.h"
 #include "elements/oscillatory_kernel_2d.h"
+#include "elements/timed_gauss_stimulus.h"
+#include "elements/timed_gauss_stimulus_2d.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"
@@ -67,6 +69,12 @@ namespace dnf_composer::user_interface
 			return IM_COL32(138, 105, 175, 255);  // Deeper Lavender
 		case element::ElementLabel::NORMAL_NOISE_2D:
 			return IM_COL32(207, 132, 68, 255);   // Deeper Warm Orange
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+			return IM_COL32(152, 116, 163, 255);  // Deeper Dusty Rose
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
+			return IM_COL32(97, 161, 97, 255);    // Darker Sage Green
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+			return IM_COL32(80, 133, 80, 255);    // Deepest Sage Green
 		default:
 			return IM_COL32(127, 127, 127, 255);  // Neutral Gray
 		}
