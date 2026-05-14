@@ -112,15 +112,15 @@ namespace dnf_composer::user_interface
 
 		// Initial-layout state: nodes not yet seen in this session get a grid position
 		// on the frame after their first render (when we can read their actual position).
-		mutable std::unordered_set<size_t>          positionedNodeIds_;
-		mutable std::unordered_map<size_t, ImVec2>  pendingInitialPositions_;
+		mutable std::unordered_set<size_t>          positionedNodeIds;
+		mutable std::unordered_map<size_t, ImVec2>  pendingInitialPositions;
 
 		// Per-node floating plot cards (toggled by double-click).
-		mutable std::unordered_map<size_t, PlotCardState> plotCards_;
+		mutable std::unordered_map<size_t, PlotCardState> plotCards;
 
 		// Node graph panel bounds (updated every frame) for plot card clamping.
-		mutable ImVec2 ngBoundsMin_ = {};
-		mutable ImVec2 ngBoundsMax_ = {};
+		mutable ImVec2 ngBoundsMin = {};
+		mutable ImVec2 ngBoundsMax = {};
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -130,7 +130,6 @@ namespace dnf_composer::user_interface
 		NodeGraphWindow& operator=(NodeGraphWindow&&) = delete;
 
 		void render() override;
-		void renderGraph() const;   // embedded variant (no Begin/End window)
 		~NodeGraphWindow() override = default;
 	private:
 		void renderElementNodes() const;
@@ -146,5 +145,13 @@ namespace dnf_composer::user_interface
 		static void applyCanvasStyle();
 		static void restoreCanvasStyle();
 		static void renderElementTooltip(const std::shared_ptr<element::Element>& element);
+		static bool isWeightMapElement(element::ElementLabel label);
+		static void drawWeightHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& weights, int rows, int cols);
+		static void draw2DFieldHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& data, int rows, int cols);
+		static void renderNodeScrollingName(const std::shared_ptr<element::Element>& element, float minNodeSize);
+		static void renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, float minNodeSize);
+		static void renderNodePins(const std::shared_ptr<element::Element>& element, float minNodeSize);
+		static void renderPlotCardMenuBar(PlotCardState& state);
+		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state, bool isWM, bool is2DField);
 	};
 }
