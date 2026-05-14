@@ -884,6 +884,42 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE]   = "oscillatory kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude       = 1.0;
+            static double decay           = 0.08;
+            static double zeroCrossings   = 0.3;
+            static double amplitudeGlobal = -0.01;
+            static bool   circular        = true;
+            static bool   normalized      = false;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",            &x_max,           0, 0);
+            ImGui::InputInt("Y size",            &y_max,           0, 0);
+            ImGui::InputDouble("X step",         &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",         &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Global amp",     &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::OscillatoryKernel2DParameters okp{ amplitude, decay, zeroCrossings,
+                                                                   amplitudeGlobal, circular, normalized };
+                const element::ElementCommonParameters common{ std::string(id),
+                    element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::OscillatoryKernel2D>(common, okp));
+            }
+            break;
+        }
         default:
             break;
         }

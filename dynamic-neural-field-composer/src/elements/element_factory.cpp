@@ -112,6 +112,12 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const NormalNoise2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<NormalNoise2D>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::OSCILLATORY_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const OscillatoryKernel2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<OscillatoryKernel2D>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -165,6 +171,8 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), MexicanHatKernel2DParameters());
 					case ElementLabel::NORMAL_NOISE_2D:
 						return creator->second(ElementCommonParameters(type), NormalNoise2DParameters());
+					case ElementLabel::OSCILLATORY_KERNEL_2D:
+						return creator->second(ElementCommonParameters(type), OscillatoryKernel2DParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

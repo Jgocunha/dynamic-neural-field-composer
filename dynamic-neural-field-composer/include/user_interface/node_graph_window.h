@@ -22,6 +22,7 @@
 #include "elements/gauss_kernel_2d.h"
 #include "elements/mexican_hat_kernel_2d.h"
 #include "elements/normal_noise_2d.h"
+#include "elements/oscillatory_kernel_2d.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"

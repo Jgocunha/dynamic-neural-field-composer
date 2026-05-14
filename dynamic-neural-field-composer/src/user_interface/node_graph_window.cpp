@@ -303,7 +303,8 @@ namespace dnf_composer::user_interface
 				                           label == element::ElementLabel::GAUSS_STIMULUS_2D ||
 				                           label == element::ElementLabel::GAUSS_KERNEL_2D ||
 				                           label == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
-				                           label == element::ElementLabel::NORMAL_NOISE_2D);
+				                           label == element::ElementLabel::NORMAL_NOISE_2D ||
+				                           label == element::ElementLabel::OSCILLATORY_KERNEL_2D);
 				const bool is2DNeuralField = label == element::ElementLabel::NEURAL_FIELD_2D;
 				const float plotH = (isWeightMap || is2DField) ? plotW : 60.0f;
 
@@ -611,7 +612,8 @@ namespace dnf_composer::user_interface
 				                          lbl == element::ElementLabel::GAUSS_STIMULUS_2D ||
 				                          lbl == element::ElementLabel::GAUSS_KERNEL_2D ||
 				                          lbl == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
-				                          lbl == element::ElementLabel::NORMAL_NOISE_2D);
+				                          lbl == element::ElementLabel::NORMAL_NOISE_2D ||
+				                          lbl == element::ElementLabel::OSCILLATORY_KERNEL_2D);
 				const float plotW = ImGui::GetContentRegionAvail().x;
 				const float plotH = (isWeightMap || is2DField) ? plotW : plotW * 0.6f;
 
@@ -756,6 +758,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEMORY_TRACE:
 		case element::ElementLabel::GAUSS_KERNEL_2D:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
@@ -942,6 +945,18 @@ namespace dnf_composer::user_interface
 		{
 			const auto nn = std::dynamic_pointer_cast<element::NormalNoise2D>(element);
 			ImGui::Text("Amplitude: %.4f", nn->getParameters().amplitude);
+			break;
+		}
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+		{
+			const auto ok = std::dynamic_pointer_cast<element::OscillatoryKernel2D>(element);
+			const auto& p = ok->getParameters();
+			ImGui::Text("Amplitude: %.2f",       p.amplitude);
+			ImGui::Text("Decay: %.4f",           p.decay);
+			ImGui::Text("Zero crossings: %.2f",  p.zeroCrossings);
+			ImGui::Text("Global amp: %.4f",      p.amplitudeGlobal);
+			ImGui::Text("Circular: %s",          p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",        p.normalized ? "true" : "false");
 			break;
 		}
 		default:

@@ -18,6 +18,7 @@
 #include "elements/gauss_kernel_2d.h"
 #include "elements/mexican_hat_kernel_2d.h"
 #include "elements/normal_noise_2d.h"
+#include "elements/oscillatory_kernel_2d.h"
 
 namespace dnf_composer::element
 {

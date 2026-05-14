@@ -71,7 +71,8 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::GAUSS_STIMULUS_2D:      return h(5);
 				case element::ElementLabel::GAUSS_KERNEL_2D:        return h(4);
 				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:  return h(6);
-				case element::ElementLabel::NORMAL_NOISE_2D:        return h(1);
+				case element::ElementLabel::NORMAL_NOISE_2D:         return h(1);
+				case element::ElementLabel::OSCILLATORY_KERNEL_2D:  return h(5);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
@@ -211,6 +212,9 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::NORMAL_NOISE_2D:
 			modifyElementNormalNoise2D(element);
+			break;
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+			modifyElementOscillatoryKernel2D(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -1072,6 +1076,65 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementOscillatoryKernel2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto kernel = std::dynamic_pointer_cast<element::OscillatoryKernel2D>(element);
+		element::OscillatoryKernel2DParameters p = kernel->getParameters();
+
+		auto amplitude      = static_cast<float>(p.amplitude);
+		auto decay          = static_cast<float>(p.decay);
+		auto zeroCrossings  = static_cast<float>(p.zeroCrossings);
+		auto amplitudeGlobal = static_cast<float>(p.amplitudeGlobal);
+		bool circular       = p.circular;
+		bool normalized     = p.normalized;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0.0f, 50.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "Decay";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &decay, 0.005f, 0.001f, 10.0f);
+		ImGui::SameLine(); ImGui::Text("Decay");
+
+		label = "##" + element->getUniqueName() + "Zero crossings";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &zeroCrossings, 0.005f, 0.0f, 1.0f);
+		ImGui::SameLine(); ImGui::Text("Zero crossings");
+
+		label = "##" + element->getUniqueName() + "Amp. global";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.01f, -10.0f, 0.0f);
+		ImGui::SameLine(); ImGui::Text("Amp. global");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+
+		label = "##" + element->getUniqueName() + "Normalized";
+		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
+		ImGui::SameLine(); ImGui::Text("Normalized");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude     - static_cast<float>(p.amplitude))     > epsilon ||
+		    std::abs(decay         - static_cast<float>(p.decay))         > epsilon ||
+		    std::abs(zeroCrossings - static_cast<float>(p.zeroCrossings)) > epsilon ||
+		    std::abs(amplitudeGlobal - static_cast<float>(p.amplitudeGlobal)) > epsilon ||
+		    circular != p.circular || normalized != p.normalized)
+		{
+			p.amplitude      = amplitude;
+			p.decay          = decay;
+			p.zeroCrossings  = zeroCrossings;
+			p.amplitudeGlobal = amplitudeGlobal;
+			p.circular       = circular;
+			p.normalized     = normalized;
+			kernel->setParameters(p);
+		}
+	}
+
 	ImVec4 ElementWindow::getColorForElementType(const element::ElementLabel label)
 	{
 		switch (label)
@@ -1108,6 +1171,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.706f, 0.494f, 0.576f, 1.0f);  // Dusty Mauve
 		case element::ElementLabel::NORMAL_NOISE_2D:
 			return ImVec4(0.600f, 0.600f, 0.600f, 1.0f);  // Light Gray
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+			return ImVec4(0.710f, 0.545f, 0.753f, 1.0f);  // Dusty Violet
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -1133,6 +1198,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_KERNEL_2D: return "Gauss Kernels 2D";
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D: return "Mexican Hat Kernels 2D";
 		case element::ElementLabel::NORMAL_NOISE_2D: return "Normal Noise 2D";
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D: return "Oscillatory Kernels 2D";
 		default: return "Unknown Elements";
 		}
 	}
