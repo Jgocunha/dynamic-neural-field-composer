@@ -27,6 +27,15 @@ TEST(FieldProjectionConstruction, LabelIsFieldProjection)
     EXPECT_EQ(fp.getLabel(), ElementLabel::FIELD_PROJECTION);
 }
 
+TEST(FieldProjectionConstruction, OutputSizeMatchesProjectedAxisBeforeInit)
+{
+    FieldProjection fpX(makeCP("fpX", 10, 8), FieldProjectionParameters{ 0 });
+    EXPECT_EQ(static_cast<int>(fpX.getComponent("output").size()), 10);
+
+    FieldProjection fpY(makeCP("fpY", 10, 8), FieldProjectionParameters{ 1 });
+    EXPECT_EQ(static_cast<int>(fpY.getComponent("output").size()), 8);
+}
+
 // ---------------------------------------------------------------------------
 // init()
 // ---------------------------------------------------------------------------

@@ -11,6 +11,13 @@ namespace dnf_composer::element
 		: Element(elementCommonParameters), parameters(parameters)
 	{
 		commonParameters.identifiers.label = ElementLabel::FIELD_PROJECTION;
+
+		const int size_x = commonParameters.dimensionParameters.size_x;
+		const int size_y = commonParameters.dimensionParameters.size_y;
+		if (parameters.projectionAxis == 0)
+			components["output"].assign(size_x, 0.0);
+		else
+			components["output"].assign(size_y, 0.0);
 	}
 
 	void FieldProjection::init()
