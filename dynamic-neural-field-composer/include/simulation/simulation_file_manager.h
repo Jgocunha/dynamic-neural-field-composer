@@ -5,7 +5,8 @@
 #include <filesystem>
 #include <cmath>
 
-#include "./simulation/simulation.h"
+#include "tools/utils.h"
+#include "simulation/simulation.h"
 #include "elements/neural_field.h"
 #include "elements/gauss_kernel.h"
 #include "elements/mexican_hat_kernel.h"

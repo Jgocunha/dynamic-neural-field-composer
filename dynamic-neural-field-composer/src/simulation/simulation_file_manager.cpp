@@ -1,5 +1,4 @@
 #include "simulation/simulation_file_manager.h"
-#include "tools/utils.h"
 
 
 namespace dnf_composer
