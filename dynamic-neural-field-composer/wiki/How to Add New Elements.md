@@ -3,14 +3,6 @@
 This guide covers every step required to add a new element to dnf-composer.
 Complete the steps in order and keep the element's 1D/2D counterpart as a reference.
 
-## Reference templates
-
-| Element type | Best header template | Best source template |
-|---|---|---|
-| Kernel | `include/elements/gauss_kernel_2d.h` | `src/elements/gauss_kernel_2d.cpp` |
-| Stimulus | `include/elements/gauss_stimulus_2d.h` | `src/elements/gauss_stimulus_2d.cpp` |
-| Utility/projection | `include/elements/memory_trace.h` | `src/elements/memory_trace.cpp` |
-
 ---
 
 ## Step 1 — Create the header
@@ -309,7 +301,7 @@ The column determines the initial horizontal position in the node graph:
 | Column | Element types |
 |--------|--------------|
 | 0 | Sources (stimuli, noise) |
-| 1 | Kernels, memory trace |
+| 1 | Kernels |
 | 2 | Couplings |
 | 3 | Fields |
 
@@ -438,7 +430,6 @@ TEST(YourElementClone, CloneHasSameParameters)
 
 Register in `examples/CMakeLists.txt`.
 
-Use `ex_neural_field_2d.cpp` as a structural template:
 
 ```cpp
 #include "visualization/visualization.h"
