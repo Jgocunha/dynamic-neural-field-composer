@@ -428,8 +428,8 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderElementNodeConnections(const std::shared_ptr<element::Element>& element)
 	{
-		constexpr float    thickness = 2.0f;
-		constexpr ImVec4   linkCol   = ImVec4(0.08f, 0.08f, 0.08f, 0.85f); // near-black
+		constexpr float thickness = 2.0f;
+		constexpr auto linkCol   = ImVec4(0.08f, 0.08f, 0.08f, 0.85f); // near-black
 
 		for (const auto& input : element->getInputs())
 		{
@@ -519,11 +519,11 @@ namespace dnf_composer::user_interface
 			if (getNodeId(el) == id) { element = el; break; }
 		if (!element) return;
 
-		// Single click â€” select element in the control panel.
+		// Single-click to select an element in the control panel.
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			ElementWindow::setFocusedElement(element);
 
-		// Double click â€” open plot card.
+		// Double-click to open a plot card.
 		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
 			if (!plotCards_.contains(id))
@@ -562,8 +562,7 @@ namespace dnf_composer::user_interface
 				const bool isWeightMap = (lbl == element::ElementLabel::FIELD_COUPLING ||
 				                          lbl == element::ElementLabel::GAUSS_FIELD_COUPLING);
 				// FIELD_PROJECTION has 2D input but 1D output — exclude it from heatmap rendering
-				const bool is2DField   = element->getElementCommonParameters().dimensionParameters.dimensionality == 2
-				                      && lbl != element::ElementLabel::FIELD_PROJECTION;
+				const bool is2DField   = element->getElementCommonParameters().dimensionParameters.dimensionality == 2;
 				const float plotW = ImGui::GetContentRegionAvail().x;
 				const float plotH = (isWeightMap || is2DField) ? plotW : plotW * 0.6f;
 				ImGui::SetNextWindowPos (state.initialPos, ImGuiCond_Always);
@@ -774,8 +773,6 @@ namespace dnf_composer::user_interface
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
-		case element::ElementLabel::FIELD_PROJECTION:
-		case element::ElementLabel::FIELD_EXPANSION:
 			return 2;
 		case element::ElementLabel::NEURAL_FIELD:
 		case element::ElementLabel::NEURAL_FIELD_2D:
@@ -1026,18 +1023,6 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Intervals: %d",    static_cast<int>(p.onTimes.size()));
 			ImGui::Text("Circular: %s",     p.circular   ? "true" : "false");
 			ImGui::Text("Normalized: %s",   p.normalized ? "true" : "false");
-			break;
-		}
-		case element::ElementLabel::FIELD_PROJECTION:
-		{
-			const auto fp = std::dynamic_pointer_cast<element::FieldProjection>(element);
-			ImGui::Text("Projection axis: %d", fp->getParameters().projectionAxis);
-			break;
-		}
-		case element::ElementLabel::FIELD_EXPANSION:
-		{
-			const auto fe = std::dynamic_pointer_cast<element::FieldExpansion>(element);
-			ImGui::Text("Expansion axis: %d", fe->getParameters().expansionAxis);
 			break;
 		}
 		default:
