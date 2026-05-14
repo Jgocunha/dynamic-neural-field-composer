@@ -1,9 +1,26 @@
 #include <gtest/gtest.h>
 
+#include "elements/activation_function.h"
 #include "elements/field_expansion.h"
+#include "elements/neural_field.h"
+#include "elements/neural_field_2d.h"
+#include "simulation/simulation.h"
 
 using namespace dnf_composer;
 using namespace dnf_composer::element;
+
+static std::shared_ptr<NeuralField> makeField1D(const std::string& name, int size = 10)
+{
+    const SigmoidFunction sig{ 0.0, 10.0 };
+    const NeuralFieldParameters parameters{ 25.0, -5.0, sig };
+    return std::make_shared<NeuralField>(ElementCommonParameters{ name, size }, parameters);
+}
+
+static std::shared_ptr<NeuralField2D> makeField2D(const std::string& name, int sizeX = 10, int sizeY = 8)
+{
+    const NeuralField2DParameters parameters{};
+    return std::make_shared<NeuralField2D>(ElementCommonParameters{ name, ElementDimensions{ sizeX, sizeY, 1.0, 1.0 } }, parameters);
+}
 
 static ElementCommonParameters makeCP(const std::string& name, int xmax = 10, int ymax = 8)
 {
@@ -24,6 +41,29 @@ TEST(FieldExpansionConstruction, LabelIsFieldExpansion)
 {
     FieldExpansion fe(makeCP("fe"), FieldExpansionParameters{});
     EXPECT_EQ(fe.getLabel(), ElementLabel::FIELD_EXPANSION);
+}
+
+TEST(FieldExpansionIntegration, ConnectsOneDFieldToTwoDField)
+{
+    Simulation sim("field-expansion-connection", 1.0, 0.0, 0.0);
+
+    const auto source = makeField1D("source", 10);
+    const auto expansion = std::make_shared<FieldExpansion>(
+        ElementCommonParameters{ "expansion", ElementDimensions{ 10, 8, 1.0, 1.0 } },
+        FieldExpansionParameters{ 0 });
+    const auto target = makeField2D("target", 10, 8);
+
+    sim.addElement(source);
+    sim.addElement(expansion);
+    sim.addElement(target);
+
+    EXPECT_NO_THROW(sim.createInteraction("source", "output", "expansion"));
+    EXPECT_NO_THROW(sim.createInteraction("expansion", "output", "target"));
+
+    EXPECT_TRUE(expansion->hasInput("source", "output"));
+    EXPECT_TRUE(target->hasInput("expansion", "output"));
+    EXPECT_EQ(static_cast<int>(expansion->getComponent("input").size()), 10);
+    EXPECT_EQ(static_cast<int>(expansion->getComponent("output").size()), 80);
 }
 
 // ---------------------------------------------------------------------------

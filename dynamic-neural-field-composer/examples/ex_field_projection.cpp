@@ -4,6 +4,7 @@
 #include "user_interface/main_menu_bar.h"
 #include "elements/gauss_stimulus_2d.h"
 #include "elements/neural_field_2d.h"
+#include "elements/neural_field.h"
 #include "elements/gauss_kernel_2d.h"
 #include "elements/field_projection.h"
 
@@ -39,23 +40,31 @@ int main()
         const auto nf = std::make_shared<element::NeuralField2D>(
             element::ElementCommonParameters{ "neural field 2d", dims }, nfp);
 
-        // Project the 2D field onto the X axis (sum over Y)
+        // Project the 2D field onto the X axis (sum over Y), then feed a 1D field.
         element::FieldProjectionParameters fpp{ 0 };
         const auto fp = std::make_shared<element::FieldProjection>(
             element::ElementCommonParameters{ "field projection", dims }, fpp);
+
+        const auto nf1d = std::make_shared<element::NeuralField>(
+            element::ElementCommonParameters{ "neural field", fieldSizeX },
+            element::NeuralFieldParameters{ 25.0, -5.0, element::SigmoidFunction(0.0, 10.0) });
 
         simulation->addElement(gs);
         simulation->addElement(gk);
         simulation->addElement(nf);
         simulation->addElement(fp);
+        simulation->addElement(nf1d);
 
-        simulation->createInteraction("gauss stimulus 2d", "output", "gauss kernel 2d");
+        simulation->createInteraction("gauss stimulus 2d", "output", "neural field 2d");
         simulation->createInteraction("gauss kernel 2d",   "output", "neural field 2d");
+        simulation->createInteraction("neural field 2d",   "output", "gauss kernel 2d");
         simulation->createInteraction("neural field 2d",   "output", "field projection");
+        simulation->createInteraction("field projection",  "output", "neural field");
 
         visualization->plot({ {gs->getUniqueName(), "output"} });
         visualization->plot({ {nf->getUniqueName(), "output"} });
         visualization->plot({ {fp->getUniqueName(), "output"} });
+        visualization->plot({ {nf1d->getUniqueName(), "output"} });
 
         simulation->init();
         app.init();

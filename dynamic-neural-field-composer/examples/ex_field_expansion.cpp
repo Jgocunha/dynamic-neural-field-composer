@@ -5,6 +5,7 @@
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_kernel.h"
 #include "elements/neural_field.h"
+#include "elements/neural_field_2d.h"
 #include "elements/field_expansion.h"
 
 int main()
@@ -36,27 +37,34 @@ int main()
         const auto gk = std::make_shared<element::GaussKernel>(
             element::ElementCommonParameters{ "gauss kernel", dims1D }, gkp);
 
-        element::NeuralFieldParameters nfp{};
+        element::NeuralFieldParameters nfp{ 25.0, -5.0, element::SigmoidFunction(0.0, 10.0) };
         const auto nf = std::make_shared<element::NeuralField>(
             element::ElementCommonParameters{ "neural field", dims1D }, nfp);
 
-        // Expand the 1D field (varies along X) into a 2D field by repeating along Y
+        // Expand the 1D field (varies along X) into a 2D field by repeating along Y.
         element::FieldExpansionParameters fep{ 0 };
         const auto fe = std::make_shared<element::FieldExpansion>(
             element::ElementCommonParameters{ "field expansion", dims2D }, fep);
+
+        const auto nf2d = std::make_shared<element::NeuralField2D>(
+            element::ElementCommonParameters{ "neural field 2d", dims2D }, element::NeuralField2DParameters{});
 
         simulation->addElement(gs);
         simulation->addElement(gk);
         simulation->addElement(nf);
         simulation->addElement(fe);
+        simulation->addElement(nf2d);
 
-        simulation->createInteraction("gauss stimulus", "output", "gauss kernel");
+        simulation->createInteraction("gauss stimulus", "output", "neural field");
         simulation->createInteraction("gauss kernel",   "output", "neural field");
+        simulation->createInteraction("neural field",   "output", "gauss kernel");
         simulation->createInteraction("neural field",   "output", "field expansion");
+        simulation->createInteraction("field expansion", "output", "neural field 2d");
 
         visualization->plot({ {gs->getUniqueName(), "output"} });
         visualization->plot({ {nf->getUniqueName(), "output"} });
         visualization->plot({ {fe->getUniqueName(), "output"} });
+        visualization->plot({ {nf2d->getUniqueName(), "output"} });
 
         simulation->init();
         app.init();
