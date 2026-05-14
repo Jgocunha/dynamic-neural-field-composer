@@ -66,13 +66,14 @@ TEST(GaussStimulus2DInit, PeakNearAmplitude)
 TEST(GaussStimulus2DInit, PeakIndexNearSpecifiedPosition)
 {
     // position (20, 30) on a 50x50 grid with d_x=d_y=1.0
-    // index = x * size_y + y = 20 * 50 + 30 = 1030
+    // coordinates are 1-indexed: x=(xi+1)*dx, so position_x=20 -> xi=19, position_y=30 -> yi=29
+    // index = xi * size_y + yi = 19 * 50 + 29 = 979
     GaussStimulus2D gs(makeCP("gs", 50, 50),
         makeGSP2D(3.0, 15.0, 20.0, 30.0, false, false));
     gs.init();
     const auto out = gs.getComponent("output");
     const int peakIdx = static_cast<int>(std::ranges::max_element(out) - out.begin());
-    EXPECT_NEAR(peakIdx, 20 * 50 + 30, 10);
+    EXPECT_NEAR(peakIdx, 19 * 50 + 29, 10);
 }
 
 TEST(GaussStimulus2DInit, NormalizedSumApproachesAmplitude)
