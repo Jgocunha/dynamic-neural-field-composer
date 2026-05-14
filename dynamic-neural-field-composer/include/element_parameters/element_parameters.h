@@ -19,9 +19,11 @@ namespace dnf_composer::element
 		OSCILLATORY_KERNEL,
 		ASYMMETRIC_GAUSS_KERNEL,
 		NORMAL_NOISE,
+		CORRELATED_NORMAL_NOISE,
 		FIELD_COUPLING,
 		GAUSS_FIELD_COUPLING,
 		MEMORY_TRACE,
+
 		NEURAL_FIELD_2D,
 		GAUSS_STIMULUS_2D,
 		GAUSS_KERNEL_2D,
@@ -31,9 +33,6 @@ namespace dnf_composer::element
 		TIMED_GAUSS_STIMULUS,
 		TIMED_GAUSS_STIMULUS_2D,
 		BOOST_STIMULUS_2D,
-		FIELD_PROJECTION,
-		FIELD_EXPANSION,
-		CORRELATED_NORMAL_NOISE,
 	};
 
 	inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -41,14 +40,16 @@ namespace dnf_composer::element
 		{NEURAL_FIELD, "neural field" },
 		{GAUSS_STIMULUS, "gauss stimulus" },
 		{BOOST_STIMULUS, "boost stimulus" },
-		{GAUSS_FIELD_COUPLING, "gauss field coupling" },
-		{FIELD_COUPLING, "field coupling" },
 		{GAUSS_KERNEL, "gauss kernel" },
 		{MEXICAN_HAT_KERNEL, "mexican hat kernel" },
 		{OSCILLATORY_KERNEL, "oscillatory kernel"},
 		{ASYMMETRIC_GAUSS_KERNEL, "asymmetric gauss kernel"},
 		{NORMAL_NOISE, "normal noise" },
+		{CORRELATED_NORMAL_NOISE, "correlated normal noise"},
+		{GAUSS_FIELD_COUPLING, "gauss field coupling" },
+		{FIELD_COUPLING, "field coupling" },
 		{MEMORY_TRACE, "memory trace" },
+
 		{NEURAL_FIELD_2D, "neural field 2d" },
 		{GAUSS_STIMULUS_2D, "gauss stimulus 2d" },
 		{GAUSS_KERNEL_2D, "gauss kernel 2d" },
@@ -58,9 +59,6 @@ namespace dnf_composer::element
 		{TIMED_GAUSS_STIMULUS, "timed gauss stimulus" },
 		{TIMED_GAUSS_STIMULUS_2D, "timed gauss stimulus 2d" },
 		{BOOST_STIMULUS_2D, "boost stimulus 2d" },
-		{FIELD_PROJECTION, "field projection" },
-		{FIELD_EXPANSION, "field expansion" },
-		{CORRELATED_NORMAL_NOISE, "correlated normal noise"},
 	};
 
 	struct ElementDimensions

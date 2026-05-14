@@ -119,7 +119,8 @@ namespace dnf_composer::user_interface
 				ImGui::PushItemWidth(dragW);
 				switchElementToModify(s_focusedElement_);
 				ImGui::PopItemWidth();
-				renderDimensionControls(s_focusedElement_);
+				if (s_focusedElement_->getElementCommonParameters().dimensionParameters.dimensionality == 1)
+					renderDimensionControls(s_focusedElement_);
 			}
 			endElementPanel(scope);
 			ImGui::Spacing();
@@ -151,7 +152,8 @@ namespace dnf_composer::user_interface
 	            PanelScope scope = beginElementPanel(tint, size);
 	            {
 	                switchElementToModify(e);
-	                renderDimensionControls(e);
+	                if (e->getElementCommonParameters().dimensionParameters.dimensionality == 1)
+	                    renderDimensionControls(e);
 	            }
 	            endElementPanel(scope);
 

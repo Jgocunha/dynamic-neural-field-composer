@@ -561,15 +561,9 @@ namespace dnf_composer::user_interface
 				const auto lbl         = element->getLabel();
 				const bool isWeightMap = (lbl == element::ElementLabel::FIELD_COUPLING ||
 				                          lbl == element::ElementLabel::GAUSS_FIELD_COUPLING);
-				const bool is2DField   = (lbl == element::ElementLabel::NEURAL_FIELD_2D ||
-				                          lbl == element::ElementLabel::GAUSS_STIMULUS_2D ||
-				                          lbl == element::ElementLabel::GAUSS_KERNEL_2D ||
-				                          lbl == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
-				                          lbl == element::ElementLabel::NORMAL_NOISE_2D ||
-				                          lbl == element::ElementLabel::OSCILLATORY_KERNEL_2D ||
-				                          lbl == element::ElementLabel::TIMED_GAUSS_STIMULUS_2D ||
-				                          lbl == element::ElementLabel::BOOST_STIMULUS_2D ||
-				                          lbl == element::ElementLabel::FIELD_EXPANSION);
+				// FIELD_PROJECTION has 2D input but 1D output — exclude it from heatmap rendering
+				const bool is2DField   = element->getElementCommonParameters().dimensionParameters.dimensionality == 2
+				                      && lbl != element::ElementLabel::FIELD_PROJECTION;
 				const float plotW = ImGui::GetContentRegionAvail().x;
 				const float plotH = (isWeightMap || is2DField) ? plotW : plotW * 0.6f;
 				ImGui::SetNextWindowPos (state.initialPos, ImGuiCond_Always);

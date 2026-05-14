@@ -23,8 +23,6 @@
 #include "elements/timed_gauss_stimulus.h"
 #include "elements/timed_gauss_stimulus_2d.h"
 #include "elements/boost_stimulus_2d.h"
-#include "elements/field_projection.h"
-#include "elements/field_expansion.h"
 
 namespace dnf_composer::element
 {

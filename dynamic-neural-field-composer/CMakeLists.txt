@@ -356,8 +356,6 @@ add_example_executable(ex_oscillatory_kernel_2d ex_oscillatory_kernel_2d.cpp)
 add_example_executable(ex_timed_gauss_stimulus ex_timed_gauss_stimulus.cpp)
 add_example_executable(ex_timed_gauss_stimulus_2d ex_timed_gauss_stimulus_2d.cpp)
 add_example_executable(ex_boost_stimulus_2d ex_boost_stimulus_2d.cpp)
-add_example_executable(ex_field_projection ex_field_projection.cpp)
-add_example_executable(ex_field_expansion ex_field_expansion.cpp)
 add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)
 
 # Documentation (Doxygen)
@@ -404,8 +402,6 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_timed_gauss_stimulus.cpp"
             "tests/elements/test_timed_gauss_stimulus_2d.cpp"
             "tests/elements/test_boost_stimulus_2d.cpp"
-            "tests/elements/test_field_projection.cpp"
-            "tests/elements/test_field_expansion.cpp"
             "tests/elements/test_change_dimensions.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"
