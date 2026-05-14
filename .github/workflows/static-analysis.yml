@@ -1,0 +1,75 @@
+name: Static Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang clang-tidy cmake \
+            libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+
+      - name: Set up vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git $HOME/vcpkg
+          $HOME/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+          echo "VCPKG_ROOT=$HOME/vcpkg" >> $GITHUB_ENV
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: ~/vcpkg/installed
+          key: vcpkg-clang-tidy-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/build.sh') }}
+          restore-keys: vcpkg-clang-tidy-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        run: |
+          $VCPKG_ROOT/vcpkg install \
+            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]:x64-linux" \
+            "implot:x64-linux" \
+            "imgui-node-editor:x64-linux" \
+            "nlohmann-json:x64-linux" \
+            "gtest:x64-linux" \
+            "catch2:x64-linux"
+
+      - name: Build and install imgui-platform-kit
+        run: |
+          IPK_SRC=$HOME/imgui-platform-kit-src
+          IPK_INSTALL=$HOME/imgui-platform-kit-install
+          git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
+          cmake -S $IPK_SRC/imgui-platform-kit -B $IPK_SRC/build \
+            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+            -DVCPKG_TARGET_TRIPLET=x64-linux \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_C_COMPILER=clang
+          cmake --build $IPK_SRC/build --parallel $(nproc)
+          cmake --install $IPK_SRC/build
+          echo "IPK_INSTALL_PREFIX=$IPK_INSTALL" >> $GITHUB_ENV
+
+      - name: Configure
+        run: |
+          cmake -S ./dynamic-neural-field-composer -B build \
+            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_C_COMPILER=clang
+
+      - name: Run clang-tidy
+        run: |
+          run-clang-tidy -p build \
+            -header-filter='dynamic-neural-field-composer/include/.*' \
+            $(find dynamic-neural-field-composer/src -name '*.cpp')

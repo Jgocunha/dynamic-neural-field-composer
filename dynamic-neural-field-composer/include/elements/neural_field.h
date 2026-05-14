@@ -7,11 +7,13 @@
 
 namespace dnf_composer::element
 {
+	/// @brief Parameters that govern a NeuralField's dynamics.
+	/// @ingroup elements
 	struct NeuralFieldParameters final : ElementSpecificParameters
 	{
-		double tau;
-		double startingRestingLevel;
-		std::unique_ptr<ActivationFunction> activationFunction;
+		double tau;                                             ///< Time constant of the field's relaxation dynamics.
+		double startingRestingLevel;                            ///< Homogeneous resting level (h); sub-threshold when negative.
+		std::unique_ptr<ActivationFunction> activationFunction; ///< Nonlinearity applied to activation to produce output.
 
 		NeuralFieldParameters& operator=(const NeuralFieldParameters& other)
 		{
@@ -35,10 +37,15 @@ namespace dnf_composer::element
 				activationFunction == other.activationFunction;
 		}
 
+		/// @brief Default constructor: tau=25, restingLevel=-5, sigmoid(0, 10).
 		NeuralFieldParameters()
-			:tau(25.0), startingRestingLevel(-5.0), activationFunction(nullptr)
+			: tau(25.0), startingRestingLevel(-5.0), activationFunction(nullptr)
 		{}
 
+		/// @brief Construct with explicit tau, resting level, and activation function.
+		/// @param tau                 Time constant in ms.
+		/// @param restingLevel        Homogeneous resting level h.
+		/// @param activationFunction  Pointwise nonlinearity.
 		NeuralFieldParameters(double tau, double restingLevel,
 		                      const ActivationFunction& activationFunction)
 			: tau(tau), startingRestingLevel(restingLevel),
@@ -68,16 +75,18 @@ namespace dnf_composer::element
 
 	};
 
+	/// @brief Describes a single activation bump (peak) in a neural field.
+	/// @ingroup elements
 	struct NeuralFieldBump
 	{
-		double centroid;
-		double startPosition;
-		double endPosition;
-		double amplitude;
-		double width;
-		double previousCentroid = 0.0;
-		double velocity;
-		double acceleration;
+		double centroid;          ///< Spatial position of the bump's centre of mass.
+		double startPosition;     ///< Left edge of the above-threshold region.
+		double endPosition;       ///< Right edge of the above-threshold region.
+		double amplitude;         ///< Peak activation value.
+		double width;             ///< Width of the above-threshold region.
+		double previousCentroid = 0.0; ///< Centroid at the previous time step.
+		double velocity;          ///< Rate of change of the centroid (positions/step).
+		double acceleration;      ///< Rate of change of velocity (positions/step²).
 
 		explicit NeuralFieldBump(const double centroid = 0.0,
 		                const double startPosition = 0.0,
@@ -114,16 +123,18 @@ namespace dnf_composer::element
 
 	};
 
+	/// @brief Snapshot of a neural field's observable state.
+	/// @ingroup elements
 	struct NeuralFieldState
 	{
-		std::vector<NeuralFieldBump> bumps;
-		bool stable;
-		double lowestActivation;
-		double highestActivation;
-		double thresholdForStability;
-		double previousActivationSum = 0.0;
-		double previousActivationAvg = 0.0;
-		double previousActivationNorm = 0.0;
+		std::vector<NeuralFieldBump> bumps; ///< Currently active above-threshold peaks.
+		bool stable;                        ///< True when the activation change falls below the stability threshold.
+		double lowestActivation;            ///< Minimum activation across the field.
+		double highestActivation;           ///< Maximum activation across the field.
+		double thresholdForStability;       ///< Convergence criterion (default 0.895).
+		double previousActivationSum  = 0.0; ///< Activation sum at the previous step — used to detect convergence.
+		double previousActivationAvg  = 0.0; ///< Activation average at the previous step — used to detect convergence.
+		double previousActivationNorm = 0.0; ///< L2 norm of activation at the previous step — used to detect convergence.
 
 		NeuralFieldState()
 			:bumps({}), stable(false), lowestActivation(0.0),
@@ -149,12 +160,34 @@ namespace dnf_composer::element
 
 	};
 
+	/// @brief Continuous attractor neural field — the core DFT building block.
+	///
+	/// Implements a one-dimensional neural field with Amari-type dynamics:
+	/// @code
+	///   tau * du/dt = -u + h + s(x, t) + (w * f(u))(x)
+	/// @endcode
+	/// where @c u is activation, @c h the resting level, @c s the summed external
+	/// input, and @c w the lateral interaction kernel convolved with the output
+	/// @c f(u) (determined by the activation function).
+	///
+	/// @ingroup elements
 	class NeuralField final : public Element
 	{
 	protected:
-		NeuralFieldParameters parameters;
-		NeuralFieldState state;
+		NeuralFieldParameters parameters; ///< Dynamics parameters (tau, h, activation function).
+		NeuralFieldState state;           ///< Runtime state (bumps, stability, min/max).
+	private:
+		// Cached raw pointers into component vectors — valid between init() calls, never resized during step().
+		double* act_  = nullptr; ///< components["activation"].data()
+		double* inp_  = nullptr; ///< components["input"].data()
+		double* rest_ = nullptr; ///< components["resting level"].data()
+
+		bool computeStateMetrics_ = true; ///< When false, skip stability/bump/min-max updates.
+		std::vector<NeuralFieldBump> prevBumps_; ///< Scratch buffer for updateBumps — avoids per-step allocation.
 	public:
+		/// @brief Construct a neural field.
+		/// @param elementCommonParameters  Name, label, and spatial dimensions.
+		/// @param parameters               Field dynamics parameters.
 		NeuralField(const ElementCommonParameters& elementCommonParameters,
 		            const NeuralFieldParameters& parameters);
 
@@ -163,21 +196,36 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
+		/// @brief Set the stability convergence threshold.
+		/// @param threshold  New threshold value (default 0.895).
 		void setThresholdForStability(const double threshold) { state.thresholdForStability = threshold; }
+
 		void setParameters(const NeuralFieldParameters& parameters);
 		NeuralFieldParameters getParameters() const;
 		bool isStable() const;
+
 		double getLowestActivation() const { return state.lowestActivation; }
 		double getHighestActivation() const { return state.highestActivation; }
+
+		/// @brief Return all currently detected above-threshold bumps.
 		std::vector<NeuralFieldBump> getBumps() const { return state.bumps; }
+
+		/// @brief Return the registered self-excitation kernel, if any.
 		std::shared_ptr<Kernel> getSelfExcitationKernel() const;
+
 		double getStabilityThreshold() const { return state.thresholdForStability; }
+
+		/// @brief Enable or disable per-step state-metric computation (stability, bumps, min/max).
+		/// The default (enabled) path uses a single fused O(N) pass and is fast enough for
+		/// normal use. Disable only as an advanced micro-optimisation for headless batch runs
+		/// where bump data and stability checks are never needed.
+		/// Default: true (full state tracking enabled).
+		void setComputeStateMetrics(bool enable) { computeStateMetrics_ = enable; }
+		bool getComputeStateMetrics() const { return computeStateMetrics_; }
 	protected:
 		void calculateActivation(double t, double deltaT);
 		void calculateOutput();
 		void updateState(double deltaT);
-		void checkStability();
-		void updateMinMaxActivation();
 		void updateBumps(double deltaT);
 	};
 }

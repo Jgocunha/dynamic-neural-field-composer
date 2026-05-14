@@ -1,4 +1,5 @@
 #include "simulation/simulation_file_manager.h"
+#include "tools/utils.h"
 
 
 namespace dnf_composer
@@ -9,7 +10,7 @@ namespace dnf_composer
 		: simulation(simulation), filePath(filePath)
 	{
         if (filePath.empty())
-            this->filePath = std::string(OUTPUT_DIRECTORY) + "/simulations/";
+            this->filePath = tools::utils::getResourceRoot() + "/data/simulations/";
 	}
 
 	void SimulationFileManager::saveElementsToJson() const
@@ -165,6 +166,18 @@ namespace dnf_composer
                 }
             }
             break;
+            case element::ActivationFunctionType::ABSSIGMOID:
+            {
+                const auto absSigmoidFn = dynamic_cast<const element::AbsSigmoidFunction*>(neuralFieldParameters.activationFunction.get());
+                if (absSigmoidFn) {
+                    elementJson["activationFunction"] = {
+                        {"type", "abs_sigmoid"},
+                        {"x_shift", absSigmoidFn->getXShift()},
+                        {"beta", absSigmoidFn->getBeta()},
+                    };
+                }
+            }
+            break;
             }
         }
         break;
@@ -199,6 +212,15 @@ namespace dnf_composer
             elementJson["amplitude"] = normalNoiseParameters.amplitude;
         }
         break;
+        case element::CORRELATED_NORMAL_NOISE:
+        {
+            const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise>(element);
+            const auto p = cnn->getParameters();
+            elementJson["amplitude"] = p.amplitude;
+            elementJson["width"] = p.width;
+            elementJson["circular"] = p.circular;
+        }
+        break;
         case element::GAUSS_STIMULUS:
         {
             const auto gaussStimulus = std::dynamic_pointer_cast<element::GaussStimulus>(element);
@@ -229,8 +251,9 @@ namespace dnf_composer
             elementJson["normalized"] = gaussFieldCouplingParameters.normalized;
             elementJson["input_x_max"] = gaussFieldCouplingParameters.inputFieldDimensions.x_max;
             elementJson["input_d_x"] = gaussFieldCouplingParameters.inputFieldDimensions.d_x;
+            elementJson["couplings"] = json::array();
             for (const auto& coupling : gaussFieldCouplingParameters.couplings)
-				elementJson["couplings"] += {coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width};
+                elementJson["couplings"].push_back(json::array({coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width}));
         }
         break;
         case element::OSCILLATORY_KERNEL:
@@ -245,6 +268,18 @@ namespace dnf_composer
 		        elementJson["normalized"] = oscillatoryKernelParameters.normalized;
 	        }
             break;
+        case element::ASYMMETRIC_GAUSS_KERNEL:
+        {
+            const auto kernel = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
+            const auto p = kernel->getParameters();
+            elementJson["width"]           = p.width;
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["timeShift"]       = p.timeShift;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
         case element::BOOST_STIMULUS:
         {
             const auto boostStimulus = std::dynamic_pointer_cast<element::BoostStimulus>(element);
@@ -362,33 +397,37 @@ namespace dnf_composer
 
 	        switch (elementLabel)
 	    	{
-	        case element::NEURAL_FIELD: 
+	        case element::NEURAL_FIELD:
 	            {
-		            // Parse specific parameters for neural field
 		            const double tau = elementJson["tau"];
 		            const double restingLevel = elementJson["restingLevel"];
 
-		            // Check the activation function type and parameters
 		            auto activationFunctionJson = elementJson["activationFunction"];
 		            std::unique_ptr<element::ActivationFunction> activationFunction;
 		            if (!activationFunctionJson.is_null()) {
 		                std::string activationFunctionType = activationFunctionJson["type"];
 		                if (activationFunctionType == "heaviside") {
-		                    double x_shift = activationFunctionJson["x_shift"];
+		                    const double x_shift = activationFunctionJson["x_shift"];
 		                    activationFunction = std::make_unique<element::HeavisideFunction>(x_shift);
 		                }
 		                else if (activationFunctionType == "sigmoid") {
-		                    double x_shift = activationFunctionJson["x_shift"];
-		                    double steepness = activationFunctionJson["steepness"];
+		                    const double x_shift = activationFunctionJson["x_shift"];
+		                    const double steepness = activationFunctionJson["steepness"];
 		                    activationFunction = std::make_unique<element::SigmoidFunction>(x_shift, steepness);
 		                }
+		                else if (activationFunctionType == "abs_sigmoid") {
+		                    const double x_shift = activationFunctionJson["x_shift"];
+		                    const double beta = activationFunctionJson["beta"];
+		                    activationFunction = std::make_unique<element::AbsSigmoidFunction>(x_shift, beta);
+		                }
 		            }
-		            // Reconstruct neural field element
+		            if (!activationFunction)
+		                activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0);
+
 		            auto neuralField = std::make_shared<element::NeuralField>(
 		                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
 		                element::NeuralFieldParameters(tau, restingLevel, *activationFunction)
 		            );
-		            // Add the reconstructed element to the simulation
 		            simulation->addElement(neuralField);
 		        }
 	        	break;
@@ -401,6 +440,19 @@ namespace dnf_composer
                     element::NormalNoiseParameters(amplitude)
                 );
                 simulation->addElement(normalNoise);
+            }
+            break;
+            case element::CORRELATED_NORMAL_NOISE:
+            {
+                const double amplitude = elementJson["amplitude"];
+                const double width = elementJson["width"];
+                const bool circular = elementJson["circular"];
+
+                auto cnn = std::make_shared<element::CorrelatedNormalNoise>(
+                    element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                    element::CorrelatedNormalNoiseParameters(amplitude, width, circular)
+                );
+                simulation->addElement(cnn);
             }
             break;
 	        case element::GAUSS_KERNEL:
@@ -472,16 +524,18 @@ namespace dnf_composer
                 const double input_d_x = elementJson["input_d_x"];
 
                 std::vector<element::GaussCoupling> couplings;
-                couplings.reserve(elementJson["couplings"].size());
-                for (const auto& coupling : elementJson["couplings"])
+                if (elementJson.contains("couplings") && elementJson["couplings"].is_array())
                 {
-	                const double x_i = coupling[0];
-					const double x_j = coupling[1];
-                    const double amp = coupling[2];
-                    const double width = coupling[3];
-					auto gc = element::GaussCoupling(x_i, x_j, amp, width);
-					couplings.push_back(gc);
-				}
+                    couplings.reserve(elementJson["couplings"].size());
+                    for (const auto& coupling : elementJson["couplings"])
+                    {
+	                    const double x_i = coupling[0];
+					    const double x_j = coupling[1];
+                        const double amp = coupling[2];
+                        const double width = coupling[3];
+					    couplings.push_back(element::GaussCoupling(x_i, x_j, amp, width));
+				    }
+                }
 
                 auto coupling = std::make_shared<element::GaussFieldCoupling>(
 					element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -506,6 +560,22 @@ namespace dnf_composer
 			        simulation->addElement(kernel);
 		        }
             break;
+        case element::ASYMMETRIC_GAUSS_KERNEL:
+        {
+            const double width           = elementJson["width"];
+            const double amplitude       = elementJson["amplitude"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const double timeShift       = elementJson["timeShift"];
+            const bool   circular        = elementJson["circular"];
+            const bool   normalized      = elementJson["normalized"];
+
+            auto kernel = std::make_shared<element::AsymmetricGaussKernel>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::AsymmetricGaussKernelParameters(width, amplitude, amplitudeGlobal, timeShift, circular, normalized)
+            );
+            simulation->addElement(kernel);
+        }
+        break;
         case element::BOOST_STIMULUS:
         {
             const double amplitude = elementJson["amplitude"];

@@ -28,7 +28,7 @@ namespace dnf_composer::user_interface
 
     public:
         LogWindow();
-        static void addLog(const ImVec4& color, const char* fmt, ...) IM_FMTARGS(3);
+        static void addLog(const ImVec4& color, const char* fmt, ...) IM_FMTARGS(2);
         void render() override { draw(); }
         static bool isActive() { return isWindowActive;}
         static void renderContent();

@@ -35,6 +35,7 @@ namespace dnf_composer
 		BOOST_STIMULUS_2D,
 		FIELD_PROJECTION,
 		FIELD_EXPANSION,
+			CORRELATED_NORMAL_NOISE,
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -61,6 +62,7 @@ namespace dnf_composer
 			{BOOST_STIMULUS_2D, "boost stimulus 2d" },
 			{FIELD_PROJECTION, "field projection" },
 			{FIELD_EXPANSION, "field expansion" },
+			{CORRELATED_NORMAL_NOISE, "correlated normal noise"},
 		};
 
 		struct ElementDimensions
@@ -101,7 +103,7 @@ namespace dnf_composer
 			ElementCommonParameters(const std::string& elementName, int x_max);
 			ElementCommonParameters(const std::string& elementName,
 				const ElementDimensions& dimensionParameters);
-			ElementCommonParameters(ElementIdentifiers identifiers, 
+			ElementCommonParameters(ElementIdentifiers identifiers,
 				const ElementDimensions& dimensionParameters);
 			bool operator==(const ElementCommonParameters& other) const;
 			void print() const;

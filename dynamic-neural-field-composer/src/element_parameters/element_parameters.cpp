@@ -1,4 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
+﻿// This is a personal academic project. Dear PVS-Studio, please check it.
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
@@ -9,13 +9,13 @@ namespace dnf_composer
 {
 	namespace element
 	{
-		ElementDimensions::ElementDimensions(int x_max, double d_x)
+		ElementDimensions::ElementDimensions(const int x_max, const double d_x)
 			: x_max(x_max), y_max(1), d_x(d_x), d_y(1.0),
 			  size_x(static_cast<int>(std::round(x_max / d_x))), size_y(1),
 			  size(static_cast<int>(std::round(x_max / d_x)))
 		{}
 
-		ElementDimensions::ElementDimensions(int x_max, int y_max, double d_x, double d_y)
+		ElementDimensions::ElementDimensions(const int x_max, const int y_max, const double d_x, const double d_y)
 			: x_max(x_max), y_max(y_max), d_x(d_x), d_y(d_y),
 			  size_x(static_cast<int>(std::round(x_max / d_x))),
 			  size_y(static_cast<int>(std::round(y_max / d_y))),

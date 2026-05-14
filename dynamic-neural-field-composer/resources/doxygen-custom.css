@@ -1,0 +1,10 @@
+#projectlogo img {
+    max-height: 55px;
+    width: auto;
+}
+
+.textblock img {
+    max-width: 600px;
+    height: auto;
+    display: block;
+}

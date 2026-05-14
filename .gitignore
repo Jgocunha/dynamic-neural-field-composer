@@ -2,8 +2,8 @@
 *.vscode
 profiling/
 *.idea
-docs/
-.claude
+*.claude
 
 install/
 build/
+docs/

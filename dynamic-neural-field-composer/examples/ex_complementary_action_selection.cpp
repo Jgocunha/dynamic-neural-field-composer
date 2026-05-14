@@ -3,6 +3,26 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
+// Complementary Action Selection example
+//
+// A multi-field DFT architecture for selecting and executing a reach-and-grasp
+// action toward one of two objects. The hand position field and object
+// perception fields feed complementary goal fields (small / large object),
+// which in turn drive a shared action execution field. The architecture
+// produces a binary decision: which object to act on.
+//
+// Architecture:
+//   hand position stimulus  --> hand position field
+//   small object stimuli    --> small object field  --> small object selection field --> action execution field
+//   large object stimulus   --> large object field  --> large object integration field -> action execution field
+//   hand position field     --> (inhibitory coupling) --> small object selection field
+//   hand position field     --> (excitatory coupling) --> large object integration field
+//
+// Try it:
+//   - Move the hand position stimulus to overlap with the large object: the
+//     large-object goal field activates and drives action execution.
+//   - Remove the large object stimulus: the small object field wins instead.
+
 int main()
 {
 	try

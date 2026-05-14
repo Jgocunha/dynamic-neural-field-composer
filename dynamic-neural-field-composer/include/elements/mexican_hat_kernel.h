@@ -19,17 +19,34 @@
 
 namespace dnf_composer::element
 {
+	/// @brief Parameters for a Mexican-hat lateral interaction kernel.
+	///
+	/// A Mexican-hat kernel is the difference of two Gaussians: a narrow excitatory
+	/// Gaussian minus a wider inhibitory Gaussian, plus a global inhibition constant.
+	/// This combination produces local self-excitation with surrounding lateral inhibition,
+	/// the standard interaction profile for winner-takes-all selection fields.
+	///
+	/// @ingroup elements
 	struct MexicanHatKernelParameters final : ElementSpecificParameters
 	{
-		double widthExc;
-		double amplitudeExc;
-		double widthInh;
-		double amplitudeInh;
-		double amplitudeGlobal;
-		bool circular;
-		bool normalized;
-		std::optional<ElementDimensions> outputFieldDimensions;
+		double widthExc;          ///< σ of the excitatory Gaussian.
+		double amplitudeExc;      ///< Peak amplitude of the excitatory Gaussian.
+		double widthInh;          ///< σ of the inhibitory Gaussian.
+		double amplitudeInh;      ///< Peak amplitude of the inhibitory Gaussian.
+		double amplitudeGlobal;   ///< Spatially uniform inhibition added after convolution.
+		bool circular;            ///< Enable circular (toroidal) convolution.
+		bool normalized;          ///< Normalise both Gaussians before differencing.
+		std::optional<ElementDimensions> outputFieldDimensions; ///< Override output size for cross-dimension use.
 
+		/// @brief Construct a MexicanHatKernel parameter set with sensible defaults.
+		/// @param widthExc       Excitatory σ (default 2.5).
+		/// @param amplitudeExc   Excitatory peak (default 11).
+		/// @param widthInh       Inhibitory σ (default 5).
+		/// @param amplitudeInh   Inhibitory peak (default 15).
+		/// @param amplitudeGlobal  Global inhibition (default -0.1).
+		/// @param circular       Circular convolution (default true).
+		/// @param normalized     Normalise kernels (default true).
+		/// @param outputDims     Optional output dimension override.
 		explicit MexicanHatKernelParameters(const double widthExc = 2.5, const double amplitudeExc = 11.0,
 		                           const double widthInh = 5.0, const double amplitudeInh = 15.0,
 		                           const double amplitudeGlobal = -0.1,
@@ -75,12 +92,27 @@ namespace dnf_composer::element
 		}
 	};
 
+	/// @brief Difference-of-Gaussians convolution kernel for DFT lateral interactions.
+	///
+	/// Produces local excitation and surround inhibition in one pass, making it the
+	/// natural choice for selection and working-memory fields.
+	///
+	/// When @c MexicanHatKernelParameters::outputFieldDimensions is set, the convolution
+	/// result is resampled to the specified output size, enabling connections between
+	/// fields of different spatial dimensions.
+	///
+	/// @ingroup elements
 	class MexicanHatKernel final : public Kernel
 	{
 	private:
 		MexicanHatKernelParameters parameters;
+		std::vector<double> scratchExtended;
 		std::vector<double> scratchConvolution;
+		std::vector<double> scratchResample_;
 	public:
+		/// @brief Construct a MexicanHatKernel.
+		/// @param elementCommonParameters  Name, label, and dimensions.
+		/// @param mhk_parameters           Kernel-specific parameters.
 		MexicanHatKernel(const ElementCommonParameters& elementCommonParameters,
 		                 MexicanHatKernelParameters mhk_parameters);
 

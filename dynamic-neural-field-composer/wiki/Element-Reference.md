@@ -32,6 +32,7 @@ NeuralFieldParameters{
 |---|---|---|
 | `SigmoidFunction(x_shift, steepness)` | `x_shift=0.0`, `steepness=10.0` | Smooth sigmoidal transfer function |
 | `HeavisideFunction(x_shift)` | `x_shift=0.0` | Binary threshold function |
+| `AbsSigmoidFunction(x_shift, beta)` | `x_shift=0.0`, `beta=10.0` | Algebraic sigmoid — avoids `exp`; smoother than Heaviside, faster than the exponential sigmoid at very high steepness |
 
 ### Components
 
@@ -77,11 +78,12 @@ A Gaussian lateral interaction kernel. Typically provides local excitation (posi
 
 ```cpp
 GaussKernelParameters{
-    double width           = 3.0,
-    double amplitude       = 3.0,
-    double amplitudeGlobal = -0.01,
-    bool   circular        = true,
-    bool   normalized      = true
+    double width                                       = 3.0,
+    double amplitude                                   = 3.0,
+    double amplitudeGlobal                             = -0.01,
+    bool   circular                                    = true,
+    bool   normalized                                  = true,
+    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
 }
 ```
 
@@ -92,6 +94,7 @@ GaussKernelParameters{
 | `amplitudeGlobal` | `-0.01` | Uniform global inhibition added to every position |
 | `circular` | `true` | Whether the field wraps around at the boundaries |
 | `normalized` | `true` | Whether the Gaussian is area-normalized |
+| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -112,13 +115,14 @@ A Mexican Hat (difference-of-Gaussians) kernel providing short-range excitation 
 
 ```cpp
 MexicanHatKernelParameters{
-    double widthExc        = 2.5,
-    double amplitudeExc    = 11.0,
-    double widthInh        = 5.0,
-    double amplitudeInh    = 15.0,
-    double amplitudeGlobal = -0.1,
-    bool   circular        = true,
-    bool   normalized      = true
+    double widthExc                                        = 2.5,
+    double amplitudeExc                                    = 11.0,
+    double widthInh                                        = 5.0,
+    double amplitudeInh                                    = 15.0,
+    double amplitudeGlobal                                 = -0.1,
+    bool   circular                                        = true,
+    bool   normalized                                      = true,
+    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
 }
 ```
 
@@ -131,6 +135,7 @@ MexicanHatKernelParameters{
 | `amplitudeGlobal` | `-0.1` | Uniform global inhibition |
 | `circular` | `true` | Boundary wrapping |
 | `normalized` | `true` | Area normalization |
+| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -151,12 +156,13 @@ A kernel with an oscillatory (damped cosine) lateral interaction pattern. Useful
 
 ```cpp
 OscillatoryKernelParameters{
-    double amplitude       = 1.0,
-    double decay           = 0.08,    // must be > 0
-    double zeroCrossings   = 0.3,     // clamped to [0, 1]
-    double amplitudeGlobal = -0.01,
-    bool   circular        = true,
-    bool   normalized      = false
+    double amplitude                                       = 1.0,
+    double decay                                           = 0.08,   // must be > 0
+    double zeroCrossings                                   = 0.3,    // clamped to [0, 1]
+    double amplitudeGlobal                                 = -0.01,
+    bool   circular                                        = true,
+    bool   normalized                                      = false,
+    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
 }
 ```
 
@@ -168,6 +174,7 @@ OscillatoryKernelParameters{
 | `amplitudeGlobal` | `-0.01` | Uniform global inhibition |
 | `circular` | `true` | Boundary wrapping |
 | `normalized` | `false` | Area normalization |
+| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -188,12 +195,13 @@ A Gaussian kernel with an asymmetric component, combining a standard Gaussian an
 
 ```cpp
 AsymmetricGaussKernelParameters{
-    double width           = 3.0,
-    double amplitude       = 3.0,
-    double amplitudeGlobal = 0.0,
-    double timeShift       = 0.0,
-    bool   circular        = true,
-    bool   normalized      = true
+    double width                                           = 3.0,
+    double amplitude                                       = 3.0,
+    double amplitudeGlobal                                 = 0.0,
+    double timeShift                                       = 0.0,
+    bool   circular                                        = true,
+    bool   normalized                                      = true,
+    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
 }
 ```
 
@@ -202,9 +210,10 @@ AsymmetricGaussKernelParameters{
 | `width` | `3.0` | Width (sigma) of the underlying Gaussian |
 | `amplitude` | `3.0` | Amplitude of the symmetric component |
 | `amplitudeGlobal` | `0.0` | Uniform global inhibition |
-| `timeShift` | `0.0` | Controls the strength of the asymmetric (derivative) component |
+| `timeShift` | `0.0` | Controls the strength of the asymmetric (derivative) component — positive values bias activity toward higher positions |
 | `circular` | `true` | Boundary wrapping |
 | `normalized` | `true` | Area normalization |
+| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -212,6 +221,43 @@ AsymmetricGaussKernelParameters{
 |---|---|
 | `"output"` | Convolved asymmetric signal |
 | `"input"` | Raw input from connected field |
+
+---
+
+## Cross-dimension kernels
+
+By default, a kernel's output is the same size as its input. Setting `outputFieldDimensions` in any kernel's parameters changes this: after convolution, the result is resampled to the specified size using linear interpolation. This lets a kernel act as a bridge between two neural fields that have different spatial resolutions.
+
+### When to use it
+
+- **Downsampling:** a high-resolution perceptual field (e.g., 200 positions) feeding a lower-resolution decision field (e.g., 100 positions).
+- **Upsampling:** a compact motor-command field projecting back onto a larger sensory field.
+- **Resolution mismatch:** any architecture where two fields operate at different spatial scales.
+
+### Code example
+
+```cpp
+// Field 200 → GaussKernel (in=200, out=100) → Field 100
+GaussKernelParameters gkp{ 3.0, 3.0, -0.01, true, true,
+                            ElementDimensions{ 100 } };   // output size
+
+auto fieldSrc = makeField("src", 200);
+auto kernel   = std::make_shared<GaussKernel>(ElementCommonParameters{"k", 200}, gkp);
+auto fieldDst = makeField("dst", 100);
+
+kernel->addInput(fieldSrc);    // src output (size 200) → kernel input (size 200)
+fieldDst->addInput(kernel);    // kernel output (size 100) → dst input (size 100)
+```
+
+The same `outputFieldDimensions` parameter is available on `MexicanHatKernel`, `OscillatoryKernel`, and `AsymmetricGaussKernel`.
+
+### Square mode (default)
+
+When `outputFieldDimensions` is `nullopt` (the default), the kernel output is the same size as its input — no resampling occurs. Setting `outputFieldDimensions` to a size equal to the input size is equivalent to leaving it unset.
+
+### Changing output size at runtime
+
+In the **Element Control** panel, select a kernel and edit the **Output Size** and **Output Step** fields. Committing the value (Enter or focus-loss) rebuilds the kernel and severs any existing connections, since the element graph's dimension contract changes. Reconnect the kernel to fields of the correct sizes afterwards.
 
 ---
 

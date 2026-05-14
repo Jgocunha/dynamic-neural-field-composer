@@ -6,9 +6,13 @@
 #include <sstream>
 #include <fstream>
 #include <chrono>
+#include <filesystem>
 
 namespace dnf_composer::tools::utils
 {
+	// Returns the runtime install prefix (parent of bin/).
+	// Falls back to the compile-time PROJECT_DIR in dev builds.
+	std::string getResourceRoot();
 	int countNumOfLinesInFile(const std::string& filename);
 
 	bool saveVectorToFile(const std::vector<double>& vector, const std::string& filename);

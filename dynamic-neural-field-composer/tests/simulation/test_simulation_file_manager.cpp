@@ -12,6 +12,12 @@
 #include "elements/neural_field.h"
 #include "elements/normal_noise.h"
 #include "elements/activation_function.h"
+#include "elements/boost_stimulus.h"
+#include "elements/oscillatory_kernel.h"
+#include "elements/asymmetric_gauss_kernel.h"
+#include "elements/field_coupling.h"
+#include "elements/gauss_field_coupling.h"
+#include "elements/memory_trace.h"
 #include "exceptions/exception.h"
 
 using namespace dnf_composer;
@@ -659,4 +665,223 @@ TEST_F(SimulationFileManagerTest, SimulationSaveReadRoundTripViaSimulationMethod
     EXPECT_NO_THROW(simB->getElement("gk 1"));
     EXPECT_NO_THROW(simB->getElement("nn 1"));
     EXPECT_TRUE(simB->isInitialized());
+}
+
+// ---------------------------------------------------------------------------
+// Round-trip: element types not covered above
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesBoostStimulusParameters)
+{
+    const BoostStimulusParameters bsp{ 7.5, false };
+    const auto stimulus = std::make_shared<BoostStimulus>(
+        ElementCommonParameters{ "bs rt", 100 }, bsp);
+
+    const auto simA = createSimulation("rt-bs-params", 1.0, 0.0, 0.0);
+    simA->addElement(stimulus);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-bs-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-bs-params.json" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<BoostStimulus>(simB->getElement("bs rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), bsp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesOscillatoryKernelParameters)
+{
+    const OscillatoryKernelParameters okp{ 2.0, 0.12, 0.4, -0.02, true, false };
+    const auto kernel = std::make_shared<OscillatoryKernel>(
+        ElementCommonParameters{ "ok rt", 100 }, okp);
+
+    const auto simA = createSimulation("rt-ok-params", 1.0, 0.0, 0.0);
+    simA->addElement(kernel);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-ok-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-ok-params.json" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<OscillatoryKernel>(simB->getElement("ok rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), okp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesAsymmetricGaussKernelParameters)
+{
+    const AsymmetricGaussKernelParameters agkp{ 4.0, 5.0, -0.01, 2.0, true, true };
+    const auto kernel = std::make_shared<AsymmetricGaussKernel>(
+        ElementCommonParameters{ "agk rt", 100 }, agkp);
+
+    const auto simA = createSimulation("rt-agk-params", 1.0, 0.0, 0.0);
+    simA->addElement(kernel);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-agk-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-agk-params.json" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<AsymmetricGaussKernel>(simB->getElement("agk rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), agkp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesFieldCouplingParameters)
+{
+    const FieldCouplingParameters fcp{ {100, 1.0}, LearningRule::OJA, 2.0, 0.05 };
+    const auto coupling = std::make_shared<FieldCoupling>(
+        ElementCommonParameters{ "fc rt", 100 }, fcp);
+
+    const auto simA = createSimulation("rt-fc-params", 1.0, 0.0, 0.0);
+    simA->addElement(coupling);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-fc-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-fc-params.json" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<FieldCoupling>(simB->getElement("fc rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), fcp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussFieldCouplingWithNoCouplings)
+{
+    const GaussFieldCouplingParameters gfcp{ {100, 1.0}, false, true, {} };
+    const auto coupling = std::make_shared<GaussFieldCoupling>(
+        ElementCommonParameters{ "gfc rt", 100 }, gfcp);
+
+    const auto simA = createSimulation("rt-gfc-empty", 1.0, 0.0, 0.0);
+    simA->addElement(coupling);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-gfc-empty-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gfc-empty.json" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<GaussFieldCoupling>(simB->getElement("gfc rt"));
+    ASSERT_NE(loaded, nullptr);
+    const auto params = loaded->getParameters();
+    EXPECT_EQ(params.circular,    gfcp.circular);
+    EXPECT_EQ(params.normalized,  gfcp.normalized);
+    EXPECT_EQ(params.inputFieldDimensions, gfcp.inputFieldDimensions);
+    EXPECT_TRUE(params.couplings.empty());
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussFieldCouplingWithCouplings)
+{
+    const std::vector<GaussCoupling> couplings = {
+        GaussCoupling{ 25.0, 30.0, 3.0, 5.0 },
+        GaussCoupling{ 50.0, 50.0, 4.0, 4.0 },
+        GaussCoupling{ 75.0, 70.0, 2.0, 6.0 },
+    };
+    const GaussFieldCouplingParameters gfcp{ {100, 1.0}, true, false, couplings };
+    const auto coupling = std::make_shared<GaussFieldCoupling>(
+        ElementCommonParameters{ "gfc rt2", 100 }, gfcp);
+
+    const auto simA = createSimulation("rt-gfc-couplings", 1.0, 0.0, 0.0);
+    simA->addElement(coupling);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-gfc-couplings-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gfc-couplings.json" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<GaussFieldCoupling>(simB->getElement("gfc rt2"));
+    ASSERT_NE(loaded, nullptr);
+    const auto params = loaded->getParameters();
+    EXPECT_EQ(params.circular,   gfcp.circular);
+    EXPECT_EQ(params.normalized, gfcp.normalized);
+    ASSERT_EQ(params.couplings.size(), couplings.size());
+    for (size_t i = 0; i < couplings.size(); ++i)
+        EXPECT_EQ(params.couplings[i], couplings[i]);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesMemoryTraceParameters)
+{
+    const MemoryTraceParameters mtp{ 150.0, 800.0, 0.3 };
+    const auto trace = std::make_shared<MemoryTrace>(
+        ElementCommonParameters{ "mt rt", 100 }, mtp);
+
+    const auto simA = createSimulation("rt-mt-params", 1.0, 0.0, 0.0);
+    simA->addElement(trace);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-mt-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-mt-params.json" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<MemoryTrace>(simB->getElement("mt rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), mtp);
+}
+
+// ---------------------------------------------------------------------------
+// All element types in a single simulation
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes)
+{
+    const auto simA = createSimulation("rt-all-elements", 1.0, 0.0, 0.0);
+    simA->addElement(makeField("nf 1"));
+    simA->addElement(makeStimulus("gs 1"));
+    simA->addElement(std::make_shared<BoostStimulus>(
+        ElementCommonParameters{ "bs 1", 100 }, BoostStimulusParameters{ 5.0, true }));
+    simA->addElement(makeKernel("gk 1"));
+    simA->addElement(makeMexHatKernel("mhk 1"));
+    simA->addElement(std::make_shared<OscillatoryKernel>(
+        ElementCommonParameters{ "ok 1", 100 },
+        OscillatoryKernelParameters{ 1.0, 0.08, 0.3, -0.01, true, false }));
+    simA->addElement(std::make_shared<AsymmetricGaussKernel>(
+        ElementCommonParameters{ "agk 1", 100 },
+        AsymmetricGaussKernelParameters{ 3.0, 3.0, 0.0, 0.0, true, true }));
+    simA->addElement(makeNoise("nn 1"));
+    simA->addElement(std::make_shared<FieldCoupling>(
+        ElementCommonParameters{ "fc 1", 100 },
+        FieldCouplingParameters{ {100, 1.0}, LearningRule::HEBB, 1.0, 0.01 }));
+    simA->addElement(std::make_shared<GaussFieldCoupling>(
+        ElementCommonParameters{ "gfc 1", 100 },
+        GaussFieldCouplingParameters{ {100, 1.0}, true, false, {} }));
+    simA->addElement(std::make_shared<MemoryTrace>(
+        ElementCommonParameters{ "mt 1", 100 },
+        MemoryTraceParameters{ 100.0, 1000.0, 0.5 }));
+
+    constexpr int elementCount = 11;
+    ASSERT_EQ(simA->getNumberOfElements(), elementCount);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-all-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-all-elements.json" };
+    sfmLoad.loadElementsFromJson();
+
+    EXPECT_EQ(simB->getNumberOfElements(), elementCount);
+    EXPECT_NE(simB->getElement("nf 1"),  nullptr);
+    EXPECT_NE(simB->getElement("gs 1"),  nullptr);
+    EXPECT_NE(simB->getElement("bs 1"),  nullptr);
+    EXPECT_NE(simB->getElement("gk 1"),  nullptr);
+    EXPECT_NE(simB->getElement("mhk 1"), nullptr);
+    EXPECT_NE(simB->getElement("ok 1"),  nullptr);
+    EXPECT_NE(simB->getElement("agk 1"), nullptr);
+    EXPECT_NE(simB->getElement("nn 1"),  nullptr);
+    EXPECT_NE(simB->getElement("fc 1"),  nullptr);
+    EXPECT_NE(simB->getElement("gfc 1"), nullptr);
+    EXPECT_NE(simB->getElement("mt 1"),  nullptr);
 }

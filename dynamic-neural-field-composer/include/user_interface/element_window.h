@@ -1,5 +1,9 @@
 #pragma once
 
+
+#include <unordered_map>
+#include <cmath>
+
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
@@ -9,6 +13,7 @@
 #include "elements/gauss_kernel.h"
 #include "elements/mexican_hat_kernel.h"
 #include "elements/normal_noise.h"
+#include "elements/correlated_normal_noise.h"
 #include "elements/gauss_field_coupling.h"
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
@@ -46,6 +51,7 @@ namespace dnf_composer::user_interface
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
+		static std::shared_ptr<element::Element> s_focusedElement_;
 	public:
 		explicit ElementWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -58,14 +64,17 @@ namespace dnf_composer::user_interface
 		void renderElementControlCard() const;
 		void renderModifyElementParameters() const;
 		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
+		static void setFocusedElement(const std::shared_ptr<element::Element>& element);
 		~ElementWindow() override = default;
 	private:
-		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element) ;
+		void renderDimensionControls(const std::shared_ptr<element::Element>& element) const;
+		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementMexicanHatKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementNormalNoise(const std::shared_ptr<element::Element>& element);
+		static void modifyElementCorrelatedNormalNoise(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussFieldCoupling(const std::shared_ptr<element::Element>& element);
 		static void modifyElementOscillatoryKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element);

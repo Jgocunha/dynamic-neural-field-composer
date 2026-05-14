@@ -31,8 +31,7 @@ namespace FileDialog {
 	{
 		static int file_dialog_file_select_index = 0;
 		static int file_dialog_folder_select_index = 0;
-		static std::string file_dialog_current_path = std::string(OUTPUT_DIRECTORY) + "/simulations/";
-		//static std::string file_dialog_current_path = std::filesystem::current_path().string();
+		static std::string file_dialog_current_path = dnf_composer::tools::utils::getResourceRoot() + "/data/simulations/";
 		static std::string file_dialog_current_file;
 		static std::string file_dialog_current_folder;
 		static char file_dialog_error[500] = "";

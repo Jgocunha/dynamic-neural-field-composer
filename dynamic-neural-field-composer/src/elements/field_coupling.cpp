@@ -1,8 +1,5 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "elements/field_coupling.h"
+﻿#include "elements/field_coupling.h"
+#include "tools/utils.h"
 
 namespace dnf_composer
 {
@@ -19,7 +16,7 @@ namespace dnf_composer
 			components["weights"] = std::vector<double>(components.at("input").size()
 				* components.at("output").size());
 			std::ranges::fill(components["weights"], 0);
-			weightsDirectory = std::string(OUTPUT_DIRECTORY) + "/inter-field-synaptic-connections";
+			weightsDirectory = tools::utils::getResourceRoot() + "/data/inter-field-synaptic-connections";
 			readWeights();
 		}
 
@@ -58,6 +55,24 @@ namespace dnf_composer
 			return cloned;
 		}
 
+		void FieldCoupling::changeDimensions(const ElementDimensions& newDimensions)
+		{
+			commonParameters.dimensionParameters = newDimensions;
+			const int inputSize = static_cast<int>(components["input"].size());
+			components["output"].assign(newDimensions.size, 0.0);
+			components["weights"].assign(inputSize * newDimensions.size, 0.0);
+			init();
+		}
+
+		void FieldCoupling::changeInputDimensions(const ElementDimensions& newInputDimensions)
+		{
+			parameters.inputFieldDimensions = newInputDimensions;
+			const int outputSize = static_cast<int>(components["output"].size());
+			components["input"].assign(newInputDimensions.size, 0.0);
+			components["weights"].assign(newInputDimensions.size * outputSize, 0.0);
+			init();
+		}
+
 		void FieldCoupling::setParameters(const FieldCouplingParameters& fcp)
 		{
 			parameters = fcp;
@@ -90,7 +105,7 @@ namespace dnf_composer
 
 		void FieldCoupling::updateOutput()
 		{
-			components["output"] = std::vector<double>(components["output"].size(), 0);
+			std::ranges::fill(components["output"], 0.0);
 
 			for (size_t i = 0; i < components["output"].size(); i++)
 			{

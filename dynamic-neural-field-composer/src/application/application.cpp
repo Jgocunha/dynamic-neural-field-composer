@@ -1,8 +1,5 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "application/application.h"
+﻿#include "application/application.h"
+#include "tools/utils.h"
 
 namespace dnf_composer
 {
@@ -105,31 +102,32 @@ namespace dnf_composer
 	void Application::setGUIParameters()
 	{
 		using namespace imgui_kit;
+		const std::string root = tools::utils::getResourceRoot();
 		const WindowParameters winParams{ "Dynamic Neural Field Composer" };
 		const FontParameters fontParams({
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        18},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        12},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Light.ttf",        24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       12},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       18},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Medium.ttf",       24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         12},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         18},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Bold.ttf",         24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        20},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        24},
-			{std::string(PROJECT_DIR) + "/resources/fonts/Cera Pro Black.ttf",        30},
-			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
-			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 20},
-			{std::string(PROJECT_DIR) + "/resources/fonts/JetBrainsMono-Regular.ttf", 26},
+			{root + "/resources/fonts/Cera Pro Light.ttf",        18},
+			{root + "/resources/fonts/Cera Pro Light.ttf",        12},
+			{root + "/resources/fonts/Cera Pro Light.ttf",        24},
+			{root + "/resources/fonts/Cera Pro Medium.ttf",       12},
+			{root + "/resources/fonts/Cera Pro Medium.ttf",       18},
+			{root + "/resources/fonts/Cera Pro Medium.ttf",       24},
+			{root + "/resources/fonts/Cera Pro Bold.ttf",         12},
+			{root + "/resources/fonts/Cera Pro Bold.ttf",         18},
+			{root + "/resources/fonts/Cera Pro Bold.ttf",         24},
+			{root + "/resources/fonts/Cera Pro Black.ttf",        20},
+			{root + "/resources/fonts/Cera Pro Black.ttf",        24},
+			{root + "/resources/fonts/Cera Pro Black.ttf",        30},
+			{root + "/resources/fonts/JetBrainsMono-Regular.ttf", 16},
+			{root + "/resources/fonts/JetBrainsMono-Regular.ttf", 20},
+			{root + "/resources/fonts/JetBrainsMono-Regular.ttf", 26},
 		});
 		const StyleParameters styleParams{Theme::Light, imgui_kit::colours::White};
 #ifdef _WIN32
-		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.ico" };
+		const IconParameters iconParams{ root + "/resources/icons/icon.ico" };
 #else
-		const IconParameters iconParams{ std::string(PROJECT_DIR) + "/resources/icons/icon.png" };
+		const IconParameters iconParams{ root + "/resources/icons/icon.png" };
 #endif
-		const BackgroundImageParameters bgParams{ std::string(PROJECT_DIR)
+		const BackgroundImageParameters bgParams{ root
 			+ "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
 		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, bgParams };
 
@@ -224,7 +222,7 @@ namespace dnf_composer
 
 	    style.FramePadding          = ImVec2(10, 6);
 	    style.FrameRounding         = 6.0f;
-	    style.FrameBorderSize       = 0.0f;
+	    style.FrameBorderSize       = 1.0f;
 
 	    style.ItemSpacing           = ImVec2(10, 8);
 	    style.ItemInnerSpacing      = ImVec2(6, 6);
@@ -257,7 +255,7 @@ namespace dnf_composer
 	    constexpr auto BORDER_LIGHT   = ImVec4(225/255.f, 229/255.f, 235/255.f, 1.0f);  // subtle border
 	    constexpr auto CARD_BG        = ImVec4(1.00f, 1.00f, 1.00f, 0.96f);             // matches white cards
 	    constexpr auto WINDOW_BG      = ImVec4(0.95f, 0.97f, 0.98f, 0.90f);             // soft wash over bg image
-	    constexpr auto TEXT           = imgui_kit::colours::Gray;              // dark, crisp
+	    constexpr auto TEXT           = imgui_kit::colours::Black;              // dark, crisp
 	    constexpr auto TEXT_MUTED     = ImVec4(0.58f, 0.60f, 0.64f, 1.0f);              // for secondary labels
 	    constexpr auto TEXT_INVERTED  = ImVec4(1.00f, 1.00f, 1.00f, 1.0f);
 

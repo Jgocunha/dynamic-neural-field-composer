@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "elements/element_factory.h"
+﻿#include "elements/element_factory.h"
 
 namespace dnf_composer
 {
@@ -45,6 +41,12 @@ namespace dnf_composer
 				{
 					const auto params = dynamic_cast<const NormalNoiseParameters*>(&elementSpecificParameters);
 					return std::make_shared<NormalNoise>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::CORRELATED_NORMAL_NOISE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const CorrelatedNormalNoiseParameters*>(&elementSpecificParameters);
+					return std::make_shared<CorrelatedNormalNoise>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::GAUSS_FIELD_COUPLING] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -179,6 +181,8 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), MexicanHatKernelParameters());
 					case ElementLabel::NORMAL_NOISE:
 						return creator->second(ElementCommonParameters(type), NormalNoiseParameters());
+					case ElementLabel::CORRELATED_NORMAL_NOISE:
+						return creator->second(ElementCommonParameters(type), CorrelatedNormalNoiseParameters());
 					case ElementLabel::GAUSS_FIELD_COUPLING:
 						return creator->second(ElementCommonParameters(type), GaussFieldCouplingParameters());
 					case ElementLabel::FIELD_COUPLING:

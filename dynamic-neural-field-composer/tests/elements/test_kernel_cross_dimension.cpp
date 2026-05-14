@@ -5,6 +5,7 @@
 #include "elements/gauss_kernel.h"
 #include "elements/mexican_hat_kernel.h"
 #include "elements/oscillatory_kernel.h"
+#include "elements/asymmetric_gauss_kernel.h"
 #include "elements/neural_field.h"
 #include "elements/activation_function.h"
 #include "simulation/simulation.h"
@@ -277,4 +278,97 @@ TEST(OscillatoryKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 
     EXPECT_NO_THROW(sim->init());
     EXPECT_NO_THROW(sim->step());
+}
+
+// ---------------------------------------------------------------------------
+// AsymmetricGaussKernel cross-dimension
+// ---------------------------------------------------------------------------
+
+static std::shared_ptr<AsymmetricGaussKernel> makeAgkKernel(const std::string& name, int inputSize,
+    std::optional<ElementDimensions> outputDims = std::nullopt)
+{
+    AsymmetricGaussKernelParameters agkp{ 3.0, 3.0, 0.0, 1.0, true, true, outputDims };
+    ElementCommonParameters cp{ name, inputSize };
+    return std::make_shared<AsymmetricGaussKernel>(cp, agkp);
+}
+
+TEST(AsymmetricGaussKernelCrossDim, OutputSizeMatchesTargetAfterConstruction)
+{
+    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60 });
+    EXPECT_EQ(agk->getComponentPtr("output")->size(), 60u);
+}
+
+TEST(AsymmetricGaussKernelCrossDim, SameDimFallbackHasOriginalOutputSize)
+{
+    const auto agk = makeAgkKernel("agk", 100);
+    EXPECT_EQ(agk->getComponentPtr("output")->size(), 100u);
+}
+
+TEST(AsymmetricGaussKernelCrossDim, ConnectionFromLargerToSmallerField)
+{
+    // Field 100 → AgkKernel(in=100, out=60) → Field 60
+    const auto fieldSrc = makeField("src", 100);
+    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60 });
+    const auto fieldDst = makeField("dst", 60);
+
+    EXPECT_NO_THROW(agk->addInput(fieldSrc));
+    EXPECT_NO_THROW(fieldDst->addInput(agk));
+
+    EXPECT_EQ(agk->getInputs().size(), 1u);
+    EXPECT_EQ(fieldDst->getInputs().size(), 1u);
+}
+
+TEST(AsymmetricGaussKernelCrossDim, ConnectionFromSmallerToLargerField)
+{
+    // Field 50 → AgkKernel(in=50, out=100) → Field 100
+    const auto fieldSrc = makeField("src", 50);
+    const auto agk = makeAgkKernel("agk", 50, ElementDimensions{ 100 });
+    const auto fieldDst = makeField("dst", 100);
+
+    EXPECT_NO_THROW(agk->addInput(fieldSrc));
+    EXPECT_NO_THROW(fieldDst->addInput(agk));
+}
+
+TEST(AsymmetricGaussKernelCrossDim, StepProducesCorrectOutputSize)
+{
+    const auto fieldSrc = makeField("src", 100);
+    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60 });
+    const auto fieldDst = makeField("dst", 60);
+
+    agk->addInput(fieldSrc);
+    fieldDst->addInput(agk);
+
+    fieldSrc->init();
+    agk->init();
+    fieldDst->init();
+
+    fieldSrc->step(0.0, 1.0);
+    agk->step(0.0, 1.0);
+    fieldDst->step(0.0, 1.0);
+
+    EXPECT_EQ(agk->getComponentPtr("output")->size(), 60u);
+}
+
+TEST(AsymmetricGaussKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
+{
+    const auto sim = createSimulation("cross-dim-agk", 1.0, 0.0, 0.0);
+    sim->addElement(makeField("src", 100));
+    sim->addElement(makeAgkKernel("agk", 100, ElementDimensions{ 60 }));
+    sim->addElement(makeField("dst", 60));
+
+    sim->createInteraction("src", "output", "agk");
+    sim->createInteraction("agk", "output", "dst");
+
+    EXPECT_NO_THROW(sim->init());
+    EXPECT_NO_THROW(sim->step());
+    EXPECT_NO_THROW(sim->step());
+}
+
+TEST(AsymmetricGaussKernelCrossDim, ParametersRoundTrip)
+{
+    const AsymmetricGaussKernelParameters p{ 3.0, 3.0, 0.0, 1.0, true, true, ElementDimensions{ 60 } };
+    EXPECT_TRUE(p.outputFieldDimensions.has_value());
+    EXPECT_EQ(p.outputFieldDimensions->size, 60);
+    EXPECT_FALSE(p.toString().empty());
+    EXPECT_TRUE(p.toString().find("Output size") != std::string::npos);
 }

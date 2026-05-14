@@ -6,7 +6,7 @@ The project uses **Google Test (GTest)** for unit testing. The test suite covers
 
 ## Setup
 
-Google Test is installed automatically via vcpkg (`gtest:x64-windows` on Windows). No manual setup is needed — just build the project normally.
+Google Test is installed automatically via vcpkg. No manual setup is needed — just build the project normally.
 
 Tests are compiled into a single executable: `dnf_composer_tests`.
 
@@ -55,6 +55,9 @@ build\x64-debug\Debug\dnf_composer_tests.exe
 
 # Linux
 ./build/dnf_composer_tests
+
+# macOS
+./build/macos-release/dnf_composer_tests
 ```
 
 ### Filtering tests

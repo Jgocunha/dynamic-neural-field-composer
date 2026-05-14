@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "elements/gauss_field_coupling.h"
+﻿#include "elements/gauss_field_coupling.h"
 
 namespace dnf_composer
 {
@@ -79,7 +75,7 @@ namespace dnf_composer
 
 		void GaussFieldCoupling::updateOutput()
 		{
-			components["output"] = std::vector<double>(components["output"].size(), 0);
+			std::ranges::fill(components["output"], 0.0);
 
 			for (size_t i = 0; i < components["output"].size(); i++)
 			{
@@ -99,6 +95,24 @@ namespace dnf_composer
 		GaussFieldCouplingParameters GaussFieldCoupling::getParameters() const
 		{
 			return parameters;
+		}
+
+		void GaussFieldCoupling::changeDimensions(const ElementDimensions& newDimensions)
+		{
+			commonParameters.dimensionParameters = newDimensions;
+			const int inputSize = static_cast<int>(components["input"].size());
+			components["output"].assign(newDimensions.size, 0.0);
+			components["weights"].assign(inputSize * newDimensions.size, 0.0);
+			init();
+		}
+
+		void GaussFieldCoupling::changeInputDimensions(const ElementDimensions& newInputDimensions)
+		{
+			parameters.inputFieldDimensions = newInputDimensions;
+			const int outputSize = static_cast<int>(components["output"].size());
+			components["input"].assign(newInputDimensions.size, 0.0);
+			components["weights"].assign(newInputDimensions.size * outputSize, 0.0);
+			init();
 		}
 
 		void GaussFieldCoupling::setParameters(const GaussFieldCouplingParameters& gfc_parameters)

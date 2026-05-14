@@ -8,20 +8,27 @@
 
 namespace dnf_composer::element
 {
+	/// @brief Parameters for a Gaussian-shaped external stimulus.
+	/// @ingroup elements
 	struct GaussStimulusParameters final : ElementSpecificParameters
 	{
+		double width;      ///< Standard deviation (σ) of the Gaussian bump.
+		double amplitude;  ///< Peak amplitude.
+		double position;   ///< Spatial position (centre) of the Gaussian.
+		bool circular;     ///< If true, the stimulus wraps at the field boundary.
+		bool normalized;   ///< If true, the Gaussian is area-normalised.
 
+		/// @brief Construct a GaussStimulus parameter set.
+		/// @param width       Gaussian σ (default 5).
+		/// @param amplitude   Peak value (default 15).
+		/// @param position    Centre in spatial coordinates (default 50).
+		/// @param circular    Circular/toroidal boundary (default true).
+		/// @param normalized  Area normalization (default false).
 		explicit GaussStimulusParameters(const double width = 5.0, const double amplitude = 15.0,
 		                        const double position = 50.0, const bool circular = true, const bool normalized = false)
 			: width(width), amplitude(amplitude), position(position),
 			  circular(circular), normalized(normalized)
 		{}
-
-		double width;
-		double amplitude;
-		double position;
-		bool circular;
-		bool normalized;
 
 		bool operator==(const GaussStimulusParameters& other) const
 		{
@@ -49,11 +56,22 @@ namespace dnf_composer::element
 		}
 	};
 
+	/// @brief Localized Gaussian input stimulus applied to a neural field.
+	///
+	/// Provides a spatially localised, time-invariant (constant) input that models
+	/// an external sensory cue or manually specified target location. The amplitude
+	/// can be changed at runtime via @c setParameters() to simulate stimulus onset
+	/// and offset.
+	///
+	/// @ingroup elements
 	class GaussStimulus final : public Element
 	{
 	private:
 		GaussStimulusParameters parameters;
 	public:
+		/// @brief Construct a GaussStimulus.
+		/// @param elementCommonParameters  Name, label, and spatial dimensions.
+		/// @param parameters               Stimulus-specific parameters.
 		GaussStimulus(const ElementCommonParameters& elementCommonParameters,
 		              const GaussStimulusParameters& parameters);
 

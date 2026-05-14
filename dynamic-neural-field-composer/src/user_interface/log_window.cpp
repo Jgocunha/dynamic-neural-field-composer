@@ -29,7 +29,8 @@ namespace dnf_composer::user_interface
 		filter.Draw("Filter", -100.0f);
 
 		ImGui::Separator();
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.95f, 0.96f, 0.97f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg,    ImVec4(0.07f, 0.07f, 0.07f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImVec4(0.07f, 0.07f, 0.07f, 1.0f));
 		if (ImGui::BeginChild("scrolling", ImVec2(0, 0), false,
 			ImGuiWindowFlags_HorizontalScrollbar))
 		{
@@ -51,7 +52,7 @@ namespace dnf_composer::user_interface
 				ImGui::SetScrollHereY(1.0f);
 		}
 		ImGui::EndChild();
-		ImGui::PopStyleColor();
+		ImGui::PopStyleColor(2);
 	}
 
 

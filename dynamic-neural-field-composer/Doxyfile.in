@@ -1,0 +1,52 @@
+PROJECT_NAME           = "Dynamic Neural Field Composer"
+PROJECT_BRIEF          = "A C++20 library and interactive application for building and simulating Dynamic Neural Field (DNF) architectures."
+PROJECT_NUMBER         = @DNF_COMPOSER_VERSION@
+
+OUTPUT_DIRECTORY       = docs/
+
+USE_MDFILE_AS_MAINPAGE = ../README.md
+
+PROJECT_LOGO           = resources/images/logo-simple.png
+
+INPUT                  = ../README.md include/ src/
+IMAGE_PATH             = ../
+RECURSIVE              = YES
+FILE_PATTERNS          = *.h *.cpp
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HTML_OUTPUT            = html
+HTML_EXTRA_STYLESHEET  = resources/doxygen-custom.css
+
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = svg
+UML_LOOK               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+CLASS_DIAGRAMS         = YES
+COLLABORATION_GRAPH    = YES
+
+WARN_IF_UNDOCUMENTED   = YES
+WARN_NO_PARAMDOC       = YES
+
+QUIET                  = NO
+WARNINGS               = YES
+
+JAVADOC_AUTOBRIEF      = NO
+QT_AUTOBRIEF           = NO
+
+BUILTIN_STL_SUPPORT    = YES
+CPP_CLI_SUPPORT        = NO
+
+SHOW_NAMESPACES        = YES
+SHOW_INCLUDE_FILES     = YES
+INLINE_SOURCES         = NO
+
+ALPHABETICAL_INDEX     = YES
+
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = YES

@@ -6,9 +6,9 @@ project(dynamic-neural-field-composer
 )
 
 # Define library version
-set(DNF_COMPOSER_VERSION_MAJOR 1 CACHE STRING "major version" FORCE)
-set(DNF_COMPOSER_VERSION_MINOR 0 CACHE STRING "minor version" FORCE)
-set(DNF_COMPOSER_VERSION_PATCH 0 CACHE STRING "patch version" FORCE)
+set(DNF_COMPOSER_VERSION_MAJOR 2 CACHE STRING "major version" FORCE)
+set(DNF_COMPOSER_VERSION_MINOR 4 CACHE STRING "minor version" FORCE)
+set(DNF_COMPOSER_VERSION_PATCH 1 CACHE STRING "patch version" FORCE)
 set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR}.${DNF_COMPOSER_VERSION_PATCH} CACHE STRING "version" FORCE)
 
 set(DNF_COMPOSER_LIB_PREFIX "release")
@@ -27,6 +27,7 @@ set(DNF_COMPOSER_ADDITIONAL_FILES_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/${C
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Check whether VCPKG is set up in your system
 if(NOT DEFINED ENV{VCPKG_ROOT})
@@ -68,6 +69,7 @@ set(elements_headers
         "include/elements/activation_function.h"
         "include/elements/element.h"
         "include/elements/element_factory.h"
+        
         "include/elements/field_coupling.h"
         "include/elements/gauss_field_coupling.h"
         "include/elements/gauss_kernel.h"
@@ -80,6 +82,8 @@ set(elements_headers
         "include/elements/asymmetric_gauss_kernel.h"
         "include/elements/boost_stimulus.h"
         "include/elements/memory_trace.h"
+        "include/elements/correlated_normal_noise.h"
+
         "include/elements/neural_field_2d.h"
         "include/elements/gauss_stimulus_2d.h"
         "include/elements/gauss_kernel_2d.h"
@@ -182,6 +186,7 @@ set(src
         "src/elements/boost_stimulus_2d.cpp"
         "src/elements/field_projection.cpp"
         "src/elements/field_expansion.cpp"
+        "src/elements/correlated_normal_noise.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -235,6 +240,10 @@ find_package(unofficial-imgui-node-editor CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
+# OpenGL must be found before importing imgui-platform-kit so that the
+# OpenGL::GL target exists when CMake resolves its exported link interface.
+find_package(OpenGL REQUIRED)
+
 # Setup imgui-platform-kit
 find_package(imgui-platform-kit REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui-platform-kit)
@@ -243,6 +252,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
     DNF_COMPOSER=1
     DNF_COMPOSER_VERSION_MAJOR=${DNF_COMPOSER_VERSION_MAJOR}
     DNF_COMPOSER_VERSION_MINOR=${DNF_COMPOSER_VERSION_MINOR}
+    DNF_COMPOSER_VERSION_PATCH=${DNF_COMPOSER_VERSION_PATCH}
 )
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
@@ -276,6 +286,12 @@ install(FILES ${exceptions_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/
 install(FILES ${user_interface_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/user_interface)
 install(FILES ${element_parameters_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/element_parameters)
 
+# Install runtime resources (fonts, icons, images, layouts)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
+
+# Install sample data (simulation JSONs, coupling weights)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/" DESTINATION data)
+
 install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CONFIG_INSTALL_DIR}
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
@@ -291,21 +307,27 @@ endif()
 
 # Main launchers
 set(LAUNCHER dnf-composer-static)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-static.cpp" ${DNF_ICON_RC})
+add_executable(${LAUNCHER} WIN32 "src/dynamic-neural-field-composer-static.cpp" ${DNF_ICON_RC})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
 imgui::imgui
 imgui-platform-kit
 ${CMAKE_PROJECT_NAME})
+if(WIN32)
+    target_link_options(${LAUNCHER} PRIVATE /ENTRY:mainCRTStartup)
+endif()
 install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 
 set(LAUNCHER dnf-composer-dynamic)
-add_executable(${LAUNCHER} "src/dynamic-neural-field-composer-dynamic.cpp" ${DNF_ICON_RC})
+add_executable(${LAUNCHER} WIN32 "src/dynamic-neural-field-composer-dynamic.cpp" ${DNF_ICON_RC})
 target_include_directories(${LAUNCHER} PRIVATE include)
 target_link_libraries(${LAUNCHER} PRIVATE
         imgui::imgui
         imgui-platform-kit
         ${CMAKE_PROJECT_NAME})
+if(WIN32)
+    target_link_options(${LAUNCHER} PRIVATE /ENTRY:mainCRTStartup)
+endif()
 install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 
 # Function to add example executables
@@ -316,6 +338,7 @@ function(add_example_executable target_name source_file)
             imgui::imgui
             imgui-platform-kit
             ${CMAKE_PROJECT_NAME})
+    install(TARGETS ${target_name} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 endfunction()
 
 # Define all examples
@@ -335,6 +358,23 @@ add_example_executable(ex_timed_gauss_stimulus_2d ex_timed_gauss_stimulus_2d.cpp
 add_example_executable(ex_boost_stimulus_2d ex_boost_stimulus_2d.cpp)
 add_example_executable(ex_field_projection ex_field_projection.cpp)
 add_example_executable(ex_field_expansion ex_field_expansion.cpp)
+add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)
+
+# Documentation (Doxygen)
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    @ONLY
+)
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+if(DOXYGEN_FOUND)
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+endif()
 
 # Tests (GTest)
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
@@ -354,6 +394,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_kernel_cross_dimension.cpp"
             "tests/elements/test_neural_field.cpp"
             "tests/elements/test_normal_noise.cpp"
+            "tests/elements/test_correlated_normal_noise.cpp"
             "tests/elements/test_boost_stimulus.cpp"
             "tests/elements/test_memory_trace.cpp"
             "tests/elements/test_neural_field_2d.cpp"
@@ -365,6 +406,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_boost_stimulus_2d.cpp"
             "tests/elements/test_field_projection.cpp"
             "tests/elements/test_field_expansion.cpp"
+            "tests/elements/test_change_dimensions.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"
             "tests/simulation/test_simulation_extended.cpp"

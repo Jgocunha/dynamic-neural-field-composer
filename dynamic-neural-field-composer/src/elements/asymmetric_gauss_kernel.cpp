@@ -10,6 +10,8 @@ namespace dnf_composer
 		{
 			commonParameters.identifiers.label = ElementLabel::ASYMMETRIC_GAUSS_KERNEL;
 			components["kernel"] = std::vector<double>(commonParameters.dimensionParameters.size);
+			if (parameters.outputFieldDimensions.has_value())
+				components["output"].resize(parameters.outputFieldDimensions->size, 0.0);
 		}
 
 		void AsymmetricGaussKernel::init()
@@ -57,37 +59,48 @@ namespace dnf_composer
                 components["kernel"][i] = parameters.amplitude * gauss[i] + parameters.timeShift * gaussDerivative[i];
             }
 
+            scratchExtended.assign(extIndex.empty() ? 0 : extIndex.size(), 0.0);
+            scratchConvolution.assign(commonParameters.dimensionParameters.size, 0.0);
+            if (parameters.outputFieldDimensions.has_value() &&
+                parameters.outputFieldDimensions->size != commonParameters.dimensionParameters.size)
+                scratchResample_.assign(commonParameters.dimensionParameters.size, 0.0);
+            else
+                scratchResample_.clear();
             fullSum = 0.0;
             std::ranges::fill(components["input"], 0.0);
-            std::ranges::fill(components["output"], 0.0);
+            if (parameters.outputFieldDimensions.has_value())
+                components["output"].assign(parameters.outputFieldDimensions->size, 0.0);
+            else
+                std::ranges::fill(components["output"], 0.0);
 		}
 
 		void AsymmetricGaussKernel::step(double t, double deltaT)
 		{
             updateInput();
 
-			// find a way to get the velocity and acceleration of the input
-            // n(t) = -tau * v(t) -tau * c * a(t)
-			// c - constant time shift
+            const auto& inp = components["input"];
+            fullSum = std::accumulate(inp.begin(), inp.begin() + commonParameters.dimensionParameters.size,
+                0.0);
 
-            fullSum = std::accumulate(components["input"].begin(), components["input"].end(), (double)0.0);
+            if (parameters.circular) {
+                tools::math::obtainCircularVector_into(scratchExtended, extIndex, inp);
+                tools::math::conv_valid_into(scratchConvolution, scratchExtended, components["kernel"]);
+            } else {
+                tools::math::conv_same_into(scratchConvolution, inp, components["kernel"]);
+            }
 
-            // Compute convolution
-            std::vector<double> convolution(commonParameters.dimensionParameters.size);
-            const std::vector<double> subDataInput = tools::math::obtainCircularVector(extIndex, components["input"]);
-
-            if (parameters.circular)
+            const double globalOffset = parameters.amplitudeGlobal * fullSum;
+            if (!scratchResample_.empty())
             {
-                convolution = tools::math::conv_valid(subDataInput, components["kernel"]);
+                for (int i = 0; i < static_cast<int>(scratchConvolution.size()); i++)
+                    scratchResample_[i] = scratchConvolution[i] + globalOffset;
+                tools::math::resampleInto(scratchResample_, components["output"]);
             }
             else
             {
-                convolution = tools::math::conv_same(components["input"], components["kernel"]);
-            }
-
-            for (int i = 0; i < components["output"].size(); i++)
-            {
-                components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+                auto& out = components["output"];
+                for (int i = 0; i < static_cast<int>(out.size()); i++)
+                    out[i] = scratchConvolution[i] + globalOffset;
             }
 		}
 

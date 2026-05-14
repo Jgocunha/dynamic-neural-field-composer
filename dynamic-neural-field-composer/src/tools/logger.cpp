@@ -1,8 +1,4 @@
-//This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "tools/logger.h"
+﻿#include "tools/logger.h"
 
 #include "application/application.h"
 #include "user_interface/log_window.h"
@@ -115,7 +111,7 @@ namespace dnf_composer::tools::logger
         switch (level)
         {
         case DEBUG:     return imgui_kit::colours::Green;
-        case INFO:      return currentTextColor;
+        case INFO:      return imgui_kit::colours::White;
         case WARNING:   return imgui_kit::colours::Yellow;
         case ERROR:
         case FATAL:     return imgui_kit::colours::Red;

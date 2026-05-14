@@ -4,8 +4,9 @@
 #include "elements/gauss_kernel.h"
 #include "elements/gauss_stimulus.h"
 #include "elements/mexican_hat_kernel.h"
-#include "elements/neural_field.h" 
+#include "elements/neural_field.h"
 #include "elements/normal_noise.h"
+#include "elements/correlated_normal_noise.h"
 #include "elements/gauss_field_coupling.h"
 #include "elements/field_coupling.h"
 #include "simulation/simulation.h"
@@ -27,6 +28,14 @@
 
 namespace dnf_composer::element
 {
+	/// @brief Factory that creates concrete Element objects from type labels and parameters.
+	///
+	/// ElementFactory maintains a dispatch table keyed on ElementLabel.
+	/// Call @c createElement(label, commonParams, specificParams) to create any registered
+	/// element type without depending on its concrete class.  A default-parameter overload
+	/// is available for quick construction during prototyping.
+	///
+	/// @ingroup elements
 	class ElementFactory
 	{
 	private:
@@ -35,9 +44,19 @@ namespace dnf_composer::element
 			                   const ElementSpecificParameters&)>> elementCreators;
 	public:
 		ElementFactory();
+
+		/// @brief Create and return an element of the given type.
+		/// @param type                       Which element to create.
+		/// @param elementCommonParameters    Name, label, and spatial dimensions.
+		/// @param elementSpecificParameters  Type-specific parameter struct (cast internally).
+		/// @return Shared pointer to the new element.
 		std::shared_ptr<Element> createElement(ElementLabel type,
 		                                       const ElementCommonParameters& elementCommonParameters,
 		                                       const ElementSpecificParameters& elementSpecificParameters);
+
+		/// @brief Create an element with default parameters.
+		/// @param type  Which element to create.
+		/// @return Shared pointer to the new element.
 		std::shared_ptr<Element> createElement(ElementLabel type);
 	private:
 		void setupElementCreators();

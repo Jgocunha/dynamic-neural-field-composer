@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "user_interface/simulation_window.h"
+﻿#include "user_interface/simulation_window.h"
 
 namespace dnf_composer::user_interface
 {
@@ -14,10 +10,14 @@ namespace dnf_composer::user_interface
 	void SimulationWindow::render()
 	{
 		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Simulation Control", nullptr, imgui_kit::getGlobalWindowFlags());
+		const bool open = ImGui::Begin("Simulation Control", nullptr,
+			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		ImGui::PopFont();
 		if (open)
 		{
+			constexpr ImGuiWindowFlags childFlags =
+				ImGuiWindowFlags_NoSavedSettings;
+			ImGui::BeginChild("##sim_scroll", ImVec2(0, 0), false, childFlags);
 			renderSimulationParametersCard();
 			ImGui::Spacing(); ImGui::Spacing();
 			renderSimulationControlsCard();
@@ -33,6 +33,7 @@ namespace dnf_composer::user_interface
 			renderLogElementParametersCard();
 			ImGui::Spacing(); ImGui::Spacing();
 			renderExportElementComponentCard();
+			ImGui::EndChild();
 		}
 		ImGui::End();
 	}
@@ -42,7 +43,6 @@ namespace dnf_composer::user_interface
 		ImGui::PushID("sim_params");
 
 		const float ui = ImGui::GetIO().FontGlobalScale;
-		const float gap = ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
 
 		const std::string id   = simulation->getIdentifier();
 
@@ -63,8 +63,6 @@ namespace dnf_composer::user_interface
 		if (idEdited || (ImGui::IsItemDeactivatedAfterEdit()))
 			simulation->setUniqueIdentifier(std::string(idBuf));
 
-		// spacer between the two groups
-		//ImGui::SameLine(0.0f, gap);
 
 		// Time step delta_t
 		ImGui::AlignTextToFramePadding();
@@ -83,33 +81,7 @@ namespace dnf_composer::user_interface
 			editableDt_ = simulation->getDeltaT();  // keep in sync when not editing
 
 		ImGui::SameLine();
-		ImGui::TextUnformatted("dt");
-
-		// // ICON_FA_ATOM  ICON_FA_STOPWATCH ICON_FA_CLOCK ICON_FA_HOURGLASS_HALF
-		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		// ImGui::PushFont(g_MonoMediumFont);
-		// ImGui::TextUnformatted(ICON_FA_CLOCK);
-		// ImGui::PopFont(); ImGui::SameLine();
-		// ImGui::PopStyleColor();
-
-		ImGui::Text("Sim. time (t)");
-		ImGui::SameLine();
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%.2f", simulation->getT());
-		ImGui::PopFont();
-
-		ImGui::SameLine();
-		const long long totalNs  = simulation->getTotalRunDuration().count();
-		const long long totalUs  = totalNs / 1'000LL;
-		const long long h        = totalUs / 3'600'000'000LL;
-		const long long m        = (totalUs % 3'600'000'000LL) / 60'000'000LL;
-		const long long s        = (totalUs % 60'000'000LL) / 1'000'000LL;
-		const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
-		ImGui::Text("Real time");
-		ImGui::SameLine();
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
-		ImGui::PopFont();
+		ImGui::TextUnformatted("\xce\x94t");  // delta t
 
 		ImGui::PopID();
 	}
@@ -196,7 +168,7 @@ namespace dnf_composer::user_interface
 	    const float tile = 36.0f * ui;                       // compact square
 	    const ImVec2 iconBox(tile, tile);
 
-	    // soft “tile”
+	    // soft tile styling
 	    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f * ui);
 	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
 	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.96f, 0.98f, 0.99f, 1.0f));
@@ -304,81 +276,85 @@ namespace dnf_composer::user_interface
 		ImGui::TextUnformatted("Add elements");
 		ImGui::PopFont();
 
-	    ImGui::Columns(2, nullptr, false);
-
-		// Left column
 		ImGui::TextUnformatted("Select type");
 
-		// Make the combo span the whole column width
-		ImGui::SetNextItemWidth(-FLT_MIN);          // or ImGui::PushItemWidth(-FLT_MIN);
 		static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
-		const char* current = element::ElementLabelToString.at(selected).c_str();
-		if (ImGui::BeginCombo("##element_type", current))
+
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
 		{
-			for (const auto& [fst, snd] : element::ElementLabelToString)
+			for (const auto& [lbl, name] : element::ElementLabelToString)
 			{
-				if (fst == element::ElementLabel::UNINITIALIZED) continue;
-				const bool is_selected = (selected == fst);
-				if (ImGui::Selectable(snd.c_str(), is_selected)) selected = fst;
-				if (is_selected) ImGui::SetItemDefaultFocus();
+				if (lbl == element::ElementLabel::UNINITIALIZED) continue;
+				const bool is_sel = (selected == lbl);
+				if (ImGui::Selectable(name.c_str(), is_sel)) selected = lbl;
+				if (is_sel) ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
 		}
 
 		ImGui::Spacing();
-		const bool addRequested = ImGui::Button("Add element", ImVec2(-FLT_MIN, 0));
+		ImGui::TextUnformatted("Define parameters");
 
-		// Right column
-	    ImGui::NextColumn();
-	    ImGui::TextUnformatted("Define parameters");
-
-	    // Fixed-size, scrollable pane for parameters
-	    // (tweak the height multiplier if you want more/less visible rows)
-	    const float col_w   = ImGui::GetColumnWidth();
-	    const float pad_w   = ImGui::GetStyle().ItemSpacing.x * 1.0f;
-	    const float child_w = col_w - pad_w; // fill the column width
-	    const float child_h = 280.0f * ImGui::GetIO().FontGlobalScale;
+		const float child_w = ImGui::GetContentRegionAvail().x;
+		const float child_h = 250.0f * ImGui::GetIO().FontGlobalScale;
 
 		constexpr ImGuiWindowFlags child_flags =
-	        //ImGuiWindowFlags_AlwaysVerticalScrollbar |
-	        ImGuiWindowFlags_AlwaysHorizontalScrollbar |
 	        ImGuiWindowFlags_NoSavedSettings;
+
+		// addRequested is set by the button rendered below, persisted via static.
+		static bool s_addRequested = false;
+		const bool addRequested = s_addRequested;
+		s_addRequested = false;
 
 	    if (ImGui::BeginChild("##params_scroll", ImVec2(child_w, child_h), true, child_flags))
 	    {
 	        switch (selected)
 	        {
-	        case element::ElementLabel::NEURAL_FIELD:
-	        {
-	            static char   id[CHAR_SIZE] = "neural field u";
-	            static int    x_max         = 100;
-	            static double d_x           = 1.0;
-	            static double resting       = -10.0;
-	            static double tau           = 25.0;
-	            static double sigmoid_k     = 5.0;
+        case element::ElementLabel::NEURAL_FIELD:
+        {
+            static char   id[CHAR_SIZE] = "neural field u";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double resting       = -10.0;
+            static double tau           = 25.0;
+            static int    actFnType     = element::SIGMOID;
+            static double xShift        = 0.0;
+            static double steepness     = 5.0;
+            static double absBeta       = 100.0;
+            static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size", &x_max, 0, 0);
+            ImGui::InputDouble("Step", &d_x, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Resting level", &resting, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Time scale", &tau, 0.0, 0.0, "%.2f");
+            ImGui::Combo("Activation fn.", &actFnType, actFnNames, 3);
+            ImGui::InputDouble("X shift", &xShift, 0.0, 0.0, "%.2f");
+            if (actFnType == element::SIGMOID)
+                ImGui::InputDouble("Steepness", &steepness, 0.0, 0.0, "%.2f");
+            else if (actFnType == element::ABSSIGMOID)
+                ImGui::InputDouble("Beta", &absBeta, 0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
 
-		        	ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-		        	ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale); // adjust width to taste
-		        	ImGui::InputInt("Size", &x_max, 0, 0);
-		        	ImGui::InputDouble("Step", &d_x, 0.0, 0.0, "%.2f");
-		        	ImGui::InputDouble("Resting level", &resting, 0.0, 0.0, "%.2f");
-		        	ImGui::InputDouble("Time scale", &tau, 0.0, 0.0, "%.2f");
-		        	ImGui::InputDouble("Sigmoid steepness", &sigmoid_k, 0.0, 0.0, "%.2f");
-		        	ImGui::PopItemWidth();
-
-	            if (addRequested)
-	            {
-	                const element::SigmoidFunction activation{ 0, sigmoid_k };
-	                const element::NeuralFieldParameters nfp{ tau, resting, activation };
-	                const element::ElementIdentifiers ids{ id };
-	                const element::ElementDimensions  dims{ x_max, d_x };
-	                const element::ElementCommonParameters common{ ids, dims };
-	                const auto nf = std::make_shared<element::NeuralField>(common, nfp);
-	                simulation->addElement(nf);
-	            }
-	            break;
-	        }
+            if (addRequested)
+            {
+                std::unique_ptr<element::ActivationFunction> af;
+                if (actFnType == element::SIGMOID)
+                    af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
+                else if (actFnType == element::HEAVISIDE)
+                    af = std::make_unique<element::HeavisideFunction>(xShift);
+                else
+                    af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+                const element::NeuralFieldParameters nfp{ tau, resting, *af };
+                const element::ElementIdentifiers ids{ id };
+                const element::ElementDimensions  dims{ x_max, d_x };
+                const element::ElementCommonParameters common{ ids, dims };
+                simulation->addElement(std::make_shared<element::NeuralField>(common, nfp));
+            }
+            break;
+        }
         case element::ElementLabel::GAUSS_STIMULUS:
         {
             static char   id[CHAR_SIZE] = "gauss stimulus";
@@ -616,6 +592,32 @@ namespace dnf_composer::user_interface
                 const element::NormalNoiseParameters nnp{ amplitude };
                 const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
                 simulation->addElement(std::make_shared<element::NormalNoise>(common, nnp));
+            }
+            break;
+        }
+        case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+        {
+            static char   id[CHAR_SIZE] = "correlated normal noise";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static double amplitude     = 0.05;
+            static double width         = 2.0;
+            static bool   circular      = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size",         &x_max,     0, 0);
+            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+            ImGui::Checkbox("Circular", &circular);
+
+            if (addRequested)
+            {
+                const element::CorrelatedNormalNoiseParameters cnnp{ amplitude, width, circular };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::CorrelatedNormalNoise>(common, cnnp));
             }
             break;
         }
@@ -1072,14 +1074,17 @@ namespace dnf_composer::user_interface
             break;
         }
 
-	        // (Optional) ensure a small extra width, so a horizontal bar is always usable
-	        // ImGui::Dummy(ImVec2(child_w + 120.0f, 0));
-	    }
-	    ImGui::EndChild();
-
-	    ImGui::Columns(1);
-	    ImGui::PopID();
 	}
+	ImGui::EndChild();
+
+	ImGui::Spacing();
+	const float addBtnW = ImGui::GetContentRegionAvail().x;
+	const float addBtnH = ImGui::GetFrameHeight() * 1.2f;
+	if (ImGui::Button("Add element", ImVec2(addBtnW, addBtnH)))
+		s_addRequested = true;
+
+	ImGui::PopID();
+}
 
 	void SimulationWindow::renderRemoveElementCard() const
 	{
@@ -1185,30 +1190,8 @@ namespace dnf_composer::user_interface
 	    ComboFromElements("Source element", selectedSource);
 
 	    ImGui::Spacing();
-		// ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.10f,0.75f,0.40f,0.18f));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f,0.75f,0.40f,0.28f));
 
-		const float btnW = leftW - 15.0f;                             // same width as combos
-		const float btnH = ImGui::GetFrameHeight() * 1.2f;   // a bit taller looks nicer
 
-		// Disable until both target & source are chosen
-		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
-		ImGui::BeginDisabled(!canConnect);
-		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
-		ImGui::EndDisabled();
-		//ImGui::PopStyleColor(3);
-
-		if (connectPressed)
-		{
-			const auto target = simulation->getElement(selectedTarget);
-			const auto input  = simulation->getElement(selectedSource);
-			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
-			{
-				target->addInput(input);
-				simulation->init();
-			}
-		}
 
 	    //  Right column: current connections list (scrollable)
 	    ImGui::NextColumn();
@@ -1216,9 +1199,8 @@ namespace dnf_composer::user_interface
 		ImGui::SameLine();
 		widgets::renderHelpMarker("You can disconnect elements by pressing the 'unlink' buttons.");
 
-	    const float listH = 210.0f * ImGui::GetIO().FontGlobalScale;
+	    const float listH = 120.0f * ImGui::GetIO().FontGlobalScale;
 	    ImGui::BeginChild("##connections_scroll", ImVec2(0, listH), true,
-	                      ImGuiWindowFlags_AlwaysVerticalScrollbar |
 	                      ImGuiWindowFlags_NoSavedSettings);
 
 	    if (!selectedTarget.empty())
@@ -1267,6 +1249,27 @@ namespace dnf_composer::user_interface
 	    ImGui::EndChild();
 
 	    ImGui::Columns(1);
+
+		const float btnW = ImGui::GetContentRegionAvail().x;
+		const float btnH = ImGui::GetFrameHeight() * 1.2f;
+
+		// Disable until both target & source are chosen
+		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
+		ImGui::BeginDisabled(!canConnect);
+		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
+		ImGui::EndDisabled();
+
+		if (connectPressed)
+		{
+			const auto target = simulation->getElement(selectedTarget);
+			const auto input  = simulation->getElement(selectedSource);
+			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
+			{
+				target->addInput(input);
+				simulation->init();
+			}
+		}
+
 	    ImGui::PopID();
 	}
 
@@ -1629,6 +1632,9 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::NORMAL_NOISE:
 				addElementNormalNoise();
 				break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+				addElementCorrelatedNormalNoise();
+				break;
 			case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				addElementGaussFieldCoupling();
 				break;
@@ -1700,22 +1706,33 @@ namespace dnf_composer::user_interface
 		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
 		static double tau = 25;
 		ImGui::InputDouble("tau", &tau, 1.0f, 10.0f, "%.2f");
-		static double sigmoidSteepness = 5.0f;
-		ImGui::InputDouble("sigmoid steepness", &sigmoidSteepness, 1.0f, 10.0f, "%.2f");
 		static double restingLevel = -10.0f;
 		ImGui::InputDouble("resting level", &restingLevel, 1.0f, 10.0f, "%.2f");
+		static int actFnType = element::SIGMOID;
+		static double xShift = 0.0;
+		static double steepness = 5.0;
+		static double absBeta = 100.0;
+		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		ImGui::Combo("activation fn.", &actFnType, actFnNames, 3);
+		ImGui::InputDouble("x shift", &xShift, 0.0, 0.0, "%.2f");
+		if (actFnType == element::SIGMOID)
+			ImGui::InputDouble("steepness", &steepness, 1.0f, 10.0f, "%.2f");
+		else if (actFnType == element::ABSSIGMOID)
+			ImGui::InputDouble("beta", &absBeta, 1.0f, 10.0f, "%.2f");
 
 		if (ImGui::Button("Add", { 100.0f, 30.0f }))
 		{
-			const element::SigmoidFunction activationFunction{ 0, sigmoidSteepness };
-			const element::NeuralFieldParameters nfp = { tau, restingLevel, activationFunction };
-
-			const element::ElementIdentifiers neuralFieldIdentifiers{id};
-			const element::ElementDimensions neuralFieldDimensions{ x_max, d_x };
-			const element::ElementCommonParameters commonParameters{ neuralFieldIdentifiers, neuralFieldDimensions };
-
-			const std::shared_ptr<element::NeuralField> neuralField(new element::NeuralField(commonParameters, nfp));
-			simulation->addElement(neuralField);
+			std::unique_ptr<element::ActivationFunction> af;
+			if (actFnType == element::SIGMOID)
+				af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
+			else if (actFnType == element::HEAVISIDE)
+				af = std::make_unique<element::HeavisideFunction>(xShift);
+			else
+				af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+			const element::NeuralFieldParameters nfp{ tau, restingLevel, *af };
+			const element::ElementCommonParameters commonParameters{ element::ElementIdentifiers{id},
+				element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::NeuralField>(commonParameters, nfp));
 		}
 		ImGui::PopID();
 	}
@@ -1868,6 +1885,31 @@ namespace dnf_composer::user_interface
 			simulation->addElement(gaussKernelNormalNoise);
 			simulation->createInteraction(id, "output", std::string(id) + " gauss kernel");
 			simulation->createInteraction(std::string(id) + " gauss kernel", "output", id);
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementCorrelatedNormalNoise() const
+	{
+		ImGui::PushID("correlated normal noise");
+		static char id[CHAR_SIZE] = "correlated normal noise a";
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		static int x_max = 100;
+		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
+		static double d_x = 1.0;
+		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
+		static double amplitude = 0.05;
+		ImGui::InputDouble("amplitude", &amplitude, 0.01f, 1.0f, "%.4f");
+		static double width = 2.0;
+		ImGui::InputDouble("width", &width, 0.1, 1.0, "%.2f");
+		static bool circular = true;
+		ImGui::Checkbox("circular", &circular);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			const element::CorrelatedNormalNoiseParameters cnnp{ amplitude, width, circular };
+			const element::ElementDimensions dimensions{ x_max, d_x };
+			simulation->addElement(std::make_shared<element::CorrelatedNormalNoise>(element::ElementCommonParameters{ id, dimensions }, cnnp));
 		}
 		ImGui::PopID();
 	}
@@ -2066,4 +2108,3 @@ namespace dnf_composer::user_interface
 		ImGui::PopID();
 	}
 }
-

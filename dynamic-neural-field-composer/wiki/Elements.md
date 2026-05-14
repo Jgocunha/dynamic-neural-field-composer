@@ -18,6 +18,13 @@ void init();                              // initialize buffers and state
 void step(double t, double deltaT);       // advance one time step
 std::shared_ptr<Element> clone() const;   // deep copy
 std::string toString() const;             // human-readable description
+
+// Resize the element to new spatial dimensions.
+// All component buffers are reassigned and init() is called automatically.
+// Note: this does NOT remove connections — call removeInputs()/removeOutputs()
+// first if connected elements have a different size (Simulation::changeDimensions
+// handles this automatically).
+void changeDimensions(const ElementDimensions& newDimensions);
 ```
 
 ---

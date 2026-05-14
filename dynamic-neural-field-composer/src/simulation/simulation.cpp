@@ -1,9 +1,6 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "simulation/simulation.h"
+﻿#include "simulation/simulation.h"
 #include "simulation/simulation_file_manager.h"
+#include "tools/utils.h"
 
 
 
@@ -125,6 +122,8 @@ namespace dnf_composer
 		runSegmentStart = std::chrono::steady_clock::now();
 		for (const auto& element : elements)
 			element->init();
+		for (const auto& element : elements)
+			element->buildInputCache();
 
 		initialized = true;
 		tools::logger::log(tools::logger::LogLevel::INFO, "Simulation initialized.");
@@ -134,12 +133,21 @@ namespace dnf_composer
 	{
 		if (paused)
 			return;
-		const auto t0 = std::chrono::steady_clock::now();
-		t += deltaT;
-		for (const auto& element : elements)
-			element->step(t, deltaT);
-		lastStepDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(
-			std::chrono::steady_clock::now() - t0);
+		if (measureStepDuration_)
+		{
+			const auto t0 = std::chrono::steady_clock::now();
+			t += deltaT;
+			for (const auto& element : elements)
+				element->step(t, deltaT);
+			lastStepDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+				std::chrono::steady_clock::now() - t0);
+		}
+		else
+		{
+			t += deltaT;
+			for (const auto& element : elements)
+				element->step(t, deltaT);
+		}
 	}
 
 	void Simulation::close()
@@ -230,7 +238,7 @@ namespace dnf_composer
 		// Check if an element with the same id already exists
 		const std::string newElementName = element->getUniqueName();
 		for (const auto& existingElement : elements) {
-			if (existingElement->getUniqueName() == newElementName) 
+			if (existingElement->getUniqueName() == newElementName)
 			{
 				const std::string logMessage = "An element with the same unique name already exists '" + newElementName + "'! New element was not added.";
 				log(tools::logger::LogLevel::WARNING, logMessage);
@@ -239,6 +247,7 @@ namespace dnf_composer
 		}
 
 		elements.emplace_back(element);
+		element->init();
 
 		const std::string logMessage = "Element '" + newElementName + "' was added to the simulation.";
 		log(tools::logger::LogLevel::INFO, logMessage);
@@ -287,7 +296,17 @@ namespace dnf_composer
 		}
 	}
 
-	void Simulation::createInteraction(const std::string& stimulusElementId, 
+	void Simulation::changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions)
+	{
+		const auto element = getElement(elementId);
+		element->removeInputs();
+		element->removeOutputs();
+		element->changeDimensions(newDimensions);
+		const std::string logMessage = "Element '" + elementId + "' resized to " + newDimensions.toString() + ".";
+		log(tools::logger::LogLevel::INFO, logMessage);
+	}
+
+	void Simulation::createInteraction(const std::string& stimulusElementId,
 		const std::string& stimulusComponent, const std::string& receivingElementId) const
 	{
 		const std::shared_ptr<element::Element> stimulusElement = getElement(stimulusElementId);
@@ -439,6 +458,11 @@ namespace dnf_composer
 		return initialized;
 	}
 
+	bool Simulation::isPaused() const
+	{
+		return paused;
+	}
+
 	void Simulation::generateUniqueIdentifier()
 	{
 		const auto now = std::chrono::system_clock::now();
@@ -454,11 +478,14 @@ namespace dnf_composer
 		const std::shared_ptr<element::Element> foundElement = getElement(id);
 		const std::vector<double> component = foundElement->getComponent(componentName);
 
-		const std::chrono::zoned_time localTime{std::chrono::current_zone(), std::chrono::system_clock::now()};
-		const std::string timeSignature = std::format("{:%Y-%m-%d_%H-%M-%S}", localTime);
+		const auto now = std::chrono::system_clock::now();
+		const auto time_t = std::chrono::system_clock::to_time_t(now);
+		std::ostringstream timeOss;
+		timeOss << std::put_time(std::localtime(&time_t), "%Y-%m-%d_%H-%M-%S");
+		const std::string timeSignature = timeOss.str();
 
 		// Add the time signature to the filename
-		const std::string filename = std::string(OUTPUT_DIRECTORY) + "/exports/" + id + "_" + componentName + "_" + timeSignature + ".txt";
+		const std::string filename = tools::utils::getResourceRoot() + "/data/exports/" + id + "_" + componentName + "_" + timeSignature + ".txt";
 
 		const bool success = tools::utils::saveVectorToFile(component, filename);
 		if (success)
@@ -479,4 +506,3 @@ namespace dnf_composer
 		return elements;
 	}
 }
-

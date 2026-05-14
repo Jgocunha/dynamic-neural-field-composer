@@ -1,8 +1,4 @@
-﻿// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "dynamic-neural-field-composer-dynamic.h"
+﻿#include "dynamic-neural-field-composer-dynamic.h"
 
 
 int main()
@@ -13,12 +9,6 @@ int main()
 
 		const auto simulation = std::make_shared<Simulation>("default simulation");
 		const auto visualization = std::make_shared<Visualization>(simulation);
-
-		// Dynamic layout: each plot is its own floating, dockable ImGui window.
-		// Users can freely move, resize, and dock individual plot windows.
-		// To switch to a tiled layout (all plots inside a single "Plots" window),
-		// change this to PlotWindowMode::TILED.
-		visualization->setPlotWindowMode(PlotWindowMode::INDIVIDUAL);
 
 		const Application app{ simulation, visualization };
 

@@ -1,11 +1,14 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "user_interface/element_window.h"
+﻿#include "user_interface/element_window.h"
 
 namespace dnf_composer::user_interface
 {
+	std::shared_ptr<element::Element> ElementWindow::s_focusedElement_ = nullptr;
+
+	void ElementWindow::setFocusedElement(const std::shared_ptr<element::Element>& element)
+	{
+		s_focusedElement_ = element;
+	}
+
 	ElementWindow::ElementWindow(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
 	{
@@ -16,9 +19,7 @@ namespace dnf_composer::user_interface
 		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
-		if (open)
-		{
-			//renderModifyElementParameters();
+		if (open) {
 			renderElementControlCard();
 		}
 		ImGui::End();
@@ -27,69 +28,110 @@ namespace dnf_composer::user_interface
 	void ElementWindow::renderElementControlCard() const
 	{
 		constexpr ImGuiWindowFlags childFlags =
-        ImGuiWindowFlags_AlwaysVerticalScrollbar |
         ImGuiWindowFlags_NoSavedSettings;
 
 		widgets::renderHelpMarker("Left click and drag or double-click to change element parameter values.");
 	    ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
 
-	    // group elements by type
-	    std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
-	    for (const auto& e : simulation->getElements())
-	        byType[e->getLabel()].push_back(e);
-
-	    const float innerW   = ImGui::GetContentRegionAvail().x;
-		const float ui       = ImGui::GetIO().FontGlobalScale;
-		const float dragW    = 130.0f * ui;
-		const float panelPadX = 10.0f * ui; // left and right from beginElementPanel
-		const float spacingX = ImGui::GetStyle().ItemSpacing.x;
+		// Layout metrics (must be computed before the Selected elements section uses them)
+	    const float innerW    = ImGui::GetContentRegionAvail().x;
+		const float ui        = ImGui::GetIO().FontGlobalScale;
+		const float dragW     = 130.0F * ui;
+		const float panelPadX = 10.0F * ui;
+		const float spacingX  = ImGui::GetStyle().ItemSpacing.x;
 
 		auto PanelHeightFor = [&](const std::shared_ptr<element::Element>& e) -> float
 		{
 			const float frameH   = ImGui::GetFrameHeight();
 			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
 			const float rowH     = frameH + spacingY;
-			const float panelPad = 2.0f * 8.0f * ui; // top and bottom padding from beginElementPanel
+			const float panelPad = 3.0F * 8.0F * ui;
 
 			auto h = [&](const int rows) {
 				return rows * rowH - spacingY + panelPad;
 			};
 
+			constexpr int dimRows  = 2; // Size + Step
+			constexpr int kDimRows = 4; // Size + Step + Output Size + Output Step
+
 			switch (e->getLabel())
 			{
-				case element::ElementLabel::NORMAL_NOISE:           return h(1);
-				case element::ElementLabel::NEURAL_FIELD:           return h(2);
-				case element::ElementLabel::GAUSS_STIMULUS:         return h(4);
-				case element::ElementLabel::GAUSS_KERNEL:           return h(4);
-				case element::ElementLabel::FIELD_COUPLING:         return h(5);
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:     return h(6);
-				case element::ElementLabel::OSCILLATORY_KERNEL:     return h(5);
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:return h(5);
-				case element::ElementLabel::BOOST_STIMULUS:         return h(2);
-				case element::ElementLabel::MEMORY_TRACE:           return h(3);
-				case element::ElementLabel::NEURAL_FIELD_2D:        return h(2);
-				case element::ElementLabel::GAUSS_STIMULUS_2D:      return h(5);
-				case element::ElementLabel::GAUSS_KERNEL_2D:        return h(4);
-				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:  return h(6);
+				case element::ElementLabel::NEURAL_FIELD_2D:         return h(2);
+				case element::ElementLabel::GAUSS_STIMULUS_2D:       return h(5);
+				case element::ElementLabel::GAUSS_KERNEL_2D:         return h(4);
+				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:   return h(6);
 				case element::ElementLabel::NORMAL_NOISE_2D:         return h(1);
-				case element::ElementLabel::OSCILLATORY_KERNEL_2D:  return h(5);
+				case element::ElementLabel::OSCILLATORY_KERNEL_2D:   return h(5);
 				case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return h(7);
 				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return h(8);
 				case element::ElementLabel::BOOST_STIMULUS_2D:       return h(2);
-				case element::ElementLabel::FIELD_PROJECTION:         return h(1);
-				case element::ElementLabel::FIELD_EXPANSION:          return h(1);
+				case element::ElementLabel::FIELD_PROJECTION:        return h(1);
+				case element::ElementLabel::FIELD_EXPANSION:         return h(1);
+				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
+				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
+				case element::ElementLabel::GAUSS_STIMULUS:          return h(4  + dimRows);
+				case element::ElementLabel::GAUSS_KERNEL:            return h(4  + kDimRows);
+				case element::ElementLabel::FIELD_COUPLING:          return h(7  + dimRows);
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:      return h(6  + kDimRows);
+				case element::ElementLabel::OSCILLATORY_KERNEL:      return h(5  + kDimRows);
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return h(5  + kDimRows);
+				case element::ElementLabel::BOOST_STIMULUS:          return h(2  + dimRows);
+				case element::ElementLabel::MEMORY_TRACE:            return h(3  + dimRows);
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
 					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(2 + 5 * numCouplings);
+					return h(4 + (5 * numCouplings) + dimRows);
 				}
-				default: return h(4);
+				default: return h(4 + dimRows);
 			}
 		};
 
-		const float maxNaturalW = 1.0f * panelPadX + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
+		const float maxNaturalW = (1.0f * panelPadX) + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
 		const float panelW = ImMin(maxNaturalW, innerW);
+
+		// Validate a focused element still belongs to this simulation
+		if (s_focusedElement_)
+		{
+			bool stillValid = false;
+			for (const auto& e : simulation->getElements()) {
+				if (e == s_focusedElement_) { stillValid = true; break; }
+			}
+			if (!stillValid) { s_focusedElement_ = nullptr;}
+		}
+
+		// Selected elements section - shows the most recently single-clicked node
+		if (s_focusedElement_)
+		{
+			ImGui::PushID("##sel_focused");
+			ImGui::PushFont(g_BoldLargeFont);
+			ImGui::TextUnformatted("Selected Element");
+			ImGui::PopFont();
+			ImGui::Spacing();
+
+			ImGui::TextUnformatted(s_focusedElement_->getUniqueName().c_str());
+			ImGui::Spacing();
+			const ImVec4 tint = getColorForElementType(s_focusedElement_->getLabel());
+			const ImVec2 selSize(panelW, PanelHeightFor(s_focusedElement_));
+			PanelScope scope = beginElementPanel(tint, selSize);
+			{
+				ImGui::PushItemWidth(dragW);
+				switchElementToModify(s_focusedElement_);
+				ImGui::PopItemWidth();
+				renderDimensionControls(s_focusedElement_);
+			}
+			endElementPanel(scope);
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+			ImGui::PopID();
+		}
+
+	    // group elements by type
+	    std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
+	    for (const auto& e : simulation->getElements())
+	        byType[e->getLabel()].push_back(e);
 
 	    for (const auto& [label, elems] : byType)
 	    {
@@ -106,10 +148,10 @@ namespace dnf_composer::user_interface
 	            const ImVec4 tint = getColorForElementType(label);
 	            const ImVec2 size(panelW, PanelHeightFor(e));
 
-	            // draw a panel first (behind), then render the editor inside it
 	            PanelScope scope = beginElementPanel(tint, size);
 	            {
-	                switchElementToModify(e);   // draws inputs at p.rect.Min + pad
+	                switchElementToModify(e);
+	                renderDimensionControls(e);
 	            }
 	            endElementPanel(scope);
 
@@ -155,20 +197,209 @@ namespace dnf_composer::user_interface
 
 	}
 
+	void ElementWindow::renderDimensionControls(const std::shared_ptr<element::Element>& element) const
+	{
+		const float ui     = ImGui::GetIO().FontGlobalScale;
+		const float inputW = 150.0f * ui;
+		const std::string elemId = element->getUniqueName();
+		const element::ElementLabel label = element->getLabel();
+		const bool isCoupling = label == element::ElementLabel::FIELD_COUPLING ||
+		                        label == element::ElementLabel::GAUSS_FIELD_COUPLING;
+		const bool isKernel   = label == element::ElementLabel::GAUSS_KERNEL ||
+		                        label == element::ElementLabel::MEXICAN_HAT_KERNEL ||
+		                        label == element::ElementLabel::OSCILLATORY_KERNEL ||
+		                        label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL;
+
+		static std::unordered_map<int, std::pair<float, float>> staged;
+		static std::unordered_map<int, std::pair<float, float>> stagedIn;
+		static std::unordered_map<int, std::pair<float, float>> stagedOut;
+		const int id = element->getUniqueIdentifier();
+		auto& [stagedXmax, stagedDx] = staged[id];
+
+		const auto& dim = element->getElementCommonParameters().dimensionParameters;
+		if (stagedXmax == 0.0f && stagedDx == 0.0f)
+		{
+			stagedXmax = static_cast<float>(dim.x_max);
+			stagedDx   = static_cast<float>(dim.d_x);
+		}
+
+		ImGui::Separator();
+		ImGui::PushID(("##dim_" + elemId).c_str());
+
+		ImGui::SetNextItemWidth(inputW);
+		ImGui::InputFloat("##x_max", &stagedXmax, 0.0f, 0.0f, "%.1f");
+		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+		{
+			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+			simulation->changeDimensions(elemId, newDim);
+			stagedXmax = static_cast<float>(newDim.x_max);
+			stagedDx   = static_cast<float>(newDim.d_x);
+		}
+		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out size" : "Size");
+		ImGui::SameLine();
+		widgets::renderHelpMarker(
+			"Changing the field size will disconnect all existing connections\n"
+			"to and from this element. Press Enter to commit the new size."
+		);
+
+		ImGui::SetNextItemWidth(inputW);
+		ImGui::InputFloat("##dx", &stagedDx, 0.0f, 0.0f, "%.2f");
+		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+		{
+			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+			simulation->changeDimensions(elemId, newDim);
+			stagedXmax = static_cast<float>(newDim.x_max);
+			stagedDx   = static_cast<float>(newDim.d_x);
+		}
+		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out step" : "Step");
+
+		if (isKernel)
+		{
+			auto& [stagedOutXmax, stagedOutDx] = stagedOut[id];
+
+			auto getKernelOutputDims = [&]() -> std::optional<element::ElementDimensions> {
+				if (label == element::ElementLabel::GAUSS_KERNEL)
+					return std::dynamic_pointer_cast<element::GaussKernel>(element)->getParameters().outputFieldDimensions;
+				if (label == element::ElementLabel::MEXICAN_HAT_KERNEL)
+					return std::dynamic_pointer_cast<element::MexicanHatKernel>(element)->getParameters().outputFieldDimensions;
+				if (label == element::ElementLabel::OSCILLATORY_KERNEL)
+					return std::dynamic_pointer_cast<element::OscillatoryKernel>(element)->getParameters().outputFieldDimensions;
+				if (label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL)
+					return std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element)->getParameters().outputFieldDimensions;
+				return std::nullopt;
+			};
+
+			if (stagedOutXmax == 0.0f && stagedOutDx == 0.0f)
+			{
+				const auto currentOut = getKernelOutputDims();
+				if (currentOut.has_value())
+				{
+					stagedOutXmax = static_cast<float>(currentOut->x_max);
+					stagedOutDx   = static_cast<float>(currentOut->d_x);
+				}
+				else
+				{
+					stagedOutXmax = static_cast<float>(dim.x_max);
+					stagedOutDx   = static_cast<float>(dim.d_x);
+				}
+			}
+
+			auto applyKernelOutputDim = [&]() {
+				if (stagedOutXmax <= 0.0f || stagedOutDx <= 0.0f) return;
+				const element::ElementDimensions newOutDim(static_cast<int>(stagedOutXmax), static_cast<double>(stagedOutDx));
+				const bool squareMode = (newOutDim.x_max == element->getMaxSpatialDimension() &&
+				                        std::abs(newOutDim.d_x - element->getStepSize()) < 1e-9);
+				const std::optional<element::ElementDimensions> newOptOut =
+					squareMode ? std::nullopt : std::make_optional(newOutDim);
+				element->removeInputs();
+				element->removeOutputs();
+				if (label == element::ElementLabel::GAUSS_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::GaussKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				else if (label == element::ElementLabel::MEXICAN_HAT_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::MexicanHatKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				else if (label == element::ElementLabel::OSCILLATORY_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::OscillatoryKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				else if (label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL)
+				{
+					const auto k = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
+					auto p = k->getParameters();
+					p.outputFieldDimensions = newOptOut;
+					k->setParameters(p);
+				}
+				const auto finalOut = getKernelOutputDims();
+				if (finalOut.has_value())
+				{
+					stagedOutXmax = static_cast<float>(finalOut->x_max);
+					stagedOutDx   = static_cast<float>(finalOut->d_x);
+				}
+				else
+				{
+					stagedOutXmax = static_cast<float>(element->getElementCommonParameters().dimensionParameters.x_max);
+					stagedOutDx   = static_cast<float>(element->getElementCommonParameters().dimensionParameters.d_x);
+				}
+			};
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##out_x_max", &stagedOutXmax, 0.0f, 0.0f, "%.1f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyKernelOutputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("Output Size");
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##out_dx", &stagedOutDx, 0.0f, 0.0f, "%.2f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyKernelOutputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("Output Step");
+		}
+
+		if (isCoupling)
+		{
+			auto& [stagedInXmax, stagedInDx] = stagedIn[id];
+
+			element::ElementDimensions currentInputDim{};
+			if (label == element::ElementLabel::FIELD_COUPLING)
+			{
+				const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element);
+				currentInputDim = fc->getParameters().inputFieldDimensions;
+			}
+			else
+			{
+				const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
+				currentInputDim = gfc->getInputFieldDimensions();
+			}
+
+			if (stagedInXmax == 0.0f && stagedInDx == 0.0f)
+			{
+				stagedInXmax = static_cast<float>(currentInputDim.x_max);
+				stagedInDx   = static_cast<float>(currentInputDim.d_x);
+			}
+
+			auto applyInputDim = [&]() {
+				if (stagedInXmax <= 0.0f || stagedInDx <= 0.0f) return;
+				const element::ElementDimensions newInDim(static_cast<int>(stagedInXmax), static_cast<double>(stagedInDx));
+				element->removeInputs();
+				element->removeOutputs();
+				if (label == element::ElementLabel::FIELD_COUPLING)
+					std::dynamic_pointer_cast<element::FieldCoupling>(element)->changeInputDimensions(newInDim);
+				else
+					std::dynamic_pointer_cast<element::GaussFieldCoupling>(element)->changeInputDimensions(newInDim);
+				stagedInXmax = static_cast<float>(newInDim.x_max);
+				stagedInDx   = static_cast<float>(newInDim.d_x);
+			};
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##in_x_max", &stagedInXmax, 0.0f, 0.0f, "%.1f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("In size");
+
+			ImGui::SetNextItemWidth(inputW);
+			ImGui::InputFloat("##in_dx", &stagedInDx, 0.0f, 0.0f, "%.2f");
+			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			ImGui::SameLine(); ImGui::TextUnformatted("In step");
+		}
+
+		ImGui::PopID();
+	}
+
 	void ElementWindow::switchElementToModify(const std::shared_ptr<element::Element>& element)
 	{
 		const std::string elementId = element->getUniqueName();
-		const element::ElementLabel label = element->getLabel();
+		static bool missingElementAcknowledged = false;
 
-		// Set text color based on the element label
-		//ImVec4 elementColor = getColorForElementType(label);
-		//ImGui::PushStyleColor(ImGuiCol_Text, elementColor);
-		//ImGui::SeparatorText((getIconForElementType(label) + " " + elementId).c_str());
-		//ImGui::PopStyleColor();
-
-		//ImGui::SeparatorText( ("Element " + elementId).c_str() );
-
-		switch (label)
+		switch (const element::ElementLabel label = element->getLabel())
 		{
 		case element::ElementLabel::NEURAL_FIELD:
 			modifyElementNeuralField(element);
@@ -187,6 +418,9 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::NORMAL_NOISE:
 			modifyElementNormalNoise(element);
+			break;
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+			modifyElementCorrelatedNormalNoise(element);
 			break;
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 			modifyElementGaussFieldCoupling(element);
@@ -239,44 +473,133 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::UNINITIALIZED:
 			break;
 		default:
-			log(tools::logger::LogLevel::ERROR, "There is a missing element in the "
-			    "TreeNode in simulation window.");
+			if (!missingElementAcknowledged)
+			{
+				log(tools::logger::LogLevel::ERROR, "There is a missing element in the "
+					"TreeNode in simulation window.");
+				missingElementAcknowledged = true;
+			}
 			break;
 		}
 	}
 
 	void ElementWindow::modifyElementNeuralField(const std::shared_ptr<element::Element>& element)
 	{
-			const float ui = ImGui::GetIO().FontGlobalScale;
+		const float ui = ImGui::GetIO().FontGlobalScale;
 
-			const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
-			element::NeuralFieldParameters nfp = neuralField->getParameters();
+		const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
+		element::NeuralFieldParameters nfp = neuralField->getParameters();
+		bool updated = false;
 
-			auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
-			auto tau = static_cast<float>(nfp.tau);
-
-			std::string label = "##" + element->getUniqueName() + "Resting level";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f);
-			ImGui::SameLine(); ImGui::Text("Resting level");
-
-			label = "##" + element->getUniqueName() + "Tau";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f);
-			ImGui::SameLine(); ImGui::Text("Tau");
-
-		static constexpr double epsilon = 1e-6;
-		if (std::abs(restingLevel - static_cast<float>(nfp.startingRestingLevel)) > epsilon)
+		auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
+		std::string label = "##" + element->getUniqueName() + "RestingLevel";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		if (ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f))
 		{
 			nfp.startingRestingLevel = restingLevel;
-			neuralField->setParameters(nfp);
+			updated = true;
 		}
+		ImGui::SameLine(); ImGui::Text("Resting level");
 
-		if (std::abs(tau - static_cast<float>(nfp.tau)) > epsilon)
+		auto tau = static_cast<float>(nfp.tau);
+		label = "##" + element->getUniqueName() + "Tau";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		if (ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f))
 		{
 			nfp.tau = tau;
-			neuralField->setParameters(nfp);
+			updated = true;
 		}
+		ImGui::SameLine(); ImGui::Text("Tau");
+
+		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		int actFnType = nfp.activationFunction
+			? static_cast<int>(nfp.activationFunction->type)
+			: element::SIGMOID;
+		label = "##" + element->getUniqueName() + "ActFnType";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		if (ImGui::Combo(label.c_str(), &actFnType, actFnNames, 3))
+		{
+			switch (actFnType)
+			{
+			case element::SIGMOID:    nfp.activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0); break;
+			case element::HEAVISIDE:  nfp.activationFunction = std::make_unique<element::HeavisideFunction>(0.0); break;
+			case element::ABSSIGMOID: nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(0.0, 100.0); break;
+			default: break;
+			}
+			updated = true;
+		}
+		ImGui::SameLine(); ImGui::Text("Activation fn.");
+
+		if (actFnType == element::SIGMOID)
+		{
+			const auto* sig = dynamic_cast<const element::SigmoidFunction*>(nfp.activationFunction.get());
+			auto xShift    = sig ? static_cast<float>(sig->getXShift())    : 0.0f;
+			auto steepness = sig ? static_cast<float>(sig->getSteepness()) : 10.0f;
+
+			label = "##" + element->getUniqueName() + "SigXShift";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::SigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(steepness));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("X shift");
+
+			label = "##" + element->getUniqueName() + "SigSteepness";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &steepness, 0.5f, 0.1f, 500.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::SigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(steepness));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("Steepness");
+		}
+		else if (actFnType == element::HEAVISIDE)
+		{
+			const auto* h = dynamic_cast<const element::HeavisideFunction*>(nfp.activationFunction.get());
+			auto xShift = h ? static_cast<float>(h->getXShift()) : 0.0f;
+
+			label = "##" + element->getUniqueName() + "HeavXShift";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::HeavisideFunction>(
+					static_cast<double>(xShift));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("X shift");
+		}
+		else if (actFnType == element::ABSSIGMOID)
+		{
+			const auto* abs = dynamic_cast<const element::AbsSigmoidFunction*>(nfp.activationFunction.get());
+			auto xShift = abs ? static_cast<float>(abs->getXShift()) : 0.0f;
+			auto beta   = abs ? static_cast<float>(abs->getBeta())   : 100.0f;
+
+			label = "##" + element->getUniqueName() + "AbsXShift";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(beta));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("X shift");
+
+			label = "##" + element->getUniqueName() + "AbsBeta";
+			ImGui::SetNextItemWidth(150.0f * ui);
+			if (ImGui::DragFloat(label.c_str(), &beta, 1.0f, 0.1f, 1000.0f))
+			{
+				nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
+					static_cast<double>(xShift), static_cast<double>(beta));
+				updated = true;
+			}
+			ImGui::SameLine(); ImGui::Text("Beta");
+		}
+
+		if (updated)
+			neuralField->setParameters(nfp);
 	}
 
 	void ElementWindow::modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element)
@@ -731,6 +1054,43 @@ namespace dnf_composer::user_interface
 		{
 			nnp.amplitude = amplitude;
 			normalNoise->setParameters(nnp);
+		}
+	}
+
+	void ElementWindow::modifyElementCorrelatedNormalNoise(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise>(element);
+		element::CorrelatedNormalNoiseParameters p = cnn->getParameters();
+
+		auto amplitude = static_cast<float>(p.amplitude);
+		auto width = static_cast<float>(p.width);
+		bool circular = p.circular;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.001f, 0.0f, 5.0f, "%.4f");
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
+		    std::abs(width - static_cast<float>(p.width)) > epsilon ||
+		    circular != p.circular)
+		{
+			p.amplitude = amplitude;
+			p.width = width;
+			p.circular = circular;
+			cnn->setParameters(p);
 		}
 	}
 
@@ -1405,6 +1765,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.337f, 0.502f, 0.749f, 1.0f);  // Soft Blue
 		case element::ElementLabel::NORMAL_NOISE:
 			return ImVec4(0.875f, 0.580f, 0.329f, 1.0f);  // Warm Orange
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
+			return ImVec4(0.820f, 0.490f, 0.200f, 1.0f);  // Deep Orange
 		case element::ElementLabel::GAUSS_KERNEL:
 			return ImVec4(0.749f, 0.247f, 0.247f, 1.0f);  // Muted Red
 		case element::ElementLabel::GAUSS_STIMULUS:
@@ -1460,6 +1822,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_KERNEL: return "Gaussian Kernels";
 		case element::ElementLabel::MEXICAN_HAT_KERNEL: return "Mexican Hat Kernels";
 		case element::ElementLabel::NORMAL_NOISE: return "Normal Noise";
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE: return "Correlated Normal Noise";
 		case element::ElementLabel::GAUSS_FIELD_COUPLING: return "Gaussian Field Couplings";
 		case element::ElementLabel::OSCILLATORY_KERNEL: return "Oscillatory Kernels";
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gaussian Kernels";

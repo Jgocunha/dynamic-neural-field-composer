@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "elements/mexican_hat_kernel.h"
+﻿#include "elements/mexican_hat_kernel.h"
 
 namespace dnf_composer
 {
@@ -52,7 +48,13 @@ namespace dnf_composer
 				components["kernel"][i] = parameters.amplitudeExc * gaussExc[i] -
 				parameters.amplitudeInh * gaussInh[i];
 
+			scratchExtended.assign(extIndex.empty() ? 0 : extIndex.size(), 0.0);
 			scratchConvolution.assign(commonParameters.dimensionParameters.size, 0.0);
+			if (parameters.outputFieldDimensions.has_value() &&
+				parameters.outputFieldDimensions->size != commonParameters.dimensionParameters.size)
+				scratchResample_.assign(commonParameters.dimensionParameters.size, 0.0);
+			else
+				scratchResample_.clear();
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
 			if (parameters.outputFieldDimensions.has_value())
@@ -65,29 +67,29 @@ namespace dnf_composer
 		{
 			updateInput();
 
-			fullSum = std::accumulate(components["input"].begin(), components["input"].end(),
-				(double)0.0);
+			const auto& inp = components["input"];
+			fullSum = std::accumulate(inp.begin(), inp.begin() + commonParameters.dimensionParameters.size,
+				0.0);
 
-			std::vector<double> convolution(commonParameters.dimensionParameters.size);
-			const std::vector<double> subDataInput = tools::math::obtainCircularVector(extIndex,
-				components["input"]);
+			if (parameters.circular) {
+				tools::math::obtainCircularVector_into(scratchExtended, extIndex, inp);
+				tools::math::conv_valid_into(scratchConvolution, scratchExtended, components["kernel"]);
+			} else {
+				tools::math::conv_same_into(scratchConvolution, inp, components["kernel"]);
+			}
 
-			if (parameters.circular)
-				convolution = tools::math::conv_valid(subDataInput, components["kernel"]);
-			else
-				convolution = tools::math::conv_same(components["input"], components["kernel"]);
-
-			if (parameters.outputFieldDimensions.has_value() &&
-				parameters.outputFieldDimensions->size != commonParameters.dimensionParameters.size)
+			const double globalOffset = parameters.amplitudeGlobal * fullSum;
+			if (!scratchResample_.empty())
 			{
 				for (int i = 0; i < static_cast<int>(scratchConvolution.size()); i++)
-					scratchConvolution[i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
-				tools::math::resampleInto(scratchConvolution, components["output"]);
+					scratchResample_[i] = scratchConvolution[i] + globalOffset;
+				tools::math::resampleInto(scratchResample_, components["output"]);
 			}
 			else
 			{
-				for (int i = 0; i < static_cast<int>(components["output"].size()); i++)
-					components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+				auto& out = components["output"];
+				for (int i = 0; i < static_cast<int>(out.size()); i++)
+					out[i] = scratchConvolution[i] + globalOffset;
 			}
 		}
 

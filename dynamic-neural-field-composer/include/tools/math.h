@@ -90,6 +90,50 @@ namespace dnf_composer::tools::math
 		return out;
 	}
 
+	// In-place variants — write into a caller-supplied buffer (no heap allocation).
+	// `out` must be pre-sized to the correct output length before calling.
+
+	template<typename T>
+	void conv_valid_into(std::vector<T>& out, const std::vector<T>& f, const std::vector<T>& g)
+	{
+		const int nf = static_cast<int>(f.size());
+		const int ng = static_cast<int>(g.size());
+		const std::vector<T>& min_v = (nf < ng) ? f : g;
+		const std::vector<T>& max_v = (nf < ng) ? g : f;
+		const int n = std::max(nf, ng) - std::min(nf, ng) + 1;
+		for (int i = 0; i < n; ++i) {
+			T acc = T();
+			for (int j = static_cast<int>(min_v.size()) - 1, k = i; j >= 0; --j, ++k)
+				acc += min_v[j] * max_v[k];
+			out[i] = acc;
+		}
+	}
+
+	template<typename T>
+	void conv_same_into(std::vector<T>& out, const std::vector<T>& f, const std::vector<T>& g)
+	{
+		const int nf = static_cast<int>(f.size());
+		const int ng = static_cast<int>(g.size());
+		const int pad = (ng - 1) / 2;
+		for (int i = 0; i < nf; ++i) {
+			T acc = T();
+			for (int j = 0; j < ng; ++j) {
+				const int fIndex = i + j - pad;
+				if (fIndex >= 0 && fIndex < nf)
+					acc += f[fIndex] * g[j];
+			}
+			out[i] = acc;
+		}
+	}
+
+	template<typename T>
+	void obtainCircularVector_into(std::vector<T>& out, const std::vector<int>& indices,
+	                               const std::vector<T>& contents)
+	{
+		for (int i = 0; i < static_cast<int>(indices.size()); ++i)
+			out[i] = contents[indices[i] - 1];
+	}
+
 	template<typename T>
 	std::vector<T> gaussNorm(const std::vector<int>& rangeX, const T& position, const T& sigma)
 	{
@@ -221,6 +265,23 @@ namespace dnf_composer::tools::math
 		std::vector<T> s(x.size());
 		for (std::size_t i = 0; i < s.size(); ++i) {
 			s[i] = 1 / (1 + std::exp(-beta * (x[i] - x0)));
+		}
+		return s;
+	}
+
+	/// @brief AbsSigmoid: rational approximation of the logistic sigmoid.
+	///
+	/// Formula: s(x) = 0.5 * (1 + beta * (x - x0) / (1 + beta * |x - x0|))
+	///
+	/// Equivalent to cedar's AbsSigmoid(beta, theta=x0). At beta >= 20 virtually
+	/// indistinguishable from the ExpSigmoid but avoids std::exp() entirely.
+	template <typename T>
+	std::vector<T> absSigmoid(const std::vector<T>& x, T beta, T x0)
+	{
+		std::vector<T> s(x.size());
+		for (std::size_t i = 0; i < s.size(); ++i) {
+			const T diff = x[i] - x0;
+			s[i] = static_cast<T>(0.5) * (1 + beta * diff / (1 + beta * std::abs(diff)));
 		}
 		return s;
 	}

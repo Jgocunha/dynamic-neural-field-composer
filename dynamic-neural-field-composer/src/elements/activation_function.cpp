@@ -1,9 +1,4 @@
-
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "elements/activation_function.h"
+﻿#include "elements/activation_function.h"
 
 
 namespace dnf_composer::element
@@ -17,6 +12,18 @@ namespace dnf_composer::element
 	std::vector<double> SigmoidFunction::operator()(const std::vector<double>& input)
 	{
 		return tools::math::sigmoid(input, steepness, x_shift);
+	}
+
+	void SigmoidFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
+	{
+		const float s  = static_cast<float>(steepness);
+		const float xs = static_cast<float>(x_shift);
+		const std::size_t n = input.size();
+		for (std::size_t i = 0; i < n; ++i)
+		{
+			const float x = static_cast<float>(input[i]);
+			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(-s * (x - xs))));
+		}
 	}
 
 	bool SigmoidFunction::operator==(const SigmoidFunction& other) const
@@ -68,6 +75,12 @@ namespace dnf_composer::element
 		return tools::math::heaviside(input, x_shift);
 	}
 
+	void HeavisideFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
+	{
+		for (std::size_t i = 0; i < input.size(); ++i)
+			out[i] = (input[i] > x_shift) ? 1.0 : 0.0;
+	}
+
 	bool HeavisideFunction::operator==(const HeavisideFunction& other) const
 	{
 		return x_shift == other.x_shift;
@@ -94,6 +107,63 @@ namespace dnf_composer::element
 	}
 
 	double HeavisideFunction::getXShift() const
+	{
+		return x_shift;
+	}
+
+	AbsSigmoidFunction::AbsSigmoidFunction(const double x_shift, const double beta)
+		: x_shift(x_shift), beta(beta)
+	{
+		type = ActivationFunctionType::ABSSIGMOID;
+	}
+
+	std::vector<double> AbsSigmoidFunction::operator()(const std::vector<double>& input)
+	{
+		return tools::math::absSigmoid(input, beta, x_shift);
+	}
+
+	void AbsSigmoidFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
+	{
+		for (std::size_t i = 0; i < input.size(); ++i) {
+			const double diff = input[i] - x_shift;
+			out[i] = 0.5 * (1.0 + beta * diff / (1.0 + beta * std::abs(diff)));
+		}
+	}
+
+	bool AbsSigmoidFunction::operator==(const AbsSigmoidFunction& other) const
+	{
+		return x_shift == other.x_shift && beta == other.beta;
+	}
+
+	std::unique_ptr<ActivationFunction> AbsSigmoidFunction::clone() const
+	{
+		return std::make_unique<AbsSigmoidFunction>(*this);
+	}
+
+	std::string AbsSigmoidFunction::toString() const
+	{
+		std::string result = "AbsSigmoidFunction(";
+		std::ostringstream stream_x_shift;
+		stream_x_shift << std::fixed << std::setprecision(2) << x_shift;
+		result += "x_shift = " + stream_x_shift.str() + ", ";
+		std::ostringstream stream_beta;
+		stream_beta << std::fixed << std::setprecision(2) << beta;
+		result += "beta = " + stream_beta.str() + ")";
+		return result;
+	}
+
+	void AbsSigmoidFunction::print() const
+	{
+		const std::string result = toString();
+		tools::logger::log(tools::logger::LogLevel::INFO, result);
+	}
+
+	double AbsSigmoidFunction::getBeta() const
+	{
+		return beta;
+	}
+
+	double AbsSigmoidFunction::getXShift() const
 	{
 		return x_shift;
 	}

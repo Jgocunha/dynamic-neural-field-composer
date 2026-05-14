@@ -8,7 +8,7 @@ namespace dnf_composer::user_interface
 		:visualization(visualization), simulation(visualization->getSimulation())
 	{}
 
-	void PlotControlWindow::renderContent()
+	void PlotControlWindow::renderContent() const
 	{
 		// Add a new plot button
 		ImGui::Text("Add a new plot:"); ImGui::SameLine();
@@ -36,14 +36,14 @@ namespace dnf_composer::user_interface
 			// Build a set of element names already present in any existing plot
 			std::unordered_set<std::string> alreadyPlotted;
 			for (const auto& [p, data] : visualization->getPlots())
-				for (const auto& [elemName, _] : data)
+				for (const auto &elemName: data | std::views::keys)
 					alreadyPlotted.insert(elemName);
 
 			for (const auto& element : simulation->getElements())
 			{
 				if (element->getLabel() != element::ElementLabel::NEURAL_FIELD)
 					continue;
-				if (alreadyPlotted.count(element->getUniqueName()))
+				if (alreadyPlotted.contains(element->getUniqueName()))
 					continue;
 				const auto* comps = element->getComponents();
 				if (!comps || comps->empty())
@@ -90,19 +90,19 @@ namespace dnf_composer::user_interface
 					                  return a.first->getUniqueIdentifier() < b.first->getUniqueIdentifier();
 				                  });
 
-				for (const auto& plot : sortedPlots)
+				for (const auto&[fst, snd] : sortedPlots)
 				{
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
-					ImGui::TextUnformatted(std::to_string(plot.first->getUniqueIdentifier()).c_str());
+					ImGui::TextUnformatted(std::to_string(fst->getUniqueIdentifier()).c_str());
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextUnformatted(PlotTypeToString.at(plot.first->getType()).c_str());
+					ImGui::TextUnformatted(PlotTypeToString.at(fst->getType()).c_str());
 
-					const std::string listbox_label = "##" + std::to_string(plot.first->getUniqueIdentifier());
+					const std::string listbox_label = "##" + std::to_string(fst->getUniqueIdentifier());
 					ImGui::TableSetColumnIndex(2);
 					if (ImGui::BeginListBox(listbox_label.c_str(), ImVec2(300, 25)))
 					{
-						for (const auto& data : plot.second)
+						for (const auto& data : snd)
 						{
 							ImGui::TextUnformatted((data.first + " " + data.second).c_str());
 						}
@@ -111,9 +111,9 @@ namespace dnf_composer::user_interface
 
 					// Add data button and popup
 					ImGui::TableSetColumnIndex(3);
-					const std::string popup_id = "AddDataPopup_" + std::to_string(plot.first->getUniqueIdentifier());
+					const std::string popup_id = "AddDataPopup_" + std::to_string(fst->getUniqueIdentifier());
 					ImGui::PushFont(g_MediumIconsFont);
-					if (ImGui::Button((ICON_FA_CIRCLE_PLUS  "##add" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
+					if (ImGui::Button((ICON_FA_CIRCLE_PLUS  "##add" + std::to_string(fst->getUniqueIdentifier())).c_str()))
 					{
 						ImGui::OpenPopup(popup_id.c_str());
 					}
@@ -133,7 +133,7 @@ namespace dnf_composer::user_interface
 								const std::string item_label = element->getUniqueName() + " " + name;
 								if (ImGui::Selectable(item_label.c_str()))
 								{
-									visualization->plot(plot.first->getUniqueIdentifier(), element->getUniqueName(), name);
+									visualization->plot(fst->getUniqueIdentifier(), element->getUniqueName(), name);
 									ImGui::CloseCurrentPopup();
 								}
 							}
@@ -143,9 +143,9 @@ namespace dnf_composer::user_interface
 
 					ImGui::SameLine();
 					// Remove data button and popup
-					const std::string remove_popup_id = "RemoveDataPopup_" + std::to_string(plot.first->getUniqueIdentifier());
+					const std::string remove_popup_id = "RemoveDataPopup_" + std::to_string(fst->getUniqueIdentifier());
 					ImGui::PushFont(g_MediumIconsFont);
-					if (ImGui::Button((ICON_FA_CIRCLE_MINUS  "##remove" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
+					if (ImGui::Button((ICON_FA_CIRCLE_MINUS  "##remove" + std::to_string(fst->getUniqueIdentifier())).c_str()))
 					{
 						ImGui::OpenPopup(remove_popup_id.c_str());
 					}
@@ -156,12 +156,12 @@ namespace dnf_composer::user_interface
 					{
 						ImGui::Text("Select data to remove:");
 						ImGui::Separator();
-						for (const auto& data : plot.second)
+						for (const auto& data : snd)
 						{
 							const std::string item_label = data.first + " " + data.second;
 							if (ImGui::Selectable(item_label.c_str()))
 							{
-								visualization->removePlottingDataFromPlot(plot.first->getUniqueIdentifier(), data);
+								visualization->removePlottingDataFromPlot(fst->getUniqueIdentifier(), data);
 								ImGui::CloseCurrentPopup();
 							}
 						}
@@ -171,9 +171,9 @@ namespace dnf_composer::user_interface
 					ImGui::SameLine();
 					// Remove the plot button
 					ImGui::PushFont(g_MediumIconsFont);
-					if (ImGui::Button((ICON_FA_TRASH "##removeplot" + std::to_string(plot.first->getUniqueIdentifier())).c_str()))
+					if (ImGui::Button((ICON_FA_TRASH "##removeplot" + std::to_string(fst->getUniqueIdentifier())).c_str()))
 					{
-						visualization->removePlot(plot.first->getUniqueIdentifier());
+						visualization->removePlot(fst->getUniqueIdentifier());
 					}
 					ImGui::PopFont();
 					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove plot");

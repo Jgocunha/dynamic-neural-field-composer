@@ -8,16 +8,26 @@
 
 namespace dnf_composer::element
 {
+	/// @brief Parameters for an oscillatory (damped-cosine) convolution kernel.
+	/// @ingroup elements
 	struct OscillatoryKernelParameters final : ElementSpecificParameters
 	{
-		double amplitude;
-		double decay;
-		double zeroCrossings;
-		double amplitudeGlobal;
-		bool circular;
-		bool normalized;
-		std::optional<ElementDimensions> outputFieldDimensions;
+		double amplitude;        ///< Overall kernel amplitude.
+		double decay;            ///< Exponential envelope decay rate (must be > 0).
+		double zeroCrossings;    ///< Spatial frequency controlling oscillation period (clamped to [0, 1]).
+		double amplitudeGlobal;  ///< Spatially uniform inhibition added after convolution.
+		bool circular;           ///< Enable circular (toroidal) convolution.
+		bool normalized;         ///< Normalise the kernel before convolution.
+		std::optional<ElementDimensions> outputFieldDimensions; ///< Override output field size.
 
+		/// @brief Construct an OscillatoryKernel parameter set.
+		/// @param amplitude       Overall amplitude (default 1.0).
+		/// @param decay           Envelope decay (default 0.08; must be > 0).
+		/// @param zeroCrossings   Oscillation frequency in [0, 1] (default 0.3).
+		/// @param amplitudeGlobal Global inhibition (default -0.01).
+		/// @param circular        Circular boundary (default true).
+		/// @param normalized      Area normalisation (default false).
+		/// @param outputDims      Optional output dimension override.
 		explicit OscillatoryKernelParameters(const double amplitude = 1.0, const double decay = 0.08,
 			const double zeroCrossings = 0.3, const double amplitudeGlobal = -0.01,
 			const bool circular = true, const bool normalized = false,
@@ -68,12 +78,28 @@ namespace dnf_composer::element
 		}
 	};
 
+	/// @brief Damped-cosine convolution kernel for oscillatory field dynamics.
+	///
+	/// The kernel shape is a decaying cosine: @c amplitude * exp(-decay * |x|) * cos(2π * zeroCrossings * x).
+	/// This produces alternating excitatory and inhibitory bands at increasing distances,
+	/// which can generate wave-like or rhythmic activity patterns in a neural field.
+	///
+	/// When @c OscillatoryKernelParameters::outputFieldDimensions is set, the convolution
+	/// result is resampled to the specified output size, enabling connections between
+	/// fields of different spatial dimensions.
+	///
+	/// @ingroup elements
 	class OscillatoryKernel final : public Kernel
 	{
 	private:
 		OscillatoryKernelParameters parameters;
+		std::vector<double> scratchExtended;
 		std::vector<double> scratchConvolution;
+		std::vector<double> scratchResample_;
 	public:
+		/// @brief Construct an OscillatoryKernel.
+		/// @param elementCommonParameters  Name, label, and spatial dimensions.
+		/// @param ok_parameters            Kernel-specific parameters.
 		OscillatoryKernel(const ElementCommonParameters& elementCommonParameters,
 			OscillatoryKernelParameters ok_parameters);
 

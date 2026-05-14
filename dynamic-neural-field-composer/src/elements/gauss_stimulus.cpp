@@ -1,8 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
-#include "elements/gauss_stimulus.h"
+﻿#include "elements/gauss_stimulus.h"
 
 namespace dnf_composer
 {
@@ -49,7 +45,7 @@ namespace dnf_composer
 				}
 			}
 
-			components["input"] = std::vector<double>(commonParameters.dimensionParameters.size);
+			std::ranges::fill(components["input"], 0.0);
 			updateInput();
 			for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
 				components["output"][i] += components["input"][i];
