@@ -11,6 +11,13 @@ namespace dnf_composer::element
 		: Element(elementCommonParameters), parameters(parameters)
 	{
 		commonParameters.identifiers.label = ElementLabel::FIELD_EXPANSION;
+
+		const int size_x = commonParameters.dimensionParameters.size_x;
+		const int size_y = commonParameters.dimensionParameters.size_y;
+		if (parameters.expansionAxis == 0)
+			components["input"].assign(size_x, 0.0);
+		else
+			components["input"].assign(size_y, 0.0);
 	}
 
 	void FieldExpansion::init()
