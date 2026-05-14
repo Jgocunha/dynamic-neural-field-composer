@@ -28,7 +28,8 @@ namespace dnf_composer::element
 
 	void FieldExpansion::step(double t, double deltaT)
 	{
-		updateInput();
+		if (!inputs.empty())
+			updateInput();
 
 		const int size_x = commonParameters.dimensionParameters.size_x;
 		const int size_y = commonParameters.dimensionParameters.size_y;
