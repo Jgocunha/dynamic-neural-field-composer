@@ -25,6 +25,7 @@
 #include "elements/oscillatory_kernel_2d.h"
 #include "elements/timed_gauss_stimulus.h"
 #include "elements/timed_gauss_stimulus_2d.h"
+#include "elements/boost_stimulus_2d.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"
@@ -75,6 +76,8 @@ namespace dnf_composer::user_interface
 			return IM_COL32(97, 161, 97, 255);    // Darker Sage Green
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
 			return IM_COL32(80, 133, 80, 255);    // Deepest Sage Green
+		case element::ElementLabel::BOOST_STIMULUS_2D:
+			return IM_COL32(210, 182, 72, 255);   // Deeper Warm Yellow
 		default:
 			return IM_COL32(127, 127, 127, 255);  // Neutral Gray
 		}

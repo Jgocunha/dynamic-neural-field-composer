@@ -305,7 +305,8 @@ namespace dnf_composer::user_interface
 				                           label == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
 				                           label == element::ElementLabel::NORMAL_NOISE_2D ||
 				                           label == element::ElementLabel::OSCILLATORY_KERNEL_2D ||
-				                           label == element::ElementLabel::TIMED_GAUSS_STIMULUS_2D);
+				                           label == element::ElementLabel::TIMED_GAUSS_STIMULUS_2D ||
+				                           label == element::ElementLabel::BOOST_STIMULUS_2D);
 				const bool is2DNeuralField = label == element::ElementLabel::NEURAL_FIELD_2D;
 				const float plotH = (isWeightMap || is2DField) ? plotW : 60.0f;
 
@@ -432,7 +433,8 @@ namespace dnf_composer::user_interface
 				lbl != element::ElementLabel::GAUSS_STIMULUS_2D &&
 				lbl != element::ElementLabel::NORMAL_NOISE_2D &&
 				lbl != element::ElementLabel::TIMED_GAUSS_STIMULUS &&
-				lbl != element::ElementLabel::TIMED_GAUSS_STIMULUS_2D;
+				lbl != element::ElementLabel::TIMED_GAUSS_STIMULUS_2D &&
+				lbl != element::ElementLabel::BOOST_STIMULUS_2D;
 
 			if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
 			{
@@ -617,7 +619,8 @@ namespace dnf_composer::user_interface
 				                          lbl == element::ElementLabel::MEXICAN_HAT_KERNEL_2D ||
 				                          lbl == element::ElementLabel::NORMAL_NOISE_2D ||
 				                          lbl == element::ElementLabel::OSCILLATORY_KERNEL_2D ||
-				                          lbl == element::ElementLabel::TIMED_GAUSS_STIMULUS_2D);
+				                          lbl == element::ElementLabel::TIMED_GAUSS_STIMULUS_2D ||
+				                          lbl == element::ElementLabel::BOOST_STIMULUS_2D);
 				const float plotW = ImGui::GetContentRegionAvail().x;
 				const float plotH = (isWeightMap || is2DField) ? plotW : plotW * 0.6f;
 
@@ -756,6 +759,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::NORMAL_NOISE_2D:
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+		case element::ElementLabel::BOOST_STIMULUS_2D:
 			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
@@ -975,6 +979,14 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Intervals: %d",   static_cast<int>(p.onTimes.size()));
 			ImGui::Text("Circular: %s",    p.circular    ? "true" : "false");
 			ImGui::Text("Normalized: %s",  p.normalized  ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::BOOST_STIMULUS_2D:
+		{
+			const auto bs = std::dynamic_pointer_cast<element::BoostStimulus2D>(element);
+			const auto& p = bs->getParameters();
+			ImGui::Text("Amplitude: %.2f", p.amplitude);
+			ImGui::Text("Active: %s",      p.isActive ? "true" : "false");
 			break;
 		}
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:

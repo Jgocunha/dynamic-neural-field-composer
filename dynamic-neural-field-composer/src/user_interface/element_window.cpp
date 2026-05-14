@@ -225,6 +225,9 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
 			modifyElementTimedGaussStimulus2D(element);
 			break;
+		case element::ElementLabel::BOOST_STIMULUS_2D:
+			modifyElementBoostStimulus2D(element);
+			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
 		default:
@@ -1010,6 +1013,35 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementBoostStimulus2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto stimulus = std::dynamic_pointer_cast<element::BoostStimulus2D>(element);
+		element::BoostStimulus2DParameters p = stimulus->getParameters();
+
+		auto amplitude = static_cast<float>(p.amplitude);
+		bool isActive  = p.isActive;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "IsActive";
+		ImGui::Checkbox(label.c_str(), &isActive);
+		ImGui::SameLine(); ImGui::Text("Active");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
+		    isActive != p.isActive)
+		{
+			p.amplitude = amplitude;
+			p.isActive  = isActive;
+			stimulus->setParameters(p);
+		}
+	}
+
 	void ElementWindow::modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element)
 	{
 		const float ui = ImGui::GetIO().FontGlobalScale;
@@ -1365,6 +1397,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.380f, 0.631f, 0.380f, 1.0f);  // Darker Sage Green
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
 			return ImVec4(0.314f, 0.522f, 0.314f, 1.0f);  // Deepest Sage Green
+		case element::ElementLabel::BOOST_STIMULUS_2D:
+			return ImVec4(0.825f, 0.714f, 0.283f, 1.0f);  // Deeper Warm Yellow
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -1393,6 +1427,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D: return "Oscillatory Kernels 2D";
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return "Timed Gaussian Stimuli";
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return "Timed Gaussian Stimuli 2D";
+		case element::ElementLabel::BOOST_STIMULUS_2D:       return "Boost Stimuli 2D";
 		default: return "Unknown Elements";
 		}
 	}

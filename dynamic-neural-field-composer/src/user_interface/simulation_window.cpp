@@ -920,6 +920,32 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::BOOST_STIMULUS_2D:
+        {
+            static char   id[CHAR_SIZE] = "boost stimulus 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude = 5.0;
+            static bool   isActive = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Active", &isActive);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::BoostStimulus2DParameters bsp{ amplitude, isActive };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::BoostStimulus2D>(common, bsp));
+            }
+            break;
+        }
         case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
         {
             static char   id[CHAR_SIZE] = "timed gauss stimulus 2d";
@@ -1530,6 +1556,9 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
 				addElementTimedGaussStimulus2D();
 				break;
+			case element::ElementLabel::BOOST_STIMULUS_2D:
+				addElementBoostStimulus2D();
+				break;
 			case element::ElementLabel::FIELD_COUPLING:
 				addElementFieldCoupling();
 				break;
@@ -1691,6 +1720,33 @@ namespace dnf_composer::user_interface
 			element::TimedGaussStimulusParameters tgsp{ sigma, amplitude, position, {{tStart, tEnd}}, circular, normalized };
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			simulation->addElement(std::make_shared<element::TimedGaussStimulus>(element::ElementCommonParameters{id, dimensions}, tgsp));
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementBoostStimulus2D() const
+	{
+		ImGui::PushID("boost stimulus 2d");
+		static char   id[CHAR_SIZE] = "boost stimulus 2d a";
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double amplitude = 5.0;
+		static bool   isActive = true;
+
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		ImGui::InputInt("x_max",      &x_max,     1,   10);
+		ImGui::InputInt("y_max",      &y_max,     1,   10);
+		ImGui::InputDouble("d_x",     &d_x,       0.1, 0.5, "%.2f");
+		ImGui::InputDouble("d_y",     &d_y,       0.1, 0.5, "%.2f");
+		ImGui::InputDouble("amplitude",&amplitude, 1.0, 5.0, "%.2f");
+		ImGui::Checkbox("active",     &isActive);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			const element::BoostStimulus2DParameters bsp{ amplitude, isActive };
+			const element::ElementDimensions dims{ x_max, y_max, d_x, d_y };
+			simulation->addElement(std::make_shared<element::BoostStimulus2D>(
+				element::ElementCommonParameters{ id, dims }, bsp));
 		}
 		ImGui::PopID();
 	}

@@ -480,6 +480,34 @@ BoostStimulusParameters{
 
 ---
 
+## BoostStimulus2D
+
+2D variant of `BoostStimulus`. Fills every position of a 2D output with a constant amplitude value.
+
+**Label:** `BOOST_STIMULUS_2D`
+
+### Parameters
+
+```cpp
+BoostStimulus2DParameters{
+    double amplitude = 5.0,
+    bool   isActive  = true
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `amplitude` | `5.0` | Constant value broadcast to all 2D field positions |
+| `isActive` | `true` | When `false` the output is zeroed |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"output"` | Flat `size_x * size_y` vector of `amplitude` (or zeros when inactive) |
+
+---
+
 ## MemoryTrace
 
 A second-layer dynamics element that accumulates a persistent trace of supra-threshold neural field activity. It builds up slowly where the connected field is active and decays slowly everywhere else, producing a representation of the history of peak activations.
