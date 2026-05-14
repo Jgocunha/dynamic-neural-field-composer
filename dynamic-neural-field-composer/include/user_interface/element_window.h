@@ -23,6 +23,8 @@
 #include "elements/timed_gauss_stimulus.h"
 #include "elements/timed_gauss_stimulus_2d.h"
 #include "elements/boost_stimulus_2d.h"
+#include "elements/field_projection.h"
+#include "elements/field_expansion.h"
 #include "user_interface/widgets.h"
 #include "application/application.h"
 
@@ -78,6 +80,8 @@ namespace dnf_composer::user_interface
 		static void modifyElementTimedGaussStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementTimedGaussStimulus2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementBoostStimulus2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementFieldProjection(const std::shared_ptr<element::Element>& element);
+		static void modifyElementFieldExpansion(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
 		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);

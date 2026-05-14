@@ -26,6 +26,8 @@
 #include "elements/timed_gauss_stimulus.h"
 #include "elements/timed_gauss_stimulus_2d.h"
 #include "elements/boost_stimulus_2d.h"
+#include "elements/field_projection.h"
+#include "elements/field_expansion.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"
@@ -78,6 +80,10 @@ namespace dnf_composer::user_interface
 			return IM_COL32(80, 133, 80, 255);    // Deepest Sage Green
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 			return IM_COL32(210, 182, 72, 255);   // Deeper Warm Yellow
+		case element::ElementLabel::FIELD_PROJECTION:
+			return IM_COL32(90, 165, 165, 255);   // Teal
+		case element::ElementLabel::FIELD_EXPANSION:
+			return IM_COL32(78, 143, 143, 255);   // Deeper Teal
 		default:
 			return IM_COL32(127, 127, 127, 255);  // Neutral Gray
 		}

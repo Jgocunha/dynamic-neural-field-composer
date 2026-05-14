@@ -89,6 +89,8 @@ set(elements_headers
         "include/elements/timed_gauss_stimulus.h"
         "include/elements/timed_gauss_stimulus_2d.h"
         "include/elements/boost_stimulus_2d.h"
+        "include/elements/field_projection.h"
+        "include/elements/field_expansion.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -178,6 +180,8 @@ set(src
         "src/elements/timed_gauss_stimulus.cpp"
         "src/elements/timed_gauss_stimulus_2d.cpp"
         "src/elements/boost_stimulus_2d.cpp"
+        "src/elements/field_projection.cpp"
+        "src/elements/field_expansion.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -329,6 +333,8 @@ add_example_executable(ex_oscillatory_kernel_2d ex_oscillatory_kernel_2d.cpp)
 add_example_executable(ex_timed_gauss_stimulus ex_timed_gauss_stimulus.cpp)
 add_example_executable(ex_timed_gauss_stimulus_2d ex_timed_gauss_stimulus_2d.cpp)
 add_example_executable(ex_boost_stimulus_2d ex_boost_stimulus_2d.cpp)
+add_example_executable(ex_field_projection ex_field_projection.cpp)
+add_example_executable(ex_field_expansion ex_field_expansion.cpp)
 
 # Tests (GTest)
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
@@ -357,6 +363,8 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_timed_gauss_stimulus.cpp"
             "tests/elements/test_timed_gauss_stimulus_2d.cpp"
             "tests/elements/test_boost_stimulus_2d.cpp"
+            "tests/elements/test_field_projection.cpp"
+            "tests/elements/test_field_expansion.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"
             "tests/simulation/test_simulation_extended.cpp"

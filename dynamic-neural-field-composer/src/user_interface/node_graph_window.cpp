@@ -306,7 +306,8 @@ namespace dnf_composer::user_interface
 				                           label == element::ElementLabel::NORMAL_NOISE_2D ||
 				                           label == element::ElementLabel::OSCILLATORY_KERNEL_2D ||
 				                           label == element::ElementLabel::TIMED_GAUSS_STIMULUS_2D ||
-				                           label == element::ElementLabel::BOOST_STIMULUS_2D);
+				                           label == element::ElementLabel::BOOST_STIMULUS_2D ||
+				                           label == element::ElementLabel::FIELD_EXPANSION);
 				const bool is2DNeuralField = label == element::ElementLabel::NEURAL_FIELD_2D;
 				const float plotH = (isWeightMap || is2DField) ? plotW : 60.0f;
 
@@ -620,7 +621,8 @@ namespace dnf_composer::user_interface
 				                          lbl == element::ElementLabel::NORMAL_NOISE_2D ||
 				                          lbl == element::ElementLabel::OSCILLATORY_KERNEL_2D ||
 				                          lbl == element::ElementLabel::TIMED_GAUSS_STIMULUS_2D ||
-				                          lbl == element::ElementLabel::BOOST_STIMULUS_2D);
+				                          lbl == element::ElementLabel::BOOST_STIMULUS_2D ||
+				                          lbl == element::ElementLabel::FIELD_EXPANSION);
 				const float plotW = ImGui::GetContentRegionAvail().x;
 				const float plotH = (isWeightMap || is2DField) ? plotW : plotW * 0.6f;
 
@@ -772,6 +774,8 @@ namespace dnf_composer::user_interface
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
+		case element::ElementLabel::FIELD_PROJECTION:
+		case element::ElementLabel::FIELD_EXPANSION:
 			return 2;
 		case element::ElementLabel::NEURAL_FIELD:
 		case element::ElementLabel::NEURAL_FIELD_2D:
@@ -1000,6 +1004,18 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Intervals: %d",    static_cast<int>(p.onTimes.size()));
 			ImGui::Text("Circular: %s",     p.circular   ? "true" : "false");
 			ImGui::Text("Normalized: %s",   p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::FIELD_PROJECTION:
+		{
+			const auto fp = std::dynamic_pointer_cast<element::FieldProjection>(element);
+			ImGui::Text("Projection axis: %d", fp->getParameters().projectionAxis);
+			break;
+		}
+		case element::ElementLabel::FIELD_EXPANSION:
+		{
+			const auto fe = std::dynamic_pointer_cast<element::FieldExpansion>(element);
+			ImGui::Text("Expansion axis: %d", fe->getParameters().expansionAxis);
 			break;
 		}
 		default:

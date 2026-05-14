@@ -508,6 +508,62 @@ BoostStimulus2DParameters{
 
 ---
 
+## FieldProjection
+
+Projects a 2D field onto one spatial dimension by summing over the other axis. Corresponds to `SumDimension` (cosivina) and `Projection` (cedar). Produces a 1D output from a 2D input.
+
+**Label:** `FIELD_PROJECTION`
+
+### Parameters
+
+```cpp
+FieldProjectionParameters{
+    int projectionAxis = 0   // 0 = sum over Y, output varies along X
+                             // 1 = sum over X, output varies along Y
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `projectionAxis` | `0` | Axis to project onto: 0 → output is size_x; 1 → output is size_y |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"input"` | Flat `size_x * size_y` vector — receives the 2D field output |
+| `"output"` | 1D vector of length `size_x` (axis 0) or `size_y` (axis 1) |
+
+---
+
+## FieldExpansion
+
+Lifts a 1D field into a 2D field by repeating values along the added dimension. Corresponds to `ExpandDimension2D` (cosivina) and `Projection` (cedar). Produces a 2D output from a 1D input.
+
+**Label:** `FIELD_EXPANSION`
+
+### Parameters
+
+```cpp
+FieldExpansionParameters{
+    int expansionAxis = 0   // 0 = input varies along X (repeated along Y)
+                            // 1 = input varies along Y (repeated along X)
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `expansionAxis` | `0` | Source axis of the 1D input: 0 → input size is size_x; 1 → input size is size_y |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"input"` | 1D vector of length `size_x` (axis 0) or `size_y` (axis 1) |
+| `"output"` | Flat `size_x * size_y` vector — each row (axis 0) or column (axis 1) is a copy of the input |
+
+---
+
 ## MemoryTrace
 
 A second-layer dynamics element that accumulates a persistent trace of supra-threshold neural field activity. It builds up slowly where the connected field is active and decays slowly everywhere else, producing a representation of the history of peak activations.

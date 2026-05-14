@@ -33,6 +33,8 @@ namespace dnf_composer
 		TIMED_GAUSS_STIMULUS,
 		TIMED_GAUSS_STIMULUS_2D,
 		BOOST_STIMULUS_2D,
+		FIELD_PROJECTION,
+		FIELD_EXPANSION,
 		};
 
 		inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -57,6 +59,8 @@ namespace dnf_composer
 			{TIMED_GAUSS_STIMULUS, "timed gauss stimulus" },
 			{TIMED_GAUSS_STIMULUS_2D, "timed gauss stimulus 2d" },
 			{BOOST_STIMULUS_2D, "boost stimulus 2d" },
+			{FIELD_PROJECTION, "field projection" },
+			{FIELD_EXPANSION, "field expansion" },
 		};
 
 		struct ElementDimensions

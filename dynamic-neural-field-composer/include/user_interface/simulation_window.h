@@ -68,6 +68,8 @@ namespace dnf_composer::user_interface
 		void addElementTimedGaussStimulus() const;
 		void addElementTimedGaussStimulus2D() const;
 		void addElementBoostStimulus2D() const;
+		void addElementFieldProjection() const;
+		void addElementFieldExpansion() const;
 		void addElementFieldCoupling() const;
 		void addElementGaussKernel() const;
 		void addElementMexicanHatKernel() const;

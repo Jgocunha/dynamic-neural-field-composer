@@ -136,6 +136,18 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const BoostStimulus2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<BoostStimulus2D>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::FIELD_PROJECTION] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const FieldProjectionParameters*>(&elementSpecificParameters);
+					return std::make_shared<FieldProjection>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::FIELD_EXPANSION] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const FieldExpansionParameters*>(&elementSpecificParameters);
+					return std::make_shared<FieldExpansion>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -197,6 +209,10 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), TimedGaussStimulus2DParameters());
 					case ElementLabel::BOOST_STIMULUS_2D:
 						return creator->second(ElementCommonParameters(type), BoostStimulus2DParameters());
+					case ElementLabel::FIELD_PROJECTION:
+						return creator->second(ElementCommonParameters(type), FieldProjectionParameters());
+					case ElementLabel::FIELD_EXPANSION:
+						return creator->second(ElementCommonParameters(type), FieldExpansionParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

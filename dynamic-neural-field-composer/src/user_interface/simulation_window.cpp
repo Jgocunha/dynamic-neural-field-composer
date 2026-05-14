@@ -981,6 +981,58 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::FIELD_PROJECTION:
+        {
+            static char   id[CHAR_SIZE] = "field projection";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static int    projectionAxis = 0;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",          &x_max, 0, 0);
+            ImGui::InputInt("Y size",          &y_max, 0, 0);
+            ImGui::InputDouble("X step",       &d_x,   0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",       &d_y,   0.0, 0.0, "%.2f");
+            ImGui::InputInt("Projection axis", &projectionAxis, 1, 1);
+            projectionAxis = std::clamp(projectionAxis, 0, 1);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::FieldProjectionParameters fpp{ projectionAxis };
+                const element::ElementCommonParameters common{ std::string(id),
+                    element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::FieldProjection>(common, fpp));
+            }
+            break;
+        }
+        case element::ElementLabel::FIELD_EXPANSION:
+        {
+            static char   id[CHAR_SIZE] = "field expansion";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static int    expansionAxis = 0;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",         &x_max, 0, 0);
+            ImGui::InputInt("Y size",         &y_max, 0, 0);
+            ImGui::InputDouble("X step",      &d_x,   0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",      &d_y,   0.0, 0.0, "%.2f");
+            ImGui::InputInt("Expansion axis", &expansionAxis, 1, 1);
+            expansionAxis = std::clamp(expansionAxis, 0, 1);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::FieldExpansionParameters fep{ expansionAxis };
+                const element::ElementCommonParameters common{ std::string(id),
+                    element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::FieldExpansion>(common, fep));
+            }
+            break;
+        }
         case element::ElementLabel::TIMED_GAUSS_STIMULUS:
         {
             static char   id[CHAR_SIZE]  = "timed gauss stimulus";
@@ -1559,6 +1611,12 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::BOOST_STIMULUS_2D:
 				addElementBoostStimulus2D();
 				break;
+			case element::ElementLabel::FIELD_PROJECTION:
+				addElementFieldProjection();
+				break;
+			case element::ElementLabel::FIELD_EXPANSION:
+				addElementFieldExpansion();
+				break;
 			case element::ElementLabel::FIELD_COUPLING:
 				addElementFieldCoupling();
 				break;
@@ -1952,6 +2010,58 @@ namespace dnf_composer::user_interface
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::MexicanHatKernel> mexicanHatKernel(new element::MexicanHatKernel({ id, dimensions }, mhkp));
 			simulation->addElement(mexicanHatKernel);
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementFieldProjection() const
+	{
+		ImGui::PushID("field projection");
+		static char   id[CHAR_SIZE] = "field projection a";
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static int    projectionAxis = 0;
+
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		ImGui::InputInt("x_max",           &x_max, 1, 10);
+		ImGui::InputInt("y_max",           &y_max, 1, 10);
+		ImGui::InputDouble("d_x",          &d_x, 0.1, 0.5, "%.2f");
+		ImGui::InputDouble("d_y",          &d_y, 0.1, 0.5, "%.2f");
+		ImGui::InputInt("projection axis", &projectionAxis, 1, 1);
+		projectionAxis = std::clamp(projectionAxis, 0, 1);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			const element::FieldProjectionParameters fpp{ projectionAxis };
+			const element::ElementDimensions dims{ x_max, y_max, d_x, d_y };
+			simulation->addElement(std::make_shared<element::FieldProjection>(
+				element::ElementCommonParameters{ id, dims }, fpp));
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementFieldExpansion() const
+	{
+		ImGui::PushID("field expansion");
+		static char   id[CHAR_SIZE] = "field expansion a";
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static int    expansionAxis = 0;
+
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		ImGui::InputInt("x_max",          &x_max, 1, 10);
+		ImGui::InputInt("y_max",          &y_max, 1, 10);
+		ImGui::InputDouble("d_x",         &d_x, 0.1, 0.5, "%.2f");
+		ImGui::InputDouble("d_y",         &d_y, 0.1, 0.5, "%.2f");
+		ImGui::InputInt("expansion axis", &expansionAxis, 1, 1);
+		expansionAxis = std::clamp(expansionAxis, 0, 1);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			const element::FieldExpansionParameters fep{ expansionAxis };
+			const element::ElementDimensions dims{ x_max, y_max, d_x, d_y };
+			simulation->addElement(std::make_shared<element::FieldExpansion>(
+				element::ElementCommonParameters{ id, dims }, fep));
 		}
 		ImGui::PopID();
 	}
