@@ -497,9 +497,12 @@ namespace dnf_composer::user_interface
 			const auto  lbl      = element->getLabel();
 			const bool  isWM     = isWeightMapElement(lbl);
 			const bool  is2D     = element->getElementCommonParameters().dimensionParameters.dimensionality == 2;
-			ImGui::SetNextWindowPos (state.initialPos, ImGuiCond_Always);
-			ImGui::SetNextWindowSize(state.size,       ImGuiCond_Always);
-			state.isFirstFrame = false;
+			if (state.isFirstFrame)
+			{
+				ImGui::SetNextWindowPos (state.initialPos, ImGuiCond_Always);
+				ImGui::SetNextWindowSize(state.size,       ImGuiCond_Always);
+				state.isFirstFrame = false;
+			}
 
 			bool open = true;
 			const float ui = ImGui::GetIO().FontGlobalScale;

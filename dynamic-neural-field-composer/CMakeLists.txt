@@ -93,8 +93,6 @@ set(elements_headers
         "include/elements/timed_gauss_stimulus.h"
         "include/elements/timed_gauss_stimulus_2d.h"
         "include/elements/boost_stimulus_2d.h"
-        "include/elements/field_projection.h"
-        "include/elements/field_expansion.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -184,8 +182,6 @@ set(src
         "src/elements/timed_gauss_stimulus.cpp"
         "src/elements/timed_gauss_stimulus_2d.cpp"
         "src/elements/boost_stimulus_2d.cpp"
-        "src/elements/field_projection.cpp"
-        "src/elements/field_expansion.cpp"
         "src/elements/correlated_normal_noise.cpp"
 
         "src/element_parameters/element_parameters.cpp"

@@ -65,8 +65,6 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return h(7);
 				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return h(8);
 				case element::ElementLabel::BOOST_STIMULUS_2D:       return h(2);
-				case element::ElementLabel::FIELD_PROJECTION:        return h(1);
-				case element::ElementLabel::FIELD_EXPANSION:         return h(1);
 				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
 				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
@@ -465,12 +463,6 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 			modifyElementBoostStimulus2D(element);
-			break;
-		case element::ElementLabel::FIELD_PROJECTION:
-			modifyElementFieldProjection(element);
-			break;
-		case element::ElementLabel::FIELD_EXPANSION:
-			modifyElementFieldExpansion(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -1412,40 +1404,6 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	void ElementWindow::modifyElementFieldProjection(const std::shared_ptr<element::Element>& element)
-	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-		const auto fp = std::dynamic_pointer_cast<element::FieldProjection>(element);
-		element::FieldProjectionParameters p = fp->getParameters();
-
-		const char* items[] = { "Axis 0: sum over Y, output along X", "Axis 1: sum over X, output along Y" };
-		int axis = p.projectionAxis;
-		const std::string label = "##" + element->getUniqueName() + "ProjAxis";
-		ImGui::SetNextItemWidth(270.0f * ui);
-		if (ImGui::Combo(label.c_str(), &axis, items, 2))
-		{
-			p.projectionAxis = axis;
-			fp->setParameters(p);
-		}
-	}
-
-	void ElementWindow::modifyElementFieldExpansion(const std::shared_ptr<element::Element>& element)
-	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-		const auto fe = std::dynamic_pointer_cast<element::FieldExpansion>(element);
-		element::FieldExpansionParameters p = fe->getParameters();
-
-		const char* items[] = { "Axis 0: input along X, expand along Y", "Axis 1: input along Y, expand along X" };
-		int axis = p.expansionAxis;
-		const std::string label = "##" + element->getUniqueName() + "ExpAxis";
-		ImGui::SetNextItemWidth(270.0f * ui);
-		if (ImGui::Combo(label.c_str(), &axis, items, 2))
-		{
-			p.expansionAxis = axis;
-			fe->setParameters(p);
-		}
-	}
-
 	void ElementWindow::modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element)
 	{
 		const float ui = ImGui::GetIO().FontGlobalScale;
@@ -1805,10 +1763,6 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.314f, 0.522f, 0.314f, 1.0f);  // Deepest Sage Green
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 			return ImVec4(0.825f, 0.714f, 0.283f, 1.0f);  // Deeper Warm Yellow
-		case element::ElementLabel::FIELD_PROJECTION:
-			return ImVec4(0.353f, 0.647f, 0.647f, 1.0f);  // Teal
-		case element::ElementLabel::FIELD_EXPANSION:
-			return ImVec4(0.306f, 0.561f, 0.561f, 1.0f);  // Deeper Teal
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -1839,8 +1793,6 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return "Timed Gaussian Stimuli";
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return "Timed Gaussian Stimuli 2D";
 		case element::ElementLabel::BOOST_STIMULUS_2D:       return "Boost Stimuli 2D";
-		case element::ElementLabel::FIELD_PROJECTION:         return "Field Projections";
-		case element::ElementLabel::FIELD_EXPANSION:          return "Field Expansions";
 		default: return "Unknown Elements";
 		}
 	}
