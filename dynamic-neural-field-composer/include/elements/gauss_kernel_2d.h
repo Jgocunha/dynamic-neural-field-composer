@@ -6,7 +6,7 @@
 #include <optional>
 
 #include "tools/math.h"
-#include "element.h"
+#include "kernel.h"
 
 namespace dnf_composer::element
 {
@@ -49,18 +49,16 @@ namespace dnf_composer::element
 		}
 	};
 
-	class GaussKernel2D final : public Element
+	class GaussKernel2D final : public Kernel
 	{
 	private:
 		GaussKernel2DParameters parameters;
-		int cutOffFactor = 5;
 		std::array<int, 2> kernelRange_x{};
 		std::array<int, 2> kernelRange_y{};
 		std::vector<int> extIndex_x;
 		std::vector<int> extIndex_y;
 		std::vector<double> kernel_1d_x;
 		std::vector<double> kernel_1d_y;
-		double fullSum = 0.0;
 	public:
 		GaussKernel2D(const ElementCommonParameters& elementCommonParameters,
 		              const GaussKernel2DParameters& parameters);

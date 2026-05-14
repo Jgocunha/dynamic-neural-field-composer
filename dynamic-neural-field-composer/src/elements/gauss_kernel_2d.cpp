@@ -10,7 +10,7 @@ namespace dnf_composer
 	{
 		GaussKernel2D::GaussKernel2D(const ElementCommonParameters& elementCommonParameters,
 			const GaussKernel2DParameters& parameters)
-			: Element(elementCommonParameters), parameters(parameters)
+			: Kernel(elementCommonParameters), parameters(parameters)
 		{
 			commonParameters.identifiers.label = ElementLabel::GAUSS_KERNEL_2D;
 		}
@@ -20,8 +20,8 @@ namespace dnf_composer
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
 
-			kernelRange_x = tools::math::computeKernelRange(parameters.width, cutOffFactor, size_x, parameters.circular);
-			kernelRange_y = tools::math::computeKernelRange(parameters.width, cutOffFactor, size_y, parameters.circular);
+			kernelRange_x = tools::math::computeKernelRange(parameters.width, cutOfFactor, size_x, parameters.circular);
+			kernelRange_y = tools::math::computeKernelRange(parameters.width, cutOfFactor, size_y, parameters.circular);
 
 			if (parameters.circular)
 			{
@@ -55,6 +55,14 @@ namespace dnf_composer
 
 			for (auto& v : kernel_1d_x) v *= parameters.amplitude;
 			for (auto& v : kernel_1d_y) v *= parameters.amplitude;
+
+			// Populate components["kernel"] with the outer product (row-major)
+			const int kx = static_cast<int>(kernel_1d_x.size());
+			const int ky = static_cast<int>(kernel_1d_y.size());
+			components["kernel"].resize(kx * ky);
+			for (int i = 0; i < kx; ++i)
+				for (int j = 0; j < ky; ++j)
+					components["kernel"][i * ky + j] = kernel_1d_x[i] * kernel_1d_y[j];
 
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);

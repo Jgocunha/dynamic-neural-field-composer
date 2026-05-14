@@ -9,7 +9,7 @@ namespace dnf_composer::element
 {
 	OscillatoryKernel2D::OscillatoryKernel2D(const ElementCommonParameters& elementCommonParameters,
 	                                         const OscillatoryKernel2DParameters& parameters)
-		: Element(elementCommonParameters), parameters(parameters)
+		: Kernel(elementCommonParameters), parameters(parameters)
 	{
 		commonParameters.identifiers.label = ElementLabel::OSCILLATORY_KERNEL_2D;
 	}
@@ -21,10 +21,10 @@ namespace dnf_composer::element
 
 		// Effective range follows the 1D OscillatoryKernel convention.
 		const double effectiveRange = std::max(1.0 / parameters.decay,
-		                                       parameters.zeroCrossings * cutOffFactor);
+		                                       parameters.zeroCrossings * cutOfFactor);
 
-		kernelRange_x = tools::math::computeKernelRange(effectiveRange, cutOffFactor, size_x, parameters.circular);
-		kernelRange_y = tools::math::computeKernelRange(effectiveRange, cutOffFactor, size_y, parameters.circular);
+		kernelRange_x = tools::math::computeKernelRange(effectiveRange, cutOfFactor, size_x, parameters.circular);
+		kernelRange_y = tools::math::computeKernelRange(effectiveRange, cutOfFactor, size_y, parameters.circular);
 
 		if (parameters.circular)
 		{
@@ -66,6 +66,14 @@ namespace dnf_composer::element
 
 		kernel_1d_x = buildKernel1D(kernelRange_x);
 		kernel_1d_y = buildKernel1D(kernelRange_y);
+
+		// Populate components["kernel"] with the outer product (row-major)
+		const int kx = static_cast<int>(kernel_1d_x.size());
+		const int ky = static_cast<int>(kernel_1d_y.size());
+		components["kernel"].resize(kx * ky);
+		for (int i = 0; i < kx; ++i)
+			for (int j = 0; j < ky; ++j)
+				components["kernel"][i * ky + j] = kernel_1d_x[i] * kernel_1d_y[j];
 
 		fullSum = 0.0;
 		std::ranges::fill(components["input"], 0.0);

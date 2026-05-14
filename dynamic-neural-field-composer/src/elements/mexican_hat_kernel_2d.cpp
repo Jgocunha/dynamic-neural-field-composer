@@ -10,7 +10,7 @@ namespace dnf_composer
 	{
 		MexicanHatKernel2D::MexicanHatKernel2D(const ElementCommonParameters& elementCommonParameters,
 			const MexicanHatKernel2DParameters& parameters)
-			: Element(elementCommonParameters), parameters(parameters)
+			: Kernel(elementCommonParameters), parameters(parameters)
 		{
 			commonParameters.identifiers.label = ElementLabel::MEXICAN_HAT_KERNEL_2D;
 		}
@@ -24,8 +24,8 @@ namespace dnf_composer
 			                       std::vector<int>& extX, std::vector<int>& extY,
 			                       std::vector<double>& kx, std::vector<double>& ky)
 			{
-				rangeX = tools::math::computeKernelRange(width, cutOffFactor, size_x, parameters.circular);
-				rangeY = tools::math::computeKernelRange(width, cutOffFactor, size_y, parameters.circular);
+				rangeX = tools::math::computeKernelRange(width, cutOfFactor, size_x, parameters.circular);
+				rangeY = tools::math::computeKernelRange(width, cutOfFactor, size_y, parameters.circular);
 				if (parameters.circular)
 				{
 					extX = tools::math::createExtendedIndex(size_x, rangeX);
@@ -67,6 +67,22 @@ namespace dnf_composer
 			for (auto& v : kernelExc_y) v *= parameters.amplitudeExc;
 			for (auto& v : kernelInh_x) v *= parameters.amplitudeInh;
 			for (auto& v : kernelInh_y) v *= parameters.amplitudeInh;
+
+			// Populate components["kernel"] with the net outer product (exc - inh), row-major.
+			// Use the larger of the two kernel ranges as the output size, centering the smaller kernel.
+			const int kx = static_cast<int>(std::max(kernelExc_x.size(), kernelInh_x.size()));
+			const int ky = static_cast<int>(std::max(kernelExc_y.size(), kernelInh_y.size()));
+			components["kernel"].assign(kx * ky, 0.0);
+			auto addProduct = [&](const std::vector<double>& kxVec, const std::vector<double>& kyVec, double sign)
+			{
+				const int offX = (kx - static_cast<int>(kxVec.size())) / 2;
+				const int offY = (ky - static_cast<int>(kyVec.size())) / 2;
+				for (int i = 0; i < static_cast<int>(kxVec.size()); ++i)
+					for (int j = 0; j < static_cast<int>(kyVec.size()); ++j)
+						components["kernel"][(i + offX) * ky + (j + offY)] += sign * kxVec[i] * kyVec[j];
+			};
+			addProduct(kernelExc_x, kernelExc_y, +1.0);
+			addProduct(kernelInh_x, kernelInh_y, -1.0);
 
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);

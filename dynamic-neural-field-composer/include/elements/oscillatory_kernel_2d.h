@@ -6,7 +6,7 @@
 #include <array>
 
 #include "tools/math.h"
-#include "element.h"
+#include "kernel.h"
 
 //https://github.com/stevenlovegrove/Pangolin/issues/352
 #ifdef max
@@ -85,18 +85,16 @@ namespace dnf_composer::element
 	 * @param elementCommonParameters  Common parameters (id, 2D dimensions).
 	 * @param parameters               Oscillatory kernel parameters.
 	 */
-	class OscillatoryKernel2D final : public Element
+	class OscillatoryKernel2D final : public Kernel
 	{
 	private:
 		OscillatoryKernel2DParameters parameters;
-		int cutOffFactor = 5;
 		std::array<int, 2> kernelRange_x{};
 		std::array<int, 2> kernelRange_y{};
 		std::vector<int> extIndex_x;
 		std::vector<int> extIndex_y;
 		std::vector<double> kernel_1d_x;
 		std::vector<double> kernel_1d_y;
-		double fullSum = 0.0;
 	public:
 		OscillatoryKernel2D(const ElementCommonParameters& elementCommonParameters,
 		                    const OscillatoryKernel2DParameters& parameters);

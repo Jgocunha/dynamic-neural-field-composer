@@ -5,7 +5,16 @@
 #include <iomanip>
 
 #include "tools/math.h"
-#include "element.h"
+#include "kernel.h"
+
+//https://github.com/stevenlovegrove/Pangolin/issues/352
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
 
 namespace dnf_composer::element
 {
@@ -57,18 +66,16 @@ namespace dnf_composer::element
 		}
 	};
 
-	class MexicanHatKernel2D final : public Element
+	class MexicanHatKernel2D final : public Kernel
 	{
 	private:
 		MexicanHatKernel2DParameters parameters;
-		int cutOffFactor = 5;
 		std::array<int, 2> kernelRangeExc_x{}, kernelRangeExc_y{};
 		std::array<int, 2> kernelRangeInh_x{}, kernelRangeInh_y{};
 		std::vector<int> extIndexExc_x, extIndexExc_y;
 		std::vector<int> extIndexInh_x, extIndexInh_y;
 		std::vector<double> kernelExc_x, kernelExc_y;
 		std::vector<double> kernelInh_x, kernelInh_y;
-		double fullSum = 0.0;
 	public:
 		MexicanHatKernel2D(const ElementCommonParameters& elementCommonParameters,
 		                   const MexicanHatKernel2DParameters& parameters);
