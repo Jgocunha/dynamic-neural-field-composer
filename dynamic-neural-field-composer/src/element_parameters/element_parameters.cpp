@@ -5,14 +5,17 @@ namespace dnf_composer::element
 	ElementDimensions::ElementDimensions(const int dimensionality)
 		: dimensionality(dimensionality), x_max(100), y_max(1), d_x(1.0), d_y(1.0)
 	{
-		if (dimensionality == 1 || dimensionality == 2)
+		if(dimensionality == 2)
+		{
 			y_max = 100;
-		else
+		}	
+		else if (dimensionality != 1)
 		{
 			const std::string logMessage = "Element dimensionality '" + std::to_string(dimensionality) +
-										   "' is invalid. Defaulting to {1D, 100, 1.0}.";
+										"' is invalid. Defaulting to {1D, 100, 1.0}.";
 			log(tools::logger::LogLevel::ERROR, logMessage);
 		}
+	
 		x_max = 100;
 
 		d_x = 1.0;
