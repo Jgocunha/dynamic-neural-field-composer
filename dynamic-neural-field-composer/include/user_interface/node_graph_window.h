@@ -98,6 +98,11 @@ namespace dnf_composer::user_interface
 		char   title[128]     = "";
 		char   xLabel[64]     = "Spatial location";
 		char   yLabel[64]     = "Amplitude";
+		// 2D heatmap options
+		int    colormap       = ImPlotColormap_Deep;
+		float  scaleMin       = -20.0F;
+		float  scaleMax       =  20.0F;
+		bool   autoScale      = true;
 	};
 
 	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
@@ -151,13 +156,13 @@ namespace dnf_composer::user_interface
 		static void drawWeightHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& weights,
 			int rows, int cols);
 		static void draw2DFieldHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& data,
-			int rows, int cols, double wMin, double wMax);
+			int rows, int cols, double wMin, double wMax, int colormap = ImPlotColormap_Deep);
 		static void drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect, int rows, int cols,
-			double dMin, double dMax);
+			double dMin, double dMax, int colormap = ImPlotColormap_Deep);
 		static void renderNodeScrollingName(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodePins(const std::shared_ptr<element::Element>& element, float minNodeSize);
-		static void renderPlotCardMenuBar(PlotCardState& state);
+		static void renderPlotCardMenuBar(PlotCardState& state, bool is2DField);
 		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state,
 			bool isWM, bool is2DField);
 	};

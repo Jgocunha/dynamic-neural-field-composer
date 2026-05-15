@@ -575,7 +575,7 @@ namespace dnf_composer::user_interface
 
 			if (visible)
 			{
-				renderPlotCardMenuBar(state);
+				renderPlotCardMenuBar(state, is2D);
 				renderPlotCardContent(element, state, isWM, is2D);
 			}
 
@@ -585,14 +585,14 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state)
+	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state, const bool is2DField)
 	{
 		if (!ImGui::BeginMenuBar()) return;
 
 		if (ImGui::BeginMenu("Dimensions"))
 		{
-			ImGui::DragFloat("X max",  &state.xMax,  0.1f, state.xMin, 1000.f,   "%.1f");
-			ImGui::DragFloat("Y max",  &state.yMax,  0.1f, state.yMin, 1000.f,   "%.2f");
+			ImGui::DragFloat("X max",  &state.xMax,  0.1f, state.xMin, 1000.f,    "%.1f");
+			ImGui::DragFloat("Y max",  &state.yMax,  0.1f, state.yMin, 1000.f,    "%.2f");
 			ImGui::DragFloat("X min",  &state.xMin,  0.1f, -1000.f,   state.xMax, "%.1f");
 			ImGui::DragFloat("Y min",  &state.yMin,  0.1f, -10000.f,  state.yMax, "%.2f");
 			ImGui::DragFloat("X step", &state.xStep, 0.1f, 0.1f,      1000.f,    "%.1f");
@@ -606,11 +606,34 @@ namespace dnf_composer::user_interface
 			ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Line Thickness"))
+		if (ImGui::BeginMenu("Colormap"))
 		{
-			ImGui::SliderFloat("##lt", &state.lineThickness, 0.1f, 10.0f, "%.1f");
+			if (ImPlot::ColormapButton(ImPlot::GetColormapName(state.colormap),
+				ImVec2(120.0f, 0.0f), state.colormap))
+			{
+				state.colormap = (state.colormap + 1) % ImPlot::GetColormapCount();
+			}
 			ImGui::EndMenu();
 		}
+		if (!is2DField)
+		{
+			if (ImGui::BeginMenu("Line Thickness"))
+			{
+				ImGui::SliderFloat("##lt", &state.lineThickness, 0.1f, 10.0f, "%.1f");
+				ImGui::EndMenu();
+			}
+		}
+		else
+		{
+			if (ImGui::BeginMenu("Scale"))
+			{
+				ImGui::DragFloatRange2("Min / Max", &state.scaleMin, &state.scaleMax,
+					0.01f, -1000.f, 1000.f, "%.2f");
+				ImGui::Checkbox("Auto scale", &state.autoScale);
+				ImGui::EndMenu();
+			}
+		}
+
 		ImGui::EndMenuBar();
 	}
 
@@ -645,13 +668,44 @@ namespace dnf_composer::user_interface
 			const auto& data = comps->at(compName);
 			if (rows > 0 && cols > 0 && static_cast<int>(data.size()) == rows * cols)
 			{
-				double wMin = *std::min_element(data.begin(), data.end());
-				double wMax = *std::max_element(data.begin(), data.end());
-				if (wMax - wMin < 1e-9) wMax = wMin + 1.0;
-				const ImVec2 origin = ImGui::GetCursorScreenPos();
-				ImGui::Dummy(ImVec2(plotW, plotH));
-				const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
-				draw2DFieldHeatmap(ImGui::GetWindowDrawList(), rect, data, rows, cols, wMin, wMax);
+				double scMin, scMax;
+				if (state.autoScale)
+				{
+					scMin = *std::min_element(data.begin(), data.end());
+					scMax = *std::max_element(data.begin(), data.end());
+					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
+				}
+				else
+				{
+					scMin = state.scaleMin;
+					scMax = state.scaleMax;
+					if (scMax <= scMin) scMax = scMin + 1.0;
+				}
+
+				if (state.title[0] == '\0')
+				{
+					const std::string defaultTitle = element->getUniqueName() + " heatmap";
+					std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
+				}
+
+				const float cbW    = 60.0f;
+				const float hmW    = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
+				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+				if (!state.autoFit)
+					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
+
+				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+				ImPlot::PushColormap(state.colormap);
+				if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(hmW, plotH), ImPlotFlags_Crosshairs))
+				{
+					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+					ImPlot::PlotHeatmap("##data", data.data(), rows, cols, scMin, scMax, nullptr,
+						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+					ImPlot::EndPlot();
+				}
+				ImGui::SameLine(0, 4.0f);
+				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
+				ImPlot::PopColormap();
 			}
 		}
 		else if (!isWM && comps)
@@ -674,6 +728,7 @@ namespace dnf_composer::user_interface
 			}
 
 			const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+			ImPlot::PushColormap(state.colormap);
 			if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(plotW, plotH), plotFlags))
 			{
 				ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
@@ -694,6 +749,7 @@ namespace dnf_composer::user_interface
 
 				ImPlot::EndPlot();
 			}
+			ImPlot::PopColormap();
 		}
 	}
 
@@ -996,7 +1052,7 @@ namespace dnf_composer::user_interface
 	}
 
 	void NodeGraphWindow::drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect,
-		const int rows, const int cols, const double dMin, const double dMax)
+		const int rows, const int cols, const double dMin, const double dMax, const int colormap)
 	{
 		constexpr float  fs      = 9.0f;
 		constexpr ImU32  textCol = IM_COL32( 40,  40,  40, 230);
@@ -1039,7 +1095,7 @@ namespace dnf_composer::user_interface
 			const float t  = static_cast<float>(s) / steps;
 			const float y0 = hmRect.Max.y - (t + 1.0f / steps) * hmRect.GetHeight();
 			const float y1 = hmRect.Max.y - t * hmRect.GetHeight();
-			const ImVec4 c4  = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
+			const ImVec4 c4  = ImPlot::SampleColormap(t, colormap);
 			const ImU32  col = IM_COL32(static_cast<int>(c4.x * 255),
 			                            static_cast<int>(c4.y * 255),
 			                            static_cast<int>(c4.z * 255), 255);
@@ -1080,7 +1136,7 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::draw2DFieldHeatmap(ImDrawList* dl, const ImRect rect,
 		const std::vector<double>& data, const int rows, const int cols,
-		const double wMin, const double wMax)
+		const double wMin, const double wMax, const int colormap)
 	{
 		constexpr float pad = 3.0f;
 		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
@@ -1093,7 +1149,7 @@ namespace dnf_composer::user_interface
 			{
 				const float  t   = static_cast<float>((data[r*cols+c] - wMin) / wRange);
 				const ImVec2 tl  = { rect.Min.x + pad + c*cellW, rect.Max.y - pad - (r+1)*cellH };
-				const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
+				const ImVec4 col = ImPlot::SampleColormap(t, colormap);
 				dl->AddRectFilled(tl, { tl.x+cellW, tl.y+cellH }, ImGui::ColorConvertFloat4ToU32(col));
 			}
 	}
