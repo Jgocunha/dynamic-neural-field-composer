@@ -320,6 +320,8 @@ namespace dnf_composer::user_interface
 					static std::unordered_map<std::string, std::pair<double,double>> s_rangeCache;
 					const double frameMin = *std::ranges::min_element(data);
 					const double frameMax = *std::ranges::max_element(data);
+					if (!std::isfinite(frameMin) || !std::isfinite(frameMax))
+						return;
 					const std::string key = element->getUniqueName();
 					if (const auto it = s_rangeCache.find(key); it == s_rangeCache.end())
 						s_rangeCache[key] = { frameMin, frameMax };
@@ -690,6 +692,7 @@ namespace dnf_composer::user_interface
 				{
 					scMin = *std::ranges::min_element(data);
 					scMax = *std::ranges::max_element(data);
+					if (!std::isfinite(scMin) || !std::isfinite(scMax)) return;
 					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
 				}
 				else
@@ -699,10 +702,11 @@ namespace dnf_composer::user_interface
 					if (scMax <= scMin) scMax = scMin + 1.0;
 				}
 
-				if (state.title[0] == '\0')
+				if (state.title[0] == '\0' || std::strcmp(state.autoTitleComponent, compName.c_str()) != 0)
 				{
 					const std::string defaultTitle = element->getUniqueName() + " " + compName;
 					std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
+					std::snprintf(state.autoTitleComponent, sizeof(state.autoTitleComponent), "%s", compName.c_str());
 					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Spatial location x");
 					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Spatial location y");
 				}

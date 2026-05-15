@@ -103,7 +103,8 @@ namespace dnf_composer::user_interface
 		float  scaleMin       = -20.0F;
 		float  scaleMax       =  20.0F;
 		bool   autoScale      = true;
-		char   selectedComponent[64] = "";
+		char   selectedComponent[64]  = "";
+		char   autoTitleComponent[64] = "";
 	};
 
 	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
