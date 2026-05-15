@@ -682,10 +682,23 @@ namespace dnf_composer::user_interface
 				(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
 			if (!comps->contains(compName)) return;
 			const auto& dp   = element->getElementCommonParameters().dimensionParameters;
-			const int   rows = dp.size_x;
-			const int   cols = dp.size_y;
 			const auto& data = comps->at(compName);
-			if (rows > 0 && cols > 0 && static_cast<int>(data.size()) == rows * cols)
+			const int total  = static_cast<int>(data.size());
+			int rows, cols;
+			if (dp.size_x * dp.size_y == total)
+			{
+				rows = dp.size_x;
+				cols = dp.size_y;
+			}
+			else
+			{
+				// Component (e.g. "kernel") is smaller than the full field — find
+				// the most square-like integer factoring of the data size.
+				rows = static_cast<int>(std::sqrt(static_cast<float>(total)));
+				while (rows > 1 && total % rows != 0) --rows;
+				cols = (rows > 0) ? total / rows : total;
+			}
+			if (rows > 0 && cols > 0 && rows * cols == total)
 			{
 				double scMin, scMax;
 				if (state.autoScale)
