@@ -811,6 +811,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
 		case element::ElementLabel::MEMORY_TRACE_2D:
 			return 1;
+		case element::ElementLabel::RESIZE:
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 			return 2;
@@ -1094,6 +1095,14 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Tau build: %.2f",  p.tauBuild);
 			ImGui::Text("Tau decay: %.2f",  p.tauDecay);
 			ImGui::Text("Threshold: %.2f",  p.threshold);
+			break;
+		}
+		case element::ElementLabel::RESIZE:
+		{
+			const auto resize = std::dynamic_pointer_cast<element::Resize>(element);
+			const auto& p = resize->getParameters();
+			ImGui::Text("Output size: %d",  p.outputSize);
+			ImGui::Text("Output step: %.2f", p.outputStep);
 			break;
 		}
 		default:

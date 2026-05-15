@@ -1054,6 +1054,31 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::RESIZE:
+        {
+            static char   id[CHAR_SIZE] = "resize";
+            static int    x_max         = 100;
+            static double d_x           = 1.0;
+            static int    out_x_max     = 50;
+            static double out_d_x       = 1.0;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Input size",  &x_max,     0, 0);
+            ImGui::InputDouble("In step",  &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputInt("Output size", &out_x_max, 0, 0);
+            ImGui::InputDouble("Out step", &out_d_x,   0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::ResizeParameters rp{ out_x_max, out_d_x };
+                const element::ElementCommonParameters common{
+                    std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::Resize>(common, rp));
+            }
+            break;
+        }
         default:
             break;
         }

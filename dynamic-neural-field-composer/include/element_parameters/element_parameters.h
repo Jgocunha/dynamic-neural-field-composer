@@ -36,6 +36,7 @@ namespace dnf_composer::element
 		CORRELATED_NORMAL_NOISE_2D,
 		ASYMMETRIC_GAUSS_KERNEL_2D,
 		MEMORY_TRACE_2D,
+		RESIZE,
 	};
 
 	inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -65,6 +66,7 @@ namespace dnf_composer::element
 		{CORRELATED_NORMAL_NOISE_2D, "correlated normal noise 2d" },
 		{ASYMMETRIC_GAUSS_KERNEL_2D, "asymmetric gauss kernel 2d" },
 		{MEMORY_TRACE_2D, "memory trace 2d" },
+		{RESIZE, "resize" },
 	};
 
 	struct ElementDimensions

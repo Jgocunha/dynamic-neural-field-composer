@@ -68,6 +68,7 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return h(3);
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return h(6);
 				case element::ElementLabel::MEMORY_TRACE_2D:         return h(3);
+				case element::ElementLabel::RESIZE:                  return h(2 + dimRows);
 				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
 				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
@@ -378,6 +379,9 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::MEMORY_TRACE_2D:
 			modifyElementMemoryTrace2D(element);
+			break;
+		case element::ElementLabel::RESIZE:
+			modifyElementResize(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -1774,6 +1778,35 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementResize(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const auto resize = std::dynamic_pointer_cast<element::Resize>(element);
+		element::ResizeParameters rp = resize->getParameters();
+
+		auto outputSize = rp.outputSize;
+		auto outputStep = static_cast<float>(rp.outputStep);
+
+		bool changed = false;
+
+		std::string label = "##" + element->getUniqueName() + "OutputSize";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		changed |= ImGui::InputInt(label.c_str(), &outputSize, 0, 0);
+		ImGui::SameLine(); ImGui::TextUnformatted("Output size");
+
+		label = "##" + element->getUniqueName() + "OutputStep";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		changed |= ImGui::InputFloat(label.c_str(), &outputStep, 0.0f, 0.0f, "%.2f");
+		ImGui::SameLine(); ImGui::TextUnformatted("Output step");
+
+		if (changed)
+		{
+			rp.outputSize = outputSize;
+			rp.outputStep = static_cast<double>(outputStep);
+			resize->setParameters(rp);
+		}
+	}
+
 	ImVec4 ElementWindow::getColorForElementType(const element::ElementLabel label)
 	{
 		switch (label)
@@ -1826,6 +1859,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.506f, 0.608f, 0.622f, 1.0f);  // Deeper Soft Teal
 		case element::ElementLabel::MEMORY_TRACE_2D:
 			return ImVec4(0.376f, 0.545f, 0.478f, 1.0f);  // Deeper Sage Green
+		case element::ElementLabel::RESIZE:
+			return ImVec4(0.200f, 0.600f, 0.620f, 1.0f);  // Teal
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -1859,6 +1894,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return "Correlated Normal Noise 2D";
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return "Asymmetric Gauss Kernels 2D";
 		case element::ElementLabel::MEMORY_TRACE_2D:         return "Memory Traces 2D";
+		case element::ElementLabel::RESIZE:                  return "Resize Elements";
 		default: return "Unknown Elements";
 		}
 	}

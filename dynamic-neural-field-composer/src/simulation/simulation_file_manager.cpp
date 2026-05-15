@@ -453,6 +453,14 @@ namespace dnf_composer
             elementJson["threshold"] = p.threshold;
         }
         break;
+        case element::RESIZE:
+        {
+            const auto resize = std::dynamic_pointer_cast<element::Resize>(element);
+            const auto p = resize->getParameters();
+            elementJson["outputSize"] = p.outputSize;
+            elementJson["outputStep"] = p.outputStep;
+        }
+        break;
         default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -875,6 +883,17 @@ namespace dnf_composer
                 element::MemoryTrace2DParameters(tauBuild, tauDecay, threshold)
             );
             simulation->addElement(mt);
+        }
+        break;
+        case element::RESIZE:
+        {
+            const int    outputSize = elementJson.value("outputSize", 100);
+            const double outputStep = elementJson.value("outputStep", 1.0);
+            auto resize = std::make_shared<element::Resize>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::ResizeParameters(outputSize, outputStep)
+            );
+            simulation->addElement(resize);
         }
         break;
 	    default:

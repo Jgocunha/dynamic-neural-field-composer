@@ -156,6 +156,12 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const MemoryTrace2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<MemoryTrace2D>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::RESIZE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const ResizeParameters*>(&elementSpecificParameters);
+					return std::make_shared<Resize>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -225,6 +231,8 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), AsymmetricGaussKernel2DParameters());
 					case ElementLabel::MEMORY_TRACE_2D:
 						return creator->second(ElementCommonParameters(type), MemoryTrace2DParameters());
+					case ElementLabel::RESIZE:
+						return creator->second(ElementCommonParameters(type), ResizeParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}
