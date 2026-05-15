@@ -68,7 +68,7 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return h(3);
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return h(6);
 				case element::ElementLabel::MEMORY_TRACE_2D:         return h(3);
-				case element::ElementLabel::RESIZE:                  return h(2 + dimRows);
+				case element::ElementLabel::RESIZE:                  return h(3 + dimRows);
 				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
 				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
@@ -1786,6 +1786,7 @@ namespace dnf_composer::user_interface
 
 		auto outputSize = rp.outputSize;
 		auto outputStep = static_cast<float>(rp.outputStep);
+		int interpIdx   = static_cast<int>(rp.interpolation);
 
 		bool changed = false;
 
@@ -1799,10 +1800,17 @@ namespace dnf_composer::user_interface
 		changed |= ImGui::InputFloat(label.c_str(), &outputStep, 0.0f, 0.0f, "%.2f");
 		ImGui::SameLine(); ImGui::TextUnformatted("Output step");
 
+		static const char* interpNames[] = { "Nearest", "Linear", "Cubic" };
+		label = "##" + element->getUniqueName() + "Interpolation";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		changed |= ImGui::Combo(label.c_str(), &interpIdx, interpNames, 3);
+		ImGui::SameLine(); ImGui::TextUnformatted("Interpolation");
+
 		if (changed)
 		{
-			rp.outputSize = outputSize;
-			rp.outputStep = static_cast<double>(outputStep);
+			rp.outputSize    = outputSize;
+			rp.outputStep    = static_cast<double>(outputStep);
+			rp.interpolation = static_cast<element::ResizeInterpolation>(interpIdx);
 			resize->setParameters(rp);
 		}
 	}

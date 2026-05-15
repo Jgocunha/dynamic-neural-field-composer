@@ -1103,6 +1103,9 @@ namespace dnf_composer::user_interface
 			const auto& p = resize->getParameters();
 			ImGui::Text("Output size: %d",  p.outputSize);
 			ImGui::Text("Output step: %.2f", p.outputStep);
+			const char* interpStr = p.interpolation == element::ResizeInterpolation::NEAREST ? "Nearest" :
+			                        p.interpolation == element::ResizeInterpolation::CUBIC    ? "Cubic"   : "Linear";
+			ImGui::Text("Interpolation: %s", interpStr);
 			break;
 		}
 		default:

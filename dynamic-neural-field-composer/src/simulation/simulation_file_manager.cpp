@@ -459,6 +459,7 @@ namespace dnf_composer
             const auto p = resize->getParameters();
             elementJson["outputSize"] = p.outputSize;
             elementJson["outputStep"] = p.outputStep;
+            elementJson["interpolation"] = static_cast<int>(p.interpolation);
         }
         break;
         default:
@@ -887,11 +888,14 @@ namespace dnf_composer
         break;
         case element::RESIZE:
         {
-            const int    outputSize = elementJson.value("outputSize", 100);
-            const double outputStep = elementJson.value("outputStep", 1.0);
+            const int    outputSize   = elementJson.value("outputSize", 100);
+            const double outputStep   = elementJson.value("outputStep", 1.0);
+            const int    interpRaw    = elementJson.value("interpolation",
+                static_cast<int>(element::ResizeInterpolation::LINEAR));
+            const auto   interpolation = static_cast<element::ResizeInterpolation>(interpRaw);
             auto resize = std::make_shared<element::Resize>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
-                element::ResizeParameters(outputSize, outputStep)
+                element::ResizeParameters(outputSize, outputStep, interpolation)
             );
             simulation->addElement(resize);
         }

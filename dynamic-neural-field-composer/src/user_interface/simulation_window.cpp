@@ -1061,6 +1061,9 @@ namespace dnf_composer::user_interface
             static double d_x           = 1.0;
             static int    out_x_max     = 50;
             static double out_d_x       = 1.0;
+            static int    interpIdx     = static_cast<int>(element::ResizeInterpolation::LINEAR);
+
+            static const char* interpNames[] = { "Nearest", "Linear", "Cubic" };
 
             ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
             ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
@@ -1068,11 +1071,14 @@ namespace dnf_composer::user_interface
             ImGui::InputDouble("In step",  &d_x,       0.0, 0.0, "%.2f");
             ImGui::InputInt("Output size", &out_x_max, 0, 0);
             ImGui::InputDouble("Out step", &out_d_x,   0.0, 0.0, "%.2f");
+            ImGui::Combo("Interpolation", &interpIdx, interpNames, 3);
             ImGui::PopItemWidth();
 
             if (addRequested)
             {
-                const element::ResizeParameters rp{ out_x_max, out_d_x };
+                const element::ResizeParameters rp{
+                    out_x_max, out_d_x,
+                    static_cast<element::ResizeInterpolation>(interpIdx) };
                 const element::ElementCommonParameters common{
                     std::string(id), element::ElementDimensions{ x_max, d_x } };
                 simulation->addElement(std::make_shared<element::Resize>(common, rp));

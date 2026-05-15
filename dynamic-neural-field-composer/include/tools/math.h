@@ -553,6 +553,46 @@ namespace dnf_composer::tools::math
 		}
 	}
 
+	template<typename T>
+	void resampleNearestInto(const std::vector<T>& input, std::vector<T>& output)
+	{
+		const int N = static_cast<int>(input.size());
+		const int M = static_cast<int>(output.size());
+		if (input.empty() || M <= 0) return;
+		if (N == M) { std::copy(input.begin(), input.end(), output.begin()); return; }
+		if (M == 1) { output[0] = input[N / 2]; return; }
+		for (int i = 0; i < M; ++i)
+		{
+			const double pos = static_cast<double>(i) * (N - 1) / (M - 1);
+			output[i] = input[static_cast<int>(std::round(pos))];
+		}
+	}
+
+	// Catmull-Rom cubic spline resampling.
+	template<typename T>
+	void resampleCubicInto(const std::vector<T>& input, std::vector<T>& output)
+	{
+		const int N = static_cast<int>(input.size());
+		const int M = static_cast<int>(output.size());
+		if (input.empty() || M <= 0) return;
+		if (N == M) { std::copy(input.begin(), input.end(), output.begin()); return; }
+		if (M == 1) { output[0] = input[N / 2]; return; }
+		const auto clamp = [N](int idx) { return std::max(0, std::min(idx, N - 1)); };
+		for (int i = 0; i < M; ++i)
+		{
+			const double pos = static_cast<double>(i) * (N - 1) / (M - 1);
+			const int lo = static_cast<int>(pos);
+			const double t = pos - lo;
+			const double p0 = static_cast<double>(input[clamp(lo - 1)]);
+			const double p1 = static_cast<double>(input[clamp(lo)]);
+			const double p2 = static_cast<double>(input[clamp(lo + 1)]);
+			const double p3 = static_cast<double>(input[clamp(lo + 2)]);
+			output[i] = static_cast<T>(0.5 * (2.0 * p1 + (-p0 + p2) * t +
+				(2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t * t +
+				(-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t * t * t));
+		}
+	}
+
 	// Separable 2D convolution.
 	// field is stored row-major: field[x * size_y + y].
 	// Applies kernel_x along the x-axis and kernel_y along the y-axis using two 1D passes.
