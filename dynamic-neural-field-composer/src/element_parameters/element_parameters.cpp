@@ -110,7 +110,7 @@ namespace dnf_composer::element
 	{}
 
 	ElementCommonParameters::ElementCommonParameters(const std::string& elementName, int x_max)
-		: identifiers(elementName), dimensionParameters(x_max)
+		: identifiers(elementName), dimensionParameters(x_max, 1.0)
 	{}
 
 	ElementCommonParameters::ElementCommonParameters(const std::string& elementName,

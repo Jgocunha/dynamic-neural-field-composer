@@ -24,6 +24,13 @@
 #include "elements/gauss_kernel_2d.h"
 #include "elements/mexican_hat_kernel_2d.h"
 #include "elements/normal_noise_2d.h"
+#include "elements/oscillatory_kernel_2d.h"
+#include "elements/timed_gauss_stimulus.h"
+#include "elements/timed_gauss_stimulus_2d.h"
+#include "elements/boost_stimulus_2d.h"
+#include "elements/correlated_normal_noise_2d.h"
+#include "elements/asymmetric_gauss_kernel_2d.h"
+#include "elements/memory_trace_2d.h"
 
 /// @defgroup simulation_io Simulation I/O
 /// @brief JSON serialization and deserialization of simulation architectures.

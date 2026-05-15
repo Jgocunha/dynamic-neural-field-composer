@@ -371,6 +371,88 @@ namespace dnf_composer
             elementJson["amplitude"] = nn->getParameters().amplitude;
         }
         break;
+        case element::OSCILLATORY_KERNEL_2D:
+        {
+            const auto ok = std::dynamic_pointer_cast<element::OscillatoryKernel2D>(element);
+            const auto p  = ok->getParameters();
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["decay"]           = p.decay;
+            elementJson["zeroCrossings"]   = p.zeroCrossings;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS:
+        {
+            const auto tgs = std::dynamic_pointer_cast<element::TimedGaussStimulus>(element);
+            const auto p   = tgs->getParameters();
+            elementJson["width"]     = p.width;
+            elementJson["amplitude"] = p.amplitude;
+            elementJson["position"]  = p.position;
+            elementJson["circular"]  = p.circular;
+            elementJson["normalized"]= p.normalized;
+            json onTimesJson = json::array();
+            for (const auto& [start, end] : p.onTimes)
+                onTimesJson.push_back({start, end});
+            elementJson["onTimes"] = onTimesJson;
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS_2D:
+        {
+            const auto tgs = std::dynamic_pointer_cast<element::TimedGaussStimulus2D>(element);
+            const auto p   = tgs->getParameters();
+            elementJson["width"]      = p.width;
+            elementJson["amplitude"]  = p.amplitude;
+            elementJson["position_x"] = p.position_x;
+            elementJson["position_y"] = p.position_y;
+            elementJson["circular"]   = p.circular;
+            elementJson["normalized"] = p.normalized;
+            json onTimesJson = json::array();
+            for (const auto& [start, end] : p.onTimes)
+                onTimesJson.push_back({start, end});
+            elementJson["onTimes"] = onTimesJson;
+        }
+        break;
+        case element::BOOST_STIMULUS_2D:
+        {
+            const auto bs = std::dynamic_pointer_cast<element::BoostStimulus2D>(element);
+            const auto p  = bs->getParameters();
+            elementJson["amplitude"] = p.amplitude;
+            elementJson["isActive"]  = p.isActive;
+        }
+        break;
+        case element::CORRELATED_NORMAL_NOISE_2D:
+        {
+            const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise2D>(element);
+            const auto p   = cnn->getParameters();
+            elementJson["amplitude"] = p.amplitude;
+            elementJson["width"]     = p.width;
+            elementJson["circular"]  = p.circular;
+        }
+        break;
+        case element::ASYMMETRIC_GAUSS_KERNEL_2D:
+        {
+            const auto agk = std::dynamic_pointer_cast<element::AsymmetricGaussKernel2D>(element);
+            const auto p   = agk->getParameters();
+            elementJson["width"]           = p.width;
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["timeShift_x"]     = p.timeShift_x;
+            elementJson["timeShift_y"]     = p.timeShift_y;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
+        case element::MEMORY_TRACE_2D:
+        {
+            const auto mt = std::dynamic_pointer_cast<element::MemoryTrace2D>(element);
+            const auto p  = mt->getParameters();
+            elementJson["tauBuild"]  = p.tauBuild;
+            elementJson["tauDecay"]  = p.tauDecay;
+            elementJson["threshold"] = p.threshold;
+        }
+        break;
         default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -683,6 +765,116 @@ namespace dnf_composer
                 element::NormalNoise2DParameters(amplitude)
             );
             simulation->addElement(nn);
+        }
+        break;
+        case element::OSCILLATORY_KERNEL_2D:
+        {
+            const double amplitude       = elementJson["amplitude"];
+            const double decay           = elementJson["decay"];
+            const double zeroCrossings   = elementJson["zeroCrossings"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const bool circular          = elementJson["circular"];
+            const bool normalized        = elementJson["normalized"];
+
+            auto ok = std::make_shared<element::OscillatoryKernel2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::OscillatoryKernel2DParameters(amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized)
+            );
+            simulation->addElement(ok);
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS:
+        {
+            const double width     = elementJson["width"];
+            const double amplitude = elementJson["amplitude"];
+            const double position  = elementJson["position"];
+            const bool circular    = elementJson["circular"];
+            const bool normalized  = elementJson["normalized"];
+            std::vector<std::pair<double, double>> onTimes;
+            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array())
+                for (const auto& pair : elementJson["onTimes"])
+                    onTimes.emplace_back(pair[0].get<double>(), pair[1].get<double>());
+
+            auto tgs = std::make_shared<element::TimedGaussStimulus>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::TimedGaussStimulusParameters(width, amplitude, position, std::move(onTimes), circular, normalized)
+            );
+            simulation->addElement(tgs);
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS_2D:
+        {
+            const double width      = elementJson["width"];
+            const double amplitude  = elementJson["amplitude"];
+            const double position_x = elementJson["position_x"];
+            const double position_y = elementJson["position_y"];
+            const bool circular     = elementJson["circular"];
+            const bool normalized   = elementJson["normalized"];
+            std::vector<std::pair<double, double>> onTimes;
+            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array())
+                for (const auto& pair : elementJson["onTimes"])
+                    onTimes.emplace_back(pair[0].get<double>(), pair[1].get<double>());
+
+            auto tgs = std::make_shared<element::TimedGaussStimulus2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::TimedGaussStimulus2DParameters(width, amplitude, position_x, position_y, std::move(onTimes), circular, normalized)
+            );
+            simulation->addElement(tgs);
+        }
+        break;
+        case element::BOOST_STIMULUS_2D:
+        {
+            const double amplitude = elementJson["amplitude"];
+            const bool isActive    = elementJson["isActive"];
+
+            auto bs = std::make_shared<element::BoostStimulus2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::BoostStimulus2DParameters(amplitude, isActive)
+            );
+            simulation->addElement(bs);
+        }
+        break;
+        case element::CORRELATED_NORMAL_NOISE_2D:
+        {
+            const double amplitude = elementJson["amplitude"];
+            const double width     = elementJson["width"];
+            const bool circular    = elementJson["circular"];
+
+            auto cnn = std::make_shared<element::CorrelatedNormalNoise2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::CorrelatedNormalNoise2DParameters(amplitude, width, circular)
+            );
+            simulation->addElement(cnn);
+        }
+        break;
+        case element::ASYMMETRIC_GAUSS_KERNEL_2D:
+        {
+            const double width           = elementJson["width"];
+            const double amplitude       = elementJson["amplitude"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const double timeShift_x     = elementJson["timeShift_x"];
+            const double timeShift_y     = elementJson["timeShift_y"];
+            const bool circular          = elementJson["circular"];
+            const bool normalized        = elementJson["normalized"];
+
+            auto agk = std::make_shared<element::AsymmetricGaussKernel2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::AsymmetricGaussKernel2DParameters(width, amplitude, amplitudeGlobal, timeShift_x, timeShift_y, circular, normalized)
+            );
+            simulation->addElement(agk);
+        }
+        break;
+        case element::MEMORY_TRACE_2D:
+        {
+            const double tauBuild  = elementJson["tauBuild"];
+            const double tauDecay  = elementJson["tauDecay"];
+            const double threshold = elementJson["threshold"];
+
+            auto mt = std::make_shared<element::MemoryTrace2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::MemoryTrace2DParameters(tauBuild, tauDecay, threshold)
+            );
+            simulation->addElement(mt);
         }
         break;
 	    default:

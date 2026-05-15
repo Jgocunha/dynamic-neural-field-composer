@@ -797,6 +797,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 			return 0;
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
 		case element::ElementLabel::OSCILLATORY_KERNEL:
@@ -805,6 +807,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_KERNEL_2D:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+		case element::ElementLabel::MEMORY_TRACE_2D:
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
@@ -1058,6 +1062,37 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Intervals: %d",    static_cast<int>(p.onTimes.size()));
 			ImGui::Text("Circular: %s",     p.circular   ? "true" : "false");
 			ImGui::Text("Normalized: %s",   p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+		{
+			const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise2D>(element);
+			const auto& p = cnn->getParameters();
+			ImGui::Text("Amplitude: %.4f", p.amplitude);
+			ImGui::Text("Width: %.2f",     p.width);
+			ImGui::Text("Circular: %s",    p.circular ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+		{
+			const auto agk = std::dynamic_pointer_cast<element::AsymmetricGaussKernel2D>(element);
+			const auto& p = agk->getParameters();
+			ImGui::Text("Width: %.2f",        p.width);
+			ImGui::Text("Amplitude: %.2f",    p.amplitude);
+			ImGui::Text("Global amp: %.4f",   p.amplitudeGlobal);
+			ImGui::Text("Time shift x: %.2f", p.timeShift_x);
+			ImGui::Text("Time shift y: %.2f", p.timeShift_y);
+			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::MEMORY_TRACE_2D:
+		{
+			const auto mt = std::dynamic_pointer_cast<element::MemoryTrace2D>(element);
+			const auto& p = mt->getParameters();
+			ImGui::Text("Tau build: %.2f",  p.tauBuild);
+			ImGui::Text("Tau decay: %.2f",  p.tauDecay);
+			ImGui::Text("Threshold: %.2f",  p.threshold);
 			break;
 		}
 		default:

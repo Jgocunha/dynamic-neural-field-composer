@@ -93,6 +93,9 @@ set(elements_headers
         "include/elements/timed_gauss_stimulus.h"
         "include/elements/timed_gauss_stimulus_2d.h"
         "include/elements/boost_stimulus_2d.h"
+        "include/elements/correlated_normal_noise_2d.h"
+        "include/elements/asymmetric_gauss_kernel_2d.h"
+        "include/elements/memory_trace_2d.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -183,6 +186,9 @@ set(src
         "src/elements/timed_gauss_stimulus_2d.cpp"
         "src/elements/boost_stimulus_2d.cpp"
         "src/elements/correlated_normal_noise.cpp"
+        "src/elements/correlated_normal_noise_2d.cpp"
+        "src/elements/asymmetric_gauss_kernel_2d.cpp"
+        "src/elements/memory_trace_2d.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -398,6 +404,10 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_timed_gauss_stimulus.cpp"
             "tests/elements/test_timed_gauss_stimulus_2d.cpp"
             "tests/elements/test_boost_stimulus_2d.cpp"
+            "tests/elements/test_normal_noise_2d.cpp"
+            "tests/elements/test_correlated_normal_noise_2d.cpp"
+            "tests/elements/test_asymmetric_gauss_kernel_2d.cpp"
+            "tests/elements/test_memory_trace_2d.cpp"
             "tests/elements/test_change_dimensions.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"

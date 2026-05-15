@@ -33,6 +33,9 @@ namespace dnf_composer::element
 		TIMED_GAUSS_STIMULUS,
 		TIMED_GAUSS_STIMULUS_2D,
 		BOOST_STIMULUS_2D,
+		CORRELATED_NORMAL_NOISE_2D,
+		ASYMMETRIC_GAUSS_KERNEL_2D,
+		MEMORY_TRACE_2D,
 	};
 
 	inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -59,6 +62,9 @@ namespace dnf_composer::element
 		{TIMED_GAUSS_STIMULUS, "timed gauss stimulus" },
 		{TIMED_GAUSS_STIMULUS_2D, "timed gauss stimulus 2d" },
 		{BOOST_STIMULUS_2D, "boost stimulus 2d" },
+		{CORRELATED_NORMAL_NOISE_2D, "correlated normal noise 2d" },
+		{ASYMMETRIC_GAUSS_KERNEL_2D, "asymmetric gauss kernel 2d" },
+		{MEMORY_TRACE_2D, "memory trace 2d" },
 	};
 
 	struct ElementDimensions

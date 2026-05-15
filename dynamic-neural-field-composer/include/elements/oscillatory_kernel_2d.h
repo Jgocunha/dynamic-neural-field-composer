@@ -95,6 +95,8 @@ namespace dnf_composer::element
 		std::vector<int> extIndex_y;
 		std::vector<double> kernel_1d_x;
 		std::vector<double> kernel_1d_y;
+		std::vector<double> scratchTmp_;
+		std::vector<double> scratchConvolution_;
 	public:
 		OscillatoryKernel2D(const ElementCommonParameters& elementCommonParameters,
 		                    const OscillatoryKernel2DParameters& parameters);

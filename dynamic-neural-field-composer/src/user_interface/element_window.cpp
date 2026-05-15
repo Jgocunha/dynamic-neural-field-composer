@@ -65,6 +65,9 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return h(7);
 				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return h(8);
 				case element::ElementLabel::BOOST_STIMULUS_2D:       return h(2);
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return h(3);
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return h(6);
+				case element::ElementLabel::MEMORY_TRACE_2D:         return h(3);
 				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
 				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
@@ -463,6 +466,15 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 			modifyElementBoostStimulus2D(element);
+			break;
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+			modifyElementCorrelatedNormalNoise2D(element);
+			break;
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+			modifyElementAsymmetricGaussKernel2D(element);
+			break;
+		case element::ElementLabel::MEMORY_TRACE_2D:
+			modifyElementMemoryTrace2D(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -1404,6 +1416,148 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementCorrelatedNormalNoise2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise2D>(element);
+		element::CorrelatedNormalNoise2DParameters p = cnn->getParameters();
+
+		auto amplitude = static_cast<float>(p.amplitude);
+		auto width     = static_cast<float>(p.width);
+		bool circular  = p.circular;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.001f, 0.0f, 5.0f, "%.4f");
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
+		    std::abs(width     - static_cast<float>(p.width))     > epsilon ||
+		    circular != p.circular)
+		{
+			p.amplitude = amplitude;
+			p.width     = width;
+			p.circular  = circular;
+			cnn->setParameters(p);
+		}
+	}
+
+	void ElementWindow::modifyElementAsymmetricGaussKernel2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto kernel = std::dynamic_pointer_cast<element::AsymmetricGaussKernel2D>(element);
+		element::AsymmetricGaussKernel2DParameters p = kernel->getParameters();
+
+		auto amplitude       = static_cast<float>(p.amplitude);
+		auto width           = static_cast<float>(p.width);
+		auto amplitudeGlobal = static_cast<float>(p.amplitudeGlobal);
+		auto timeShift_x     = static_cast<float>(p.timeShift_x);
+		auto timeShift_y     = static_cast<float>(p.timeShift_y);
+		bool circular        = p.circular;
+		bool normalized      = p.normalized;
+
+		std::string label = "##" + element->getUniqueName() + "Amplitude";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitude, 0.05f, -30.0f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Amplitude");
+
+		label = "##" + element->getUniqueName() + "Width";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &width, 0.005f, 0.0f, 30.0f);
+		ImGui::SameLine(); ImGui::Text("Width");
+
+		label = "##" + element->getUniqueName() + "Amp. global";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.005f, -10.0f, 0.0f);
+		ImGui::SameLine(); ImGui::Text("Amp. global");
+
+		label = "##" + element->getUniqueName() + "Time shift x";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &timeShift_x, 0.01f, -10.0f, 10.0f);
+		ImGui::SameLine(); ImGui::Text("Time shift x");
+
+		label = "##" + element->getUniqueName() + "Time shift y";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &timeShift_y, 0.01f, -10.0f, 10.0f);
+		ImGui::SameLine(); ImGui::Text("Time shift y");
+
+		label = "##" + element->getUniqueName() + "Circular";
+		ImGui::Checkbox(label.c_str(), &circular);
+		ImGui::SameLine(); ImGui::Text("Circular");
+
+		label = "##" + element->getUniqueName() + "Normalized";
+		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
+		ImGui::SameLine(); ImGui::Text("Normalized");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude       - static_cast<float>(p.amplitude))       > epsilon ||
+		    std::abs(width           - static_cast<float>(p.width))           > epsilon ||
+		    std::abs(amplitudeGlobal - static_cast<float>(p.amplitudeGlobal)) > epsilon ||
+		    std::abs(timeShift_x     - static_cast<float>(p.timeShift_x))     > epsilon ||
+		    std::abs(timeShift_y     - static_cast<float>(p.timeShift_y))     > epsilon ||
+		    circular != p.circular || normalized != p.normalized)
+		{
+			p.amplitude       = amplitude;
+			p.width           = width;
+			p.amplitudeGlobal = amplitudeGlobal;
+			p.timeShift_x     = timeShift_x;
+			p.timeShift_y     = timeShift_y;
+			p.circular        = circular;
+			p.normalized      = normalized;
+			kernel->setParameters(p);
+		}
+	}
+
+	void ElementWindow::modifyElementMemoryTrace2D(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+
+		const auto mt = std::dynamic_pointer_cast<element::MemoryTrace2D>(element);
+		element::MemoryTrace2DParameters p = mt->getParameters();
+
+		auto tauBuild  = static_cast<float>(p.tauBuild);
+		auto tauDecay  = static_cast<float>(p.tauDecay);
+		auto threshold = static_cast<float>(p.threshold);
+
+		std::string label = "##" + element->getUniqueName() + "TauBuild";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &tauBuild, 1.0f, 1.0f, 10000.0f);
+		ImGui::SameLine(); ImGui::Text("Tau build");
+
+		label = "##" + element->getUniqueName() + "TauDecay";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &tauDecay, 5.0f, 1.0f, 100000.0f);
+		ImGui::SameLine(); ImGui::Text("Tau decay");
+
+		label = "##" + element->getUniqueName() + "Threshold";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		ImGui::DragFloat(label.c_str(), &threshold, 0.01f, -2.0f, 2.0f);
+		ImGui::SameLine(); ImGui::Text("Threshold");
+
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(tauBuild  - static_cast<float>(p.tauBuild))  > epsilon ||
+		    std::abs(tauDecay  - static_cast<float>(p.tauDecay))  > epsilon ||
+		    std::abs(threshold - static_cast<float>(p.threshold)) > epsilon)
+		{
+			p.tauBuild  = tauBuild;
+			p.tauDecay  = tauDecay;
+			p.threshold = threshold;
+			mt->setParameters(p);
+		}
+	}
+
 	void ElementWindow::modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element)
 	{
 		const float ui = ImGui::GetIO().FontGlobalScale;
@@ -1763,6 +1917,12 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.314f, 0.522f, 0.314f, 1.0f);  // Deepest Sage Green
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 			return ImVec4(0.825f, 0.714f, 0.283f, 1.0f);  // Deeper Warm Yellow
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+			return ImVec4(0.714f, 0.427f, 0.173f, 1.0f);  // Deeper Deep Orange
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+			return ImVec4(0.506f, 0.608f, 0.622f, 1.0f);  // Deeper Soft Teal
+		case element::ElementLabel::MEMORY_TRACE_2D:
+			return ImVec4(0.376f, 0.545f, 0.478f, 1.0f);  // Deeper Sage Green
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -1793,6 +1953,9 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return "Timed Gaussian Stimuli";
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return "Timed Gaussian Stimuli 2D";
 		case element::ElementLabel::BOOST_STIMULUS_2D:       return "Boost Stimuli 2D";
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return "Correlated Normal Noise 2D";
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return "Asymmetric Gauss Kernels 2D";
+		case element::ElementLabel::MEMORY_TRACE_2D:         return "Memory Traces 2D";
 		default: return "Unknown Elements";
 		}
 	}

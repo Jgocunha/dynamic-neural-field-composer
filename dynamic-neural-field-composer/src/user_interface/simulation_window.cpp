@@ -1018,6 +1018,99 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+        {
+            static char   id[CHAR_SIZE] = "correlated normal noise 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude = 0.05;
+            static double width = 1.0;
+            static bool   circular = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular", &circular);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::CorrelatedNormalNoise2DParameters cnnp{ amplitude, width, circular };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::CorrelatedNormalNoise2D>(common, cnnp));
+            }
+            break;
+        }
+        case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE] = "asymmetric gauss kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double width = 3.0;
+            static double amplitude = 3.0;
+            static double amplitudeGlobal = 0.0;
+            static double timeShift_x = 0.0;
+            static double timeShift_y = 0.0;
+            static bool   circular = true;
+            static bool   normalized = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",         &x_max,           0, 0);
+            ImGui::InputInt("Y size",         &y_max,           0, 0);
+            ImGui::InputDouble("X step",      &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",      &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Time shift x",&timeShift_x,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Time shift y",&timeShift_y,     0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::AsymmetricGaussKernel2DParameters agkp{ width, amplitude, amplitudeGlobal,
+                                                                        timeShift_x, timeShift_y, circular, normalized };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::AsymmetricGaussKernel2D>(common, agkp));
+            }
+            break;
+        }
+        case element::ElementLabel::MEMORY_TRACE_2D:
+        {
+            static char   id[CHAR_SIZE] = "memory trace 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double tauBuild = 100.0;
+            static double tauDecay = 1000.0;
+            static double threshold = 0.5;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",         &x_max,     0, 0);
+            ImGui::InputInt("Y size",         &y_max,     0, 0);
+            ImGui::InputDouble("X step",      &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",      &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau build",   &tauBuild,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau decay",   &tauDecay,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Threshold",   &threshold, 0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::MemoryTrace2DParameters mtp{ tauBuild, tauDecay, threshold };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::MemoryTrace2D>(common, mtp));
+            }
+            break;
+        }
         default:
             break;
         }

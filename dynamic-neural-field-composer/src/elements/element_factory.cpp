@@ -138,6 +138,24 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const BoostStimulus2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<BoostStimulus2D>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::CORRELATED_NORMAL_NOISE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const CorrelatedNormalNoise2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<CorrelatedNormalNoise2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const AsymmetricGaussKernel2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<AsymmetricGaussKernel2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::MEMORY_TRACE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const MemoryTrace2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<MemoryTrace2D>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -201,6 +219,12 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), TimedGaussStimulus2DParameters());
 					case ElementLabel::BOOST_STIMULUS_2D:
 						return creator->second(ElementCommonParameters(type), BoostStimulus2DParameters());
+					case ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+						return creator->second(ElementCommonParameters(type), CorrelatedNormalNoise2DParameters());
+					case ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+						return creator->second(ElementCommonParameters(type), AsymmetricGaussKernel2DParameters());
+					case ElementLabel::MEMORY_TRACE_2D:
+						return creator->second(ElementCommonParameters(type), MemoryTrace2DParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

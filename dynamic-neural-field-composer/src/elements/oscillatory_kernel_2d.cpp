@@ -60,12 +60,12 @@ namespace dnf_composer::element
 					for (double& v : k) v /= normFactor;
 			}
 
-			for (double& v : k) v *= parameters.amplitude;
 			return k;
 		};
 
 		kernel_1d_x = buildKernel1D(kernelRange_x);
 		kernel_1d_y = buildKernel1D(kernelRange_y);
+		for (auto& v : kernel_1d_x) v *= parameters.amplitude;
 
 		// Populate components["kernel"] with the outer product (row-major)
 		const int kx = static_cast<int>(kernel_1d_x.size());
@@ -74,6 +74,10 @@ namespace dnf_composer::element
 		for (int i = 0; i < kx; ++i)
 			for (int j = 0; j < ky; ++j)
 				components["kernel"][i * ky + j] = kernel_1d_x[i] * kernel_1d_y[j];
+
+		const int totalSize = size_x * size_y;
+		scratchTmp_.assign(totalSize, 0.0);
+		scratchConvolution_.assign(totalSize, 0.0);
 
 		fullSum = 0.0;
 		std::ranges::fill(components["input"], 0.0);
@@ -89,12 +93,13 @@ namespace dnf_composer::element
 		const int size_x = commonParameters.dimensionParameters.size_x;
 		const int size_y = commonParameters.dimensionParameters.size_y;
 
-		const auto convolution = tools::math::conv2d_separable(
+		tools::math::conv2d_separable_into(
+			scratchConvolution_, scratchTmp_,
 			components["input"], kernel_1d_x, kernel_1d_y,
 			size_x, size_y, extIndex_x, extIndex_y);
 
 		for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
-			components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+			components["output"][i] = scratchConvolution_[i] + parameters.amplitudeGlobal * fullSum;
 	}
 
 	std::string OscillatoryKernel2D::toString() const

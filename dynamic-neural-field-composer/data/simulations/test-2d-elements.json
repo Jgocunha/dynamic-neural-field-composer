@@ -67,12 +67,7 @@
             },
             "d_x": 1.0,
             "d_y": 1.0,
-            "inputs": [
-                [
-                    "timed gauss stimulus 2d",
-                    "output"
-                ]
-            ],
+            "inputs": null,
             "label": [
                 13,
                 "neural field 2d"
@@ -123,10 +118,41 @@
             "d_y": 1.0,
             "inputs": null,
             "label": [
-                20,
-                "timed gauss stimulus 2d"
+                21,
+                "boost stimulus 2d"
             ],
-            "uniqueName": "timed gauss stimulus 2d",
+            "uniqueName": "boost stimulus 2d",
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                18,
+                "oscillatory kernel 2d"
+            ],
+            "uniqueName": "oscillatory kernel 2d",
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitudeExc": 11.0,
+            "amplitudeGlobal": -0.1,
+            "amplitudeInh": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                16,
+                "mexican hat kernel 2d"
+            ],
+            "normalized": true,
+            "uniqueName": "mexican hat kernel 2d",
+            "widthExc": 2.5,
+            "widthInh": 5.0,
             "x_max": 50,
             "y_max": 50
         }

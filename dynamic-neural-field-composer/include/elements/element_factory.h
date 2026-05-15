@@ -23,6 +23,9 @@
 #include "elements/timed_gauss_stimulus.h"
 #include "elements/timed_gauss_stimulus_2d.h"
 #include "elements/boost_stimulus_2d.h"
+#include "elements/correlated_normal_noise_2d.h"
+#include "elements/asymmetric_gauss_kernel_2d.h"
+#include "elements/memory_trace_2d.h"
 
 namespace dnf_composer::element
 {

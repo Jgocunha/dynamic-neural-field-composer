@@ -28,6 +28,9 @@
 #include "elements/timed_gauss_stimulus.h"
 #include "elements/timed_gauss_stimulus_2d.h"
 #include "elements/boost_stimulus_2d.h"
+#include "elements/correlated_normal_noise_2d.h"
+#include "elements/asymmetric_gauss_kernel_2d.h"
+#include "elements/memory_trace_2d.h"
 #include "user_interface/widgets.h"
 #include "application/application.h"
 
@@ -87,6 +90,9 @@ namespace dnf_composer::user_interface
 		static void modifyElementTimedGaussStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementTimedGaussStimulus2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementBoostStimulus2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementCorrelatedNormalNoise2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementAsymmetricGaussKernel2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementMemoryTrace2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementFieldProjection(const std::shared_ptr<element::Element>& element);
 		static void modifyElementFieldExpansion(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);

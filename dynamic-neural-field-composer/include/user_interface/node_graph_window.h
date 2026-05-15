@@ -81,6 +81,12 @@ namespace dnf_composer::user_interface
 			return IM_COL32(80, 133, 80, 255);    // Deepest Sage Green
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 			return IM_COL32(210, 182, 72, 255);   // Deeper Warm Yellow
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+			return IM_COL32(182, 109, 44, 255);   // Deeper Deep Orange
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+			return IM_COL32(129, 155, 159, 255);  // Deeper Soft Teal
+		case element::ElementLabel::MEMORY_TRACE_2D:
+			return IM_COL32(96, 139, 122, 255);   // Deeper Sage Green
 		default:
 			return IM_COL32(127, 127, 127, 255);  // Neutral Gray
 		}
