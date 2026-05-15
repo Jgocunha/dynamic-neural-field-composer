@@ -53,15 +53,24 @@ namespace dnf_composer::element
 			}
 		}
 
-		if (parameters.normalized && sum > 1e-12)
-		{
-			for (auto& v : stimulusPattern)
-				v = parameters.amplitude * v / sum;
-		}
-		else
+		if (!parameters.normalized)
 		{
 			for (auto& v : stimulusPattern)
 				v *= parameters.amplitude;
+		}
+		else
+		{
+			if (sum > 1e-12)
+			{
+				for (auto& v : stimulusPattern)
+					v = parameters.amplitude * v / sum;
+			}
+			else
+			{
+				const std::string message = "Tried to normalize TimedGaussStimulus2D '"
+					+ getUniqueName() + "' but sum of Gaussian is zero.";
+				log(tools::logger::LogLevel::ERROR, message);
+			}
 		}
 
 		std::ranges::fill(components["output"], 0.0);
