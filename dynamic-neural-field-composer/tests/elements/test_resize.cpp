@@ -16,17 +16,21 @@ static ElementCommonParameters makeCP(const std::string& name, const int inputSi
     return ElementCommonParameters{ name, ElementDimensions{ inputSize, 1.0 } };
 }
 
-// Build a Resize connected to a GaussStimulus with constant output, run n steps.
+// Build a Resize with a constant input signal, run n steps.
+// Creates a truly constant input by directly filling the GaussStimulus output.
 static std::vector<double> runResize(int inputSize, int outputSize,
     ResizeInterpolation interp, int steps = 5)
 {
-    GaussStimulusParameters gsp{ 1000.0, 1.0, static_cast<double>(inputSize / 2), false, false };
+    GaussStimulusParameters gsp{ 1.0, 1.0, static_cast<double>(inputSize / 2), false, false };
     auto upstream = std::make_shared<GaussStimulus>(makeCP("gs", inputSize), gsp);
     upstream->init();
-    for (int i = 0; i < 20; ++i)   // drive toward constant output
-        upstream->step(0.0, 1.0);
+    
+    // Fill the upstream output with a constant value for a truly constant input
+    // Use getComponentPtr() to modify the element's internal buffer rather than a copy.
+    std::vector<double>* upstreamOutputPtr = upstream->getComponentPtr("output");
+    std::ranges::fill(*upstreamOutputPtr, 0.5);
 
-    auto resize = std::make_shared<Resize>(
+    const auto resize = std::make_shared<Resize>(
         makeCP("r", inputSize), ResizeParameters(outputSize, 1.0, interp));
     resize->init();
     resize->addInput(upstream, "output");
