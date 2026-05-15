@@ -38,7 +38,7 @@ namespace dnf_composer::element
 		explicit OscillatoryKernel2DParameters(double amplitude = 1.0, double decay = 0.08,
 		                                       double zeroCrossings = 0.3,
 		                                       double amplitudeGlobal = -0.01,
-		                                       bool circular = true, bool normalized = false)
+		                                       bool circular = true, bool normalized = true)
 			: amplitude(amplitude), decay(decay), zeroCrossings(zeroCrossings),
 			  amplitudeGlobal(amplitudeGlobal), circular(circular), normalized(normalized)
 		{
