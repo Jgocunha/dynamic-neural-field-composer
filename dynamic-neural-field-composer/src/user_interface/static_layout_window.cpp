@@ -163,7 +163,7 @@ namespace dnf_composer::user_interface
 			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, std::max(graphH, 5.0f)), false,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
-				nodeGraphWindow->renderGraph();
+				nodeGraphWindow->renderEmbedded();
 			}
 			ImGui::EndChild();
 			ImGui::PopStyleColor();

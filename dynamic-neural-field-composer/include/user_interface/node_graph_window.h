@@ -130,8 +130,10 @@ namespace dnf_composer::user_interface
 		NodeGraphWindow& operator=(NodeGraphWindow&&) = delete;
 
 		void render() override;
+		void renderEmbedded() const;
 		~NodeGraphWindow() override = default;
 	private:
+		void renderGraphContent() const;
 		void renderElementNodes() const;
 		static void renderElementNode(const std::shared_ptr<element::Element>& element);
 		static void renderElementNodeConnections(const std::shared_ptr<element::Element>& element);

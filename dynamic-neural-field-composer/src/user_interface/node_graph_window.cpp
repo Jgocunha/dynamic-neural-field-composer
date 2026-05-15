@@ -11,6 +11,29 @@ namespace dnf_composer::user_interface
 		context = ImNodeEditor::CreateEditor(&config);
 	}
 
+	void NodeGraphWindow::renderGraphContent() const
+	{
+		widgets::renderHelpMarker(
+			"Visualize elements and their interactions.\n"
+			"Drag from an Output pin to an Input pin to create a connection.\n"
+			"Double-click a link to remove it.\n"
+			"Double-click a node to open/close its plot card.");
+
+		ImNodeEditor::SetCurrentEditor(context);
+		applyCanvasStyle();
+		ImNodeEditor::Begin("dnf-composer-graph");
+		renderElementNodes();
+		handleInteractions();
+		ImNodeEditor::End();
+		restoreCanvasStyle();
+		ImNodeEditor::SetCurrentEditor(nullptr);
+
+		const ImVec2 ngPos  = ImGui::GetWindowPos();
+		const ImVec2 ngSize = ImGui::GetWindowSize();
+		ngBoundsMin = ngPos;
+		ngBoundsMax = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
+	}
+
 	void NodeGraphWindow::render()
 	{
 		const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
@@ -22,31 +45,17 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 
 		if (open)
-		{
-			widgets::renderHelpMarker(
-				"Visualize elements and their interactions.\n"
-				"Drag from an Output pin to an Input pin to create a connection.\n"
-				"Double-click a link to remove it.\n"
-				"Double-click a node to open/close its plot card.");
+			renderGraphContent();
 
-			ImNodeEditor::SetCurrentEditor(context);
-			applyCanvasStyle();
-			ImNodeEditor::Begin("dnf-composer-graph");
-			renderElementNodes();
-			handleInteractions();
-			ImNodeEditor::End();
-			restoreCanvasStyle();
-			ImNodeEditor::SetCurrentEditor(nullptr);
-
-			// Record node graph window bounds for plot card clamping.
-			const ImVec2 ngPos  = ImGui::GetWindowPos();
-			const ImVec2 ngSize = ImGui::GetWindowSize();
-			ngBoundsMin = ngPos;
-			ngBoundsMax = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
-		}
 		ImGui::End();
 
 		// Plot cards are separate top-level windows, must be rendered outside Begin/End.
+		renderNodePlotCards();
+	}
+
+	void NodeGraphWindow::renderEmbedded() const
+	{
+		renderGraphContent();
 		renderNodePlotCards();
 	}
 
