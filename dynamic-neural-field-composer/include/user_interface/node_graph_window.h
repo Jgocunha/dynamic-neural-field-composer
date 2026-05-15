@@ -90,7 +90,7 @@ namespace dnf_composer::user_interface
 	{
 		bool   isFirstFrame   = true;
 		ImVec2 initialPos;
-		ImVec2 size           = { 380.0F, 300.0F };
+		ImVec2 size           = { 540.0F, 620.0F };
 		bool   autoFit        = true;
 		float  xMin = 0.F, xMax = 100.F, yMin = -20.F, yMax = 20.F;
 		float  xStep          = 1.0F;
@@ -103,6 +103,7 @@ namespace dnf_composer::user_interface
 		float  scaleMin       = -20.0F;
 		float  scaleMax       =  20.0F;
 		bool   autoScale      = true;
+		char   selectedComponent[64] = "";
 	};
 
 	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
@@ -162,7 +163,8 @@ namespace dnf_composer::user_interface
 		static void renderNodeScrollingName(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodePins(const std::shared_ptr<element::Element>& element, float minNodeSize);
-		static void renderPlotCardMenuBar(PlotCardState& state, bool is2DField);
+		static void renderPlotCardMenuBar(PlotCardState& state, bool is2DField,
+			const std::shared_ptr<element::Element>& element);
 		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state,
 			bool isWM, bool is2DField);
 	};

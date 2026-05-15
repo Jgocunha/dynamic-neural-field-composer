@@ -272,10 +272,10 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
-		constexpr float pad       = 5.0f;
-		constexpr float axisLeft  = 24.0f;  // reserved for y-axis labels
-		constexpr float axisBot   = 13.0f;  // reserved for x-axis labels
-		constexpr float axisRight = 24.0f;  // reserved for amplitude colorbar
+		constexpr float pad       = 0.0f;
+		//constexpr float axisLeft  = 24.0f;  // reserved for y-axis labels
+		//constexpr float axisBot   = 13.0f;  // reserved for x-axis labels
+		constexpr float axisRight = 26.0f;  // reserved for amplitude colorbar
 
 		const auto  label       = element->getLabel();
 		const bool  isWeightMap = isWeightMapElement(label);
@@ -333,8 +333,8 @@ namespace dnf_composer::user_interface
 					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
 
 					const ImRect hmRect(
-						ImVec2(rect.Min.x + axisLeft,        rect.Min.y + pad),
-						ImVec2(rect.Max.x - pad - axisRight, rect.Max.y - axisBot));
+						ImVec2(rect.Min.x,        rect.Min.y + pad),
+						ImVec2(rect.Max.x - pad - axisRight, rect.Max.y ));
 					draw2DFieldHeatmap(dl, hmRect, data, rows, cols, stableMin, stableMax);
 					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
 					drewContent = true;
@@ -575,7 +575,7 @@ namespace dnf_composer::user_interface
 
 			if (visible)
 			{
-				renderPlotCardMenuBar(state, is2D);
+				renderPlotCardMenuBar(state, is2D, element);
 				renderPlotCardContent(element, state, isWM, is2D);
 			}
 
@@ -585,7 +585,8 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state, const bool is2DField)
+	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state, const bool is2DField,
+		const std::shared_ptr<element::Element>& element)
 	{
 		if (!ImGui::BeginMenuBar()) return;
 
@@ -606,15 +607,6 @@ namespace dnf_composer::user_interface
 			ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Colormap"))
-		{
-			if (ImPlot::ColormapButton(ImPlot::GetColormapName(state.colormap),
-				ImVec2(120.0f, 0.0f), state.colormap))
-			{
-				state.colormap = (state.colormap + 1) % ImPlot::GetColormapCount();
-			}
-			ImGui::EndMenu();
-		}
 		if (!is2DField)
 		{
 			if (ImGui::BeginMenu("Line Thickness"))
@@ -625,11 +617,34 @@ namespace dnf_composer::user_interface
 		}
 		else
 		{
+			if (ImGui::BeginMenu("Colormap"))
+			{
+				if (ImPlot::ColormapButton(ImPlot::GetColormapName(state.colormap),
+					ImVec2(120.0f, 0.0f), state.colormap))
+				{
+					state.colormap = (state.colormap + 1) % ImPlot::GetColormapCount();
+				}
+				ImGui::EndMenu();
+			}
 			if (ImGui::BeginMenu("Scale"))
 			{
 				ImGui::DragFloatRange2("Min / Max", &state.scaleMin, &state.scaleMax,
 					0.01f, -1000.f, 1000.f, "%.2f");
 				ImGui::Checkbox("Auto scale", &state.autoScale);
+				ImGui::EndMenu();
+			}
+			if (const auto* comps = element->getComponents(); comps && ImGui::BeginMenu("Component"))
+			{
+				const std::string defaultComp =
+					(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+				const std::string activeComp =
+					(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
+				for (const auto& name : *comps | std::views::keys)
+				{
+					const bool selected = (activeComp == name);
+					if (ImGui::MenuItem(name.c_str(), nullptr, selected))
+						std::snprintf(state.selectedComponent, sizeof(state.selectedComponent), "%s", name.c_str());
+				}
 				ImGui::EndMenu();
 			}
 		}
@@ -659,8 +674,10 @@ namespace dnf_composer::user_interface
 		}
 		else if (is2DField && comps)
 		{
-			const std::string compName =
+			const std::string defaultComp =
 				(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+			const std::string compName =
+				(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
 			if (!comps->contains(compName)) return;
 			const auto& dp   = element->getElementCommonParameters().dimensionParameters;
 			const int   rows = dp.size_x;
@@ -671,8 +688,8 @@ namespace dnf_composer::user_interface
 				double scMin, scMax;
 				if (state.autoScale)
 				{
-					scMin = *std::min_element(data.begin(), data.end());
-					scMax = *std::max_element(data.begin(), data.end());
+					scMin = *std::ranges::min_element(data);
+					scMax = *std::ranges::max_element(data);
 					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
 				}
 				else
@@ -684,8 +701,10 @@ namespace dnf_composer::user_interface
 
 				if (state.title[0] == '\0')
 				{
-					const std::string defaultTitle = element->getUniqueName() + " heatmap";
+					const std::string defaultTitle = element->getUniqueName() + " " + compName;
 					std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
+					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Spatial location x");
+					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Spatial location y");
 				}
 
 				const float cbW    = 60.0f;
@@ -716,7 +735,7 @@ namespace dnf_composer::user_interface
 				std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
 			}
 
-			const ImPlotFlags    plotFlags = ImPlotFlags_Crosshairs;
+			constexpr ImPlotFlags    plotFlags = ImPlotFlags_Crosshairs;
 			const ImPlotAxisFlags axF      = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
 
 			if (!state.autoFit)
@@ -728,21 +747,21 @@ namespace dnf_composer::user_interface
 			}
 
 			const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+			const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, state.lineThickness };
 			ImPlot::PushColormap(state.colormap);
 			if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(plotW, plotH), plotFlags))
 			{
 				ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
 				ImPlot::SetupLegend(ImPlotLocation_SouthWest, ImPlotLegendFlags_None);
 
-				const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, state.lineThickness };
-				for (const auto& [name, data] : *comps)
+				for (const auto& [name, seriesData] : *comps)
 				{
-					if (data.size() < 2) continue;
-					std::vector<float> xs(data.size()), ys(data.size());
-					for (int i = 0; i < static_cast<int>(data.size()); ++i)
+					if (seriesData.size() < 2) continue;
+					std::vector<float> xs(seriesData.size()), ys(seriesData.size());
+					for (int i = 0; i < static_cast<int>(seriesData.size()); ++i)
 					{
 						xs[i] = static_cast<float>(i + 1) * state.xStep;
-						ys[i] = static_cast<float>(data[i]);
+						ys[i] = static_cast<float>(seriesData[i]);
 					}
 					ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()), lineSpec);
 				}
@@ -1060,29 +1079,29 @@ namespace dnf_composer::user_interface
 		constexpr int    nTicks  = 4;
 		ImFont* const    font    = ImGui::GetFont();
 
-		// X-axis ticks (column indices) below the heatmap
-		for (int i = 0; i <= nTicks; ++i)
-		{
-			const float t   = static_cast<float>(i) / nTicks;
-			const float x   = hmRect.Min.x + t * hmRect.GetWidth();
-			const int   idx = static_cast<int>(std::round(t * (cols - 1)));
-			char buf[8];
-			std::snprintf(buf, sizeof(buf), "%d", idx);
-			dl->AddLine(ImVec2(x, hmRect.Max.y), ImVec2(x, hmRect.Max.y + 2.0f), tickCol, 1.0f);
-			dl->AddText(font, fs, ImVec2(x - 5.0f, hmRect.Max.y + 2.0f), textCol, buf);
-		}
-
-		// Y-axis ticks (row indices) left of the heatmap
-		for (int i = 0; i <= nTicks; ++i)
-		{
-			const float t   = static_cast<float>(i) / nTicks;
-			const float y   = hmRect.Min.y + t * hmRect.GetHeight();
-			const int   idx = static_cast<int>(std::round((1.0f - t) * (rows - 1)));
-			char buf[8];
-			std::snprintf(buf, sizeof(buf), "%d", idx);
-			dl->AddLine(ImVec2(hmRect.Min.x, y), ImVec2(hmRect.Min.x - 2.0f, y), tickCol, 1.0f);
-			dl->AddText(font, fs, ImVec2(hmRect.Min.x - 21.0f, y - fs * 0.5f), textCol, buf);
-		}
+		// // X-axis ticks (column indices) below the heatmap
+		// for (int i = 0; i <= nTicks; ++i)
+		// {
+		// 	const float t   = static_cast<float>(i) / nTicks;
+		// 	const float x   = hmRect.Min.x + t * hmRect.GetWidth();
+		// 	const int   idx = static_cast<int>(std::round(t * (cols - 1)));
+		// 	char buf[8];
+		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
+		// 	dl->AddLine(ImVec2(x, hmRect.Max.y), ImVec2(x, hmRect.Max.y + 2.0f), tickCol, 1.0f);
+		// 	dl->AddText(font, fs, ImVec2(x - 5.0f, hmRect.Max.y + 2.0f), textCol, buf);
+		// }
+		//
+		// // Y-axis ticks (row indices) left of the heatmap
+		// for (int i = 0; i <= nTicks; ++i)
+		// {
+		// 	const float t   = static_cast<float>(i) / nTicks;
+		// 	const float y   = hmRect.Min.y + t * hmRect.GetHeight();
+		// 	const int   idx = static_cast<int>(std::round((1.0f - t) * (rows - 1)));
+		// 	char buf[8];
+		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
+		// 	dl->AddLine(ImVec2(hmRect.Min.x, y), ImVec2(hmRect.Min.x - 2.0f, y), tickCol, 1.0f);
+		// 	dl->AddText(font, fs, ImVec2(hmRect.Min.x - 21.0f, y - fs * 0.5f), textCol, buf);
+		// }
 
 		// Amplitude colorbar: vertical strip to the right of the heatmap
 		constexpr float barGap = 3.0f;
