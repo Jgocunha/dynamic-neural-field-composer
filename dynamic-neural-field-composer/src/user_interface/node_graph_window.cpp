@@ -45,7 +45,9 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 
 		if (open)
+		{
 			renderGraphContent();
+		}
 
 		ImGui::End();
 
@@ -180,7 +182,7 @@ namespace dnf_composer::user_interface
 
 		builder.Header(bodyVec4);
 		{
-			static constexpr float minNodeSize = 250.0F;
+			static constexpr float minNodeSize = 280.0F;
 			ImGui::Dummy(ImVec2(minNodeSize, 0));
 
 			renderNodeScrollingName(element, minNodeSize);
@@ -270,10 +272,15 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
-		constexpr float pad         = 3.0f;
-		const auto      label       = element->getLabel();
-		const bool      isWeightMap = isWeightMapElement(label);
-		const float     plotH       = isWeightMap ? minNodeSize : 60.0f;
+		constexpr float pad       = 5.0f;
+		constexpr float axisLeft  = 24.0f;  // reserved for y-axis labels
+		constexpr float axisBot   = 13.0f;  // reserved for x-axis labels
+		constexpr float axisRight = 24.0f;  // reserved for amplitude colorbar
+
+		const auto  label       = element->getLabel();
+		const bool  isWeightMap = isWeightMapElement(label);
+		const bool  is2D        = element->getElementCommonParameters().dimensionParameters.dimensionality == 2;
+		const float plotH       = (isWeightMap || is2D) ? minNodeSize : 60.0f;
 
 		const ImVec2 origin = ImGui::GetCursorScreenPos();
 		const ImRect rect(origin, ImVec2(origin.x + minNodeSize, origin.y + plotH));
@@ -282,8 +289,8 @@ namespace dnf_composer::user_interface
 		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
 		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
 
-		const auto* comps    = element->getComponents();
-		bool        drewHeatmap = false;
+		const auto* comps = element->getComponents();
+		bool drewContent  = false;
 
 		if (isWeightMap && comps && comps->contains("weights"))
 		{
@@ -293,11 +300,49 @@ namespace dnf_composer::user_interface
 			if (cols > 0 && rows > 0 && cols * rows == static_cast<int>(weights.size()))
 			{
 				drawWeightHeatmap(dl, rect, weights, rows, cols);
-				drewHeatmap = true;
+				drewContent = true;
+			}
+		}
+		else if (is2D && comps)
+		{
+			const std::string compName =
+				(label == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+			if (comps->contains(compName))
+			{
+				const auto& dp   = element->getElementCommonParameters().dimensionParameters;
+				const int   rows = dp.size_x;
+				const int   cols = dp.size_y;
+				if (const auto& data = comps->at(compName); rows > 0 && cols > 0
+					&& static_cast<int>(data.size()) == rows * cols)
+				{
+					// EMA-smoothed range: adapts to data changes while dampening
+					// per-frame jitter that causes colormap band flashing.
+					static std::unordered_map<std::string, std::pair<double,double>> s_rangeCache;
+					const double frameMin = *std::ranges::min_element(data);
+					const double frameMax = *std::ranges::max_element(data);
+					const std::string key = element->getUniqueName();
+					if (const auto it = s_rangeCache.find(key); it == s_rangeCache.end())
+						s_rangeCache[key] = { frameMin, frameMax };
+					else
+					{
+						constexpr double alpha = 0.05;
+						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
+						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
+					}
+					auto& [stableMin, stableMax] = s_rangeCache[key];
+					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
+
+					const ImRect hmRect(
+						ImVec2(rect.Min.x + axisLeft,        rect.Min.y + pad),
+						ImVec2(rect.Max.x - pad - axisRight, rect.Max.y - axisBot));
+					draw2DFieldHeatmap(dl, hmRect, data, rows, cols, stableMin, stableMax);
+					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
+					drewContent = true;
+				}
 			}
 		}
 
-		if (!drewHeatmap && !isWeightMap && comps)
+		if (!drewContent && !isWeightMap && !is2D && comps)
 		{
 			double globalMin =  1e300, globalMax = -1e300;
 			for (const auto& data : *comps | std::views::values)
@@ -331,15 +376,20 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderNodePins(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
 		using ax::Widgets::IconType;
-		constexpr ImVec4 pinColor = ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
-		constexpr ImVec2 iconSize = ImVec2(14, 14);
+		constexpr auto pinColor = ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
+		constexpr auto iconSize = ImVec2(14, 14);
 
 		const auto lbl = element->getLabel();
 		const bool hasInputPin =
 			lbl != element::ElementLabel::GAUSS_STIMULUS &&
+			lbl != element::ElementLabel::GAUSS_STIMULUS_2D &&
+			lbl != element::ElementLabel::TIMED_GAUSS_STIMULUS &&
+			lbl != element::ElementLabel::TIMED_GAUSS_STIMULUS_2D &&
 			lbl != element::ElementLabel::NORMAL_NOISE &&
+			lbl != element::ElementLabel::NORMAL_NOISE_2D &&
 			lbl != element::ElementLabel::CORRELATED_NORMAL_NOISE &&
-			lbl != element::ElementLabel::BOOST_STIMULUS;
+			lbl != element::ElementLabel::BOOST_STIMULUS &&
+			lbl != element::ElementLabel::BOOST_STIMULUS_2D;
 
 		if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
 		{
@@ -595,10 +645,13 @@ namespace dnf_composer::user_interface
 			const auto& data = comps->at(compName);
 			if (rows > 0 && cols > 0 && static_cast<int>(data.size()) == rows * cols)
 			{
+				double wMin = *std::min_element(data.begin(), data.end());
+				double wMax = *std::max_element(data.begin(), data.end());
+				if (wMax - wMin < 1e-9) wMax = wMin + 1.0;
 				const ImVec2 origin = ImGui::GetCursorScreenPos();
 				ImGui::Dummy(ImVec2(plotW, plotH));
 				const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
-				draw2DFieldHeatmap(ImGui::GetWindowDrawList(), rect, data, rows, cols);
+				draw2DFieldHeatmap(ImGui::GetWindowDrawList(), rect, data, rows, cols, wMin, wMax);
 			}
 		}
 		else if (!isWM && comps)
@@ -638,10 +691,6 @@ namespace dnf_composer::user_interface
 					}
 					ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()), lineSpec);
 				}
-
-				double zero = 0.0;
-				ImPlot::SetNextLineStyle(ImVec4(0.3f, 0.3f, 0.3f, 0.4f), 1.0f);
-				ImPlot::PlotInfLines("##zero", &zero, 1, ImPlotInfLinesFlags_Horizontal);
 
 				ImPlot::EndPlot();
 			}
@@ -946,6 +995,70 @@ namespace dnf_composer::user_interface
 		       label == element::ElementLabel::GAUSS_FIELD_COUPLING;
 	}
 
+	void NodeGraphWindow::drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect,
+		const int rows, const int cols, const double dMin, const double dMax)
+	{
+		constexpr float  fs      = 9.0f;
+		constexpr ImU32  textCol = IM_COL32( 40,  40,  40, 230);
+		constexpr ImU32  tickCol = IM_COL32( 80,  80,  80, 180);
+		constexpr int    nTicks  = 4;
+		ImFont* const    font    = ImGui::GetFont();
+
+		// X-axis ticks (column indices) below the heatmap
+		for (int i = 0; i <= nTicks; ++i)
+		{
+			const float t   = static_cast<float>(i) / nTicks;
+			const float x   = hmRect.Min.x + t * hmRect.GetWidth();
+			const int   idx = static_cast<int>(std::round(t * (cols - 1)));
+			char buf[8];
+			std::snprintf(buf, sizeof(buf), "%d", idx);
+			dl->AddLine(ImVec2(x, hmRect.Max.y), ImVec2(x, hmRect.Max.y + 2.0f), tickCol, 1.0f);
+			dl->AddText(font, fs, ImVec2(x - 5.0f, hmRect.Max.y + 2.0f), textCol, buf);
+		}
+
+		// Y-axis ticks (row indices) left of the heatmap
+		for (int i = 0; i <= nTicks; ++i)
+		{
+			const float t   = static_cast<float>(i) / nTicks;
+			const float y   = hmRect.Min.y + t * hmRect.GetHeight();
+			const int   idx = static_cast<int>(std::round((1.0f - t) * (rows - 1)));
+			char buf[8];
+			std::snprintf(buf, sizeof(buf), "%d", idx);
+			dl->AddLine(ImVec2(hmRect.Min.x, y), ImVec2(hmRect.Min.x - 2.0f, y), tickCol, 1.0f);
+			dl->AddText(font, fs, ImVec2(hmRect.Min.x - 21.0f, y - fs * 0.5f), textCol, buf);
+		}
+
+		// Amplitude colorbar: vertical strip to the right of the heatmap
+		constexpr float barGap = 3.0f;
+		constexpr float barW   = 7.0f;
+		const float barX0 = hmRect.Max.x + barGap;
+		const float barX1 = barX0 + barW;
+		const int   steps = std::max(1, static_cast<int>(hmRect.GetHeight()));
+		for (int s = 0; s < steps; ++s)
+		{
+			const float t  = static_cast<float>(s) / steps;
+			const float y0 = hmRect.Max.y - (t + 1.0f / steps) * hmRect.GetHeight();
+			const float y1 = hmRect.Max.y - t * hmRect.GetHeight();
+			const ImVec4 c4  = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
+			const ImU32  col = IM_COL32(static_cast<int>(c4.x * 255),
+			                            static_cast<int>(c4.y * 255),
+			                            static_cast<int>(c4.z * 255), 255);
+			dl->AddRectFilled(ImVec2(barX0, y0), ImVec2(barX1, y1), col);
+		}
+		dl->AddRect(ImVec2(barX0, hmRect.Min.y), ImVec2(barX1, hmRect.Max.y), tickCol, 0.0f, 0, 0.5f);
+		// Colorbar ticks and value labels
+		char buf[16];
+		for (int i = 0; i <= nTicks; ++i)
+		{
+			const float  t   = static_cast<float>(i) / nTicks;
+			const float  y   = hmRect.Max.y - t * hmRect.GetHeight();
+			const double val = dMin + t * (dMax - dMin);
+			std::snprintf(buf, sizeof(buf), "%.1f", val);
+			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0f, y), tickCol, 1.0f);
+			dl->AddText(font, fs, ImVec2(barX1 + 3.0f, y - fs * 0.5f), textCol, buf);
+		}
+	}
+
 	void NodeGraphWindow::drawWeightHeatmap(ImDrawList* dl, const ImRect rect,
 		const std::vector<double>& weights, const int rows, const int cols)
 	{
@@ -966,13 +1079,12 @@ namespace dnf_composer::user_interface
 	}
 
 	void NodeGraphWindow::draw2DFieldHeatmap(ImDrawList* dl, const ImRect rect,
-		const std::vector<double>& data, const int rows, const int cols)
+		const std::vector<double>& data, const int rows, const int cols,
+		const double wMin, const double wMax)
 	{
 		constexpr float pad = 3.0f;
 		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
 		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
-		double wMin =  1e300, wMax = -1e300;
-		for (const double v : data) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
 		const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
 		const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
 		const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);

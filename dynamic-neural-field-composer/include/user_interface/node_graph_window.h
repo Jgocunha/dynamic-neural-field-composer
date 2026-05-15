@@ -36,7 +36,7 @@
 
 namespace dnf_composer::user_interface
 {
-	inline ImU32 getHeaderColorForElementType(element::ElementLabel label)
+	inline ImU32 getHeaderColorForElementType(const element::ElementLabel label)
 	{
 		switch (label) {
 		case element::ElementLabel::NEURAL_FIELD:
@@ -89,12 +89,12 @@ namespace dnf_composer::user_interface
 	struct PlotCardState
 	{
 		bool   isFirstFrame   = true;
-		ImVec2 initialPos     = {};
-		ImVec2 size           = { 380.0f, 300.0f };
+		ImVec2 initialPos;
+		ImVec2 size           = { 380.0F, 300.0F };
 		bool   autoFit        = true;
-		float  xMin = 0.f, xMax = 100.f, yMin = -20.f, yMax = 20.f;
-		float  xStep          = 1.0f;
-		float  lineThickness  = 2.5f;
+		float  xMin = 0.F, xMax = 100.F, yMin = -20.F, yMax = 20.F;
+		float  xStep          = 1.0F;
+		float  lineThickness  = 2.5F;
 		char   title[128]     = "";
 		char   xLabel[64]     = "Spatial location";
 		char   yLabel[64]     = "Amplitude";
@@ -148,12 +148,17 @@ namespace dnf_composer::user_interface
 		static void restoreCanvasStyle();
 		static void renderElementTooltip(const std::shared_ptr<element::Element>& element);
 		static bool isWeightMapElement(element::ElementLabel label);
-		static void drawWeightHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& weights, int rows, int cols);
-		static void draw2DFieldHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& data, int rows, int cols);
+		static void drawWeightHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& weights,
+			int rows, int cols);
+		static void draw2DFieldHeatmap(ImDrawList* dl, ImRect rect, const std::vector<double>& data,
+			int rows, int cols, double wMin, double wMax);
+		static void drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect, int rows, int cols,
+			double dMin, double dMax);
 		static void renderNodeScrollingName(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodePins(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderPlotCardMenuBar(PlotCardState& state);
-		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state, bool isWM, bool is2DField);
+		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state,
+			bool isWM, bool is2DField);
 	};
 }
