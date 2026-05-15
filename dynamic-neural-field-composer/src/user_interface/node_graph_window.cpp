@@ -709,6 +709,7 @@ namespace dnf_composer::user_interface
 					std::snprintf(state.autoTitleComponent, sizeof(state.autoTitleComponent), "%s", compName.c_str());
 					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Spatial location x");
 					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Spatial location y");
+
 				}
 
 				const float cbW    = 60.0f;

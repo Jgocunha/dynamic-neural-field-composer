@@ -112,7 +112,7 @@ namespace dnf_composer::element
 
 	std::shared_ptr<Element> OscillatoryKernel2D::clone() const
 	{
-		return std::make_shared<OscillatoryKernel2D>(*this);
+		return std::make_shared<OscillatoryKernel2D>(commonParameters, parameters);
 	}
 
 	void OscillatoryKernel2D::setParameters(const OscillatoryKernel2DParameters& p)

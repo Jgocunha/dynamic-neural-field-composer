@@ -113,7 +113,7 @@ TEST(ResampleTest, SingleOutputSizeReturnsCenterSample)
 
 TEST(GaussKernelCrossDim, OutputSizeMatchesTargetAfterConstruction)
 {
-    const auto gk = makeGaussKernel("gk", 100, ElementDimensions{ 50 });
+    const auto gk = makeGaussKernel("gk", 100, ElementDimensions{ 50, 1.0 });
     EXPECT_EQ(gk->getComponentPtr("output")->size(), 50u);
 }
 
@@ -127,7 +127,7 @@ TEST(GaussKernelCrossDim, ConnectionFromLargerToSmallerField)
 {
     // Field 100 → GaussKernel(in=100, out=50) → Field 50
     const auto fieldSrc = makeField("src", 100);
-    const auto gk = makeGaussKernel("gk", 100, ElementDimensions{ 50 });
+    const auto gk = makeGaussKernel("gk", 100, ElementDimensions{ 50, 1.0 });
     const auto fieldDst = makeField("dst", 50);
 
     EXPECT_NO_THROW(gk->addInput(fieldSrc));
@@ -141,7 +141,7 @@ TEST(GaussKernelCrossDim, ConnectionFromSmallerToLargerField)
 {
     // Field 50 → GaussKernel(in=50, out=100) → Field 100
     const auto fieldSrc = makeField("src", 50);
-    const auto gk = makeGaussKernel("gk", 50, ElementDimensions{ 100 });
+    const auto gk = makeGaussKernel("gk", 50, ElementDimensions{ 100, 1.0 });
     const auto fieldDst = makeField("dst", 100);
 
     EXPECT_NO_THROW(gk->addInput(fieldSrc));
@@ -151,7 +151,7 @@ TEST(GaussKernelCrossDim, ConnectionFromSmallerToLargerField)
 TEST(GaussKernelCrossDim, StepProducesCorrectOutputSize)
 {
     const auto fieldSrc = makeField("src", 100);
-    const auto gk = makeGaussKernel("gk", 100, ElementDimensions{ 50 });
+    const auto gk = makeGaussKernel("gk", 100, ElementDimensions{ 50, 1.0 });
     const auto fieldDst = makeField("dst", 50);
 
     gk->addInput(fieldSrc);
@@ -172,7 +172,7 @@ TEST(GaussKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 {
     const auto sim = createSimulation("cross-dim-gauss", 1.0, 0.0, 0.0);
     sim->addElement(makeField("src", 100));
-    sim->addElement(makeGaussKernel("gk", 100, ElementDimensions{ 50 }));
+    sim->addElement(makeGaussKernel("gk", 100, ElementDimensions{ 50, 1.0 }));
     sim->addElement(makeField("dst", 50));
 
     sim->createInteraction("src", "output", "gk");
@@ -185,7 +185,7 @@ TEST(GaussKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 
 TEST(GaussKernelCrossDim, ParametersRoundTrip)
 {
-    const GaussKernelParameters p{ 3.0, 3.0, -0.01, true, true, ElementDimensions{ 50 } };
+    const GaussKernelParameters p{ 3.0, 3.0, -0.01, true, true, ElementDimensions{ 50, 1.0 } };
     EXPECT_TRUE(p.outputFieldDimensions.has_value());
     EXPECT_EQ(p.outputFieldDimensions->size, 50);
     EXPECT_FALSE(p.toString().empty());
@@ -198,14 +198,14 @@ TEST(GaussKernelCrossDim, ParametersRoundTrip)
 
 TEST(MexicanHatKernelCrossDim, OutputSizeMatchesTargetAfterConstruction)
 {
-    const auto mhk = makeMexKernel("mhk", 100, ElementDimensions{ 200 });
+    const auto mhk = makeMexKernel("mhk", 100, ElementDimensions{ 200, 1.0 });
     EXPECT_EQ(mhk->getComponentPtr("output")->size(), 200u);
 }
 
 TEST(MexicanHatKernelCrossDim, StepProducesCorrectOutputSize)
 {
     const auto fieldSrc = makeField("src", 100);
-    const auto mhk = makeMexKernel("mhk", 100, ElementDimensions{ 200 });
+    const auto mhk = makeMexKernel("mhk", 100, ElementDimensions{ 200, 1.0 });
     const auto fieldDst = makeField("dst", 200);
 
     mhk->addInput(fieldSrc);
@@ -226,7 +226,7 @@ TEST(MexicanHatKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 {
     const auto sim = createSimulation("cross-dim-mhk", 1.0, 0.0, 0.0);
     sim->addElement(makeField("src", 100));
-    sim->addElement(makeMexKernel("mhk", 100, ElementDimensions{ 200 }));
+    sim->addElement(makeMexKernel("mhk", 100, ElementDimensions{ 200, 1.0 }));
     sim->addElement(makeField("dst", 200));
 
     sim->createInteraction("src", "output", "mhk");
@@ -242,14 +242,14 @@ TEST(MexicanHatKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 
 TEST(OscillatoryKernelCrossDim, OutputSizeMatchesTargetAfterConstruction)
 {
-    const auto ok = makeOscKernel("ok", 100, ElementDimensions{ 75 });
+    const auto ok = makeOscKernel("ok", 100, ElementDimensions{ 75, 1.0 });
     EXPECT_EQ(ok->getComponentPtr("output")->size(), 75u);
 }
 
 TEST(OscillatoryKernelCrossDim, StepProducesCorrectOutputSize)
 {
     const auto fieldSrc = makeField("src", 100);
-    const auto ok = makeOscKernel("ok", 100, ElementDimensions{ 75 });
+    const auto ok = makeOscKernel("ok", 100, ElementDimensions{ 75, 1.0 });
     const auto fieldDst = makeField("dst", 75);
 
     ok->addInput(fieldSrc);
@@ -270,7 +270,7 @@ TEST(OscillatoryKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 {
     const auto sim = createSimulation("cross-dim-osc", 1.0, 0.0, 0.0);
     sim->addElement(makeField("src", 100));
-    sim->addElement(makeOscKernel("ok", 100, ElementDimensions{ 75 }));
+    sim->addElement(makeOscKernel("ok", 100, ElementDimensions{ 75, 1.0 }));
     sim->addElement(makeField("dst", 75));
 
     sim->createInteraction("src", "output", "ok");
@@ -294,7 +294,7 @@ static std::shared_ptr<AsymmetricGaussKernel> makeAgkKernel(const std::string& n
 
 TEST(AsymmetricGaussKernelCrossDim, OutputSizeMatchesTargetAfterConstruction)
 {
-    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60 });
+    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60, 1.0 });
     EXPECT_EQ(agk->getComponentPtr("output")->size(), 60u);
 }
 
@@ -308,7 +308,7 @@ TEST(AsymmetricGaussKernelCrossDim, ConnectionFromLargerToSmallerField)
 {
     // Field 100 → AgkKernel(in=100, out=60) → Field 60
     const auto fieldSrc = makeField("src", 100);
-    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60 });
+    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60, 1.0 });
     const auto fieldDst = makeField("dst", 60);
 
     EXPECT_NO_THROW(agk->addInput(fieldSrc));
@@ -322,7 +322,7 @@ TEST(AsymmetricGaussKernelCrossDim, ConnectionFromSmallerToLargerField)
 {
     // Field 50 → AgkKernel(in=50, out=100) → Field 100
     const auto fieldSrc = makeField("src", 50);
-    const auto agk = makeAgkKernel("agk", 50, ElementDimensions{ 100 });
+    const auto agk = makeAgkKernel("agk", 50, ElementDimensions{ 100, 1.0 });
     const auto fieldDst = makeField("dst", 100);
 
     EXPECT_NO_THROW(agk->addInput(fieldSrc));
@@ -332,7 +332,7 @@ TEST(AsymmetricGaussKernelCrossDim, ConnectionFromSmallerToLargerField)
 TEST(AsymmetricGaussKernelCrossDim, StepProducesCorrectOutputSize)
 {
     const auto fieldSrc = makeField("src", 100);
-    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60 });
+    const auto agk = makeAgkKernel("agk", 100, ElementDimensions{ 60, 1.0 });
     const auto fieldDst = makeField("dst", 60);
 
     agk->addInput(fieldSrc);
@@ -353,7 +353,7 @@ TEST(AsymmetricGaussKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 {
     const auto sim = createSimulation("cross-dim-agk", 1.0, 0.0, 0.0);
     sim->addElement(makeField("src", 100));
-    sim->addElement(makeAgkKernel("agk", 100, ElementDimensions{ 60 }));
+    sim->addElement(makeAgkKernel("agk", 100, ElementDimensions{ 60, 1.0 }));
     sim->addElement(makeField("dst", 60));
 
     sim->createInteraction("src", "output", "agk");
@@ -366,7 +366,7 @@ TEST(AsymmetricGaussKernelCrossDim, SimulationRunsWithCrossDimensionKernel)
 
 TEST(AsymmetricGaussKernelCrossDim, ParametersRoundTrip)
 {
-    const AsymmetricGaussKernelParameters p{ 3.0, 3.0, 0.0, 1.0, true, true, ElementDimensions{ 60 } };
+    const AsymmetricGaussKernelParameters p{ 3.0, 3.0, 0.0, 1.0, true, true, ElementDimensions{ 60, 1.0 } };
     EXPECT_TRUE(p.outputFieldDimensions.has_value());
     EXPECT_EQ(p.outputFieldDimensions->size, 60);
     EXPECT_FALSE(p.toString().empty());

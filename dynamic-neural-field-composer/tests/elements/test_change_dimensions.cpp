@@ -21,7 +21,7 @@ using namespace dnf_composer::element;
 // Helpers
 // ---------------------------------------------------------------------------
 
-static ElementDimensions dim(const int size) { return ElementDimensions{ size }; }
+static ElementDimensions dim(const int size) { return ElementDimensions{ size, 1.0 }; }
 
 static std::shared_ptr<GaussStimulus> makeGaussStimulus(int size = 100)
 {
@@ -80,14 +80,14 @@ static std::shared_ptr<AsymmetricGaussKernel> makeAsymmetricGaussKernel(int size
 static std::shared_ptr<FieldCoupling> makeFieldCoupling(int inSize = 100, int outSize = 100)
 {
     ElementCommonParameters cp{ "fc", outSize };
-    FieldCouplingParameters fcp{ ElementDimensions{ inSize }, LearningRule::HEBB, 1.0, 0.01 };
+    FieldCouplingParameters fcp{ ElementDimensions{ inSize, 1.0 }, LearningRule::HEBB, 1.0, 0.01 };
     return std::make_shared<FieldCoupling>(cp, fcp);
 }
 
 static std::shared_ptr<GaussFieldCoupling> makeGaussFieldCoupling(int inSize = 100, int outSize = 100)
 {
     ElementCommonParameters cp{ "gfc", outSize };
-    GaussFieldCouplingParameters gfcp{ ElementDimensions{ inSize } };
+    GaussFieldCouplingParameters gfcp{ ElementDimensions{ inSize, 1.0 } };
     return std::make_shared<GaussFieldCoupling>(cp, gfcp);
 }
 
