@@ -584,12 +584,15 @@ namespace dnf_composer::user_interface
 				drawWeightHeatmap(ImGui::GetWindowDrawList(), rect, weights, rows, cols);
 			}
 		}
-		else if (is2DField && comps && !comps->empty())
+		else if (is2DField && comps)
 		{
+			const std::string compName =
+				(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+			if (!comps->contains(compName)) return;
 			const auto& dp   = element->getElementCommonParameters().dimensionParameters;
 			const int   rows = dp.size_x;
 			const int   cols = dp.size_y;
-			const auto& data = comps->begin()->second;
+			const auto& data = comps->at(compName);
 			if (rows > 0 && cols > 0 && static_cast<int>(data.size()) == rows * cols)
 			{
 				const ImVec2 origin = ImGui::GetCursorScreenPos();
@@ -606,11 +609,8 @@ namespace dnf_composer::user_interface
 				std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
 			}
 
-			ImPlotFlags plotFlags = ImPlotFlags_Crosshairs;
-			if (state.autoFit)
-				plotFlags |= ImPlotFlags_Equal;
-
-			const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+			const ImPlotFlags    plotFlags = ImPlotFlags_Crosshairs;
+			const ImPlotAxisFlags axF      = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
 
 			if (!state.autoFit)
 			{
@@ -638,6 +638,11 @@ namespace dnf_composer::user_interface
 					}
 					ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()), lineSpec);
 				}
+
+				double zero = 0.0;
+				ImPlot::SetNextLineStyle(ImVec4(0.3f, 0.3f, 0.3f, 0.4f), 1.0f);
+				ImPlot::PlotInfLines("##zero", &zero, 1, ImPlotInfLinesFlags_Horizontal);
+
 				ImPlot::EndPlot();
 			}
 		}
