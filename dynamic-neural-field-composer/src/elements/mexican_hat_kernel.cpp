@@ -8,8 +8,6 @@ namespace dnf_composer
 			: Kernel(elementCommonParameters), parameters(std::move(mhk_parameters))
 		{
 			commonParameters.identifiers.label = ElementLabel::MEXICAN_HAT_KERNEL;
-			if (parameters.outputFieldDimensions.has_value())
-				components["output"].resize(parameters.outputFieldDimensions->size, 0.0);
 		}
 
 		void MexicanHatKernel::init()
@@ -50,17 +48,9 @@ namespace dnf_composer
 
 			scratchExtended.assign(extIndex.empty() ? 0 : extIndex.size(), 0.0);
 			scratchConvolution.assign(commonParameters.dimensionParameters.size, 0.0);
-			if (parameters.outputFieldDimensions.has_value() &&
-				parameters.outputFieldDimensions->size != commonParameters.dimensionParameters.size)
-				scratchResample_.assign(commonParameters.dimensionParameters.size, 0.0);
-			else
-				scratchResample_.clear();
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
-			if (parameters.outputFieldDimensions.has_value())
-				components["output"].assign(parameters.outputFieldDimensions->size, 0.0);
-			else
-				std::ranges::fill(components["output"], 0.0);
+			std::ranges::fill(components["output"], 0.0);
 		}
 
 		void MexicanHatKernel::step(double t, double deltaT)
@@ -79,18 +69,9 @@ namespace dnf_composer
 			}
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
-			if (!scratchResample_.empty())
-			{
-				for (int i = 0; i < static_cast<int>(scratchConvolution.size()); i++)
-					scratchResample_[i] = scratchConvolution[i] + globalOffset;
-				tools::math::resampleInto(scratchResample_, components["output"]);
-			}
-			else
-			{
-				auto& out = components["output"];
-				for (int i = 0; i < static_cast<int>(out.size()); i++)
-					out[i] = scratchConvolution[i] + globalOffset;
-			}
+			auto& out = components["output"];
+			for (int i = 0; i < static_cast<int>(out.size()); i++)
+				out[i] = scratchConvolution[i] + globalOffset;
 		}
 
 		std::string MexicanHatKernel::toString() const

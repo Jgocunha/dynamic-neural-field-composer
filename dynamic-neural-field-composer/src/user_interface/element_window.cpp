@@ -208,14 +208,9 @@ namespace dnf_composer::user_interface
 		const element::ElementLabel label = element->getLabel();
 		const bool isCoupling = label == element::ElementLabel::FIELD_COUPLING ||
 		                        label == element::ElementLabel::GAUSS_FIELD_COUPLING;
-		const bool isKernel   = label == element::ElementLabel::GAUSS_KERNEL ||
-		                        label == element::ElementLabel::MEXICAN_HAT_KERNEL ||
-		                        label == element::ElementLabel::OSCILLATORY_KERNEL ||
-		                        label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL;
 
 		static std::unordered_map<int, std::pair<float, float>> staged;
 		static std::unordered_map<int, std::pair<float, float>> stagedIn;
-		static std::unordered_map<int, std::pair<float, float>> stagedOut;
 		const int id = element->getUniqueIdentifier();
 		auto& [stagedXmax, stagedDx] = staged[id];
 
@@ -255,98 +250,6 @@ namespace dnf_composer::user_interface
 			stagedDx   = static_cast<float>(newDim.d_x);
 		}
 		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out step" : "Step");
-
-		if (isKernel)
-		{
-			auto& [stagedOutXmax, stagedOutDx] = stagedOut[id];
-
-			auto getKernelOutputDims = [&]() -> std::optional<element::ElementDimensions> {
-				if (label == element::ElementLabel::GAUSS_KERNEL)
-					return std::dynamic_pointer_cast<element::GaussKernel>(element)->getParameters().outputFieldDimensions;
-				if (label == element::ElementLabel::MEXICAN_HAT_KERNEL)
-					return std::dynamic_pointer_cast<element::MexicanHatKernel>(element)->getParameters().outputFieldDimensions;
-				if (label == element::ElementLabel::OSCILLATORY_KERNEL)
-					return std::dynamic_pointer_cast<element::OscillatoryKernel>(element)->getParameters().outputFieldDimensions;
-				if (label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL)
-					return std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element)->getParameters().outputFieldDimensions;
-				return std::nullopt;
-			};
-
-			if (stagedOutXmax == 0.0f && stagedOutDx == 0.0f)
-			{
-				const auto currentOut = getKernelOutputDims();
-				if (currentOut.has_value())
-				{
-					stagedOutXmax = static_cast<float>(currentOut->x_max);
-					stagedOutDx   = static_cast<float>(currentOut->d_x);
-				}
-				else
-				{
-					stagedOutXmax = static_cast<float>(dim.x_max);
-					stagedOutDx   = static_cast<float>(dim.d_x);
-				}
-			}
-
-			auto applyKernelOutputDim = [&]() {
-				if (stagedOutXmax <= 0.0f || stagedOutDx <= 0.0f) return;
-				const element::ElementDimensions newOutDim(static_cast<int>(stagedOutXmax), static_cast<double>(stagedOutDx));
-				const bool squareMode = (newOutDim.x_max == element->getMaxSpatialDimension() &&
-				                        std::abs(newOutDim.d_x - element->getStepSize()) < 1e-9);
-				const std::optional<element::ElementDimensions> newOptOut =
-					squareMode ? std::nullopt : std::make_optional(newOutDim);
-				element->removeInputs();
-				element->removeOutputs();
-				if (label == element::ElementLabel::GAUSS_KERNEL)
-				{
-					const auto k = std::dynamic_pointer_cast<element::GaussKernel>(element);
-					auto p = k->getParameters();
-					p.outputFieldDimensions = newOptOut;
-					k->setParameters(p);
-				}
-				else if (label == element::ElementLabel::MEXICAN_HAT_KERNEL)
-				{
-					const auto k = std::dynamic_pointer_cast<element::MexicanHatKernel>(element);
-					auto p = k->getParameters();
-					p.outputFieldDimensions = newOptOut;
-					k->setParameters(p);
-				}
-				else if (label == element::ElementLabel::OSCILLATORY_KERNEL)
-				{
-					const auto k = std::dynamic_pointer_cast<element::OscillatoryKernel>(element);
-					auto p = k->getParameters();
-					p.outputFieldDimensions = newOptOut;
-					k->setParameters(p);
-				}
-				else if (label == element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL)
-				{
-					const auto k = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
-					auto p = k->getParameters();
-					p.outputFieldDimensions = newOptOut;
-					k->setParameters(p);
-				}
-				const auto finalOut = getKernelOutputDims();
-				if (finalOut.has_value())
-				{
-					stagedOutXmax = static_cast<float>(finalOut->x_max);
-					stagedOutDx   = static_cast<float>(finalOut->d_x);
-				}
-				else
-				{
-					stagedOutXmax = static_cast<float>(element->getElementCommonParameters().dimensionParameters.x_max);
-					stagedOutDx   = static_cast<float>(element->getElementCommonParameters().dimensionParameters.d_x);
-				}
-			};
-
-			ImGui::SetNextItemWidth(inputW);
-			ImGui::InputFloat("##out_x_max", &stagedOutXmax, 0.0f, 0.0f, "%.1f");
-			if (ImGui::IsItemDeactivatedAfterEdit()) applyKernelOutputDim();
-			ImGui::SameLine(); ImGui::TextUnformatted("Output Size");
-
-			ImGui::SetNextItemWidth(inputW);
-			ImGui::InputFloat("##out_dx", &stagedOutDx, 0.0f, 0.0f, "%.2f");
-			if (ImGui::IsItemDeactivatedAfterEdit()) applyKernelOutputDim();
-			ImGui::SameLine(); ImGui::TextUnformatted("Output Step");
-		}
 
 		if (isCoupling)
 		{
