@@ -76,6 +76,9 @@ namespace dnf_composer::element
 		std::vector<int> extIndexInh_x, extIndexInh_y;
 		std::vector<double> kernelExc_x, kernelExc_y;
 		std::vector<double> kernelInh_x, kernelInh_y;
+		std::vector<double> scratchTmp_;
+		std::vector<double> scratchExcConv_;
+		std::vector<double> scratchInhConv_;
 	public:
 		MexicanHatKernel2D(const ElementCommonParameters& elementCommonParameters,
 		                   const MexicanHatKernel2DParameters& parameters);

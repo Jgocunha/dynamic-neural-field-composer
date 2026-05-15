@@ -64,9 +64,7 @@ namespace dnf_composer
 				kernelInh_x, kernelInh_y);
 
 			for (auto& v : kernelExc_x) v *= parameters.amplitudeExc;
-			for (auto& v : kernelExc_y) v *= parameters.amplitudeExc;
 			for (auto& v : kernelInh_x) v *= parameters.amplitudeInh;
-			for (auto& v : kernelInh_y) v *= parameters.amplitudeInh;
 
 			// Populate components["kernel"] with the net outer product (exc - inh), row-major.
 			// Use the larger of the two kernel ranges as the output size, centering the smaller kernel.
@@ -84,6 +82,11 @@ namespace dnf_composer
 			addProduct(kernelExc_x, kernelExc_y, +1.0);
 			addProduct(kernelInh_x, kernelInh_y, -1.0);
 
+			const int totalSize = size_x * size_y;
+			scratchTmp_.assign(totalSize, 0.0);
+			scratchExcConv_.assign(totalSize, 0.0);
+			scratchInhConv_.assign(totalSize, 0.0);
+
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
 			std::ranges::fill(components["output"], 0.0);
@@ -98,16 +101,19 @@ namespace dnf_composer
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
 
-			const auto excOut = tools::math::conv2d_separable(
+			tools::math::conv2d_separable_into(
+				scratchExcConv_, scratchTmp_,
 				components["input"], kernelExc_x, kernelExc_y,
 				size_x, size_y, extIndexExc_x, extIndexExc_y);
 
-			const auto inhOut = tools::math::conv2d_separable(
+			tools::math::conv2d_separable_into(
+				scratchInhConv_, scratchTmp_,
 				components["input"], kernelInh_x, kernelInh_y,
 				size_x, size_y, extIndexInh_x, extIndexInh_y);
 
+			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
-				components["output"][i] = excOut[i] - inhOut[i] + parameters.amplitudeGlobal * fullSum;
+				components["output"][i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
 		}
 
 		std::string MexicanHatKernel2D::toString() const
