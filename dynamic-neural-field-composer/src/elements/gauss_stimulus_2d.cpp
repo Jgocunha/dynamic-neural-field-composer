@@ -12,6 +12,13 @@ namespace dnf_composer
 			const GaussStimulusParameters2D& parameters)
 			: Element(elementCommonParameters), parameters(parameters)
 		{
+			if (parameters.position_x < 0 || parameters.position_x >= elementCommonParameters.dimensionParameters.x_max)
+				throw Exception(ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE,
+					elementCommonParameters.identifiers.uniqueName);
+			if (parameters.position_y < 0 || parameters.position_y >= elementCommonParameters.dimensionParameters.y_max)
+				throw Exception(ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE,
+					elementCommonParameters.identifiers.uniqueName);
+
 			commonParameters.identifiers.label = ElementLabel::GAUSS_STIMULUS_2D;
 		}
 
@@ -43,16 +50,36 @@ namespace dnf_composer
 				}
 			}
 
-			if (parameters.normalized && sum > 1e-12)
-			{
-				for (auto& v : components["output"])
-					v = parameters.amplitude * v / sum;
-			}
-			else
+			if (!parameters.normalized)
 			{
 				for (auto& v : components["output"])
 					v *= parameters.amplitude;
 			}
+			else
+			{
+				if (sum > 1e-12)
+				{
+					for (auto& v : components["output"])
+						v = parameters.amplitude * v / sum;
+				}
+				else
+				{
+					const std::string message = "Tried to initialize a normalized Gaussian stimulus 2D '"
+						+ getUniqueName() + "'. With the sum of the output vector equal "
+						"to zero that is impossible! ";
+					log(tools::logger::LogLevel::ERROR, message);
+				}
+			}
+
+			std::ranges::fill(components["input"], 0.0);
+			updateInput();
+			const int totalSize = size_x * size_y;
+			for (int i = 0; i < totalSize; ++i)
+				components["output"][i] += components["input"][i];
+		}
+
+		void GaussStimulus2D::step(double t, double deltaT)
+		{
 		}
 
 		std::string GaussStimulus2D::toString() const

@@ -61,7 +61,7 @@ namespace dnf_composer::element
 		                const GaussStimulusParameters2D& parameters);
 
 		void init() override;
-		void step(double t, double deltaT) override {}
+		void step(double t, double deltaT) override;
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 

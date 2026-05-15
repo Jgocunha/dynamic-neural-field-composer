@@ -618,4 +618,64 @@ namespace dnf_composer::tools::math
 
 		return result;
 	}
+
+	// In-place 2D separable convolution — writes into caller-supplied buffers.
+	// `out` and `tmp` must be pre-sized to size_x * size_y before calling.
+	template<typename T>
+	void conv2d_separable_into(
+		std::vector<T>& out,
+		std::vector<T>& tmp,
+		const std::vector<T>& field,
+		const std::vector<T>& kernel_x,
+		const std::vector<T>& kernel_y,
+		int size_x, int size_y,
+		const std::vector<int>& extIndex_x,
+		const std::vector<int>& extIndex_y)
+	{
+		const bool circular_x = !extIndex_x.empty();
+		const bool circular_y = !extIndex_y.empty();
+
+		std::vector<T> row(size_y);
+		std::vector<T> col(size_x);
+		std::vector<T> convRow(size_y);
+		std::vector<T> extRow(circular_y ? extIndex_y.size() : 0);
+		std::vector<T> convCol(size_x);
+		std::vector<T> extCol(circular_x ? extIndex_x.size() : 0);
+
+		for (int x = 0; x < size_x; ++x)
+		{
+			for (int y = 0; y < size_y; ++y)
+				row[y] = field[x * size_y + y];
+
+			if (circular_y)
+			{
+				obtainCircularVector_into(extRow, extIndex_y, row);
+				conv_valid_into(convRow, extRow, kernel_y);
+			}
+			else
+			{
+				conv_same_into(convRow, row, kernel_y);
+			}
+			for (int y = 0; y < size_y; ++y)
+				tmp[x * size_y + y] = convRow[y];
+		}
+
+		for (int y = 0; y < size_y; ++y)
+		{
+			for (int x = 0; x < size_x; ++x)
+				col[x] = tmp[x * size_y + y];
+
+			if (circular_x)
+			{
+				obtainCircularVector_into(extCol, extIndex_x, col);
+				conv_valid_into(convCol, extCol, kernel_x);
+			}
+			else
+			{
+				conv_same_into(convCol, col, kernel_x);
+			}
+			for (int x = 0; x < size_x; ++x)
+				out[x * size_y + y] = convCol[x];
+		}
+	}
 }

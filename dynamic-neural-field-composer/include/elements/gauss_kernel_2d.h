@@ -59,6 +59,8 @@ namespace dnf_composer::element
 		std::vector<int> extIndex_y;
 		std::vector<double> kernel_1d_x;
 		std::vector<double> kernel_1d_y;
+		std::vector<double> scratchTmp_;
+		std::vector<double> scratchConvolution_;
 	public:
 		GaussKernel2D(const ElementCommonParameters& elementCommonParameters,
 		              const GaussKernel2DParameters& parameters);

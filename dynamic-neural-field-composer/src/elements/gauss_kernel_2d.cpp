@@ -54,7 +54,6 @@ namespace dnf_composer
 			}
 
 			for (auto& v : kernel_1d_x) v *= parameters.amplitude;
-			for (auto& v : kernel_1d_y) v *= parameters.amplitude;
 
 			// Populate components["kernel"] with the outer product (row-major)
 			const int kx = static_cast<int>(kernel_1d_x.size());
@@ -63,6 +62,10 @@ namespace dnf_composer
 			for (int i = 0; i < kx; ++i)
 				for (int j = 0; j < ky; ++j)
 					components["kernel"][i * ky + j] = kernel_1d_x[i] * kernel_1d_y[j];
+
+			const int totalSize = size_x * size_y;
+			scratchTmp_.assign(totalSize, 0.0);
+			scratchConvolution_.assign(totalSize, 0.0);
 
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
@@ -78,12 +81,14 @@ namespace dnf_composer
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
 
-			const auto convolution = tools::math::conv2d_separable(
+			tools::math::conv2d_separable_into(
+				scratchConvolution_, scratchTmp_,
 				components["input"], kernel_1d_x, kernel_1d_y,
 				size_x, size_y, extIndex_x, extIndex_y);
 
+			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
-				components["output"][i] = convolution[i] + parameters.amplitudeGlobal * fullSum;
+				components["output"][i] = scratchConvolution_[i] + globalOffset;
 		}
 
 		std::string GaussKernel2D::toString() const
