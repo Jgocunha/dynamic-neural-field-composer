@@ -32,6 +32,7 @@
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
 #include "elements/resize.h"
+#include "elements/field_projection.h"
 #include "user_interface/widgets.h"
 #include "application/application.h"
 

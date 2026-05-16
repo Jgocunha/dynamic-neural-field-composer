@@ -825,6 +825,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEMORY_TRACE_2D:
 			return 1;
 		case element::ElementLabel::RESIZE:
+		case element::ElementLabel::FIELD_PROJECTION:
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 			return 2;
@@ -1119,6 +1120,21 @@ namespace dnf_composer::user_interface
 			const char* interpStr = p.interpolation == element::ResizeInterpolation::NEAREST ? "Nearest" :
 			                        p.interpolation == element::ResizeInterpolation::CUBIC    ? "Cubic"   : "Linear";
 			ImGui::Text("Interpolation: %s", interpStr);
+			break;
+		}
+		case element::ElementLabel::FIELD_PROJECTION:
+		{
+			const auto fp = std::dynamic_pointer_cast<element::FieldProjection>(element);
+			const auto& p = fp->getParameters();
+			const char* dirStr  = (p.direction == element::FieldProjectionDirection::COMPRESS) ? "Compress 2D->1D" : "Expand 1D->2D";
+			const char* axisStr = (p.projectionAxis == 0) ? "0 (keep X)" : "1 (keep Y)";
+			const char* compStr = "Sum";
+			if (p.compressionType == element::FieldProjectionCompression::AVERAGE) compStr = "Average";
+			else if (p.compressionType == element::FieldProjectionCompression::MAXIMUM) compStr = "Maximum";
+			else if (p.compressionType == element::FieldProjectionCompression::MINIMUM) compStr = "Minimum";
+			ImGui::Text("Direction: %s", dirStr);
+			ImGui::Text("Projection axis: %s", axisStr);
+			ImGui::Text("Compression: %s", compStr);
 			break;
 		}
 		default:

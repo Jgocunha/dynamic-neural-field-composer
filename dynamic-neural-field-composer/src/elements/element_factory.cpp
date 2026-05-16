@@ -162,6 +162,12 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const ResizeParameters*>(&elementSpecificParameters);
 					return std::make_shared<Resize>(elementCommonParameters, *params);
 				};
+
+			elementCreators[ElementLabel::FIELD_PROJECTION] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const FieldProjectionParameters*>(&elementSpecificParameters);
+					return std::make_shared<FieldProjection>(elementCommonParameters, *params);
+				};
 		}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -233,6 +239,8 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), MemoryTrace2DParameters());
 					case ElementLabel::RESIZE:
 						return creator->second(ElementCommonParameters(type), ResizeParameters());
+					case ElementLabel::FIELD_PROJECTION:
+						return creator->second(ElementCommonParameters(type), FieldProjectionParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

@@ -37,6 +37,7 @@ namespace dnf_composer::element
 		ASYMMETRIC_GAUSS_KERNEL_2D,
 		MEMORY_TRACE_2D,
 		RESIZE,
+		FIELD_PROJECTION,
 	};
 
 	inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -67,6 +68,7 @@ namespace dnf_composer::element
 		{ASYMMETRIC_GAUSS_KERNEL_2D, "asymmetric gauss kernel 2d" },
 		{MEMORY_TRACE_2D, "memory trace 2d" },
 		{RESIZE, "resize" },
+		{FIELD_PROJECTION, "field projection" },
 	};
 
 	struct ElementDimensions

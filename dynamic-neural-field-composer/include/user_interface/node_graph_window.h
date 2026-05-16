@@ -30,6 +30,7 @@
 #include "elements/memory_trace_2d.h"
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/resize.h"
+#include "elements/field_projection.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"
@@ -135,8 +136,8 @@ namespace dnf_composer::user_interface
 		mutable std::unordered_map<size_t, PlotCardState> plotCards;
 
 		// Node graph panel bounds (updated every frame) for plot card clamping.
-		mutable ImVec2 ngBoundsMin = {};
-		mutable ImVec2 ngBoundsMax = {};
+		mutable ImVec2 ngBoundsMin;
+		mutable ImVec2 ngBoundsMax;
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 

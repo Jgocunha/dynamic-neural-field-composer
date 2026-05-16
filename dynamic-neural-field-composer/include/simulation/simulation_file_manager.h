@@ -32,6 +32,7 @@
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
 #include "elements/resize.h"
+#include "elements/field_projection.h"
 
 /// @defgroup simulation_io Simulation I/O
 /// @brief JSON serialization and deserialization of simulation architectures.

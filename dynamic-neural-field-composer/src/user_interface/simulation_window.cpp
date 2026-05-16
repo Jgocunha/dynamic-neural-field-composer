@@ -1085,6 +1085,56 @@ namespace dnf_composer::user_interface
             }
             break;
         }
+        case element::ElementLabel::FIELD_PROJECTION:
+        {
+            static char   id[CHAR_SIZE] = "fp";
+            static int    x_max         = 100;
+            static int    y_max         = 100;
+            static double d_x           = 1.0;
+            static double d_y           = 1.0;
+            static int    dirIdx        = 0;
+            static int    axisIdx       = 0;
+            static int    compIdx       = 0;
+
+            static const char* dirNames[]  = { "Compress 2D->1D", "Expand 1D->2D" };
+            static const char* axisNames[] = { "0 - X axis", "1 - Y axis" };
+            static const char* compNames[] = { "Sum", "Average", "Maximum", "Minimum" };
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::Combo("Direction",       &dirIdx,  dirNames,  2);
+            ImGui::Combo("Projection axis", &axisIdx, axisNames, 2);
+            if (dirIdx == 1) // EXPAND: user sets the 2D output size
+            {
+                ImGui::InputInt("Output size X", &x_max, 0, 0);
+                ImGui::InputInt("Output size Y", &y_max, 0, 0);
+                ImGui::InputDouble("Step X", &d_x, 0.0, 0.0, "%.2f");
+                ImGui::InputDouble("Step Y", &d_y, 0.0, 0.0, "%.2f");
+            }
+            else // COMPRESS: dimensions auto-detected from the connected 2D field
+            {
+                ImGui::TextDisabled("Dimensions adapt from connected 2D field");
+            }
+            ImGui::Combo("Compression",     &compIdx, compNames, 4);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const int cx = (dirIdx == 0) ? 1 : x_max;
+                const int cy = (dirIdx == 0) ? 1 : y_max;
+                const double dx = (dirIdx == 0) ? 1.0 : d_x;
+                const double dy = (dirIdx == 0) ? 1.0 : d_y;
+                const element::FieldProjectionParameters fp{
+                    axisIdx,
+                    static_cast<element::FieldProjectionCompression>(compIdx),
+                    static_cast<element::FieldProjectionDirection>(dirIdx) };
+                const element::ElementCommonParameters common{
+                    std::string(id),
+                    element::ElementDimensions{ cx, cy, dx, dy } };
+                simulation->addElement(std::make_shared<element::FieldProjection>(common, fp));
+            }
+            break;
+        }
         default:
             break;
         }

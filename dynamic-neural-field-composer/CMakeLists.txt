@@ -96,6 +96,8 @@ set(elements_headers
         "include/elements/correlated_normal_noise_2d.h"
         "include/elements/asymmetric_gauss_kernel_2d.h"
         "include/elements/memory_trace_2d.h"
+        "include/elements/resize.h"
+        "include/elements/field_projection.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -190,6 +192,7 @@ set(src
         "src/elements/asymmetric_gauss_kernel_2d.cpp"
         "src/elements/memory_trace_2d.cpp"
         "src/elements/resize.cpp"
+        "src/elements/field_projection.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -408,6 +411,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_asymmetric_gauss_kernel_2d.cpp"
             "tests/elements/test_memory_trace_2d.cpp"
             "tests/elements/test_resize.cpp"
+            "tests/elements/test_field_projection.cpp"
             "tests/elements/test_change_dimensions.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"

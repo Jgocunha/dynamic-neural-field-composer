@@ -204,3 +204,79 @@ TEST(FieldProjectionToString, NonEmpty)
     FieldProjection fp(makeCP("fp"), FieldProjectionParameters{});
     EXPECT_FALSE(fp.toString().empty());
 }
+
+// ---------------------------------------------------------------------------
+// Compression types — Average, Maximum, Minimum
+// ---------------------------------------------------------------------------
+
+TEST(FieldProjectionStep, AverageAxis0)
+{
+    // 2x3 field: row 0 = [1,1,1], row 1 = [2,2,2]
+    // axis 0, AVERAGE → output[0] = 3/3 = 1, output[1] = 6/3 = 2
+    FieldProjection fp(makeCP("fp", 2, 3),
+        FieldProjectionParameters{ 0, FieldProjectionCompression::AVERAGE });
+    fp.init();
+
+    auto* inp = fp.getComponentPtr("input");
+    for (int xi = 0; xi < 2; ++xi)
+        for (int yi = 0; yi < 3; ++yi)
+            (*inp)[xi * 3 + yi] = static_cast<double>(xi + 1);
+
+    fp.step(0.0, 1.0);
+
+    const auto out = fp.getComponent("output");
+    EXPECT_NEAR(out[0], 1.0, 1e-9);
+    EXPECT_NEAR(out[1], 2.0, 1e-9);
+}
+
+TEST(FieldProjectionStep, MaximumAxis1)
+{
+    // 2x3 field: col 0 = [10, 20], col 1 = [30, 40], col 2 = [50, 60]
+    // axis 1, MAXIMUM → output[yi] = max over X → output[0]=20, output[1]=40, output[2]=60
+    FieldProjection fp(makeCP("fp", 2, 3),
+        FieldProjectionParameters{ 1, FieldProjectionCompression::MAXIMUM });
+    fp.init();
+
+    auto* inp = fp.getComponentPtr("input");
+    for (int xi = 0; xi < 2; ++xi)
+        for (int yi = 0; yi < 3; ++yi)
+            (*inp)[xi * 3 + yi] = static_cast<double>((xi + 1) * 10 * (yi + 1));
+
+    fp.step(0.0, 1.0);
+
+    const auto out = fp.getComponent("output");
+    EXPECT_DOUBLE_EQ(out[0], 20.0);
+    EXPECT_DOUBLE_EQ(out[1], 40.0);
+    EXPECT_DOUBLE_EQ(out[2], 60.0);
+}
+
+TEST(FieldProjectionStep, MinimumAxis0)
+{
+    // 2x3 field: row 0 = [1,2,3], row 1 = [4,5,6]
+    // axis 0, MINIMUM → output[xi] = min over Y → output[0]=1, output[1]=4
+    FieldProjection fp(makeCP("fp", 2, 3),
+        FieldProjectionParameters{ 0, FieldProjectionCompression::MINIMUM });
+    fp.init();
+
+    auto* inp = fp.getComponentPtr("input");
+    for (int xi = 0; xi < 2; ++xi)
+        for (int yi = 0; yi < 3; ++yi)
+            (*inp)[xi * 3 + yi] = static_cast<double>(xi * 3 + yi + 1);
+
+    fp.step(0.0, 1.0);
+
+    const auto out = fp.getComponent("output");
+    EXPECT_DOUBLE_EQ(out[0], 1.0);
+    EXPECT_DOUBLE_EQ(out[1], 4.0);
+}
+
+TEST(FieldProjectionParameters, CompressionTypeRoundtrip)
+{
+    FieldProjection fp(makeCP("fp"),
+        FieldProjectionParameters{ 1, FieldProjectionCompression::MAXIMUM });
+    EXPECT_EQ(fp.getParameters().compressionType, FieldProjectionCompression::MAXIMUM);
+
+    fp.setParameters(FieldProjectionParameters{ 0, FieldProjectionCompression::MINIMUM });
+    EXPECT_EQ(fp.getParameters().compressionType, FieldProjectionCompression::MINIMUM);
+    EXPECT_EQ(fp.getParameters().projectionAxis, 0);
+}

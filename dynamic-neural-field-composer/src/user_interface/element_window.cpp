@@ -69,6 +69,7 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return h(6);
 				case element::ElementLabel::MEMORY_TRACE_2D:         return h(3);
 				case element::ElementLabel::RESIZE:                  return h(3 + dimRows);
+				case element::ElementLabel::FIELD_PROJECTION:        return h(3 + dimRows);
 				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
 				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
@@ -382,6 +383,9 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::RESIZE:
 			modifyElementResize(element);
+			break;
+		case element::ElementLabel::FIELD_PROJECTION:
+			modifyElementFieldProjection(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -1815,6 +1819,46 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementFieldProjection(const std::shared_ptr<element::Element>& element)
+	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
+		const auto fp = std::dynamic_pointer_cast<element::FieldProjection>(element);
+		element::FieldProjectionParameters params = fp->getParameters();
+
+		bool changed = false;
+
+		static const char* dirNames[]   = { "Compress 2D to 1D", "Expand 1D to 2D" };
+		static const char* axisNames[]  = { "0 - keep X", "1 - keep Y" };
+		static const char* compNames[]  = { "Sum", "Average", "Maximum", "Minimum" };
+
+		int dirIdx  = static_cast<int>(params.direction);
+		int axisIdx = params.projectionAxis;
+		int compIdx = static_cast<int>(params.compressionType);
+
+		const std::string dirLabel  = "##" + element->getUniqueName() + "Direction";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		changed |= ImGui::Combo(dirLabel.c_str(), &dirIdx, dirNames, 2);
+		ImGui::SameLine(); ImGui::TextUnformatted("Direction");
+
+		const std::string axisLabel = "##" + element->getUniqueName() + "ProjectionAxis";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		changed |= ImGui::Combo(axisLabel.c_str(), &axisIdx, axisNames, 2);
+		ImGui::SameLine(); ImGui::TextUnformatted("Projection axis");
+
+		const std::string compLabel = "##" + element->getUniqueName() + "Compression";
+		ImGui::SetNextItemWidth(150.0f * ui);
+		changed |= ImGui::Combo(compLabel.c_str(), &compIdx, compNames, 4);
+		ImGui::SameLine(); ImGui::TextUnformatted("Compression");
+
+		if (changed)
+		{
+			params.direction       = static_cast<element::FieldProjectionDirection>(dirIdx);
+			params.projectionAxis  = axisIdx;
+			params.compressionType = static_cast<element::FieldProjectionCompression>(compIdx);
+			fp->setParameters(params);
+		}
+	}
+
 	ImVec4 ElementWindow::getColorForElementType(const element::ElementLabel label)
 	{
 		switch (label)
@@ -1869,6 +1913,8 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.376f, 0.545f, 0.478f, 1.0f);  // Deeper Sage Green
 		case element::ElementLabel::RESIZE:
 			return ImVec4(0.200f, 0.600f, 0.620f, 1.0f);  // Teal
+		case element::ElementLabel::FIELD_PROJECTION:
+			return ImVec4(0.580f, 0.310f, 0.710f, 1.0f);  // Violet
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -1903,6 +1949,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return "Asymmetric Gauss Kernels 2D";
 		case element::ElementLabel::MEMORY_TRACE_2D:         return "Memory Traces 2D";
 		case element::ElementLabel::RESIZE:                  return "Resize Elements";
+		case element::ElementLabel::FIELD_PROJECTION:        return "Field Projections";
 		default: return "Unknown Elements";
 		}
 	}
