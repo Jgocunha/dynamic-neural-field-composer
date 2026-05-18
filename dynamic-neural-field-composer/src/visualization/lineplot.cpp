@@ -1,5 +1,6 @@
 #include "visualization/lineplot.h"
 
+#include <array>
 #include "application/application.h"
 
 namespace dnf_composer
@@ -25,7 +26,9 @@ namespace dnf_composer
 	{
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(lineThickness - other.lineThickness) > epsilon || autoFit != other.autoFit)
+		{
 			return false;
+		}
 		return true;
 	}
 
@@ -34,7 +37,9 @@ namespace dnf_composer
 		: Plot(parameters), linePlotParameters(linePlotParameters)
 	{
 		if (commonParameters.type != PlotType::LINE_PLOT)
+		{
 			throw std::invalid_argument("LinePlot: parameters.plotType must be PlotType::Line.");
+		}
 	}
 
 	void LinePlot::setLineThickness(double lineThickness)
@@ -89,13 +94,13 @@ namespace dnf_composer
 		std::string title = commonParameters.annotations.title;
 		std::string x_label = commonParameters.annotations.x_label;
 		std::string y_label = commonParameters.annotations.y_label;
-		char titleBuffer[128];
-		char xLabelBuffer[128];
-		char yLabelBuffer[128];
+		std::array<char, 128> titleBuffer{};
+		std::array<char, 128> xLabelBuffer{};
+		std::array<char, 128> yLabelBuffer{};
 
-		snprintf(titleBuffer, sizeof(titleBuffer), "%s", title.c_str());
-		snprintf(xLabelBuffer, sizeof(xLabelBuffer), "%s", x_label.c_str());
-		snprintf(yLabelBuffer, sizeof(yLabelBuffer), "%s", y_label.c_str());
+		snprintf(titleBuffer.data(), titleBuffer.size(), "%s", title.c_str());
+		snprintf(xLabelBuffer.data(), xLabelBuffer.size(), "%s", x_label.c_str());
+		snprintf(yLabelBuffer.data(), yLabelBuffer.size(), "%s", y_label.c_str());
 
         if (ImGui::BeginMenuBar())
         {
@@ -128,25 +133,27 @@ namespace dnf_composer
 				}
 
 				if (ImGui::Checkbox("Auto-fit", &autoFit))
+				{
 					linePlotParameters.autoFit = autoFit;
+				}
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("Annotations"))
 			{
-				if (ImGui::InputText("Title", titleBuffer, sizeof(titleBuffer)))
+				if (ImGui::InputText("Title", titleBuffer.data(), titleBuffer.size()))
 				{
-					title = titleBuffer;
+					title = titleBuffer.data();
 					commonParameters.annotations.title = title;
 				}
-				if (ImGui::InputText("X label", xLabelBuffer, sizeof(xLabelBuffer)))
+				if (ImGui::InputText("X label", xLabelBuffer.data(), xLabelBuffer.size()))
 				{
-					x_label = xLabelBuffer;
+					x_label = xLabelBuffer.data();
 					commonParameters.annotations.x_label = x_label;
 				}
-				if (ImGui::InputText("Y label", yLabelBuffer, sizeof(yLabelBuffer)))
+				if (ImGui::InputText("Y label", yLabelBuffer.data(), yLabelBuffer.size()))
 				{
-					y_label = yLabelBuffer;
+					y_label = yLabelBuffer.data();
 					commonParameters.annotations.y_label = y_label;
 				}
 				ImGui::EndMenu();
@@ -231,7 +238,7 @@ namespace dnf_composer
             std::vector<double> shiftedXValues(line_data.size());
             for (size_t i = 0; i < line_data.size(); ++i) 
 			{
-                shiftedXValues[i] = (i + 1) * commonParameters.dimensions.xStep;
+                shiftedXValues[i] = static_cast<double>(i + 1) * commonParameters.dimensions.xStep;
             }
 
             ImPlot::PlotLine(label.c_str(), shiftedXValues.data(), line_data.data(), static_cast<int>(line_data.size()), lineSpec);

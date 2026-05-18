@@ -79,7 +79,7 @@ namespace dnf_composer::element
 		explicit ElementDimensions(int x_max, int y_max, double d_x, double d_y); // 2D
 		bool operator==(const ElementDimensions& other) const;
 		void print() const;
-		std::string toString() const;
+		[[nodiscard]] std::string toString() const;
 	};
 
 	struct ElementIdentifiers
@@ -93,7 +93,7 @@ namespace dnf_composer::element
 		explicit ElementIdentifiers(std::string elementName);
 		bool operator==(const ElementIdentifiers& other) const;
 		void print() const;
-		std::string toString() const;
+		[[nodiscard]] std::string toString() const;
 	};
 
 	struct ElementCommonParameters
@@ -111,14 +111,14 @@ namespace dnf_composer::element
 		                        const ElementDimensions& dimensionParameters);
 		bool operator==(const ElementCommonParameters& other) const;
 		void print() const;
-		std::string toString() const;
+		[[nodiscard]] std::string toString() const;
 	};
 
 	struct ElementSpecificParameters
 	{
 		ElementSpecificParameters() = default;
 		virtual ~ElementSpecificParameters() = default;
-		virtual std::string toString() const = 0;
+		[[nodiscard]] virtual std::string toString() const = 0;
 		void print() const;
 	};
 }
