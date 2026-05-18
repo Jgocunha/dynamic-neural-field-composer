@@ -1,0 +1,619 @@
+{
+    "deltaT": 1.0,
+    "elements": [
+        {
+            "activationFunction": {
+                "steepness": 5.0,
+                "type": "sigmoid",
+                "x_shift": 0.0
+            },
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "timed gauss stimulus",
+                    "output"
+                ],
+                [
+                    "asymmetric gauss kernel",
+                    "output"
+                ],
+                [
+                    "boost stimulus",
+                    "output"
+                ],
+                [
+                    "normal noise",
+                    "output"
+                ],
+                [
+                    "correlated normal noise",
+                    "output"
+                ],
+                [
+                    "gauss stimulus",
+                    "output"
+                ],
+                [
+                    "oscillatory kernel",
+                    "output"
+                ],
+                [
+                    "gauss kernel",
+                    "output"
+                ],
+                [
+                    "mexican hat kernel",
+                    "output"
+                ],
+                [
+                    "memory trace",
+                    "output"
+                ]
+            ],
+            "label": [
+                1,
+                "neural field"
+            ],
+            "restingLevel": -10.0,
+            "tau": 25.0,
+            "uniqueName": "neural field u",
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                2,
+                "gauss stimulus"
+            ],
+            "normalized": false,
+            "position": 50.0,
+            "uniqueName": "gauss stimulus",
+            "width": 5.0,
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 5.0,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "isActive": false,
+            "label": [
+                3,
+                "boost stimulus"
+            ],
+            "uniqueName": "boost stimulus",
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 3.0,
+            "amplitudeGlobal": -0.01,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ],
+            "label": [
+                4,
+                "gauss kernel"
+            ],
+            "normalized": true,
+            "uniqueName": "gauss kernel",
+            "width": 3.0,
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitudeExc": 11.0,
+            "amplitudeGlobal": -0.1,
+            "amplitudeInh": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ],
+            "label": [
+                5,
+                "mexican hat kernel"
+            ],
+            "normalized": true,
+            "uniqueName": "mexican hat kernel",
+            "widthExc": 2.5,
+            "widthInh": 5.0,
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 1.0,
+            "amplitudeGlobal": -0.01,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "decay": 0.08,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ],
+            "label": [
+                6,
+                "oscillatory kernel"
+            ],
+            "normalized": false,
+            "uniqueName": "oscillatory kernel",
+            "x_max": 100,
+            "y_max": 1,
+            "zeroCrossings": 0.3
+        },
+        {
+            "amplitude": 3.0,
+            "amplitudeGlobal": 0.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ],
+            "label": [
+                7,
+                "asymmetric gauss kernel"
+            ],
+            "normalized": true,
+            "timeShift": 0.0,
+            "uniqueName": "asymmetric gauss kernel",
+            "width": 3.0,
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 0.05,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                9,
+                "correlated normal noise"
+            ],
+            "uniqueName": "correlated normal noise",
+            "width": 2.0,
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 0.2,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                8,
+                "normal noise"
+            ],
+            "uniqueName": "normal noise",
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "input_d_x": 1.0,
+            "input_x_max": 100,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ],
+            "label": [
+                10,
+                "field coupling"
+            ],
+            "learningRate": 0.6200000047683716,
+            "learningRule": 0,
+            "scalar": 1.0,
+            "uniqueName": "field coupling",
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "circular": false,
+            "couplings": [
+                [
+                    32.018001556396484,
+                    71.93000030517578,
+                    21.05299949645996,
+                    3.5439999103546143
+                ],
+                [
+                    68.4209976196289,
+                    19.29800033569336,
+                    12.279999732971191,
+                    4.560999870300293
+                ]
+            ],
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "input_d_x": 1.0,
+            "input_x_max": 100,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ],
+            "label": [
+                11,
+                "gauss field coupling"
+            ],
+            "normalized": true,
+            "uniqueName": "gauss field coupling",
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ],
+            "label": [
+                12,
+                "memory trace"
+            ],
+            "tauBuild": 100.0,
+            "tauDecay": 1000.0,
+            "threshold": 0.5,
+            "uniqueName": "memory trace",
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "activationFunction": {
+                "steepness": 10.0,
+                "type": "sigmoid",
+                "x_shift": 0.0
+            },
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "normal noise 2d",
+                    "output"
+                ],
+                [
+                    "asymmetric gauss kernel 2d",
+                    "output"
+                ],
+                [
+                    "oscillatory kernel 2d",
+                    "output"
+                ],
+                [
+                    "mexican hat kernel 2d",
+                    "output"
+                ],
+                [
+                    "gauss kernel 2d",
+                    "output"
+                ],
+                [
+                    "timed gauss stimulus 2d",
+                    "output"
+                ],
+                [
+                    "boost stimulus 2d",
+                    "output"
+                ],
+                [
+                    "memory trace 2d",
+                    "output"
+                ],
+                [
+                    "gauss stimulus 2d",
+                    "output"
+                ]
+            ],
+            "label": [
+                13,
+                "neural field 2d"
+            ],
+            "restingLevel": -5.0,
+            "tau": 25.0,
+            "uniqueName": "neural field 2d",
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitude": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                14,
+                "gauss stimulus 2d"
+            ],
+            "normalized": false,
+            "position_x": 25.0,
+            "position_y": 25.0,
+            "uniqueName": "gauss stimulus 2d",
+            "width": 5.0,
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitude": 3.0,
+            "amplitudeGlobal": -0.01,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field 2d",
+                    "output"
+                ]
+            ],
+            "label": [
+                15,
+                "gauss kernel 2d"
+            ],
+            "normalized": true,
+            "uniqueName": "gauss kernel 2d",
+            "width": 3.0,
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitudeExc": 2.0,
+            "amplitudeGlobal": -0.10000000149011612,
+            "amplitudeInh": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field 2d",
+                    "output"
+                ]
+            ],
+            "label": [
+                16,
+                "mexican hat kernel 2d"
+            ],
+            "normalized": true,
+            "uniqueName": "mexican hat kernel 2d",
+            "widthExc": 2.5,
+            "widthInh": 5.0,
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitude": 0.2,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                17,
+                "normal noise 2d"
+            ],
+            "uniqueName": "normal noise 2d",
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitude": 1.0,
+            "amplitudeGlobal": -0.009999999776482582,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "decay": 0.07999999821186066,
+            "inputs": [
+                [
+                    "neural field 2d",
+                    "output"
+                ]
+            ],
+            "label": [
+                18,
+                "oscillatory kernel 2d"
+            ],
+            "normalized": true,
+            "uniqueName": "oscillatory kernel 2d",
+            "x_max": 50,
+            "y_max": 50,
+            "zeroCrossings": 0.30000001192092896
+        },
+        {
+            "amplitude": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                19,
+                "timed gauss stimulus"
+            ],
+            "normalized": false,
+            "onTimes": [
+                [
+                    0.0,
+                    700.0
+                ]
+            ],
+            "position": 50.0,
+            "uniqueName": "timed gauss stimulus",
+            "width": 5.0,
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                20,
+                "timed gauss stimulus 2d"
+            ],
+            "normalized": false,
+            "onTimes": [
+                [
+                    0.0,
+                    200.0
+                ]
+            ],
+            "position_x": 25.0,
+            "position_y": 25.0,
+            "uniqueName": "timed gauss stimulus 2d",
+            "width": 5.0,
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitude": 5.0,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "isActive": false,
+            "label": [
+                21,
+                "boost stimulus 2d"
+            ],
+            "uniqueName": "boost stimulus 2d",
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitude": 0.05,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                22,
+                "correlated normal noise 2d"
+            ],
+            "uniqueName": "correlated normal noise 2d",
+            "width": 1.0,
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "amplitude": 3.0,
+            "amplitudeGlobal": 0.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field 2d",
+                    "output"
+                ]
+            ],
+            "label": [
+                23,
+                "asymmetric gauss kernel 2d"
+            ],
+            "normalized": true,
+            "timeShift_x": 0.0,
+            "timeShift_y": 0.0,
+            "uniqueName": "asymmetric gauss kernel 2d",
+            "width": 3.0,
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "gauss kernel 2d",
+                    "output"
+                ]
+            ],
+            "label": [
+                24,
+                "memory trace 2d"
+            ],
+            "tauBuild": 100.0,
+            "tauDecay": 300.0,
+            "threshold": 0.5,
+            "uniqueName": "memory trace 2d",
+            "x_max": 50,
+            "y_max": 50
+        },
+        {
+            "activationFunction": {
+                "steepness": 5.0,
+                "type": "sigmoid",
+                "x_shift": 0.0
+            },
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "gauss field coupling",
+                    "output"
+                ],
+                [
+                    "field coupling",
+                    "output"
+                ],
+                [
+                    "gauss stimulus v",
+                    "output"
+                ]
+            ],
+            "label": [
+                1,
+                "neural field"
+            ],
+            "restingLevel": -10.0,
+            "tau": 25.0,
+            "uniqueName": "neural field v",
+            "x_max": 100,
+            "y_max": 1
+        },
+        {
+            "amplitude": 15.0,
+            "circular": true,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null,
+            "label": [
+                2,
+                "gauss stimulus"
+            ],
+            "normalized": false,
+            "position": 50.0,
+            "uniqueName": "gauss stimulus v",
+            "width": 5.0,
+            "x_max": 100,
+            "y_max": 1
+        }
+    ],
+    "identifier": "all-elements"
+}

@@ -1,4 +1,5 @@
-﻿#include "user_interface/node_graph_window.h"
+#include "user_interface/node_graph_window.h"
+#include <cstring>
 
 extern ImFont* g_BlackSmallFont;
 
@@ -9,6 +10,29 @@ namespace dnf_composer::user_interface
 	{
 		config.SettingsFile = "imnode-window.json";
 		context = ImNodeEditor::CreateEditor(&config);
+	}
+
+	void NodeGraphWindow::renderGraphContent() const
+	{
+		widgets::renderHelpMarker(
+			"Visualize elements and their interactions.\n"
+			"Drag from an Output pin to an Input pin to create a connection.\n"
+			"Double-click a link to remove it.\n"
+			"Double-click a node to open/close its plot card.");
+
+		ImNodeEditor::SetCurrentEditor(context);
+		applyCanvasStyle();
+		ImNodeEditor::Begin("dnf-composer-graph");
+		renderElementNodes();
+		handleInteractions();
+		ImNodeEditor::End();
+		restoreCanvasStyle();
+		ImNodeEditor::SetCurrentEditor(nullptr);
+
+		const ImVec2 ngPos  = ImGui::GetWindowPos();
+		const ImVec2 ngSize = ImGui::GetWindowSize();
+		ngBoundsMin = ngPos;
+		ngBoundsMax = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
 	}
 
 	void NodeGraphWindow::render()
@@ -23,57 +47,18 @@ namespace dnf_composer::user_interface
 
 		if (open)
 		{
-			widgets::renderHelpMarker(
-				"Visualize elements and their interactions.\n"
-				"Drag from an Output pin to an Input pin to create a connection.\n"
-				"Double-click a link to remove it.\n"
-				"Double-click a node to open/close its plot card.");
-
-			ImNodeEditor::SetCurrentEditor(context);
-			applyCanvasStyle();
-			ImNodeEditor::Begin("dnf-composer-graph");
-			renderElementNodes();
-			handleInteractions();
-			ImNodeEditor::End();
-			restoreCanvasStyle();
-			ImNodeEditor::SetCurrentEditor(nullptr);
-
-			// Record node graph window bounds for plot card clamping.
-			const ImVec2 ngPos  = ImGui::GetWindowPos();
-			const ImVec2 ngSize = ImGui::GetWindowSize();
-			ngBoundsMin_ = ngPos;
-			ngBoundsMax_ = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
+			renderGraphContent();
 		}
+
 		ImGui::End();
 
 		// Plot cards are separate top-level windows, must be rendered outside Begin/End.
 		renderNodePlotCards();
 	}
 
-	void NodeGraphWindow::renderGraph() const
+	void NodeGraphWindow::renderEmbedded() const
 	{
-		widgets::renderHelpMarker(
-				"Visualize elements and their interactions.\n"
-				"Drag from an Output pin to an Input pin to create a connection.\n"
-				"Double-click a link to remove it.\n"
-				"Double-click a node to open/close its plot card.");
-
-		ImNodeEditor::SetCurrentEditor(context);
-		applyCanvasStyle();
-		ImNodeEditor::Begin("dnf-composer-graph");
-		renderElementNodes();
-		handleInteractions();
-		ImNodeEditor::End();
-		restoreCanvasStyle();
-		ImNodeEditor::SetCurrentEditor(nullptr);
-
-		// Record node graph window bounds for plot card clamping.
-		const ImVec2 ngPos  = ImGui::GetWindowPos();
-		const ImVec2 ngSize = ImGui::GetWindowSize();
-		ngBoundsMin_ = ngPos;
-		ngBoundsMax_ = ImVec2(ngPos.x + ngSize.x, ngPos.y + ngSize.y);
-
-		// Plot cards are separate top-level windows must be rendered outside Begin/End.
+		renderGraphContent();
 		renderNodePlotCards();
 	}
 
@@ -91,19 +76,15 @@ namespace dnf_composer::user_interface
 		ImNodeEditor::PopStyleColor(2);
 	}
 
-	// -------------------------------------------------------------------------
-	// Node rendering
-	// -------------------------------------------------------------------------
-
 	void NodeGraphWindow::renderElementNodes() const
 	{
 		// Apply initial positions queued in the previous frame.
 		// SetNodePosition must be called before BeginNode to take effect on this frame.
-		for (const auto& [nodeId, pos] : pendingInitialPositions_)
+		for (const auto& [nodeId, pos] : pendingInitialPositions)
 		{
 			ImNodeEditor::SetNodePosition(nodeId, pos);
 		}
-		pendingInitialPositions_.clear();
+		pendingInitialPositions.clear();
 
 		for (const auto& element : simulation->getElements())
 		{
@@ -133,7 +114,7 @@ namespace dnf_composer::user_interface
 		{
 			const int g = getColumnForElement(el->getLabel());
 			++groupCount[g];
-			if (positionedNodeIds_.contains(getNodeId(el)))
+			if (positionedNodeIds.contains(getNodeId(el)))
 			{
 				++columnCounts[g];
 			}
@@ -150,7 +131,7 @@ namespace dnf_composer::user_interface
 
 		for (const auto& element : elements)
 		{
-			if (const size_t nodeId = getNodeId(element); !positionedNodeIds_.contains(nodeId))
+			if (const size_t nodeId = getNodeId(element); !positionedNodeIds.contains(nodeId))
 			{
 				if (const ImVec2 pos = ImNodeEditor::GetNodePosition(nodeId);
 					std::abs(pos.x) < 1.0F && std::abs(pos.y) < 1.0F)
@@ -159,11 +140,11 @@ namespace dnf_composer::user_interface
 					const int rowIdx = columnCounts[g]++;
 					const int col    = rowIdx / maxRows;
 					const int row    = rowIdx % maxRows;
-					pendingInitialPositions_[nodeId] =
+					pendingInitialPositions[nodeId] =
 						ImVec2(groupBaseX[g] + (static_cast<float>(col) * colSpacing),
 							baseY + (static_cast<float>(row) * rowSpacing));
 				}
-				positionedNodeIds_.insert(nodeId);
+				positionedNodeIds.insert(nodeId);
 			}
 		}
 
@@ -173,11 +154,9 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	// Clang-Tidy: Function 'renderElementNode' has cognitive complexity of 59 (threshold 25)
 	void NodeGraphWindow::renderElementNode(const std::shared_ptr<element::Element>& element)
 	{
 		namespace util = ax::NodeEditor::Utilities;
-		using ax::Widgets::IconType;
 
 		const ImNodeEditor::NodeId nodeId = getNodeId(element);
 		const ImU32  headerU32  = getHeaderColorForElementType(element->getLabel());
@@ -191,7 +170,6 @@ namespace dnf_composer::user_interface
 			1.0F
 		};
 
-		// No border, uniform color, tighter top padding, so the title sits higher
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeRounding,    10.0F);
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodeBorderWidth, 0.0F);
 		ImNodeEditor::PushStyleVar(ImNodeEditor::StyleVar_NodePadding,     ImVec4(8, 4, 8, 6));
@@ -203,74 +181,13 @@ namespace dnf_composer::user_interface
 
 		bool showTooltip = false;
 
-		// ----- "HEADER" section used for the full node body ------------------
-		// Using the same pastel color as NodeBg so the node is visually uniform.
-		// Putting all content here forces Input/Output pins to appear below it.
 		builder.Header(bodyVec4);
 		{
-			// Fixed node width - the name is clipped and scrolls on hover.
-			static constexpr float minNodeSize = 250.0F;
-			static constexpr float scrollSpeed  = 50.0F;  // px / sec
-			static constexpr float scrollDelay  = 0.5F;   // sec pause before scrolling
-			static constexpr float scrollPause  = 1.0F;   // sec pause after full scroll
-			static std::unordered_map<size_t, double> s_hoverStart;
-
+			static constexpr float minNodeSize = 280.0F;
 			ImGui::Dummy(ImVec2(minNodeSize, 0));
 
-			ImGui::PushFont(g_BlackLargeFont);
-			{
-				const std::string& name  = element->getUniqueName();
-				const float        lineH = ImGui::GetTextLineHeight();
-				const float        textW = ImGui::CalcTextSize(name.c_str()).x;
-				// Leave room for node padding on the right so the clip aligns with the body edge.
-				constexpr float nodePad = 16.0F;
-				constexpr float availW  = minNodeSize - nodePad;
+			renderNodeScrollingName(element, minNodeSize);
 
-				if (textW <= availW)
-				{
-					ImGui::TextUnformatted(name.c_str());
-				}
-				else
-				{
-					const ImVec2 origin = ImGui::GetCursorScreenPos();
-					// Reserve the fixed slot â€” IsItemHovered() reads this rect.
-					ImGui::Dummy(ImVec2(availW, lineH));
-
-					const size_t id      = getNodeId(element);
-					const double now     = ImGui::GetTime();
-					const float  overflow = textW - availW;
-					float        offsetX  = 0.0F;
-
-					if (ImGui::IsItemHovered())
-					{
-						if (!s_hoverStart.contains(id))
-						{
-							s_hoverStart[id] = now;
-						}
-						if (const auto elapsed = static_cast<float>(now - s_hoverStart.at(id)); elapsed > scrollDelay)
-						{
-							const float scrollTime = elapsed - scrollDelay;
-							const float cycleDur   = (overflow / scrollSpeed) + scrollPause;
-							const float phase      = std::fmod(scrollTime, cycleDur);
-							offsetX = -std::min(phase * scrollSpeed, overflow);
-						}
-					}
-					else
-					{
-						s_hoverStart.erase(id);
-					}
-
-					ImGui::PushClipRect(origin, ImVec2(origin.x + availW, origin.y + lineH), true);
-					ImGui::GetWindowDrawList()->AddText(
-						ImVec2(origin.x + offsetX, origin.y),
-						ImGui::GetColorU32(ImGuiCol_Text),
-						name.c_str());
-					ImGui::PopClipRect();
-				}
-			}
-			ImGui::PopFont();
-
-			// Info icon â€” hover shows parameters
 			ImGui::Spacing();
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_CIRCLE_INFO);
@@ -278,139 +195,12 @@ namespace dnf_composer::user_interface
 			showTooltip = ImGui::IsItemHovered();
 			ImGui::Spacing();
 
-			// ---- Inline sparkline for all components ----
-			{
-				constexpr float plotW = minNodeSize;
-				constexpr float pad   = 3.0f;
-				const auto  label       = element->getLabel();
-				const bool  isWeightMap = (label == element::ElementLabel::FIELD_COUPLING ||
-				                           label == element::ElementLabel::GAUSS_FIELD_COUPLING);
-				const float plotH = isWeightMap ? plotW : 60.0f;
-
-				const ImVec2 origin = ImGui::GetCursorScreenPos();
-				const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
-
-				ImDrawList* dl = ImGui::GetWindowDrawList();
-				dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
-				dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
-
-				const auto* comps = element->getComponents();
-				bool drewHeatmap = false;
-
-				if (isWeightMap && comps && comps->count("weights"))
-				{
-					const auto& weights = comps->at("weights");
-					const int cols = comps->count("output") ? static_cast<int>(comps->at("output").size()) : 0;
-					const int rows = comps->count("input")  ? static_cast<int>(comps->at("input").size())  : 0;
-
-					if (cols > 0 && rows > 0 && cols * rows == static_cast<int>(weights.size()))
-					{
-						double wMin =  1e300, wMax = -1e300;
-						for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
-						const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
-
-						const float cellW = (rect.GetWidth()  - 2*pad) / float(cols);
-						const float cellH = (rect.GetHeight() - 2*pad) / float(rows);
-
-						for (int r = 0; r < rows; ++r)
-						{
-							for (int c = 0; c < cols; ++c)
-							{
-								const double v   = weights[r * cols + c];
-								const float  t   = float((v - wMin) / wRange);
-								const ImVec2 tl  = { rect.Min.x + pad + c * cellW, rect.Max.y - pad - (r + 1) * cellH };
-								const ImVec2 br  = { tl.x + cellW, tl.y + cellH };
-								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
-								dl->AddRectFilled(tl, br, ImGui::ColorConvertFloat4ToU32(col));
-							}
-						}
-						drewHeatmap = true;
-					}
-				}
-
-				if (!drewHeatmap && !isWeightMap && comps)
-				{
-					double globalMin =  1e300, globalMax = -1e300;
-					for (const auto& [name, data] : *comps)
-						for (const double v : data) { globalMin = std::min(globalMin, v); globalMax = std::max(globalMax, v); }
-					const double range = (globalMax - globalMin) < 1e-9 ? 1.0 : (globalMax - globalMin);
-
-					int colorIdx = 0;
-					for (const auto& [name, data] : *comps)
-					{
-						if (data.size() < 2) { ++colorIdx; continue; }
-						const ImVec4 colF = ImPlot::GetColormapColor(colorIdx++, ImPlotColormap_Deep);
-						const ImU32  col  = ImGui::ColorConvertFloat4ToU32(ImVec4(colF.x, colF.y, colF.z, 0.86f));
-						const int   n   = static_cast<int>(data.size());
-
-						auto toScreen = [&](int i) -> ImVec2 {
-							const float x = rect.Min.x + pad + (rect.GetWidth()  - 2*pad) * (float(i) / float(n - 1));
-							const float y = rect.Max.y - pad - (rect.GetHeight() - 2*pad) * float((data[i] - globalMin) / range);
-							return { x, y };
-						};
-
-						for (int i = 0; i < n - 1; ++i)
-							dl->AddLine(toScreen(i), toScreen(i + 1), col, 1.8f);
-					}
-				}
-
-				// advance cursor past the plot area
-				ImGui::Dummy(ImVec2(plotW, plotH));
-			}
+			renderNodeInlinePreview(element, minNodeSize);
 			ImGui::Spacing();
 
-			// ---- Pin row: Input (flush left) | Output (flush right) ----
-			constexpr ImVec4 pinColor = ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
-			constexpr ImVec2 iconSize = ImVec2(14, 14);
-
-			// Source elements (no inputs by design)
-			const auto lbl = element->getLabel();
-			const bool hasInputPin =
-				lbl != element::ElementLabel::GAUSS_STIMULUS &&
-				lbl != element::ElementLabel::NORMAL_NOISE &&
-				lbl != element::ElementLabel::CORRELATED_NORMAL_NOISE &&
-				lbl != element::ElementLabel::BOOST_STIMULUS;
-
-			if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
-			{
-				ImGui::TableSetupColumn("##in",  ImGuiTableColumnFlags_WidthStretch);
-				ImGui::TableSetupColumn("##out", ImGuiTableColumnFlags_WidthStretch);
-				ImGui::TableNextRow();
-
-				// Left cell: Input pin (source elements have none)
-				ImGui::TableSetColumnIndex(0);
-				if (hasInputPin)
-				{
-					ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
-					                       ImNodeEditor::PinKind::Input);
-					ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
-					ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
-					ImGui::SameLine(0, 4);
-					ImGui::TextUnformatted("Input");
-					ImNodeEditor::EndPin();
-				}
-
-				// Right cell: Output pin (right-aligned within cell)
-				ImGui::TableSetColumnIndex(1);
-				ImNodeEditor::BeginPin(startingOutputPinId + element->getUniqueIdentifier(),
-				                       ImNodeEditor::PinKind::Output);
-				ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
-				{
-					const float avail  = ImGui::GetContentRegionAvail().x;
-					const float needed = ImGui::CalcTextSize("Output").x + 4.0f + iconSize.x;
-					if (avail > needed)
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - needed);
-				}
-				ImGui::TextUnformatted("Output");
-				ImGui::SameLine(0, 4);
-				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
-				ImNodeEditor::EndPin();
-
-				ImGui::EndTable();
-			}
+			renderNodePins(element, minNodeSize);
 		}
 		builder.EndHeader();
-
 		builder.End();
 
 		ImNodeEditor::PopStyleColor(2);
@@ -426,10 +216,246 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void NodeGraphWindow::renderNodeScrollingName(const std::shared_ptr<element::Element>& element, const float minNodeSize)
+	{
+		static constexpr float scrollSpeed = 50.0F;
+		static constexpr float scrollDelay = 0.5F;
+		static constexpr float scrollPause = 1.0F;
+		static std::unordered_map<size_t, double> s_hoverStart;
+
+		ImGui::PushFont(g_BlackLargeFont);
+		const std::string& name  = element->getUniqueName();
+		const float        lineH = ImGui::GetTextLineHeight();
+		const float        textW = ImGui::CalcTextSize(name.c_str()).x;
+		constexpr float    nodePad = 16.0F;
+		const float        availW  = minNodeSize - nodePad;
+
+		if (textW <= availW)
+		{
+			ImGui::TextUnformatted(name.c_str());
+		}
+		else
+		{
+			const ImVec2 origin  = ImGui::GetCursorScreenPos();
+			ImGui::Dummy(ImVec2(availW, lineH));
+
+			const size_t id       = getNodeId(element);
+			const double now      = ImGui::GetTime();
+			const float  overflow = textW - availW;
+			float        offsetX  = 0.0F;
+
+			if (ImGui::IsItemHovered())
+			{
+				if (!s_hoverStart.contains(id))
+					s_hoverStart[id] = now;
+				if (const auto elapsed = static_cast<float>(now - s_hoverStart.at(id)); elapsed > scrollDelay)
+				{
+					const float scrollTime = elapsed - scrollDelay;
+					const float cycleDur   = (overflow / scrollSpeed) + scrollPause;
+					const float phase      = std::fmod(scrollTime, cycleDur);
+					offsetX = -std::min(phase * scrollSpeed, overflow);
+				}
+			}
+			else
+			{
+				s_hoverStart.erase(id);
+			}
+
+			ImGui::PushClipRect(origin, ImVec2(origin.x + availW, origin.y + lineH), true);
+			ImGui::GetWindowDrawList()->AddText(
+				ImVec2(origin.x + offsetX, origin.y),
+				ImGui::GetColorU32(ImGuiCol_Text),
+				name.c_str());
+			ImGui::PopClipRect();
+		}
+		ImGui::PopFont();
+	}
+
+	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
+	{
+		constexpr float pad       = 0.0f;
+		//constexpr float axisLeft  = 24.0f;  // reserved for y-axis labels
+		//constexpr float axisBot   = 13.0f;  // reserved for x-axis labels
+		constexpr float axisRight = 26.0f;  // reserved for amplitude colorbar
+
+		const auto  label       = element->getLabel();
+		const bool  isWeightMap = isWeightMapElement(label);
+		const bool  is2D        = element->getElementCommonParameters().dimensionParameters.dimensionality == 2;
+		const float plotH       = (isWeightMap || is2D) ? minNodeSize : 60.0f;
+
+		const ImVec2 origin = ImGui::GetCursorScreenPos();
+		const ImRect rect(origin, ImVec2(origin.x + minNodeSize, origin.y + plotH));
+
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
+		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
+
+		const auto* comps = element->getComponents();
+		bool drewContent  = false;
+
+		if (isWeightMap && comps && comps->contains("weights"))
+		{
+			const auto& weights = comps->at("weights");
+			const int cols = comps->contains("output") ? static_cast<int>(comps->at("output").size()) : 0;
+			const int rows = comps->contains("input")  ? static_cast<int>(comps->at("input").size())  : 0;
+			if (cols > 0 && rows > 0 && cols * rows == static_cast<int>(weights.size()))
+			{
+				const double frameMin = *std::ranges::min_element(weights);
+				const double frameMax = *std::ranges::max_element(weights);
+				if (std::isfinite(frameMin) && std::isfinite(frameMax))
+				{
+					static std::unordered_map<std::string, std::pair<double, double>> s_wmRangeCache;
+					const std::string key = element->getUniqueName();
+					if (const auto it = s_wmRangeCache.find(key); it == s_wmRangeCache.end())
+						s_wmRangeCache[key] = { frameMin, frameMax };
+					else
+					{
+						constexpr double alpha = 0.05;
+						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
+						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
+					}
+					auto& [stableMin, stableMax] = s_wmRangeCache[key];
+					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
+
+					constexpr float axisRight = 30.0f;
+					const ImRect hmRect(rect.Min, ImVec2(rect.Max.x - axisRight, rect.Max.y));
+					draw2DFieldHeatmap(dl, hmRect, weights, rows, cols, stableMin, stableMax);
+					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
+					drewContent = true;
+				}
+			}
+		}
+		else if (is2D && comps)
+		{
+			const std::string compName =
+				(label == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+			if (comps->contains(compName))
+			{
+				const auto& dp   = element->getElementCommonParameters().dimensionParameters;
+				const int   rows = dp.size_x;
+				const int   cols = dp.size_y;
+				if (const auto& data = comps->at(compName); rows > 0 && cols > 0
+					&& static_cast<int>(data.size()) == rows * cols)
+				{
+					// EMA-smoothed range: adapts to data changes while dampening
+					// per-frame jitter that causes colormap band flashing.
+					static std::unordered_map<std::string, std::pair<double,double>> s_rangeCache;
+					const double frameMin = *std::ranges::min_element(data);
+					const double frameMax = *std::ranges::max_element(data);
+					if (!std::isfinite(frameMin) || !std::isfinite(frameMax))
+						return;
+					const std::string key = element->getUniqueName();
+					if (const auto it = s_rangeCache.find(key); it == s_rangeCache.end())
+						s_rangeCache[key] = { frameMin, frameMax };
+					else
+					{
+						constexpr double alpha = 0.05;
+						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
+						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
+					}
+					auto& [stableMin, stableMax] = s_rangeCache[key];
+					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
+
+					const ImRect hmRect(
+						ImVec2(rect.Min.x,        rect.Min.y + pad),
+						ImVec2(rect.Max.x - pad - axisRight, rect.Max.y ));
+					draw2DFieldHeatmap(dl, hmRect, data, rows, cols, stableMin, stableMax);
+					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
+					drewContent = true;
+				}
+			}
+		}
+
+		if (!drewContent && !isWeightMap && !is2D && comps)
+		{
+			double globalMin =  1e300, globalMax = -1e300;
+			for (const auto& data : *comps | std::views::values)
+				for (const double v : data) { globalMin = std::min(globalMin, v); globalMax = std::max(globalMax, v); }
+			const double range = (globalMax - globalMin) < 1e-9 ? 1.0 : (globalMax - globalMin);
+
+			int colorIdx = 0;
+			for (const auto& data : *comps | std::views::values)
+			{
+				if (data.size() < 2) { ++colorIdx; continue; }
+				const ImVec4 colF = ImPlot::GetColormapColor(colorIdx++, ImPlotColormap_Deep);
+				const ImU32  col  = ImGui::ColorConvertFloat4ToU32(ImVec4(colF.x, colF.y, colF.z, 0.86f));
+				const int    n    = static_cast<int>(data.size());
+
+				auto toScreen = [&](const int i) -> ImVec2 {
+					const float x = rect.Min.x + pad + (rect.GetWidth()  - 2*pad) *
+						(static_cast<float>(i) / static_cast<float>(n - 1));
+					const float y = rect.Max.y - pad - (rect.GetHeight() - 2*pad) *
+						static_cast<float>((data[i] - globalMin) / range);
+					return { x, y };
+				};
+
+				for (int i = 0; i < n - 1; ++i)
+					dl->AddLine(toScreen(i), toScreen(i + 1), col, 1.8f);
+			}
+		}
+
+		ImGui::Dummy(ImVec2(minNodeSize, plotH));
+	}
+
+	void NodeGraphWindow::renderNodePins(const std::shared_ptr<element::Element>& element, const float minNodeSize)
+	{
+		using ax::Widgets::IconType;
+		constexpr auto pinColor = ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
+		constexpr auto iconSize = ImVec2(14, 14);
+
+		const auto lbl = element->getLabel();
+		const bool hasInputPin =
+			lbl != element::ElementLabel::GAUSS_STIMULUS &&
+			lbl != element::ElementLabel::GAUSS_STIMULUS_2D &&
+			lbl != element::ElementLabel::TIMED_GAUSS_STIMULUS &&
+			lbl != element::ElementLabel::TIMED_GAUSS_STIMULUS_2D &&
+			lbl != element::ElementLabel::NORMAL_NOISE &&
+			lbl != element::ElementLabel::NORMAL_NOISE_2D &&
+			lbl != element::ElementLabel::CORRELATED_NORMAL_NOISE &&
+			lbl != element::ElementLabel::BOOST_STIMULUS &&
+			lbl != element::ElementLabel::BOOST_STIMULUS_2D;
+
+		if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
+		{
+			ImGui::TableSetupColumn("##in",  ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("##out", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+			if (hasInputPin)
+			{
+				ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
+				                       ImNodeEditor::PinKind::Input);
+				ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
+				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
+				ImGui::SameLine(0, 4);
+				ImGui::TextUnformatted("Input");
+				ImNodeEditor::EndPin();
+			}
+
+			ImGui::TableSetColumnIndex(1);
+			ImNodeEditor::BeginPin(startingOutputPinId + element->getUniqueIdentifier(),
+			                       ImNodeEditor::PinKind::Output);
+			ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
+			{
+				const float avail  = ImGui::GetContentRegionAvail().x;
+				const float needed = ImGui::CalcTextSize("Output").x + 4.0f + iconSize.x;
+				if (avail > needed)
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - needed);
+			}
+			ImGui::TextUnformatted("Output");
+			ImGui::SameLine(0, 4);
+			ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
+			ImNodeEditor::EndPin();
+
+			ImGui::EndTable();
+		}
+	}
+
 	void NodeGraphWindow::renderElementNodeConnections(const std::shared_ptr<element::Element>& element)
 	{
-		constexpr float    thickness = 2.0f;
-		constexpr ImVec4   linkCol   = ImVec4(0.08f, 0.08f, 0.08f, 0.85f); // near-black
+		constexpr float thickness = 2.0f;
+		constexpr auto linkCol   = ImVec4(0.08f, 0.08f, 0.08f, 0.85f); // near-black
 
 		for (const auto& input : element->getInputs())
 		{
@@ -445,10 +471,6 @@ namespace dnf_composer::user_interface
 				linkCol, thickness);
 		}
 	}
-
-	// -------------------------------------------------------------------------
-	// Interaction handling
-	// -------------------------------------------------------------------------
 
 	void NodeGraphWindow::handleInteractions() const
 	{
@@ -519,36 +541,35 @@ namespace dnf_composer::user_interface
 			if (getNodeId(el) == id) { element = el; break; }
 		if (!element) return;
 
-		// Single click â€” select element in the control panel.
+		// Single-click to select an element in the control panel.
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			ElementWindow::setFocusedElement(element);
 
-		// Double click â€” open plot card.
+		// Double-click to open a plot card.
 		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
-			if (!plotCards_.contains(id))
+			if (!plotCards.contains(id))
 			{
 				PlotCardState state;
-				const float midX = ngBoundsMin_.x + (ngBoundsMax_.x - ngBoundsMin_.x) * 0.5f;
-				const float midY = ngBoundsMin_.y + (ngBoundsMax_.y - ngBoundsMin_.y) * 0.5f;
+				const float midX = ngBoundsMin.x + (ngBoundsMax.x - ngBoundsMin.x) * 0.5f;
+				const float midY = ngBoundsMin.y + (ngBoundsMax.y - ngBoundsMin.y) * 0.5f;
 				state.initialPos = ImVec2(midX - state.size.x * 0.5f, midY - state.size.y * 0.5f);
-				plotCards_[id] = state;
+				plotCards[id] = state;
 			}
 		}
 	}
 
 	void NodeGraphWindow::renderNodePlotCards() const
 	{
-		for (auto it = plotCards_.begin(); it != plotCards_.end(); )
+		for (auto it = plotCards.begin(); it != plotCards.end(); )
 		{
 			const size_t nodeId = it->first;
 			PlotCardState& state = it->second;
 
-			// Find the element for this node.
 			std::shared_ptr<element::Element> element;
 			for (const auto& el : simulation->getElements())
 				if (getNodeId(el) == nodeId) { element = el; break; }
-			if (!element) { it = plotCards_.erase(it); continue; }
+			if (!element) { it = plotCards.erase(it); continue; }
 
 			constexpr ImGuiWindowFlags cardFlags =
 				ImGuiWindowFlags_NoCollapse      |
@@ -556,6 +577,9 @@ namespace dnf_composer::user_interface
 				ImGuiWindowFlags_NoSavedSettings |
 				ImGuiWindowFlags_MenuBar;
 
+			const auto  lbl      = element->getLabel();
+			const bool  isWM     = isWeightMapElement(lbl);
+			const bool  is2D     = element->getElementCommonParameters().dimensionParameters.dimensionality == 2;
 			if (state.isFirstFrame)
 			{
 				ImGui::SetNextWindowPos (state.initialPos, ImGuiCond_Always);
@@ -571,130 +595,262 @@ namespace dnf_composer::user_interface
 			const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, cardFlags);
 			ImGui::PopFont();
 			ImGui::PopStyleColor();
-			ImGui::PopStyleVar();  // only affects title bar, not content
+			ImGui::PopStyleVar();
 
 			if (visible)
 			{
-				// Menu bar: Dimensions | Annotations | Line Thickness
-				if (ImGui::BeginMenuBar())
-				{
-					if (ImGui::BeginMenu("Dimensions"))
-					{
-						ImGui::DragFloat("X max",  &state.xMax,  0.1f, state.xMin, 1000.f,   "%.1f");
-						ImGui::DragFloat("Y max",  &state.yMax,  0.1f, state.yMin, 1000.f,   "%.2f");
-						ImGui::DragFloat("X min",  &state.xMin,  0.1f, -1000.f,   state.xMax, "%.1f");
-						ImGui::DragFloat("Y min",  &state.yMin,  0.1f, -10000.f,  state.yMax, "%.2f");
-						ImGui::DragFloat("X step", &state.xStep, 0.1f, 0.1f,      1000.f,    "%.1f");
-						ImGui::Checkbox("Auto-fit", &state.autoFit);
-						ImGui::EndMenu();
-					}
-					if (ImGui::BeginMenu("Annotations"))
-					{
-						ImGui::InputText("Title",   state.title,  sizeof(state.title));
-						ImGui::InputText("X label", state.xLabel, sizeof(state.xLabel));
-						ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
-						ImGui::EndMenu();
-					}
-					if (ImGui::BeginMenu("Line Thickness"))
-					{
-						ImGui::SliderFloat("##lt", &state.lineThickness, 0.1f, 10.0f, "%.1f");
-						ImGui::EndMenu();
-					}
-					ImGui::EndMenuBar();
-				}
-
-				const auto* comps = element->getComponents();
-				const auto  lbl   = element->getLabel();
-				const bool  isWM  = (lbl == element::ElementLabel::FIELD_COUPLING ||
-				                     lbl == element::ElementLabel::GAUSS_FIELD_COUPLING);
-				const float plotW = ImGui::GetContentRegionAvail().x;
-				const float plotH = ImGui::GetContentRegionAvail().y;
-
-				if (isWM && comps && comps->contains("weights"))
-				{
-					const auto& weights = comps->at("weights");
-					const int rows = comps->contains("input")  ? static_cast<int>(comps->at("input").size())  : 0;
-					const int cols = comps->contains("output") ? static_cast<int>(comps->at("output").size()) : 0;
-
-					if (rows > 0 && cols > 0 && rows * cols == static_cast<int>(weights.size()))
-					{
-						constexpr float pad = 3.0f;
-						const ImVec2 origin = ImGui::GetCursorScreenPos();
-						ImGui::Dummy(ImVec2(plotW, plotH));
-						const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
-
-						ImDrawList* dl = ImGui::GetWindowDrawList();
-						double wMin =  1e300, wMax = -1e300;
-						for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
-						const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
-						const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
-						const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);
-
-						for (int r = 0; r < rows; ++r)
-							for (int c = 0; c < cols; ++c)
-							{
-								const float  t  = static_cast<float>((weights[r*cols+c] - wMin) / wRange);
-								const ImVec2 tl = { rect.Min.x + pad + c*cellW, rect.Max.y - pad - (r+1)*cellH };
-								const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
-								dl->AddRectFilled(tl, { tl.x+cellW, tl.y+cellH },
-								                  ImGui::ColorConvertFloat4ToU32(col));
-							}
-					}
-				}
-				else if (!isWM && comps)
-				{
-					if (state.title[0] == '\0')
-					{
-						const std::string defaultTitle = element->getUniqueName() + " components";
-						std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
-					}
-
-					ImPlotFlags plotFlags = ImPlotFlags_Crosshairs;
-					if (state.autoFit)
-						plotFlags |= ImPlotFlags_Equal;
-
-					const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
-
-					if (!state.autoFit)
-					{
-						ImPlot::SetNextAxesLimits(
-							state.xMin, state.xMax,
-							state.yMin, state.yMax,
-							ImPlotCond_Always);
-					}
-
-					const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
-					if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(plotW, plotH), plotFlags))
-					{
-						ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
-						ImPlot::SetupLegend(ImPlotLocation_SouthWest, ImPlotLegendFlags_None);
-
-						const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, state.lineThickness };
-						for (const auto& [name, data] : *comps)
-						{
-							if (data.size() < 2) continue;
-							std::vector<float> xs(data.size()), ys(data.size());
-							for (int i = 0; i < static_cast<int>(data.size()); ++i)
-							{
-								xs[i] = static_cast<float>(i + 1) * state.xStep;
-								ys[i] = static_cast<float>(data[i]);
-							}
-							ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()), lineSpec);
-						}
-						ImPlot::EndPlot();
-					}
-				}
+				renderPlotCardMenuBar(state, is2D, element, isWM);
+				renderPlotCardContent(element, state, isWM, is2D);
 			}
 
-			if (!open) { it = plotCards_.erase(it); ImGui::End(); continue; }
+			if (!open) { it = plotCards.erase(it); ImGui::End(); continue; }
 			ImGui::End();
 			++it;
 		}
 	}
 
-	// -------------------------------------------------------------------------
-	// Helpers
-	// -------------------------------------------------------------------------
+	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state, const bool is2DField,
+		const std::shared_ptr<element::Element>& element, const bool isWM)
+	{
+		if (!ImGui::BeginMenuBar()) return;
+
+		if (ImGui::BeginMenu("Dimensions"))
+		{
+			ImGui::DragFloat("X max",  &state.xMax,  0.1f, state.xMin, 1000.f,    "%.1f");
+			ImGui::DragFloat("Y max",  &state.yMax,  0.1f, state.yMin, 1000.f,    "%.2f");
+			ImGui::DragFloat("X min",  &state.xMin,  0.1f, -1000.f,   state.xMax, "%.1f");
+			ImGui::DragFloat("Y min",  &state.yMin,  0.1f, -10000.f,  state.yMax, "%.2f");
+			ImGui::DragFloat("X step", &state.xStep, 0.1f, 0.1f,      1000.f,    "%.1f");
+			ImGui::Checkbox("Auto-fit", &state.autoFit);
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Annotations"))
+		{
+			ImGui::InputText("Title",   state.title,  sizeof(state.title));
+			ImGui::InputText("X label", state.xLabel, sizeof(state.xLabel));
+			ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
+			ImGui::EndMenu();
+		}
+		if (!is2DField && !isWM)
+		{
+			if (ImGui::BeginMenu("Line Thickness"))
+			{
+				ImGui::SliderFloat("##lt", &state.lineThickness, 0.1f, 10.0f, "%.1f");
+				ImGui::EndMenu();
+			}
+		}
+		if (is2DField || isWM)
+		{
+			if (ImGui::BeginMenu("Colormap"))
+			{
+				if (ImPlot::ColormapButton(ImPlot::GetColormapName(state.colormap),
+					ImVec2(120.0f, 0.0f), state.colormap))
+				{
+					state.colormap = (state.colormap + 1) % ImPlot::GetColormapCount();
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Scale"))
+			{
+				ImGui::DragFloatRange2("Min / Max", &state.scaleMin, &state.scaleMax,
+					0.01f, -1000.f, 1000.f, "%.2f");
+				ImGui::Checkbox("Auto scale", &state.autoScale);
+				ImGui::EndMenu();
+			}
+			if (is2DField)
+			{
+				if (const auto* comps = element->getComponents(); comps && ImGui::BeginMenu("Component"))
+				{
+					const std::string defaultComp =
+						(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+					const std::string activeComp =
+						(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
+					for (const auto& name : *comps | std::views::keys)
+					{
+						const bool selected = (activeComp == name);
+						if (ImGui::MenuItem(name.c_str(), nullptr, selected))
+							std::snprintf(state.selectedComponent, sizeof(state.selectedComponent), "%s", name.c_str());
+					}
+					ImGui::EndMenu();
+				}
+			}
+		}
+
+		ImGui::EndMenuBar();
+	}
+
+	void NodeGraphWindow::renderPlotCardContent(const std::shared_ptr<element::Element>& element,
+		PlotCardState& state, const bool isWM, const bool is2DField)
+	{
+		const auto* comps = element->getComponents();
+		const float plotW = ImGui::GetContentRegionAvail().x;
+		const float plotH = ImGui::GetContentRegionAvail().y;
+
+		if (isWM && comps && comps->contains("weights"))
+		{
+			const auto& weights = comps->at("weights");
+			const int rows = comps->contains("input")  ? static_cast<int>(comps->at("input").size())  : 0;
+			const int cols = comps->contains("output") ? static_cast<int>(comps->at("output").size()) : 0;
+			if (rows > 0 && cols > 0 && rows * cols == static_cast<int>(weights.size()))
+			{
+				double scMin, scMax;
+				if (state.autoScale)
+				{
+					scMin = *std::ranges::min_element(weights);
+					scMax = *std::ranges::max_element(weights);
+					if (!std::isfinite(scMin) || !std::isfinite(scMax)) return;
+					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
+				}
+				else
+				{
+					scMin = state.scaleMin;
+					scMax = state.scaleMax;
+					if (scMax <= scMin) scMax = scMin + 1.0;
+				}
+
+				if (state.title[0] == '\0')
+				{
+					const std::string defaultTitle = element->getUniqueName() + " weights";
+					std::snprintf(state.title,  sizeof(state.title),  "%s", defaultTitle.c_str());
+					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Output field");
+					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Input field");
+				}
+
+				const float cbW = 60.0f;
+				const float hmW = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
+				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+				if (!state.autoFit)
+					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
+
+				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+				ImPlot::PushColormap(state.colormap);
+				if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(hmW, plotH), ImPlotFlags_Crosshairs))
+				{
+					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+					ImPlot::PlotHeatmap("##data", weights.data(), rows, cols, scMin, scMax, nullptr,
+						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+					ImPlot::EndPlot();
+				}
+				ImGui::SameLine(0, 4.0f);
+				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
+				ImPlot::PopColormap();
+			}
+		}
+		else if (is2DField && comps)
+		{
+			const std::string defaultComp =
+				(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+			const std::string compName =
+				(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
+			if (!comps->contains(compName)) return;
+			const auto& dp   = element->getElementCommonParameters().dimensionParameters;
+			const auto& data = comps->at(compName);
+			const int total  = static_cast<int>(data.size());
+			int rows, cols;
+			if (dp.size_x * dp.size_y == total)
+			{
+				rows = dp.size_x;
+				cols = dp.size_y;
+			}
+			else
+			{
+				// Component (e.g. "kernel") is smaller than the full field — find
+				// the most square-like integer factoring of the data size.
+				rows = static_cast<int>(std::sqrt(static_cast<float>(total)));
+				while (rows > 1 && total % rows != 0) --rows;
+				cols = (rows > 0) ? total / rows : total;
+			}
+			if (rows > 0 && cols > 0 && rows * cols == total)
+			{
+				double scMin, scMax;
+				if (state.autoScale)
+				{
+					scMin = *std::ranges::min_element(data);
+					scMax = *std::ranges::max_element(data);
+					if (!std::isfinite(scMin) || !std::isfinite(scMax)) return;
+					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
+				}
+				else
+				{
+					scMin = state.scaleMin;
+					scMax = state.scaleMax;
+					if (scMax <= scMin) scMax = scMin + 1.0;
+				}
+
+				if (state.title[0] == '\0' || std::strcmp(state.autoTitleComponent, compName.c_str()) != 0)
+				{
+					const std::string defaultTitle = element->getUniqueName() + " " + compName;
+					std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
+					std::snprintf(state.autoTitleComponent, sizeof(state.autoTitleComponent), "%s", compName.c_str());
+					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Spatial location x");
+					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Spatial location y");
+
+				}
+
+				const float cbW    = 60.0f;
+				const float hmW    = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
+				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+				if (!state.autoFit)
+					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
+
+				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+				ImPlot::PushColormap(state.colormap);
+				if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(hmW, plotH), ImPlotFlags_Crosshairs))
+				{
+					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+					ImPlot::PlotHeatmap("##data", data.data(), rows, cols, scMin, scMax, nullptr,
+						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+					ImPlot::EndPlot();
+				}
+				ImGui::SameLine(0, 4.0f);
+				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
+				ImPlot::PopColormap();
+			}
+		}
+		else if (!isWM && comps)
+		{
+			if (state.title[0] == '\0')
+			{
+				const std::string defaultTitle = element->getUniqueName() + " components";
+				std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
+			}
+
+			constexpr ImPlotFlags    plotFlags = ImPlotFlags_Crosshairs;
+			const ImPlotAxisFlags axF      = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+
+			if (!state.autoFit)
+			{
+				ImPlot::SetNextAxesLimits(
+					state.xMin, state.xMax,
+					state.yMin, state.yMax,
+					ImPlotCond_Always);
+			}
+
+			const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+			const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, state.lineThickness };
+			ImPlot::PushColormap(state.colormap);
+			if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(plotW, plotH), plotFlags))
+			{
+				ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+				ImPlot::SetupLegend(ImPlotLocation_SouthWest, ImPlotLegendFlags_None);
+
+				for (const auto& [name, seriesData] : *comps)
+				{
+					if (seriesData.size() < 2) continue;
+					std::vector<float> xs(seriesData.size()), ys(seriesData.size());
+					for (int i = 0; i < static_cast<int>(seriesData.size()); ++i)
+					{
+						xs[i] = static_cast<float>(i + 1) * state.xStep;
+						ys[i] = static_cast<float>(seriesData[i]);
+					}
+					ImPlot::PlotLine(name.c_str(), xs.data(), ys.data(), static_cast<int>(xs.size()), lineSpec);
+				}
+
+				ImPlot::EndPlot();
+			}
+			ImPlot::PopColormap();
+		}
+	}
 
 	size_t NodeGraphWindow::getNodeId(const std::shared_ptr<element::Element>& element)
 	{
@@ -711,17 +867,30 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::NORMAL_NOISE:
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
 		case element::ElementLabel::BOOST_STIMULUS:
+		case element::ElementLabel::GAUSS_STIMULUS_2D:
+		case element::ElementLabel::NORMAL_NOISE_2D:
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+		case element::ElementLabel::BOOST_STIMULUS_2D:
+			return 0;
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
 			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
 		case element::ElementLabel::OSCILLATORY_KERNEL:
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
 		case element::ElementLabel::MEMORY_TRACE:
+		case element::ElementLabel::GAUSS_KERNEL_2D:
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+		case element::ElementLabel::MEMORY_TRACE_2D:
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 			return 2;
 		case element::ElementLabel::NEURAL_FIELD:
+		case element::ElementLabel::NEURAL_FIELD_2D:
 			return 3;
 		default:
 			return 1;
@@ -875,11 +1044,247 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Couplings: %zu",     p.couplings.size());
 			break;
 		}
+		case element::ElementLabel::NEURAL_FIELD_2D:
+		{
+			const auto nf = std::dynamic_pointer_cast<element::NeuralField2D>(element);
+			const auto& p = nf->getParameters();
+			ImGui::Text("Tau: %.2f", p.tau);
+			ImGui::Text("Resting level: %.2f", p.startingRestingLevel);
+			ImGui::Text("Activation fn: %s", p.activationFunction->toString().c_str());
+			break;
+		}
+		case element::ElementLabel::GAUSS_STIMULUS_2D:
+		{
+			const auto gs = std::dynamic_pointer_cast<element::GaussStimulus2D>(element);
+			const auto& p = gs->getParameters();
+			ImGui::Text("Width: %.2f",       p.width);
+			ImGui::Text("Amplitude: %.2f",   p.amplitude);
+			ImGui::Text("Position x: %.2f",  p.position_x);
+			ImGui::Text("Position y: %.2f",  p.position_y);
+			ImGui::Text("Circular: %s",      p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",    p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::GAUSS_KERNEL_2D:
+		{
+			const auto gk = std::dynamic_pointer_cast<element::GaussKernel2D>(element);
+			const auto& p = gk->getParameters();
+			ImGui::Text("Width: %.2f",        p.width);
+			ImGui::Text("Amplitude: %.2f",    p.amplitude);
+			ImGui::Text("Global amp: %.4f",   p.amplitudeGlobal);
+			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+		{
+			const auto mh = std::dynamic_pointer_cast<element::MexicanHatKernel2D>(element);
+			const auto& p = mh->getParameters();
+			ImGui::Text("Width exc: %.2f",    p.widthExc);
+			ImGui::Text("Amplitude exc: %.2f",p.amplitudeExc);
+			ImGui::Text("Width inh: %.2f",    p.widthInh);
+			ImGui::Text("Amplitude inh: %.2f",p.amplitudeInh);
+			ImGui::Text("Global amp: %.4f",   p.amplitudeGlobal);
+			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::NORMAL_NOISE_2D:
+		{
+			const auto nn = std::dynamic_pointer_cast<element::NormalNoise2D>(element);
+			ImGui::Text("Amplitude: %.4f", nn->getParameters().amplitude);
+			break;
+		}
+		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+		{
+			const auto ok = std::dynamic_pointer_cast<element::OscillatoryKernel2D>(element);
+			const auto& p = ok->getParameters();
+			ImGui::Text("Amplitude: %.2f",       p.amplitude);
+			ImGui::Text("Decay: %.4f",           p.decay);
+			ImGui::Text("Zero crossings: %.2f",  p.zeroCrossings);
+			ImGui::Text("Global amp: %.4f",      p.amplitudeGlobal);
+			ImGui::Text("Circular: %s",          p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",        p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
+		{
+			const auto tgs = std::dynamic_pointer_cast<element::TimedGaussStimulus>(element);
+			const auto& p = tgs->getParameters();
+			ImGui::Text("Width: %.2f",     p.width);
+			ImGui::Text("Amplitude: %.2f", p.amplitude);
+			ImGui::Text("Position: %.2f",  p.position);
+			ImGui::Text("Intervals: %d",   static_cast<int>(p.onTimes.size()));
+			ImGui::Text("Circular: %s",    p.circular    ? "true" : "false");
+			ImGui::Text("Normalized: %s",  p.normalized  ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::BOOST_STIMULUS_2D:
+		{
+			const auto bs = std::dynamic_pointer_cast<element::BoostStimulus2D>(element);
+			const auto& p = bs->getParameters();
+			ImGui::Text("Amplitude: %.2f", p.amplitude);
+			ImGui::Text("Active: %s",      p.isActive ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+		{
+			const auto tgs = std::dynamic_pointer_cast<element::TimedGaussStimulus2D>(element);
+			const auto& p = tgs->getParameters();
+			ImGui::Text("Width: %.2f",      p.width);
+			ImGui::Text("Amplitude: %.2f",  p.amplitude);
+			ImGui::Text("Position x: %.2f", p.position_x);
+			ImGui::Text("Position y: %.2f", p.position_y);
+			ImGui::Text("Intervals: %d",    static_cast<int>(p.onTimes.size()));
+			ImGui::Text("Circular: %s",     p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",   p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+		{
+			const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise2D>(element);
+			const auto& p = cnn->getParameters();
+			ImGui::Text("Amplitude: %.4f", p.amplitude);
+			ImGui::Text("Width: %.2f",     p.width);
+			ImGui::Text("Circular: %s",    p.circular ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+		{
+			const auto agk = std::dynamic_pointer_cast<element::AsymmetricGaussKernel2D>(element);
+			const auto& p = agk->getParameters();
+			ImGui::Text("Width: %.2f",        p.width);
+			ImGui::Text("Amplitude: %.2f",    p.amplitude);
+			ImGui::Text("Global amp: %.4f",   p.amplitudeGlobal);
+			ImGui::Text("Time shift x: %.2f", p.timeShift_x);
+			ImGui::Text("Time shift y: %.2f", p.timeShift_y);
+			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
+			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::MEMORY_TRACE_2D:
+		{
+			const auto mt = std::dynamic_pointer_cast<element::MemoryTrace2D>(element);
+			const auto& p = mt->getParameters();
+			ImGui::Text("Tau build: %.2f",  p.tauBuild);
+			ImGui::Text("Tau decay: %.2f",  p.tauDecay);
+			ImGui::Text("Threshold: %.2f",  p.threshold);
+			break;
+		}
 		default:
 			ImGui::TextDisabled("No parameters available.");
 			break;
 		}
 
 		ImGui::EndTooltip();
+	}
+
+	bool NodeGraphWindow::isWeightMapElement(const element::ElementLabel label)
+	{
+		return label == element::ElementLabel::FIELD_COUPLING ||
+		       label == element::ElementLabel::GAUSS_FIELD_COUPLING;
+	}
+
+	void NodeGraphWindow::drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect,
+		const int rows, const int cols, const double dMin, const double dMax, const int colormap)
+	{
+		constexpr float  fs      = 9.0f;
+		constexpr ImU32  textCol = IM_COL32( 40,  40,  40, 230);
+		constexpr ImU32  tickCol = IM_COL32( 80,  80,  80, 180);
+		constexpr int    nTicks  = 4;
+		ImFont* const    font    = ImGui::GetFont();
+
+		// // X-axis ticks (column indices) below the heatmap
+		// for (int i = 0; i <= nTicks; ++i)
+		// {
+		// 	const float t   = static_cast<float>(i) / nTicks;
+		// 	const float x   = hmRect.Min.x + t * hmRect.GetWidth();
+		// 	const int   idx = static_cast<int>(std::round(t * (cols - 1)));
+		// 	char buf[8];
+		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
+		// 	dl->AddLine(ImVec2(x, hmRect.Max.y), ImVec2(x, hmRect.Max.y + 2.0f), tickCol, 1.0f);
+		// 	dl->AddText(font, fs, ImVec2(x - 5.0f, hmRect.Max.y + 2.0f), textCol, buf);
+		// }
+		//
+		// // Y-axis ticks (row indices) left of the heatmap
+		// for (int i = 0; i <= nTicks; ++i)
+		// {
+		// 	const float t   = static_cast<float>(i) / nTicks;
+		// 	const float y   = hmRect.Min.y + t * hmRect.GetHeight();
+		// 	const int   idx = static_cast<int>(std::round((1.0f - t) * (rows - 1)));
+		// 	char buf[8];
+		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
+		// 	dl->AddLine(ImVec2(hmRect.Min.x, y), ImVec2(hmRect.Min.x - 2.0f, y), tickCol, 1.0f);
+		// 	dl->AddText(font, fs, ImVec2(hmRect.Min.x - 21.0f, y - fs * 0.5f), textCol, buf);
+		// }
+
+		// Amplitude colorbar: vertical strip to the right of the heatmap
+		constexpr float barGap = 3.0f;
+		constexpr float barW   = 7.0f;
+		const float barX0 = hmRect.Max.x + barGap;
+		const float barX1 = barX0 + barW;
+		const int   steps = std::max(1, static_cast<int>(hmRect.GetHeight()));
+		for (int s = 0; s < steps; ++s)
+		{
+			const float t  = static_cast<float>(s) / steps;
+			const float y0 = hmRect.Max.y - (t + 1.0f / steps) * hmRect.GetHeight();
+			const float y1 = hmRect.Max.y - t * hmRect.GetHeight();
+			const ImVec4 c4  = ImPlot::SampleColormap(t, colormap);
+			const ImU32  col = IM_COL32(static_cast<int>(c4.x * 255),
+			                            static_cast<int>(c4.y * 255),
+			                            static_cast<int>(c4.z * 255), 255);
+			dl->AddRectFilled(ImVec2(barX0, y0), ImVec2(barX1, y1), col);
+		}
+		dl->AddRect(ImVec2(barX0, hmRect.Min.y), ImVec2(barX1, hmRect.Max.y), tickCol, 0.0f, 0, 0.5f);
+		// Colorbar ticks and value labels
+		char buf[16];
+		for (int i = 0; i <= nTicks; ++i)
+		{
+			const float  t   = static_cast<float>(i) / nTicks;
+			const float  y   = hmRect.Max.y - t * hmRect.GetHeight();
+			const double val = dMin + t * (dMax - dMin);
+			std::snprintf(buf, sizeof(buf), "%.1f", val);
+			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0f, y), tickCol, 1.0f);
+			dl->AddText(font, fs, ImVec2(barX1 + 3.0f, y - fs * 0.5f), textCol, buf);
+		}
+	}
+
+	void NodeGraphWindow::drawWeightHeatmap(ImDrawList* dl, const ImRect rect,
+		const std::vector<double>& weights, const int rows, const int cols)
+	{
+		constexpr float pad = 3.0f;
+		double wMin =  1e300, wMax = -1e300;
+		for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
+		const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
+		const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
+		const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);
+		for (int r = 0; r < rows; ++r)
+			for (int c = 0; c < cols; ++c)
+			{
+				const float  t   = static_cast<float>((weights[r*cols+c] - wMin) / wRange);
+				const ImVec2 tl  = { rect.Min.x + pad + c*cellW, rect.Max.y - pad - (r+1)*cellH };
+				const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
+				dl->AddRectFilled(tl, { tl.x+cellW, tl.y+cellH }, ImGui::ColorConvertFloat4ToU32(col));
+			}
+	}
+
+	void NodeGraphWindow::draw2DFieldHeatmap(ImDrawList* dl, const ImRect rect,
+		const std::vector<double>& data, const int rows, const int cols,
+		const double wMin, const double wMax, const int colormap)
+	{
+		constexpr float pad = 3.0f;
+		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
+		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
+		const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
+		const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
+		const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);
+		for (int r = 0; r < rows; ++r)
+			for (int c = 0; c < cols; ++c)
+			{
+				const float  t   = static_cast<float>((data[r*cols+c] - wMin) / wRange);
+				const ImVec2 tl  = { rect.Min.x + pad + c*cellW, rect.Max.y - pad - (r+1)*cellH };
+				const ImVec4 col = ImPlot::SampleColormap(t, colormap);
+				dl->AddRectFilled(tl, { tl.x+cellW, tl.y+cellH }, ImGui::ColorConvertFloat4ToU32(col));
+			}
 	}
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <optional>
 
 #include "tools/math.h"
 #include "kernel.h"
@@ -17,21 +16,11 @@ namespace dnf_composer::element
 		double amplitudeGlobal; ///< Spatially uniform inhibition added after convolution.
 		bool circular;          ///< If true, convolution wraps around (toroidal boundary).
 		bool normalized;        ///< If true, the Gaussian is area-normalised.
-		std::optional<ElementDimensions> outputFieldDimensions; ///< Override output field size for cross-dimension kernels.
 
-		/// @brief Construct a GaussKernel parameter set.
-		/// @param width       Gaussian σ (default 3).
-		/// @param amp         Peak amplitude (default 3).
-		/// @param ampGlobal   Global inhibition constant (default -0.01).
-		/// @param circular    Enable circular convolution (default true).
-		/// @param normalized  Normalise the kernel (default true).
-		/// @param outputDims  Override output dimensions for cross-field use (optional).
 		explicit GaussKernelParameters(const double width = 3.0, const double amp = 3.0, const double ampGlobal = -0.01,
-		                      const bool circular = true, const bool normalized = true,
-		                      const std::optional<ElementDimensions>& outputDims = std::nullopt)
+		                      const bool circular = true, const bool normalized = true)
 			: width(width), amplitude(amp), amplitudeGlobal(ampGlobal),
-			  circular(circular), normalized(normalized),
-			  outputFieldDimensions(outputDims)
+			  circular(circular), normalized(normalized)
 		{}
 
 		bool operator==(const GaussKernelParameters& other) const {
@@ -41,8 +30,7 @@ namespace dnf_composer::element
 				std::abs(amplitude - other.amplitude) < epsilon &&
 				std::abs(amplitudeGlobal - other.amplitudeGlobal) < epsilon &&
 				circular == other.circular &&
-				normalized == other.normalized &&
-				outputFieldDimensions == other.outputFieldDimensions;
+				normalized == other.normalized;
 		}
 
 		[[nodiscard]] std::string toString() const override
@@ -54,10 +42,7 @@ namespace dnf_composer::element
 				<< "Amplitude: " << amplitude << ", "
 				<< "Amplitude global: " << amplitudeGlobal << ", "
 				<< "Circular: " << (circular ? "true" : "false") << ", "
-				<< "Normalized: " << (normalized ? "true" : "false");
-			if (outputFieldDimensions.has_value())
-				result << ", Output size: " << outputFieldDimensions->size;
-			result << "]";
+				<< "Normalized: " << (normalized ? "true" : "false") << "]";
 			return result.str();
 		}
 	};
@@ -69,18 +54,13 @@ namespace dnf_composer::element
 	/// baseline (@c amplitudeGlobal * fullSum). The result is stored in the "output"
 	/// component and fed forward to the receiving neural field.
 	///
-	/// When @c GaussKernelParameters::outputFieldDimensions is set, the convolution
-	/// result is resampled to the specified output size, enabling connections between
-	/// fields of different spatial dimensions.
-	///
 	/// @ingroup elements
 	class GaussKernel final : public Kernel
 	{
 	private:
 		GaussKernelParameters parameters;
-		std::vector<double> scratchExtended;    ///< Pre-allocated circular extension of input.
-		std::vector<double> scratchConvolution; ///< Pre-allocated convolution output buffer.
-		std::vector<double> scratchResample_;   ///< Pre-allocated buffer for cross-dimension resampling (empty when unused).
+		std::vector<double> scratchExtended;
+		std::vector<double> scratchConvolution;
 	public:
 		/// @brief Construct a GaussKernel.
 		/// @param elementCommonParameters  Name, label, and dimensions.

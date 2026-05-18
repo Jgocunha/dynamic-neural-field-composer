@@ -1,7 +1,5 @@
 #pragma once
 
-#include <optional>
-
 #include "kernel.h"
 #include "tools/math.h"
 
@@ -18,24 +16,13 @@ namespace dnf_composer::element
 		double amplitudeGlobal;  ///< Spatially uniform inhibition added after convolution.
 		bool circular;           ///< Enable circular (toroidal) convolution.
 		bool normalized;         ///< Normalise the kernel before convolution.
-		std::optional<ElementDimensions> outputFieldDimensions; ///< Override output field size.
 
-		/// @brief Construct an OscillatoryKernel parameter set.
-		/// @param amplitude       Overall amplitude (default 1.0).
-		/// @param decay           Envelope decay (default 0.08; must be > 0).
-		/// @param zeroCrossings   Oscillation frequency in [0, 1] (default 0.3).
-		/// @param amplitudeGlobal Global inhibition (default -0.01).
-		/// @param circular        Circular boundary (default true).
-		/// @param normalized      Area normalisation (default false).
-		/// @param outputDims      Optional output dimension override.
 		explicit OscillatoryKernelParameters(const double amplitude = 1.0, const double decay = 0.08,
 			const double zeroCrossings = 0.3, const double amplitudeGlobal = -0.01,
-			const bool circular = true, const bool normalized = false,
-			const std::optional<ElementDimensions>& outputDims = std::nullopt)
+			const bool circular = true, const bool normalized = false)
 			: amplitude(amplitude), decay(decay),
 			zeroCrossings(zeroCrossings), amplitudeGlobal(amplitudeGlobal),
-			circular(circular), normalized(normalized),
-			outputFieldDimensions(outputDims)
+			circular(circular), normalized(normalized)
 		{
 			// zero crossings must be in the range [0, 1]
 			if (zeroCrossings < 0.0)
@@ -56,8 +43,7 @@ namespace dnf_composer::element
 				std::abs(zeroCrossings - other.zeroCrossings) < epsilon &&
 				std::abs(amplitudeGlobal - other.amplitudeGlobal) < epsilon &&
 				circular == other.circular &&
-				normalized == other.normalized &&
-				outputFieldDimensions == other.outputFieldDimensions;
+				normalized == other.normalized;
 		}
 
 		[[nodiscard]] std::string toString() const override
@@ -70,10 +56,7 @@ namespace dnf_composer::element
 				<< "Zero crossings: " << zeroCrossings << ", "
 				<< "Amplitude global: " << amplitudeGlobal << ", "
 				<< "Circular: " << (circular ? "true" : "false") << ", "
-				<< "Normalized: " << (normalized ? "true" : "false");
-			if (outputFieldDimensions.has_value())
-				result << ", Output size: " << outputFieldDimensions->size;
-			result << "]";
+				<< "Normalized: " << (normalized ? "true" : "false") << "]";
 			return result.str();
 		}
 	};
@@ -84,10 +67,6 @@ namespace dnf_composer::element
 	/// This produces alternating excitatory and inhibitory bands at increasing distances,
 	/// which can generate wave-like or rhythmic activity patterns in a neural field.
 	///
-	/// When @c OscillatoryKernelParameters::outputFieldDimensions is set, the convolution
-	/// result is resampled to the specified output size, enabling connections between
-	/// fields of different spatial dimensions.
-	///
 	/// @ingroup elements
 	class OscillatoryKernel final : public Kernel
 	{
@@ -95,7 +74,6 @@ namespace dnf_composer::element
 		OscillatoryKernelParameters parameters;
 		std::vector<double> scratchExtended;
 		std::vector<double> scratchConvolution;
-		std::vector<double> scratchResample_;
 	public:
 		/// @brief Construct an OscillatoryKernel.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.

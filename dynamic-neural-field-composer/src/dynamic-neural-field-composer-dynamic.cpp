@@ -1,7 +1,6 @@
 ﻿#include "dynamic-neural-field-composer-dynamic.h"
 
 
-
 int main()
 {
 	try

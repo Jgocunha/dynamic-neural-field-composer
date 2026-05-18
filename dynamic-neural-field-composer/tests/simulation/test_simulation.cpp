@@ -369,7 +369,7 @@ TEST(SimulationChangeDimensions, ResizesElementAndBreaksConnections)
     sim.createInteraction("stim", "output", "field");
     sim.init();
 
-    sim.changeDimensions("field", ElementDimensions{ 50 });
+    sim.changeDimensions("field", ElementDimensions{ 50, 1.0 });
 
     EXPECT_EQ(sim.getElement("field")->getSize(), 50);
     EXPECT_FALSE(sim.getElement("field")->hasInput());
@@ -381,6 +381,6 @@ TEST(SimulationChangeDimensions, UnconnectedElementResizesWithoutError)
     Simulation sim("s", 1.0, 0.0, 0.0);
     sim.addElement(makeField("field", 100));
     sim.init();
-    EXPECT_NO_THROW(sim.changeDimensions("field", ElementDimensions{ 75 }));
+    EXPECT_NO_THROW(sim.changeDimensions("field", ElementDimensions{ 75, 1.0 }));
     EXPECT_EQ(sim.getElement("field")->getSize(), 75);
 }

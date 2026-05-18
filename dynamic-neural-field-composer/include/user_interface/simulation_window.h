@@ -65,6 +65,9 @@ namespace dnf_composer::user_interface
 		//  `--`-`--`--'`--`-``--`---'
 		void addElementNeuralField() const;
 		void addElementGaussStimulus() const;
+		void addElementTimedGaussStimulus() const;
+		void addElementTimedGaussStimulus2D() const;
+		void addElementBoostStimulus2D() const;
 		void addElementFieldCoupling() const;
 		void addElementGaussKernel() const;
 		void addElementMexicanHatKernel() const;

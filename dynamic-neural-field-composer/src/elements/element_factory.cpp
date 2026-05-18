@@ -84,7 +84,80 @@ namespace dnf_composer
 					const auto params = dynamic_cast<const MemoryTraceParameters*>(&elementSpecificParameters);
 					return std::make_shared<MemoryTrace>(elementCommonParameters, *params);
 				};
-		}
+
+			elementCreators[ElementLabel::NEURAL_FIELD_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const NeuralField2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<NeuralField2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::GAUSS_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const GaussStimulusParameters2D*>(&elementSpecificParameters);
+					return std::make_shared<GaussStimulus2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::GAUSS_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const GaussKernel2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<GaussKernel2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::MEXICAN_HAT_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const MexicanHatKernel2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<MexicanHatKernel2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::NORMAL_NOISE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const NormalNoise2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<NormalNoise2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::OSCILLATORY_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const OscillatoryKernel2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<OscillatoryKernel2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::TIMED_GAUSS_STIMULUS] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const TimedGaussStimulusParameters*>(&elementSpecificParameters);
+					return std::make_shared<TimedGaussStimulus>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::TIMED_GAUSS_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const TimedGaussStimulus2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<TimedGaussStimulus2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::BOOST_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const BoostStimulus2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<BoostStimulus2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::CORRELATED_NORMAL_NOISE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const CorrelatedNormalNoise2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<CorrelatedNormalNoise2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const AsymmetricGaussKernel2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<AsymmetricGaussKernel2D>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::MEMORY_TRACE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const MemoryTrace2DParameters*>(&elementSpecificParameters);
+					return std::make_shared<MemoryTrace2D>(elementCommonParameters, *params);
+				};
+
+			}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 		{
@@ -129,6 +202,30 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), BoostStimulusParameters());
 					case ElementLabel::MEMORY_TRACE:
 						return creator->second(ElementCommonParameters(type), MemoryTraceParameters());
+					case ElementLabel::NEURAL_FIELD_2D:
+						return creator->second(ElementCommonParameters(type), NeuralField2DParameters());
+					case ElementLabel::GAUSS_STIMULUS_2D:
+						return creator->second(ElementCommonParameters(type), GaussStimulusParameters2D());
+					case ElementLabel::GAUSS_KERNEL_2D:
+						return creator->second(ElementCommonParameters(type), GaussKernel2DParameters());
+					case ElementLabel::MEXICAN_HAT_KERNEL_2D:
+						return creator->second(ElementCommonParameters(type), MexicanHatKernel2DParameters());
+					case ElementLabel::NORMAL_NOISE_2D:
+						return creator->second(ElementCommonParameters(type), NormalNoise2DParameters());
+					case ElementLabel::OSCILLATORY_KERNEL_2D:
+						return creator->second(ElementCommonParameters(type), OscillatoryKernel2DParameters());
+					case ElementLabel::TIMED_GAUSS_STIMULUS:
+						return creator->second(ElementCommonParameters(type), TimedGaussStimulusParameters());
+					case ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+						return creator->second(ElementCommonParameters(type), TimedGaussStimulus2DParameters());
+					case ElementLabel::BOOST_STIMULUS_2D:
+						return creator->second(ElementCommonParameters(type), BoostStimulus2DParameters());
+					case ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+						return creator->second(ElementCommonParameters(type), CorrelatedNormalNoise2DParameters());
+					case ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+						return creator->second(ElementCommonParameters(type), AsymmetricGaussKernel2DParameters());
+					case ElementLabel::MEMORY_TRACE_2D:
+						return creator->second(ElementCommonParameters(type), MemoryTrace2DParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}
