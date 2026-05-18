@@ -1,4 +1,5 @@
 #include "user_interface/node_graph_window.h"
+#include <cstring>
 
 extern ImFont* g_BlackSmallFont;
 
