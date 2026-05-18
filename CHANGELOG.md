@@ -1,6 +1,42 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [2.5.0] - 2026-05-18
+
+### Added
+- **2D element stack**: `NeuralField2D`, `GaussStimulus2D`, `GaussKernel2D`,
+  `MexicanHatKernel2D`, `OscillatoryKernel2D`, `AsymmetricGaussKernel2D`,
+  `CorrelatedNormalNoise2D`, `NormalNoise2D`, `BoostStimulus2D`, `MemoryTrace2D`,
+  `TimedGaussStimulus2D` — full 2D DNF stack mirroring the 1D API
+- **`FieldProjection` element**: projects a 2D field onto one axis (row or column
+  sum/mean) to produce a 1D output; UI and JSON serialisation included
+- **`FieldCoupling::addInput()`**: runtime method to wire a new upstream source into a
+  FieldCoupling element; regression test added
+- `all-elements.json` reference simulation covering every element type
+- Heatmap colormap selector and scale controls for 2D field rendering in NodeGraphWindow
+- Adaptive row/column layout in NodeGraphWindow for multi-element displays
+
+### Fixed
+- `ElementDimensions` default constructor did not assign `dimensionality`; derived sizes
+  were computed before the field was set, leaving objects in an inconsistent state
+- Static analysis (`clang-tidy`) violations resolved:
+  - `[[nodiscard]]` added to `Exception::what/getErrorCode/getErrorMessage` and all
+    `toString()` declarations in `element_parameters.h`
+  - `ErrorCode` base narrowed from `int` to `std::uint8_t`
+  - Braces added to all bare `if`/`for`/`while` bodies in `simulation.cpp` and
+    `main_menu_bar.cpp`
+  - C-style `char[]` buffers replaced with `std::array<char, N>` in `main_menu_bar.cpp`
+    and `lineplot.cpp`
+  - Narrowing `size_t → double` in `LinePlot::render()` made explicit via `static_cast`
+- Missing `#include <cstring>` in `node_graph_window.cpp` (caused `std::strcmp` build error)
+- `sizeof(file_dialog_buffer)` returned pointer size (8) instead of buffer size (500);
+  fixed by using `path.size()` directly in the `FileDialog::ShowFileDialog` call
+- `OscillatoryKernel2DParameters`: `normalized` default corrected to `true`
+
+### Tests
+- Regression: `FieldCoupling::addInput` preserves learning activity after runtime input addition
+
 ## [2.4.1] - 2026-05-08
 
 ### Performance
