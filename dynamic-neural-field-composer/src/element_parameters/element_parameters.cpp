@@ -14,6 +14,7 @@ namespace dnf_composer::element
 			const std::string logMessage = "Element dimensionality '" + std::to_string(dimensionality) +
 										"' is invalid. Defaulting to {1D, 100, 1.0}.";
 			log(tools::logger::LogLevel::ERROR, logMessage);
+			this->dimensionality = 1;
 		}
 	
 		x_max = 100;
