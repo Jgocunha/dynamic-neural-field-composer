@@ -1,15 +1,23 @@
 <map id="dnf_composer::element::Kernel" name="dnf_composer::element::Kernel">
-<area shape="rect" id="Node000001" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="325,521,493,721"/>
+<area shape="rect" id="Node000001" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="758,521,926,721"/>
 <area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html" title="Spatially shifted Gaussian kernel that induces directional peak drift." alt="" coords="5,769,204,969"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="315,695,218,771,206,781,203,777,215,767,312,691"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussKernel.html" title="Gaussian convolution kernel providing local excitation and optional global inhibition." alt="" coords="229,769,397,969"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="368,735,354,770,349,768,363,733"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html" title="Difference&#45;of&#45;Gaussians convolution kernel for DFT lateral interactions." alt="" coords="421,769,589,969"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="455,733,468,768,463,770,450,735"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html" title="Damped&#45;cosine convolution kernel for oscillatory field dynamics." alt="" coords="613,769,781,969"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="506,689,602,767,614,778,611,782,599,771,502,693"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="325,133,493,473"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="411,487,411,521,406,521,406,487"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="325,5,492,85"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="411,99,411,133,406,133,406,99"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="745,633,632,648,497,674,426,692,354,714,283,741,217,772,205,778,203,773,214,767,281,736,352,709,424,687,496,669,632,643,744,628"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html" title="2D asymmetric Gaussian kernel that induces directional peak drift." alt="" coords="228,769,445,969"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="746,653,607,702,531,734,459,772,447,779,444,775,457,767,529,729,605,697,744,648"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1GaussKernel.html" title="Gaussian convolution kernel providing local excitation and optional global inhibition." alt="" coords="470,769,638,969"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="748,693,652,771,640,782,636,778,648,767,745,689"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html" title=" " alt="" coords="662,769,830,969"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="801,735,787,770,782,768,796,733"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html" title="Difference&#45;of&#45;Gaussians convolution kernel for DFT lateral interactions." alt="" coords="854,769,1022,969"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="888,733,902,768,897,770,883,735"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html" title=" " alt="" coords="1046,769,1222,969"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="939,689,1036,767,1047,778,1044,782,1032,771,935,694"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html" title="Damped&#45;cosine convolution kernel for oscillatory field dynamics." alt="" coords="1246,769,1414,969"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="940,644,1008,664,1084,691,1162,726,1235,767,1247,776,1244,780,1233,772,1160,730,1082,696,1006,669,938,649"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html" title="2D oscillatory lateral&#45;interaction kernel using separable convolution." alt="" coords="1438,769,1606,969"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="940,628,1046,643,1171,669,1237,687,1302,709,1367,736,1427,767,1439,774,1436,779,1425,772,1364,741,1301,714,1235,692,1169,674,1045,648,939,633"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="758,133,926,473"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="845,487,845,521,839,521,839,487"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="759,5,925,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="845,99,845,133,839,133,839,99"/>
 </map>

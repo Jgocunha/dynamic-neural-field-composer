@@ -1,11 +1,19 @@
 <map id="dnf_composer::tools::math::gaussian_2d_periodic" name="dnf_composer::tools::math::gaussian_2d_periodic">
-<area shape="rect" id="Node000001" title=" " alt="" coords="475,84,629,139"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#af9329fd9e8be90a4177c5c1769b52864" title="Initialize the element (called once before the simulation loop)." alt="" coords="240,91,427,131"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="461,114,427,114,427,109,461,109"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a108ed838e6171d3ff2275b2d01099494" title="Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions an..." alt="" coords="11,5,187,60"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="259,89,180,63,182,58,261,84"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a011959c9655f8768d27b19fe039eba00" title="Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions an..." alt="" coords="5,84,192,139"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="227,114,192,114,192,109,227,109"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a228fff4bd406f51e882b50bce7188bec" title=" " alt="" coords="11,163,187,217"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="261,138,182,165,180,160,259,133"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="563,235,717,289"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#af9329fd9e8be90a4177c5c1769b52864" title="Initialize the element (called once before the simulation loop)." alt="" coords="314,131,501,171"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="568,231,449,174,452,169,571,226"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a942b7e1646c800e33517bf0d694eb128" title="Initialize the element (called once before the simulation loop)." alt="" coords="319,242,495,282"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="548,265,496,265,496,259,548,259"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#a283b859099270f4c90ae2aef6fefb30b" title="Initialize the element (called once before the simulation loop)." alt="" coords="300,310,515,350"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="550,291,477,313,476,307,548,286"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a108ed838e6171d3ff2275b2d01099494" title="Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions an..." alt="" coords="41,5,217,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="358,127,307,100,251,74,216,61,218,56,253,69,310,95,361,122"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a011959c9655f8768d27b19fe039eba00" title="Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions an..." alt="" coords="35,84,222,139"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="300,139,222,127,223,122,301,133"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a228fff4bd406f51e882b50bce7188bec" title=" " alt="" coords="41,163,217,217"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="301,169,217,180,217,175,300,163"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a4fe276b2df937c10b4f56e15bef2f8c9" title=" " alt="" coords="5,242,252,282"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="305,265,252,265,252,259,305,259"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#a9cf70a3ebe946dc04a7c1fca89875f55" title=" " alt="" coords="35,307,222,361"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="286,334,222,335,222,330,286,329"/>
 </map>

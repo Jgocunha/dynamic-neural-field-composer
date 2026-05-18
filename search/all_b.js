@@ -14,8 +14,8 @@ var searchData=
   ['linethickness_11',['linethickness',['../structdnf__composer_1_1user__interface_1_1PlotCardState.html#a6c5d9810a6fe8d42aa48fa6a01b6b253',1,'dnf_composer::user_interface::PlotCardState::lineThickness'],['../structdnf__composer_1_1LinePlotParameters.html#a7910b60e767b72027809e229dd1cf8d6',1,'dnf_composer::LinePlotParameters::lineThickness']]],
   ['loadelementsfromjson_12',['loadElementsFromJson',['../classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076',1,'dnf_composer::SimulationFileManager']]],
   ['loadflags_13',['LoadFlags',['../structImGui__ImplFreeType__FontSrcData.html#a642672e66a1cc028fc72f082a137eaf9',1,'ImGui_ImplFreeType_FontSrcData']]],
-  ['log_14',['log',['../namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a',1,'dnf_composer::tools::logger::log()'],['../classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b',1,'dnf_composer::tools::logger::Logger::log()']]],
-  ['log_5flocal_5ftime_5ferror_15',['LOG_LOCAL_TIME_ERROR',['../namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa265c982c0abf5027b3d43322fac846fd',1,'dnf_composer']]],
+  ['log_14',['log',['../classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b',1,'dnf_composer::tools::logger::Logger::log()'],['../namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a',1,'dnf_composer::tools::logger::log()']]],
+  ['log_5flocal_5ftime_5ferror_15',['LOG_LOCAL_TIME_ERROR',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca265c982c0abf5027b3d43322fac846fd',1,'dnf_composer']]],
   ['log_5fwindow_2ecpp_16',['log_window.cpp',['../log__window_8cpp.html',1,'']]],
   ['log_5fwindow_2eh_17',['log_window.h',['../log__window_8h.html',1,'']]],
   ['logentry_18',['LogEntry',['../structdnf__composer_1_1user__interface_1_1LogEntry.html',1,'dnf_composer::user_interface']]],
@@ -25,5 +25,5 @@ var searchData=
   ['loglevel_22',['LogLevel',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd',1,'dnf_composer::tools::logger']]],
   ['logoutputmode_23',['LogOutputMode',['../namespacednf__composer_1_1tools_1_1logger.html#a140699a0bf2e738ec68ba603bc082b6a',1,'dnf_composer::tools::logger']]],
   ['logwindow_24',['logwindow',['../classdnf__composer_1_1user__interface_1_1LogWindow.html',1,'dnf_composer::user_interface::LogWindow'],['../classdnf__composer_1_1user__interface_1_1LogWindow.html#a75dfb7f2f272573b6f2dc211435dbb15',1,'dnf_composer::user_interface::LogWindow::LogWindow()']]],
-  ['lowestactivation_25',['lowestActivation',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a142042609f6e9ef5a276cc34f97f4420',1,'dnf_composer::element::NeuralFieldState']]]
+  ['lowestactivation_25',['lowestactivation',['../structdnf__composer_1_1element_1_1NeuralField2DState.html#ab1011ddb6287c8d4c126a34704099e31',1,'dnf_composer::element::NeuralField2DState::lowestActivation'],['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a142042609f6e9ef5a276cc34f97f4420',1,'dnf_composer::element::NeuralFieldState::lowestActivation']]]
 ];

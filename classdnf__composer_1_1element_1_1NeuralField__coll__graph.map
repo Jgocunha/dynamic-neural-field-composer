@@ -1,42 +1,42 @@
 <map id="dnf_composer::element::NeuralField" name="dnf_composer::element::NeuralField">
-<area shape="rect" id="Node000001" title="Continuous attractor neural field — the core DFT building block." alt="" coords="861,1231,1063,1591"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="427,888,595,1168"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="608,1107,863,1322,860,1326,604,1111"/>
-<area shape="rect" id="Node000012" title=" " alt="" coords="399,1371,623,1451"/>
-<area shape="poly" id="edge13_Node000012_Node000002" title=" " alt="" coords="514,1168,514,1354,509,1354,509,1168"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="632,665,799,745"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="685,759,598,896,593,893,681,756"/>
-<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html" title="Bundles identity and spatial dimensions passed to every Element constructor." alt="" coords="221,585,447,825"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="337,825,349,863,379,911,417,952,413,956,374,914,344,865,331,826"/>
-<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementIdentifiers.html" title="Identity information for an element: numeric ID, name, and type label." alt="" coords="43,293,225,493"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="200,491,251,570,246,573,196,494"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="95,135,173,200"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="137,200,137,276,131,276,131,200"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="443,345,587,440"/>
-<area shape="poly" id="edge9_Node000009_Node000006" title=" " alt="" coords="174,170,229,179,296,196,367,222,400,240,432,261,464,293,489,329,485,332,460,296,428,265,398,244,364,227,295,201,228,185,173,175"/>
-<area shape="rect" id="Node000011" title=" " alt="" coords="209,1653,419,1763"/>
-<area shape="poly" id="edge14_Node000011_Node000006" title=" " alt="" coords="96,197,63,227,34,264,18,297,11,325,9,391,9,1412,13,1451,26,1487,45,1521,70,1553,99,1581,131,1607,197,1649,194,1654,127,1611,95,1585,66,1556,41,1524,21,1490,8,1452,3,1412,3,391,5,324,13,295,29,261,59,223,93,193"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="69,5,199,85"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="137,99,137,134,131,134,131,99"/>
-<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1ElementDimensions.html" title="Spatial discretization of a one&#45;dimensional field." alt="" coords="249,303,419,483"/>
-<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="337,483,337,569,331,569,331,483"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="518,440,515,871,510,871,513,440"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="437,135,594,200"/>
-<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="518,200,518,329,513,329,513,200"/>
-<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="301,1654,290,1569,285,1462,287,1403,293,1344,305,1286,324,1230,341,1195,363,1162,414,1105,417,1109,367,1165,346,1198,329,1232,310,1287,299,1345,292,1404,290,1462,295,1569,306,1653"/>
-<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="487,1453,361,1641,357,1638,483,1450"/>
-<area shape="rect" id="Node000013" href="$structdnf__composer_1_1element_1_1NeuralFieldParameters.html" title="Parameters that govern a NeuralField&#39;s dynamics." alt="" coords="869,928,1055,1128"/>
-<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="965,1128,965,1214,959,1214,959,1128"/>
-<area shape="rect" id="Node000014" href="$structdnf__composer_1_1element_1_1ElementSpecificParameters.html" title="Abstract base for all element&#45;specific parameter structs." alt="" coords="823,635,1051,775"/>
-<area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="946,789,957,928,952,928,941,789"/>
-<area shape="rect" id="Node000015" title=" " alt="" coords="1075,658,1297,753"/>
-<area shape="poly" id="edge17_Node000013_Node000015" title=" " alt="" coords="1156,754,1043,916,1038,913,1152,751"/>
-<area shape="rect" id="Node000016" href="$structdnf__composer_1_1element_1_1ActivationFunction.html" title="Abstract base for activation functions applied to a neural field." alt="" coords="1101,273,1271,513"/>
-<area shape="poly" id="edge18_Node000015_Node000016" title=" " alt="" coords="1189,513,1189,642,1183,642,1183,513"/>
-<area shape="rect" id="Node000017" href="$structdnf__composer_1_1element_1_1NeuralFieldState.html" title="Snapshot of a neural field&#39;s observable state." alt="" coords="1130,908,1317,1148"/>
-<area shape="poly" id="edge19_Node000001_Node000017" title=" " alt="" coords="1144,1150,1074,1251,1070,1248,1140,1146"/>
-<area shape="rect" id="Node000018" title=" " alt="" coords="1321,665,1531,745"/>
-<area shape="poly" id="edge20_Node000017_Node000018" title=" " alt="" coords="1404,747,1310,895,1305,892,1399,744"/>
-<area shape="rect" id="Node000019" href="$structdnf__composer_1_1element_1_1NeuralFieldBump.html" title="Describes a single activation bump (peak) in a neural field." alt="" coords="1342,263,1510,523"/>
-<area shape="poly" id="edge21_Node000018_Node000019" title=" " alt="" coords="1429,523,1429,649,1423,649,1423,523"/>
+<area shape="rect" id="Node000001" title="Continuous attractor neural field — the core DFT building block." alt="" coords="863,1291,1064,1651"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="429,948,597,1228"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="609,1167,864,1382,861,1386,606,1171"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="401,1431,625,1511"/>
+<area shape="poly" id="edge13_Node000012_Node000002" title=" " alt="" coords="515,1228,515,1414,510,1414,510,1228"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="633,725,800,805"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="687,819,599,956,595,953,682,816"/>
+<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html" title=" " alt="" coords="223,645,448,885"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="338,885,350,923,380,971,418,1012,414,1016,376,974,345,925,333,886"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementIdentifiers.html" title=" " alt="" coords="45,323,226,523"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="194,522,251,620,257,630,252,633,246,623,189,524"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="96,135,175,200"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="138,200,138,306,133,306,133,200"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="445,375,589,470"/>
+<area shape="poly" id="edge9_Node000009_Node000006" title=" " alt="" coords="175,169,231,177,298,194,369,220,403,239,433,261,455,282,473,307,499,359,494,361,468,310,451,286,430,265,400,243,367,225,297,199,230,183,175,174"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="211,1713,420,1823"/>
+<area shape="poly" id="edge14_Node000011_Node000006" title=" " alt="" coords="97,197,63,227,35,264,17,305,10,339,10,421,10,1472,15,1511,27,1547,47,1581,71,1613,100,1641,132,1667,198,1709,195,1714,129,1671,97,1645,67,1616,42,1584,22,1550,9,1512,5,1472,5,421,5,339,12,303,30,261,60,223,94,193"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="70,5,201,85"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="138,99,138,134,133,134,133,99"/>
+<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1ElementDimensions.html" title=" " alt="" coords="251,263,420,583"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="338,583,338,629,333,629,333,583"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="519,470,516,932,511,932,514,470"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="438,135,595,200"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="519,200,519,359,514,359,514,200"/>
+<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="302,1714,291,1629,286,1522,288,1463,295,1404,307,1346,325,1290,342,1255,364,1222,415,1165,419,1169,368,1225,347,1258,330,1292,312,1347,300,1405,293,1464,291,1522,297,1629,308,1713"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="489,1513,363,1701,358,1698,484,1510"/>
+<area shape="rect" id="Node000013" href="$structdnf__composer_1_1element_1_1NeuralFieldParameters.html" title="Parameters that govern a NeuralField&#39;s dynamics." alt="" coords="870,988,1057,1188"/>
+<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="966,1188,966,1274,961,1274,961,1188"/>
+<area shape="rect" id="Node000014" href="$structdnf__composer_1_1element_1_1ElementSpecificParameters.html" title=" " alt="" coords="824,695,1052,835"/>
+<area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="947,849,958,988,953,988,942,849"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="1077,718,1298,813"/>
+<area shape="poly" id="edge17_Node000013_Node000015" title=" " alt="" coords="1157,814,1044,976,1040,973,1153,811"/>
+<area shape="rect" id="Node000016" href="$structdnf__composer_1_1element_1_1ActivationFunction.html" title="Abstract base for activation functions applied to a neural field." alt="" coords="1102,303,1273,543"/>
+<area shape="poly" id="edge18_Node000015_Node000016" title=" " alt="" coords="1190,543,1190,702,1185,702,1185,543"/>
+<area shape="rect" id="Node000017" href="$structdnf__composer_1_1element_1_1NeuralFieldState.html" title="Snapshot of a neural field&#39;s observable state." alt="" coords="1131,968,1318,1208"/>
+<area shape="poly" id="edge19_Node000001_Node000017" title=" " alt="" coords="1145,1210,1076,1311,1071,1308,1141,1206"/>
+<area shape="rect" id="Node000018" title=" " alt="" coords="1322,725,1533,805"/>
+<area shape="poly" id="edge20_Node000017_Node000018" title=" " alt="" coords="1405,807,1311,955,1307,952,1400,804"/>
+<area shape="rect" id="Node000019" href="$structdnf__composer_1_1element_1_1NeuralFieldBump.html" title="Describes a single activation bump (peak) in a neural field." alt="" coords="1343,293,1511,553"/>
+<area shape="poly" id="edge21_Node000018_Node000019" title=" " alt="" coords="1430,553,1430,709,1425,709,1425,553"/>
 </map>

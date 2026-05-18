@@ -1,0 +1,15 @@
+<map id="dnf_composer::element::GaussKernel2D::step" name="dnf_composer::element::GaussKernel2D::step">
+<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,133,181,173"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2" title=" " alt="" coords="229,85,452,125"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,134,223,125,224,131,182,139"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="253,165,429,205"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="182,162,239,170,239,175,181,167"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e" title=" " alt="" coords="529,5,707,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="406,83,499,55,529,46,530,52,501,60,407,88"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d" title=" " alt="" coords="531,69,705,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="452,96,517,92,517,98,452,102"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title=" " alt="" coords="500,133,736,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="453,122,489,128,488,134,452,127"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" title="Cache raw pointers to input component data. Call after all element init()s complete." alt="" coords="519,197,717,237"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="429,193,506,202,505,207,429,198"/>
+</map>

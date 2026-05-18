@@ -1,0 +1,9 @@
+<map id="dnf_composer::element::AsymmetricGaussKernel2D" name="dnf_composer::element::AsymmetricGaussKernel2D">
+<area shape="rect" id="Node000001" title="2D asymmetric Gaussian kernel that induces directional peak drift." alt="" coords="5,769,223,969"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Kernel.html" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="30,521,198,721"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,735,117,769,111,769,111,735"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="30,133,198,473"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="117,487,117,521,111,521,111,487"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="31,5,197,85"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="117,99,117,133,111,133,111,99"/>
+</map>

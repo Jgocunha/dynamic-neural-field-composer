@@ -95,7 +95,7 @@ Inheritance diagram for dnf_composer::element::GaussKernel:</div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::GaussKernel:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussKernel__coll__graph.svg" width="794" height="1599"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussKernel__coll__graph.svg" width="794" height="1719"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -160,7 +160,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa01ede49f059909e7be5304649fe0697 inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_aa01ede49f059909e7be5304649fe0697"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt;, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aa01ede49f059909e7be5304649fe0697">getInputsAndComponents</a> ()</td></tr>
 <tr class="memdesc:aa01ede49f059909e7be5304649fe0697 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all inputs mapped to the component name they expose.  <br /></td></tr>
 <tr class="separator:aa01ede49f059909e7be5304649fe0697 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb545160a669e84f9f13846ae09ca8f1 inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_adb545160a669e84f9f13846ae09ca8f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__element__parameters.html#gac3d19ecdf631f5316e2c09003233bece">ElementLabel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#adb545160a669e84f9f13846ae09ca8f1">getLabel</a> () const</td></tr>
+<tr class="memitem:adb545160a669e84f9f13846ae09ca8f1 inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_adb545160a669e84f9f13846ae09ca8f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233bece">ElementLabel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#adb545160a669e84f9f13846ae09ca8f1">getLabel</a> () const</td></tr>
 <tr class="separator:adb545160a669e84f9f13846ae09ca8f1 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2982501622d89acb575cbcab2c72ef16 inherit pub_methods_classdnf__composer_1_1element_1_1Element" id="r_a2982501622d89acb575cbcab2c72ef16"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a2982501622d89acb575cbcab2c72ef16">getMaxSpatialDimension</a> () const</td></tr>
 <tr class="separator:a2982501622d89acb575cbcab2c72ef16 inherit pub_methods_classdnf__composer_1_1element_1_1Element"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,8 +241,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Gaussian convolution kernel providing local excitation and optional global inhibition. </p>
-<p>On each <code><a class="el" href="classdnf__composer_1_1element_1_1GaussKernel.html#a5fd228b67854d1c571f272756c67389a" title="Advance the element by one time step.">step()</a></code>, the kernel convolves its input field's "output" component with a Gaussian of the given width and amplitude, then adds the global inhibition baseline (<code>amplitudeGlobal</code> * fullSum). The result is stored in the "output" component and fed forward to the receiving neural field.</p>
-<p>When <code><a class="el" href="structdnf__composer_1_1element_1_1GaussKernelParameters.html#af1f6682ed2842a29c9e49b8b0a27245d" title="Override output field size for cross-dimension kernels.">GaussKernelParameters::outputFieldDimensions</a></code> is set, the convolution result is resampled to the specified output size, enabling connections between fields of different spatial dimensions. </p>
+<p>On each <code><a class="el" href="classdnf__composer_1_1element_1_1GaussKernel.html#a5fd228b67854d1c571f272756c67389a" title="Advance the element by one time step.">step()</a></code>, the kernel convolves its input field's "output" component with a Gaussian of the given width and amplitude, then adds the global inhibition baseline (<code>amplitudeGlobal</code> * fullSum). The result is stored in the "output" component and fed forward to the receiving neural field. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a671f66944ee5d7b405019b7692f48a7a" name="a671f66944ee5d7b405019b7692f48a7a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a671f66944ee5d7b405019b7692f48a7a">&#9670;&#160;</a></span>GaussKernel()</h2>
@@ -435,7 +434,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussKernel_a5fd228b67854d1c571f272756c67389a_cgraph.svg" width="716" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussKernel_a5fd228b67854d1c571f272756c67389a_cgraph.svg" width="716" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

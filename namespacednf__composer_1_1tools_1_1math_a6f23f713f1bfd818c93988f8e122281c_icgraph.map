@@ -1,7 +1,11 @@
 <map id="dnf_composer::tools::math::gaussDerivativeNorm" name="dnf_composer::tools::math::gaussDerivativeNorm">
-<area shape="rect" id="Node000001" title=" " alt="" coords="511,13,725,53"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="244,13,463,53"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="497,35,463,35,463,30,497,30"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#aa692c282d0b5b78e54d15664166a06eb" title=" " alt="" coords="5,5,196,60"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="230,35,196,35,196,30,230,30"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="547,53,761,93"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="271,17,489,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="533,59,489,54,490,48,534,54"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a8234958fc93042c32fa069831a7034c5" title="Initialize the element (called once before the simulation loop)." alt="" coords="261,85,499,125"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="534,89,499,93,499,88,533,84"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#aa692c282d0b5b78e54d15664166a06eb" title=" " alt="" coords="14,5,205,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="257,38,205,37,205,31,257,32"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#afbef9cba9917c5548463b4e8a7cec7fd" title=" " alt="" coords="5,84,213,139"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="248,111,213,111,213,106,248,105"/>
 </map>

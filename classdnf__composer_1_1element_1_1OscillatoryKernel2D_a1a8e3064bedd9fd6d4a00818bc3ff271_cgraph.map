@@ -1,0 +1,15 @@
+<map id="dnf_composer::element::OscillatoryKernel2D::step" name="dnf_composer::element::OscillatoryKernel2D::step">
+<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,133,200,173"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2" title=" " alt="" coords="248,85,471,125"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,133,238,125,239,131,201,138"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="271,165,447,205"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="200,163,258,170,257,175,200,168"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e" title=" " alt="" coords="547,5,726,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="424,83,518,55,547,46,549,52,519,60,426,88"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d" title=" " alt="" coords="549,69,724,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="471,96,535,92,536,98,471,102"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title=" " alt="" coords="519,133,755,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="471,122,508,128,507,134,470,127"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" title="Cache raw pointers to input component data. Call after all element init()s complete." alt="" coords="538,197,735,237"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="448,193,524,202,524,207,447,198"/>
+</map>

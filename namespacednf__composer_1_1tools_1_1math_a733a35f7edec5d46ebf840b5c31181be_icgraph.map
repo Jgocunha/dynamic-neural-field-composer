@@ -1,7 +1,11 @@
 <map id="dnf_composer::tools::math::generateNormalVector" name="dnf_composer::tools::math::generateNormalVector">
-<area shape="rect" id="Node000001" title=" " alt="" coords="272,37,491,77"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#a4d7c18564ba06a8bfc776f98f4ca0f7a" title="Advance the element by one time step." alt="" coords="5,5,224,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="258,45,224,41,225,36,259,40"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1NormalNoise.html#ab11bbf272dfe2f01b63ce4120283f8d9" title="Advance the element by one time step." alt="" coords="27,69,203,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="259,75,203,81,203,76,258,69"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="291,101,509,141"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#a4d7c18564ba06a8bfc776f98f4ca0f7a" title="Advance the element by one time step." alt="" coords="15,5,233,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="340,98,242,60,203,48,205,43,244,55,342,93"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise2D.html#a3b8fb5f809d6103a7dff54129d8301f5" title="Advance the element by one time step." alt="" coords="5,69,243,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="277,110,243,106,243,100,278,104"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1NormalNoise.html#ab11bbf272dfe2f01b63ce4120283f8d9" title="Advance the element by one time step." alt="" coords="36,133,212,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="277,138,213,146,212,140,277,133"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1NormalNoise2D.html#ace176b2564e66e39b64cff2375588461" title="Advance the element by one time step." alt="" coords="36,197,212,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="342,149,244,188,205,200,203,195,242,183,340,144"/>
 </map>

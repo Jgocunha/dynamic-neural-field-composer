@@ -24,26 +24,26 @@
 <text text-anchor="start" x="4.5" y="-171.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text text-anchor="start" x="17.5" y="-171.5" font-family="Helvetica,sans-Serif" font-size="10.00">weightsDirectory</text>
 <text text-anchor="start" x="4.5" y="-156.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-156.5" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
+<text text-anchor="start" x="17.5" y="-156.5" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
 <text text-anchor="start" x="4.5" y="-141.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-141.5" font-family="Helvetica,sans-Serif" font-size="10.00">changeInputDimensions()</text>
+<text text-anchor="start" x="17.5" y="-141.5" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
 <text text-anchor="start" x="4.5" y="-126.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-126.5" font-family="Helvetica,sans-Serif" font-size="10.00">clearWeights()</text>
+<text text-anchor="start" x="17.5" y="-126.5" font-family="Helvetica,sans-Serif" font-size="10.00">changeInputDimensions()</text>
 <text text-anchor="start" x="4.5" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text text-anchor="start" x="17.5" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">clearWeights()</text>
 <text text-anchor="start" x="4.5" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">FieldCoupling()</text>
+<text text-anchor="start" x="17.5" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
 <text text-anchor="start" x="4.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">getParameters()</text>
+<text text-anchor="start" x="17.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">FieldCoupling()</text>
 <text text-anchor="start" x="4.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">getWeightsDirectory()</text>
+<text text-anchor="start" x="17.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">getParameters()</text>
 <text text-anchor="start" x="4.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">init()</text>
+<text text-anchor="start" x="17.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">getWeightsDirectory()</text>
 <text text-anchor="start" x="4.5" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">readWeights()</text>
+<text text-anchor="start" x="17.5" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">init()</text>
 <text text-anchor="start" x="4.5" y="-21.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="17.5" y="-21.5" font-family="Helvetica,sans-Serif" font-size="10.00">setLearning()</text>
-<text text-anchor="start" x="17.5" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 6 more...</text>
+<text text-anchor="start" x="17.5" y="-21.5" font-family="Helvetica,sans-Serif" font-size="10.00">readWeights()</text>
+<text text-anchor="start" x="17.5" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 7 more...</text>
 <polygon fill="#666666" stroke="#666666" points="0.5,-226.5 0.5,-226.5 147.5,-226.5 147.5,-226.5 0.5,-226.5"/>
 <polygon fill="#666666" stroke="#666666" points="0.5,-166.5 0.5,-166.5 15.5,-166.5 15.5,-166.5 0.5,-166.5"/>
 <polygon fill="#666666" stroke="#666666" points="15.5,-166.5 15.5,-166.5 147.5,-166.5 147.5,-166.5 15.5,-166.5"/>

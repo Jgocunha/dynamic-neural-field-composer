@@ -1,10 +1,15 @@
 <map id="dnf_composer::tools::math::gaussDerivative" name="dnf_composer::tools::math::gaussDerivative">
-<area shape="rect" id="Node000001" title=" " alt="" coords="773,35,952,75"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a6f23f713f1bfd818c93988f8e122281c" title=" " alt="" coords="511,5,725,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="760,45,725,41,726,36,760,40"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="244,35,463,75"/>
-<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="760,60,725,60,511,60,463,59,463,54,511,55,725,55,760,54"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="497,41,463,45,462,40,497,36"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#aa692c282d0b5b78e54d15664166a06eb" title=" " alt="" coords="5,27,196,82"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="230,57,196,57,196,52,230,52"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="809,61,988,101"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a6f23f713f1bfd818c93988f8e122281c" title=" " alt="" coords="547,61,761,101"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="796,83,761,83,761,78,796,78"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="271,13,489,53"/>
+<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="810,60,761,51,620,38,489,34,490,29,620,33,762,46,811,55"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a8234958fc93042c32fa069831a7034c5" title="Initialize the element (called once before the simulation loop)." alt="" coords="261,101,499,141"/>
+<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="812,106,762,115,626,126,499,127,499,122,626,120,761,110,811,101"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="533,62,489,54,490,49,534,57"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="534,101,499,106,499,101,533,96"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#aa692c282d0b5b78e54d15664166a06eb" title=" " alt="" coords="14,5,205,60"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="257,35,205,35,205,30,257,30"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#afbef9cba9917c5548463b4e8a7cec7fd" title=" " alt="" coords="5,93,213,148"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="248,123,213,123,213,118,248,118"/>
 </map>

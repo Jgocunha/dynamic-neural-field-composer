@@ -8,5 +8,5 @@ var searchData=
   ['library_5',['Library',['../structImGui__ImplFreeType__Data.html#a29a742812f010781e3217ad640944d70',1,'ImGui_ImplFreeType_Data']]],
   ['linethickness_6',['linethickness',['../structdnf__composer_1_1user__interface_1_1PlotCardState.html#a6c5d9810a6fe8d42aa48fa6a01b6b253',1,'dnf_composer::user_interface::PlotCardState::lineThickness'],['../structdnf__composer_1_1LinePlotParameters.html#a7910b60e767b72027809e229dd1cf8d6',1,'dnf_composer::LinePlotParameters::lineThickness']]],
   ['loadflags_7',['LoadFlags',['../structImGui__ImplFreeType__FontSrcData.html#a642672e66a1cc028fc72f082a137eaf9',1,'ImGui_ImplFreeType_FontSrcData']]],
-  ['lowestactivation_8',['lowestActivation',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a142042609f6e9ef5a276cc34f97f4420',1,'dnf_composer::element::NeuralFieldState']]]
+  ['lowestactivation_8',['lowestactivation',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a142042609f6e9ef5a276cc34f97f4420',1,'dnf_composer::element::NeuralFieldState::lowestActivation'],['../structdnf__composer_1_1element_1_1NeuralField2DState.html#ab1011ddb6287c8d4c126a34704099e31',1,'dnf_composer::element::NeuralField2DState::lowestActivation']]]
 ];

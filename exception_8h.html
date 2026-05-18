@@ -83,17 +83,18 @@ $(function() {
   <div class="headertitle"><div class="title">exception.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;exception&gt;</code><br />
+<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;exception&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for exception.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="exception_8h__incl.svg" width="182" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="exception_8h__incl.svg" width="272" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="exception_8h__dep__incl.svg" width="3988" height="1004"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="exception_8h__dep__incl.svg" width="5460" height="990"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="exception_8h_source.html">Go to the source code of this file.</a></p>
@@ -110,46 +111,46 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a1b44d8c312ce085759707d53cb11de9f" id="r_a1b44d8c312ce085759707d53cb11de9f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9f">dnf_composer::ErrorCode</a> : int { <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fae0aa021e21dddbd6d8cecec71e9cf564">dnf_composer::OK</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa47356a03ff6025174a209c849452dccd">dnf_composer::APP_CONSTRUCTION</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fae280540a3740af4bf918297b835f7bc6">dnf_composer::APP_INIT</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa3d9b37649d53afbb948005b248175e5e">dnf_composer::APP_STEP</a>
+<tr class="memitem:a8fa187c612acb1ee0d0de3165127fb7c" id="r_a8fa187c612acb1ee0d0de3165127fb7c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7c">dnf_composer::ErrorCode</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cae0aa021e21dddbd6d8cecec71e9cf564">dnf_composer::OK</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca47356a03ff6025174a209c849452dccd">dnf_composer::APP_CONSTRUCTION</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cae280540a3740af4bf918297b835f7bc6">dnf_composer::APP_INIT</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca3d9b37649d53afbb948005b248175e5e">dnf_composer::APP_STEP</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa2e1cf90644ced627109daca1cd80b3b9">dnf_composer::APP_CLOSE</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa419f485901385a4b0244c5f723ca01a8">dnf_composer::APP_INVALID_SIM</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa674f85cb87a8f0465fb622980c83f28f">dnf_composer::APP_INVALID_VIS</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fad526479d7d1c003e662a08ad00da0711">dnf_composer::APP_VIS_SIM_MISMATCH</a>
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca2e1cf90644ced627109daca1cd80b3b9">dnf_composer::APP_CLOSE</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca419f485901385a4b0244c5f723ca01a8">dnf_composer::APP_INVALID_SIM</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca674f85cb87a8f0465fb622980c83f28f">dnf_composer::APP_INVALID_VIS</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cad526479d7d1c003e662a08ad00da0711">dnf_composer::APP_VIS_SIM_MISMATCH</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa8ce9f9606fd38ac008de70c7b5a94e26">dnf_composer::SIM_INVALID_PARAMETER</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fab89f810ba404d0e61e9ec533f00543b1">dnf_composer::SIM_ELEM_NOT_FOUND</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa30e4fa0f18b5eb12b4244b7bb6e3e1c6">dnf_composer::SIM_RUNTIME_LESS_THAN_ZERO</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa22138bbb9857f99b06db469a4ee2081a">dnf_composer::SIM_ELEM_INDEX</a>
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca8ce9f9606fd38ac008de70c7b5a94e26">dnf_composer::SIM_INVALID_PARAMETER</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cab89f810ba404d0e61e9ec533f00543b1">dnf_composer::SIM_ELEM_NOT_FOUND</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca30e4fa0f18b5eb12b4244b7bb6e3e1c6">dnf_composer::SIM_RUNTIME_LESS_THAN_ZERO</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca22138bbb9857f99b06db469a4ee2081a">dnf_composer::SIM_ELEM_INDEX</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa181d8ed3313aa0f5ee07ab95e369db4a">dnf_composer::SIM_ELEM_ALREADY_EXISTS</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fac49b813c339144955d0bd0e7bf3bbd63">dnf_composer::ELEM_INVALID_SIZE</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa46cd0feec73546b6d6a7ba15951471da">dnf_composer::ELEM_INVALID_PARAMETER</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa69291fe0cd2673a7a0ece7e676f063ec">dnf_composer::ELEM_INPUT_IS_NULL</a>
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca181d8ed3313aa0f5ee07ab95e369db4a">dnf_composer::SIM_ELEM_ALREADY_EXISTS</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cac49b813c339144955d0bd0e7bf3bbd63">dnf_composer::ELEM_INVALID_SIZE</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca46cd0feec73546b6d6a7ba15951471da">dnf_composer::ELEM_INVALID_PARAMETER</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca69291fe0cd2673a7a0ece7e676f063ec">dnf_composer::ELEM_INPUT_IS_NULL</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa16f0d603633dddb84bf43724f5dbfd4c">dnf_composer::ELEM_INPUT_ALREADY_EXISTS</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa9c9274ea0955e3885ffca68d1a646894">dnf_composer::ELEM_INPUT_NOT_FOUND</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa680bf77bd508a41a55ef509cadd6e765">dnf_composer::ELEM_INPUT_SIZE_MISMATCH</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa04f0581ac9d3c6c8a6face9f1bfe8aef">dnf_composer::ELEM_SIZE_NOT_ALLOWED</a>
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca16f0d603633dddb84bf43724f5dbfd4c">dnf_composer::ELEM_INPUT_ALREADY_EXISTS</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca9c9274ea0955e3885ffca68d1a646894">dnf_composer::ELEM_INPUT_NOT_FOUND</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca680bf77bd508a41a55ef509cadd6e765">dnf_composer::ELEM_INPUT_SIZE_MISMATCH</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca04f0581ac9d3c6c8a6face9f1bfe8aef">dnf_composer::ELEM_SIZE_NOT_ALLOWED</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa49cfd39b6006295fd237fbe7631f6994">dnf_composer::ELEM_RENAME_NOT_ALLOWED</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9faf9eab69d092d2022bbdfb66fa628cc37">dnf_composer::ELEM_COMP_NOT_FOUND</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9faffabdedb6280bf8dde5a664c077287a7">dnf_composer::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9faef9abf319f23b8a70c7cb0c06bc04cef">dnf_composer::GAUSS_STIMULUS_SUM_MISMATCH</a>
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca49cfd39b6006295fd237fbe7631f6994">dnf_composer::ELEM_RENAME_NOT_ALLOWED</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7caf9eab69d092d2022bbdfb66fa628cc37">dnf_composer::ELEM_COMP_NOT_FOUND</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7caffabdedb6280bf8dde5a664c077287a7">dnf_composer::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7caef9abf319f23b8a70c7cb0c06bc04cef">dnf_composer::GAUSS_STIMULUS_SUM_MISMATCH</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa8ca8915de2c352ff98a0e27f16f5136f">dnf_composer::VIS_INVALID_SIM</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa80dbb01bba6f1718336a4fcbffb70fe3">dnf_composer::VIS_DATA_NOT_FOUND</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa17399e756afd1dd33a7d4d934a7c1b24">dnf_composer::VIS_INVALID_PLOTTING_INDEX</a>
-, <a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fa265c982c0abf5027b3d43322fac846fd">dnf_composer::LOG_LOCAL_TIME_ERROR</a>
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca8ca8915de2c352ff98a0e27f16f5136f">dnf_composer::VIS_INVALID_SIM</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca80dbb01bba6f1718336a4fcbffb70fe3">dnf_composer::VIS_DATA_NOT_FOUND</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca17399e756afd1dd33a7d4d934a7c1b24">dnf_composer::VIS_INVALID_PLOTTING_INDEX</a>
+, <a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca265c982c0abf5027b3d43322fac846fd">dnf_composer::LOG_LOCAL_TIME_ERROR</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacednf__composer.html#a1b44d8c312ce085759707d53cb11de9fafd54c9fb00efabeb1099cd14fb30a7de">dnf_composer::PLOT_INVALID_VIS_OBJ</a>
+&#160;&#160;<a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cafd54c9fb00efabeb1099cd14fb30a7de">dnf_composer::PLOT_INVALID_VIS_OBJ</a>
 <br />
  }</td></tr>
-<tr class="separator:a1b44d8c312ce085759707d53cb11de9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a8fa187c612acb1ee0d0de3165127fb7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
