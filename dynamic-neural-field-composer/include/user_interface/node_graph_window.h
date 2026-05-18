@@ -29,8 +29,6 @@
 #include "elements/boost_stimulus_2d.h"
 #include "elements/memory_trace_2d.h"
 #include "elements/asymmetric_gauss_kernel_2d.h"
-#include "elements/resize.h"
-#include "elements/field_projection.h"
 #include "widgets.h"
 #include "user_interface/node_utilities/builders.h"
 #include "user_interface/node_utilities/node_widgets.h"

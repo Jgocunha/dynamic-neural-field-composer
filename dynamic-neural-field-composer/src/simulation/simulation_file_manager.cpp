@@ -453,24 +453,6 @@ namespace dnf_composer
             elementJson["threshold"] = p.threshold;
         }
         break;
-        case element::RESIZE:
-        {
-            const auto resize = std::dynamic_pointer_cast<element::Resize>(element);
-            const auto p = resize->getParameters();
-            elementJson["outputSize"] = p.outputSize;
-            elementJson["outputStep"] = p.outputStep;
-            elementJson["interpolation"] = static_cast<int>(p.interpolation);
-        }
-        break;
-        case element::FIELD_PROJECTION:
-        {
-            const auto fp = std::dynamic_pointer_cast<element::FieldProjection>(element);
-            const auto p  = fp->getParameters();
-            elementJson["projectionAxis"]  = p.projectionAxis;
-            elementJson["compressionType"] = static_cast<int>(p.compressionType);
-            elementJson["direction"]       = static_cast<int>(p.direction);
-        }
-        break;
         default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -893,35 +875,6 @@ namespace dnf_composer
                 element::MemoryTrace2DParameters(tauBuild, tauDecay, threshold)
             );
             simulation->addElement(mt);
-        }
-        break;
-        case element::RESIZE:
-        {
-            const int    outputSize   = elementJson.value("outputSize", 100);
-            const double outputStep   = elementJson.value("outputStep", 1.0);
-            const int    interpRaw    = elementJson.value("interpolation",
-                static_cast<int>(element::ResizeInterpolation::LINEAR));
-            const auto   interpolation = static_cast<element::ResizeInterpolation>(interpRaw);
-            auto resize = std::make_shared<element::Resize>(
-                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
-                element::ResizeParameters(outputSize, outputStep, interpolation)
-            );
-            simulation->addElement(resize);
-        }
-        break;
-        case element::FIELD_PROJECTION:
-        {
-            element::FieldProjectionParameters fp{};
-            fp.projectionAxis  = elementJson.value("projectionAxis", 0);
-            fp.compressionType = static_cast<element::FieldProjectionCompression>(
-                elementJson.value("compressionType", 0));
-            fp.direction       = static_cast<element::FieldProjectionDirection>(
-                elementJson.value("direction", 0));
-            auto proj = std::make_shared<element::FieldProjection>(
-                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
-                fp
-            );
-            simulation->addElement(proj);
         }
         break;
 	    default:

@@ -31,8 +31,6 @@
 #include "elements/correlated_normal_noise_2d.h"
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
-#include "elements/resize.h"
-#include "elements/field_projection.h"
 #include "user_interface/widgets.h"
 #include "application/application.h"
 
@@ -95,9 +93,6 @@ namespace dnf_composer::user_interface
 		static void modifyElementCorrelatedNormalNoise2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementAsymmetricGaussKernel2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementMemoryTrace2D(const std::shared_ptr<element::Element>& element);
-		static void modifyElementResize(const std::shared_ptr<element::Element>& element);
-		static void modifyElementFieldProjection(const std::shared_ptr<element::Element>& element);
-		static void modifyElementFieldExpansion(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
 		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);
