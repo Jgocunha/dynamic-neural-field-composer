@@ -103,6 +103,8 @@ namespace dnf_composer
 
 			void init() override;
 			void step(double t, double deltaT) override;
+			void addInput(const std::shared_ptr<Element>& inputElement,
+				const std::string& inputComponent = "output") override;
 			std::string toString() const override;
 			std::shared_ptr<Element> clone() const override;
 

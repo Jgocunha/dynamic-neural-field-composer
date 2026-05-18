@@ -117,6 +117,14 @@ namespace dnf_composer
 			}
 		}
 
+		void FieldCoupling::addInput(const std::shared_ptr<Element>& inputElement,
+			const std::string& inputComponent)
+		{
+			Element::addInput(inputElement, inputComponent);
+			updateInputField();
+			updateOutputField();
+		}
+
 		void FieldCoupling::updateInputField()
 		{
 			if (inputs.size() != 1)

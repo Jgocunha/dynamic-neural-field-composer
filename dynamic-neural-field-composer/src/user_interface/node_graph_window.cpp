@@ -299,8 +299,29 @@ namespace dnf_composer::user_interface
 			const int rows = comps->contains("input")  ? static_cast<int>(comps->at("input").size())  : 0;
 			if (cols > 0 && rows > 0 && cols * rows == static_cast<int>(weights.size()))
 			{
-				drawWeightHeatmap(dl, rect, weights, rows, cols);
-				drewContent = true;
+				const double frameMin = *std::ranges::min_element(weights);
+				const double frameMax = *std::ranges::max_element(weights);
+				if (std::isfinite(frameMin) && std::isfinite(frameMax))
+				{
+					static std::unordered_map<std::string, std::pair<double, double>> s_wmRangeCache;
+					const std::string key = element->getUniqueName();
+					if (const auto it = s_wmRangeCache.find(key); it == s_wmRangeCache.end())
+						s_wmRangeCache[key] = { frameMin, frameMax };
+					else
+					{
+						constexpr double alpha = 0.05;
+						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
+						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
+					}
+					auto& [stableMin, stableMax] = s_wmRangeCache[key];
+					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
+
+					constexpr float axisRight = 30.0f;
+					const ImRect hmRect(rect.Min, ImVec2(rect.Max.x - axisRight, rect.Max.y));
+					draw2DFieldHeatmap(dl, hmRect, weights, rows, cols, stableMin, stableMax);
+					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
+					drewContent = true;
+				}
 			}
 		}
 		else if (is2D && comps)
@@ -577,7 +598,7 @@ namespace dnf_composer::user_interface
 
 			if (visible)
 			{
-				renderPlotCardMenuBar(state, is2D, element);
+				renderPlotCardMenuBar(state, is2D, element, isWM);
 				renderPlotCardContent(element, state, isWM, is2D);
 			}
 
@@ -588,7 +609,7 @@ namespace dnf_composer::user_interface
 	}
 
 	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state, const bool is2DField,
-		const std::shared_ptr<element::Element>& element)
+		const std::shared_ptr<element::Element>& element, const bool isWM)
 	{
 		if (!ImGui::BeginMenuBar()) return;
 
@@ -609,7 +630,7 @@ namespace dnf_composer::user_interface
 			ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
 			ImGui::EndMenu();
 		}
-		if (!is2DField)
+		if (!is2DField && !isWM)
 		{
 			if (ImGui::BeginMenu("Line Thickness"))
 			{
@@ -617,7 +638,7 @@ namespace dnf_composer::user_interface
 				ImGui::EndMenu();
 			}
 		}
-		else
+		if (is2DField || isWM)
 		{
 			if (ImGui::BeginMenu("Colormap"))
 			{
@@ -635,19 +656,22 @@ namespace dnf_composer::user_interface
 				ImGui::Checkbox("Auto scale", &state.autoScale);
 				ImGui::EndMenu();
 			}
-			if (const auto* comps = element->getComponents(); comps && ImGui::BeginMenu("Component"))
+			if (is2DField)
 			{
-				const std::string defaultComp =
-					(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
-				const std::string activeComp =
-					(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
-				for (const auto& name : *comps | std::views::keys)
+				if (const auto* comps = element->getComponents(); comps && ImGui::BeginMenu("Component"))
 				{
-					const bool selected = (activeComp == name);
-					if (ImGui::MenuItem(name.c_str(), nullptr, selected))
-						std::snprintf(state.selectedComponent, sizeof(state.selectedComponent), "%s", name.c_str());
+					const std::string defaultComp =
+						(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
+					const std::string activeComp =
+						(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
+					for (const auto& name : *comps | std::views::keys)
+					{
+						const bool selected = (activeComp == name);
+						if (ImGui::MenuItem(name.c_str(), nullptr, selected))
+							std::snprintf(state.selectedComponent, sizeof(state.selectedComponent), "%s", name.c_str());
+					}
+					ImGui::EndMenu();
 				}
-				ImGui::EndMenu();
 			}
 		}
 
@@ -668,10 +692,47 @@ namespace dnf_composer::user_interface
 			const int cols = comps->contains("output") ? static_cast<int>(comps->at("output").size()) : 0;
 			if (rows > 0 && cols > 0 && rows * cols == static_cast<int>(weights.size()))
 			{
-				const ImVec2 origin = ImGui::GetCursorScreenPos();
-				ImGui::Dummy(ImVec2(plotW, plotH));
-				const ImRect rect(origin, ImVec2(origin.x + plotW, origin.y + plotH));
-				drawWeightHeatmap(ImGui::GetWindowDrawList(), rect, weights, rows, cols);
+				double scMin, scMax;
+				if (state.autoScale)
+				{
+					scMin = *std::ranges::min_element(weights);
+					scMax = *std::ranges::max_element(weights);
+					if (!std::isfinite(scMin) || !std::isfinite(scMax)) return;
+					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
+				}
+				else
+				{
+					scMin = state.scaleMin;
+					scMax = state.scaleMax;
+					if (scMax <= scMin) scMax = scMin + 1.0;
+				}
+
+				if (state.title[0] == '\0')
+				{
+					const std::string defaultTitle = element->getUniqueName() + " weights";
+					std::snprintf(state.title,  sizeof(state.title),  "%s", defaultTitle.c_str());
+					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Output field");
+					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Input field");
+				}
+
+				const float cbW = 60.0f;
+				const float hmW = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
+				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
+				if (!state.autoFit)
+					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
+
+				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+				ImPlot::PushColormap(state.colormap);
+				if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(hmW, plotH), ImPlotFlags_Crosshairs))
+				{
+					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+					ImPlot::PlotHeatmap("##data", weights.data(), rows, cols, scMin, scMax, nullptr,
+						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+					ImPlot::EndPlot();
+				}
+				ImGui::SameLine(0, 4.0f);
+				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
+				ImPlot::PopColormap();
 			}
 		}
 		else if (is2DField && comps)

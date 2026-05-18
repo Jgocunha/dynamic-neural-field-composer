@@ -173,7 +173,7 @@ namespace dnf_composer::user_interface
 		static void renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodePins(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderPlotCardMenuBar(PlotCardState& state, bool is2DField,
-			const std::shared_ptr<element::Element>& element);
+			const std::shared_ptr<element::Element>& element, bool isWM = false);
 		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state,
 			bool isWM, bool is2DField);
 	};
