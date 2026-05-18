@@ -236,6 +236,39 @@ TEST(FieldCouplingTest, StepWithoutConnectionsDoesNotCrash)
 }
 
 // ---------------------------------------------------------------------------
+// addInput — regression: input pointer must be refreshed immediately
+// ---------------------------------------------------------------------------
+
+// Regression: FieldCoupling::addInput() must refresh the internal input/output
+// pointers so that learning can be enabled without calling init() again.
+// Scenario: output connection exists at init() time; input is connected at runtime.
+TEST(FieldCouplingTest, AddInputAtRuntimeDoesNotDisableLearning)
+{
+    const auto inputField  = makeField("if");
+    const auto fc          = makeFC("fc", 100, 100);
+    const auto outputField = makeField("of");
+
+    // Output side is wired before init (simulates connection drawn before simulation start).
+    outputField->addInput(fc);
+
+    // init() sets fc->output (outputs map is already populated) but fc->input is null
+    // because inputField is not yet connected.
+    inputField->init();
+    fc->init();
+    outputField->init();
+
+    // User draws the input connection at runtime (simulation already initialised).
+    // Before the fix, addInput did not call updateInputField(), leaving fc->input null.
+    fc->addInput(inputField);
+
+    fc->setLearning(true);
+    fc->step(0.0, 0.1);
+
+    // checkValidConnections() must find both pointers valid; learning must stay active.
+    EXPECT_TRUE(fc->getParameters().isLearningActive);
+}
+
+// ---------------------------------------------------------------------------
 // FieldCouplingParameters equality / toString
 // ---------------------------------------------------------------------------
 
