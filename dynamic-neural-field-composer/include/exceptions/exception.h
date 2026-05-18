@@ -1,11 +1,12 @@
 #pragma once
 
+#include <cstdint>
 #include <exception>
 #include <string>
 
 namespace dnf_composer
 {
-	enum class ErrorCode : int
+	enum class ErrorCode : std::uint8_t
 	{
 		OK,
 		APP_CONSTRUCTION, APP_INIT, APP_STEP, APP_CLOSE, APP_INVALID_SIM, APP_INVALID_VIS, APP_VIS_SIM_MISMATCH,
@@ -35,10 +36,10 @@ namespace dnf_composer
 		Exception(ErrorCode errorCode, int errorIndex);
 		Exception(ErrorCode errorCode, std::string errorElement, std::string errorComponent);
 
-		const char* what() const noexcept override;
+		[[nodiscard]] const char* what() const noexcept override;
 
-		ErrorCode getErrorCode() const;
-		std::string getErrorMessage() const;
+		[[nodiscard]] ErrorCode getErrorCode() const;
+		[[nodiscard]] std::string getErrorMessage() const;
 	};
 }
 

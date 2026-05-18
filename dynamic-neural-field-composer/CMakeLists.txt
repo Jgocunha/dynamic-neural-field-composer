@@ -69,6 +69,7 @@ set(elements_headers
         "include/elements/activation_function.h"
         "include/elements/element.h"
         "include/elements/element_factory.h"
+        
         "include/elements/field_coupling.h"
         "include/elements/gauss_field_coupling.h"
         "include/elements/gauss_kernel.h"
@@ -82,6 +83,19 @@ set(elements_headers
         "include/elements/boost_stimulus.h"
         "include/elements/memory_trace.h"
         "include/elements/correlated_normal_noise.h"
+
+        "include/elements/neural_field_2d.h"
+        "include/elements/gauss_stimulus_2d.h"
+        "include/elements/gauss_kernel_2d.h"
+        "include/elements/mexican_hat_kernel_2d.h"
+        "include/elements/normal_noise_2d.h"
+        "include/elements/oscillatory_kernel_2d.h"
+        "include/elements/timed_gauss_stimulus.h"
+        "include/elements/timed_gauss_stimulus_2d.h"
+        "include/elements/boost_stimulus_2d.h"
+        "include/elements/correlated_normal_noise_2d.h"
+        "include/elements/asymmetric_gauss_kernel_2d.h"
+        "include/elements/memory_trace_2d.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -162,7 +176,19 @@ set(src
         "src/elements/asymmetric_gauss_kernel.cpp"
         "src/elements/boost_stimulus.cpp"
         "src/elements/memory_trace.cpp"
+        "src/elements/neural_field_2d.cpp"
+        "src/elements/gauss_stimulus_2d.cpp"
+        "src/elements/gauss_kernel_2d.cpp"
+        "src/elements/mexican_hat_kernel_2d.cpp"
+        "src/elements/normal_noise_2d.cpp"
+        "src/elements/oscillatory_kernel_2d.cpp"
+        "src/elements/timed_gauss_stimulus.cpp"
+        "src/elements/timed_gauss_stimulus_2d.cpp"
+        "src/elements/boost_stimulus_2d.cpp"
         "src/elements/correlated_normal_noise.cpp"
+        "src/elements/correlated_normal_noise_2d.cpp"
+        "src/elements/asymmetric_gauss_kernel_2d.cpp"
+        "src/elements/memory_trace_2d.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 #"src/element_parameters/field_coupling_parameters.cpp"
@@ -324,9 +350,13 @@ add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
-add_example_executable(ex_cross_dimension_kernels ex_cross_dimension_kernels.cpp)
 add_example_executable(ex_boost_stimulus ex_boost_stimulus.cpp)
 add_example_executable(ex_memory_trace ex_memory_trace.cpp)
+add_example_executable(ex_neural_field_2d ex_neural_field_2d.cpp)
+add_example_executable(ex_oscillatory_kernel_2d ex_oscillatory_kernel_2d.cpp)
+add_example_executable(ex_timed_gauss_stimulus ex_timed_gauss_stimulus.cpp)
+add_example_executable(ex_timed_gauss_stimulus_2d ex_timed_gauss_stimulus_2d.cpp)
+add_example_executable(ex_boost_stimulus_2d ex_boost_stimulus_2d.cpp)
 add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)
 
 # Documentation (Doxygen)
@@ -360,12 +390,22 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tests/elements/test_gauss_field_coupling.cpp"
             "tests/elements/test_gauss_stimulus.cpp"
             "tests/elements/test_kernels.cpp"
-            "tests/elements/test_kernel_cross_dimension.cpp"
             "tests/elements/test_neural_field.cpp"
             "tests/elements/test_normal_noise.cpp"
             "tests/elements/test_correlated_normal_noise.cpp"
             "tests/elements/test_boost_stimulus.cpp"
             "tests/elements/test_memory_trace.cpp"
+            "tests/elements/test_neural_field_2d.cpp"
+            "tests/elements/test_gauss_stimulus_2d.cpp"
+            "tests/elements/test_gauss_kernel_2d.cpp"
+            "tests/elements/test_oscillatory_kernel_2d.cpp"
+            "tests/elements/test_timed_gauss_stimulus.cpp"
+            "tests/elements/test_timed_gauss_stimulus_2d.cpp"
+            "tests/elements/test_boost_stimulus_2d.cpp"
+            "tests/elements/test_normal_noise_2d.cpp"
+            "tests/elements/test_correlated_normal_noise_2d.cpp"
+            "tests/elements/test_asymmetric_gauss_kernel_2d.cpp"
+            "tests/elements/test_memory_trace_2d.cpp"
             "tests/elements/test_change_dimensions.cpp"
             # simulation
             "tests/simulation/test_simulation.cpp"

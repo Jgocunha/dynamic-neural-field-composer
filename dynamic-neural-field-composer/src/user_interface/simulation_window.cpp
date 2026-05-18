@@ -395,25 +395,11 @@ namespace dnf_composer::user_interface
             static double amplitudeGlobal = -0.01;
             static bool   circular        = true;
             static bool   normalized      = true;
-            static int    out_x_max       = 100;
-            static double out_d_x         = 1.0;
 
             ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
             ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputInt("Size",           &x_max,           0, 0);
-            ImGui::InputInt("Out size",       &out_x_max,       0, 0);
-            ImGui::PopItemWidth();
-            ImGui::SameLine();
-            widgets::renderHelpMarker(
-                "Output field size for cross-dimension coupling.\n"
-                "Set this to the size of the destination field when connecting\n"
-                "fields of different spatial dimensions via this kernel.\n"
-                "The kernel convolves in input space, then linearly resamples\n"
-                "the result to the output size before passing it downstream.\n"
-                "Leave equal to 'Size' (default) for standard same-dimension coupling.");
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputDouble("Step",        &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Out step",    &out_d_x,         0.0, 0.0, "%.2f");
             ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
             ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
@@ -424,12 +410,7 @@ namespace dnf_composer::user_interface
             if (addRequested)
             {
                 const element::ElementDimensions inDims{ x_max, d_x };
-                const element::ElementDimensions outDims{ out_x_max, out_d_x };
-                const std::optional<element::ElementDimensions> outputDims =
-                    (outDims.size != inDims.size)
-                    ? std::make_optional(outDims)
-                    : std::nullopt;
-                const element::GaussKernelParameters gkp{ width, amplitude, amplitudeGlobal, circular, normalized, outputDims };
+                const element::GaussKernelParameters gkp{ width, amplitude, amplitudeGlobal, circular, normalized };
                 const element::ElementCommonParameters common{ std::string(id), inDims };
                 simulation->addElement(std::make_shared<element::GaussKernel>(common, gkp));
             }
@@ -447,25 +428,11 @@ namespace dnf_composer::user_interface
             static double amplitudeGlobal = -0.1;
             static bool   circular        = true;
             static bool   normalized      = true;
-            static int    out_x_max       = 100;
-            static double out_d_x         = 1.0;
 
             ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
             ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputInt("Size",             &x_max,           0, 0);
-            ImGui::InputInt("Out size",         &out_x_max,       0, 0);
-            ImGui::PopItemWidth();
-            ImGui::SameLine();
-            widgets::renderHelpMarker(
-                "Output field size for cross-dimension coupling.\n"
-                "Set this to the size of the destination field when connecting\n"
-                "fields of different spatial dimensions via this kernel.\n"
-                "The kernel convolves in input space, then linearly resamples\n"
-                "the result to the output size before passing it downstream.\n"
-                "Leave equal to 'Size' (default) for standard same-dimension coupling.");
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputDouble("Step",          &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Out step",      &out_d_x,         0.0, 0.0, "%.2f");
             ImGui::InputDouble("Width exc",     &widthExc,        0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude exc", &amplitudeExc,    0.0, 0.0, "%.2f");
             ImGui::InputDouble("Width inh",     &widthInh,        0.0, 0.0, "%.2f");
@@ -478,12 +445,7 @@ namespace dnf_composer::user_interface
             if (addRequested)
             {
                 const element::ElementDimensions inDims{ x_max, d_x };
-                const element::ElementDimensions outDims{ out_x_max, out_d_x };
-                const std::optional<element::ElementDimensions> outputDims =
-                    (outDims.size != inDims.size)
-                    ? std::make_optional(outDims)
-                    : std::nullopt;
-                const element::MexicanHatKernelParameters mhkp{ widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized, outputDims };
+                const element::MexicanHatKernelParameters mhkp{ widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized };
                 const element::ElementCommonParameters common{ std::string(id), inDims };
                 simulation->addElement(std::make_shared<element::MexicanHatKernel>(common, mhkp));
             }
@@ -500,25 +462,11 @@ namespace dnf_composer::user_interface
             static double amplitudeGlobal = -0.01;
             static bool   circular        = true;
             static bool   normalized      = false;
-            static int    out_x_max       = 100;
-            static double out_d_x         = 1.0;
 
             ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
             ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputInt("Size",              &x_max,           0, 0);
-            ImGui::InputInt("Out size",          &out_x_max,       0, 0);
-            ImGui::PopItemWidth();
-            ImGui::SameLine();
-            widgets::renderHelpMarker(
-                "Output field size for cross-dimension coupling.\n"
-                "Set this to the size of the destination field when connecting\n"
-                "fields of different spatial dimensions via this kernel.\n"
-                "The kernel convolves in input space, then linearly resamples\n"
-                "the result to the output size before passing it downstream.\n"
-                "Leave equal to 'Size' (default) for standard same-dimension coupling.");
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
             ImGui::InputDouble("Step",           &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Out step",       &out_d_x,         0.0, 0.0, "%.2f");
             ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
             ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
             ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
@@ -530,12 +478,7 @@ namespace dnf_composer::user_interface
             if (addRequested)
             {
                 const element::ElementDimensions inDims{ x_max, d_x };
-                const element::ElementDimensions outDims{ out_x_max, out_d_x };
-                const std::optional<element::ElementDimensions> outputDims =
-                    (outDims.size != inDims.size)
-                    ? std::make_optional(outDims)
-                    : std::nullopt;
-                const element::OscillatoryKernelParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized, outputDims };
+                const element::OscillatoryKernelParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized };
                 const element::ElementCommonParameters common{ std::string(id), inDims };
                 simulation->addElement(std::make_shared<element::OscillatoryKernel>(common, okp));
             }
@@ -741,6 +684,373 @@ namespace dnf_composer::user_interface
                 const element::MemoryTraceParameters mtp{ tauBuild, tauDecay, threshold };
                 const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
                 simulation->addElement(std::make_shared<element::MemoryTrace>(common, mtp));
+            }
+            break;
+        }
+        case element::ElementLabel::NEURAL_FIELD_2D:
+        {
+            static char   id[CHAR_SIZE] = "neural field 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double tau = 25.0, restingLevel = -5.0;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",            &x_max,       0, 0);
+            ImGui::InputInt("Y size",            &y_max,       0, 0);
+            ImGui::InputDouble("X step",         &d_x,         0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",         &d_y,         0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau",            &tau,         0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Resting level",  &restingLevel,0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::NeuralField2DParameters nfp{ tau, restingLevel, element::SigmoidFunction(0.0, 10.0) };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::NeuralField2D>(common, nfp));
+            }
+            break;
+        }
+        case element::ElementLabel::GAUSS_STIMULUS_2D:
+        {
+            static char   id[CHAR_SIZE] = "gauss stimulus 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double width = 5.0, amplitude = 15.0;
+            static double pos_x = 25.0, pos_y = 25.0;
+            static bool   circular = true, normalized = false;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Position x",&pos_x,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Position y",&pos_y,     0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::GaussStimulusParameters2D gsp( width, amplitude, pos_x, pos_y, circular, normalized );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::GaussStimulus2D>(common, gsp));
+            }
+            break;
+        }
+        case element::ElementLabel::GAUSS_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE] = "gauss kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double width = 3.0, amplitude = 3.0, amplitudeGlobal = -0.01;
+            static bool   circular = true, normalized = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",              &x_max,           0, 0);
+            ImGui::InputInt("Y size",              &y_max,           0, 0);
+            ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",            &width,           0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude",        &amplitude,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::GaussKernel2DParameters gkp( width, amplitude, amplitudeGlobal, circular, normalized );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::GaussKernel2D>(common, gkp));
+            }
+            break;
+        }
+        case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE] = "mexican hat kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double widthExc = 2.5, amplitudeExc = 11.0;
+            static double widthInh = 5.0, amplitudeInh = 15.0;
+            static double amplitudeGlobal = -0.1;
+            static bool   circular = true, normalized = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",              &x_max,           0, 0);
+            ImGui::InputInt("Y size",              &y_max,           0, 0);
+            ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width exc",        &widthExc,        0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude exc",    &amplitudeExc,    0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width inh",        &widthInh,        0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude inh",    &amplitudeInh,    0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::MexicanHatKernel2DParameters mhkp( widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::MexicanHatKernel2D>(common, mhkp));
+            }
+            break;
+        }
+        case element::ElementLabel::NORMAL_NOISE_2D:
+        {
+            static char   id[CHAR_SIZE] = "normal noise 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude = 0.2;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::NormalNoise2DParameters nnp( amplitude );
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::NormalNoise2D>(common, nnp));
+            }
+            break;
+        }
+        case element::ElementLabel::OSCILLATORY_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE]   = "oscillatory kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude       = 1.0;
+            static double decay           = 0.08;
+            static double zeroCrossings   = 0.3;
+            static double amplitudeGlobal = -0.01;
+            static bool   circular        = true;
+            static bool   normalized      = false;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",            &x_max,           0, 0);
+            ImGui::InputInt("Y size",            &y_max,           0, 0);
+            ImGui::InputDouble("X step",         &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",         &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Global amp",     &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::OscillatoryKernel2DParameters okp{ amplitude, decay, zeroCrossings,
+                                                                   amplitudeGlobal, circular, normalized };
+                const element::ElementCommonParameters common{ std::string(id),
+                    element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::OscillatoryKernel2D>(common, okp));
+            }
+            break;
+        }
+        case element::ElementLabel::BOOST_STIMULUS_2D:
+        {
+            static char   id[CHAR_SIZE] = "boost stimulus 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude = 5.0;
+            static bool   isActive = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Active", &isActive);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::BoostStimulus2DParameters bsp{ amplitude, isActive };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::BoostStimulus2D>(common, bsp));
+            }
+            break;
+        }
+        case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+        {
+            static char   id[CHAR_SIZE] = "timed gauss stimulus 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double width = 5.0, amplitude = 15.0;
+            static double pos_x = 25.0, pos_y = 25.0;
+            static double tStart = 0.0, tEnd = 10.0;
+            static bool   circular = true, normalized = false;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Position x",&pos_x,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Position y",&pos_y,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("T start",   &tStart,    0.0, 0.0, "%.2f");
+            ImGui::InputDouble("T end",     &tEnd,      0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                element::TimedGaussStimulus2DParameters tgsp{ width, amplitude, pos_x, pos_y,
+                    {{tStart, tEnd}}, circular, normalized };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::TimedGaussStimulus2D>(common, tgsp));
+            }
+            break;
+        }
+        case element::ElementLabel::TIMED_GAUSS_STIMULUS:
+        {
+            static char   id[CHAR_SIZE]  = "timed gauss stimulus";
+            static int    x_max          = 100;
+            static double d_x            = 1.0;
+            static double width          = 5.0;
+            static double amplitude      = 15.0;
+            static double position       = 50.0;
+            static double tStart         = 0.0;
+            static double tEnd           = 10.0;
+            static bool   circular       = true;
+            static bool   normalized     = false;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("Size",         &x_max,     0, 0);
+            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Position",  &position,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("T start",   &tStart,    0.0, 0.0, "%.2f");
+            ImGui::InputDouble("T end",     &tEnd,      0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                element::TimedGaussStimulusParameters tgsp{ width, amplitude, position,
+                    {{tStart, tEnd}}, circular, normalized };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+                simulation->addElement(std::make_shared<element::TimedGaussStimulus>(common, tgsp));
+            }
+            break;
+        }
+        case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+        {
+            static char   id[CHAR_SIZE] = "correlated normal noise 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double amplitude = 0.05;
+            static double width = 1.0;
+            static bool   circular = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",       &x_max,     0, 0);
+            ImGui::InputInt("Y size",       &y_max,     0, 0);
+            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular", &circular);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::CorrelatedNormalNoise2DParameters cnnp{ amplitude, width, circular };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::CorrelatedNormalNoise2D>(common, cnnp));
+            }
+            break;
+        }
+        case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
+        {
+            static char   id[CHAR_SIZE] = "asymmetric gauss kernel 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double width = 3.0;
+            static double amplitude = 3.0;
+            static double amplitudeGlobal = 0.0;
+            static double timeShift_x = 0.0;
+            static double timeShift_y = 0.0;
+            static bool   circular = true;
+            static bool   normalized = true;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",         &x_max,           0, 0);
+            ImGui::InputInt("Y size",         &y_max,           0, 0);
+            ImGui::InputDouble("X step",      &d_x,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",      &d_y,             0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
+            ImGui::InputDouble("Time shift x",&timeShift_x,     0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Time shift y",&timeShift_y,     0.0, 0.0, "%.2f");
+            ImGui::Checkbox("Circular",   &circular);
+            ImGui::Checkbox("Normalized", &normalized);
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::AsymmetricGaussKernel2DParameters agkp{ width, amplitude, amplitudeGlobal,
+                                                                        timeShift_x, timeShift_y, circular, normalized };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::AsymmetricGaussKernel2D>(common, agkp));
+            }
+            break;
+        }
+        case element::ElementLabel::MEMORY_TRACE_2D:
+        {
+            static char   id[CHAR_SIZE] = "memory trace 2d";
+            static int    x_max = 50, y_max = 50;
+            static double d_x = 1.0, d_y = 1.0;
+            static double tauBuild = 100.0;
+            static double tauDecay = 1000.0;
+            static double threshold = 0.5;
+
+            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
+            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
+            ImGui::InputInt("X size",         &x_max,     0, 0);
+            ImGui::InputInt("Y size",         &y_max,     0, 0);
+            ImGui::InputDouble("X step",      &d_x,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Y step",      &d_y,       0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau build",   &tauBuild,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Tau decay",   &tauDecay,  0.0, 0.0, "%.2f");
+            ImGui::InputDouble("Threshold",   &threshold, 0.0, 0.0, "%.2f");
+            ImGui::PopItemWidth();
+
+            if (addRequested)
+            {
+                const element::MemoryTrace2DParameters mtp{ tauBuild, tauDecay, threshold };
+                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+                simulation->addElement(std::make_shared<element::MemoryTrace2D>(common, mtp));
             }
             break;
         }
@@ -1279,6 +1589,15 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::GAUSS_STIMULUS:
 				addElementGaussStimulus();
 				break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS:
+				addElementTimedGaussStimulus();
+				break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
+				addElementTimedGaussStimulus2D();
+				break;
+			case element::ElementLabel::BOOST_STIMULUS_2D:
+				addElementBoostStimulus2D();
+				break;
 			case element::ElementLabel::FIELD_COUPLING:
 				addElementFieldCoupling();
 				break;
@@ -1422,6 +1741,101 @@ namespace dnf_composer::user_interface
 			const element::ElementDimensions dimensions{ x_max, d_x };
 			const std::shared_ptr<element::GaussStimulus> gaussStimulus(new element::GaussStimulus ({id, dimensions}, gsp));
 			simulation->addElement(gaussStimulus);
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementTimedGaussStimulus() const
+	{
+		ImGui::PushID("timed gauss stimulus");
+		static char id[CHAR_SIZE] = "timed gauss stimulus a";
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		static int x_max = 100;
+		ImGui::InputInt("x_max", &x_max, 1, 10);
+		static double d_x = 1.0;
+		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
+		static double sigma = 5.0;
+		ImGui::InputDouble("sigma", &sigma, 1.0, 10.0, "%.2f");
+		static double amplitude = 20.0;
+		ImGui::InputDouble("amplitude", &amplitude, 1.0, 10.0, "%.2f");
+		static double position = 50.0;
+		ImGui::InputDouble("position", &position, 1.0, 10.0, "%.2f");
+		static double tStart = 0.0, tEnd = 10.0;
+		ImGui::InputDouble("t_start", &tStart, 0.1, 1.0, "%.2f");
+		ImGui::InputDouble("t_end",   &tEnd,   0.1, 1.0, "%.2f");
+		static bool normalized = false;
+		ImGui::Checkbox("normalized", &normalized);
+		static bool circular = false;
+		ImGui::Checkbox("circular", &circular);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			element::TimedGaussStimulusParameters tgsp{ sigma, amplitude, position, {{tStart, tEnd}}, circular, normalized };
+			const element::ElementDimensions dimensions{ x_max, d_x };
+			simulation->addElement(std::make_shared<element::TimedGaussStimulus>(element::ElementCommonParameters{id, dimensions}, tgsp));
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementBoostStimulus2D() const
+	{
+		ImGui::PushID("boost stimulus 2d");
+		static char   id[CHAR_SIZE] = "boost stimulus 2d a";
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double amplitude = 5.0;
+		static bool   isActive = true;
+
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		ImGui::InputInt("x_max",      &x_max,     1,   10);
+		ImGui::InputInt("y_max",      &y_max,     1,   10);
+		ImGui::InputDouble("d_x",     &d_x,       0.1, 0.5, "%.2f");
+		ImGui::InputDouble("d_y",     &d_y,       0.1, 0.5, "%.2f");
+		ImGui::InputDouble("amplitude",&amplitude, 1.0, 5.0, "%.2f");
+		ImGui::Checkbox("active",     &isActive);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			const element::BoostStimulus2DParameters bsp{ amplitude, isActive };
+			const element::ElementDimensions dims{ x_max, y_max, d_x, d_y };
+			simulation->addElement(std::make_shared<element::BoostStimulus2D>(
+				element::ElementCommonParameters{ id, dims }, bsp));
+		}
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::addElementTimedGaussStimulus2D() const
+	{
+		ImGui::PushID("timed gauss stimulus 2d");
+		static char   id[CHAR_SIZE] = "timed gauss stimulus 2d a";
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double sigma = 5.0, amplitude = 15.0;
+		static double pos_x = 25.0, pos_y = 25.0;
+		static double tStart = 0.0, tEnd = 10.0;
+		static bool   circular = true, normalized = false;
+
+		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
+		ImGui::InputInt("x_max",      &x_max,     1,   10);
+		ImGui::InputInt("y_max",      &y_max,     1,   10);
+		ImGui::InputDouble("d_x",     &d_x,       0.1, 0.5, "%.2f");
+		ImGui::InputDouble("d_y",     &d_y,       0.1, 0.5, "%.2f");
+		ImGui::InputDouble("sigma",   &sigma,     1.0, 10.0, "%.2f");
+		ImGui::InputDouble("amplitude",&amplitude,1.0, 10.0, "%.2f");
+		ImGui::InputDouble("pos_x",   &pos_x,     1.0, 10.0, "%.2f");
+		ImGui::InputDouble("pos_y",   &pos_y,     1.0, 10.0, "%.2f");
+		ImGui::InputDouble("t_start", &tStart,    0.1, 1.0,  "%.2f");
+		ImGui::InputDouble("t_end",   &tEnd,      0.1, 1.0,  "%.2f");
+		ImGui::Checkbox("circular",   &circular);
+		ImGui::Checkbox("normalized", &normalized);
+
+		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		{
+			element::TimedGaussStimulus2DParameters tgsp{ sigma, amplitude, pos_x, pos_y,
+				{{tStart, tEnd}}, circular, normalized };
+			const element::ElementDimensions dims{ x_max, y_max, d_x, d_y };
+			simulation->addElement(std::make_shared<element::TimedGaussStimulus2D>(
+				element::ElementCommonParameters{ id, dims }, tgsp));
 		}
 		ImGui::PopID();
 	}

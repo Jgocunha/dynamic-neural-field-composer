@@ -295,6 +295,80 @@ GaussStimulusParameters{
 
 ---
 
+## TimedGaussStimulus
+
+A Gaussian stimulus that is active only during specified time windows. The spatial pattern is pre-computed in `init()` and written to output only while the simulation time falls within one of the `[tStart, tEnd]` intervals.
+
+**Label:** `TIMED_GAUSS_STIMULUS`
+
+### Parameters
+
+```cpp
+TimedGaussStimulusParameters{
+    double width      = 5.0,
+    double amplitude  = 15.0,
+    double position   = 50.0,
+    std::vector<std::pair<double,double>> onTimes = {},
+    bool   circular   = true,
+    bool   normalized = false
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `width` | `5.0` | Width (sigma) of the Gaussian |
+| `amplitude` | `15.0` | Peak amplitude when active |
+| `position` | `50.0` | Center position of the Gaussian |
+| `onTimes` | `{}` | List of `[tStart, tEnd]` intervals (inclusive) during which output is non-zero |
+| `circular` | `true` | Boundary wrapping |
+| `normalized` | `false` | Area normalization |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"output"` | Gaussian profile when active, zero otherwise |
+
+---
+
+## TimedGaussStimulus2D
+
+2D variant of `TimedGaussStimulus`. The 2D Gaussian pattern is pre-computed and gated by the same `onTimes` mechanism.
+
+**Label:** `TIMED_GAUSS_STIMULUS_2D`
+
+### Parameters
+
+```cpp
+TimedGaussStimulus2DParameters{
+    double width      = 5.0,
+    double amplitude  = 15.0,
+    double position_x = 25.0,
+    double position_y = 25.0,
+    std::vector<std::pair<double,double>> onTimes = {},
+    bool   circular   = true,
+    bool   normalized = false
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `width` | `5.0` | Isotropic width (sigma) of the 2D Gaussian |
+| `amplitude` | `15.0` | Peak amplitude when active |
+| `position_x` | `25.0` | x-center of the Gaussian |
+| `position_y` | `25.0` | y-center of the Gaussian |
+| `onTimes` | `{}` | List of `[tStart, tEnd]` intervals during which output is non-zero |
+| `circular` | `true` | Periodic boundary wrapping |
+| `normalized` | `false` | Area normalization |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"output"` | Flat `size_x * size_y` 2D Gaussian profile when active, zero otherwise |
+
+---
+
 ## NormalNoise
 
 Adds zero-mean Gaussian white noise to the field at every time step.
@@ -449,6 +523,34 @@ BoostStimulusParameters{
 ### Usage note
 
 `setParameters()` calls `init()` internally, so the output vector is updated immediately — no need to wait for the next `step()` call.
+
+---
+
+## BoostStimulus2D
+
+2D variant of `BoostStimulus`. Fills every position of a 2D output with a constant amplitude value.
+
+**Label:** `BOOST_STIMULUS_2D`
+
+### Parameters
+
+```cpp
+BoostStimulus2DParameters{
+    double amplitude = 5.0,
+    bool   isActive  = true
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `amplitude` | `5.0` | Constant value broadcast to all 2D field positions |
+| `isActive` | `true` | When `false` the output is zeroed |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"output"` | Flat `size_x * size_y` vector of `amplitude` (or zeros when inactive) |
 
 ---
 

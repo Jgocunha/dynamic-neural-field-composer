@@ -12,14 +12,13 @@
 #include <vector>
 #include <array>
 #include <cmath>
-#include <math.h>
+//#include <math.h>
 #include <algorithm>
 #include <numeric>
 #include <functional>
 #include <random>
-#include <numbers> // std::numbers
+#include <numbers>
 #include <fstream>
-
 
 namespace dnf_composer::tools::math
 {
@@ -79,7 +78,7 @@ namespace dnf_composer::tools::math
 		const int pad = (ng - 1) / 2;
 
 		for (int i = 0; i < nf; ++i) {
-			T sum = T(); // Initialize sum for each element of output
+			T sum = T(); // Initialize the sum for each element of output
 			for (int j = 0; j < ng; ++j) {
 				int fIndex = i + j - pad; // Adjust index for 'same' mode with shift correction
 				if (fIndex >= 0 && fIndex < nf) { // Check boundaries
@@ -441,7 +440,7 @@ namespace dnf_composer::tools::math
 			}
 		}
 
-		return true; // Vectors are equal within threshold
+		return true; // Vectors are equal within the threshold
 	}
 
 	template <typename T>
@@ -551,6 +550,172 @@ namespace dnf_composer::tools::math
 			const int hi = std::min(lo + 1, N - 1);
 			const double t = pos - lo;
 			output[i] = input[lo] * (1.0 - t) + input[hi] * t;
+		}
+	}
+
+	template<typename T>
+	void resampleNearestInto(const std::vector<T>& input, std::vector<T>& output)
+	{
+		const int N = static_cast<int>(input.size());
+		const int M = static_cast<int>(output.size());
+		if (input.empty() || M <= 0) return;
+		if (N == M) { std::copy(input.begin(), input.end(), output.begin()); return; }
+		if (M == 1) { output[0] = input[N / 2]; return; }
+		for (int i = 0; i < M; ++i)
+		{
+			const double pos = static_cast<double>(i) * (N - 1) / (M - 1);
+			output[i] = input[static_cast<int>(std::round(pos))];
+		}
+	}
+
+	// Catmull-Rom cubic spline resampling.
+	template<typename T>
+	void resampleCubicInto(const std::vector<T>& input, std::vector<T>& output)
+	{
+		const int N = static_cast<int>(input.size());
+		const int M = static_cast<int>(output.size());
+		if (input.empty() || M <= 0) return;
+		if (N == M) { std::copy(input.begin(), input.end(), output.begin()); return; }
+		if (M == 1) { output[0] = input[N / 2]; return; }
+		const auto clamp = [N](int idx) { return std::max(0, std::min(idx, N - 1)); };
+		for (int i = 0; i < M; ++i)
+		{
+			const double pos = static_cast<double>(i) * (N - 1) / (M - 1);
+			const int lo = static_cast<int>(pos);
+			const double t = pos - lo;
+			const double p0 = static_cast<double>(input[clamp(lo - 1)]);
+			const double p1 = static_cast<double>(input[clamp(lo)]);
+			const double p2 = static_cast<double>(input[clamp(lo + 1)]);
+			const double p3 = static_cast<double>(input[clamp(lo + 2)]);
+			output[i] = static_cast<T>(0.5 * (2.0 * p1 + (-p0 + p2) * t +
+				(2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t * t +
+				(-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t * t * t));
+		}
+	}
+
+	// Separable 2D convolution.
+	// field is stored row-major: field[x * size_y + y].
+	// Applies kernel_x along the x-axis and kernel_y along the y-axis using two 1D passes.
+	// extIndex_x / extIndex_y are the circular extension indices produced by createExtendedIndex
+	// (pass empty vectors for non-circular mode).
+	template<typename T>
+	std::vector<T> conv2d_separable(
+		const std::vector<T>& field,
+		const std::vector<T>& kernel_x,
+		const std::vector<T>& kernel_y,
+		int size_x, int size_y,
+		const std::vector<int>& extIndex_x,
+		const std::vector<int>& extIndex_y)
+	{
+		const bool circular_x = !extIndex_x.empty();
+		const bool circular_y = !extIndex_y.empty();
+
+		// y-pass: convolve each row along the y-axis
+		std::vector<T> tmp(size_x * size_y, T());
+		for (int x = 0; x < size_x; ++x)
+		{
+			// extract row
+			std::vector<T> row(size_y);
+			for (int y = 0; y < size_y; ++y)
+				row[y] = field[x * size_y + y];
+
+			std::vector<T> convRow;
+			if (circular_y)
+			{
+				const auto extRow = obtainCircularVector(extIndex_y, row);
+				convRow = conv_valid(extRow, kernel_y);
+			}
+			else
+			{
+				convRow = conv_same(row, kernel_y);
+			}
+			for (int y = 0; y < size_y; ++y)
+				tmp[x * size_y + y] = convRow[y];
+		}
+
+		// x-pass: convolve each column along the x-axis
+		std::vector<T> result(size_x * size_y, T());
+		for (int y = 0; y < size_y; ++y)
+		{
+			// extract column
+			std::vector<T> col(size_x);
+			for (int x = 0; x < size_x; ++x)
+				col[x] = tmp[x * size_y + y];
+
+			std::vector<T> convCol;
+			if (circular_x)
+			{
+				const auto extCol = obtainCircularVector(extIndex_x, col);
+				convCol = conv_valid(extCol, kernel_x);
+			}
+			else
+			{
+				convCol = conv_same(col, kernel_x);
+			}
+			for (int x = 0; x < size_x; ++x)
+				result[x * size_y + y] = convCol[x];
+		}
+
+		return result;
+	}
+
+	// In-place 2D separable convolution — writes into caller-supplied buffers.
+	// `out` and `tmp` must be pre-sized to size_x * size_y before calling.
+	template<typename T>
+	void conv2d_separable_into(
+		std::vector<T>& out,
+		std::vector<T>& tmp,
+		const std::vector<T>& field,
+		const std::vector<T>& kernel_x,
+		const std::vector<T>& kernel_y,
+		int size_x, int size_y,
+		const std::vector<int>& extIndex_x,
+		const std::vector<int>& extIndex_y)
+	{
+		const bool circular_x = !extIndex_x.empty();
+		const bool circular_y = !extIndex_y.empty();
+
+		std::vector<T> row(size_y);
+		std::vector<T> col(size_x);
+		std::vector<T> convRow(size_y);
+		std::vector<T> extRow(circular_y ? extIndex_y.size() : 0);
+		std::vector<T> convCol(size_x);
+		std::vector<T> extCol(circular_x ? extIndex_x.size() : 0);
+
+		for (int x = 0; x < size_x; ++x)
+		{
+			for (int y = 0; y < size_y; ++y)
+				row[y] = field[x * size_y + y];
+
+			if (circular_y)
+			{
+				obtainCircularVector_into(extRow, extIndex_y, row);
+				conv_valid_into(convRow, extRow, kernel_y);
+			}
+			else
+			{
+				conv_same_into(convRow, row, kernel_y);
+			}
+			for (int y = 0; y < size_y; ++y)
+				tmp[x * size_y + y] = convRow[y];
+		}
+
+		for (int y = 0; y < size_y; ++y)
+		{
+			for (int x = 0; x < size_x; ++x)
+				col[x] = tmp[x * size_y + y];
+
+			if (circular_x)
+			{
+				obtainCircularVector_into(extCol, extIndex_x, col);
+				conv_valid_into(convCol, extCol, kernel_x);
+			}
+			else
+			{
+				conv_same_into(convCol, col, kernel_x);
+			}
+			for (int x = 0; x < size_x; ++x)
+				out[x * size_y + y] = convCol[x];
 		}
 	}
 }

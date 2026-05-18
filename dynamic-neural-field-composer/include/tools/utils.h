@@ -55,7 +55,7 @@ namespace dnf_composer::tools::utils
 #ifdef _WIN32
 		return localtime_s(result, time) == 0;
 #else
-				return localtime_r(time, result) != nullptr;
+		return localtime_r(time, result) != nullptr;
 #endif
 	}
 }

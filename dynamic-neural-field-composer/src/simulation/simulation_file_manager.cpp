@@ -1,5 +1,4 @@
 #include "simulation/simulation_file_manager.h"
-#include "tools/utils.h"
 
 
 namespace dnf_composer
@@ -114,6 +113,8 @@ namespace dnf_composer
         elementJson["label"] = { commonParams.identifiers.label, element::ElementLabelToString.at(commonParams.identifiers.label) };
         elementJson["x_max"] = commonParams.dimensionParameters.x_max;
         elementJson["d_x"] = commonParams.dimensionParameters.d_x;
+        elementJson["y_max"] = commonParams.dimensionParameters.y_max;
+        elementJson["d_y"] = commonParams.dimensionParameters.d_y;
 
         // Add interactions to the JSON object
         const std::unordered_map<std::shared_ptr<element::Element>, std::string> inputs = element->getInputsAndComponents();
@@ -145,8 +146,7 @@ namespace dnf_composer
             switch (activationFunctionType) {
             case element::ActivationFunctionType::HEAVISIDE:
             {
-                const auto heavisideActivationFunction = dynamic_cast<const element::HeavisideFunction*>(neuralFieldParameters.activationFunction.get());
-                if (heavisideActivationFunction) {
+	            if (const auto heavisideActivationFunction = dynamic_cast<const element::HeavisideFunction*>(neuralFieldParameters.activationFunction.get())) {
                     elementJson["activationFunction"] = {
                         {"type", "heaviside"},
                         {"x_shift", heavisideActivationFunction->getXShift()}
@@ -156,8 +156,7 @@ namespace dnf_composer
             break;
             case element::ActivationFunctionType::SIGMOID:
             {
-                const auto sigmoidActivationFunction = dynamic_cast<const element::SigmoidFunction*>(neuralFieldParameters.activationFunction.get());
-                if (sigmoidActivationFunction) {
+	            if (const auto sigmoidActivationFunction = dynamic_cast<const element::SigmoidFunction*>(neuralFieldParameters.activationFunction.get())) {
                     elementJson["activationFunction"] = {
                         {"type", "sigmoid"},
                         {"x_shift", sigmoidActivationFunction->getXShift()},
@@ -297,6 +296,163 @@ namespace dnf_composer
             elementJson["threshold"] = memoryTraceParameters.threshold;
         }
         break;
+        case element::NEURAL_FIELD_2D:
+        {
+            const auto nf = std::dynamic_pointer_cast<element::NeuralField2D>(element);
+            const auto p  = nf->getParameters();
+            const auto activationFunctionType = p.activationFunction->type;
+            elementJson["tau"] = p.tau;
+            elementJson["restingLevel"] = p.startingRestingLevel;
+
+            switch (activationFunctionType) {
+            case element::ActivationFunctionType::HEAVISIDE:
+            {
+                if (const auto* fn = dynamic_cast<const element::HeavisideFunction*>(p.activationFunction.get())) {
+                    elementJson["activationFunction"] = {
+                        {"type", "heaviside"},
+                        {"x_shift", fn->getXShift()}
+                    };
+                }
+            }
+            break;
+            case element::ActivationFunctionType::SIGMOID:
+            {
+                if (const auto* fn = dynamic_cast<const element::SigmoidFunction*>(p.activationFunction.get())) {
+                    elementJson["activationFunction"] = {
+                        {"type", "sigmoid"},
+                        {"x_shift", fn->getXShift()},
+                        {"steepness", fn->getSteepness()},
+                    };
+                }
+            }
+            break;
+            }
+        }
+        break;
+        case element::GAUSS_STIMULUS_2D:
+        {
+            const auto gs = std::dynamic_pointer_cast<element::GaussStimulus2D>(element);
+            const auto p  = gs->getParameters();
+            elementJson["width"]      = p.width;
+            elementJson["amplitude"]  = p.amplitude;
+            elementJson["position_x"] = p.position_x;
+            elementJson["position_y"] = p.position_y;
+            elementJson["circular"]   = p.circular;
+            elementJson["normalized"] = p.normalized;
+        }
+        break;
+        case element::GAUSS_KERNEL_2D:
+        {
+            const auto gk = std::dynamic_pointer_cast<element::GaussKernel2D>(element);
+            const auto p  = gk->getParameters();
+            elementJson["width"]           = p.width;
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
+        case element::MEXICAN_HAT_KERNEL_2D:
+        {
+            const auto mh = std::dynamic_pointer_cast<element::MexicanHatKernel2D>(element);
+            const auto p  = mh->getParameters();
+            elementJson["widthExc"]        = p.widthExc;
+            elementJson["amplitudeExc"]    = p.amplitudeExc;
+            elementJson["widthInh"]        = p.widthInh;
+            elementJson["amplitudeInh"]    = p.amplitudeInh;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
+        case element::NORMAL_NOISE_2D:
+        {
+            const auto nn = std::dynamic_pointer_cast<element::NormalNoise2D>(element);
+            elementJson["amplitude"] = nn->getParameters().amplitude;
+        }
+        break;
+        case element::OSCILLATORY_KERNEL_2D:
+        {
+            const auto ok = std::dynamic_pointer_cast<element::OscillatoryKernel2D>(element);
+            const auto p  = ok->getParameters();
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["decay"]           = p.decay;
+            elementJson["zeroCrossings"]   = p.zeroCrossings;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS:
+        {
+            const auto tgs = std::dynamic_pointer_cast<element::TimedGaussStimulus>(element);
+            const auto p   = tgs->getParameters();
+            elementJson["width"]     = p.width;
+            elementJson["amplitude"] = p.amplitude;
+            elementJson["position"]  = p.position;
+            elementJson["circular"]  = p.circular;
+            elementJson["normalized"]= p.normalized;
+            json onTimesJson = json::array();
+            for (const auto& [start, end] : p.onTimes)
+                onTimesJson.push_back({start, end});
+            elementJson["onTimes"] = onTimesJson;
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS_2D:
+        {
+            const auto tgs = std::dynamic_pointer_cast<element::TimedGaussStimulus2D>(element);
+            const auto p   = tgs->getParameters();
+            elementJson["width"]      = p.width;
+            elementJson["amplitude"]  = p.amplitude;
+            elementJson["position_x"] = p.position_x;
+            elementJson["position_y"] = p.position_y;
+            elementJson["circular"]   = p.circular;
+            elementJson["normalized"] = p.normalized;
+            json onTimesJson = json::array();
+            for (const auto& [start, end] : p.onTimes)
+                onTimesJson.push_back({start, end});
+            elementJson["onTimes"] = onTimesJson;
+        }
+        break;
+        case element::BOOST_STIMULUS_2D:
+        {
+            const auto bs = std::dynamic_pointer_cast<element::BoostStimulus2D>(element);
+            const auto p  = bs->getParameters();
+            elementJson["amplitude"] = p.amplitude;
+            elementJson["isActive"]  = p.isActive;
+        }
+        break;
+        case element::CORRELATED_NORMAL_NOISE_2D:
+        {
+            const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise2D>(element);
+            const auto p   = cnn->getParameters();
+            elementJson["amplitude"] = p.amplitude;
+            elementJson["width"]     = p.width;
+            elementJson["circular"]  = p.circular;
+        }
+        break;
+        case element::ASYMMETRIC_GAUSS_KERNEL_2D:
+        {
+            const auto agk = std::dynamic_pointer_cast<element::AsymmetricGaussKernel2D>(element);
+            const auto p   = agk->getParameters();
+            elementJson["width"]           = p.width;
+            elementJson["amplitude"]       = p.amplitude;
+            elementJson["amplitudeGlobal"] = p.amplitudeGlobal;
+            elementJson["timeShift_x"]     = p.timeShift_x;
+            elementJson["timeShift_y"]     = p.timeShift_y;
+            elementJson["circular"]        = p.circular;
+            elementJson["normalized"]      = p.normalized;
+        }
+        break;
+        case element::MEMORY_TRACE_2D:
+        {
+            const auto mt = std::dynamic_pointer_cast<element::MemoryTrace2D>(element);
+            const auto p  = mt->getParameters();
+            elementJson["tauBuild"]  = p.tauBuild;
+            elementJson["tauDecay"]  = p.tauDecay;
+            elementJson["threshold"] = p.threshold;
+        }
+        break;
         default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -317,6 +473,8 @@ namespace dnf_composer
 	        const element::ElementLabel elementLabel = elementLabelFromString(labelStr);
 	        const int x_max = elementJson["x_max"];
 	        const double d_x = elementJson["d_x"];
+	        const int y_max = elementJson.contains("y_max") ? elementJson["y_max"].get<int>() : 1;
+	        const double d_y = elementJson.contains("d_y") ? elementJson["d_y"].get<double>() : 1.0;
 
 	        switch (elementLabel)
 	    	{
@@ -434,7 +592,7 @@ namespace dnf_composer
                 const double input_d_x = elementJson["input_d_x"];
                 auto coupling = std::make_shared<element::FieldCoupling>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
-                    element::FieldCouplingParameters({input_x_max, input_d_x}, learningRule, scalar, learningRate)
+                    element::FieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), learningRule, scalar, learningRate)
                 );
                 simulation->addElement(coupling);
             }
@@ -462,7 +620,7 @@ namespace dnf_composer
 
                 auto coupling = std::make_shared<element::GaussFieldCoupling>(
 					element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
-                    element::GaussFieldCouplingParameters({input_x_max, input_d_x}, normalized, circular, couplings)
+                    element::GaussFieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), normalized, circular, couplings)
 				);
                 simulation->addElement(coupling);
             }
@@ -522,6 +680,201 @@ namespace dnf_composer
                 element::MemoryTraceParameters(tauBuild, tauDecay, threshold)
             );
             simulation->addElement(memoryTrace);
+        }
+        break;
+        case element::NEURAL_FIELD_2D:
+        {
+            const double tau = elementJson["tau"];
+            const double restingLevel = elementJson["restingLevel"];
+
+            auto activationFunctionJson = elementJson["activationFunction"];
+            std::unique_ptr<element::ActivationFunction> activationFunction;
+            if (!activationFunctionJson.is_null()) {
+                std::string activationFunctionType = activationFunctionJson["type"];
+                if (activationFunctionType == "heaviside") {
+                    double x_shift = activationFunctionJson["x_shift"];
+                    activationFunction = std::make_unique<element::HeavisideFunction>(x_shift);
+                }
+                else if (activationFunctionType == "sigmoid") {
+                    double x_shift = activationFunctionJson["x_shift"];
+                    double steepness = activationFunctionJson["steepness"];
+                    activationFunction = std::make_unique<element::SigmoidFunction>(x_shift, steepness);
+                }
+            }
+            auto nf = std::make_shared<element::NeuralField2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::NeuralField2DParameters(tau, restingLevel, *activationFunction)
+            );
+            simulation->addElement(nf);
+        }
+        break;
+        case element::GAUSS_STIMULUS_2D:
+        {
+            const double width      = elementJson["width"];
+            const double amplitude  = elementJson["amplitude"];
+            const double position_x = elementJson["position_x"];
+            const double position_y = elementJson["position_y"];
+            const bool circular     = elementJson["circular"];
+            const bool normalized   = elementJson["normalized"];
+
+            auto gs = std::make_shared<element::GaussStimulus2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::GaussStimulusParameters2D(width, amplitude, position_x, position_y, circular, normalized)
+            );
+            simulation->addElement(gs);
+        }
+        break;
+        case element::GAUSS_KERNEL_2D:
+        {
+            const double width           = elementJson["width"];
+            const double amplitude       = elementJson["amplitude"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const bool circular          = elementJson["circular"];
+            const bool normalized        = elementJson["normalized"];
+
+            auto gk = std::make_shared<element::GaussKernel2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::GaussKernel2DParameters(width, amplitude, amplitudeGlobal, circular, normalized)
+            );
+            simulation->addElement(gk);
+        }
+        break;
+        case element::MEXICAN_HAT_KERNEL_2D:
+        {
+            const double widthExc        = elementJson["widthExc"];
+            const double amplitudeExc    = elementJson["amplitudeExc"];
+            const double widthInh        = elementJson["widthInh"];
+            const double amplitudeInh    = elementJson["amplitudeInh"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const bool circular          = elementJson["circular"];
+            const bool normalized        = elementJson["normalized"];
+
+            auto mh = std::make_shared<element::MexicanHatKernel2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::MexicanHatKernel2DParameters(widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized)
+            );
+            simulation->addElement(mh);
+        }
+        break;
+        case element::NORMAL_NOISE_2D:
+        {
+            const double amplitude = elementJson["amplitude"];
+
+            auto nn = std::make_shared<element::NormalNoise2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::NormalNoise2DParameters(amplitude)
+            );
+            simulation->addElement(nn);
+        }
+        break;
+        case element::OSCILLATORY_KERNEL_2D:
+        {
+            const double amplitude       = elementJson["amplitude"];
+            const double decay           = elementJson["decay"];
+            const double zeroCrossings   = elementJson["zeroCrossings"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const bool circular          = elementJson["circular"];
+            const bool normalized        = elementJson["normalized"];
+
+            auto ok = std::make_shared<element::OscillatoryKernel2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::OscillatoryKernel2DParameters(amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized)
+            );
+            simulation->addElement(ok);
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS:
+        {
+            const double width     = elementJson["width"];
+            const double amplitude = elementJson["amplitude"];
+            const double position  = elementJson["position"];
+            const bool circular    = elementJson["circular"];
+            const bool normalized  = elementJson["normalized"];
+            std::vector<std::pair<double, double>> onTimes;
+            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array())
+                for (const auto& pair : elementJson["onTimes"])
+                    onTimes.emplace_back(pair[0].get<double>(), pair[1].get<double>());
+
+            auto tgs = std::make_shared<element::TimedGaussStimulus>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::TimedGaussStimulusParameters(width, amplitude, position, std::move(onTimes), circular, normalized)
+            );
+            simulation->addElement(tgs);
+        }
+        break;
+        case element::TIMED_GAUSS_STIMULUS_2D:
+        {
+            const double width      = elementJson["width"];
+            const double amplitude  = elementJson["amplitude"];
+            const double position_x = elementJson["position_x"];
+            const double position_y = elementJson["position_y"];
+            const bool circular     = elementJson["circular"];
+            const bool normalized   = elementJson["normalized"];
+            std::vector<std::pair<double, double>> onTimes;
+            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array())
+                for (const auto& pair : elementJson["onTimes"])
+                    onTimes.emplace_back(pair[0].get<double>(), pair[1].get<double>());
+
+            auto tgs = std::make_shared<element::TimedGaussStimulus2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::TimedGaussStimulus2DParameters(width, amplitude, position_x, position_y, std::move(onTimes), circular, normalized)
+            );
+            simulation->addElement(tgs);
+        }
+        break;
+        case element::BOOST_STIMULUS_2D:
+        {
+            const double amplitude = elementJson["amplitude"];
+            const bool isActive    = elementJson["isActive"];
+
+            auto bs = std::make_shared<element::BoostStimulus2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::BoostStimulus2DParameters(amplitude, isActive)
+            );
+            simulation->addElement(bs);
+        }
+        break;
+        case element::CORRELATED_NORMAL_NOISE_2D:
+        {
+            const double amplitude = elementJson["amplitude"];
+            const double width     = elementJson["width"];
+            const bool circular    = elementJson["circular"];
+
+            auto cnn = std::make_shared<element::CorrelatedNormalNoise2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::CorrelatedNormalNoise2DParameters(amplitude, width, circular)
+            );
+            simulation->addElement(cnn);
+        }
+        break;
+        case element::ASYMMETRIC_GAUSS_KERNEL_2D:
+        {
+            const double width           = elementJson["width"];
+            const double amplitude       = elementJson["amplitude"];
+            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+            const double timeShift_x     = elementJson["timeShift_x"];
+            const double timeShift_y     = elementJson["timeShift_y"];
+            const bool circular          = elementJson["circular"];
+            const bool normalized        = elementJson["normalized"];
+
+            auto agk = std::make_shared<element::AsymmetricGaussKernel2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::AsymmetricGaussKernel2DParameters(width, amplitude, amplitudeGlobal, timeShift_x, timeShift_y, circular, normalized)
+            );
+            simulation->addElement(agk);
+        }
+        break;
+        case element::MEMORY_TRACE_2D:
+        {
+            const double tauBuild  = elementJson["tauBuild"];
+            const double tauDecay  = elementJson["tauDecay"];
+            const double threshold = elementJson["threshold"];
+
+            auto mt = std::make_shared<element::MemoryTrace2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::MemoryTrace2DParameters(tauBuild, tauDecay, threshold)
+            );
+            simulation->addElement(mt);
         }
         break;
 	    default:

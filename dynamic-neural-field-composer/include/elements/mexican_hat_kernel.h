@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <array>
-#include <optional>
 
 #include "kernel.h"
 #include "tools/math.h"
@@ -36,27 +35,15 @@ namespace dnf_composer::element
 		double amplitudeGlobal;   ///< Spatially uniform inhibition added after convolution.
 		bool circular;            ///< Enable circular (toroidal) convolution.
 		bool normalized;          ///< Normalise both Gaussians before differencing.
-		std::optional<ElementDimensions> outputFieldDimensions; ///< Override output size for cross-dimension use.
 
-		/// @brief Construct a MexicanHatKernel parameter set with sensible defaults.
-		/// @param widthExc       Excitatory σ (default 2.5).
-		/// @param amplitudeExc   Excitatory peak (default 11).
-		/// @param widthInh       Inhibitory σ (default 5).
-		/// @param amplitudeInh   Inhibitory peak (default 15).
-		/// @param amplitudeGlobal  Global inhibition (default -0.1).
-		/// @param circular       Circular convolution (default true).
-		/// @param normalized     Normalise kernels (default true).
-		/// @param outputDims     Optional output dimension override.
 		explicit MexicanHatKernelParameters(const double widthExc = 2.5, const double amplitudeExc = 11.0,
 		                           const double widthInh = 5.0, const double amplitudeInh = 15.0,
 		                           const double amplitudeGlobal = -0.1,
-		                           const bool circular = true, const bool normalized = true,
-		                           const std::optional<ElementDimensions>& outputDims = std::nullopt)
+		                           const bool circular = true, const bool normalized = true)
 			: widthExc(widthExc), amplitudeExc(amplitudeExc),
 			  widthInh(widthInh), amplitudeInh(amplitudeInh),
 			  amplitudeGlobal(amplitudeGlobal),
-			  circular(circular), normalized(normalized),
-			  outputFieldDimensions(outputDims)
+			  circular(circular), normalized(normalized)
 		{}
 
 		bool operator==(const MexicanHatKernelParameters& other) const
@@ -69,8 +56,7 @@ namespace dnf_composer::element
 				std::abs(amplitudeInh - other.amplitudeInh) < epsilon &&
 				std::abs(amplitudeGlobal - other.amplitudeGlobal) < epsilon &&
 				circular == other.circular &&
-				normalized == other.normalized &&
-				outputFieldDimensions == other.outputFieldDimensions;
+				normalized == other.normalized;
 		}
 
 		[[nodiscard]] std::string toString() const override
@@ -84,10 +70,7 @@ namespace dnf_composer::element
 				<< "Amplitude inh.: " << amplitudeInh << ", "
 				<< "Amplitude glob.: " << amplitudeGlobal << ", "
 				<< "Circular: " << (circular ? "true" : "false") << ", "
-				<< "Normalized: " << (normalized ? "true" : "false");
-			if (outputFieldDimensions.has_value())
-				result << ", Output size: " << outputFieldDimensions->size;
-			result << "]";
+				<< "Normalized: " << (normalized ? "true" : "false") << "]";
 			return result.str();
 		}
 	};
@@ -97,10 +80,6 @@ namespace dnf_composer::element
 	/// Produces local excitation and surround inhibition in one pass, making it the
 	/// natural choice for selection and working-memory fields.
 	///
-	/// When @c MexicanHatKernelParameters::outputFieldDimensions is set, the convolution
-	/// result is resampled to the specified output size, enabling connections between
-	/// fields of different spatial dimensions.
-	///
 	/// @ingroup elements
 	class MexicanHatKernel final : public Kernel
 	{
@@ -108,7 +87,6 @@ namespace dnf_composer::element
 		MexicanHatKernelParameters parameters;
 		std::vector<double> scratchExtended;
 		std::vector<double> scratchConvolution;
-		std::vector<double> scratchResample_;
 	public:
 		/// @brief Construct a MexicanHatKernel.
 		/// @param elementCommonParameters  Name, label, and dimensions.

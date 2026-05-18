@@ -28,7 +28,7 @@ static std::shared_ptr<NeuralField> makeField(const std::string& name, const int
 static std::shared_ptr<FieldCoupling> makeFC(const std::string& name,
     const int inSize = 100, const int outSize = 100)
 {
-    ElementDimensions inDim{ inSize };
+    ElementDimensions inDim{ inSize, 1.0 };
     FieldCouplingParameters fcp{ inDim, LearningRule::HEBB, 1.0, 0.01 };
     ElementCommonParameters cp{ name, outSize };
     return std::make_shared<FieldCoupling>(cp, fcp);
@@ -90,7 +90,7 @@ TEST(FieldCouplingTest, HasRequiredComponents)
 
 TEST(FieldCouplingTest, GetParametersReflectsConstruction)
 {
-    ElementDimensions inDim{ 80 };
+    ElementDimensions inDim{ 80, 1.0 };
     FieldCouplingParameters fcp{ inDim, LearningRule::OJA, 2.0, 0.05 };
     ElementCommonParameters cp{ "fc 1", 60 };
     const auto fc = std::make_shared<FieldCoupling>(cp, fcp);
@@ -105,7 +105,7 @@ TEST(FieldCouplingTest, GetParametersReflectsConstruction)
 TEST(FieldCouplingTest, SetParametersUpdatesGetParameters)
 {
     const auto fc = makeFC("fc 1");
-    ElementDimensions inDim{ 50 };
+    ElementDimensions inDim{ 50, 1.0 };
     FieldCouplingParameters newFcp{ inDim, LearningRule::DELTA, 3.0, 0.1 };
     fc->setParameters(newFcp);
 
@@ -191,7 +191,7 @@ TEST_F(FieldCouplingFileTest, WriteReadRoundTripProducesCorrectWeightCount)
 {
     const int inSize = 10;
     const int outSize = 8;
-    ElementDimensions inDim{ inSize };
+    ElementDimensions inDim{ inSize, 1.0 };
     FieldCouplingParameters fcp{ inDim, LearningRule::HEBB, 1.0, 0.01 };
     ElementCommonParameters cp{ "rt-fc", outSize };
     const auto fc = std::make_shared<FieldCoupling>(cp, fcp);
@@ -236,12 +236,45 @@ TEST(FieldCouplingTest, StepWithoutConnectionsDoesNotCrash)
 }
 
 // ---------------------------------------------------------------------------
+// addInput — regression: input pointer must be refreshed immediately
+// ---------------------------------------------------------------------------
+
+// Regression: FieldCoupling::addInput() must refresh the internal input/output
+// pointers so that learning can be enabled without calling init() again.
+// Scenario: output connection exists at init() time; input is connected at runtime.
+TEST(FieldCouplingTest, AddInputAtRuntimeDoesNotDisableLearning)
+{
+    const auto inputField  = makeField("if");
+    const auto fc          = makeFC("fc", 100, 100);
+    const auto outputField = makeField("of");
+
+    // Output side is wired before init (simulates connection drawn before simulation start).
+    outputField->addInput(fc);
+
+    // init() sets fc->output (outputs map is already populated) but fc->input is null
+    // because inputField is not yet connected.
+    inputField->init();
+    fc->init();
+    outputField->init();
+
+    // User draws the input connection at runtime (simulation already initialised).
+    // Before the fix, addInput did not call updateInputField(), leaving fc->input null.
+    fc->addInput(inputField);
+
+    fc->setLearning(true);
+    fc->step(0.0, 0.1);
+
+    // checkValidConnections() must find both pointers valid; learning must stay active.
+    EXPECT_TRUE(fc->getParameters().isLearningActive);
+}
+
+// ---------------------------------------------------------------------------
 // FieldCouplingParameters equality / toString
 // ---------------------------------------------------------------------------
 
 TEST(FieldCouplingParametersTest, EqualParametersCompareEqual)
 {
-    ElementDimensions dim{ 100 };
+    ElementDimensions dim{ 100, 1.0 };
     const FieldCouplingParameters a{ dim, LearningRule::HEBB, 1.0, 0.01 };
     const FieldCouplingParameters b{ dim, LearningRule::HEBB, 1.0, 0.01 };
     EXPECT_EQ(a, b);
@@ -249,7 +282,7 @@ TEST(FieldCouplingParametersTest, EqualParametersCompareEqual)
 
 TEST(FieldCouplingParametersTest, DifferentLearningRuleComparesNotEqual)
 {
-    ElementDimensions dim{ 100 };
+    ElementDimensions dim{ 100, 1.0 };
     const FieldCouplingParameters a{ dim, LearningRule::HEBB, 1.0, 0.01 };
     const FieldCouplingParameters b{ dim, LearningRule::OJA,  1.0, 0.01 };
     EXPECT_NE(a, b);
@@ -257,7 +290,7 @@ TEST(FieldCouplingParametersTest, DifferentLearningRuleComparesNotEqual)
 
 TEST(FieldCouplingParametersTest, DifferentScalarComparesNotEqual)
 {
-    ElementDimensions dim{ 100 };
+    ElementDimensions dim{ 100, 1.0 };
     const FieldCouplingParameters a{ dim, LearningRule::HEBB, 1.0, 0.01 };
     const FieldCouplingParameters b{ dim, LearningRule::HEBB, 2.0, 0.01 };
     EXPECT_NE(a, b);
@@ -265,7 +298,7 @@ TEST(FieldCouplingParametersTest, DifferentScalarComparesNotEqual)
 
 TEST(FieldCouplingParametersTest, ToStringReturnsNonEmpty)
 {
-    ElementDimensions dim{ 100 };
+    ElementDimensions dim{ 100, 1.0 };
     const FieldCouplingParameters fcp{ dim, LearningRule::HEBB, 1.0, 0.01 };
     EXPECT_FALSE(fcp.toString().empty());
 }

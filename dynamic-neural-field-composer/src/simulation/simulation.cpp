@@ -15,10 +15,14 @@ namespace dnf_composer
 		: uniqueIdentifier(identifier), deltaT(deltaT), tZero(tZero), t(t)
 	{
 		if (deltaT <= 0 || tZero > t)
+		{
 			throw Exception(ErrorCode::SIM_INVALID_PARAMETER);
+		}
 
 		if (identifier.empty())
+		{
 			generateUniqueIdentifier();
+		}
 		initialized = false;
 		paused = false;
 		elements = {};
@@ -48,7 +52,9 @@ namespace dnf_composer
 	Simulation& Simulation::operator=(const Simulation& other)
 	{
 		if (this == &other)
+		{
 			return *this; // Self-assignment, do nothing
+		}
 
 		// Copy simple and built-in type members
 		initialized = other.initialized;
@@ -61,7 +67,9 @@ namespace dnf_composer
 		// Clear the current elements and deep copy from other
 		elements.clear();
 		for (const auto& elem : other.elements)
+		{
 			elements.push_back(elem->clone());
+		}
 
 		return *this;
 	}
@@ -121,9 +129,13 @@ namespace dnf_composer
 		accumulatedRunDuration = std::chrono::nanoseconds{ 0 };
 		runSegmentStart = std::chrono::steady_clock::now();
 		for (const auto& element : elements)
+		{
 			element->init();
+		}
 		for (const auto& element : elements)
+		{
 			element->buildInputCache();
+		}
 
 		initialized = true;
 		tools::logger::log(tools::logger::LogLevel::INFO, "Simulation initialized.");
@@ -132,7 +144,9 @@ namespace dnf_composer
 	void Simulation::step()
 	{
 		if (paused)
+		{
 			return;
+		}
 		if (measureStepDuration_)
 		{
 			const auto t0 = std::chrono::steady_clock::now();
@@ -154,7 +168,9 @@ namespace dnf_composer
 	{
 		pause();
 		for (const auto& element : elements)
+		{
 			element->close();
+		}
 		
 		initialized = false;
 		log(tools::logger::LogLevel::INFO, "Simulation closed.");
@@ -202,15 +218,21 @@ namespace dnf_composer
 	void Simulation::run(double runTime)
 	{
 		if (runTime <= 0)
+		{
 			throw Exception(ErrorCode::SIM_RUNTIME_LESS_THAN_ZERO, static_cast<int>(runTime));
+		}
 
 		const double simTime = t + runTime;
 
 		if (!initialized)
+		{
 			init();
+		}
 
 		while (t < simTime)
+		{
 			step();
+		}
 
 		close();
 	}
@@ -218,17 +240,23 @@ namespace dnf_composer
 	void Simulation::runForRealTime(double milliseconds)
 	{
 		if (milliseconds <= 0)
+		{
 			throw Exception(ErrorCode::SIM_RUNTIME_LESS_THAN_ZERO, static_cast<int>(milliseconds));
+		}
 
 		if (!initialized)
+		{
 			init();
+		}
 
 		const auto deadline = std::chrono::steady_clock::now()
 			+ std::chrono::duration_cast<std::chrono::steady_clock::duration>(
 				std::chrono::duration<double, std::milli>(milliseconds));
 
 		while (std::chrono::steady_clock::now() < deadline)
+		{
 			step();
+		}
 
 		close();
 	}
@@ -256,7 +284,9 @@ namespace dnf_composer
 	void Simulation::removeElement(const std::string& elementId)
 	{
 		for (const auto& element : elements)
+		{
 			element->removeInput(elementId);
+		}
 
 		for (int i = 0; i < static_cast<int>(elements.size()); i++)
 		{
@@ -341,7 +371,9 @@ namespace dnf_composer
 	void Simulation::setDeltaT(double deltaT)
 	{
 		if (deltaT <= 0)
+		{
 			throw Exception(ErrorCode::SIM_INVALID_PARAMETER);
+		}
 
 		this->deltaT = deltaT;
 	}
@@ -354,8 +386,12 @@ namespace dnf_composer
 	std::shared_ptr<element::Element> Simulation::getElement(const std::string& id) const
 	{
 		for (const auto& element : elements)
+		{
 			if (element->getUniqueName() == id)
+			{
 				return element;
+			}
+		}
 
 		return nullptr;
 		//throw Exception(ErrorCode::SIM_ELEM_NOT_FOUND, id);
@@ -364,8 +400,12 @@ namespace dnf_composer
 	std::shared_ptr<element::Element> Simulation::getElement(const int index) const 
 	{
 		for (const auto& element : elements)
+		{
 			if (element->getUniqueIdentifier() == index)
-							return element;
+			{
+				return element;
+			}
+		}
 
 		throw Exception(ErrorCode::SIM_ELEM_INDEX, index);
 	}
@@ -404,8 +444,12 @@ namespace dnf_composer
 	{
 		int highestIndex = 0;
 		for (const auto& element : elements)
+		{
 			if (element->getUniqueIdentifier() > highestIndex)
+			{
 				highestIndex = element->getUniqueIdentifier();
+			}
+		}
 		return highestIndex;
 	}
 
@@ -437,7 +481,9 @@ namespace dnf_composer
 	std::chrono::nanoseconds Simulation::getTotalRunDuration() const
 	{
 		if (paused)
+		{
 			return accumulatedRunDuration;
+		}
 		return accumulatedRunDuration + std::chrono::duration_cast<std::chrono::nanoseconds>(
 			std::chrono::steady_clock::now() - runSegmentStart);
 	}
@@ -446,7 +492,9 @@ namespace dnf_composer
 	{
 		const std::shared_ptr<element::Element> foundElement = getElement(id);
 		if (!foundElement)
+		{
 			return false;
+		}
 
 		const auto componentList = foundElement->getComponentList();
 

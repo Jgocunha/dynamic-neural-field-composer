@@ -18,6 +18,18 @@
 #include "elements/field_coupling.h"
 #include "elements/gauss_field_coupling.h"
 #include "elements/memory_trace.h"
+#include "elements/neural_field_2d.h"
+#include "elements/gauss_stimulus_2d.h"
+#include "elements/gauss_kernel_2d.h"
+#include "elements/mexican_hat_kernel_2d.h"
+#include "elements/normal_noise_2d.h"
+#include "elements/oscillatory_kernel_2d.h"
+#include "elements/timed_gauss_stimulus.h"
+#include "elements/timed_gauss_stimulus_2d.h"
+#include "elements/boost_stimulus_2d.h"
+#include "elements/correlated_normal_noise_2d.h"
+#include "elements/asymmetric_gauss_kernel_2d.h"
+#include "elements/memory_trace_2d.h"
 #include "exceptions/exception.h"
 
 using namespace dnf_composer;
@@ -318,16 +330,16 @@ TEST_F(SimulationFileManagerTest, LoadFromTestJsonCreatesCorrectElementCount)
 TEST_F(SimulationFileManagerTest, LoadFromAndTestJsonCreatesCorrectElementCount)
 {
     // and-test.json contains 10 elements
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     const auto sim = createSimulation("load-and-test", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
-    EXPECT_EQ(sim->getNumberOfElements(), 10);
+    EXPECT_EQ(sim->getNumberOfElements(), 13);
 }
 
 TEST_F(SimulationFileManagerTest, LoadCreatesElementsWithCorrectNames)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     const auto sim = createSimulation("load-names", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -341,7 +353,7 @@ TEST_F(SimulationFileManagerTest, LoadCreatesElementsWithCorrectNames)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresNeuralFieldParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     const auto sim = createSimulation("load-nf-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -355,7 +367,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresNeuralFieldParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresGaussKernelParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     const auto sim = createSimulation("load-gk-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -363,9 +375,9 @@ TEST_F(SimulationFileManagerTest, LoadRestoresGaussKernelParameters)
     const auto gk = std::dynamic_pointer_cast<GaussKernel>(sim->getElement("gk 1"));
     ASSERT_NE(gk, nullptr);
     const auto params = gk->getParameters();
-    EXPECT_NEAR(params.amplitude, 3.3, 1e-4);
+    EXPECT_NEAR(params.amplitude, 5.5, 1e-4);
     EXPECT_NEAR(params.width, 3.0, 1e-6);
-    EXPECT_NEAR(params.amplitudeGlobal, 0.0, 1e-6);
+    EXPECT_NEAR(params.amplitudeGlobal, -0.01, 1e-6);
     EXPECT_TRUE(params.circular);
     EXPECT_TRUE(params.normalized);
 }
@@ -391,7 +403,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresMexicanHatKernelParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresNormalNoiseParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     const auto sim = createSimulation("load-nn-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -403,7 +415,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresNormalNoiseParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresInteractions)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     const auto sim = createSimulation("load-interactions", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -453,17 +465,17 @@ TEST_F(SimulationFileManagerTest, SimulationReadClearsExistingElementsBeforeLoad
     sim->addElement(makeField("pre-existing"));
     sim->addElement(makeStimulus("pre-existing-gs"));
 
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     sim->read(testFile);
 
-    EXPECT_EQ(sim->getNumberOfElements(), 10);
+    EXPECT_EQ(sim->getNumberOfElements(), 13);
     EXPECT_EQ(sim->getElement("pre-existing"), nullptr);
 }
 
 TEST_F(SimulationFileManagerTest, SimulationReadInitializesSimulation)
 {
     const auto sim = createSimulation("sim-read-init", 1.0, 0.0, 0.0);
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and-test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
     sim->read(testFile);
     EXPECT_TRUE(sim->isInitialized());
 }
@@ -736,7 +748,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesAsymmetricGaussKernelParamet
 
 TEST_F(SimulationFileManagerTest, RoundTripPreservesFieldCouplingParameters)
 {
-    const FieldCouplingParameters fcp{ {100, 1.0}, LearningRule::OJA, 2.0, 0.05 };
+    const FieldCouplingParameters fcp{ ElementDimensions(100, 1.0), LearningRule::OJA, 2.0, 0.05 };
     const auto coupling = std::make_shared<FieldCoupling>(
         ElementCommonParameters{ "fc rt", 100 }, fcp);
 
@@ -757,7 +769,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesFieldCouplingParameters)
 
 TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussFieldCouplingWithNoCouplings)
 {
-    const GaussFieldCouplingParameters gfcp{ {100, 1.0}, false, true, {} };
+    const GaussFieldCouplingParameters gfcp{ ElementDimensions(100, 1.0), false, true, {} };
     const auto coupling = std::make_shared<GaussFieldCoupling>(
         ElementCommonParameters{ "gfc rt", 100 }, gfcp);
 
@@ -787,7 +799,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussFieldCouplingWithCoupli
         GaussCoupling{ 50.0, 50.0, 4.0, 4.0 },
         GaussCoupling{ 75.0, 70.0, 2.0, 6.0 },
     };
-    const GaussFieldCouplingParameters gfcp{ {100, 1.0}, true, false, couplings };
+    const GaussFieldCouplingParameters gfcp{ ElementDimensions(100, 1.0), true, false, couplings };
     const auto coupling = std::make_shared<GaussFieldCoupling>(
         ElementCommonParameters{ "gfc rt2", 100 }, gfcp);
 
@@ -854,10 +866,10 @@ TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes)
     simA->addElement(makeNoise("nn 1"));
     simA->addElement(std::make_shared<FieldCoupling>(
         ElementCommonParameters{ "fc 1", 100 },
-        FieldCouplingParameters{ {100, 1.0}, LearningRule::HEBB, 1.0, 0.01 }));
+        FieldCouplingParameters{ ElementDimensions(100, 1.0), LearningRule::HEBB, 1.0, 0.01 }));
     simA->addElement(std::make_shared<GaussFieldCoupling>(
         ElementCommonParameters{ "gfc 1", 100 },
-        GaussFieldCouplingParameters{ {100, 1.0}, true, false, {} }));
+        GaussFieldCouplingParameters{ ElementDimensions(100, 1.0), true, false, {} }));
     simA->addElement(std::make_shared<MemoryTrace>(
         ElementCommonParameters{ "mt 1", 100 },
         MemoryTraceParameters{ 100.0, 1000.0, 0.5 }));
@@ -884,4 +896,295 @@ TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes)
     EXPECT_NE(simB->getElement("fc 1"),  nullptr);
     EXPECT_NE(simB->getElement("gfc 1"), nullptr);
     EXPECT_NE(simB->getElement("mt 1"),  nullptr);
+}
+
+// ---------------------------------------------------------------------------
+// 2D element round-trips — individual parameter verification
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesNeuralField2DParameters)
+{
+    const SigmoidFunction sigmoid{ 0.5, 8.0 };
+    const NeuralField2DParameters nfp{ 30.0, -4.0, sigmoid };
+    auto nf = std::make_shared<NeuralField2D>(
+        ElementCommonParameters{ "nf2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, nfp);
+
+    const auto simA = createSimulation("rt-nf2d", 1.0, 0.0, 0.0);
+    simA->addElement(nf);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-nf2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-nf2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<NeuralField2D>(simB->getElement("nf2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_NEAR(loaded->getParameters().tau,                  nfp.tau,                 1e-9);
+    EXPECT_NEAR(loaded->getParameters().startingRestingLevel, nfp.startingRestingLevel, 1e-9);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussKernel2DParameters)
+{
+    const GaussKernel2DParameters gkp{ 4.0, 2.5, -0.02, true, true };
+    auto gk = std::make_shared<GaussKernel2D>(
+        ElementCommonParameters{ "gk2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, gkp);
+
+    const auto simA = createSimulation("rt-gk2d", 1.0, 0.0, 0.0);
+    simA->addElement(gk);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-gk2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-gk2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<GaussKernel2D>(simB->getElement("gk2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), gkp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesMexicanHatKernel2DParameters)
+{
+    const MexicanHatKernel2DParameters mhp{ 3.0, 9.0, 7.0, 6.0, -0.03, true, true };
+    auto mh = std::make_shared<MexicanHatKernel2D>(
+        ElementCommonParameters{ "mhk2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, mhp);
+
+    const auto simA = createSimulation("rt-mhk2d", 1.0, 0.0, 0.0);
+    simA->addElement(mh);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-mhk2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-mhk2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<MexicanHatKernel2D>(simB->getElement("mhk2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), mhp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesOscillatoryKernel2DParameters)
+{
+    const OscillatoryKernel2DParameters okp{ 1.5, 0.06, 0.25, -0.02, true, false };
+    auto ok = std::make_shared<OscillatoryKernel2D>(
+        ElementCommonParameters{ "ok2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, okp);
+
+    const auto simA = createSimulation("rt-ok2d", 1.0, 0.0, 0.0);
+    simA->addElement(ok);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-ok2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-ok2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<OscillatoryKernel2D>(simB->getElement("ok2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), okp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesAsymmetricGaussKernel2DParameters)
+{
+    const AsymmetricGaussKernel2DParameters agkp{ 2.5, 2.0, -0.01, 0.3, 0.2, true, true };
+    auto agk = std::make_shared<AsymmetricGaussKernel2D>(
+        ElementCommonParameters{ "agk2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, agkp);
+
+    const auto simA = createSimulation("rt-agk2d", 1.0, 0.0, 0.0);
+    simA->addElement(agk);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-agk2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-agk2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<AsymmetricGaussKernel2D>(simB->getElement("agk2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), agkp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesMemoryTrace2DParameters)
+{
+    const MemoryTrace2DParameters mtp{ 200.0, 2000.0, 0.4 };
+    auto mt = std::make_shared<MemoryTrace2D>(
+        ElementCommonParameters{ "mt2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, mtp);
+
+    const auto simA = createSimulation("rt-mt2d", 1.0, 0.0, 0.0);
+    simA->addElement(mt);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-mt2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-mt2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<MemoryTrace2D>(simB->getElement("mt2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), mtp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesTimedGaussStimulusParameters)
+{
+    const TimedGaussStimulusParameters tgsp{ 4.0, 12.0, 60.0, {{0.0, 50.0}, {100.0, 200.0}}, true, false };
+    auto tgs = std::make_shared<TimedGaussStimulus>(
+        ElementCommonParameters{ "tgs rt", 100 }, tgsp);
+
+    const auto simA = createSimulation("rt-tgs", 1.0, 0.0, 0.0);
+    simA->addElement(tgs);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-tgs-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-tgs.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<TimedGaussStimulus>(simB->getElement("tgs rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), tgsp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesTimedGaussStimulus2DParameters)
+{
+    const TimedGaussStimulus2DParameters tgsp{ 3.0, 10.0, 15.0, 20.0, {{5.0, 30.0}, {60.0, 90.0}}, true, false };
+    auto tgs = std::make_shared<TimedGaussStimulus2D>(
+        ElementCommonParameters{ "tgs2d rt", ElementDimensions(30, 30, 1.0, 1.0) }, tgsp);
+
+    const auto simA = createSimulation("rt-tgs2d", 1.0, 0.0, 0.0);
+    simA->addElement(tgs);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-tgs2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-tgs2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<TimedGaussStimulus2D>(simB->getElement("tgs2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), tgsp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesBoostStimulus2DParameters)
+{
+    const BoostStimulus2DParameters bsp{ 7.0, false };
+    auto bs = std::make_shared<BoostStimulus2D>(
+        ElementCommonParameters{ "bs2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, bsp);
+
+    const auto simA = createSimulation("rt-bs2d", 1.0, 0.0, 0.0);
+    simA->addElement(bs);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-bs2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-bs2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<BoostStimulus2D>(simB->getElement("bs2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), bsp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesCorrelatedNormalNoise2DParameters)
+{
+    const CorrelatedNormalNoise2DParameters cnnp{ 0.08, 3.5, false };
+    auto cnn = std::make_shared<CorrelatedNormalNoise2D>(
+        ElementCommonParameters{ "cnn2d rt", ElementDimensions(20, 20, 1.0, 1.0) }, cnnp);
+
+    const auto simA = createSimulation("rt-cnn2d", 1.0, 0.0, 0.0);
+    simA->addElement(cnn);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-cnn2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-cnn2d.json" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<CorrelatedNormalNoise2D>(simB->getElement("cnn2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), cnnp);
+}
+
+// ---------------------------------------------------------------------------
+// All element types (1D + 2D) in a single simulation
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes2D)
+{
+    const auto simA = createSimulation("rt-all-2d", 1.0, 0.0, 0.0);
+
+    // 2D field
+    {
+        const SigmoidFunction sig{ 0.0, 10.0 };
+        simA->addElement(std::make_shared<NeuralField2D>(
+            ElementCommonParameters{ "nf2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+            NeuralField2DParameters{ 25.0, -5.0, sig }));
+    }
+    // 2D stimuli
+    simA->addElement(std::make_shared<GaussStimulus2D>(
+        ElementCommonParameters{ "gs2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, true, false }));
+    simA->addElement(std::make_shared<BoostStimulus2D>(
+        ElementCommonParameters{ "bs2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        BoostStimulus2DParameters{ 5.0, true }));
+    simA->addElement(std::make_shared<TimedGaussStimulus2D>(
+        ElementCommonParameters{ "tgs2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        TimedGaussStimulus2DParameters{ 3.0, 8.0, 10.0, 10.0, {{0.0, 50.0}}, true, false }));
+    // 2D kernels
+    simA->addElement(std::make_shared<GaussKernel2D>(
+        ElementCommonParameters{ "gk2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        GaussKernel2DParameters{ 3.0, 2.0, -0.01, true, true }));
+    simA->addElement(std::make_shared<MexicanHatKernel2D>(
+        ElementCommonParameters{ "mhk2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        MexicanHatKernel2DParameters{ 3.0, 8.0, 6.0, 5.0, -0.02, true, true }));
+    simA->addElement(std::make_shared<OscillatoryKernel2D>(
+        ElementCommonParameters{ "ok2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        OscillatoryKernel2DParameters{ 1.0, 0.08, 0.3, -0.01, true, false }));
+    simA->addElement(std::make_shared<AsymmetricGaussKernel2D>(
+        ElementCommonParameters{ "agk2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        AsymmetricGaussKernel2DParameters{ 3.0, 2.0, 0.0, 0.1, 0.0, true, true }));
+    // 2D noise
+    simA->addElement(std::make_shared<NormalNoise2D>(
+        ElementCommonParameters{ "nn2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        NormalNoise2DParameters{ 0.01 }));
+    simA->addElement(std::make_shared<CorrelatedNormalNoise2D>(
+        ElementCommonParameters{ "cnn2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        CorrelatedNormalNoise2DParameters{ 0.05, 2.0, true }));
+    // 2D memory
+    simA->addElement(std::make_shared<MemoryTrace2D>(
+        ElementCommonParameters{ "mt2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
+        MemoryTrace2DParameters{ 100.0, 1000.0, 0.5 }));
+    // 1D timed stimulus
+    simA->addElement(std::make_shared<TimedGaussStimulus>(
+        ElementCommonParameters{ "tgs 1", 100 },
+        TimedGaussStimulusParameters{ 5.0, 15.0, 50.0, {{0.0, 100.0}}, true, false }));
+
+    constexpr int elementCount = 12;
+    ASSERT_EQ(simA->getNumberOfElements(), elementCount);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-all-2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-all-2d.json" }.loadElementsFromJson();
+
+    EXPECT_EQ(simB->getNumberOfElements(), elementCount);
+    EXPECT_NE(simB->getElement("nf2d 1"),   nullptr);
+    EXPECT_NE(simB->getElement("gs2d 1"),   nullptr);
+    EXPECT_NE(simB->getElement("bs2d 1"),   nullptr);
+    EXPECT_NE(simB->getElement("tgs2d 1"),  nullptr);
+    EXPECT_NE(simB->getElement("gk2d 1"),   nullptr);
+    EXPECT_NE(simB->getElement("mhk2d 1"),  nullptr);
+    EXPECT_NE(simB->getElement("ok2d 1"),   nullptr);
+    EXPECT_NE(simB->getElement("agk2d 1"),  nullptr);
+    EXPECT_NE(simB->getElement("nn2d 1"),   nullptr);
+    EXPECT_NE(simB->getElement("cnn2d 1"),  nullptr);
+    EXPECT_NE(simB->getElement("mt2d 1"),   nullptr);
+    EXPECT_NE(simB->getElement("tgs 1"),    nullptr);
+
+    // Spot-check parameters survive the round-trip
+    const auto gk = std::dynamic_pointer_cast<GaussKernel2D>(simB->getElement("gk2d 1"));
+    ASSERT_NE(gk, nullptr);
+    EXPECT_EQ(gk->getParameters(), (GaussKernel2DParameters{ 3.0, 2.0, -0.01, true, true }));
+
+    const auto agk = std::dynamic_pointer_cast<AsymmetricGaussKernel2D>(simB->getElement("agk2d 1"));
+    ASSERT_NE(agk, nullptr);
+    EXPECT_EQ(agk->getParameters(), (AsymmetricGaussKernel2DParameters{ 3.0, 2.0, 0.0, 0.1, 0.0, true, true }));
+
+    const auto mt = std::dynamic_pointer_cast<MemoryTrace2D>(simB->getElement("mt2d 1"));
+    ASSERT_NE(mt, nullptr);
+    EXPECT_EQ(mt->getParameters(), (MemoryTrace2DParameters{ 100.0, 1000.0, 0.5 }));
+
+    const auto tgs = std::dynamic_pointer_cast<TimedGaussStimulus>(simB->getElement("tgs 1"));
+    ASSERT_NE(tgs, nullptr);
+    EXPECT_EQ(tgs->getParameters(), (TimedGaussStimulusParameters{ 5.0, 15.0, 50.0, {{0.0, 100.0}}, true, false }));
 }

@@ -61,11 +61,6 @@ namespace dnf_composer
 			return parameters;
 		}
 
-		/*double NeuralField::getCentroid() const
-		{
-			return state.centroid;
-		}*/
-
 		bool NeuralField::isStable() const
 		{
 			if (state.stable)
@@ -118,49 +113,6 @@ namespace dnf_composer
 		{
 			parameters.activationFunction->apply(components["activation"], components["output"]);
 		}
-
-		//void NeuralField::calculateCentroid()
-		//{
-		//	const std::vector<double> f_output = tools::math::heaviside(components["activation"], 0.1);
-
-		//	if (*std::ranges::max_element(f_output) > 0)
-		//	{
-		//		const bool isAtLimits = (f_output[0] > 0) || (f_output[commonParameters.dimensionParameters.size - 1] > 0);
-
-		//		double sumActivation = 0.0;
-		//		double sumWeightedPositions = 0.0;
-
-		//		for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
-		//		{
-		//			const double activation = f_output[i];
-
-		//			sumActivation += activation;
-
-		//			// Calculate the circular distance from the midpoint to the position
-		//			double distance = 0.0;
-		//			if (isAtLimits)
-		//				distance = fmod(static_cast<double>(i) - static_cast<double>(commonParameters.dimensionParameters.size) * 0.5 
-		//					+ static_cast<double>(commonParameters.dimensionParameters.size) * 10, static_cast<double>(commonParameters.dimensionParameters.size));
-		//			else
-		//				distance = fmod(static_cast<double>(i) - static_cast<double>(commonParameters.dimensionParameters.size) * 0.5, static_cast<double>(commonParameters.dimensionParameters.size));
-		//			sumWeightedPositions += distance * activation;
-		//		}
-
-		//		static constexpr double epsilon = 1e-6;
-		//		if (std::fabs(sumActivation) > epsilon)
-		//		{
-		//			// Shift the centroid back to the circular field
-		//			state.centroid = fmod(static_cast<double>(commonParameters.dimensionParameters.size) * 0.5 + sumWeightedPositions / sumActivation, static_cast<double>(commonParameters.dimensionParameters.size));
-		//			if (isAtLimits)
-		//				state.centroid = (state.centroid >= 0 ? state.centroid : state.centroid + static_cast<double>(commonParameters.dimensionParameters.size));
-		//		}
-		//		state.centroid = state.centroid * commonParameters.dimensionParameters.d_x + commonParameters.dimensionParameters.d_x;
-		//	}
-		//	else
-		//	{
-		//		state.centroid = -1.0;
-		//	}
-		//}
 
 		void NeuralField::updateState(double deltaT)
 		{

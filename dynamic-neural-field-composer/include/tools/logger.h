@@ -13,6 +13,8 @@
 #undef ERROR
 #endif
 
+
+
 namespace dnf_composer::tools::logger
 {
 	enum LogLevel : int
@@ -38,9 +40,9 @@ namespace dnf_composer::tools::logger
 		LogOutputMode outputMode;
 		static LogLevel minLogLevel;
 	public:
-		explicit Logger(LogLevel level, LogOutputMode mode = ALL);
+		Logger(LogLevel level, LogOutputMode mode = ALL);
 		void log(const std::string& message) const;
-		static void setMinLogLevel(const LogLevel level) { minLogLevel = level; }
+		static void setMinLogLevel(LogLevel level) { minLogLevel = level; }
 	private:
 		static std::string getLogLevelColorCodeCmd(LogLevel level);
 		static ImVec4 getLogLevelColorCodeGui(LogLevel level);
@@ -53,3 +55,6 @@ namespace dnf_composer::tools::logger
 
 	static Logger logger(LogLevel::INFO);
 }
+
+
+
