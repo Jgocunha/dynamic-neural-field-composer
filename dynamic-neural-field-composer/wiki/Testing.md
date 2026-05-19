@@ -129,5 +129,5 @@ TEST_F(NeuralFieldFixture, ActivationStartsAtRestingLevel)
 To add a new test file:
 
 1. Create `tests/test_my_module.cpp`
-2. Add it to the `add_executable(dnf_composer_tests ...)` list in `CMakeLists.txt`
+2. Add it to the `add_executable(dnf_composer_tests ...)` list in `tests/CMakeLists.txt`
 3. Rebuild — `gtest_discover_tests` will pick it up automatically

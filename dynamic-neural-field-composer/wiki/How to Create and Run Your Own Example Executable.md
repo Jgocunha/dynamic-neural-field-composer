@@ -7,6 +7,7 @@ dynamic-neural-field-composer/
 ├── src/                          # Main source code
 ├── include/                      # Header files
 ├── examples/                     # Example executables
+│   ├── CMakeLists.txt            # Example build configuration
 │   ├── ex_field_couplings.cpp
 │   ├── ex_two_robot_team.cpp
 │   └── ... (other examples)
@@ -19,14 +20,13 @@ dynamic-neural-field-composer/
 1. Create your new example file ```my_custom_example.cpp```; 
 1. Based on the provided examples create your DNF architecture.
 
-## Step 2: Update CMakeLists.txt
-1. Open the main CMakeLists.txt file;
-2. Add your executable to the build system:
+## Step 2: Update examples/CMakeLists.txt
+1. Open `examples/CMakeLists.txt`;
+2. Add your executable using the `add_example_executable` helper:
 ``` cmake
-   # Add this near the end of the file, after the main executable
-   add_executable(my_custom_example "examples/my_custom_example.cpp")
+add_example_executable(my_custom_example my_custom_example.cpp)
 ```
-**Note:** Replace `my_custom_example` with your desired executable name, and update the path to match your filename.
+**Note:** Replace `my_custom_example` with your desired executable name, and update the filename to match your file.
 
 3. Build and run.
 
