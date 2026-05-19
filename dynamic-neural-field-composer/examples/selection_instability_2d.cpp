@@ -3,25 +3,14 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
-// Competitive Selection example
-//
-// Three localized stimuli (options A, B, C) feed a single selection field.
-// A Gaussian kernel provides broad lateral
-// inhibition — only the option whose input crosses threshold first forms a
-// stable peak; the others are suppressed (winner-takes-all).
-//
-// Try it:
-//   - Run with default parameters: option B (strongest) wins.
-//   - Reduce option B amplitude below option A or C: the winner shifts.
-//   - Give two options equal amplitude: noise breaks the tie stochastically.
-
 int main()
 {
 	try
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("example competitive selection", 25.0, 0.0, 0.0);
+		const auto simulation = std::make_shared<Simulation>("Selection instability (example)",
+			5.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
@@ -30,13 +19,13 @@ int main()
 
 		// ── Option stimuli ────────────────────────────────────────────────────
 		// Three options at positions 25, 50, 75.
-		// Amplitudes are intentionally the same so small changes shift the winner.
+		// Amplitudes are intentionally the same, so small changes (noise) shift the winner.
 		const auto sAcp = element::ElementCommonParameters{ "option A stimulus" };
 		const auto sAp  = element::GaussStimulusParameters{ 3.0, 5.0, 25.0 };
 		const auto sA   = std::make_shared<element::GaussStimulus>(sAcp, sAp);
 
 		const auto sBcp = element::ElementCommonParameters{ "option B stimulus" };
-		const auto sBp  = element::GaussStimulusParameters{ 3.0, 8.0, 50.0 };
+		const auto sBp  = element::GaussStimulusParameters{ 3.0, 5.0, 50.0 };
 		const auto sB   = std::make_shared<element::GaussStimulus>(sBcp, sBp);
 
 		const auto sCcp = element::ElementCommonParameters{ "option C stimulus" };
@@ -55,7 +44,7 @@ int main()
 		const auto gk   = std::make_shared<element::GaussKernel>(gkcp, gkp);
 
 		// ── Normal noise ──────────────────────────────────────────────────────
-		// Small noise is enough to break symmetry when two stimuli are equal.
+		// Small noise is enough to break symmetry when two (or more) stimuli are equal.
 		const auto nncp = element::ElementCommonParameters{ "normal noise" };
 		const auto nnp  = element::NormalNoiseParameters{ 0.2 };
 		const auto nn   = std::make_shared<element::NormalNoise>(nncp, nnp);
@@ -74,7 +63,6 @@ int main()
 		nf->addInput(nn);
 		gk->addInput(nf);
 
-		// ── Plots ─────────────────────────────────────────────────────────────
 		visualization->plot({ {nf->getUniqueName(), "activation"},
 		                      {nf->getUniqueName(), "output"},
 		                      {nf->getUniqueName(), "input"} });
