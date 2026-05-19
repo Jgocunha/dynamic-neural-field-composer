@@ -12,7 +12,8 @@ int main()
     {
         using namespace dnf_composer;
 
-        const auto simulation = std::make_shared<Simulation>("example timed gauss stimulus 2d", 25.0, 0.0, 0.0);
+        const auto simulation = std::make_shared<Simulation>("Timed stimuli 2d (example)",
+            5.0, 0.0, 0.0);
         const auto visualization = std::make_shared<Visualization>(simulation);
         const Application app{ simulation, visualization };
 
@@ -32,7 +33,7 @@ int main()
             15.0,  // amplitude
             25.0,  // position_x
             25.0,  // position_y
-            {{10.0, 30.0}, {60.0, 80.0}},  // on-time windows
+            {{0.0, 300.0}, {600.0, 1000.0}},  // on-time windows
             true,  // circular
             false  // normalized
         };
@@ -54,9 +55,18 @@ int main()
         simulation->createInteraction("timed stim 2d",  "output", "gauss kernel 2d");
         simulation->createInteraction("gauss kernel 2d", "output", "neural field 2d");
 
-        visualization->plot({ {tgs->getUniqueName(), "output"} });
-        visualization->plot({ {gk->getUniqueName(), "output"} });
-        visualization->plot({ {nf->getUniqueName(), "output"} });
+        visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+            PlotAnnotations{"Neural field activation", "Spatial dimension (x)", "Spatial dimension (y)"}},
+            HeatmapParameters{},
+            { {nf->getUniqueName(), "activation"} });
+        visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+            PlotAnnotations{"Gauss kernel", "Spatial dimension (x)", "Spatial dimension (y)"}},
+            HeatmapParameters{},
+            { {gk->getUniqueName(), "kernel"} });
+        visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+            PlotAnnotations{"Gauss kernel output", "Spatial dimension (x)", "Spatial dimension (y)"}},
+            HeatmapParameters{},
+            { {gk->getUniqueName(), "output"} });
 
         simulation->init();
         app.init();

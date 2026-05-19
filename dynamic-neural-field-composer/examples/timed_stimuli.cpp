@@ -30,7 +30,7 @@ int main()
             5.0,   // width
             15.0,  // amplitude
             50.0,  // position
-            {{10.0, 30.0}, {60.0, 80.0}},  // on-time windows
+            {{0.0, 300.0}, {600.0, 1000.0}},  // on-time windows
             true,  // circular
             false  // normalized
         };
@@ -54,7 +54,7 @@ int main()
 
         visualization->plot({ {tgs->getUniqueName(), "output"} });
         visualization->plot({ {gk->getUniqueName(), "output"} });
-        visualization->plot({ {nf->getUniqueName(), "output"} });
+        visualization->plot({ {nf->getUniqueName(), "activation"} });
 
         app.init();
         while (!app.hasGUIBeenClosed())

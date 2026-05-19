@@ -8,7 +8,7 @@ int main()
 	try {
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("Travelling bump of activation (example)",
+		const auto simulation = std::make_shared<Simulation>("Travelling bump of activation 2D (example)",
 			5.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 
