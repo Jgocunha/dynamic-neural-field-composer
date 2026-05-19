@@ -19,13 +19,13 @@ int main()
 
 		// ── Option stimuli ────────────────────────────────────────────────────
 		// Three options at positions 25, 50, 75.
-		// Amplitudes are intentionally the same, so small changes shift the winner.
+		// Amplitudes are intentionally the same, so small changes (noise) shift the winner.
 		const auto sAcp = element::ElementCommonParameters{ "option A stimulus" };
 		const auto sAp  = element::GaussStimulusParameters{ 3.0, 5.0, 25.0 };
 		const auto sA   = std::make_shared<element::GaussStimulus>(sAcp, sAp);
 
 		const auto sBcp = element::ElementCommonParameters{ "option B stimulus" };
-		const auto sBp  = element::GaussStimulusParameters{ 3.0, 8.0, 50.0 };
+		const auto sBp  = element::GaussStimulusParameters{ 3.0, 5.0, 50.0 };
 		const auto sB   = std::make_shared<element::GaussStimulus>(sBcp, sBp);
 
 		const auto sCcp = element::ElementCommonParameters{ "option C stimulus" };
@@ -44,7 +44,7 @@ int main()
 		const auto gk   = std::make_shared<element::GaussKernel>(gkcp, gkp);
 
 		// ── Normal noise ──────────────────────────────────────────────────────
-		// Small noise is enough to break symmetry when two stimuli are equal.
+		// Small noise is enough to break symmetry when two (or more) stimuli are equal.
 		const auto nncp = element::ElementCommonParameters{ "normal noise" };
 		const auto nnp  = element::NormalNoiseParameters{ 0.2 };
 		const auto nn   = std::make_shared<element::NormalNoise>(nncp, nnp);
