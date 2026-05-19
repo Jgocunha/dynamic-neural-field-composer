@@ -16,13 +16,13 @@ add_example_executable(example_boost_detection          boost_detection.cpp)
 add_example_executable(example_boost_detection_2d       boost_detection_2d.cpp)
 add_example_executable(example_selection_instability    selection_instability.cpp)
 add_example_executable(example_selection_instability_2d selection_instability_2d.cpp)
-
+add_example_executable(example_memory_trace             memory_trace.cpp)
+#add_example_executable(example_memory_trace_2d          memory_trace_2d.cpp)
 
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
-add_example_executable(ex_memory_trace ex_memory_trace.cpp)
-add_example_executable(ex_neural_field_2d ex_neural_field_2d.cpp)
+
 add_example_executable(ex_oscillatory_kernel_2d ex_oscillatory_kernel_2d.cpp)
 
 
