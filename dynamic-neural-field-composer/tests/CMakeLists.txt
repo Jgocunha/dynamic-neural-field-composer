@@ -1,7 +1,6 @@
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
 if(DNF_COMPOSER_BUILD_TESTS)
     find_package(GTest CONFIG REQUIRED)
-    enable_testing()
 
     add_executable(dnf_composer_tests
             # elements

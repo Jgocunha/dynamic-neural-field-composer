@@ -354,6 +354,7 @@ if(DOXYGEN_FOUND)
 endif()
 
 # Tests
+enable_testing()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
     add_subdirectory(tests)
 endif()
