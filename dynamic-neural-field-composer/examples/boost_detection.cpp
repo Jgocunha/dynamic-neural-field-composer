@@ -3,31 +3,13 @@
 #include "user_interface/static_layout_window.h"
 #include "user_interface/main_menu_bar.h"
 
-// Boost Stimulus example
-//
-// Demonstrates the BoostStimulus element, which applies a uniform (spatially
-// homogeneous) input across the entire neural field. Combined with a localized
-// GaussStimulus and a MexicanHatKernel, this shows how a global boost can
-// raise the field's effective resting level, pushing a sub-threshold localized
-// input over the detection threshold.
-//
-// Architecture:
-//   BoostStimulus + GaussStimulus --> NeuralField <--> MexicanHatKernel
-//                                         ^
-//                                    NormalNoise
-//
-// Try it:
-//   - Set boost amplitude to 0: the localized stimulus alone cannot sustain a peak.
-//   - Increase boost amplitude gradually: observe the field tip into detection.
-//   - Once detected, reduce boost back to 0: the self-excitation sustains the peak.
-
 int main()
 {
 	try
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("example boost stimulus", 10.0, 0.0, 0.0);
+		const auto simulation = std::make_shared<Simulation>("Boost detection (example)", 10.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
@@ -41,7 +23,7 @@ int main()
 
 		// Localized Gauss stimulus to demonstrate categorical responding
 		const auto gscp = element::ElementCommonParameters{ "Gauss stimulus" };
-		const auto gsp = element::GaussStimulusParameters{ 5.0, 8.0, 50.0 };
+		const auto gsp = element::GaussStimulusParameters{ 5.0, 4.0, 50.0 };
 		const auto gs = std::make_shared<element::GaussStimulus>(gscp, gsp);
 
 		// Mexican hat kernel for self-excitation / lateral inhibition
@@ -53,9 +35,9 @@ int main()
 		const auto nfp = element::NeuralFieldParameters{};
 		const auto nf = std::make_shared<element::NeuralField>(nfcp, nfp);
 
-		const auto nncp = element::ElementCommonParameters{ "Normal noise" };
-		const auto nnp = element::NormalNoiseParameters{};
-		const auto nn = std::make_shared<element::NormalNoise>(nncp, nnp);
+		const auto nncp = element::ElementCommonParameters{ "Correlated normal noise" };
+		const auto nnp = element::CorrelatedNormalNoiseParameters{};
+		const auto nn = std::make_shared<element::CorrelatedNormalNoise>(nncp, nnp);
 
 		simulation->addElement(bs);
 		simulation->addElement(gs);

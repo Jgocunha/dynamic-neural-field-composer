@@ -12,16 +12,16 @@ add_example_executable(example_travelling_bump      travelling_bump.cpp)
 add_example_executable(example_travelling_bump_2d   travelling_bump_2d.cpp)
 add_example_executable(example_timed_stimuli        timed_stimuli.cpp)
 add_example_executable(example_timed_stimuli_2d     timed_stimuli_2d.cpp)
+add_example_executable(example_boost_detection      boost_detection.cpp)
+add_example_executable(example_boost_detection_2d   boost_detection_2d.cpp)
 
 
-add_example_executable(ex_comp_act_selection ex_complementary_action_selection.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
 add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
-add_example_executable(ex_boost_stimulus ex_boost_stimulus.cpp)
 add_example_executable(ex_memory_trace ex_memory_trace.cpp)
 add_example_executable(ex_neural_field_2d ex_neural_field_2d.cpp)
 add_example_executable(ex_oscillatory_kernel_2d ex_oscillatory_kernel_2d.cpp)
 
-add_example_executable(ex_boost_stimulus_2d ex_boost_stimulus_2d.cpp)
+
 add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)

@@ -12,7 +12,8 @@ int main()
     {
         using namespace dnf_composer;
 
-        const auto simulation = std::make_shared<Simulation>("example boost stimulus 2d", 25.0, 0.0, 0.0);
+        const auto simulation = std::make_shared<Simulation>("Boost detection 2D (example)",
+            5.0, 0.0, 0.0);
         const auto visualization = std::make_shared<Visualization>(simulation);
         const Application app{ simulation, visualization };
 
@@ -30,6 +31,10 @@ int main()
         const auto bs = std::make_shared<element::BoostStimulus2D>(
             element::ElementCommonParameters{ "boost 2d", dims }, bsp);
 
+        element::TimedGaussStimulus2DParameters tgsp{5, 8, 25, 25, {{0, 500}}};
+        const auto tgs = std::make_shared<element::TimedGaussStimulus2D>(
+            element::ElementCommonParameters{ "timed stim 2d", dims }, tgsp);
+
         element::GaussKernel2DParameters gkp{ 3.0, 3.0, -0.01, true, true };
         const auto gk = std::make_shared<element::GaussKernel2D>(
             element::ElementCommonParameters{ "gauss kernel 2d", dims }, gkp);
@@ -41,13 +46,25 @@ int main()
         simulation->addElement(bs);
         simulation->addElement(gk);
         simulation->addElement(nf);
+        simulation->addElement(tgs);
 
-        simulation->createInteraction("boost 2d",       "output", "gauss kernel 2d");
+        simulation->createInteraction("boost 2d",       "output", "neural field 2d");
+        simulation->createInteraction("timed stim 2d",       "output", "neural field 2d");
         simulation->createInteraction("gauss kernel 2d","output", "neural field 2d");
+        simulation->createInteraction("neural field 2d","output", "gauss kernel 2d");
 
-        visualization->plot({ {bs->getUniqueName(), "output"} });
-        visualization->plot({ {gk->getUniqueName(), "output"} });
-        visualization->plot({ {nf->getUniqueName(), "output"} });
+        visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+            PlotAnnotations{"Neural field activation", "Spatial dimension (x)", "Spatial dimension (y)"}},
+            HeatmapParameters{},
+            { {nf->getUniqueName(), "activation"} });
+        visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+            PlotAnnotations{"Boost stimulus", "Spatial dimension (x)", "Spatial dimension (y)"}},
+            HeatmapParameters{},
+            { {bs->getUniqueName(), "output"} });
+        visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+            PlotAnnotations{"Timed stimulus", "Spatial dimension (x)", "Spatial dimension (y)"}},
+            HeatmapParameters{},
+            { {tgs->getUniqueName(), "output"} });
 
         simulation->init();
         app.init();
