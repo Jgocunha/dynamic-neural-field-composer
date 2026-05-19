@@ -8,8 +8,10 @@ function(add_example_executable target_name source_file)
     install(TARGETS ${target_name} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 endfunction()
 
+add_example_executable(example_travelling_bump travelling_bump.cpp)
+add_example_executable(example_travelling_bump_2d travelling_bump_2d.cpp)
+
 add_example_executable(ex_comp_act_selection ex_complementary_action_selection.cpp)
-add_example_executable(ex_asymmetric_gauss_kernel ex_asymmetric_gauss_kernel.cpp)
 add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
 add_example_executable(ex_field_couplings ex_field_couplings.cpp)
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)

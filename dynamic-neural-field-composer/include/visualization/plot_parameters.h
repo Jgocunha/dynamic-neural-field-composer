@@ -17,8 +17,8 @@ namespace dnf_composer
 			const double& y_min, const double& y_max, 
 			const double& x_step, const double& y_step);
 		explicit PlotDimensions(double x_step);
-		bool isLegal() const;
-		std::string toString() const;
+		[[nodiscard]] bool isLegal() const;
+		[[nodiscard]] std::string toString() const;
 		bool operator==(const PlotDimensions& other) const;
 	};
 
@@ -27,8 +27,9 @@ namespace dnf_composer
 		std::string title, x_label, y_label;
 
 		PlotAnnotations();
-		PlotAnnotations(std::string title, std::string x_label, std::string y_label);
-		std::string toString() const;
+		explicit PlotAnnotations(std::string title, std::string x_label = "Spatial dimension",
+			std::string y_label = "Amplitude");
+		[[nodiscard]] std::string toString() const;
 		bool operator==(const PlotAnnotations& other) const;
 	};
 
@@ -50,8 +51,10 @@ namespace dnf_composer
 		PlotAnnotations annotations;
 
 		PlotCommonParameters();
-		PlotCommonParameters(const PlotType type, const PlotDimensions& dimensions, PlotAnnotations annotations);
-		std::string toString() const;
+		explicit PlotCommonParameters(PlotType type);
+		PlotCommonParameters(PlotType type, PlotAnnotations annotations);
+		PlotCommonParameters(PlotType type, const PlotDimensions& dimensions, PlotAnnotations annotations);
+		[[nodiscard]] std::string toString() const;
 		bool operator==(const PlotCommonParameters& other) const;
 	};
 
@@ -59,6 +62,6 @@ namespace dnf_composer
 	{
 		virtual ~PlotSpecificParameters() = default;
 		PlotSpecificParameters() = default;
-		virtual std::string toString() const = 0;
+		[[nodiscard]] virtual std::string toString() const = 0;
 	};
 }

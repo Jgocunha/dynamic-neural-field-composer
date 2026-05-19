@@ -52,9 +52,7 @@ namespace dnf_composer
 
 	bool PlotDimensions::isLegal() const
 	{
-		if (xMin >= xMax || yMin >= yMax || xStep <= 0 || yStep <= 0)
-			return false;
-		return true;
+		return xMin < xMax && yMin < yMax && xStep > 0 && yStep > 0;
 	}
 
 	std::string PlotDimensions::toString() const
@@ -74,20 +72,16 @@ namespace dnf_composer
 	{
 		constexpr double epsilon = 1e-6;
 
-		if (std::fabs(xMin - other.xMin) > epsilon ||
-			std::fabs(xMax - other.xMax) > epsilon ||
-			std::fabs(yMin - other.yMin) > epsilon ||
-			std::fabs(yMax - other.yMax) > epsilon ||
-			std::fabs(xStep - other.xStep) > epsilon ||
-			std::fabs(yStep - other.yStep) > epsilon)
-		{
-			return false;
-		}
-		return true;
+		return std::fabs(xMin - other.xMin) <= epsilon &&
+			std::fabs(xMax - other.xMax) <= epsilon &&
+			std::fabs(yMin - other.yMin) <= epsilon &&
+			std::fabs(yMax - other.yMax) <= epsilon &&
+			std::fabs(xStep - other.xStep) <= epsilon &&
+			std::fabs(yStep - other.yStep) <= epsilon;
 	}
 
 	PlotAnnotations::PlotAnnotations()
-		:title("title"), x_label("x label"), y_label("y label")
+		:title("Element component(s)"), x_label("Spatial dimension"), y_label("Amplitude")
 	{}
 
 	PlotAnnotations::PlotAnnotations(std::string title, std::string x_label, std::string y_label)
@@ -106,13 +100,19 @@ namespace dnf_composer
 
 	bool PlotAnnotations::operator==(const PlotAnnotations& other) const
 	{
-		if (title != other.title || x_label != other.x_label || y_label != other.y_label )
-			return false;
-		return true;
+		return !(title != other.title || x_label != other.x_label || y_label != other.y_label);
 	}
 
 	PlotCommonParameters::PlotCommonParameters()
-		: type(PlotType::LINE_PLOT), dimensions(), annotations()
+		: type(PlotType::LINE_PLOT)
+	{}
+
+	PlotCommonParameters::PlotCommonParameters(const PlotType type)
+		: type(type)
+	{}
+
+	PlotCommonParameters::PlotCommonParameters(const PlotType type , PlotAnnotations annotations)
+		: type(type), annotations(std::move(annotations))
 	{}
 
 	PlotCommonParameters::PlotCommonParameters(const PlotType type, const PlotDimensions& dimensions, PlotAnnotations annotations)
