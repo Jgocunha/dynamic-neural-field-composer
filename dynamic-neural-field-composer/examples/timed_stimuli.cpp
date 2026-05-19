@@ -12,7 +12,8 @@ int main()
     {
         using namespace dnf_composer;
 
-        const auto simulation = std::make_shared<Simulation>("example timed gauss stimulus", 25.0, 0.0, 0.0);
+        const auto simulation = std::make_shared<Simulation>("Timed stimuli (example)",
+            5.0, 0.0, 0.0);
         const auto visualization = std::make_shared<Visualization>(simulation);
         const Application app{ simulation, visualization };
 
