@@ -552,29 +552,61 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::handlePinInteractions() const
 	{
-		static ImNodeEditor::PinId sessionStartPin  = 0;
-		static bool                prevInCreate     = false;
-		static bool                sessionAccepted  = false;
-		static ImNodeEditor::PinId pendingClickPin  = 0;
+		// pendingOutputPin: set when user clicks an output pin; cleared when they click an input
+		// pin (completing the connection), click elsewhere, or start a successful drag.
+		static ImNodeEditor::PinId pendingOutputPin = 0;
 
 		const int maxIdx = simulation->getHighestElementIndex();
 
-		// Cancel pending click-to-click with Escape or right-click
-		if (pendingClickPin &&
+		// Cancel with Escape or right-click.
+		if (pendingOutputPin &&
 			(ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
-			pendingClickPin = 0;
+			pendingOutputPin = 0;
 
-		bool inCreate = false;
+		// Click-to-click: handle every left-click directly via GetHoveredPin().
+		// This runs before BeginCreate so it fires even when clicking a pin starts a new session.
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		{
+			const ImNodeEditor::PinId hovered = ImNodeEditor::GetHoveredPin();
+			if (hovered)
+			{
+				const int asOutput = static_cast<int>(hovered.Get()) - startingOutputPinId;
+				const int asInput  = static_cast<int>(hovered.Get()) - startingInputPinId;
+				const bool isValidOutput = asOutput >= 0 && asOutput <= maxIdx;
+				const bool isValidInput  = asInput  >= 0 && asInput  <= maxIdx;
 
+				if (pendingOutputPin && isValidInput)
+				{
+					// Second click on an input pin: complete the connection.
+					const int srcId = static_cast<int>(pendingOutputPin.Get()) - startingOutputPinId;
+					simulation->createInteraction(
+						simulation->getElement(srcId)->getUniqueName(), "output",
+						simulation->getElement(asInput)->getUniqueName());
+					pendingOutputPin = 0;
+				}
+				else if (isValidOutput)
+				{
+					// First click (or change of mind): record this output pin.
+					pendingOutputPin = hovered;
+				}
+				else
+				{
+					pendingOutputPin = 0;
+				}
+			}
+			else
+			{
+				// Clicked empty space: cancel any pending connection.
+				pendingOutputPin = 0;
+			}
+		}
+
+		// Drag-to-connect via imgui-node-editor's BeginCreate API.
 		if (ImNodeEditor::BeginCreate())
 		{
-			inCreate = true;
-
 			ImNodeEditor::PinId startPin, endPin;
 			if (ImNodeEditor::QueryNewLink(&startPin, &endPin))
 			{
-				if (!sessionStartPin) sessionStartPin = startPin;
-
 				const int srcId = static_cast<int>(startPin.Get()) - startingOutputPinId;
 				const int dstId = static_cast<int>(endPin.Get())   - startingInputPinId;
 
@@ -585,8 +617,7 @@ namespace dnf_composer::user_interface
 						simulation->createInteraction(
 							simulation->getElement(srcId)->getUniqueName(), "output",
 							simulation->getElement(dstId)->getUniqueName());
-						pendingClickPin = 0;
-						sessionAccepted = true;
+						pendingOutputPin = 0;
 					}
 				}
 				else
@@ -595,47 +626,12 @@ namespace dnf_composer::user_interface
 				}
 			}
 
-			ImNodeEditor::PinId nodePin;
-			if (!sessionStartPin && ImNodeEditor::QueryNewNode(&nodePin) && nodePin)
-			{
-				sessionStartPin = nodePin;
+			// Reject node-creation prompts (not supported).
+			ImNodeEditor::PinId newNodePin;
+			if (ImNodeEditor::QueryNewNode(&newNodePin))
 				ImNodeEditor::RejectNewItem();
-			}
 
 			ImNodeEditor::EndCreate();
-		}
-
-		// When a create session ends without accepting = user clicked (not dragged to) a pin
-		if (prevInCreate && !inCreate)
-		{
-			if (!sessionAccepted && sessionStartPin)
-			{
-				const int srcId = static_cast<int>(sessionStartPin.Get()) - startingOutputPinId;
-				if (srcId >= 0 && srcId <= maxIdx)
-					pendingClickPin = sessionStartPin;
-			}
-			sessionStartPin = 0;
-			sessionAccepted = false;
-		}
-		prevInCreate = inCreate;
-
-		// Complete pending click-to-click: next left-click on an input pin
-		if (pendingClickPin && !inCreate)
-		{
-			const ImNodeEditor::PinId hovered = ImNodeEditor::GetHoveredPin();
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-			{
-				if (hovered)
-				{
-					const int srcId = static_cast<int>(pendingClickPin.Get()) - startingOutputPinId;
-					const int dstId = static_cast<int>(hovered.Get())         - startingInputPinId;
-					if (srcId >= 0 && srcId <= maxIdx && dstId >= 0 && dstId <= maxIdx)
-						simulation->createInteraction(
-							simulation->getElement(srcId)->getUniqueName(), "output",
-							simulation->getElement(dstId)->getUniqueName());
-				}
-				pendingClickPin = 0;
-			}
 		}
 	}
 
