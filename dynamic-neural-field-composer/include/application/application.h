@@ -150,5 +150,5 @@ namespace dnf_composer
 	inline constexpr size_t g_FontCount = 15; ///< Number of text font variants (icon fonts not counted).
 	inline ImFont* g_SmallIconsFont;    ///< Font Awesome @ 12
 	inline ImFont* g_MediumIconsFont;   ///< Font Awesome @ 20
-	inline ImFont* g_LargeIconsFont;    ///< Font Awesome @ 48
+	inline ImFont* g_LargeIconsFont;    ///< Font Awesome @ 26
 }

@@ -140,10 +140,10 @@ namespace dnf_composer::user_interface
 			ImGui::AlignTextToFramePadding();
 			ImGui::TextUnformatted(".dnf");
 			ImGui::PopFont();
-			ImGui::SameLine(0, 20);
+			ImGui::SameLine(0, 40);
 
 			renderTopBarLeft(ui, btnSz);
-			ImGui::SameLine(0, 20);
+			ImGui::SameLine(0, 40);
 
 			ImGui::AlignTextToFramePadding();
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
@@ -185,14 +185,14 @@ namespace dnf_composer::user_interface
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f * ui);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-		ImGui::PushFont(g_MediumIconsFont);
+		ImGui::PushFont(g_LargeIconsFont);
 
 		if (ImGui::Button(ICON_FA_PLAY        "##top_play",   bSz)) simulation->init();
-		ImGui::SameLine(0, 4);
+		ImGui::SameLine(0, 6);
 		if (ImGui::Button(ICON_FA_PAUSE       "##top_pause",  bSz)) simulation->pause();
-		ImGui::SameLine(0, 4);
+		ImGui::SameLine(0, 6);
 		if (ImGui::Button(ICON_FA_FORWARD_FAST"##top_resume", bSz)) simulation->resume();
-		ImGui::SameLine(0, 4);
+		ImGui::SameLine(0, 6);
 		if (ImGui::Button(ICON_FA_STOP        "##top_stop",   bSz)) simulation->close();
 
 		ImGui::PopFont();
@@ -260,7 +260,7 @@ namespace dnf_composer::user_interface
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f * ui);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-		ImGui::PushFont(g_MediumIconsFont);
+		ImGui::PushFont(g_LargeIconsFont);
 		if (ImGui::Button(ICON_FA_PLAY "##top_run_ticks", ImVec2(btnSz, btnSz)))
 		{
 			startTick = static_cast<int>(simulation->getT());
@@ -292,7 +292,7 @@ namespace dnf_composer::user_interface
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f * ui);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-		ImGui::PushFont(g_MediumIconsFont);
+		ImGui::PushFont(g_LargeIconsFont);
 		if (ImGui::Button(ICON_FA_PLAY "##top_run_ms", ImVec2(btnSz, btnSz)))
 		{
 			if (!simulation->isInitialized()) simulation->init();

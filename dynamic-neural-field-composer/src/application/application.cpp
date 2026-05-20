@@ -196,7 +196,7 @@ namespace dnf_composer
 		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 48.0f, &icons_config, icons_ranges);
+			FA_compressed_size, 26.0f, &icons_config, icons_ranges);
 		g_LargeIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->Build();
