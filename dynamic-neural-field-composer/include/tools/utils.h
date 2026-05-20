@@ -58,4 +58,6 @@ namespace dnf_composer::tools::utils
 		return localtime_r(time, result) != nullptr;
 #endif
 	}
+
+	float getProcessMemoryMb();
 }

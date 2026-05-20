@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <chrono>
+
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
@@ -9,6 +11,10 @@
 #include "user_interface/element_window.h"
 #include "user_interface/node_graph_window.h"
 #include "user_interface/plots_window.h"
+#include "application/application.h"
+#include "tools/utils.h"
+#include "user_interface/widgets.h"
+#include "user_interface/log_window.h"
 
 namespace dnf_composer::user_interface
 {
@@ -38,9 +44,12 @@ namespace dnf_composer::user_interface
 	private:
 		void drawPanels() const;
 
-		void panelSimulation (ImVec2 pos, ImVec2 size) const;
-		void panelElement    (ImVec2 pos, ImVec2 size) const;
-		void panelNodeGraph  (ImVec2 pos, ImVec2 size) const;
-		void panelStatusBar  (ImVec2 pos, ImVec2 size) const;
+		void panelTopBar        (ImVec2 pos, ImVec2 size) const;
+		void renderTopBarLeft   (float ui, float btnSz) const;
+		void renderTopBarRight  (float ui, float btnSz) const;
+		void panelSimulation    (ImVec2 pos, ImVec2 size) const;
+		void panelElement       (ImVec2 pos, ImVec2 size) const;
+		void panelNodeGraph     (ImVec2 pos, ImVec2 size) const;
+		void panelStatusBar     (ImVec2 pos, ImVec2 size) const;
 	};
 }

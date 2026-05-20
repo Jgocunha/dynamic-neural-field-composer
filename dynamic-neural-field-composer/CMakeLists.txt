@@ -250,6 +250,10 @@ find_package(OpenGL REQUIRED)
 find_package(imgui-platform-kit REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui-platform-kit)
 
+if(WIN32)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE psapi)
+endif()
+
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
     DNF_COMPOSER=1
     DNF_COMPOSER_VERSION_MAJOR=${DNF_COMPOSER_VERSION_MAJOR}
