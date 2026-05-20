@@ -136,6 +136,12 @@ namespace dnf_composer::user_interface
 		// Node graph panel bounds (updated every frame) for plot card clamping.
 		mutable ImVec2 ngBoundsMin;
 		mutable ImVec2 ngBoundsMax;
+
+		// Mini-map cache (filled each frame inside Begin/End while editor context is active).
+		mutable std::vector<std::pair<ImVec2, ImVec2>> cachedNodeRects;
+		mutable std::vector<element::ElementLabel>     cachedNodeLabels;
+		mutable ImVec2                                 cachedVpMin{};
+		mutable ImVec2                                 cachedVpMax{};
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -176,5 +182,7 @@ namespace dnf_composer::user_interface
 			const std::shared_ptr<element::Element>& element, bool isWM = false);
 		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state,
 			bool isWM, bool is2DField);
+		void renderNavigationControls() const;
+		void renderMiniMap() const;
 	};
 }

@@ -222,7 +222,7 @@ namespace dnf_composer
 
 	    style.FramePadding          = ImVec2(10, 6);
 	    style.FrameRounding         = 6.0f;
-	    style.FrameBorderSize       = 1.0f;
+	    style.FrameBorderSize       = 0.0f;
 
 	    style.ItemSpacing           = ImVec2(10, 8);
 	    style.ItemInnerSpacing      = ImVec2(6, 6);
@@ -254,10 +254,9 @@ namespace dnf_composer
 		constexpr auto PANEL_LIGHT    = ImVec4(245/255.f, 247/255.f, 250/255.f, 1.0f);  // sidebar bg
 	    constexpr auto BORDER_LIGHT   = ImVec4(225/255.f, 229/255.f, 235/255.f, 1.0f);  // subtle border
 	    constexpr auto CARD_BG        = ImVec4(1.00f, 1.00f, 1.00f, 0.96f);             // matches white cards
-	    constexpr auto WINDOW_BG      = ImVec4(0.95f, 0.97f, 0.98f, 0.90f);             // soft wash over bg image
+	    constexpr auto WINDOW_BG      = ImVec4(1.00f, 1.00f, 1.00f, 218.0f/255.0f);             // soft wash over bg image
 	    constexpr auto TEXT           = imgui_kit::colours::Black;              // dark, crisp
-	    constexpr auto TEXT_MUTED     = ImVec4(0.58f, 0.60f, 0.64f, 1.0f);              // for secondary labels
-	    constexpr auto TEXT_INVERTED  = ImVec4(1.00f, 1.00f, 1.00f, 1.0f);
+	    constexpr auto TEXT_MUTED     = imgui_kit::colours::Gray;              // for secondary labels
 
 	    // Subtle states
 	    constexpr auto HOVER          = ImVec4(0.05f, 0.05f, 0.05f, 0.04f);
@@ -270,7 +269,7 @@ namespace dnf_composer
 	    c[ImGuiCol_TextDisabled]         = TEXT_MUTED;
 
 	    // Windows / areas
-	    c[ImGuiCol_WindowBg]             = ImVec4(1.00f, 1.00f, 1.00f, 218.0f/255.0f);
+	    c[ImGuiCol_WindowBg]             = WINDOW_BG;
 	    c[ImGuiCol_ChildBg]              = ImVec4(0,0,0,0); // children are drawn as part of your custom zones
 	    c[ImGuiCol_PopupBg]              = ImVec4(1,1,1,0.98f);
 

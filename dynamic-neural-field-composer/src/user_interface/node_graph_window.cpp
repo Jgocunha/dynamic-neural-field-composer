@@ -27,7 +27,10 @@ namespace dnf_composer::user_interface
 		handleInteractions();
 		ImNodeEditor::End();
 		restoreCanvasStyle();
+		renderMiniMap();
 		ImNodeEditor::SetCurrentEditor(nullptr);
+
+		renderNavigationControls();
 
 		const ImVec2 ngPos  = ImGui::GetWindowPos();
 		const ImVec2 ngSize = ImGui::GetWindowSize();
@@ -152,6 +155,18 @@ namespace dnf_composer::user_interface
 		{
 			renderElementNodeConnections(element);
 		}
+
+		// Cache node canvas rects for mini-map (must happen inside Begin/End).
+		cachedNodeRects.clear();
+		cachedNodeLabels.clear();
+		for (const auto& element : elements)
+		{
+			const size_t id = getNodeId(element);
+			cachedNodeRects.emplace_back(ImNodeEditor::GetNodePosition(id), ImNodeEditor::GetNodeSize(id));
+			cachedNodeLabels.push_back(element->getLabel());
+		}
+		cachedVpMin = ImNodeEditor::ScreenToCanvas(ngBoundsMin);
+		cachedVpMax = ImNodeEditor::ScreenToCanvas(ngBoundsMax);
 	}
 
 	void NodeGraphWindow::renderElementNode(const std::shared_ptr<element::Element>& element)
@@ -274,9 +289,7 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
 		constexpr float pad       = 0.0f;
-		//constexpr float axisLeft  = 24.0f;  // reserved for y-axis labels
-		//constexpr float axisBot   = 13.0f;  // reserved for x-axis labels
-		constexpr float axisRight = 26.0f;  // reserved for amplitude colorbar
+		constexpr float axisRight = 30.0f;  // reserved for amplitude colorbar
 
 		const auto  label       = element->getLabel();
 		const bool  isWeightMap = isWeightMapElement(label);
@@ -317,7 +330,6 @@ namespace dnf_composer::user_interface
 					auto& [stableMin, stableMax] = s_wmRangeCache[key];
 					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
 
-					constexpr float axisRight = 30.0f;
 					const ImRect hmRect(rect.Min, ImVec2(rect.Max.x - axisRight, rect.Max.y));
 					draw2DFieldHeatmap(dl, hmRect, weights, rows, cols, stableMin, stableMax);
 					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
@@ -481,33 +493,90 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::handlePinInteractions() const
 	{
-		static bool isAttemptingConnection = false;
-		static ImNodeEditor::PinId outputPinId = 0;
+		static ImNodeEditor::PinId sessionStartPin  = 0;
+		static bool                prevInCreate     = false;
+		static bool                sessionAccepted  = false;
+		static ImNodeEditor::PinId pendingClickPin  = 0;
 
-		if (ImNodeEditor::GetHoveredPin() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+		const int maxIdx = simulation->getHighestElementIndex();
+
+		// Cancel pending click-to-click with Escape or right-click
+		if (pendingClickPin &&
+			(ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
+			pendingClickPin = 0;
+
+		bool inCreate = false;
+
+		if (ImNodeEditor::BeginCreate())
 		{
-			outputPinId = ImNodeEditor::GetHoveredPin();
-			isAttemptingConnection = true;
-			return;
-		}
+			inCreate = true;
 
-		if (ImNodeEditor::GetHoveredPin() && isAttemptingConnection)
-		{
-			const int srcId  = static_cast<int>(outputPinId.Get()) - startingOutputPinId;
-			const int dstId  = static_cast<int>(ImNodeEditor::GetHoveredPin().Get()) - startingInputPinId;
-			const int maxIdx = simulation->getHighestElementIndex();
-
-			if (srcId < 0 || dstId < 0 || srcId > maxIdx || dstId > maxIdx)
+			ImNodeEditor::PinId startPin, endPin;
+			if (ImNodeEditor::QueryNewLink(&startPin, &endPin))
 			{
-				isAttemptingConnection = false;
-				return;
+				if (!sessionStartPin) sessionStartPin = startPin;
+
+				const int srcId = static_cast<int>(startPin.Get()) - startingOutputPinId;
+				const int dstId = static_cast<int>(endPin.Get())   - startingInputPinId;
+
+				if (srcId >= 0 && srcId <= maxIdx && dstId >= 0 && dstId <= maxIdx)
+				{
+					if (ImNodeEditor::AcceptNewItem())
+					{
+						simulation->createInteraction(
+							simulation->getElement(srcId)->getUniqueName(), "output",
+							simulation->getElement(dstId)->getUniqueName());
+						pendingClickPin = 0;
+						sessionAccepted = true;
+					}
+				}
+				else
+				{
+					ImNodeEditor::RejectNewItem();
+				}
 			}
 
-			simulation->createInteraction(
-				simulation->getElement(srcId)->getUniqueName(), "output",
-				simulation->getElement(dstId)->getUniqueName());
+			ImNodeEditor::PinId nodePin;
+			if (!sessionStartPin && ImNodeEditor::QueryNewNode(&nodePin) && nodePin)
+			{
+				sessionStartPin = nodePin;
+				ImNodeEditor::RejectNewItem();
+			}
 
-			isAttemptingConnection = false;
+			ImNodeEditor::EndCreate();
+		}
+
+		// When a create session ends without accepting = user clicked (not dragged to) a pin
+		if (prevInCreate && !inCreate)
+		{
+			if (!sessionAccepted && sessionStartPin)
+			{
+				const int srcId = static_cast<int>(sessionStartPin.Get()) - startingOutputPinId;
+				if (srcId >= 0 && srcId <= maxIdx)
+					pendingClickPin = sessionStartPin;
+			}
+			sessionStartPin = 0;
+			sessionAccepted = false;
+		}
+		prevInCreate = inCreate;
+
+		// Complete pending click-to-click: next left-click on an input pin
+		if (pendingClickPin && !inCreate)
+		{
+			const ImNodeEditor::PinId hovered = ImNodeEditor::GetHoveredPin();
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				if (hovered)
+				{
+					const int srcId = static_cast<int>(pendingClickPin.Get()) - startingOutputPinId;
+					const int dstId = static_cast<int>(hovered.Get())         - startingInputPinId;
+					if (srcId >= 0 && srcId <= maxIdx && dstId >= 0 && dstId <= maxIdx)
+						simulation->createInteraction(
+							simulation->getElement(srcId)->getUniqueName(), "output",
+							simulation->getElement(dstId)->getUniqueName());
+				}
+				pendingClickPin = 0;
+			}
 		}
 	}
 
@@ -1194,30 +1263,6 @@ namespace dnf_composer::user_interface
 		constexpr int    nTicks  = 4;
 		ImFont* const    font    = ImGui::GetFont();
 
-		// // X-axis ticks (column indices) below the heatmap
-		// for (int i = 0; i <= nTicks; ++i)
-		// {
-		// 	const float t   = static_cast<float>(i) / nTicks;
-		// 	const float x   = hmRect.Min.x + t * hmRect.GetWidth();
-		// 	const int   idx = static_cast<int>(std::round(t * (cols - 1)));
-		// 	char buf[8];
-		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
-		// 	dl->AddLine(ImVec2(x, hmRect.Max.y), ImVec2(x, hmRect.Max.y + 2.0f), tickCol, 1.0f);
-		// 	dl->AddText(font, fs, ImVec2(x - 5.0f, hmRect.Max.y + 2.0f), textCol, buf);
-		// }
-		//
-		// // Y-axis ticks (row indices) left of the heatmap
-		// for (int i = 0; i <= nTicks; ++i)
-		// {
-		// 	const float t   = static_cast<float>(i) / nTicks;
-		// 	const float y   = hmRect.Min.y + t * hmRect.GetHeight();
-		// 	const int   idx = static_cast<int>(std::round((1.0f - t) * (rows - 1)));
-		// 	char buf[8];
-		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
-		// 	dl->AddLine(ImVec2(hmRect.Min.x, y), ImVec2(hmRect.Min.x - 2.0f, y), tickCol, 1.0f);
-		// 	dl->AddText(font, fs, ImVec2(hmRect.Min.x - 21.0f, y - fs * 0.5f), textCol, buf);
-		// }
-
 		// Amplitude colorbar: vertical strip to the right of the heatmap
 		constexpr float barGap = 3.0f;
 		constexpr float barW   = 7.0f;
@@ -1247,6 +1292,143 @@ namespace dnf_composer::user_interface
 			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0f, y), tickCol, 1.0f);
 			dl->AddText(font, fs, ImVec2(barX1 + 3.0f, y - fs * 0.5f), textCol, buf);
 		}
+	}
+
+	void NodeGraphWindow::renderNavigationControls() const
+	{
+		constexpr float kBtnSize = 40.0f;
+		constexpr float kGap     = 8.0f;
+		constexpr float kPad     = 10.0f;
+
+		const ImVec2 winPos  = ImGui::GetWindowPos();
+		const ImVec2 winSize = ImGui::GetWindowSize();
+
+		ImGui::SetNextWindowPos(
+			ImVec2(winPos.x + kPad, winPos.y + winSize.y - kBtnSize - kPad * 3.0f),
+			ImGuiCond_Always);
+		ImGui::SetNextWindowBgAlpha(0.9f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPad, kPad));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
+
+		const bool open = ImGui::Begin("##ng_nav", nullptr,
+			ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav |
+			ImGuiWindowFlags_NoFocusOnAppearing);
+
+		ImGui::PopStyleVar(2);
+
+		if (open)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.92f, 0.92f, 0.93f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.80f, 0.84f, 0.95f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.65f, 0.72f, 0.92f, 1.0f));
+
+			ImGui::PushFont(g_MediumIconsFont);
+			const bool fitAll = ImGui::Button(ICON_FA_EXPAND,   ImVec2(kBtnSize, kBtnSize));
+			const bool hovAll = ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort);
+			ImGui::SameLine(0, kGap);
+			const bool fitSel = ImGui::Button(ICON_FA_COMPRESS, ImVec2(kBtnSize, kBtnSize));
+			const bool hovSel = ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort);
+			ImGui::PopFont();
+
+			ImGui::PopStyleColor(3);
+			ImGui::PopStyleVar(1);
+
+			// Tooltips are set after PopFont so they render with the default font.
+			if (hovAll) ImGui::SetTooltip("Fit all");
+			if (hovSel) ImGui::SetTooltip("Fit selection");
+
+			if (fitAll)
+			{
+				ImNodeEditor::SetCurrentEditor(context);
+				ImNodeEditor::NavigateToContent(0.3f);
+				ImNodeEditor::SetCurrentEditor(nullptr);
+			}
+			if (fitSel)
+			{
+				ImNodeEditor::SetCurrentEditor(context);
+				ImNodeEditor::NavigateToSelection(false, 0.3f);
+				ImNodeEditor::SetCurrentEditor(nullptr);
+			}
+		}
+		ImGui::End();
+	}
+
+	void NodeGraphWindow::renderMiniMap() const
+	{
+		constexpr float kW       = 200.0f;
+		constexpr float kH       = 130.0f;
+		constexpr float kPad     = 8.0f;
+		constexpr float kBBoxPad = 60.0f;
+
+		const ImVec2 winPos  = ImGui::GetWindowPos();
+		const ImVec2 winSize = ImGui::GetWindowSize();
+		ImGui::SetNextWindowPos(
+			ImVec2(winPos.x + winSize.x - kW - kPad * 3.0f,
+			       winPos.y + winSize.y - kH - kPad * 3.0f),
+			ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(kW + kPad * 2.0f, kH + kPad * 2.0f), ImGuiCond_Always);
+		ImGui::SetNextWindowBgAlpha(0.88f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPad, kPad));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
+		const bool open = ImGui::Begin("##ng_minimap", nullptr,
+			ImGuiWindowFlags_NoDecoration    | ImGuiWindowFlags_NoMove              |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking           |
+			ImGuiWindowFlags_NoNav           | ImGuiWindowFlags_NoFocusOnAppearing  |
+			ImGuiWindowFlags_NoScrollbar     | ImGuiWindowFlags_NoInputs);
+		ImGui::PopStyleVar(2);
+
+		if (open && !cachedNodeRects.empty())
+		{
+			// Bounding box of all nodes in canvas space
+			ImVec2 bboxMin = cachedNodeRects[0].first;
+			ImVec2 bboxMax = { bboxMin.x + cachedNodeRects[0].second.x,
+			                   bboxMin.y + cachedNodeRects[0].second.y };
+			for (const auto& [pos, sz] : cachedNodeRects)
+			{
+				bboxMin.x = std::min(bboxMin.x, pos.x);
+				bboxMin.y = std::min(bboxMin.y, pos.y);
+				bboxMax.x = std::max(bboxMax.x, pos.x + sz.x);
+				bboxMax.y = std::max(bboxMax.y, pos.y + sz.y);
+			}
+			bboxMin.x -= kBBoxPad;  bboxMin.y -= kBBoxPad;
+			bboxMax.x += kBBoxPad;  bboxMax.y += kBBoxPad;
+
+			const float bboxW = bboxMax.x - bboxMin.x;
+			const float bboxH = bboxMax.y - bboxMin.y;
+
+			if (bboxW > 0.0f && bboxH > 0.0f)
+			{
+				const float scale = std::min(kW / bboxW, kH / bboxH);
+
+				ImDrawList* dl      = ImGui::GetWindowDrawList();
+				const ImVec2 origin = ImGui::GetCursorScreenPos();
+
+				auto toScreen = [&](const ImVec2& cp) -> ImVec2 {
+					return { origin.x + (cp.x - bboxMin.x) * scale,
+					         origin.y + (cp.y - bboxMin.y) * scale };
+				};
+
+				for (size_t i = 0; i < cachedNodeRects.size(); ++i)
+				{
+					const ImVec2 p0 = toScreen(cachedNodeRects[i].first);
+					const ImVec2 p1 = toScreen({
+						cachedNodeRects[i].first.x + cachedNodeRects[i].second.x,
+						cachedNodeRects[i].first.y + cachedNodeRects[i].second.y });
+					const ImU32 col = getHeaderColorForElementType(cachedNodeLabels[i]);
+					dl->AddRectFilled(p0, p1, col, 2.0f);
+					dl->AddRect(p0, p1, IM_COL32(255, 255, 255, 60), 2.0f);
+				}
+
+				const ImVec2 vp0 = toScreen(cachedVpMin);
+				const ImVec2 vp1 = toScreen(cachedVpMax);
+				dl->AddRect(vp0, vp1, IM_COL32(255, 255, 255, 200), 2.0f, 0, 1.5f);
+			}
+		}
+		ImGui::End();
 	}
 
 	void NodeGraphWindow::drawWeightHeatmap(ImDrawList* dl, const ImRect rect,
