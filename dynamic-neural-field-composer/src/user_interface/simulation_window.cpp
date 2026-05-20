@@ -1,4 +1,5 @@
 ﻿#include "user_interface/simulation_window.h"
+#include "elements/neural_field.h"
 
 namespace dnf_composer::user_interface
 {
@@ -271,10 +272,11 @@ namespace dnf_composer::user_interface
 	{
 		ImGui::PushID("add_element_section");
 
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Add elements");
-		ImGui::PopFont();
+		if (!ImGui::CollapsingHeader("Add elements"))
+		{
+			ImGui::PopID();
+			return;
+		}
 
 		ImGui::TextUnformatted("Select type");
 
@@ -291,6 +293,19 @@ namespace dnf_composer::user_interface
 				if (is_sel) ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
+		}
+
+		// Shared id buffer: auto-filled as "<TypeName> N+1" when type changes
+		static char id[CHAR_SIZE] = {};
+		static element::ElementLabel prevSelected = element::ElementLabel::UNINITIALIZED;
+		if (selected != prevSelected)
+		{
+			prevSelected = selected;
+			int count = 0;
+			for (const auto& e : simulation->getElements())
+				if (e->getLabel() == selected) ++count;
+			const std::string& typeName = element::ElementLabelToString.at(selected);
+			std::snprintf(id, sizeof(id), "%s %d", typeName.c_str(), count + 1);
 		}
 
 		ImGui::Spacing();
@@ -313,7 +328,6 @@ namespace dnf_composer::user_interface
 	        {
         case element::ElementLabel::NEURAL_FIELD:
         {
-            static char   id[CHAR_SIZE] = "neural field u";
             static int    x_max         = 100;
             static double d_x           = 1.0;
             static double resting       = -10.0;
@@ -357,7 +371,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::GAUSS_STIMULUS:
         {
-            static char   id[CHAR_SIZE] = "gauss stimulus";
             static int    x_max         = 100;
             static double d_x           = 1.0;
             static double width         = 5.0;
@@ -387,7 +400,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::GAUSS_KERNEL:
         {
-            static char   id[CHAR_SIZE]   = "gauss kernel";
             static int    x_max           = 100;
             static double d_x             = 1.0;
             static double width           = 3.0;
@@ -418,7 +430,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::MEXICAN_HAT_KERNEL:
         {
-            static char   id[CHAR_SIZE]   = "mexican hat kernel";
             static int    x_max           = 100;
             static double d_x             = 1.0;
             static double widthExc        = 2.5;
@@ -453,7 +464,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::OSCILLATORY_KERNEL:
         {
-            static char   id[CHAR_SIZE]   = "oscillatory kernel";
             static int    x_max           = 100;
             static double d_x             = 1.0;
             static double amplitude       = 1.0;
@@ -486,7 +496,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
         {
-            static char   id[CHAR_SIZE]   = "asymmetric gauss kernel";
             static int    x_max           = 100;
             static double d_x             = 1.0;
             static double width           = 3.0;
@@ -518,7 +527,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::NORMAL_NOISE:
         {
-            static char   id[CHAR_SIZE] = "normal noise";
             static int    x_max         = 100;
             static double d_x           = 1.0;
             static double amplitude     = 0.2;
@@ -540,7 +548,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::CORRELATED_NORMAL_NOISE:
         {
-            static char   id[CHAR_SIZE] = "correlated normal noise";
             static int    x_max         = 100;
             static double d_x           = 1.0;
             static double amplitude     = 0.05;
@@ -566,7 +573,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::FIELD_COUPLING:
         {
-            static char        id[CHAR_SIZE] = "field coupling";
             static int         x_max_out     = 100;
             static double      d_x_out       = 1.0;
             static int         x_max_in      = 100;
@@ -610,7 +616,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::GAUSS_FIELD_COUPLING:
         {
-            static char   id[CHAR_SIZE] = "gauss field coupling";
             static int    x_max_out     = 100;
             static double d_x_out       = 1.0;
             static int    x_max_in      = 100;
@@ -639,7 +644,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::BOOST_STIMULUS:
         {
-            static char   id[CHAR_SIZE] = "boost stimulus";
             static int    x_max         = 100;
             static double d_x           = 1.0;
             static double amplitude     = 5.0;
@@ -663,7 +667,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::MEMORY_TRACE:
         {
-            static char   id[CHAR_SIZE] = "memory trace";
             static int    x_max         = 100;
             static double d_x           = 1.0;
             static double tauBuild      = 100.0;
@@ -689,7 +692,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::NEURAL_FIELD_2D:
         {
-            static char   id[CHAR_SIZE] = "neural field 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double tau = 25.0, restingLevel = -5.0;
@@ -714,7 +716,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::GAUSS_STIMULUS_2D:
         {
-            static char   id[CHAR_SIZE] = "gauss stimulus 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double width = 5.0, amplitude = 15.0;
@@ -745,7 +746,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::GAUSS_KERNEL_2D:
         {
-            static char   id[CHAR_SIZE] = "gauss kernel 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double width = 3.0, amplitude = 3.0, amplitudeGlobal = -0.01;
@@ -774,7 +774,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
         {
-            static char   id[CHAR_SIZE] = "mexican hat kernel 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double widthExc = 2.5, amplitudeExc = 11.0;
@@ -807,7 +806,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::NORMAL_NOISE_2D:
         {
-            static char   id[CHAR_SIZE] = "normal noise 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double amplitude = 0.2;
@@ -831,7 +829,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::OSCILLATORY_KERNEL_2D:
         {
-            static char   id[CHAR_SIZE]   = "oscillatory kernel 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double amplitude       = 1.0;
@@ -867,7 +864,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::BOOST_STIMULUS_2D:
         {
-            static char   id[CHAR_SIZE] = "boost stimulus 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double amplitude = 5.0;
@@ -893,7 +889,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
         {
-            static char   id[CHAR_SIZE] = "timed gauss stimulus 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double width = 5.0, amplitude = 15.0;
@@ -928,7 +923,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::TIMED_GAUSS_STIMULUS:
         {
-            static char   id[CHAR_SIZE]  = "timed gauss stimulus";
             static int    x_max          = 100;
             static double d_x            = 1.0;
             static double width          = 5.0;
@@ -963,7 +957,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
         {
-            static char   id[CHAR_SIZE] = "correlated normal noise 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double amplitude = 0.05;
@@ -991,7 +984,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
         {
-            static char   id[CHAR_SIZE] = "asymmetric gauss kernel 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double width = 3.0;
@@ -1028,7 +1020,6 @@ namespace dnf_composer::user_interface
         }
         case element::ElementLabel::MEMORY_TRACE_2D:
         {
-            static char   id[CHAR_SIZE] = "memory trace 2d";
             static int    x_max = 50, y_max = 50;
             static double d_x = 1.0, d_y = 1.0;
             static double tauBuild = 100.0;
@@ -1074,10 +1065,11 @@ namespace dnf_composer::user_interface
 	{
 	    ImGui::PushID("remove_element_inline");
 
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Remove elements");
-		ImGui::PopFont();
+		if (!ImGui::CollapsingHeader("Remove elements"))
+		{
+			ImGui::PopID();
+			return;
+		}
 
 	    //  Row: "Remove [combo] from simulation"
 	    // Make the label baseline align with framed widgets (combo).
@@ -1133,10 +1125,11 @@ namespace dnf_composer::user_interface
 	{
 		ImGui::PushID("set_interactions_section");
 
-	    // Headline
-	    ImGui::PushFont(g_BoldLargeFont);
-	    ImGui::TextUnformatted("Set interactions");
-	    ImGui::PopFont();
+	    if (!ImGui::CollapsingHeader("Set interactions"))
+	    {
+	    	ImGui::PopID();
+	    	return;
+	    }
 
 	    // Two columns like the mock
 	    ImGui::Columns(2, nullptr, false);
@@ -1261,10 +1254,11 @@ namespace dnf_composer::user_interface
 	{
 		 ImGui::PushID("export_inline");
 
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Export data");
-		ImGui::PopFont();
+		if (!ImGui::CollapsingHeader("Export data"))
+		{
+			ImGui::PopID();
+			return;
+		}
 
 	    // Baseline-aligned sentence with inline combos:
 	    ImGui::AlignTextToFramePadding();
@@ -1334,10 +1328,11 @@ namespace dnf_composer::user_interface
 	{
 		ImGui::PushID("log_inline");
 
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Log parameters");
-		ImGui::PopFont();
+		if (!ImGui::CollapsingHeader("Log information"))
+		{
+			ImGui::PopID();
+			return;
+		}
 
 		ImGui::AlignTextToFramePadding();
 		ImGui::TextUnformatted("Log");
@@ -1376,6 +1371,53 @@ namespace dnf_composer::user_interface
 
 		if (logClicked && !selectedId.empty())
 			if (const auto e = simulation->getElement(selectedId)) e->print();
+
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::renderMonitoringCard() const
+	{
+		ImGui::PushID("monitoring_section");
+
+		if (!ImGui::CollapsingHeader("Monitoring"))
+		{
+			ImGui::PopID();
+			return;
+		}
+
+		bool anyNF = false;
+		for (const auto& e : simulation->getElements())
+		{
+			if (e->getLabel() != element::ElementLabel::NEURAL_FIELD)
+				continue;
+			anyNF = true;
+
+			const auto* nf = dynamic_cast<const element::NeuralField*>(e.get());
+			if (!nf) continue;
+
+			ImGui::PushFont(g_BlackMediumFont);
+			ImGui::TextUnformatted(e->getUniqueName().c_str());
+			ImGui::PopFont();
+			ImGui::Separator();
+
+			ImGui::Text("Stability: %s", nf->isStable() ? "Stable" : "Unstable");
+			ImGui::Text("Lowest activation: %.2f",  nf->getLowestActivation());
+			ImGui::Text("Highest activation: %.2f", nf->getHighestActivation());
+
+			const auto bumps = nf->getBumps();
+			ImGui::Text("Number of bumps: %d", static_cast<int>(bumps.size()));
+
+			for (int i = 0; i < static_cast<int>(bumps.size()); ++i)
+			{
+				const auto& b = bumps[i];
+				ImGui::Text("  Bump %d: pos %.2f  amp %.2f  width %.2f", i, b.centroid, b.amplitude, b.width);
+				ImGui::Text("           vel %.2f  acc %.2f", b.velocity, b.acceleration);
+			}
+			ImGui::Spacing();
+		}
+
+		if (!anyNF)
+			ImGui::TextDisabled("No neural fields in simulation.");
 
 		ImGui::PopID();
 	}

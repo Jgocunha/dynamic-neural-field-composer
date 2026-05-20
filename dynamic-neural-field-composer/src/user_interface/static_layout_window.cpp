@@ -330,6 +330,8 @@ namespace dnf_composer::user_interface
 				simulationWindow->renderLogElementParametersCard();
 				ImGui::Spacing();
 				simulationWindow->renderExportElementComponentCard();
+				ImGui::Spacing();
+				simulationWindow->renderMonitoringCard();
 			}
 			ImGui::EndChild();
 			ImGui::PopStyleColor();
