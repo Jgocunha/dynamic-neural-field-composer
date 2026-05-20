@@ -43,6 +43,7 @@ namespace dnf_composer::user_interface
 		elementWindow    = std::make_unique<ElementWindow>(simulation);
 		nodeGraphWindow  = std::make_unique<NodeGraphWindow>(simulation);
 		plotsWindow		= std::make_unique<PlotsWindow>(visualization);
+		logWindow        = std::make_unique<LogWindow>();
 	}
 
 	void StaticLayoutWindow::render()
@@ -69,7 +70,8 @@ namespace dnf_composer::user_interface
 		if (ImGui::Begin("##static_root", nullptr, root_flags))
 		{
 			drawPanels();
-			plotsWindow->render(); // plots are rendered outside any panel
+			plotsWindow->render();
+			logWindow->renderPopUp();
 		}
 
 		ImGui::End();
@@ -344,37 +346,14 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::Separator();
 
-			static bool s_logsOpen = false;
-
-			const float scale   = ImGui::GetIO().FontGlobalScale;
-			const float logH    = s_logsOpen ? 200.0f * scale : 0.0f;
-			const float logScrollbarH = 5.0f * scale;
-			const float headerH = ImGui::GetFrameHeightWithSpacing() + logScrollbarH;
-			const float graphH  = ImGui::GetContentRegionAvail().y - logH - headerH;
-
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, std::max(graphH, 5.0f)), false,
+			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, 0), false,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
 				nodeGraphWindow->renderEmbedded();
 			}
 			ImGui::EndChild();
 			ImGui::PopStyleColor();
-
-			ImGui::PushFont(g_BlackMediumFont);
-			s_logsOpen = ImGui::CollapsingHeader("Logs");
-			ImGui::PopFont();
-			if (s_logsOpen)
-			{
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-				if (ImGui::BeginChild("##ng_logs_c", ImVec2(0, logH), false,
-					ImGuiWindowFlags_NoSavedSettings))
-				{
-					LogWindow::renderContent();
-				}
-				ImGui::EndChild();
-				ImGui::PopStyleColor();
-			}
 		}
 		endPanel();
 	}

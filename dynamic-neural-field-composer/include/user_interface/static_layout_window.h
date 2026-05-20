@@ -28,6 +28,7 @@ namespace dnf_composer::user_interface
 		std::unique_ptr<ElementWindow>      elementWindow;
 		std::unique_ptr<NodeGraphWindow>    nodeGraphWindow;
 		std::unique_ptr<PlotsWindow>		plotsWindow;
+		std::unique_ptr<LogWindow>			logWindow;
 
 	public:
 		StaticLayoutWindow(const std::shared_ptr<Simulation>&    simulation,
