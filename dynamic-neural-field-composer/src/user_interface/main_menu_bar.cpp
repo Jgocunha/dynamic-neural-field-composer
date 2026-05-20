@@ -1,6 +1,12 @@
 #include "user_interface/main_menu_bar.h"
 #include <array>
 
+#ifdef __APPLE__
+    #define CTRL_KEY "Cmd"
+#else
+    #define CTRL_KEY "Ctrl"
+#endif
+
 
 namespace dnf_composer::user_interface
 {
@@ -16,34 +22,35 @@ namespace dnf_composer::user_interface
 		handleShortcuts();
 	}
 
+	// Clang-Tidy: Function 'renderMainMenuBar' has cognitive complexity of 79 (threshold 25)
     void MainMenuBar::renderMainMenuBar()
     {
         if (ImGui::BeginMainMenuBar())
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("New", "Ctrl+N"))
+                if (ImGui::MenuItem("New", CTRL_KEY "+N"))
                 {
                     simulation->close();
                     simulation->clean();
                 }
-                if (ImGui::MenuItem("Open", "Ctrl+O"))
+                if (ImGui::MenuItem("Open", CTRL_KEY "+O"))
                 {
                     FileDialog::file_dialog_open = true;
                     fileFlags.showOpenSimulationDialog = true;
                     FileDialog::file_dialog_open_type = FileDialog::FileDialogType::OpenFile;
                 }
-                if (ImGui::MenuItem("Save", "Ctrl+S"))
+                if (ImGui::MenuItem("Save", CTRL_KEY "+S"))
                 {
                     simulation->save();
                 }
-                if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+                if (ImGui::MenuItem("Save As", CTRL_KEY "+Shift+S"))
                 {
                     FileDialog::file_dialog_open = true;
                     fileFlags.showSaveSimulationDialog = true;
                     FileDialog::file_dialog_open_type = FileDialog::FileDialogType::SelectFolder;
                 }
-                if (ImGui::MenuItem("Quit", "Ctrl+q"))
+                if (ImGui::MenuItem("Quit", CTRL_KEY "+Q"))
                 {
                     simulation->save();
 	                simulation->close();
@@ -80,10 +87,10 @@ namespace dnf_composer::user_interface
 
                 static auto deltaT = static_cast<float>(simulation->getDeltaT());
                 ImGui::Text("Simulation time step (dt)");
-                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.1f, 25.0, "%.2f");
+                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.1F, 25.0, "%.2f");
                 if (ImGui::IsItemDeactivatedAfterEdit())
                 {
-                    if (std::isfinite(deltaT) && deltaT > 0.0f)
+                    if (std::isfinite(deltaT) && deltaT > 0.0F)
                     {
                         simulation->setDeltaT(deltaT);
                     }
@@ -96,7 +103,7 @@ namespace dnf_composer::user_interface
                 ImGui::SameLine();
                 ImGui::Text("%.2f", simulation->getT());
                 ImGui::SameLine();
-                ImGui::Text(" t");
+                ImGui::Text(" ticks");
 
                 const long long stepNs = simulation->getLastStepDuration().count();
                 ImGui::Text("Real-time per step");
@@ -118,15 +125,15 @@ namespace dnf_composer::user_interface
 
             if (ImGui::BeginMenu("Simulation Control"))
             {
-                if (ImGui::MenuItem("Start", "Ctrl+Space"))
+                if (ImGui::MenuItem("Start", CTRL_KEY "+Space"))
                 {
                     simulation->init();
                 }
-                if (ImGui::MenuItem("Stop", "Ctrl+C"))
+                if (ImGui::MenuItem("Stop", CTRL_KEY "+C"))
                 {
                     simulation->close();
                 }
-                if (ImGui::MenuItem("Pause", "Ctrl+P"))
+                if (ImGui::MenuItem("Pause", CTRL_KEY "+P"))
                 {
                     simulation->pause();
                 }
@@ -151,7 +158,7 @@ namespace dnf_composer::user_interface
 
         		ImGui::Text("Zoom");
         		ImGui::SameLine();
-        		ImGui::SetNextItemWidth(90.0f);
+        		ImGui::SetNextItemWidth(90.0F);
         		if (ImGui::BeginCombo("##zoom", previewBuf.data(), ImGuiComboFlags_HeightSmall))
         		{
         			for (int i = 0; i < presetCount; ++i)
@@ -171,7 +178,7 @@ namespace dnf_composer::user_interface
         			ImGui::EndCombo();
         		}
         		ImGui::SameLine();
-        		ImGui::TextDisabled("Ctrl + / Ctrl -");
+        		ImGui::TextDisabled(CTRL_KEY " + / " CTRL_KEY " -");
 
         		ImGui::Separator();
         		const auto& io = ImGui::GetIO();

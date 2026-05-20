@@ -251,7 +251,7 @@ namespace dnf_composer::user_interface
 			ImGui::Text("%.0f", simulation->getT());
 			ImGui::PopFont();
 			ImGui::SameLine(0, 4);
-			ImGui::TextUnformatted("iter.");
+			ImGui::TextUnformatted("ticks");
 			ImGui::SameLine(0, 14);
 
 			// ── Real time ─────────────────────────────────────────────────────

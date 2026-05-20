@@ -161,7 +161,7 @@ namespace dnf_composer::user_interface
 
 	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("iterations");
+	    ImGui::TextUnformatted("ticks");
 
 	    // ---- play icon button at the end of the line ----
 	    ImGui::SameLine(0.0f, gap);
@@ -1408,7 +1408,7 @@ namespace dnf_composer::user_interface
 		static int iterationCount = 1000; // Default value
 		static int currentIteration = 0;
 		ImGui::SetNextItemWidth(120);
-		ImGui::InputInt("Iterations", &iterationCount, 1, 10);
+		ImGui::InputInt("Ticks", &iterationCount, 1, 10);
 		if (iterationCount < 1) iterationCount = 1; // Ensure positive value
 
 		ImGui::SameLine();
