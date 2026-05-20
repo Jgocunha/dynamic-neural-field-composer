@@ -140,8 +140,13 @@ namespace dnf_composer::user_interface
 		// Mini-map cache (filled each frame inside Begin/End while editor context is active).
 		mutable std::vector<std::pair<ImVec2, ImVec2>> cachedNodeRects;
 		mutable std::vector<element::ElementLabel>     cachedNodeLabels;
+		mutable std::vector<size_t>                    cachedNodeIds;
 		mutable ImVec2                                 cachedVpMin{};
 		mutable ImVec2                                 cachedVpMax{};
+
+		// Overlap prevention: baseline positions and drag-start positions for snap-on-drop.
+		mutable std::unordered_map<size_t, ImVec2> prevNodePositions;
+		mutable std::unordered_map<size_t, ImVec2> dragStartPositions;
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 

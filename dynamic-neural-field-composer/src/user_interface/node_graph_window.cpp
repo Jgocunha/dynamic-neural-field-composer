@@ -27,6 +27,63 @@ namespace dnf_composer::user_interface
 		handleInteractions();
 		ImNodeEditor::End();
 		restoreCanvasStyle();
+
+		// Overlap prevention: check only when the drag ends, not every frame.
+		// This avoids fighting imgui-node-editor's drag system (which would cause flashing).
+		{
+			const bool mouseHeld = ImGui::IsMouseDown(ImGuiMouseButton_Left);
+			for (size_t i = 0; i < cachedNodeRects.size(); ++i)
+			{
+				const size_t idA  = cachedNodeIds[i];
+				const ImVec2 posA = cachedNodeRects[i].first;
+				const ImVec2 szA  = cachedNodeRects[i].second;
+
+				if (!prevNodePositions.count(idA))
+				{
+					prevNodePositions[idA] = posA;
+					continue;
+				}
+				const ImVec2 prevA = prevNodePositions[idA];
+				const bool movedA = std::abs(posA.x - prevA.x) > 0.5f ||
+				                    std::abs(posA.y - prevA.y) > 0.5f;
+
+				if (movedA && !dragStartPositions.count(idA))
+					dragStartPositions[idA] = prevA;
+
+				if (!movedA && !mouseHeld && dragStartPositions.count(idA))
+				{
+					bool finalOverlaps = false;
+					for (size_t j = 0; j < cachedNodeRects.size(); ++j)
+					{
+						if (i == j) continue;
+						const ImVec2 posB = cachedNodeRects[j].first;
+						const ImVec2 szB  = cachedNodeRects[j].second;
+						const float ox = std::min(posA.x + szA.x, posB.x + szB.x) - std::max(posA.x, posB.x);
+						const float oy = std::min(posA.y + szA.y, posB.y + szB.y) - std::max(posA.y, posB.y);
+						if (ox > 0.0f && oy > 0.0f &&
+						    ox * oy > 0.30f * std::min(szA.x * szA.y, szB.x * szB.y))
+						{
+							finalOverlaps = true;
+							break;
+						}
+					}
+					if (finalOverlaps)
+					{
+						ImNodeEditor::SetNodePosition(idA, dragStartPositions[idA]);
+						prevNodePositions[idA] = dragStartPositions[idA];
+					}
+					else
+					{
+						prevNodePositions[idA] = posA;
+					}
+					dragStartPositions.erase(idA);
+					continue;
+				}
+
+				prevNodePositions[idA] = posA;
+			}
+		}
+
 		renderMiniMap();
 		ImNodeEditor::SetCurrentEditor(nullptr);
 
@@ -156,14 +213,16 @@ namespace dnf_composer::user_interface
 			renderElementNodeConnections(element);
 		}
 
-		// Cache node canvas rects for mini-map (must happen inside Begin/End).
+		// Cache node canvas rects for mini-map and overlap prevention (must happen inside Begin/End).
 		cachedNodeRects.clear();
 		cachedNodeLabels.clear();
+		cachedNodeIds.clear();
 		for (const auto& element : elements)
 		{
 			const size_t id = getNodeId(element);
 			cachedNodeRects.emplace_back(ImNodeEditor::GetNodePosition(id), ImNodeEditor::GetNodeSize(id));
 			cachedNodeLabels.push_back(element->getLabel());
+			cachedNodeIds.push_back(id);
 		}
 		cachedVpMin = ImNodeEditor::ScreenToCanvas(ngBoundsMin);
 		cachedVpMax = ImNodeEditor::ScreenToCanvas(ngBoundsMax);
