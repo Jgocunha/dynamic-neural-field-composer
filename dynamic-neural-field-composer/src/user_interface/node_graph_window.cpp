@@ -16,6 +16,7 @@ namespace dnf_composer::user_interface
 	{
 		widgets::renderHelpMarker(
 			"Visualize elements and their interactions.\n"
+			"Zoom in/out by scrolling.\n"
 			"Drag from an Output pin to an Input pin to create a connection.\n"
 			"Double-click a link to remove it.\n"
 			"Double-click a node to open/close its plot card.");
@@ -38,7 +39,7 @@ namespace dnf_composer::user_interface
 				const ImVec2 posA = cachedNodeRects[i].first;
 				const ImVec2 szA  = cachedNodeRects[i].second;
 
-				if (!prevNodePositions.count(idA))
+				if (!prevNodePositions.contains(idA))
 				{
 					prevNodePositions[idA] = posA;
 					continue;

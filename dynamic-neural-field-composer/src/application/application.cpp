@@ -25,6 +25,7 @@ namespace dnf_composer
 		registerSettingsHandler();
 		enableKeyboardShortcuts();
 		appendFonts();
+		defineImGuiStyle();
 		log(tools::logger::LogLevel::INFO, "Application initialized successfully.");
 	}
 
@@ -192,15 +193,18 @@ namespace dnf_composer
 		g_SmallIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 20.0f, &icons_config, icons_ranges);
+			FA_compressed_size, 18.0f, &icons_config, icons_ranges);
 		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 26.0f, &icons_config, icons_ranges);
+			FA_compressed_size, 24.0f, &icons_config, icons_ranges);
 		g_LargeIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->Build();
+	}
 
+	void Application::defineImGuiStyle()
+	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
 	    // ----- Metrics & layout: tuned to your UI scale & rounded cards -----
@@ -254,7 +258,7 @@ namespace dnf_composer
 		constexpr auto PANEL_LIGHT    = ImVec4(245/255.f, 247/255.f, 250/255.f, 1.0f);  // sidebar bg
 	    constexpr auto BORDER_LIGHT   = ImVec4(225/255.f, 229/255.f, 235/255.f, 1.0f);  // subtle border
 	    constexpr auto CARD_BG        = ImVec4(1.00f, 1.00f, 1.00f, 0.96f);             // matches white cards
-	    constexpr auto WINDOW_BG      = ImVec4(1.00f, 1.00f, 1.00f, 218.0f/255.0f);             // soft wash over bg image
+	    constexpr auto WINDOW_BG      = ImVec4(1.00f, 1.00f, 1.00f, 218.0f/255.0f);// soft wash over bg image
 	    constexpr auto TEXT           = imgui_kit::colours::Black;              // dark, crisp
 	    constexpr auto TEXT_MUTED     = imgui_kit::colours::Gray;              // for secondary labels
 

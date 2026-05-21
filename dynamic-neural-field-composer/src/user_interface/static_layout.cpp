@@ -1,4 +1,4 @@
-#include "user_interface/static_layout_window.h"
+#include "user_interface/static_layout.h"
 
 
 extern ImFont* g_BlackLargeFont;
@@ -14,7 +14,7 @@ namespace dnf_composer::user_interface
 	static constexpr float kColABase   = 515.0F;  // Simulation Control
 	static constexpr float kColBBase   = 360.0F;  // Element Control (rightmost)
 	static constexpr float kStatusBarH = 40.0F;   // status bar height
-	static constexpr float kTopBarH    = 50.0F;   // top control bar height
+	static constexpr float kTopBarH    = 70.0F;   // top control bar height
 	static constexpr float kMargin     = 6.0F;
 	static constexpr float kRounding   = 8.0F;
 
@@ -40,10 +40,12 @@ namespace dnf_composer::user_interface
 		const std::shared_ptr<Visualization>& visualization)
 		: simulation(simulation), visualization(visualization)
 	{
+		controlBarWindow = std::make_unique<ControlBarWindow>(simulation);
 		simulationWindow = std::make_unique<SimulationWindow>(simulation);
 		elementWindow    = std::make_unique<ElementWindow>(simulation);
 		nodeGraphWindow  = std::make_unique<NodeGraphWindow>(simulation);
-		plotsWindow		= std::make_unique<PlotsWindow>(visualization);
+		plotsWindow		 = std::make_unique<PlotsWindow>(visualization);
+		statusBarWindow  = std::make_unique<StatusBarWindow>(simulation);
 		logWindow        = std::make_unique<LogWindow>();
 	}
 
@@ -109,201 +111,35 @@ namespace dnf_composer::user_interface
 		const float xC = xA + colAW + m;
 		const float xB = xC + colCW + m;
 
-		panelTopBar    ({origin.x + m, y0},      {total.x - m * 2.0f, topBarH});
-		panelSimulation({xA, y1},                {colAW, fullH});
-		panelNodeGraph ({xC, y1},                {colCW, fullH});
-		panelElement   ({xB, y1},                {colBW, fullH});
-		panelStatusBar ({origin.x + m, y1 + fullH + m}, {total.x - m * 2.0f, statusH});
+		drawPanelControlBar({origin.x + m, y0},      {total.x - m * 2.0f, topBarH});
+		drawPanelSimulation({xA, y1},                {colAW, fullH});
+		drawPanelElement   ({xB, y1},                {colBW, fullH});
+		drawPanelNodeGraph ({xC, y1},                {colCW, fullH});
+		drawPanelStatusBar ({origin.x + m, y1 + fullH + m}, {total.x - m * 2.0f, statusH});
 	}
 
-	void StaticLayoutWindow::panelTopBar(const ImVec2 pos, const ImVec2 size) const
+	void StaticLayoutWindow::drawPanelControlBar(const ImVec2 pos, const ImVec2 size) const
 	{
-		const float ui    = ImGui::GetIO().FontGlobalScale;
-		const float btnSz = size.y - 16.0f * ui;
-
-		if (beginPanelFixed("##sl_top", pos, size))
+		if (beginPanelFixed("##sl_control_bar", pos, size))
 		{
-			const float slackTop = (ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight()) * 0.5f;
-			if (slackTop > 0.0f) ImGui::SetCursorPosY(ImGui::GetCursorPosY() + slackTop);
-			ImGui::AlignTextToFramePadding();
-			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::TextUnformatted(ICON_FA_WAVE_SQUARE);
-			ImGui::PopFont();
-			ImGui::PopStyleColor();
-			ImGui::SameLine(0, 8);
+			const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
+						| ImGuiWindowFlags_NoScrollbar
+						| ImGuiWindowFlags_NoScrollWithMouse
+						| ImGuiWindowFlags_NoSavedSettings;
 
-			static std::array<char, 128> idBuf{};
-			std::snprintf(idBuf.data(), idBuf.size(), "%s",
-			              simulation->getUniqueIdentifier().c_str());
-			ImGui::SetNextItemWidth(225.0f * ui);
-			ImGui::PushFont(g_BlackMediumFont);
-			const bool idEdited = ImGui::InputText("##top_sim_id", idBuf.data(), idBuf.size(),
-				ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue);
-			if (idEdited || ImGui::IsItemDeactivatedAfterEdit())
-				simulation->setUniqueIdentifier(std::string(idBuf.data()));
-			ImGui::SameLine(0, 2);
-			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted(".dnf");
-			ImGui::PopFont();
-			ImGui::SameLine(0, 40);
-
-			renderTopBarLeft(ui, btnSz);
-			ImGui::SameLine(0, 40);
-
-			ImGui::AlignTextToFramePadding();
-			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::TextUnformatted(ICON_FA_CLOCK);
-			ImGui::PopFont();
-			ImGui::PopStyleColor();
-			ImGui::SameLine(0, 6);
-			static double editDt = simulation->getDeltaT();
-			ImGui::SetNextItemWidth(60.0f * ui);
-			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::InputDouble("##top_dt", &editDt, 0.0, 0.0, "%.2f");
-			ImGui::PopFont();
-			if (ImGui::IsItemDeactivatedAfterEdit())
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, 0), false,
+				flags))
 			{
-				if (std::isfinite(editDt) && editDt > 0.0)
-					simulation->setDeltaT(editDt);
-				editDt = simulation->getDeltaT();
+				controlBarWindow->drawContents();
 			}
-			ImGui::SameLine(0, 4);
-			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted("\xce\x94t");
-
-			renderTopBarRight(ui, btnSz);
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
 		}
 		endPanel();
 	}
 
-	void StaticLayoutWindow::renderTopBarLeft(const float ui, const float btnSz) const
-	{
-		const ImVec2 bSz(btnSz, btnSz);
-		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-		ImGui::PushFont(g_LargeIconsFont);
-
-		if (ImGui::Button(ICON_FA_PLAY        "##top_play",   bSz)) simulation->init();
-		ImGui::SameLine(0, 6);
-		if (ImGui::Button(ICON_FA_PAUSE       "##top_pause",  bSz)) simulation->pause();
-		ImGui::SameLine(0, 6);
-		if (ImGui::Button(ICON_FA_FORWARD_FAST"##top_resume", bSz)) simulation->resume();
-		ImGui::SameLine(0, 6);
-		if (ImGui::Button(ICON_FA_STOP        "##top_stop",   bSz)) simulation->close();
-
-		ImGui::PopFont();
-		ImGui::PopStyleVar(1);
-		ImGui::PopStyleColor(1);
-	}
-
-	void StaticLayoutWindow::renderTopBarRight(const float ui, const float btnSz) const
-	{
-		static int   tickCount = 1000;
-		static bool  runNTicks = false;
-		static int   startTick = 0;
-		static float msCount   = 1000.0f;
-		static bool  runForMs  = false;
-		static std::chrono::steady_clock::time_point runMsStart;
-
-		if (runNTicks && simulation->getT() >= startTick + tickCount)
-		{
-			runNTicks = false;
-			simulation->pause();
-		}
-		if (runForMs)
-		{
-			const auto elapsed = std::chrono::duration<float, std::milli>(
-				std::chrono::steady_clock::now() - runMsStart).count();
-			if (elapsed >= msCount)
-			{
-				runForMs = false;
-				simulation->pause();
-			}
-		}
-
-		constexpr auto kFill   = ImVec4(0.96f, 0.98f, 0.99f, 1.0f);
-		constexpr auto kHover  = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
-		constexpr auto kActive = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
-
-		const float innerSp = ImGui::GetStyle().ItemInnerSpacing.x;
-		const float runW =
-			ImGui::CalcTextSize("Run simulation for").x + innerSp + 60.0f * ui + innerSp +
-			ImGui::CalcTextSize("ticks").x + innerSp + btnSz + 8.0f +
-			ImGui::CalcTextSize("Run simulation for").x + innerSp + 60.0f * ui + innerSp +
-			ImGui::CalcTextSize("ms").x + innerSp + btnSz +
-			ImGui::GetStyle().WindowPadding.x + 8.0f;
-
-		const float rightX = ImGui::GetWindowWidth() - runW;
-		const float curX   = ImGui::GetCursorPosX();
-		ImGui::SameLine(rightX > curX + 8.0f ? rightX : curX + 8.0f);
-
-		// ── Run simulation for N ticks ────────────────────────────────────────
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Run simulation for");
-		ImGui::SameLine(0, innerSp);
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::SetNextItemWidth(60.0f * ui);
-		if (ImGui::InputInt("##top_ticks", &tickCount, 0, 0) && tickCount < 1) tickCount = 1;
-		ImGui::PopFont();
-		ImGui::SameLine(0, innerSp);
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("ticks");
-		ImGui::SameLine(0, innerSp);
-
-		ImGui::PushStyleColor(ImGuiCol_Button,        kFill);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kHover);
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  kActive);
-		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f * ui);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-		ImGui::PushFont(g_LargeIconsFont);
-		if (ImGui::Button(ICON_FA_PLAY "##top_run_ticks", ImVec2(btnSz, btnSz)))
-		{
-			startTick = static_cast<int>(simulation->getT());
-			if (!simulation->isInitialized()) { simulation->init(); startTick = 0; }
-			simulation->resume();
-			runNTicks = true;
-		}
-		ImGui::PopFont();
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(4);
-		ImGui::SameLine(0, 20);
-
-		// ── Run simulation for N ms ───────────────────────────────────────────
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Run simulation for");
-		ImGui::SameLine(0, innerSp);
-		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::SetNextItemWidth(60.0f * ui);
-		if (ImGui::InputFloat("##top_ms", &msCount, 0.0f, 0.0f, "%.0f") && msCount < 0.1f) msCount = 0.1f;
-		ImGui::PopFont();
-		ImGui::SameLine(0, innerSp);
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("ms");
-		ImGui::SameLine(0, innerSp);
-
-		ImGui::PushStyleColor(ImGuiCol_Button,        kFill);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kHover);
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  kActive);
-		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f * ui);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-		ImGui::PushFont(g_LargeIconsFont);
-		if (ImGui::Button(ICON_FA_PLAY "##top_run_ms", ImVec2(btnSz, btnSz)))
-		{
-			if (!simulation->isInitialized()) simulation->init();
-			simulation->resume();
-			runForMs   = true;
-			runMsStart = std::chrono::steady_clock::now();
-		}
-		ImGui::PopFont();
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(4);
-	}
-
-	void StaticLayoutWindow::panelSimulation(const ImVec2 pos, const ImVec2 size) const
+	void StaticLayoutWindow::drawPanelSimulation(const ImVec2 pos, const ImVec2 size) const
 	{
 		if (beginPanelFixed("##sl_sim", pos, size))
 		{
@@ -335,7 +171,24 @@ namespace dnf_composer::user_interface
 		endPanel();
 	}
 
-	void StaticLayoutWindow::panelNodeGraph(ImVec2 pos, ImVec2 size) const
+	void StaticLayoutWindow::drawPanelElement(const ImVec2 pos, const ImVec2 size) const
+	{
+		if (beginPanelFixed("##sl_elem", pos, size))
+		{
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::Text("Element Control");
+			ImGui::PopFont();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			elementWindow->renderElementControlCard();
+			ImGui::PopStyleColor();
+		}
+		endPanel();
+	}
+
+	void StaticLayoutWindow::drawPanelNodeGraph(const ImVec2 pos, const ImVec2 size) const
 	{
 		if (beginPanelFixed("##sl_node", pos, size))
 		{
@@ -356,24 +209,7 @@ namespace dnf_composer::user_interface
 		endPanel();
 	}
 
-	void StaticLayoutWindow::panelElement(ImVec2 pos, ImVec2 size) const
-	{
-		if (beginPanelFixed("##sl_elem", pos, size))
-		{
-			ImGui::PushFont(g_BlackLargeFont);
-			ImGui::Text("Element Control");
-			ImGui::PopFont();
-			ImGui::Separator();
-			ImGui::Spacing();
-
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			elementWindow->renderElementControlCard();
-			ImGui::PopStyleColor();
-		}
-		endPanel();
-	}
-
-	void StaticLayoutWindow::panelStatusBar(ImVec2 pos, ImVec2 size) const
+	void StaticLayoutWindow::drawPanelStatusBar(const ImVec2 pos, const ImVec2 size) const
 	{
 		if (beginPanelFixed("##sl_status", pos, size))
 		{

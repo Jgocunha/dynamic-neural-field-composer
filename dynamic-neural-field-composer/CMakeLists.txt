@@ -99,13 +99,6 @@ set(elements_headers
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
-#"include/element_parameters/field_coupling_parameters.h"
-##"include/element_parameters/gauss_field_coupling_parameters.h"
-#"include/element_parameters/gauss_kernel_parameters.h"
-#"include/element_parameters/gauss_stimulus_parameters.h"
-#"include/element_parameters/mexican_hat_kernel_parameters.h"
-#"include/element_parameters/neural_field_parameters.h"
-#"include/element_parameters/normal_noise_parameters.h"
 )
 
 set(tools_headers
@@ -128,12 +121,16 @@ set(user_interface_headers
         "include/user_interface/widgets.h"
         "include/user_interface/plots_window.h"
         "include/user_interface/log_window.h"
-        "include/user_interface/fonts/IconsFontAwesome6.h"
-        "include/user_interface/fonts/fa.h"
-        "include/user_interface/static_layout_window.h"
+        "include/user_interface/static_layout.h"
+        "include/user_interface/status_bar_window.h"
+        "include/user_interface/control_bar_window.h"
+
         "include/user_interface/node_utilities/builders.h"
         "include/user_interface/node_utilities/drawing.h"
         "include/user_interface/node_utilities/node_widgets.h"
+
+        "include/user_interface/fonts/IconsFontAwesome6.h"
+        "include/user_interface/fonts/fa.h"
 )
 
 set(header 
@@ -191,14 +188,6 @@ set(src
         "src/elements/memory_trace_2d.cpp"
 
         "src/element_parameters/element_parameters.cpp"
-#"src/element_parameters/field_coupling_parameters.cpp"
-##"include/element_parameters/gauss_field_coupling_parameters.h"
-#"src/element_parameters/gauss_kernel_parameters.cpp"
-#"src/element_parameters/gauss_stimulus_parameters.cpp"
-#"src/element_parameters/lateral_interactions_parameters.cpp"
-#"src/element_parameters/mexican_hat_kernel_parameters.cpp"
-#"src/element_parameters/neural_field_parameters.cpp"
-#"src/element_parameters/normal_noise_parameters.cpp"
 
         "src/tools/math.cpp"
         "src/tools/profiling.cpp"
@@ -216,7 +205,10 @@ set(src
         "src/user_interface/widgets.cpp"
         "src/user_interface/plots_window.cpp"
         "src/user_interface/log_window.cpp"
-        "src/user_interface/static_layout_window.cpp"
+        "src/user_interface/static_layout.cpp"
+        "src/user_interface/status_bar_window.cpp"
+        "src/user_interface/control_bar_window.cpp"
+
         "src/user_interface/node_utilities/builders.cpp"
         "src/user_interface/node_utilities/drawing.cpp"
         "src/user_interface/node_utilities/node_widgets.cpp"

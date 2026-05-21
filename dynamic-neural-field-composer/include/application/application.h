@@ -124,6 +124,7 @@ namespace dnf_composer
 		void setGUIParameters();
 		static void enableKeyboardShortcuts();
 		static void appendFonts();
+		static void defineImGuiStyle();
 	};
 
 	// Text fonts — 3 sizes per weight
