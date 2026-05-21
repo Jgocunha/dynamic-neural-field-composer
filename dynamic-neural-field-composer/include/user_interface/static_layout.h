@@ -43,11 +43,13 @@ namespace dnf_composer::user_interface
 		~StaticLayoutWindow() override = default;
 
 	private:
+		void renderWindows() const;
 		void drawPanels() const;
 
 		void panelTopBar        (ImVec2 pos, ImVec2 size) const;
 		void renderTopBarLeft   (float ui, float btnSz) const;
 		void renderTopBarRight  (float ui, float btnSz) const;
+
 		void panelSimulation    (ImVec2 pos, ImVec2 size) const;
 		void panelElement       (ImVec2 pos, ImVec2 size) const;
 		void panelNodeGraph     (ImVec2 pos, ImVec2 size) const;

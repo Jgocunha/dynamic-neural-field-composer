@@ -6,6 +6,7 @@ extern ImFont* g_BlackMediumFont;
 extern ImFont* g_BlackSmallFont;
 extern ImFont* g_MonoMediumFont;
 extern ImFont* g_MediumIconsFont;
+extern ImFont* g_SmallIconsFont;
 
 namespace dnf_composer::user_interface
 {
@@ -69,12 +70,16 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::Begin("##static_root", nullptr, root_flags))
 		{
-			drawPanels();
-			plotsWindow->render();
-			logWindow->renderPopUp();
+			renderWindows();
 		}
 
 		ImGui::End();
+	}
+
+	void StaticLayoutWindow::renderWindows() const
+	{
+		drawPanels();
+		plotsWindow->render();
 	}
 
 	void StaticLayoutWindow::drawPanels() const
@@ -110,7 +115,6 @@ namespace dnf_composer::user_interface
 		panelElement   ({xB, y1},                {colBW, fullH});
 		panelStatusBar ({origin.x + m, y1 + fullH + m}, {total.x - m * 2.0f, statusH});
 	}
-
 
 	void StaticLayoutWindow::panelTopBar(const ImVec2 pos, const ImVec2 size) const
 	{
@@ -177,15 +181,7 @@ namespace dnf_composer::user_interface
 	void StaticLayoutWindow::renderTopBarLeft(const float ui, const float btnSz) const
 	{
 		const ImVec2 bSz(btnSz, btnSz);
-		constexpr ImVec4 kBg     = ImVec4(0.96f, 0.98f, 0.99f, 1.0f);
-		constexpr ImVec4 kHover  = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
-		constexpr ImVec4 kActive = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
-
-		ImGui::PushStyleColor(ImGuiCol_Button,        kBg);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kHover);
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,  kActive);
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f * ui);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
 		ImGui::PushFont(g_LargeIconsFont);
 
@@ -198,8 +194,8 @@ namespace dnf_composer::user_interface
 		if (ImGui::Button(ICON_FA_STOP        "##top_stop",   bSz)) simulation->close();
 
 		ImGui::PopFont();
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(4);
+		ImGui::PopStyleVar(1);
+		ImGui::PopStyleColor(1);
 	}
 
 	void StaticLayoutWindow::renderTopBarRight(const float ui, const float btnSz) const
@@ -227,9 +223,9 @@ namespace dnf_composer::user_interface
 			}
 		}
 
-		constexpr ImVec4 kFill   = ImVec4(0.96f, 0.98f, 0.99f, 1.0f);
-		constexpr ImVec4 kHover  = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
-		constexpr ImVec4 kActive = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
+		constexpr auto kFill   = ImVec4(0.96f, 0.98f, 0.99f, 1.0f);
+		constexpr auto kHover  = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
+		constexpr auto kActive = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
 
 		const float innerSp = ImGui::GetStyle().ItemInnerSpacing.x;
 		const float runW =
@@ -434,15 +430,15 @@ namespace dnf_composer::user_interface
 			std::snprintf(zoomBuf, sizeof(zoomBuf), "%d%%",  static_cast<int>(Application::getUiScalePct()));
 			std::snprintf(memBuf,  sizeof(memBuf),  "%.1f MB", tools::utils::getProcessMemoryMb());
 
-			constexpr float sep  = 14.0F;
-			const float rW   =
+			constexpr float sep = 14.0F;
+			const float rW =
 				ImGui::CalcTextSize("FPS ").x + ImGui::CalcTextSize(fpsBuf).x  + sep +
 				ImGui::CalcTextSize("Zoom ").x + ImGui::CalcTextSize(zoomBuf).x + sep +
 				ImGui::CalcTextSize("Mem. ").x + ImGui::CalcTextSize(memBuf).x +
-				ImGui::GetStyle().WindowPadding.x;
+					ImGui::GetStyle().WindowPadding.x;
 
 			const float rightX = ImGui::GetWindowWidth() - rW;
-			if (const float curX   = ImGui::GetCursorPosX(); rightX > curX + sep) {
+			if (const float curX = ImGui::GetCursorPosX(); rightX > curX + sep) {
 				ImGui::SameLine(rightX);
 			} else {
 				ImGui::SameLine(0, sep);
