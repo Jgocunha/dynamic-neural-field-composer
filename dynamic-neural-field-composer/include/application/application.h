@@ -20,9 +20,6 @@
 
 namespace dnf_composer
 {
-	/// @brief Selects whether UI windows are managed dynamically or in a fixed static layout.
-	enum class UIMode { Dynamic = 0, Static = 1 };
-
 	// Base template: assumes T does not have a constructor that takes Simulation*
 	template<typename T, typename = void>
 	struct has_simulation_constructor : std::false_type {};
@@ -62,13 +59,10 @@ namespace dnf_composer
 		std::shared_ptr<imgui_kit::UserInterface> gui;
 		bool guiActive;
 		static float uiScalePct; ///< User-controlled UI scale percentage (50–200%).
-		static UIMode uiMode;    ///< Current UI layout mode.
 
 	public:
 		static float  getUiScalePct()          { return uiScalePct; }
 		static void   setUiScalePct(float pct) { uiScalePct = pct; }
-		static UIMode getUIMode()              { return uiMode; }
-		static void   setUIMode(UIMode m)      { uiMode = m; }
 
 	public:
 		/// @brief Construct an Application.

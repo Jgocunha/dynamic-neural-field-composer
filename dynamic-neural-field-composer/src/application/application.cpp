@@ -4,7 +4,6 @@
 namespace dnf_composer
 {
 	float   Application::uiScalePct = 100.0f;
-	UIMode  Application::uiMode     = UIMode::Dynamic;
 
 	Application::Application(const std::shared_ptr<Simulation>& simulation,
 		const std::shared_ptr<Visualization>& visualization)
@@ -47,9 +46,6 @@ namespace dnf_composer
 			float scale = 100.0f;
 			if (sscanf(line, "UiScale=%f", &scale) == 1)
 				Application::setUiScalePct(scale);
-			int mode = 0;
-			if (sscanf(line, "UIMode=%d", &mode) == 1)
-				Application::setUIMode(static_cast<UIMode>(mode));
 		};
 
 		// called when ImGui writes imgui.ini to disk
@@ -57,7 +53,6 @@ namespace dnf_composer
 		{
 			buf->appendf("[%s][Data]\n", h->TypeName);
 			buf->appendf("UiScale=%.0f\n", Application::getUiScalePct());
-			buf->appendf("UIMode=%d\n",    static_cast<int>(Application::getUIMode()));
 			buf->appendf("\n");
 		};
 
