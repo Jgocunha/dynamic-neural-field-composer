@@ -3,8 +3,8 @@
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
-#include <array>
-#include <chrono>
+#include "user_interface/log_window.h"
+
 
 namespace dnf_composer::user_interface
 {
@@ -29,5 +29,6 @@ namespace dnf_composer::user_interface
         void drawSimulationControlButtons() const;
         void drawTimescale() const;
         void drawRunControl() const;
+        void drawConsoleButton() const;
     };
 }

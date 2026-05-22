@@ -14,7 +14,7 @@ namespace dnf_composer::user_interface
 	static constexpr float kColABase   = 515.0F;  // Simulation Control
 	static constexpr float kColBBase   = 360.0F;  // Element Control (rightmost)
 	static constexpr float kStatusBarH = 40.0F;   // status bar height
-	static constexpr float kTopBarH    = 70.0F;   // top control bar height
+	static constexpr float kTopBarH    = 50.0F;   // top control bar height
 	static constexpr float kMargin     = 6.0F;
 	static constexpr float kRounding   = 8.0F;
 
@@ -82,6 +82,8 @@ namespace dnf_composer::user_interface
 	{
 		drawPanels();
 		plotsWindow->render();
+		if (LogWindow::isActive())
+			logWindow->render();
 	}
 
 	void StaticLayoutWindow::drawPanels() const
@@ -120,6 +122,7 @@ namespace dnf_composer::user_interface
 
 	void StaticLayoutWindow::drawPanelControlBar(const ImVec2 pos, const ImVec2 size) const
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(14.0f, 4.0f));
 		if (beginPanelFixed("##sl_control_bar", pos, size))
 		{
 			const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
@@ -137,6 +140,7 @@ namespace dnf_composer::user_interface
 			ImGui::PopStyleColor();
 		}
 		endPanel();
+		ImGui::PopStyleVar();
 	}
 
 	void StaticLayoutWindow::drawPanelSimulation(const ImVec2 pos, const ImVec2 size) const

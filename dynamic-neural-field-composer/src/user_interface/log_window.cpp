@@ -5,7 +5,7 @@ namespace dnf_composer::user_interface
 {
 	LogWindow::LogWindow()
 	{
-   		isWindowActive = true;
+   		isWindowActive = false;
 		clean();
 	}
 
@@ -71,7 +71,7 @@ namespace dnf_composer::user_interface
 	void LogWindow::draw()
 	{
 		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Logs", nullptr, imgui_kit::getGlobalWindowFlags());
+		const bool open = ImGui::Begin("Logs", &isWindowActive, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
 
 		if (!open)

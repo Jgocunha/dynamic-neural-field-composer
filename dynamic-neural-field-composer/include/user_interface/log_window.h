@@ -34,8 +34,9 @@ namespace dnf_composer::user_interface
         LogWindow();
         static void addLog(const ImVec4& color, const char* fmt, ...) IM_FMTARGS(2);
         void render() override { draw(); }
-        static bool isActive() { return isWindowActive; }
-        static void setExpanded(bool v) { s_expanded = v; }
+        static bool isActive()            { return isWindowActive; }
+        static void setActive(bool v)     { isWindowActive = v; }
+        static void setExpanded(bool v)   { s_expanded = v; }
         ~LogWindow() override = default;
     private:
         static void clean() { logs.clear(); }
