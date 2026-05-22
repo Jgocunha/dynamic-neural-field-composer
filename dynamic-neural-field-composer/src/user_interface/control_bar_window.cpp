@@ -217,12 +217,12 @@ namespace dnf_composer
             ImGui::PopStyleColor(5);
         }
 
-        void ControlBarWindow::drawConsoleButton() const
+        void ControlBarWindow::drawConsoleButton()
         {
             const float  ui   = ImGui::GetIO().FontGlobalScale;
             const bool   open = LogWindow::isActive();
 
-            // Right-align: jump to window right edge minus group width
+            // Right-align: jump to the window right edge minus group width
             const float iconW    = g_MediumIconsFont->LegacySize;
             const float textW    = ImGui::CalcTextSize("Console").x;
             const float chevronW = g_SmallIconsFont->LegacySize;

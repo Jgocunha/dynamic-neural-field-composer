@@ -29,6 +29,6 @@ namespace dnf_composer::user_interface
         void drawSimulationControlButtons() const;
         void drawTimescale() const;
         void drawRunControl() const;
-        void drawConsoleButton() const;
+        static void drawConsoleButton();
     };
 }
