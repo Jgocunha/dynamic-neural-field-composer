@@ -148,32 +148,7 @@ namespace dnf_composer
 		void StaticLayoutWindow::drawPanelSimulation(const ImVec2 pos, const ImVec2 size) const
 		{
 			if (beginPanelFixed("##sl_sim", pos, size))
-			{
-				ImGui::PushFont(g_BlackLargeFont);
-				ImGui::Text("Simulation Control");
-				ImGui::PopFont();
-				ImGui::Separator();
-				ImGui::Spacing();
-
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-				if (ImGui::BeginChild("##sl_sim_scroll", ImVec2(0, 0), false,
-					ImGuiWindowFlags_NoSavedSettings))
-				{
-					simulationWindow->renderAddElementCard();
-					ImGui::Spacing();
-					simulationWindow->renderRemoveElementCard();
-					ImGui::Spacing();
-					simulationWindow->renderSetInteractionCard();
-					ImGui::Spacing();
-					simulationWindow->renderLogElementParametersCard();
-					ImGui::Spacing();
-					simulationWindow->renderExportElementComponentCard();
-					ImGui::Spacing();
-					simulationWindow->renderMonitoringCard();
-				}
-				ImGui::EndChild();
-				ImGui::PopStyleColor();
-			}
+				simulationWindow->renderSidebarContents();
 			endPanel();
 		}
 
