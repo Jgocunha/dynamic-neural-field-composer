@@ -8,6 +8,7 @@
                 "x_shift": 0.0
             },
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "gk 1",
@@ -29,7 +30,8 @@
             "restingLevel": -10.0,
             "tau": 25.0,
             "uniqueName": "nf 1",
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "activationFunction": {
@@ -38,6 +40,7 @@
                 "x_shift": 0.0
             },
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "gk 2",
@@ -59,7 +62,8 @@
             "restingLevel": -10.0,
             "tau": 25.0,
             "uniqueName": "nf 2",
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "activationFunction": {
@@ -68,6 +72,7 @@
                 "x_shift": 0.0
             },
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "gk 2-3",
@@ -93,13 +98,15 @@
             "restingLevel": -10.0,
             "tau": 25.0,
             "uniqueName": "nf 3",
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 5.5,
             "amplitudeGlobal": -0.009999999776482582,
             "circular": true,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "nf 1",
@@ -107,19 +114,21 @@
                 ]
             ],
             "label": [
-                3,
+                4,
                 "gauss kernel"
             ],
             "normalized": true,
             "uniqueName": "gk 1",
             "width": 3.0,
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 5.0,
             "amplitudeGlobal": -0.01,
             "circular": true,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "nf 2",
@@ -127,19 +136,21 @@
                 ]
             ],
             "label": [
-                3,
+                4,
                 "gauss kernel"
             ],
             "normalized": true,
             "uniqueName": "gk 2",
             "width": 3.0,
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 5.0,
             "amplitudeGlobal": -0.01,
             "circular": true,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "nf 3",
@@ -147,52 +158,60 @@
                 ]
             ],
             "label": [
-                3,
+                4,
                 "gauss kernel"
             ],
             "normalized": true,
             "uniqueName": "gk 3",
             "width": 3.0,
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 0.01,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": null,
             "label": [
-                7,
+                8,
                 "normal noise"
             ],
             "uniqueName": "nn 1",
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 0.01,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": null,
             "label": [
-                7,
+                8,
                 "normal noise"
             ],
             "uniqueName": "nn 2",
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 0.01,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": null,
             "label": [
-                7,
+                8,
                 "normal noise"
             ],
             "uniqueName": "nn 3",
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 5.0,
             "amplitudeGlobal": -0.01,
             "circular": true,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "nf 1",
@@ -200,19 +219,21 @@
                 ]
             ],
             "label": [
-                3,
+                4,
                 "gauss kernel"
             ],
             "normalized": true,
             "uniqueName": "gk 1-3",
             "width": 3.0,
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 5.0,
             "amplitudeGlobal": -0.01,
             "circular": true,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": [
                 [
                     "nf 2",
@@ -220,18 +241,20 @@
                 ]
             ],
             "label": [
-                3,
+                4,
                 "gauss kernel"
             ],
             "normalized": true,
             "uniqueName": "gk 2-3",
             "width": 3.0,
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 20.0,
             "circular": true,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": null,
             "label": [
                 2,
@@ -241,12 +264,14 @@
             "position": 50.0,
             "uniqueName": "gauss stimulus a",
             "width": 5.0,
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         },
         {
             "amplitude": 20.0,
             "circular": true,
             "d_x": 1.0,
+            "d_y": 1.0,
             "inputs": null,
             "label": [
                 2,
@@ -256,7 +281,8 @@
             "position": 50.0,
             "uniqueName": "gauss stimulus b",
             "width": 5.0,
-            "x_max": 100
+            "x_max": 100,
+            "y_max": 1
         }
     ],
     "identifier": "and"

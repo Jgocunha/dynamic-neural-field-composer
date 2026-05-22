@@ -81,8 +81,6 @@ namespace dnf_composer
             constexpr auto kBg     = ImVec4(0.96f, 0.98f, 0.00f, 0.0f);
             constexpr auto kHover  = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
             constexpr auto kActive = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
-
-            constexpr auto kBlack = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
             constexpr auto kRed   = ImVec4(0.8f, 0.1f, 0.1f, 1.0f);
 
             ImGui::PushStyleColor(ImGuiCol_Button,        kBg);
@@ -99,15 +97,11 @@ namespace dnf_composer
             const bool hPlay   = ImGui::IsItemHovered();
 
             ImGui::SameLine(0, 8);
-            ImGui::PushStyleColor(ImGuiCol_Text, kBlack);
             if (ImGui::Button(ICON_FA_PAUSE "##cb_pause",  bSz)) simulation->pause();
-            ImGui::PopStyleColor();
             const bool hPause  = ImGui::IsItemHovered();
 
             ImGui::SameLine(0, 8);
-            ImGui::PushStyleColor(ImGuiCol_Text, kBlack);
             if (ImGui::Button(ICON_FA_FORWARD_FAST "##cb_resume", bSz)) simulation->resume();
-            ImGui::PopStyleColor();
             const bool hResume = ImGui::IsItemHovered();
 
             ImGui::SameLine(0, 8);

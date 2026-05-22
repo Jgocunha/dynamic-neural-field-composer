@@ -1,9 +1,8 @@
 #include "user_interface/node_graph_window.h"
 #include <cstring>
 
+#include "elements/correlated_normal_noise_2d.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
-
-extern ImFont* g_BlackSmallFont;
 
 namespace dnf_composer::user_interface
 {

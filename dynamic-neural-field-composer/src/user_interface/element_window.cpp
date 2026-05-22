@@ -1,18 +1,44 @@
 ﻿#include "user_interface/element_window.h"
 
+#include <unordered_map>
+#include <cmath>
+
+#include "elements/neural_field.h"
+#include "elements/field_coupling.h"
+#include "elements/gauss_kernel.h"
+#include "elements/mexican_hat_kernel.h"
+#include "elements/normal_noise.h"
+#include "elements/correlated_normal_noise.h"
+#include "elements/gauss_field_coupling.h"
+#include "elements/oscillatory_kernel.h"
+#include "elements/asymmetric_gauss_kernel.h"
+#include "elements/boost_stimulus.h"
+#include "elements/memory_trace.h"
+#include "elements/neural_field_2d.h"
+#include "elements/gauss_stimulus_2d.h"
+#include "elements/gauss_kernel_2d.h"
+#include "elements/mexican_hat_kernel_2d.h"
+#include "elements/normal_noise_2d.h"
+#include "elements/oscillatory_kernel_2d.h"
+#include "elements/timed_gauss_stimulus.h"
+#include "elements/timed_gauss_stimulus_2d.h"
+#include "elements/boost_stimulus_2d.h"
+#include "elements/correlated_normal_noise_2d.h"
+#include "elements/asymmetric_gauss_kernel_2d.h"
+#include "elements/memory_trace_2d.h"
+
 namespace dnf_composer::user_interface
 {
-	std::shared_ptr<element::Element> ElementWindow::s_focusedElement_ = nullptr;
+	std::shared_ptr<element::Element> ElementWindow::focusedElement = nullptr;
 
 	void ElementWindow::setFocusedElement(const std::shared_ptr<element::Element>& element)
 	{
-		s_focusedElement_ = element;
+		focusedElement = element;
 	}
 
 	ElementWindow::ElementWindow(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
-	{
-	}
+	{}
 
 	void ElementWindow::render()
 	{
@@ -25,7 +51,7 @@ namespace dnf_composer::user_interface
 		ImGui::End();
 	}
 
-	void ElementWindow::renderElementControlCard() const
+	void ElementWindow::renderElementControlCard()
 	{
 		constexpr ImGuiWindowFlags childFlags =
         ImGuiWindowFlags_NoSavedSettings;
@@ -93,17 +119,17 @@ namespace dnf_composer::user_interface
 		const float panelW = ImMin(maxNaturalW, innerW);
 
 		// Validate a focused element still belongs to this simulation
-		if (s_focusedElement_)
+		if (focusedElement)
 		{
 			bool stillValid = false;
 			for (const auto& e : simulation->getElements()) {
-				if (e == s_focusedElement_) { stillValid = true; break; }
+				if (e == focusedElement) { stillValid = true; break; }
 			}
-			if (!stillValid) { s_focusedElement_ = nullptr;}
+			if (!stillValid) { focusedElement = nullptr;}
 		}
 
 		// Selected elements section - shows the most recently single-clicked node
-		if (s_focusedElement_)
+		if (focusedElement)
 		{
 			ImGui::PushID("##sel_focused");
 			ImGui::PushFont(g_BoldLargeFont);
@@ -111,17 +137,17 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::Spacing();
 
-			ImGui::TextUnformatted(s_focusedElement_->getUniqueName().c_str());
+			ImGui::TextUnformatted(focusedElement->getUniqueName().c_str());
 			ImGui::Spacing();
-			const ImVec4 tint = getColorForElementType(s_focusedElement_->getLabel());
-			const ImVec2 selSize(panelW, PanelHeightFor(s_focusedElement_));
+			const ImVec4 tint = getColorForElementType(focusedElement->getLabel());
+			const ImVec2 selSize(panelW, PanelHeightFor(focusedElement));
 			PanelScope scope = beginElementPanel(tint, selSize);
 			{
 				ImGui::PushItemWidth(dragW);
-				switchElementToModify(s_focusedElement_);
+				switchElementToModify(focusedElement);
 				ImGui::PopItemWidth();
-				if (s_focusedElement_->getElementCommonParameters().dimensionParameters.dimensionality == 1)
-					renderDimensionControls(s_focusedElement_);
+				if (focusedElement->getElementCommonParameters().dimensionParameters.dimensionality == 1)
+					renderDimensionControls(focusedElement);
 			}
 			endElementPanel(scope);
 			ImGui::Spacing();
@@ -167,7 +193,7 @@ namespace dnf_composer::user_interface
 	    ImGui::EndChild();
 	}
 
-	void ElementWindow::renderModifyElementParameters() const
+	void ElementWindow::renderModifyElementParameters()
 	{
 		// Group elements by type
 		std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> elementsByType;
@@ -194,7 +220,6 @@ namespace dnf_composer::user_interface
 					ImGui::Separator();
 				}
 			}
-
 			ImGui::PopStyleColor(2);
 		}
 
@@ -507,8 +532,9 @@ namespace dnf_composer::user_interface
 			ImGui::SameLine(); ImGui::Text("Beta");
 		}
 
-		if (updated)
+		if (updated) {
 			neuralField->setParameters(nfp);
+		}
 	}
 
 	void ElementWindow::modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element)
@@ -561,6 +587,7 @@ namespace dnf_composer::user_interface
 			gsp.circular = circular;
 			gsp.normalized = normalized;
 			stimulus->setParameters(gsp);
+			
 		}
 	}
 
@@ -611,6 +638,7 @@ namespace dnf_composer::user_interface
 			{
 				tgsp.onTimes.erase(tgsp.onTimes.begin() + i);
 				stimulus->setParameters(tgsp);
+				
 				return;
 			}
 		}
@@ -630,6 +658,7 @@ namespace dnf_composer::user_interface
 		{
 			tgsp.onTimes.emplace_back(newStart, newEnd);
 			stimulus->setParameters(tgsp);
+			
 			return;
 		}
 
@@ -646,6 +675,7 @@ namespace dnf_composer::user_interface
 			tgsp.circular   = circular;
 			tgsp.normalized = normalized;
 			stimulus->setParameters(tgsp);
+			
 		}
 	}
 
@@ -703,6 +733,7 @@ namespace dnf_composer::user_interface
 			{
 				p.onTimes.erase(p.onTimes.begin() + i);
 				stimulus->setParameters(p);
+				
 				return;
 			}
 		}
@@ -722,6 +753,7 @@ namespace dnf_composer::user_interface
 		{
 			p.onTimes.emplace_back(newStart, newEnd);
 			stimulus->setParameters(p);
+			
 			return;
 		}
 
@@ -740,6 +772,7 @@ namespace dnf_composer::user_interface
 			p.circular    = circular;
 			p.normalized  = normalized;
 			stimulus->setParameters(p);
+			
 		}
 	}
 
@@ -765,6 +798,7 @@ namespace dnf_composer::user_interface
 				{
 					fcp.learningRule = static_cast<LearningRule>(i);
 					fieldCoupling->setParameters(fcp);
+					
 				}
 			}
 			ImGui::EndCombo();
@@ -790,16 +824,19 @@ namespace dnf_composer::user_interface
 		{
 			fcp.scalar = scalar;
 			fieldCoupling->setParameters(fcp);
+			
 		}
 		if (activateLearning != fcp.isLearningActive)
 		{
 			fcp.isLearningActive = activateLearning;
 			fieldCoupling->setParameters(fcp);
+			
 		}
 		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) > epsilon)
 		{
 			fcp.learningRate = learningRate;
 			fieldCoupling->setParameters(fcp);
+			
 		}
 
 		ImGui::PushID(element->getUniqueName().c_str()); // Use unique ID for scope
@@ -873,6 +910,7 @@ namespace dnf_composer::user_interface
 			gkp.circular = circular;
 			gkp.normalized = normalized;
 			kernel->setParameters(gkp);
+			
 		}
 	}
 
@@ -941,6 +979,7 @@ namespace dnf_composer::user_interface
 			mhkp.circular = circular;
 			mhkp.normalized = normalized;
 			kernel->setParameters(mhkp);
+			
 		}
 	}
 
@@ -963,6 +1002,7 @@ namespace dnf_composer::user_interface
 		{
 			nnp.amplitude = amplitude;
 			normalNoise->setParameters(nnp);
+			
 		}
 	}
 
@@ -1000,6 +1040,7 @@ namespace dnf_composer::user_interface
 			p.width = width;
 			p.circular = circular;
 			cnn->setParameters(p);
+			
 		}
 	}
 
@@ -1075,6 +1116,7 @@ namespace dnf_composer::user_interface
 				coupling.amplitude = amplitude;
 				coupling.width = width;
 				gfc->setParameters(gfcp);
+				
 			}
 		}
 
@@ -1122,6 +1164,7 @@ namespace dnf_composer::user_interface
 				};
 				gfc->addCoupling(newCoupling);
 				gfc->init();
+				
 
 				// Reset parameters
 				new_x_i = 0.0f;
@@ -1198,6 +1241,7 @@ namespace dnf_composer::user_interface
 			okp.circular = circular;
 			okp.normalized = normalized;
 			kernel->setParameters(okp);
+			
 		}
 	}
 
@@ -1258,6 +1302,7 @@ namespace dnf_composer::user_interface
 			agkp.circular = circular;
 			agkp.normalized = normalized;
 			kernel->setParameters(agkp);
+			
 		}
 	}
 
@@ -1287,6 +1332,7 @@ namespace dnf_composer::user_interface
 			bsp.amplitude = amplitude;
 			bsp.isActive = isActive;
 			boostStimulus->setParameters(bsp);
+			
 		}
 	}
 
@@ -1316,6 +1362,7 @@ namespace dnf_composer::user_interface
 			p.amplitude = amplitude;
 			p.isActive  = isActive;
 			stimulus->setParameters(p);
+			
 		}
 	}
 
@@ -1353,6 +1400,7 @@ namespace dnf_composer::user_interface
 			p.width     = width;
 			p.circular  = circular;
 			cnn->setParameters(p);
+			
 		}
 	}
 
@@ -1420,6 +1468,7 @@ namespace dnf_composer::user_interface
 			p.circular        = circular;
 			p.normalized      = normalized;
 			kernel->setParameters(p);
+			
 		}
 	}
 
@@ -1458,6 +1507,7 @@ namespace dnf_composer::user_interface
 			p.tauDecay  = tauDecay;
 			p.threshold = threshold;
 			mt->setParameters(p);
+			
 		}
 	}
 
@@ -1496,6 +1546,7 @@ namespace dnf_composer::user_interface
 			mtp.tauDecay  = tauDecay;
 			mtp.threshold = threshold;
 			memoryTrace->setParameters(mtp);
+			
 		}
 	}
 
@@ -1525,6 +1576,7 @@ namespace dnf_composer::user_interface
 			p.tau = tau;
 			p.startingRestingLevel = restingLevel;
 			nf->setParameters(p);
+			
 		}
 	}
 
@@ -1580,6 +1632,7 @@ namespace dnf_composer::user_interface
 			p.position_x = posX; p.position_y = posY;
 			p.circular = circular; p.normalized = normalized;
 			gs->setParameters(p);
+			
 		}
 	}
 
@@ -1628,6 +1681,7 @@ namespace dnf_composer::user_interface
 			p.amplitudeGlobal = amplitudeGlobal;
 			p.circular = circular; p.normalized = normalized;
 			gk->setParameters(p);
+			
 		}
 	}
 
@@ -1691,6 +1745,7 @@ namespace dnf_composer::user_interface
 			p.amplitudeGlobal = amplitudeGlobal;
 			p.circular = circular; p.normalized = normalized;
 			mhk->setParameters(p);
+			
 		}
 	}
 
@@ -1712,6 +1767,7 @@ namespace dnf_composer::user_interface
 		{
 			p.amplitude = amplitude;
 			nn->setParameters(p);
+			
 		}
 	}
 
@@ -1771,6 +1827,7 @@ namespace dnf_composer::user_interface
 			p.circular       = circular;
 			p.normalized     = normalized;
 			kernel->setParameters(p);
+			
 		}
 	}
 

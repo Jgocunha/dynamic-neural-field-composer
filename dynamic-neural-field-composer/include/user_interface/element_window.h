@@ -1,41 +1,11 @@
 #pragma once
 
-
-#include <unordered_map>
-#include <cmath>
-
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "simulation/simulation.h"
 #include "elements/gauss_stimulus.h"
-#include "elements/neural_field.h"
-#include "elements/field_coupling.h"
-#include "elements/gauss_kernel.h"
-#include "elements/mexican_hat_kernel.h"
-#include "elements/normal_noise.h"
-#include "elements/correlated_normal_noise.h"
-#include "elements/gauss_field_coupling.h"
-#include "elements/oscillatory_kernel.h"
-#include "elements/asymmetric_gauss_kernel.h"
-#include "elements/boost_stimulus.h"
-#include "elements/memory_trace.h"
-#include "elements/neural_field_2d.h"
-#include "elements/gauss_stimulus_2d.h"
-#include "elements/gauss_kernel_2d.h"
-#include "elements/mexican_hat_kernel_2d.h"
-#include "elements/normal_noise_2d.h"
-#include "elements/oscillatory_kernel_2d.h"
-#include "elements/timed_gauss_stimulus.h"
-#include "elements/timed_gauss_stimulus_2d.h"
-#include "elements/boost_stimulus_2d.h"
-#include "elements/correlated_normal_noise_2d.h"
-#include "elements/asymmetric_gauss_kernel_2d.h"
-#include "elements/memory_trace_2d.h"
 #include "user_interface/widgets.h"
 #include "application/application.h"
-
-extern ImFont* g_BlackLargeFont;
-extern ImFont* g_BoldLargeFont;
 
 namespace dnf_composer::user_interface
 {
@@ -52,7 +22,7 @@ namespace dnf_composer::user_interface
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
-		static std::shared_ptr<element::Element> s_focusedElement_;
+		static std::shared_ptr<element::Element> focusedElement;
 	public:
 		explicit ElementWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -62,8 +32,8 @@ namespace dnf_composer::user_interface
 		ElementWindow& operator=(ElementWindow&&) = delete;
 
 		void render() override;
-		void renderElementControlCard() const;
-		void renderModifyElementParameters() const;
+		void renderElementControlCard();
+		void renderModifyElementParameters();
 		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
 		static void setFocusedElement(const std::shared_ptr<element::Element>& element);
 		~ElementWindow() override = default;

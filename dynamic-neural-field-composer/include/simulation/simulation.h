@@ -52,7 +52,7 @@ namespace dnf_composer
 		/// @param deltaT      Step size (default 1).
 		/// @param tZero       Start time (default 0).
 		/// @param t           Initial current time (default 0).
-		Simulation(const std::string& identifier = "", double deltaT = 1, double tZero = 0, double t = 0);
+		explicit Simulation(const std::string& identifier = "", double deltaT = 1, double tZero = 0, double t = 0);
 		Simulation(const Simulation& other);
 		Simulation& operator=(const Simulation& other);
 		Simulation(Simulation&& other) noexcept;
@@ -170,10 +170,10 @@ namespace dnf_composer
 
 		/// @brief Enable or disable per-step wall-clock timing (default: enabled).
 		/// Disable for headless/benchmark runs to avoid two steady_clock::now() calls per step.
-		void setMeasureStepDuration(bool enable) { measureStepDuration_ = enable; }
-		bool getMeasureStepDuration() const { return measureStepDuration_; }
+		void setMeasureStepDuration(bool enable) { measureStepDuration = enable; }
+		bool getMeasureStepDuration() const { return measureStepDuration; }
 	private:
-		bool measureStepDuration_ = true;
+		bool measureStepDuration = true;
 		void generateUniqueIdentifier();
 	};
 }
