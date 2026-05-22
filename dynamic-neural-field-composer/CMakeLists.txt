@@ -148,6 +148,7 @@ set(header
 # Set source files
 set(src 
         "src/application/application.cpp"
+        "src/application/style.cpp"
 
         "src/simulation/simulation.cpp"
         "src/simulation/simulation_file_manager.cpp"

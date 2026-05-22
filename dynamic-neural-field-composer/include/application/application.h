@@ -11,6 +11,7 @@
 #include "visualization/visualization.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 #include "user_interface/fonts/fa.h"
+#include "tools/utils.h"
 
 #define IMGUI_ENABLE_FREETYPE
 #include "user_interface/fonts/imgui_freetype.h"
@@ -26,7 +27,8 @@ namespace dnf_composer
 
 	// Specialization for types that take a Simulation*
 	template<typename T>
-	struct has_simulation_constructor<T, std::void_t<decltype(T(std::declval<std::shared_ptr<Simulation>>()))>> : std::true_type {};
+	struct has_simulation_constructor<T,
+		std::void_t<decltype(T(std::declval<std::shared_ptr<Simulation>>()))>> : std::true_type {};
 
 	// Base template: assumes T does not have a constructor that takes Visualization*
 	template<typename T, typename = void>
@@ -34,7 +36,8 @@ namespace dnf_composer
 
 	// Specialization for types that take a Visualization*
 	template<typename T>
-	struct has_visualization_constructor<T, std::void_t<decltype(T(std::declval<std::shared_ptr<Visualization>>()))>> : std::true_type {};
+	struct has_visualization_constructor<T,
+		std::void_t<decltype(T(std::declval<std::shared_ptr<Visualization>>()))>> : std::true_type {};
 
 	/// @brief Top-level application that owns the GUI, simulation, and visualization.
 	///
@@ -122,28 +125,28 @@ namespace dnf_composer
 	};
 
 	// Text fonts — 3 sizes per weight
-	inline ImFont* g_LightMediumFont;   ///< Cera Pro Light  @ 18 (main font)
-	inline ImFont* g_LightSmallFont;    ///< Cera Pro Light  @ 12
-	inline ImFont* g_LightLargeFont;    ///< Cera Pro Light  @ 24
+	inline ImFont* g_LightMediumFont;   ///< Cera Pro Light
+	inline ImFont* g_LightSmallFont;    ///< Cera Pro Light
+	inline ImFont* g_LightLargeFont;    ///< Cera Pro Light
 
-	inline ImFont* g_MediumSmallFont;   ///< Cera Pro Medium @ 12
-	inline ImFont* g_MediumMediumFont;  ///< Cera Pro Medium @ 18
-	inline ImFont* g_MediumLargeFont;   ///< Cera Pro Medium @ 24
+	inline ImFont* g_MediumSmallFont;   ///< Cera Pro Medium
+	inline ImFont* g_MediumMediumFont;  ///< Cera Pro Medium (main font)
+	inline ImFont* g_MediumLargeFont;   ///< Cera Pro Medium
 
-	inline ImFont* g_BoldSmallFont;     ///< Cera Pro Bold   @ 12
-	inline ImFont* g_BoldMediumFont;    ///< Cera Pro Bold   @ 18
-	inline ImFont* g_BoldLargeFont;     ///< Cera Pro Bold   @ 24
+	inline ImFont* g_BoldSmallFont;     ///< Cera Pro Bold
+	inline ImFont* g_BoldMediumFont;    ///< Cera Pro Bold
+	inline ImFont* g_BoldLargeFont;     ///< Cera Pro Bold
 
-	inline ImFont* g_BlackSmallFont;    ///< Cera Pro Black  @ 20
-	inline ImFont* g_BlackMediumFont;   ///< Cera Pro Black  @ 24
-	inline ImFont* g_BlackLargeFont;    ///< Cera Pro Black  @ 30
+	inline ImFont* g_BlackSmallFont;    ///< Cera Pro Black
+	inline ImFont* g_BlackMediumFont;   ///< Cera Pro Black
+	inline ImFont* g_BlackLargeFont;    ///< Cera Pro Black
 
-	inline ImFont* g_MonoSmallFont;     ///< JetBrainsMono   @ 16
-	inline ImFont* g_MonoMediumFont;    ///< JetBrainsMono   @ 20
-	inline ImFont* g_MonoLargeFont;     ///< JetBrainsMono   @ 26
+	inline ImFont* g_MonoSmallFont;     ///< JetBrainsMono
+	inline ImFont* g_MonoMediumFont;    ///< JetBrainsMono
+	inline ImFont* g_MonoLargeFont;     ///< JetBrainsMono
 
 	inline constexpr size_t g_FontCount = 15; ///< Number of text font variants (icon fonts not counted).
-	inline ImFont* g_SmallIconsFont;    ///< Font Awesome @ 12
-	inline ImFont* g_MediumIconsFont;   ///< Font Awesome @ 20
-	inline ImFont* g_LargeIconsFont;    ///< Font Awesome @ 26
+	inline ImFont* g_SmallIconsFont;    ///< Font Awesome
+	inline ImFont* g_MediumIconsFont;   ///< Font Awesome
+	inline ImFont* g_LargeIconsFont;    ///< Font Awesome
 }
