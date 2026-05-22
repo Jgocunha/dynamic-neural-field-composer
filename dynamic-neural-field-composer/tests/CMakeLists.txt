@@ -3,6 +3,8 @@ if(DNF_COMPOSER_BUILD_TESTS)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(dnf_composer_tests
+            # application
+            "application/test_application.cpp"
             # elements
             "elements/test_activation_function.cpp"
             "elements/test_element.cpp"

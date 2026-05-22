@@ -9,9 +9,6 @@
 #include "exceptions/exception.h"
 #include "simulation/simulation.h"
 #include "visualization/visualization.h"
-#include "user_interface/fonts/IconsFontAwesome6.h"
-#include "user_interface/fonts/fa.h"
-#include "tools/utils.h"
 
 #define IMGUI_ENABLE_FREETYPE
 #include "user_interface/fonts/imgui_freetype.h"
@@ -67,7 +64,6 @@ namespace dnf_composer
 		static float  getUiScalePct()          { return uiScalePct; }
 		static void   setUiScalePct(float pct) { uiScalePct = pct; }
 
-	public:
 		/// @brief Construct an Application.
 		/// @param simulation    Shared simulation to drive (may be nullptr).
 		/// @param visualization Shared visualization to render (may be nullptr).
@@ -80,6 +76,7 @@ namespace dnf_composer
 		/// @brief Advance the simulation by one step and render all windows.
 		void step() const;
 
+		/// @brief Tear down the GUI and close the simulation. Call once after the main loop.
 		void close() const;
 
 		/// @brief Register the application's ImGui settings handler (for persistence).
@@ -93,14 +90,14 @@ namespace dnf_composer
 			gui->addWindow<WindowType>(std::forward<Args>(args)...);
 		}
 
-		/// @brief Register a window that takes a Simulation shared_ptr as first argument.
+		/// @brief Register a window that takes a Simulation shared_ptr as the first argument.
 		template<typename WindowType, typename... Args,
 			std::enable_if_t<has_simulation_constructor<WindowType>::value, int> = 0>
 		void addWindow(Args&&... args) const {
 			gui->addWindow<WindowType>(simulation, std::forward<Args>(args)...);
 		}
 
-		/// @brief Register a window that takes a Visualization shared_ptr as first argument.
+		/// @brief Register a window that takes a Visualization shared_ptr as the first argument.
 		template<typename WindowType, typename... Args,
 			std::enable_if_t<!has_simulation_constructor<WindowType>::value&&
 			has_visualization_constructor<WindowType>::value, int> = 0>
@@ -114,6 +111,7 @@ namespace dnf_composer
 		/// @brief Return true if the user has closed the main window.
 		[[nodiscard]] bool hasGUIBeenClosed() const;
 
+		/// @brief Return true if the GUI overlay is currently active.
 		[[nodiscard]] bool isGUIActive() const;
 
 		~Application() = default;

@@ -1,5 +1,9 @@
 ﻿#include "application/application.h"
+
 #include "application/style.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
+#include "user_interface/fonts/fa.h"
+#include "tools/utils.h"
 
 namespace dnf_composer
 {

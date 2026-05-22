@@ -3,6 +3,7 @@
 #include "user_interface/widgets.h"
 
 #include "application/application.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_LightMediumFont;
 extern ImFont* g_MediumMediumFont;

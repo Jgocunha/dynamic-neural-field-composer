@@ -1,6 +1,8 @@
 #include "user_interface/plot_control_window.h"
 #include <unordered_set>
 
+#include "user_interface/fonts/IconsFontAwesome6.h"
+
 
 namespace dnf_composer::user_interface
 {

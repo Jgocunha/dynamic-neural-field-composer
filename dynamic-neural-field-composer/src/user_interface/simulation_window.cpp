@@ -1,5 +1,6 @@
 ﻿#include "user_interface/simulation_window.h"
 #include "elements/neural_field.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 namespace dnf_composer::user_interface
 {
