@@ -49,11 +49,6 @@ namespace dnf_composer::user_interface
 	private:
 		void renderWindows() const;
 		void drawPanels() const;
-
-		// void panelTopBar        (ImVec2 pos, ImVec2 size) const;
-		// void renderTopBarLeft   (float ui, float btnSz) const;
-		// void renderTopBarRight  (float ui, float btnSz) const;
-
 		void drawPanelControlBar    (ImVec2 pos, ImVec2 size) const;
 		void drawPanelSimulation    (ImVec2 pos, ImVec2 size) const;
 		void drawPanelElement       (ImVec2 pos, ImVec2 size) const;
