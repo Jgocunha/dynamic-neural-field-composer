@@ -217,11 +217,11 @@ namespace dnf_composer
             const bool   open = LogWindow::isActive();
 
             // Right-align: jump to the window right edge minus group width
-            const float iconW    = g_MediumIconsFont->LegacySize;
+            const float iconW    = g_MediumIconsFont->LegacySize * ui;
             const float textW    = ImGui::CalcTextSize("Console").x;
-            const float chevronW = g_SmallIconsFont->LegacySize;
+            const float chevronW = g_SmallIconsFont->LegacySize * ui;
             const float groupW   = iconW + 6.0f * ui + textW + 6.0f * ui + chevronW;
-            ImGui::SameLine(ImGui::GetWindowWidth() - groupW - 8.0f * ui);
+            ImGui::SameLine(ImGui::GetWindowWidth() - groupW - ImGui::GetStyle().WindowPadding.x);
 
             const ImVec4 color = open
                 ? ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight)

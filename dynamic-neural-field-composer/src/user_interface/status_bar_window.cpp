@@ -38,6 +38,9 @@ namespace dnf_composer
 
     void StatusBarWindow::drawContents() const
     {
+        if (const float slackTop = (ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight()) * 0.5f; slackTop > 0.0f)
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + slackTop);
+
     	const std::string simId = simulation->getIdentifier();
 		const bool running = simulation->isInitialized() && !simulation->isPaused();
 		const bool paused  = simulation->isInitialized() &&  simulation->isPaused();
@@ -55,7 +58,7 @@ namespace dnf_composer
 		ImGui::TextUnformatted("\xce\x94t");
 		ImGui::SameLine(0, 4);
 		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%.1f", simulation->getDeltaT());
+		ImGui::Text("%.2f", simulation->getDeltaT());
 		ImGui::PopFont();
 		ImGui::SameLine(0, 14);
 
@@ -74,7 +77,7 @@ namespace dnf_composer
 		ImGui::TextUnformatted("Real time");
 		ImGui::SameLine(0, 4);
 		ImGui::PushFont(g_MonoMediumFont);
-		ImGui::Text("%lldh%lldm%llds%lldms", hh, mm, ss, ms);
+		ImGui::Text("%lldh %lldm %llds %lldms", hh, mm, ss, ms);
 		ImGui::PopFont();
 		ImGui::SameLine(0, 14);
 
