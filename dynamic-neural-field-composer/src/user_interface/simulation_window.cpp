@@ -17,55 +17,108 @@ namespace dnf_composer::user_interface
 			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		ImGui::PopFont();
 		if (open)
+		{
 			renderSidebarContents();
+		}
 		ImGui::End();
 	}
 
 	void SimulationWindow::renderSidebarContents() const
 	{
-		const float ui     = ImGui::GetIO().FontGlobalScale;
-		const float stripW = 160.0f * ui;
-		const float totalH = ImGui::GetContentRegionAvail().y;
+		const float ui       = ImGui::GetIO().FontGlobalScale;
+		const float sideW    = 58.0f * ui;
+		const float gap      = 6.0f * ui;
+		const float totalH   = ImGui::GetContentRegionAvail().y;
+		const float contentW = ImGui::GetContentRegionAvail().x - sideW - gap;
+		constexpr float rounding = 8.0f;
 
-		ImGui::BeginChild("##sim_strip", ImVec2(stripW, totalH), false,
-			ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-		drawIconStrip();
-		ImGui::EndChild();
-
-		ImGui::SameLine(0, 0);
-		ImGui::BeginChild("##sim_content", ImVec2(0, totalH), false,
-			ImGuiWindowFlags_NoSavedSettings);
-		switch (activePane)
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0f * ui, 4.0f * ui));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
+		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, true,
+			ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 		{
-			case 0: renderAddElementCard();             break;
-			case 1: renderRemoveElementCard();          break;
-			case 2: renderSetInteractionCard();         break;
-			case 3: renderLogElementParametersCard();   break;
-			case 4: renderExportElementComponentCard(); break;
-			case 5: renderMonitoringCard();             break;
-			default: break;
+			drawIconStrip();
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleVar(3);
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine(0, gap);
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
+		if (ImGui::BeginChild("##sim_content", {contentW, totalH}, true,
+			ImGuiWindowFlags_NoSavedSettings))
+		{
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			renderContentPaneTitle();
+			switch (activePane)
+			{
+				case 0: renderAddElementCard();             break;
+				case 1: renderRemoveElementCard();          break;
+				case 2: renderSetInteractionCard();         break;
+				case 3: renderLogElementParametersCard();   break;
+				case 4: renderExportElementComponentCard(); break;
+				case 5: renderMonitoringCard();             break;
+				default: break;
+			}
+			ImGui::PopStyleColor();
+		}
+		ImGui::EndChild();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
+	}
+
+	void SimulationWindow::renderContentPaneTitle() const
+	{
+		struct PaneInfo { const char* icon; const char* name; };
+		static constexpr PaneInfo kInfo[] = {
+			{ ICON_FA_PLUS,     "Add element"      },
+			{ ICON_FA_TRASH,    "Remove element"   },
+			{ ICON_FA_LINK,     "Set interactions" },
+			{ ICON_FA_TERMINAL, "Log parameters"   },
+			{ ICON_FA_DOWNLOAD, "Export data"      },
+			{ ICON_FA_DATABASE, "Monitoring"       },
+		};
+
+		ImGui::PushFont(g_MediumIconsFont);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+		ImGui::TextUnformatted(kInfo[activePane].icon);
+		ImGui::PopStyleColor();
+		ImGui::PopFont();
+
+		ImGui::SameLine(0, 8.0f);
+		ImGui::PushFont(g_BlackMediumFont);
+		ImGui::TextUnformatted(kInfo[activePane].name);
+		ImGui::PopFont();
+
+		ImGui::Separator();
+		ImGui::Spacing();
 	}
 
 	void SimulationWindow::drawIconStrip()
 	{
-		struct PaneTab { const char* icon; const char* label; };
+		struct PaneTab { const char* icon; const char* tooltip; };
 		static constexpr PaneTab kPanes[] = {
-			{ ICON_FA_PLUS,     "Add element"    },
-			{ ICON_FA_TRASH,    "Remove element" },
-			{ ICON_FA_LINK,     "Interaction"    },
-			{ ICON_FA_TERMINAL, "Log parameters" },
-			{ ICON_FA_DOWNLOAD, "Export"         },
-			{ ICON_FA_BOLT,     "Monitoring"     },
+			{ ICON_FA_PLUS,     "Add Element"     },
+			{ ICON_FA_TRASH,    "Remove Element"  },
+			{ ICON_FA_LINK,     "Set Interaction" },
+			{ ICON_FA_TERMINAL, "Log Parameters"  },
+			{ ICON_FA_DOWNLOAD, "Export Data"     },
+			{ ICON_FA_DATABASE, "Monitoring"      },
 		};
 
-		ImGui::SetCursorPos(ImVec2(10.0f, 20.0f));
+		ImGui::SetCursorPos(ImVec2(0.0f, 16.0f));
 		ImGui::BeginGroup();
 		for (int i = 0; i < 6; ++i)
 		{
-			if (widgets::renderSidebarTab(kPanes[i].icon, kPanes[i].label, activePane == i))
+			if (widgets::renderSidebarTab(kPanes[i].icon, "", activePane == i))
 				activePane = i;
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("%s", kPanes[i].tooltip);
 		}
 		ImGui::EndGroup();
 	}

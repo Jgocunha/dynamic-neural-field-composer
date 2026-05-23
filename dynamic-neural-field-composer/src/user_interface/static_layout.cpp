@@ -85,7 +85,9 @@ namespace dnf_composer
 			drawPanels();
 			plotsWindow->render();
 			if (LogWindow::isActive())
+			{
 				logWindow->render();
+			}
 		}
 
 		void StaticLayoutWindow::drawPanels() const
@@ -101,30 +103,30 @@ namespace dnf_composer
 			const float topBarH = kTopBarH * scale;
 
 			// Node graph (col C) fills the remaining horizontal space.
-			const float colCW = total.x - colAW - colBW - m * 4.0f;
+			const float colCW = total.x - colAW - colBW - (m * 4.0F);
 
 			// y0: top bar row; y1: three column row
 			const float y0    = origin.y + m;
 			const float y1    = y0 + topBarH + m;
 
 			// Full height of the three main columns; leave room for top bar + status bar + margins.
-			const float fullH = total.y - m * 2.0f - statusH - m - topBarH - m;
+			const float fullH = total.y - (m * 2.0F) - statusH - m - topBarH - m;
 
 			// Column x-positions: A (sim control) | C (node graph) | B (element control)
 			const float xA = origin.x + m;
 			const float xC = xA + colAW + m;
 			const float xB = xC + colCW + m;
 
-			drawPanelControlBar({origin.x + m, y0},      {total.x - m * 2.0f, topBarH});
+			drawPanelControlBar({origin.x + m, y0},      {total.x - (m * 2.0F), topBarH});
 			drawPanelSimulation({xA, y1},                {colAW, fullH});
 			drawPanelElement   ({xB, y1},                {colBW, fullH});
 			drawPanelNodeGraph ({xC, y1},                {colCW, fullH});
-			drawPanelStatusBar ({origin.x + m, y1 + fullH + m}, {total.x - m * 2.0f, statusH});
+			drawPanelStatusBar ({origin.x + m, y1 + fullH + m}, {total.x - (m * 2.0F), statusH});
 		}
 
 		void StaticLayoutWindow::drawPanelControlBar(const ImVec2 pos, const ImVec2 size) const
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(14.0f, 4.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(14.0F, 4.0F));
 			if (beginPanelFixed("##sl_control_bar", pos, size))
 			{
 				const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
@@ -132,8 +134,8 @@ namespace dnf_composer
 							| ImGuiWindowFlags_NoScrollWithMouse
 							| ImGuiWindowFlags_NoSavedSettings;
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-				if (ImGui::BeginChild("##cb", ImVec2(0, 0), false,
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+				if (ImGui::BeginChild("##cb", ImVec2(0, 0), 0,
 					flags))
 				{
 					controlBarWindow->drawContents();
@@ -147,9 +149,13 @@ namespace dnf_composer
 
 		void StaticLayoutWindow::drawPanelSimulation(const ImVec2 pos, const ImVec2 size) const
 		{
-			if (beginPanelFixed("##sl_sim", pos, size))
+			ImGui::SetCursorScreenPos(pos);
+			if (ImGui::BeginChild("##sl_sim", size, false,
+				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+			{
 				simulationWindow->renderSidebarContents();
-			endPanel();
+			}
+			ImGui::EndChild();
 		}
 
 		void StaticLayoutWindow::drawPanelElement(const ImVec2 pos, const ImVec2 size) const
@@ -162,7 +168,7 @@ namespace dnf_composer
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
 				elementWindow->renderElementControlCard();
 				ImGui::PopStyleColor();
 			}
@@ -192,7 +198,7 @@ namespace dnf_composer
 
 		void StaticLayoutWindow::drawPanelStatusBar(const ImVec2 pos, const ImVec2 size) const
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(14.0f, 4.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(14.0F, 4.0F));
 			if (beginPanelFixed("##sl_status_bar", pos, size))
 			{
 				const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
@@ -200,8 +206,8 @@ namespace dnf_composer
 							| ImGuiWindowFlags_NoScrollWithMouse
 							| ImGuiWindowFlags_NoSavedSettings;
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-				if (ImGui::BeginChild("##sb", ImVec2(0, 0), false,
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+				if (ImGui::BeginChild("##sb", ImVec2(0, 0), 0,
 					flags))
 				{
 					statusBarWindow->drawContents();

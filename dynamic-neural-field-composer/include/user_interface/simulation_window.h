@@ -46,6 +46,7 @@ namespace dnf_composer::user_interface
 		~SimulationWindow() override = default;
 	private:
 		static void drawIconStrip();
+		void renderContentPaneTitle() const;
 		void addElementNeuralField(const char* id, bool addRequested) const;
 		void addElementGaussStimulus(char* id, bool addRequested) const;
 		void addElementTimedGaussStimulus(char* id, bool addRequested) const;
