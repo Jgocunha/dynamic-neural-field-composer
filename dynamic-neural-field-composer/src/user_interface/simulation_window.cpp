@@ -1,6 +1,8 @@
 #include "user_interface/simulation_window.h"
 #include "elements/neural_field.h"
 
+extern ImFont* g_MonoMediumFont;
+
 namespace dnf_composer::user_interface
 {
 	int SimulationWindow::activePane = 0;
@@ -127,24 +129,74 @@ namespace dnf_composer::user_interface
 	{
 		ImGui::PushID("add_element_section");
 
-		ImGui::TextUnformatted("TYPE");
-		ImGui::Spacing();
+		// ── Dimensionality toggle ───────────────────────────────────────────
+		static int dimensionality = 1;
+		static element::ElementLabel selected1D = element::ElementLabel::NEURAL_FIELD;
+		static element::ElementLabel selected2D = element::ElementLabel::NEURAL_FIELD_2D;
+		element::ElementLabel& selected = (dimensionality == 1) ? selected1D : selected2D;
 
-		static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
-
-		ImGui::SetNextItemWidth(-FLT_MIN);
-		if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
 		{
-			for (const auto& [lbl, name] : element::ElementLabelToString)
+			using L = element::ElementLabel;
+			const float btnW    = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+			const ImVec4 accent  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			const ImVec4 bg      = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
+			const ImVec4 bgHov   = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered);
+			const ImVec4 textSel(1.f, 1.f, 1.f, 1.f);
+			const ImVec4 textNorm = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+
+			auto dimBtn = [&](const char* label, int dim)
 			{
-				if (lbl == element::ElementLabel::UNINITIALIZED) continue;
-				const bool is_sel = (selected == lbl);
-				if (ImGui::Selectable(name.c_str(), is_sel)) selected = lbl;
-				if (is_sel) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
+				const bool on = (dimensionality == dim);
+				ImGui::PushStyleColor(ImGuiCol_Button,        on ? accent : bg);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, on ? accent : bgHov);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  accent);
+				ImGui::PushStyleColor(ImGuiCol_Text,          on ? textSel : textNorm);
+				if (ImGui::Button(label, {btnW, 0})) dimensionality = dim;
+				ImGui::PopStyleColor(4);
+			};
+			dimBtn("1D", 1);
+			ImGui::SameLine();
+			dimBtn("2D", 2);
 		}
 
+		ImGui::Spacing();
+
+		// ── Filtered type combo ─────────────────────────────────────────────
+		{
+			using L = element::ElementLabel;
+			static constexpr L k1D[] = {
+				L::NEURAL_FIELD, L::GAUSS_STIMULUS, L::TIMED_GAUSS_STIMULUS,
+				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
+				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
+				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE
+			};
+			static constexpr L k2D[] = {
+				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
+				L::GAUSS_KERNEL_2D, L::MEXICAN_HAT_KERNEL_2D, L::OSCILLATORY_KERNEL_2D,
+				L::ASYMMETRIC_GAUSS_KERNEL_2D, L::NORMAL_NOISE_2D, L::CORRELATED_NORMAL_NOISE_2D,
+				L::BOOST_STIMULUS_2D, L::MEMORY_TRACE_2D
+			};
+			const L* pLabels = (dimensionality == 1) ? k1D : k2D;
+			const int nLabels = (dimensionality == 1) ? static_cast<int>(std::size(k1D))
+			                                          : static_cast<int>(std::size(k2D));
+
+			ImGui::TextUnformatted("Type");
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
+			{
+				for (int i = 0; i < nLabels; ++i)
+				{
+					const L lbl = pLabels[i];
+					const bool is_sel = (selected == lbl);
+					if (ImGui::Selectable(element::ElementLabelToString.at(lbl).c_str(), is_sel))
+						selected = lbl;
+					if (is_sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+		}
+
+		// ── Name input ──────────────────────────────────────────────────────
 		static char id[CHAR_SIZE] = {};
 		static element::ElementLabel prevSelected = element::ElementLabel::UNINITIALIZED;
 		if (selected != prevSelected)
@@ -158,51 +210,44 @@ namespace dnf_composer::user_interface
 		}
 
 		ImGui::Spacing();
-		ImGui::TextUnformatted("Identifier");
+		ImGui::TextUnformatted("Name");
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		ImGui::InputTextWithHint("##id", "enter identifier", id, IM_ARRAYSIZE(id));
-
-		ImGui::Spacing();
-		ImGui::TextUnformatted("PARAMETERS");
 		ImGui::Spacing();
 
+		// ── Parameters ──────────────────────────────────────────────────────
 		static bool s_addRequested = false;
 		const bool addRequested = s_addRequested;
 		s_addRequested = false;
 
-		const float child_h = ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight() * 1.2f - ImGui::GetStyle().ItemSpacing.y * 2;
-		if (ImGui::BeginChild("##params_scroll", ImVec2(0, child_h), true, ImGuiWindowFlags_NoSavedSettings))
+		switch (selected)
 		{
-			switch (selected)
-			{
-				case element::ElementLabel::NEURAL_FIELD:              addElementNeuralField(id, addRequested);              break;
-				case element::ElementLabel::GAUSS_STIMULUS:            addElementGaussStimulus(id, addRequested);            break;
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS:      addElementTimedGaussStimulus(id, addRequested);      break;
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:   addElementTimedGaussStimulus2D(id, addRequested);   break;
-				case element::ElementLabel::GAUSS_KERNEL:              addElementGaussKernel(id, addRequested);              break;
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:        addElementMexicanHatKernel(id, addRequested);        break;
-				case element::ElementLabel::OSCILLATORY_KERNEL:        addElementOscillatoryKernel(id, addRequested);       break;
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:   addElementAsymmetricGaussKernel(id, addRequested);  break;
-				case element::ElementLabel::NORMAL_NOISE:              addElementNormalNoise(id, addRequested);              break;
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE:   addElementCorrelatedNormalNoise(id, addRequested);  break;
-				case element::ElementLabel::FIELD_COUPLING:            addElementFieldCoupling(id, addRequested);           break;
-				case element::ElementLabel::GAUSS_FIELD_COUPLING:      addElementGaussFieldCoupling(id, addRequested);     break;
-				case element::ElementLabel::BOOST_STIMULUS:            addElementBoostStimulus(id, addRequested);           break;
-				case element::ElementLabel::MEMORY_TRACE:              addElementMemoryTrace(id, addRequested);             break;
-				case element::ElementLabel::NEURAL_FIELD_2D:           addElementNeuralField2D(id, addRequested);           break;
-				case element::ElementLabel::GAUSS_STIMULUS_2D:         addElementGaussStimulus2D(id, addRequested);        break;
-				case element::ElementLabel::GAUSS_KERNEL_2D:           addElementGaussKernel2D(id, addRequested);          break;
-				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:     addElementMexicanHatKernel2D(id, addRequested);    break;
-				case element::ElementLabel::NORMAL_NOISE_2D:           addElementNormalNoise2D(id, addRequested);          break;
-				case element::ElementLabel::OSCILLATORY_KERNEL_2D:     addElementOscillatoryKernel2D(id, addRequested);   break;
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id, addRequested); break;
-				case element::ElementLabel::BOOST_STIMULUS_2D:         addElementBoostStimulus2D(id, addRequested);        break;
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id, addRequested); break;
-				case element::ElementLabel::MEMORY_TRACE_2D:           addElementMemoryTrace2D(id, addRequested);          break;
-				default: break;
-			}
+			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id, addRequested);              break;
+			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id, addRequested);            break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id, addRequested);      break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id, addRequested);   break;
+			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id, addRequested);              break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id, addRequested);        break;
+			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id, addRequested);       break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id, addRequested);  break;
+			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id, addRequested);              break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id, addRequested);  break;
+			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id, addRequested);           break;
+			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id, addRequested);     break;
+			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id, addRequested);           break;
+			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id, addRequested);             break;
+			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id, addRequested);           break;
+			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id, addRequested);        break;
+			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id, addRequested);          break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id, addRequested);    break;
+			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id, addRequested);          break;
+			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id, addRequested);   break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id, addRequested); break;
+			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id, addRequested);        break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id, addRequested); break;
+			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id, addRequested);          break;
+			default: break;
 		}
-		ImGui::EndChild();
 
 		ImGui::Spacing();
 		const float addBtnW = ImGui::GetContentRegionAvail().x;
@@ -212,6 +257,67 @@ namespace dnf_composer::user_interface
 
 		ImGui::PopID();
 	}
+
+	// ── helpers ─────────────────────────────────────────────────────────────
+	// Two-column table: label left (normal font), input right (mono font).
+	// Call beginParamTable / endParamTable around each group.
+
+	static bool beginParamTable(const char* id)
+	{
+		return ImGui::BeginTable(id, 2, ImGuiTableFlags_None);
+	}
+
+	static void paramTableSetup()
+	{
+		ImGui::TableSetupColumn("##l", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+		ImGui::TableSetupColumn("##v", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+	}
+
+	static void endParamTable()
+	{
+		ImGui::EndTable();
+	}
+
+	// Render one label-left / input-right row for int input
+	static void paramRowInt(const char* label, const char* wid, int* v)
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted(label);
+		ImGui::TableSetColumnIndex(1);
+		ImGui::PushFont(g_MonoMediumFont);
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputInt(wid, v, 0, 0);
+		ImGui::PopFont();
+	}
+
+	// Render one label-left / input-right row for double input
+	static void paramRowDouble(const char* label, const char* wid, double* v, const char* fmt)
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted(label);
+		ImGui::TableSetColumnIndex(1);
+		ImGui::PushFont(g_MonoMediumFont);
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputDouble(wid, v, 0.0, 0.0, fmt);
+		ImGui::PopFont();
+	}
+
+	// Render one label-left / checkbox-right row
+	static void paramRowBool(const char* label, const char* wid, bool* v)
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted(label);
+		ImGui::TableSetColumnIndex(1);
+		ImGui::Checkbox(wid, v);
+	}
+
+	// ── addElement functions ─────────────────────────────────────────────────
 
 	void SimulationWindow::addElementNeuralField(const char* id, const bool addRequested) const
 	{
@@ -225,18 +331,33 @@ namespace dnf_composer::user_interface
 		static double absBeta   = 100.0;
 		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",            &x_max,     0, 0);
-		ImGui::InputDouble("Step",         &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Resting level",&resting,   0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Time scale",   &tau,       0.0, 0.0, "%.2f");
-		ImGui::Combo("Activation fn.",     &actFnType, actFnNames, 3);
-		ImGui::InputDouble("X shift",      &xShift,    0.0, 0.0, "%.2f");
-		if (actFnType == element::SIGMOID)
-			ImGui::InputDouble("Steepness", &steepness, 0.0, 0.0, "%.2f");
-		else if (actFnType == element::ABSSIGMOID)
-			ImGui::InputDouble("Beta",      &absBeta,   0.0, 0.0, "%.2f");
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nf_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size",  "##nf_size", &x_max);
+			paramRowDouble("Step",  "##nf_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##nf_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Resting level", "##nf_rest", &resting, "%.2f");
+			paramRowDouble("Time scale",    "##nf_tau",  &tau,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Activation function");
+		if (beginParamTable("##nf_act")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf_fn", &actFnType, actFnNames, 3);
+			paramRowDouble("X shift", "##nf_xsh", &xShift, "%.2f");
+			if (actFnType == element::SIGMOID)
+				paramRowDouble("Steepness", "##nf_steep", &steepness, "%.2f");
+			else if (actFnType == element::ABSSIGMOID)
+				paramRowDouble("Beta", "##nf_beta", &absBeta, "%.2f");
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -263,15 +384,28 @@ namespace dnf_composer::user_interface
 		static bool   circular   = true;
 		static bool   normalized = false;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",          &x_max,     0, 0);
-		ImGui::InputDouble("Step",       &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",      &width,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude",  &amplitude, 0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Position",   &position,  0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gs_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gs_size", &x_max);
+			paramRowDouble("Step", "##gs_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##gs_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##gs_w",   &width,     "%.2f");
+			paramRowDouble("Amplitude", "##gs_amp", &amplitude, "%.2f");
+			paramRowDouble("Position",  "##gs_pos", &position,  "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gs_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gs_circ", &circular);
+			paramRowBool("Normalized", "##gs_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -293,17 +427,35 @@ namespace dnf_composer::user_interface
 		static bool   circular   = true;
 		static bool   normalized = false;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",         &x_max,     0, 0);
-		ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Position",  &position,  0.0, 0.0, "%.2f");
-		ImGui::InputDouble("T start",   &tStart,    0.0, 0.0, "%.2f");
-		ImGui::InputDouble("T end",     &tEnd,      0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##tgs_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##tgs_size", &x_max);
+			paramRowDouble("Step", "##tgs_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##tgs_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##tgs_w",   &width,     "%.2f");
+			paramRowDouble("Amplitude", "##tgs_amp", &amplitude, "%.2f");
+			paramRowDouble("Position",  "##tgs_pos", &position,  "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Timing");
+		if (beginParamTable("##tgs_tim")) {
+			paramTableSetup();
+			paramRowDouble("T start", "##tgs_ts", &tStart, "%.2f");
+			paramRowDouble("T end",   "##tgs_te", &tEnd,   "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##tgs_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##tgs_circ", &circular);
+			paramRowBool("Normalized", "##tgs_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -322,20 +474,38 @@ namespace dnf_composer::user_interface
 		static double tStart = 0.0, tEnd = 10.0;
 		static bool   circular = true, normalized = false;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",       &x_max,     0, 0);
-		ImGui::InputInt("Y size",       &y_max,     0, 0);
-		ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Position x",&pos_x,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Position y",&pos_y,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("T start",   &tStart,    0.0, 0.0, "%.2f");
-		ImGui::InputDouble("T end",     &tEnd,      0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##tgs2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##tgs2_xmax", &x_max);
+			paramRowInt   ("Y size", "##tgs2_ymax", &y_max);
+			paramRowDouble("X step", "##tgs2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##tgs2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##tgs2_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##tgs2_w",    &width,     "%.2f");
+			paramRowDouble("Amplitude",  "##tgs2_amp",  &amplitude, "%.2f");
+			paramRowDouble("Position x", "##tgs2_posx", &pos_x,     "%.2f");
+			paramRowDouble("Position y", "##tgs2_posy", &pos_y,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Timing");
+		if (beginParamTable("##tgs2_tim")) {
+			paramTableSetup();
+			paramRowDouble("T start", "##tgs2_ts", &tStart, "%.2f");
+			paramRowDouble("T end",   "##tgs2_te", &tEnd,   "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##tgs2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##tgs2_circ", &circular);
+			paramRowBool("Normalized", "##tgs2_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -356,15 +526,28 @@ namespace dnf_composer::user_interface
 		static bool   circular        = true;
 		static bool   normalized      = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",           &x_max,           0, 0);
-		ImGui::InputDouble("Step",        &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gk_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gk_size", &x_max);
+			paramRowDouble("Step", "##gk_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##gk_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##gk_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",  "##gk_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp", "##gk_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gk_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gk_circ", &circular);
+			paramRowBool("Normalized", "##gk_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -386,17 +569,40 @@ namespace dnf_composer::user_interface
 		static bool   circular        = true;
 		static bool   normalized      = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",             &x_max,           0, 0);
-		ImGui::InputDouble("Step",          &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width exc",     &widthExc,        0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude exc", &amplitudeExc,    0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width inh",     &widthInh,        0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude inh", &amplitudeInh,    0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Global amp",    &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mhk_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##mhk_size", &x_max);
+			paramRowDouble("Step", "##mhk_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Excitatory");
+		if (beginParamTable("##mhk_exc")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk_we",   &widthExc,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk_ampe", &amplitudeExc, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Inhibitory");
+		if (beginParamTable("##mhk_inh")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk_wi",   &widthInh,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk_ampi", &amplitudeInh, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Global");
+		if (beginParamTable("##mhk_glo")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##mhk_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##mhk_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##mhk_circ", &circular);
+			paramRowBool("Normalized", "##mhk_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -417,16 +623,29 @@ namespace dnf_composer::user_interface
 		static bool   circular        = true;
 		static bool   normalized      = false;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",              &x_max,           0, 0);
-		ImGui::InputDouble("Step",           &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
-		ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Global amp",     &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##ok_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##ok_size", &x_max);
+			paramRowDouble("Step", "##ok_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##ok_ker")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude",      "##ok_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Decay",          "##ok_dec",  &decay,           "%.4f");
+			paramRowDouble("Zero crossings", "##ok_zc",   &zeroCrossings,   "%.2f");
+			paramRowDouble("Global amp",     "##ok_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##ok_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##ok_circ", &circular);
+			paramRowBool("Normalized", "##ok_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -447,16 +666,29 @@ namespace dnf_composer::user_interface
 		static bool   circular        = true;
 		static bool   normalized      = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",          &x_max,           0, 0);
-		ImGui::InputDouble("Step",       &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",      &width,           0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude",  &amplitude,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Global amp", &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::InputDouble("Time shift", &timeShift,       0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##agk_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##agk_size", &x_max);
+			paramRowDouble("Step", "##agk_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##agk_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##agk_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",  "##agk_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp", "##agk_ampg", &amplitudeGlobal, "%.4f");
+			paramRowDouble("Time shift", "##agk_tsh",  &timeShift,       "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##agk_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##agk_circ", &circular);
+			paramRowBool("Normalized", "##agk_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -472,11 +704,19 @@ namespace dnf_composer::user_interface
 		static double d_x       = 1.0;
 		static double amplitude = 0.2;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",         &x_max,     0, 0);
-		ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nn_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##nn_size", &x_max);
+			paramRowDouble("Step", "##nn_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##nn_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##nn_amp", &amplitude, "%.4f");
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -494,13 +734,26 @@ namespace dnf_composer::user_interface
 		static double width     = 2.0;
 		static bool   circular  = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",         &x_max,     0, 0);
-		ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-		ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular", &circular);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##cnn_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##cnn_size", &x_max);
+			paramRowDouble("Step", "##cnn_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##cnn_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##cnn_amp", &amplitude, "%.4f");
+			paramRowDouble("Width",     "##cnn_w",   &width,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##cnn_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular", "##cnn_circ", &circular);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -520,28 +773,41 @@ namespace dnf_composer::user_interface
 		static double      scalar       = 1.0;
 		static double      learningRate = 0.01;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Out size",    &x_max_out, 0, 0);
-		ImGui::InputDouble("Out step", &d_x_out,   0.0, 0.0, "%.2f");
-		ImGui::InputInt("In size",     &x_max_in,  0, 0);
-		ImGui::InputDouble("In step",  &d_x_in,    0.0, 0.0, "%.2f");
-		ImGui::PopItemWidth();
-
-		ImGui::SetNextItemWidth(110.0f * ImGui::GetIO().FontGlobalScale);
-		if (ImGui::BeginCombo("Rule", LearningRuleToString.at(rule).c_str()))
-		{
-			for (const auto& [lr, name] : LearningRuleToString)
-			{
-				const bool sel = (rule == lr);
-				if (ImGui::Selectable(name.c_str(), sel)) rule = lr;
-				if (sel) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##fc_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##fc_osize", &x_max_out);
+			paramRowDouble("Step", "##fc_ostep", &d_x_out, "%.2f");
+			endParamTable();
 		}
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputDouble("Scalar",        &scalar,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Learning rate", &learningRate, 0.0, 0.0, "%.4f");
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##fc_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##fc_isize", &x_max_in);
+			paramRowDouble("Step", "##fc_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Learning");
+		if (beginParamTable("##fc_learn")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Rule");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##fc_rule", LearningRuleToString.at(rule).c_str()))
+			{
+				for (const auto& [lr, name] : LearningRuleToString)
+				{
+					const bool sel = (rule == lr);
+					if (ImGui::Selectable(name.c_str(), sel)) rule = lr;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			paramRowDouble("Scalar",        "##fc_scal", &scalar,       "%.2f");
+			paramRowDouble("Learning rate", "##fc_lr",   &learningRate, "%.4f");
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -561,14 +827,27 @@ namespace dnf_composer::user_interface
 		static bool   normalized = true;
 		static bool   circular   = false;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Out size",    &x_max_out, 0, 0);
-		ImGui::InputDouble("Out step", &d_x_out,   0.0, 0.0, "%.2f");
-		ImGui::InputInt("In size",     &x_max_in,  0, 0);
-		ImGui::InputDouble("In step",  &d_x_in,    0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Normalized",  &normalized);
-		ImGui::Checkbox("Circular",    &circular);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##gfc_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gfc_osize", &x_max_out);
+			paramRowDouble("Step", "##gfc_ostep", &d_x_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##gfc_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gfc_isize", &x_max_in);
+			paramRowDouble("Step", "##gfc_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gfc_opt")) {
+			paramTableSetup();
+			paramRowBool("Normalized", "##gfc_norm", &normalized);
+			paramRowBool("Circular",   "##gfc_circ", &circular);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -585,12 +864,20 @@ namespace dnf_composer::user_interface
 		static double amplitude = 5.0;
 		static bool   isActive  = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",         &x_max,     0, 0);
-		ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Active", &isActive);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##bs_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##bs_size", &x_max);
+			paramRowDouble("Step", "##bs_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Stimulus");
+		if (beginParamTable("##bs_stim")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##bs_amp", &amplitude, "%.2f");
+			paramRowBool  ("Active",    "##bs_act", &isActive);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -608,13 +895,21 @@ namespace dnf_composer::user_interface
 		static double tauDecay  = 1000.0;
 		static double threshold = 0.5;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("Size",          &x_max,     0, 0);
-		ImGui::InputDouble("Step",       &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Tau build",  &tauBuild,  0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Tau decay",  &tauDecay,  0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Threshold",  &threshold, 0.0, 0.0, "%.2f");
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mt_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##mt_size", &x_max);
+			paramRowDouble("Step", "##mt_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##mt_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Tau build",  "##mt_tauB", &tauBuild,  "%.2f");
+			paramRowDouble("Tau decay",  "##mt_tauD", &tauDecay,  "%.2f");
+			paramRowDouble("Threshold",  "##mt_thr",  &threshold, "%.2f");
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -629,19 +924,52 @@ namespace dnf_composer::user_interface
 		static int    x_max = 50, y_max = 50;
 		static double d_x = 1.0, d_y = 1.0;
 		static double tau = 25.0, restingLevel = -5.0;
+		static int    actFnType = element::SIGMOID;
+		static double xShift    = 0.0;
+		static double steepness = 5.0;
+		static double absBeta   = 100.0;
+		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",           &x_max,       0, 0);
-		ImGui::InputInt("Y size",           &y_max,       0, 0);
-		ImGui::InputDouble("X step",        &d_x,         0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",        &d_y,         0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Tau",           &tau,         0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Resting level", &restingLevel,0.0, 0.0, "%.2f");
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nf2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##nf2_xmax", &x_max);
+			paramRowInt   ("Y size", "##nf2_ymax", &y_max);
+			paramRowDouble("X step", "##nf2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##nf2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##nf2_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Time scale",    "##nf2_tau",  &tau,          "%.2f");
+			paramRowDouble("Resting level", "##nf2_rest", &restingLevel, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Activation function");
+		if (beginParamTable("##nf2_act")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf2_fn", &actFnType, actFnNames, 3);
+			paramRowDouble("X shift", "##nf2_xsh", &xShift, "%.2f");
+			if (actFnType == element::SIGMOID)
+				paramRowDouble("Steepness", "##nf2_steep", &steepness, "%.2f");
+			else if (actFnType == element::ABSSIGMOID)
+				paramRowDouble("Beta", "##nf2_beta", &absBeta, "%.2f");
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
-			const element::NeuralField2DParameters nfp{ tau, restingLevel, element::SigmoidFunction(0.0, 10.0) };
+			std::unique_ptr<element::ActivationFunction> af;
+			if (actFnType == element::SIGMOID)
+				af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
+			else if (actFnType == element::HEAVISIDE)
+				af = std::make_unique<element::HeavisideFunction>(xShift);
+			else
+				af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+			const element::NeuralField2DParameters nfp{ tau, restingLevel, *af };
 			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
 			simulation->addElement(std::make_shared<element::NeuralField2D>(common, nfp));
 		}
@@ -655,18 +983,31 @@ namespace dnf_composer::user_interface
 		static double pos_x = 25.0, pos_y = 25.0;
 		static bool   circular = true, normalized = false;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",       &x_max,     0, 0);
-		ImGui::InputInt("Y size",       &y_max,     0, 0);
-		ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Position x",&pos_x,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Position y",&pos_y,     0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gs2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##gs2_xmax", &x_max);
+			paramRowInt   ("Y size", "##gs2_ymax", &y_max);
+			paramRowDouble("X step", "##gs2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##gs2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##gs2_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##gs2_w",    &width,     "%.2f");
+			paramRowDouble("Amplitude",  "##gs2_amp",  &amplitude, "%.2f");
+			paramRowDouble("Position x", "##gs2_posx", &pos_x,     "%.2f");
+			paramRowDouble("Position y", "##gs2_posy", &pos_y,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gs2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gs2_circ", &circular);
+			paramRowBool("Normalized", "##gs2_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -683,17 +1024,30 @@ namespace dnf_composer::user_interface
 		static double width = 3.0, amplitude = 3.0, amplitudeGlobal = -0.01;
 		static bool   circular = true, normalized = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",              &x_max,           0, 0);
-		ImGui::InputInt("Y size",              &y_max,           0, 0);
-		ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",            &width,           0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude",        &amplitude,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gk2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##gk2_xmax", &x_max);
+			paramRowInt   ("Y size", "##gk2_ymax", &y_max);
+			paramRowDouble("X step", "##gk2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##gk2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##gk2_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##gk2_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",  "##gk2_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp", "##gk2_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gk2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gk2_circ", &circular);
+			paramRowBool("Normalized", "##gk2_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -712,19 +1066,42 @@ namespace dnf_composer::user_interface
 		static double amplitudeGlobal = -0.1;
 		static bool   circular = true, normalized = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",              &x_max,           0, 0);
-		ImGui::InputInt("Y size",              &y_max,           0, 0);
-		ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width exc",        &widthExc,        0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude exc",    &amplitudeExc,    0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width inh",        &widthInh,        0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude inh",    &amplitudeInh,    0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mhk2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##mhk2_xmax", &x_max);
+			paramRowInt   ("Y size", "##mhk2_ymax", &y_max);
+			paramRowDouble("X step", "##mhk2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##mhk2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Excitatory");
+		if (beginParamTable("##mhk2_exc")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk2_we",   &widthExc,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk2_ampe", &amplitudeExc, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Inhibitory");
+		if (beginParamTable("##mhk2_inh")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk2_wi",   &widthInh,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk2_ampi", &amplitudeInh, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Global");
+		if (beginParamTable("##mhk2_glo")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##mhk2_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##mhk2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##mhk2_circ", &circular);
+			paramRowBool("Normalized", "##mhk2_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -740,13 +1117,21 @@ namespace dnf_composer::user_interface
 		static double d_x = 1.0, d_y = 1.0;
 		static double amplitude = 0.2;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",       &x_max,     0, 0);
-		ImGui::InputInt("Y size",       &y_max,     0, 0);
-		ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nn2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##nn2_xmax", &x_max);
+			paramRowInt   ("Y size", "##nn2_ymax", &y_max);
+			paramRowDouble("X step", "##nn2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##nn2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##nn2_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##nn2_amp", &amplitude, "%.4f");
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -767,18 +1152,31 @@ namespace dnf_composer::user_interface
 		static bool   circular        = true;
 		static bool   normalized      = false;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",            &x_max,           0, 0);
-		ImGui::InputInt("Y size",            &y_max,           0, 0);
-		ImGui::InputDouble("X step",         &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",         &d_y,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
-		ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Global amp",     &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##ok2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##ok2_xmax", &x_max);
+			paramRowInt   ("Y size", "##ok2_ymax", &y_max);
+			paramRowDouble("X step", "##ok2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##ok2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##ok2_ker")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude",      "##ok2_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Decay",          "##ok2_dec",  &decay,           "%.4f");
+			paramRowDouble("Zero crossings", "##ok2_zc",   &zeroCrossings,   "%.2f");
+			paramRowDouble("Global amp",     "##ok2_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##ok2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##ok2_circ", &circular);
+			paramRowBool("Normalized", "##ok2_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -800,19 +1198,32 @@ namespace dnf_composer::user_interface
 		static bool   circular        = true;
 		static bool   normalized      = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",          &x_max,           0, 0);
-		ImGui::InputInt("Y size",          &y_max,           0, 0);
-		ImGui::InputDouble("X step",       &d_x,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",       &d_y,             0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Width",        &width,           0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude",    &amplitude,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Global amp",   &amplitudeGlobal, 0.0, 0.0, "%.4f");
-		ImGui::InputDouble("Time shift x", &timeShift_x,     0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Time shift y", &timeShift_y,     0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular",   &circular);
-		ImGui::Checkbox("Normalized", &normalized);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##agk2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##agk2_xmax", &x_max);
+			paramRowInt   ("Y size", "##agk2_ymax", &y_max);
+			paramRowDouble("X step", "##agk2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##agk2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##agk2_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",        "##agk2_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",    "##agk2_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp",   "##agk2_ampg", &amplitudeGlobal, "%.4f");
+			paramRowDouble("Time shift x", "##agk2_tsx",  &timeShift_x,     "%.2f");
+			paramRowDouble("Time shift y", "##agk2_tsy",  &timeShift_y,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##agk2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##agk2_circ", &circular);
+			paramRowBool("Normalized", "##agk2_norm", &normalized);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -830,14 +1241,22 @@ namespace dnf_composer::user_interface
 		static double amplitude = 5.0;
 		static bool   isActive  = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",       &x_max,     0, 0);
-		ImGui::InputInt("Y size",       &y_max,     0, 0);
-		ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Active", &isActive);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##bs2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##bs2_xmax", &x_max);
+			paramRowInt   ("Y size", "##bs2_ymax", &y_max);
+			paramRowDouble("X step", "##bs2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##bs2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Stimulus");
+		if (beginParamTable("##bs2_stim")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##bs2_amp", &amplitude, "%.2f");
+			paramRowBool  ("Active",    "##bs2_act", &isActive);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -855,15 +1274,28 @@ namespace dnf_composer::user_interface
 		static double width     = 1.0;
 		static bool   circular  = true;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",       &x_max,     0, 0);
-		ImGui::InputInt("Y size",       &y_max,     0, 0);
-		ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-		ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-		ImGui::Checkbox("Circular", &circular);
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##cnn2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##cnn2_xmax", &x_max);
+			paramRowInt   ("Y size", "##cnn2_ymax", &y_max);
+			paramRowDouble("X step", "##cnn2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##cnn2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##cnn2_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##cnn2_amp", &amplitude, "%.4f");
+			paramRowDouble("Width",     "##cnn2_w",   &width,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##cnn2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular", "##cnn2_circ", &circular);
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -881,15 +1313,23 @@ namespace dnf_composer::user_interface
 		static double tauDecay  = 1000.0;
 		static double threshold = 0.5;
 
-		ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-		ImGui::InputInt("X size",        &x_max,     0, 0);
-		ImGui::InputInt("Y size",        &y_max,     0, 0);
-		ImGui::InputDouble("X step",     &d_x,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Y step",     &d_y,       0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Tau build",  &tauBuild,  0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Tau decay",  &tauDecay,  0.0, 0.0, "%.2f");
-		ImGui::InputDouble("Threshold",  &threshold, 0.0, 0.0, "%.2f");
-		ImGui::PopItemWidth();
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mt2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("X size", "##mt2_xmax", &x_max);
+			paramRowInt   ("Y size", "##mt2_ymax", &y_max);
+			paramRowDouble("X step", "##mt2_dx",   &d_x, "%.2f");
+			paramRowDouble("Y step", "##mt2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##mt2_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Tau build",  "##mt2_tauB", &tauBuild,  "%.2f");
+			paramRowDouble("Tau decay",  "##mt2_tauD", &tauDecay,  "%.2f");
+			paramRowDouble("Threshold",  "##mt2_thr",  &threshold, "%.2f");
+			endParamTable();
+		}
 
 		if (addRequested)
 		{
@@ -902,50 +1342,110 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderRemoveElementCard() const
 	{
-		ImGui::PushID("remove_element_inline");
+		struct ElemCategory { const char* label; ImU32 color; };
+		static auto getCategory = [](const element::ElementLabel lbl) -> ElemCategory {
+			using L = element::ElementLabel;
+			switch (lbl) {
+				case L::NEURAL_FIELD:    case L::NEURAL_FIELD_2D:
+					return {"Field",    IM_COL32(74,  144, 217, 255)};
+				case L::GAUSS_STIMULUS:  case L::TIMED_GAUSS_STIMULUS:
+				case L::GAUSS_STIMULUS_2D: case L::TIMED_GAUSS_STIMULUS_2D:
+				case L::BOOST_STIMULUS:  case L::BOOST_STIMULUS_2D:
+					return {"Stimulus", IM_COL32(31,  158, 126, 255)};
+				case L::GAUSS_KERNEL:    case L::MEXICAN_HAT_KERNEL:
+				case L::OSCILLATORY_KERNEL: case L::ASYMMETRIC_GAUSS_KERNEL:
+				case L::GAUSS_KERNEL_2D: case L::MEXICAN_HAT_KERNEL_2D:
+				case L::OSCILLATORY_KERNEL_2D: case L::ASYMMETRIC_GAUSS_KERNEL_2D:
+					return {"Kernel",   IM_COL32(192, 57,  43,  255)};
+				case L::NORMAL_NOISE:    case L::CORRELATED_NORMAL_NOISE:
+				case L::NORMAL_NOISE_2D: case L::CORRELATED_NORMAL_NOISE_2D:
+					return {"Noise",    IM_COL32(230, 126, 34,  255)};
+				case L::FIELD_COUPLING:  case L::GAUSS_FIELD_COUPLING:
+					return {"Coupling", IM_COL32(142, 68,  173, 255)};
+				case L::MEMORY_TRACE:    case L::MEMORY_TRACE_2D:
+					return {"Memory",   IM_COL32(127, 140, 141, 255)};
+				default:
+					return {"Unknown",  IM_COL32(150, 150, 150, 255)};
+			}
+		};
 
-		static std::string selectedId;
+		static char searchBuf[128] = {};
+		static std::string pendingRemove;
 
-		ImGui::TextUnformatted("REMOVE ELEMENT");
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##re_search", "Search...", searchBuf, sizeof(searchBuf));
 		ImGui::Spacing();
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Remove");
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
-		const char* preview = selectedId.empty() ? "element" : selectedId.c_str();
-		ImGui::SetNextItemWidth(180.0f * ImGui::GetIO().FontGlobalScale);
-		if (ImGui::BeginCombo("##element_combo", preview))
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Pick element to remove");
+		ImGui::PopStyleColor();
+		ImGui::Spacing();
+
+		std::string filterLower(searchBuf);
+		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
+
+		const float rowH   = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
+		const float dotR   = 5.0f;
+		const float trashW = ImGui::GetFrameHeight() + 10.0f;
+		const float typeW  = 65.0f * ImGui::GetIO().FontGlobalScale;
+
+		if (ImGui::BeginChild("##re_list", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
 		{
 			for (const auto& e : simulation->getElements())
 			{
 				const std::string& name = e->getUniqueName();
-				const bool is_sel = (selectedId == name);
-				if (ImGui::Selectable(name.c_str(), is_sel))
-					selectedId = name;
-				if (is_sel) ImGui::SetItemDefaultFocus();
+				const auto cat = getCategory(e->getLabel());
+
+				if (!filterLower.empty())
+				{
+					std::string nameLower(name);
+					std::ranges::transform(nameLower, nameLower.begin(), ::tolower);
+					std::string catLower(cat.label);
+					std::transform(catLower.begin(), catLower.end(), catLower.begin(), ::tolower);
+					if (nameLower.find(filterLower) == std::string::npos &&
+						catLower.find(filterLower)  == std::string::npos)
+						continue;
+				}
+
+				ImGui::PushID(name.c_str());
+
+				const ImVec2 rowMin = ImGui::GetCursorScreenPos();
+				const float  avail  = ImGui::GetContentRegionAvail().x;
+				const float  selH   = rowH - ImGui::GetStyle().ItemSpacing.y;
+
+				ImGui::Selectable("##row", false, ImGuiSelectableFlags_AllowOverlap, {avail, selH});
+
+				ImDrawList* dl = ImGui::GetWindowDrawList();
+				const float cy    = rowMin.y + selH * 0.5f;
+				const float cx    = rowMin.x + 12.0f;
+				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+
+				dl->AddCircleFilled({cx, cy}, dotR, cat.color);
+				dl->AddText({cx + dotR + 8.0f, textY}, ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
+				dl->AddText({rowMin.x + avail - trashW - typeW - 4.0f, textY},
+					ImGui::GetColorU32(ImGuiCol_TextDisabled), cat.label);
+
+				ImGui::SetCursorScreenPos({rowMin.x + avail - trashW, rowMin.y});
+				ImGui::PushFont(g_MediumIconsFont);
+				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+				if (ImGui::Button(ICON_FA_TRASH, {trashW, selH}))
+					pendingRemove = name;
+				ImGui::PopStyleColor(3);
+				ImGui::PopFont();
+
+				ImGui::PopID();
 			}
-			ImGui::EndCombo();
 		}
+		ImGui::EndChild();
 
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("from simulation");
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-		const float line_h = ImGui::GetFrameHeight();
-		const ImVec2 iconSz(line_h + 10.0f, line_h);
-
-		ImGui::PushFont(g_MediumIconsFont);
-		const bool clicked = ImGui::Button(ICON_FA_TRASH, iconSz);
-		ImGui::PopFont();
-
-		if (clicked && !selectedId.empty())
+		if (!pendingRemove.empty())
 		{
-			simulation->removeElement(selectedId);
+			simulation->removeElement(pendingRemove);
 			simulation->init();
+			pendingRemove.clear();
 		}
-
-		ImGui::PopID();
 	}
 
 	void SimulationWindow::renderSetInteractionCard() const
