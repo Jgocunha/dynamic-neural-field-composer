@@ -1,7 +1,9 @@
 #include "user_interface/simulation_window.h"
 #include "elements/neural_field.h"
+#include <sstream>
 
 extern ImFont* g_MonoMediumFont;
+extern ImFont* g_MediumMediumFont;
 
 namespace dnf_composer::user_interface
 {
@@ -74,16 +76,18 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 	}
 
-	void SimulationWindow::renderContentPaneTitle() const
+	void SimulationWindow::renderContentPaneTitle()
 	{
+		ImGui::Spacing();
+
 		struct PaneInfo { const char* icon; const char* name; };
 		static constexpr PaneInfo kInfo[] = {
-			{ ICON_FA_PLUS,     "Add element"      },
-			{ ICON_FA_TRASH,    "Remove element"   },
+			{ ICON_FA_PLUS,     "Add elements"      },
+			{ ICON_FA_TRASH,    "Remove elements"   },
 			{ ICON_FA_LINK,     "Set interactions" },
 			{ ICON_FA_TERMINAL, "Log parameters"   },
 			{ ICON_FA_DOWNLOAD, "Export data"      },
-			{ ICON_FA_DATABASE, "Monitoring"       },
+			{ ICON_FA_BINOCULARS, "Monitoring"       },
 		};
 
 		ImGui::PushFont(g_MediumIconsFont);
@@ -105,12 +109,12 @@ namespace dnf_composer::user_interface
 	{
 		struct PaneTab { const char* icon; const char* tooltip; };
 		static constexpr PaneTab kPanes[] = {
-			{ ICON_FA_PLUS,     "Add Element"     },
-			{ ICON_FA_TRASH,    "Remove Element"  },
-			{ ICON_FA_LINK,     "Set Interaction" },
-			{ ICON_FA_TERMINAL, "Log Parameters"  },
-			{ ICON_FA_DOWNLOAD, "Export Data"     },
-			{ ICON_FA_DATABASE, "Monitoring"      },
+			{ ICON_FA_PLUS,     "Add elements"     },
+			{ ICON_FA_TRASH,    "Remove elements"  },
+			{ ICON_FA_LINK,     "Set interactions" },
+			{ ICON_FA_TERMINAL, "Log parameters"  },
+			{ ICON_FA_DOWNLOAD, "Export data"     },
+			{ ICON_FA_BINOCULARS, "Monitoring"      },
 		};
 
 		ImGui::SetCursorPos(ImVec2(0.0f, 16.0f));
@@ -250,10 +254,28 @@ namespace dnf_composer::user_interface
 		}
 
 		ImGui::Spacing();
-		const float addBtnW = ImGui::GetContentRegionAvail().x;
-		const float addBtnH = ImGui::GetFrameHeight() * 1.2f;
-		if (ImGui::Button("+ Add element", ImVec2(addBtnW, addBtnH)))
-			s_addRequested = true;
+		{
+			const float addBtnH = ImGui::GetFrameHeight() * 1.5f;
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
+			if (ImGui::Button("     Add element", {-FLT_MIN, addBtnH}))
+				s_addRequested = true;
+			ImGui::PopStyleColor(4);
+
+			const ImVec2 bMin = ImGui::GetItemRectMin();
+			const ImVec2 bMax = ImGui::GetItemRectMax();
+			ImGui::PushFont(g_MediumIconsFont);
+			const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_PLUS);
+			const float  labelW = ImGui::CalcTextSize("     Add element").x;
+			const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+			const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+			ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+				{iconX, iconY}, IM_COL32(255, 255, 255, 255), ICON_FA_PLUS);
+			ImGui::PopFont();
+		}
 
 		ImGui::PopID();
 	}
@@ -351,7 +373,7 @@ namespace dnf_composer::user_interface
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf_fn", &actFnType, actFnNames, 3);
-			paramRowDouble("X shift", "##nf_xsh", &xShift, "%.2f");
+			paramRowDouble("Shift", "##nf_xsh", &xShift, "%.2f");
 			if (actFnType == element::SIGMOID)
 				paramRowDouble("Steepness", "##nf_steep", &steepness, "%.2f");
 			else if (actFnType == element::ABSSIGMOID)
@@ -423,7 +445,7 @@ namespace dnf_composer::user_interface
 		static double amplitude  = 15.0;
 		static double position   = 50.0;
 		static double tStart     = 0.0;
-		static double tEnd       = 10.0;
+		static double tEnd       = 500.0;
 		static bool   circular   = true;
 		static bool   normalized = false;
 
@@ -445,8 +467,8 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Timing");
 		if (beginParamTable("##tgs_tim")) {
 			paramTableSetup();
-			paramRowDouble("T start", "##tgs_ts", &tStart, "%.2f");
-			paramRowDouble("T end",   "##tgs_te", &tEnd,   "%.2f");
+			paramRowDouble("t start", "##tgs_ts", &tStart, "%.2f");
+			paramRowDouble("t end",   "##tgs_te", &tEnd,   "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Options");
@@ -477,10 +499,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##tgs2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##tgs2_xmax", &x_max);
-			paramRowInt   ("Y size", "##tgs2_ymax", &y_max);
-			paramRowDouble("X step", "##tgs2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##tgs2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##tgs2_xmax", &x_max);
+			paramRowInt   ("y size", "##tgs2_ymax", &y_max);
+			paramRowDouble("x step", "##tgs2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##tgs2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Shape");
@@ -495,8 +517,8 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Timing");
 		if (beginParamTable("##tgs2_tim")) {
 			paramTableSetup();
-			paramRowDouble("T start", "##tgs2_ts", &tStart, "%.2f");
-			paramRowDouble("T end",   "##tgs2_te", &tEnd,   "%.2f");
+			paramRowDouble("t start", "##tgs2_ts", &tStart, "%.2f");
+			paramRowDouble("t end",   "##tgs2_te", &tEnd,   "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Options");
@@ -621,7 +643,7 @@ namespace dnf_composer::user_interface
 		static double zeroCrossings   = 0.3;
 		static double amplitudeGlobal = -0.01;
 		static bool   circular        = true;
-		static bool   normalized      = false;
+		static bool   normalized      = true;
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##ok_dim")) {
@@ -769,7 +791,7 @@ namespace dnf_composer::user_interface
 		static double      d_x_out      = 1.0;
 		static int         x_max_in     = 100;
 		static double      d_x_in       = 1.0;
-		static LearningRule rule        = LearningRule::HEBB;
+		static auto rule        = LearningRule::HEBB;
 		static double      scalar       = 1.0;
 		static double      learningRate = 0.01;
 
@@ -824,8 +846,8 @@ namespace dnf_composer::user_interface
 		static double d_x_out    = 1.0;
 		static int    x_max_in   = 100;
 		static double d_x_in     = 1.0;
-		static bool   normalized = true;
-		static bool   circular   = false;
+		static bool   normalized = false;
+		static bool   circular   = true;
 
 		ImGui::SeparatorText("Output dimensions");
 		if (beginParamTable("##gfc_odim")) {
@@ -933,10 +955,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##nf2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##nf2_xmax", &x_max);
-			paramRowInt   ("Y size", "##nf2_ymax", &y_max);
-			paramRowDouble("X step", "##nf2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##nf2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##nf2_xmax", &x_max);
+			paramRowInt   ("y size", "##nf2_ymax", &y_max);
+			paramRowDouble("x step", "##nf2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##nf2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Dynamics");
@@ -952,7 +974,7 @@ namespace dnf_composer::user_interface
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf2_fn", &actFnType, actFnNames, 3);
-			paramRowDouble("X shift", "##nf2_xsh", &xShift, "%.2f");
+			paramRowDouble("Shift", "##nf2_xsh", &xShift, "%.2f");
 			if (actFnType == element::SIGMOID)
 				paramRowDouble("Steepness", "##nf2_steep", &steepness, "%.2f");
 			else if (actFnType == element::ABSSIGMOID)
@@ -986,10 +1008,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##gs2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##gs2_xmax", &x_max);
-			paramRowInt   ("Y size", "##gs2_ymax", &y_max);
-			paramRowDouble("X step", "##gs2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##gs2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##gs2_xmax", &x_max);
+			paramRowInt   ("y size", "##gs2_ymax", &y_max);
+			paramRowDouble("x step", "##gs2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##gs2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Shape");
@@ -1027,10 +1049,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##gk2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##gk2_xmax", &x_max);
-			paramRowInt   ("Y size", "##gk2_ymax", &y_max);
-			paramRowDouble("X step", "##gk2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##gk2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##gk2_xmax", &x_max);
+			paramRowInt   ("y size", "##gk2_ymax", &y_max);
+			paramRowDouble("x step", "##gk2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##gk2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Kernel");
@@ -1069,10 +1091,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##mhk2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##mhk2_xmax", &x_max);
-			paramRowInt   ("Y size", "##mhk2_ymax", &y_max);
-			paramRowDouble("X step", "##mhk2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##mhk2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##mhk2_xmax", &x_max);
+			paramRowInt   ("y size", "##mhk2_ymax", &y_max);
+			paramRowDouble("x step", "##mhk2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##mhk2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Excitatory");
@@ -1120,10 +1142,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##nn2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##nn2_xmax", &x_max);
-			paramRowInt   ("Y size", "##nn2_ymax", &y_max);
-			paramRowDouble("X step", "##nn2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##nn2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##nn2_xmax", &x_max);
+			paramRowInt   ("y size", "##nn2_ymax", &y_max);
+			paramRowDouble("x step", "##nn2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##nn2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Noise");
@@ -1155,10 +1177,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##ok2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##ok2_xmax", &x_max);
-			paramRowInt   ("Y size", "##ok2_ymax", &y_max);
-			paramRowDouble("X step", "##ok2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##ok2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##ok2_xmax", &x_max);
+			paramRowInt   ("y size", "##ok2_ymax", &y_max);
+			paramRowDouble("x step", "##ok2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##ok2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Kernel");
@@ -1201,10 +1223,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##agk2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##agk2_xmax", &x_max);
-			paramRowInt   ("Y size", "##agk2_ymax", &y_max);
-			paramRowDouble("X step", "##agk2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##agk2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##agk2_xmax", &x_max);
+			paramRowInt   ("y size", "##agk2_ymax", &y_max);
+			paramRowDouble("x step", "##agk2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##agk2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Kernel");
@@ -1244,10 +1266,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##bs2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##bs2_xmax", &x_max);
-			paramRowInt   ("Y size", "##bs2_ymax", &y_max);
-			paramRowDouble("X step", "##bs2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##bs2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##bs2_xmax", &x_max);
+			paramRowInt   ("y size", "##bs2_ymax", &y_max);
+			paramRowDouble("x step", "##bs2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##bs2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Stimulus");
@@ -1277,10 +1299,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##cnn2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##cnn2_xmax", &x_max);
-			paramRowInt   ("Y size", "##cnn2_ymax", &y_max);
-			paramRowDouble("X step", "##cnn2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##cnn2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##cnn2_xmax", &x_max);
+			paramRowInt   ("y size", "##cnn2_ymax", &y_max);
+			paramRowDouble("x step", "##cnn2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##cnn2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Noise");
@@ -1316,10 +1338,10 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##mt2_dim")) {
 			paramTableSetup();
-			paramRowInt   ("X size", "##mt2_xmax", &x_max);
-			paramRowInt   ("Y size", "##mt2_ymax", &y_max);
-			paramRowDouble("X step", "##mt2_dx",   &d_x, "%.2f");
-			paramRowDouble("Y step", "##mt2_dy",   &d_y, "%.2f");
+			paramRowInt   ("x size", "##mt2_xmax", &x_max);
+			paramRowInt   ("y size", "##mt2_ymax", &y_max);
+			paramRowDouble("x step", "##mt2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##mt2_dy",   &d_y, "%.2f");
 			endParamTable();
 		}
 		ImGui::SeparatorText("Dynamics");
@@ -1450,115 +1472,165 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderSetInteractionCard() const
 	{
-		ImGui::PushID("set_interactions_section");
-
 		static std::string selectedTarget;
 		static std::string selectedSource;
+		static std::string pendingRemoveTarget;
+		static std::string pendingRemoveSource;
+		static char connSearch[128] = {};
 
-		ImGui::TextUnformatted("SET INTERACTION");
-		ImGui::Spacing();
-
-		ImGui::Columns(2, nullptr, false);
-
-		const float leftW = 220.0f * ImGui::GetIO().FontGlobalScale;
-		ImGui::SetColumnWidth(0, leftW);
-
-		auto ComboFromElements = [&](const char* label, std::string& value)
+		auto elementCombo = [&](const char* wid, const char* hint, std::string& value)
 		{
-			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted(label);
-			ImGui::SetNextItemWidth(leftW - 20.0f * ImGui::GetIO().FontGlobalScale);
-			const char* preview = value.empty() ? label : value.c_str();
-			if (ImGui::BeginCombo((std::string("##") + label).c_str(), preview))
+			const char* preview = value.empty() ? hint : value.c_str();
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(wid, preview))
 			{
 				for (const auto& e : simulation->getElements())
 				{
 					const std::string& name = e->getUniqueName();
-					const bool is_sel = (value == name);
-					if (ImGui::Selectable(name.c_str(), is_sel))
-						value = name;
-					if (is_sel) ImGui::SetItemDefaultFocus();
+					const bool sel = (value == name);
+					if (ImGui::Selectable(name.c_str(), sel)) value = name;
+					if (sel) ImGui::SetItemDefaultFocus();
 				}
 				ImGui::EndCombo();
 			}
 		};
 
-		ComboFromElements("Target element", selectedTarget);
-		ComboFromElements("Source element", selectedSource);
-
+		ImGui::TextUnformatted("Target element");
+		elementCombo("##si_target", "Target element", selectedTarget);
+		ImGui::Spacing();
+		ImGui::TextUnformatted("Source element");
+		elementCombo("##si_source", "Source element", selectedSource);
 		ImGui::Spacing();
 
-		ImGui::NextColumn();
-		ImGui::TextUnformatted("Connected elements");
-		ImGui::SameLine();
-		widgets::renderHelpMarker("You can disconnect elements by pressing the 'unlink' buttons.");
-
-		const float listH = 120.0f * ImGui::GetIO().FontGlobalScale;
-		ImGui::BeginChild("##connections_scroll", ImVec2(0, listH), true, ImGuiWindowFlags_NoSavedSettings);
-
-		if (!selectedTarget.empty())
+		// Connect button — right after the source combo
 		{
-			if (const auto target = simulation->getElement(selectedTarget))
+			const bool canConn = !selectedTarget.empty() && !selectedSource.empty();
+			const float btnH   = ImGui::GetFrameHeight() * 1.5f;
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
+			ImGui::BeginDisabled(!canConn);
+			const bool pressed = ImGui::Button("     Connect", {-FLT_MIN, btnH});
+			ImGui::EndDisabled();
+			ImGui::PopStyleColor(4);
+
 			{
-				const auto& inputs = target->getInputs();
-				if (inputs.empty())
+				const ImVec2 bMin = ImGui::GetItemRectMin();
+				const ImVec2 bMax = ImGui::GetItemRectMax();
+				ImGui::PushFont(g_MediumIconsFont);
+				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_LINK);
+				const float  labelW = ImGui::CalcTextSize("     Connect").x;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const ImU32  col    = canConn ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+					{iconX, iconY}, col, ICON_FA_LINK);
+				ImGui::PopFont();
+			}
+
+			if (pressed)
+			{
+				const auto target = simulation->getElement(selectedTarget);
+				const auto input  = simulation->getElement(selectedSource);
+				if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
 				{
-					ImGui::TextDisabled("No connections.");
+					target->addInput(input);
+					simulation->init();
 				}
-				else
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Existing connections");
+		ImGui::PopStyleColor();
+		ImGui::Spacing();
+
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##si_conn_search", "Search...", connSearch, sizeof(connSearch));
+		ImGui::Spacing();
+
+		std::string filterLower(connSearch);
+		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
+
+		const float unlinkW = ImGui::GetFrameHeight() + 6.0f;
+
+		if (ImGui::BeginChild("##si_connections", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
+		{
+			bool any = false;
+			for (const auto& tgt : simulation->getElements())
+			{
+				for (const auto& [src, comp] : tgt->getInputsAndComponents())
 				{
-					int idx = 0;
-					for (const auto& conn : inputs)
+					std::string label = src->getUniqueName() + " \xe2\x86\x92 " + tgt->getUniqueName();
+					if (comp != "output") label += " (" + comp + ")";
+
+					if (!filterLower.empty())
 					{
-						ImGui::PushID(idx);
-						ImGui::TextUnformatted(conn->getUniqueName().c_str());
-						ImGui::SameLine();
-						const float h = ImGui::GetFrameHeight();
-
-						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f,0.0f,0.0f,0.15f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0f,0.0f,0.0f,0.25f));
-						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.90f,0.10f,0.10f,1.0f));
-						ImGui::PushFont(g_MediumIconsFont);
-						const bool removeClicked = ImGui::Button(ICON_FA_LINK_SLASH, ImVec2(h + 10.0f, h));
-						ImGui::PopFont();
-						ImGui::PopStyleColor(4);
-
-						if (removeClicked)
-						{
-							target->removeInput(conn->getUniqueIdentifier());
-							simulation->init();
-						}
-
-						ImGui::PopID();
-						++idx;
+						std::string labelLower = label;
+						std::transform(labelLower.begin(), labelLower.end(), labelLower.begin(), ::tolower);
+						if (labelLower.find(filterLower) == std::string::npos) continue;
 					}
+
+					any = true;
+					ImGui::PushID(label.c_str());
+
+					const ImVec2 rowMin = ImGui::GetCursorScreenPos();
+					const float  avail  = ImGui::GetContentRegionAvail().x;
+					const float  selH   = ImGui::GetFrameHeight();
+
+					ImGui::Selectable("##conn_row", false, ImGuiSelectableFlags_AllowOverlap,
+						{avail, selH});
+					const bool hov = ImGui::IsItemHovered();
+
+					ImDrawList* dl = ImGui::GetWindowDrawList();
+					const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+					dl->AddText({rowMin.x + 6.0f, textY}, ImGui::GetColorU32(ImGuiCol_Text),
+						label.c_str());
+
+					if (hov)
+					{
+						ImGui::SetCursorScreenPos({rowMin.x + avail - unlinkW, rowMin.y});
+						ImGui::PushFont(g_MediumIconsFont);
+						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.0f, 0.0f, 0.12f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0f, 0.0f, 0.0f, 0.22f));
+						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85f, 0.15f, 0.15f, 1.0f));
+						if (ImGui::Button(ICON_FA_LINK_SLASH, {unlinkW, selH}))
+						{
+							pendingRemoveTarget = tgt->getUniqueName();
+							pendingRemoveSource = src->getUniqueName();
+						}
+						ImGui::PopStyleColor(4);
+						ImGui::PopFont();
+					}
+
+					ImGui::PopID();
 				}
+			}
+			if (!any)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+				ImGui::TextUnformatted("No connections.");
+				ImGui::PopStyleColor();
 			}
 		}
 		ImGui::EndChild();
 
-		ImGui::Columns(1);
-
-		const float btnW = ImGui::GetContentRegionAvail().x;
-		const float btnH = ImGui::GetFrameHeight() * 1.2f;
-		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
-		ImGui::BeginDisabled(!canConnect);
-		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
-		ImGui::EndDisabled();
-
-		if (connectPressed)
+		if (!pendingRemoveTarget.empty())
 		{
-			const auto target = simulation->getElement(selectedTarget);
-			const auto input  = simulation->getElement(selectedSource);
-			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
+			if (const auto tgt = simulation->getElement(pendingRemoveTarget))
 			{
-				target->addInput(input);
+				tgt->removeInput(pendingRemoveSource);
 				simulation->init();
 			}
+			pendingRemoveTarget.clear();
+			pendingRemoveSource.clear();
 		}
-
-		ImGui::PopID();
 	}
 
 	void SimulationWindow::renderExportElementComponentCard() const
@@ -1626,45 +1698,300 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderLogElementParametersCard() const
 	{
-		ImGui::PushID("log_inline");
+		struct ElemCategory { const char* label; ImU32 color; };
+		static auto getCat = [](const element::ElementLabel lbl) -> ElemCategory {
+			using L = element::ElementLabel;
+			switch (lbl) {
+				case L::NEURAL_FIELD:    case L::NEURAL_FIELD_2D:
+					return {"Field",    IM_COL32(74,  144, 217, 255)};
+				case L::GAUSS_STIMULUS:  case L::TIMED_GAUSS_STIMULUS:
+				case L::GAUSS_STIMULUS_2D: case L::TIMED_GAUSS_STIMULUS_2D:
+				case L::BOOST_STIMULUS:  case L::BOOST_STIMULUS_2D:
+					return {"Stimulus", IM_COL32(31,  158, 126, 255)};
+				case L::GAUSS_KERNEL:    case L::MEXICAN_HAT_KERNEL:
+				case L::OSCILLATORY_KERNEL: case L::ASYMMETRIC_GAUSS_KERNEL:
+				case L::GAUSS_KERNEL_2D: case L::MEXICAN_HAT_KERNEL_2D:
+				case L::OSCILLATORY_KERNEL_2D: case L::ASYMMETRIC_GAUSS_KERNEL_2D:
+					return {"Kernel",   IM_COL32(192, 57,  43,  255)};
+				case L::NORMAL_NOISE:    case L::CORRELATED_NORMAL_NOISE:
+				case L::NORMAL_NOISE_2D: case L::CORRELATED_NORMAL_NOISE_2D:
+					return {"Noise",    IM_COL32(230, 126, 34,  255)};
+				case L::FIELD_COUPLING:  case L::GAUSS_FIELD_COUPLING:
+					return {"Coupling", IM_COL32(142, 68,  173, 255)};
+				case L::MEMORY_TRACE:    case L::MEMORY_TRACE_2D:
+					return {"Memory",   IM_COL32(127, 140, 141, 255)};
+				default:
+					return {"Unknown",  IM_COL32(150, 150, 150, 255)};
+			}
+		};
 
 		static std::string selectedId;
+		static char        searchBuf[128] = {};
 
-		ImGui::TextUnformatted("LOG INFORMATION");
+		// ── Search bar ───────────────────────────────────────────────────────
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##lp_search", "Search...", searchBuf, sizeof(searchBuf));
 		ImGui::Spacing();
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Log");
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
-		const char* preview = selectedId.empty() ? "element" : selectedId.c_str();
-		ImGui::SetNextItemWidth(140.0f * ImGui::GetIO().FontGlobalScale);
-		if (ImGui::BeginCombo("##log_elem_combo", preview))
+		// ── Element list (bounded, filtered) ─────────────────────────────────
+		std::string filterLower(searchBuf);
+		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
+
+		const float rowH  = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
+		const float dotR  = 5.0f;
+		const float typeW = 65.0f * ImGui::GetIO().FontGlobalScale;
+
+		int matchCount = 0;
+		for (const auto& e : simulation->getElements())
+		{
+			if (filterLower.empty()) { ++matchCount; continue; }
+			std::string nl(e->getUniqueName());
+			std::ranges::transform(nl, nl.begin(), ::tolower);
+			std::string cl(getCat(e->getLabel()).label);
+			std::ranges::transform(cl, cl.begin(), ::tolower);
+			if (nl.find(filterLower) != std::string::npos || cl.find(filterLower) != std::string::npos)
+				++matchCount;
+		}
+
+		const float maxListH = rowH * 8.0f;
+		const float listH    = std::min(static_cast<float>(std::max(matchCount, 1)) * rowH, maxListH);
+
+		if (ImGui::BeginChild("##lp_list", {0, listH}, false, ImGuiWindowFlags_NoSavedSettings))
 		{
 			for (const auto& e : simulation->getElements())
 			{
 				const std::string& name = e->getUniqueName();
-				const bool is_sel = (selectedId == name);
-				if (ImGui::Selectable(name.c_str(), is_sel))
+				const auto cat = getCat(e->getLabel());
+
+				if (!filterLower.empty())
+				{
+					std::string nl(name);
+					std::ranges::transform(nl, nl.begin(), ::tolower);
+					std::string cl(cat.label);
+					std::ranges::transform(cl, cl.begin(), ::tolower);
+					if (nl.find(filterLower) == std::string::npos && cl.find(filterLower) == std::string::npos)
+						continue;
+				}
+
+				ImGui::PushID(name.c_str());
+
+				const ImVec2 rowMin  = ImGui::GetCursorScreenPos();
+				const float  avail   = ImGui::GetContentRegionAvail().x;
+				const float  selH    = rowH - ImGui::GetStyle().ItemSpacing.y;
+				const bool   selected = (selectedId == name);
+
+				if (ImGui::Selectable("##lp_row", selected, 0, {avail, selH}))
 					selectedId = name;
-				if (is_sel) ImGui::SetItemDefaultFocus();
+
+				ImDrawList* dl    = ImGui::GetWindowDrawList();
+				const float cy    = rowMin.y + selH * 0.5f;
+				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+
+				dl->AddCircleFilled({rowMin.x + 12.0f, cy}, dotR, cat.color);
+				dl->AddText({rowMin.x + 12.0f + dotR + 8.0f, textY},
+					ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
+				dl->AddText({rowMin.x + avail - typeW, textY},
+					ImGui::GetColorU32(ImGuiCol_TextDisabled), cat.label);
+
+				ImGui::PopID();
 			}
-			ImGui::EndCombo();
 		}
+		ImGui::EndChild();
 
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("parameters");
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+		// ── "Parameters" header + copy button ────────────────────────────────
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
 
-		const float h = ImGui::GetFrameHeight();
+		const std::string paramText = [&]() -> std::string {
+			if (selectedId.empty()) return {};
+			const auto elem = simulation->getElement(selectedId);
+			return elem ? elem->toString() : std::string{};
+		}();
+
+		const float copyW = ImGui::GetFrameHeight() + 6.0f;
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Parameters");
+		ImGui::PopStyleColor();
+		ImGui::SameLine(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - copyW);
 		ImGui::PushFont(g_MediumIconsFont);
-		const bool logClicked = ImGui::Button(ICON_FA_TERMINAL, ImVec2(h + 10.0f, h));
+		ImGui::BeginDisabled(paramText.empty());
+		if (ImGui::Button(ICON_FA_COPY, {copyW, ImGui::GetFrameHeight()}))
+			ImGui::SetClipboardText(paramText.c_str());
+		ImGui::EndDisabled();
 		ImGui::PopFont();
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			ImGui::SetTooltip("Copy parameters to clipboard");
+		ImGui::Spacing();
 
-		if (logClicked && !selectedId.empty())
-			if (const auto e = simulation->getElement(selectedId)) e->print();
+		// ── Parameter display panel ───────────────────────────────────────────
+		// Bracket-aware parser: splits "key: value, key: [nested], ..." into pairs.
+		// Values enclosed in [] or {} are marked isList=true; plain values are isList=false.
+		struct LpParam { std::string key, value; bool isList; };
+		auto parseBlock = [](const std::string& content) -> std::vector<LpParam>
+		{
+			std::vector<LpParam> result;
+			size_t i = 0;
+			const size_t n = content.size();
+			while (i < n)
+			{
+				while (i < n && (content[i] == ' ' || content[i] == ',')) ++i;
+				if (i >= n) break;
 
-		ImGui::PopID();
+				// Key: read until ':' at depth 0 (parens/brackets count as depth)
+				const size_t keyStart = i;
+				int depth = 0;
+				while (i < n) {
+					if (content[i] == '[' || content[i] == '{' || content[i] == '(') ++depth;
+					else if (content[i] == ']' || content[i] == '}' || content[i] == ')') {
+						if (depth > 0) --depth; else break;
+					}
+					else if (content[i] == ':' && depth == 0) break;
+					++i;
+				}
+				if (i >= n || content[i] != ':') break;
+
+				std::string key = content.substr(keyStart, i - keyStart);
+				while (!key.empty() && (key.front() == ' ' || key.back() == ' '))
+					{ if (key.front() == ' ') key.erase(0, 1); if (!key.empty() && key.back() == ' ') key.pop_back(); }
+				++i; // skip ':'
+				while (i < n && content[i] == ' ') ++i;
+
+				// Value: bracket-enclosed (strip brackets) or plain (read until depth-0 comma)
+				std::string value;
+				bool isList = false;
+				if (i < n && (content[i] == '[' || content[i] == '{'))
+				{
+					const char open = content[i], close = (open == '[') ? ']' : '}';
+					int d = 0; ++i;
+					const size_t vs = i;
+					while (i < n) {
+						if (content[i] == open) ++d;
+						else if (content[i] == close) { if (d == 0) break; --d; }
+						++i;
+					}
+					value = content.substr(vs, i - vs);
+					if (i < n) ++i;
+					isList = true;
+				}
+				else
+				{
+					const size_t vs = i;
+					int vd = 0;
+					while (i < n) {
+						if (content[i] == '(' || content[i] == '[' || content[i] == '{') ++vd;
+						else if (content[i] == ')' || content[i] == ']' || content[i] == '}') {
+							if (vd > 0) --vd; else break;
+						}
+						else if (content[i] == ',' && vd == 0) break;
+						++i;
+					}
+					value = content.substr(vs, i - vs);
+					while (!value.empty() && value.back() == ' ') value.pop_back();
+				}
+				if (!key.empty()) result.push_back({std::move(key), std::move(value), isList});
+			}
+			return result;
+		};
+
+		if (ImGui::BeginChild("##lp_params", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
+		{
+			if (paramText.empty())
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+				ImGui::TextUnformatted("Select an element to view its parameters.");
+				ImGui::PopStyleColor();
+			}
+			else
+			{
+				const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+				std::istringstream stream(paramText);
+				std::string line;
+				bool firstLine = true;
+
+				while (std::getline(stream, line))
+				{
+					if (line.empty()) { ImGui::Spacing(); firstLine = false; continue; }
+
+					if (firstLine)
+					{
+						// Title: element type name — black medium font, accent color
+						ImGui::PushFont(g_BlackMediumFont);
+						ImGui::TextUnformatted(line.c_str());
+						ImGui::PopFont();
+						ImGui::Separator();
+						ImGui::Spacing();
+						firstLine = false;
+					}
+					else
+					{
+						// Find the first '[' or '{' to split the section name from content
+						const size_t brk = line.find_first_of("[{");
+						if (brk == std::string::npos)
+						{
+							ImGui::PushFont(g_MonoMediumFont);
+							ImGui::TextWrapped("%s", line.c_str());
+							ImGui::PopFont();
+							continue;
+						}
+
+						// Section name: text before the bracket, strip trailing ':' and spaces
+						std::string section = line.substr(0, brk);
+						while (!section.empty() && (section.back() == ':' || section.back() == ' '))
+							section.pop_back();
+
+						// Extract the inner content of the outer bracket
+						const char outerOpen  = line[brk];
+						const char outerClose = (outerOpen == '[') ? ']' : '}';
+						int depth = 0;
+						size_t innerStart = brk + 1, innerEnd = brk + 1;
+						for (size_t j = brk; j < line.size(); ++j) {
+							if (line[j] == outerOpen)  ++depth;
+							else if (line[j] == outerClose) { --depth; if (depth == 0) { innerEnd = j; break; } }
+						}
+						const std::string inner = line.substr(innerStart, innerEnd - innerStart);
+
+						// Subtitle: section name — black medium font, normal text color
+						if (!section.empty())
+						{
+							ImGui::PushFont(g_LightMediumFont);
+							ImGui::TextUnformatted(section.c_str());
+							ImGui::PopFont();
+						}
+
+						const auto params = parseBlock(inner);
+						for (const auto& p : params)
+						{
+							if (p.isList)
+							{
+								// Sub-subtitle: key — medium font, accent color
+								ImGui::PushFont(g_LightMediumFont);
+								ImGui::TextUnformatted(("  " + p.key).c_str());
+								ImGui::PopFont();
+
+								// Each sub-param on its own line in mono
+								const auto subParams = parseBlock(p.value);
+								for (const auto& sp : subParams)
+								{
+									ImGui::PushFont(g_MonoMediumFont);
+									ImGui::TextWrapped("    %s: %s", sp.key.c_str(), sp.value.c_str());
+									ImGui::PopFont();
+								}
+							}
+							else
+							{
+								// Plain param: mono, indented
+								ImGui::PushFont(g_MonoMediumFont);
+								ImGui::TextWrapped("  %s: %s", p.key.c_str(), p.value.c_str());
+								ImGui::PopFont();
+							}
+						}
+						ImGui::Spacing();
+					}
+				}
+			}
+		}
+		ImGui::EndChild();
 	}
 
 	void SimulationWindow::renderMonitoringCard() const

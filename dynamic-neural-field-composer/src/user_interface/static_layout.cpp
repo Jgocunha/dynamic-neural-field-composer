@@ -17,7 +17,7 @@ namespace dnf_composer
 		static constexpr float kColBBase   = 360.0F;  // Element Control (rightmost)
 		static constexpr float kStatusBarH = 30.0F;   // status bar height (bottom)
 		static constexpr float kTopBarH    = 50.0F;   // top control bar height
-		static constexpr float kMargin     = 6.0F;
+		static constexpr float kMargin     = 1.0F;
 		static constexpr float kRounding   = 8.0F;
 
 		static bool beginPanelFixed(const char* id, const ImVec2 pos, const ImVec2 size)
