@@ -28,6 +28,7 @@
 #include "elements/correlated_normal_noise_2d.h"
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_MonoMediumFont;
 
@@ -74,14 +75,30 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::render()
 	{
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.918f, 0.898f, 0.863f, 1.0f));  // tone b
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
-		ImGui::PopFont();
-		if (open)
-			renderElementControlCard();
-		ImGui::End();
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
+		const bool open = ImGui::Begin("##element_control", nullptr,
+			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
 		ImGui::PopStyleColor();
+		if (open)
+		{
+			const float startY = ImGui::GetCursorPosY();
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			ImGui::SetCursorPosY(startY + yOff);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::TextUnformatted(ICON_FA_SLIDERS);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::SameLine(0, 8.0F);
+			ImGui::SetCursorPosY(startY);
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::TextUnformatted("Element Control");
+			ImGui::PopFont();
+			ImGui::Separator();
+			ImGui::Spacing();
+			renderElementControlCard();
+		}
+		ImGui::End();
 	}
 
 	void ElementWindow::renderElementControlCard()
@@ -112,7 +129,9 @@ namespace dnf_composer::user_interface
 		}
 
 		constexpr ImGuiWindowFlags childFlags = ImGuiWindowFlags_NoSavedSettings;
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
 		ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
+		ImGui::PopStyleColor();
 
 		// Build lowercase search string
 		std::string searchLower(searchBuf);

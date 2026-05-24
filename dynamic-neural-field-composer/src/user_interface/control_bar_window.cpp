@@ -23,9 +23,7 @@ namespace dnf_composer
                 | ImGuiWindowFlags_NoScrollbar
                 | ImGuiWindowFlags_NoScrollWithMouse;
 
-            ImGui::PushFont(g_BlackLargeFont);
-            const bool open = ImGui::Begin("Control", nullptr, flags);
-            ImGui::PopFont();
+            const bool open = ImGui::Begin("##control", nullptr, flags | ImGuiWindowFlags_NoTitleBar);
 
             if (open)
                 drawContents();

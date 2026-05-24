@@ -1,6 +1,7 @@
 #include "user_interface/simulation_window.h"
 #include "elements/neural_field.h"
 #include "elements/neural_field_2d.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_MonoMediumFont;
 extern ImFont* g_MediumMediumFont;
@@ -16,12 +17,33 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::render()
 	{
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Simulation Control", nullptr,
-			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-		ImGui::PopFont();
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
+		const bool open = ImGui::Begin("##simulation_control", nullptr,
+			imgui_kit::getGlobalWindowFlags()
+			| ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_NoScrollbar
+			| ImGuiWindowFlags_NoScrollWithMouse);
+		ImGui::PopStyleVar();
 		if (open)
 		{
+			ImGui::SetCursorPos({14.0F, 8.0F});
+			const float startY = ImGui::GetCursorPosY();
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			ImGui::SetCursorPosY(startY + yOff);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::TextUnformatted(ICON_FA_BRAIN);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::SameLine(0, 8.0F);
+			ImGui::SetCursorPosY(startY);
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::TextUnformatted("Simulation Control");
+			ImGui::PopFont();
+			ImGui::SetCursorPosX(0.0F);
+			ImGui::Separator();
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetStyle().ItemSpacing.y);
+
 			renderSidebarContents();
 		}
 		ImGui::End();

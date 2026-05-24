@@ -86,10 +86,7 @@ namespace dnf_composer::user_interface
 			}
 		}
 
-		renderMiniMap();
 		ImNodeEditor::SetCurrentEditor(nullptr);
-
-		renderNavigationControls();
 
 		const ImVec2 ngPos  = ImGui::GetWindowPos();
 		const ImVec2 ngSize = ImGui::GetWindowSize();
@@ -100,28 +97,54 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::render()
 	{
 		const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
+			| ImGuiWindowFlags_NoTitleBar
 			| ImGuiWindowFlags_NoScrollbar
 			| ImGuiWindowFlags_NoScrollWithMouse;
 
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Node Graph", nullptr, flags);
-		ImGui::PopFont();
+		const bool open = ImGui::Begin("##node_graph", nullptr, flags);
 
+		ImVec2 ngPos{}, ngSize{};
 		if (open)
 		{
+			const float startY = ImGui::GetCursorPosY();
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			ImGui::SetCursorPosY(startY + yOff);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::TextUnformatted(ICON_FA_SHARE_NODES);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::SameLine(0, 8.0F);
+			ImGui::SetCursorPosY(startY);
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::TextUnformatted("Node Graph");
+			ImGui::PopFont();
+			ImGui::Separator();
+
+			ngPos  = ImGui::GetWindowPos();
+			ngSize = ImGui::GetWindowSize();
 			renderGraphContent();
 		}
 
 		ImGui::End();
 
-		// Plot cards are separate top-level windows, must be rendered outside Begin/End.
+		// Plot cards, minimap, and nav controls are separate top-level windows — render outside Begin/End.
 		renderNodePlotCards();
+		if (open)
+		{
+			renderMiniMap(ngPos, ngSize);
+			renderNavigationControls(ngPos, ngSize);
+		}
 	}
 
 	void NodeGraphWindow::renderEmbedded() const
 	{
+		const ImVec2 pos  = ImGui::GetWindowPos();
+		const ImVec2 size = ImGui::GetWindowSize();
 		renderGraphContent();
 		renderNodePlotCards();
+		renderMiniMap(pos, size);
+		renderNavigationControls(pos, size);
 	}
 
 	void NodeGraphWindow::applyCanvasStyle()
@@ -1351,14 +1374,11 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	void NodeGraphWindow::renderNavigationControls() const
+	void NodeGraphWindow::renderNavigationControls(const ImVec2 winPos, const ImVec2 winSize) const
 	{
 		constexpr float kBtnSize = 40.0f;
 		constexpr float kGap     = 8.0f;
 		constexpr float kPad     = 10.0f;
-
-		const ImVec2 winPos  = ImGui::GetWindowPos();
-		const ImVec2 winSize = ImGui::GetWindowSize();
 
 		ImGui::SetNextWindowPos(
 			ImVec2(winPos.x + kPad, winPos.y + winSize.y - kBtnSize - kPad * 3.0f),
@@ -1414,15 +1434,12 @@ namespace dnf_composer::user_interface
 		ImGui::End();
 	}
 
-	void NodeGraphWindow::renderMiniMap() const
+	void NodeGraphWindow::renderMiniMap(const ImVec2 winPos, const ImVec2 winSize) const
 	{
 		constexpr float kW       = 200.0f;
 		constexpr float kH       = 130.0f;
 		constexpr float kPad     = 8.0f;
 		constexpr float kBBoxPad = 60.0f;
-
-		const ImVec2 winPos  = ImGui::GetWindowPos();
-		const ImVec2 winSize = ImGui::GetWindowSize();
 		ImGui::SetNextWindowPos(
 			ImVec2(winPos.x + winSize.x - kW - kPad * 3.0f,
 			       winPos.y + winSize.y - kH - kPad * 3.0f),

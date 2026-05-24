@@ -24,9 +24,7 @@ namespace dnf_composer
             | ImGuiWindowFlags_NoScrollbar
             | ImGuiWindowFlags_NoScrollWithMouse;
 
-        ImGui::PushFont(g_BlackLargeFont);
-        const bool open = ImGui::Begin("Status", nullptr, flags);
-        ImGui::PopFont();
+        const bool open = ImGui::Begin("##status", nullptr, flags | ImGuiWindowFlags_NoTitleBar);
 
         if (open)
         {

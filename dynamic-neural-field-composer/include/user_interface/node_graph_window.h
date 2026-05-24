@@ -187,7 +187,7 @@ namespace dnf_composer::user_interface
 			const std::shared_ptr<element::Element>& element, bool isWM = false);
 		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state,
 			bool isWM, bool is2DField);
-		void renderNavigationControls() const;
-		void renderMiniMap() const;
+		void renderNavigationControls(ImVec2 winPos, ImVec2 winSize) const;
+		void renderMiniMap(ImVec2 winPos, ImVec2 winSize) const;
 	};
 }
