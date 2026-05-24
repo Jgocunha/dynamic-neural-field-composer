@@ -1,5 +1,6 @@
 #include "user_interface/simulation_window.h"
 #include "elements/neural_field.h"
+#include "elements/neural_field_2d.h"
 
 extern ImFont* g_MonoMediumFont;
 extern ImFont* g_MediumMediumFont;
@@ -89,14 +90,14 @@ namespace dnf_composer::user_interface
 			{ .icon=ICON_FA_BINOCULARS, .name="Monitoring"       },
 		};
 
-		ImGui::PushFont(g_MediumIconsFont);
+		ImGui::PushFont(g_LargeIconsFont);
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 		ImGui::TextUnformatted(kInfo[activePane].icon);
 		ImGui::PopStyleColor();
 		ImGui::PopFont();
 
 		ImGui::SameLine(0, 8.0F);
-		ImGui::PushFont(g_BlackMediumFont);
+		ImGui::PushFont(g_BlackLargeFont);
 		ImGui::TextUnformatted(kInfo[activePane].name);
 		ImGui::PopFont();
 
@@ -1647,7 +1648,7 @@ namespace dnf_composer::user_interface
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
 		ImGui::TextUnformatted("Element");
 		ImGui::PopStyleColor();
-		const char* elemPreview = selectedElementId.empty() ? "Select and element..." : selectedElementId.c_str();
+		const char* elemPreview = selectedElementId.empty() ? "Select an element..." : selectedElementId.c_str();
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		if (ImGui::BeginCombo("##export_elem_combo", elemPreview))
 		{
@@ -1886,23 +1887,33 @@ namespace dnf_composer::user_interface
 		bool anyNF = false;
 		for (const auto& e : simulation->getElements())
 		{
-			if (e->getLabel() != element::ElementLabel::NEURAL_FIELD)
-				continue;
+			const bool is1D = (e->getLabel() == element::ElementLabel::NEURAL_FIELD);
+			const bool is2D = (e->getLabel() == element::ElementLabel::NEURAL_FIELD_2D);
+			if (!is1D && !is2D) continue;
 			anyNF = true;
 
-			const auto* nf = dynamic_cast<const element::NeuralField*>(e.get());
-			if (!nf) continue;
+			const auto* nf1d = is1D ? dynamic_cast<const element::NeuralField*>(e.get())   : nullptr;
+			const auto* nf2d = is2D ? dynamic_cast<const element::NeuralField2D*>(e.get()) : nullptr;
+			if (!nf1d && !nf2d) continue;
 
 			const std::string& name   = e->getUniqueName();
-			const bool         stable = nf->isStable();
-			const float        lo     = static_cast<float>(nf->getLowestActivation());
-			const float        hi     = static_cast<float>(nf->getHighestActivation());
-			const auto         bumps  = nf->getBumps();
-			const int          bn     = static_cast<int>(bumps.size());
+			const bool  stable = is1D ? nf1d->isStable()             : nf2d->isStable();
+			const float lo     = is1D ? static_cast<float>(nf1d->getLowestActivation())
+			                          : static_cast<float>(nf2d->getLowestActivation());
+			const float hi     = is1D ? static_cast<float>(nf1d->getHighestActivation())
+			                          : static_cast<float>(nf2d->getHighestActivation());
+			const auto  bumps1d = is1D ? nf1d->getBumps() : std::vector<element::NeuralFieldBump>{};
+			const auto  bumps2d = is2D ? nf2d->getBumps() : std::vector<element::NeuralField2DBump>{};
+			const int   bn      = is1D ? static_cast<int>(bumps1d.size())
+			                           : static_cast<int>(bumps2d.size());
 
-			const float padV    = ImGui::GetStyle().WindowPadding.y;
-			const float spacing = ImGui::GetStyle().ItemSpacing.y;
-			const float lineH   = ImGui::GetTextLineHeightWithSpacing();
+			const float padV      = ImGui::GetStyle().WindowPadding.y;
+			const float spacing   = ImGui::GetStyle().ItemSpacing.y;
+			const float lineH     = ImGui::GetTextLineHeightWithSpacing();
+			const float monoLineH = (g_MonoMediumFont ? g_MonoMediumFont->LegacySize
+			                                          : ImGui::GetTextLineHeight()) + spacing;
+			// Mixed default+mono lines take the height of the taller font.
+			const float rowH = std::max(lineH, monoLineH);
 
 			// Separator() advances only (1px + ItemSpacing.y), not a full lineH.
 			// InvisibleButton auto-appends ItemSpacing.y, so bar accounts for kBarH + spacing.
@@ -1912,11 +1923,11 @@ namespace dnf_composer::user_interface
 				+ spacing          // Spacing() after header
 				+ kBarH + spacing  // bar InvisibleButton (auto item-spacing included)
 				+ spacing          // Spacing() after bar
-				+ lineH            // Range row
-				+ lineH;           // Bumps row
+				+ rowH             // Range row  (mixed default+mono)
+				+ rowH;            // Bumps row  (mixed default+mono)
 
 			if (bn > 0)
-				cardH += float(bn) * (sepH + 3.0f * lineH); // (sep + 3 text lines) per bump
+				cardH += float(bn) * (sepH + lineH + 2.0f * rowH); // sep + "Bump N" + 2 data rows
 
 			const float avail = ImGui::GetContentRegionAvail().x;
 
@@ -2003,22 +2014,30 @@ namespace dnf_composer::user_interface
 				{
 					char buf[64];
 					snprintf(buf, sizeof(buf), "%.2f ... %.2f", lo, hi);
+					ImGui::PushFont(g_MonoMediumFont);
 					const float valW = ImGui::CalcTextSize(buf).x;
+					ImGui::PopFont();
 					ImGui::TextDisabled("Range");
 					ImGui::SameLine();
 					ImGui::SetCursorPosX(maxX - valW);
+					ImGui::PushFont(g_MonoMediumFont);
 					ImGui::TextUnformatted(buf);
+					ImGui::PopFont();
 				}
 
 				// ── Bumps row ─────────────────────────────────────────────────
 				{
 					char buf[16];
 					snprintf(buf, sizeof(buf), "%d", bn);
+					ImGui::PushFont(g_MonoMediumFont);
 					const float valW = ImGui::CalcTextSize(buf).x;
+					ImGui::PopFont();
 					ImGui::TextDisabled("Bumps");
 					ImGui::SameLine();
 					ImGui::SetCursorPosX(maxX - valW);
+					ImGui::PushFont(g_MonoMediumFont);
 					ImGui::TextUnformatted(buf);
+					ImGui::PopFont();
 				}
 
 				// ── Per-bump detail ───────────────────────────────────────────
@@ -2027,12 +2046,39 @@ namespace dnf_composer::user_interface
 					ImGui::Separator();
 					for (int i = 0; i < bn; ++i)
 					{
-						const auto& b = bumps[i];
 						ImGui::PushFont(g_BlackSmallFont);
 						ImGui::Text("Bump %d", i);
 						ImGui::PopFont();
-						ImGui::Text("Pos %.2f   Amp %.2f",   b.centroid, b.amplitude);
-						ImGui::Text("Width %.2f   Vel %.2f", b.width,    b.velocity);
+						if (is1D)
+						{
+							const auto& b = bumps1d[i];
+							ImGui::TextDisabled("Pos");   ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.centroid);  ImGui::PopFont();
+							ImGui::SameLine(0, 12);
+							ImGui::TextDisabled("Amp");   ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.amplitude); ImGui::PopFont();
+
+							ImGui::TextDisabled("Width"); ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.width);     ImGui::PopFont();
+							ImGui::SameLine(0, 12);
+							ImGui::TextDisabled("Vel");   ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.velocity);  ImGui::PopFont();
+						}
+						else
+						{
+							const auto& b = bumps2d[i];
+							ImGui::TextDisabled("Pos");  ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("(%.2f, %.2f)", b.centroid_x, b.centroid_y); ImGui::PopFont();
+							ImGui::SameLine(0, 12);
+							ImGui::TextDisabled("Amp");  ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.amplitude); ImGui::PopFont();
+
+							ImGui::TextDisabled("Area"); ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.area);      ImGui::PopFont();
+							ImGui::SameLine(0, 12);
+							ImGui::TextDisabled("Vel");  ImGui::SameLine(0, 4);
+							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("(%.2f, %.2f)", b.velocity_x, b.velocity_y); ImGui::PopFont();
+						}
 						if (i < bn - 1)
 							ImGui::Separator();
 					}
