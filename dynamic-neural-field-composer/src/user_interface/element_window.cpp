@@ -74,13 +74,14 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::render()
 	{
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.918f, 0.898f, 0.863f, 1.0f));  // tone b
 		ImGui::PushFont(g_BlackLargeFont);
 		const bool open = ImGui::Begin("Element Control", nullptr, imgui_kit::getGlobalWindowFlags());
 		ImGui::PopFont();
-		if (open) {
+		if (open)
 			renderElementControlCard();
-		}
 		ImGui::End();
+		ImGui::PopStyleColor();
 	}
 
 	void ElementWindow::renderElementControlCard()

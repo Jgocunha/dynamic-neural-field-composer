@@ -1,4 +1,5 @@
 #include "user_interface/static_layout.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 
 namespace dnf_composer
@@ -17,8 +18,8 @@ namespace dnf_composer
 		static constexpr float kColBBase   = 360.0F;  // Element Control (rightmost)
 		static constexpr float kStatusBarH = 30.0F;   // status bar height (bottom)
 		static constexpr float kTopBarH    = 50.0F;   // top control bar height
-		static constexpr float kMargin     = 1.0F;
-		static constexpr float kRounding   = 8.0F;
+		static constexpr float kMargin     = 0.0F;
+		static constexpr float kRounding   = 1.0F;
 
 		static bool beginPanelFixed(const char* id, const ImVec2 pos, const ImVec2 size)
 		{
@@ -160,10 +161,25 @@ namespace dnf_composer
 
 		void StaticLayoutWindow::drawPanelElement(const ImVec2 pos, const ImVec2 size) const
 		{
-			if (beginPanelFixed("##sl_elem", pos, size))
+			ImGui::SetCursorScreenPos(pos);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.922f, 0.922f, 0.922f, 1.0f));  // tone b
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   kRounding);
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
+			if (ImGui::BeginChild("##sl_elem", size, static_cast<int>(true),
+				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
-				ImGui::PushFont(g_BlackLargeFont);
-				ImGui::Text("Element Control");
+				const float startY = ImGui::GetCursorPosY();
+				const float yOff   = (g_MediumLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+				ImGui::SetCursorPosY(startY + yOff);
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+				ImGui::PushFont(g_MediumIconsFont);
+				ImGui::TextUnformatted(ICON_FA_SLIDERS);
+				ImGui::PopFont();
+				ImGui::PopStyleColor();
+				ImGui::SameLine(0, 8.0F);
+				ImGui::SetCursorPosY(startY);
+				ImGui::PushFont(g_MediumLargeFont);
+				ImGui::TextUnformatted("Element Control");
 				ImGui::PopFont();
 				ImGui::Separator();
 				ImGui::Spacing();
@@ -172,15 +188,27 @@ namespace dnf_composer
 				elementWindow->renderElementControlCard();
 				ImGui::PopStyleColor();
 			}
-			endPanel();
+			ImGui::EndChild();
+			ImGui::PopStyleVar(2);
+			ImGui::PopStyleColor();
 		}
 
 		void StaticLayoutWindow::drawPanelNodeGraph(const ImVec2 pos, const ImVec2 size) const
 		{
 			if (beginPanelFixed("##sl_node", pos, size))
 			{
-				ImGui::PushFont(g_BlackLargeFont);
-				ImGui::Text("Node Graph");
+			const float startY = ImGui::GetCursorPosY();
+				const float yOff   = (g_MediumLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+				ImGui::SetCursorPosY(startY + yOff);
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+				ImGui::PushFont(g_MediumIconsFont);
+				ImGui::TextUnformatted(ICON_FA_SHARE_NODES);
+				ImGui::PopFont();
+				ImGui::PopStyleColor();
+				ImGui::SameLine(0, 8.0F);
+				ImGui::SetCursorPosY(startY);
+				ImGui::PushFont(g_MediumLargeFont);
+				ImGui::TextUnformatted("Node Graph");
 				ImGui::PopFont();
 				ImGui::Separator();
 

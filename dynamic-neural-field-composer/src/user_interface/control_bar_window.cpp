@@ -79,8 +79,8 @@ namespace dnf_composer
             const ImVec2 bSz(btnSz, btnSz);
 
             constexpr auto kBg     = ImVec4(0.96f, 0.98f, 0.00f, 0.0f);
-            constexpr auto kHover  = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
-            constexpr auto kActive = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
+            constexpr auto kHover  = ImVec4(0.878f, 0.878f, 0.878f, 1.0f);  // tone c
+            constexpr auto kActive = ImVec4(0.835f, 0.835f, 0.835f, 1.0f);
             constexpr auto kRed   = ImVec4(0.8f, 0.1f, 0.1f, 1.0f);
 
             ImGui::PushStyleColor(ImGuiCol_Button,        kBg);
@@ -184,8 +184,8 @@ namespace dnf_composer
 
             const float btnSz = ImGui::GetFrameHeight();
             constexpr auto kBg     = ImVec4(0.96f, 0.98f, 0.00f, 0.0f);
-            constexpr auto kHover  = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
-            constexpr auto kActive = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
+            constexpr auto kHover  = ImVec4(0.878f, 0.878f, 0.878f, 1.0f);  // tone c
+            constexpr auto kActive = ImVec4(0.835f, 0.835f, 0.835f, 1.0f);
 
             ImGui::PushStyleColor(ImGuiCol_Button,        kBg);
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kHover);

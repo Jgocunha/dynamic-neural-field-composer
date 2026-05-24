@@ -31,13 +31,13 @@ namespace dnf_composer::user_interface
 	{
 		const float ui       = ImGui::GetIO().FontGlobalScale;
 		const float sideW    = 58.0F * ui;
-		const float gap      = 6.0F * ui;
+		const float gap      = 1.0F * ui;
 		const float totalH   = ImGui::GetContentRegionAvail().y;
 		const float contentW = ImGui::GetContentRegionAvail().x - sideW - gap;
-		constexpr float rounding = 8.0F;
+		constexpr float rounding = 1.0F;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0F * ui, 4.0F * ui));
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.878f, 0.878f, 0.878f, 1.0f));  // tone c
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, 1,
@@ -51,7 +51,7 @@ namespace dnf_composer::user_interface
 
 		ImGui::SameLine(0, gap);
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.922f, 0.922f, 0.922f, 1.0f));  // tone b
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_content", {contentW, totalH}, 1,
@@ -97,7 +97,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 
 		ImGui::SameLine(0, 8.0F);
-		ImGui::PushFont(g_BlackLargeFont);
+		ImGui::PushFont(g_MediumLargeFont);
 		ImGui::TextUnformatted(kInfo[activePane].name);
 		ImGui::PopFont();
 
