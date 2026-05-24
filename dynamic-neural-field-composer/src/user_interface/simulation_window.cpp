@@ -1952,7 +1952,7 @@ namespace dnf_composer::user_interface
 						IM_COL32(74, 144, 217, 255));
 
 					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + kDotR * 2.0f + 6.0f);
-					ImGui::PushFont(g_BlackMediumFont);
+					ImGui::PushFont(g_BoldLargeFont);
 					ImGui::TextUnformatted(name.c_str());
 					ImGui::PopFont();
 
@@ -2046,7 +2046,7 @@ namespace dnf_composer::user_interface
 					ImGui::Separator();
 					for (int i = 0; i < bn; ++i)
 					{
-						ImGui::PushFont(g_BlackSmallFont);
+						ImGui::PushFont(g_BoldMediumFont);
 						ImGui::Text("Bump %d", i);
 						ImGui::PopFont();
 						if (is1D)

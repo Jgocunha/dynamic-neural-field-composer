@@ -45,9 +45,9 @@ namespace dnf_composer
 		const bool running = simulation->isInitialized() && !simulation->isPaused();
 		const bool paused  = simulation->isInitialized() &&  simulation->isPaused();
 
-		const ImVec4 dotColor = running ? imgui_kit::colours::Green
-							  : paused  ? imgui_kit::colours::Yellow
-										: imgui_kit::colours::Red;
+		const ImVec4 dotColor = running ? ImVec4(0.20f, 0.75f, 0.20f, 1.0f)
+						  : paused  ? ImVec4(0.90f, 0.70f, 0.10f, 1.0f)
+									: ImVec4(0.75f, 0.20f, 0.20f, 1.0f);
 		const char* stateStr  = running ? "Running" : paused ? "Paused" : "Stopped";
 
 		ImGui::TextColored(dotColor, "\xe2\x97\x8f");  // U+25CF BLACK CIRCLE

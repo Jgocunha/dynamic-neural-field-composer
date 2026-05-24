@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 #include <cmath>
+#include <algorithm>
+#include <cctype>
 
 #include "elements/neural_field.h"
 #include "elements/field_coupling.h"
@@ -27,8 +29,38 @@
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
 
+extern ImFont* g_MonoMediumFont;
+
 namespace dnf_composer::user_interface
 {
+	// ── param-table helpers ─────────────────────────────────────────────────
+	namespace {
+		static bool ewBeginTable(const char* id) {
+			const float ui     = ImGui::GetIO().FontGlobalScale;
+			const float tableW = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+			return ImGui::BeginTable(id, 2, ImGuiTableFlags_None, ImVec2(tableW, 0));
+		}
+		static void ewTableSetup() {
+			ImGui::TableSetupColumn("##l", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+			ImGui::TableSetupColumn("##v", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+		}
+		static void ewEndTable() { ImGui::EndTable(); }
+		static void ewRowDrag(const char* lbl, const char* wid, float* v,
+		                      float spd, float mn, float mx, const char* fmt = "%.3f") {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(lbl);
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::DragFloat(wid, v, spd, mn, mx, fmt);
+			ImGui::PopFont();
+		}
+		static void ewRowBool(const char* lbl, const char* wid, bool* v) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(lbl);
+			ImGui::TableSetColumnIndex(1); ImGui::Checkbox(wid, v);
+		}
+	}
+
 	std::shared_ptr<element::Element> ElementWindow::focusedElement = nullptr;
 
 	void ElementWindow::setFocusedElement(const std::shared_ptr<element::Element>& element)
@@ -53,144 +85,234 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::renderElementControlCard()
 	{
-		constexpr ImGuiWindowFlags childFlags =
-        ImGuiWindowFlags_NoSavedSettings;
-
-		widgets::renderHelpMarker("Left click and drag or double-click to change element parameter values.");
-	    ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
-
-		// Layout metrics (must be computed before the Selected elements section uses them)
-	    const float innerW    = ImGui::GetContentRegionAvail().x;
-		const float ui        = ImGui::GetIO().FontGlobalScale;
-		const float dragW     = 130.0F * ui;
-		const float panelPadX = 10.0F * ui;
-		const float spacingX  = ImGui::GetStyle().ItemSpacing.x;
+		const float ui       = ImGui::GetIO().FontGlobalScale;
+		const float dragW    = 130.0f * ui;
 
 		auto PanelHeightFor = [&](const std::shared_ptr<element::Element>& e) -> float
 		{
 			const float frameH   = ImGui::GetFrameHeight();
 			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
 			const float rowH     = frameH + spacingY;
-			const float panelPad = 3.0F * 8.0F * ui;
+			const float panelPad = 3.0f * 8.0f * ui;
 
-			auto h = [&](const int rows) {
-				return rows * rowH - spacingY + panelPad;
-			};
+			auto h   = [&](const int rows) { return rows * rowH - spacingY + panelPad; };
+			auto sep = [&](const int n)    { return n * rowH; };
 
-			constexpr int dimRows  = 2; // Size + Step
-			constexpr int kDimRows = 4; // Size + Step + Output Size + Output Step
+			constexpr int dimRows  = 2;
+			constexpr int kDimRows = 4;
 
 			switch (e->getLabel())
 			{
-				case element::ElementLabel::NEURAL_FIELD_2D:         return h(2);
-				case element::ElementLabel::GAUSS_STIMULUS_2D:       return h(5);
-				case element::ElementLabel::GAUSS_KERNEL_2D:         return h(4);
-				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:   return h(6);
-				case element::ElementLabel::NORMAL_NOISE_2D:         return h(1);
-				case element::ElementLabel::OSCILLATORY_KERNEL_2D:   return h(5);
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS:    return h(7);
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D: return h(8);
-				case element::ElementLabel::BOOST_STIMULUS_2D:       return h(2);
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return h(3);
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return h(6);
-				case element::ElementLabel::MEMORY_TRACE_2D:         return h(3);
-				case element::ElementLabel::NORMAL_NOISE:            return h(1  + dimRows);
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE: return h(2  + dimRows);
-				case element::ElementLabel::NEURAL_FIELD:            return h(5  + dimRows);
-				case element::ElementLabel::GAUSS_STIMULUS:          return h(4  + dimRows);
-				case element::ElementLabel::GAUSS_KERNEL:            return h(4  + kDimRows);
-				case element::ElementLabel::FIELD_COUPLING:          return h(7  + dimRows);
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:      return h(6  + kDimRows);
-				case element::ElementLabel::OSCILLATORY_KERNEL:      return h(5  + kDimRows);
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return h(5  + kDimRows);
-				case element::ElementLabel::BOOST_STIMULUS:          return h(2  + dimRows);
-				case element::ElementLabel::MEMORY_TRACE:            return h(3  + dimRows);
+				// 2D types (no dimension rows)
+				case element::ElementLabel::NEURAL_FIELD_2D:            return h(2)  + sep(1);  // Dynamics
+				case element::ElementLabel::GAUSS_STIMULUS_2D:          return h(6)  + sep(2);  // Shape + Options
+				case element::ElementLabel::GAUSS_KERNEL_2D:            return h(5)  + sep(2);  // Shape + Options
+				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      return h(7)  + sep(2);  // Shape + Options
+				case element::ElementLabel::NORMAL_NOISE_2D:            return h(1)  + sep(1);  // Parameters
+				case element::ElementLabel::OSCILLATORY_KERNEL_2D:      return h(6)  + sep(2);  // Shape + Options
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS:       return h(7)  + sep(3);  // Shape + Timing + Options
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    return h(8)  + sep(3);  // Shape + Timing + Options
+				case element::ElementLabel::BOOST_STIMULUS_2D:          return h(2)  + sep(1);  // Parameters
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return h(3)  + sep(2);  // Shape + Options
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return h(7)  + sep(2);  // Shape + Options
+				case element::ElementLabel::MEMORY_TRACE_2D:            return h(3)  + sep(1);  // Dynamics
+				// 1D types (include dimension rows)
+				case element::ElementLabel::NORMAL_NOISE:               return h(1  + dimRows)  + sep(1);  // Parameters
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE:    return h(3  + dimRows)  + sep(2);  // Shape + Options
+				case element::ElementLabel::NEURAL_FIELD:               return h(5  + dimRows)  + sep(2);  // Dynamics + Activation function
+				case element::ElementLabel::GAUSS_STIMULUS:             return h(5  + dimRows)  + sep(2);  // Shape + Options
+				case element::ElementLabel::GAUSS_KERNEL:               return h(5  + kDimRows) + sep(2);  // Shape + Options
+				case element::ElementLabel::FIELD_COUPLING:             return h(5  + dimRows)  + sep(1);  // Parameters
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:         return h(7  + kDimRows) + sep(2);  // Shape + Options
+				case element::ElementLabel::OSCILLATORY_KERNEL:         return h(6  + kDimRows) + sep(2);  // Shape + Options
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    return h(6  + kDimRows) + sep(2);  // Shape + Options
+				case element::ElementLabel::BOOST_STIMULUS:             return h(2  + dimRows)  + sep(1);  // Parameters
+				case element::ElementLabel::MEMORY_TRACE:               return h(3  + dimRows)  + sep(1);  // Dynamics
 				case element::ElementLabel::GAUSS_FIELD_COUPLING:
 				{
 					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
 					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(4 + (5 * numCouplings) + dimRows);
+					return h(4 + (5 * numCouplings) + dimRows) + sep(1);  // Options
 				}
-				default: return h(4 + dimRows);
+				default: return h(4 + dimRows) + sep(1);
 			}
 		};
 
-		const float maxNaturalW = (1.0f * panelPadX) + dragW + spacingX + ImGui::CalcTextSize("circular + normalized").x;
-		const float panelW = ImMin(maxNaturalW, innerW);
-
-		// Validate a focused element still belongs to this simulation
+		// Validate focusedElement still in simulation
 		if (focusedElement)
 		{
 			bool stillValid = false;
-			for (const auto& e : simulation->getElements()) {
-				if (e == focusedElement) { stillValid = true; break; }
-			}
-			if (!stillValid) { focusedElement = nullptr;}
+			for (const auto& el : simulation->getElements())
+				if (el == focusedElement) { stillValid = true; break; }
+			if (!stillValid) focusedElement = nullptr;
 		}
 
-		// Selected elements section - shows the most recently single-clicked node
+		// Search bar
+		static char searchBuf[128] = {};
+		ImGui::SetNextItemWidth(-1.0f);
+		ImGui::InputTextWithHint("##ew_search", "Search elements...", searchBuf, sizeof(searchBuf));
+		ImGui::Spacing();
+
+		// Sync external focus (from node graph)
+		static std::string selectedName;
 		if (focusedElement)
 		{
-			ImGui::PushID("##sel_focused");
-			ImGui::PushFont(g_BoldLargeFont);
-			ImGui::TextUnformatted("Selected Element");
-			ImGui::PopFont();
-			ImGui::Spacing();
-
-			ImGui::TextUnformatted(focusedElement->getUniqueName().c_str());
-			ImGui::Spacing();
-			const ImVec4 tint = getColorForElementType(focusedElement->getLabel());
-			const ImVec2 selSize(panelW, PanelHeightFor(focusedElement));
-			PanelScope scope = beginElementPanel(tint, selSize);
-			{
-				ImGui::PushItemWidth(dragW);
-				switchElementToModify(focusedElement);
-				ImGui::PopItemWidth();
-				if (focusedElement->getElementCommonParameters().dimensionParameters.dimensionality == 1)
-					renderDimensionControls(focusedElement);
-			}
-			endElementPanel(scope);
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
-			ImGui::PopID();
+			selectedName = focusedElement->getUniqueName();
+			focusedElement = nullptr;
 		}
 
-	    // group elements by type
-	    std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
-	    for (const auto& e : simulation->getElements())
-	        byType[e->getLabel()].push_back(e);
+		constexpr ImGuiWindowFlags childFlags = ImGuiWindowFlags_NoSavedSettings;
+		ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
 
-	    for (const auto& [label, elems] : byType)
-	    {
-	        ImGui::PushFont(g_BoldLargeFont);
-	        ImGui::TextUnformatted(getElementTypeDisplayName(label).c_str());
-	        ImGui::PopFont();
-	        ImGui::Spacing();
+		// Build lowercase search string
+		std::string searchLower(searchBuf);
+		std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
+			[](unsigned char c) { return std::tolower(c); });
 
-	        for (const auto& e : elems)
-	        {
-	            // small title above each panel
-	            ImGui::TextUnformatted(e->getUniqueName().c_str());
+		// Short badge label per type
+		auto shortTypeName = [](element::ElementLabel lbl) -> const char* {
+			switch (lbl) {
+				case element::ElementLabel::GAUSS_STIMULUS:              return "Stimulus";
+				case element::ElementLabel::NEURAL_FIELD:                return "Field";
+				case element::ElementLabel::GAUSS_KERNEL:                return "Kernel";
+				case element::ElementLabel::NORMAL_NOISE:                return "Noise";
+				case element::ElementLabel::MEMORY_TRACE:                return "Memory";
+				case element::ElementLabel::FIELD_COUPLING:              return "Coupling";
+				case element::ElementLabel::GAUSS_FIELD_COUPLING:        return "GFC";
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:          return "MHKernel";
+				case element::ElementLabel::OSCILLATORY_KERNEL:          return "Osc";
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:     return "AGKernel";
+				case element::ElementLabel::BOOST_STIMULUS:              return "Boost";
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE:     return "CorrNoise";
+				case element::ElementLabel::NEURAL_FIELD_2D:             return "Field2D";
+				case element::ElementLabel::GAUSS_STIMULUS_2D:           return "Stim2D";
+				case element::ElementLabel::GAUSS_KERNEL_2D:             return "Kernel2D";
+				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:       return "MHK2D";
+				case element::ElementLabel::NORMAL_NOISE_2D:             return "Noise2D";
+				case element::ElementLabel::OSCILLATORY_KERNEL_2D:       return "Osc2D";
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS:        return "TimedStim";
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:     return "TimedStim2D";
+				case element::ElementLabel::BOOST_STIMULUS_2D:           return "Boost2D";
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:  return "CorrNoise2D";
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:  return "AGK2D";
+				case element::ElementLabel::MEMORY_TRACE_2D:             return "Memory2D";
+				default:                                                  return "Element";
+			}
+		};
 
-	            const ImVec4 tint = getColorForElementType(label);
-	            const ImVec2 size(panelW, PanelHeightFor(e));
+		// Group elements by type
+		std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
+		for (const auto& e : simulation->getElements())
+			byType[e->getLabel()].push_back(e);
 
-	            PanelScope scope = beginElementPanel(tint, size);
-	            {
-	                switchElementToModify(e);
-	                if (e->getElementCommonParameters().dimensionParameters.dimensionality == 1)
-	                    renderDimensionControls(e);
-	            }
-	            endElementPanel(scope);
+		if (byType.empty())
+		{
+			ImGui::TextDisabled("Add elements to see them here.");
+			ImGui::EndChild();
+			return;
+		}
 
-	            ImGui::Spacing();
-	        }
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+		const float frameH   = ImGui::GetFrameHeight();
+		const float spacingY = ImGui::GetStyle().ItemSpacing.y;
+		const float lineH    = frameH + spacingY;
 
-	        ImGui::Spacing();
-	    }
+		// Shared lambda — renders one row (highlight + dot + name + badge) and, if selected, the inline card
+		auto renderRow = [&](const std::shared_ptr<element::Element>& e,
+		                     const ImVec4& col, const char* badge)
+		{
+			const std::string& name       = e->getUniqueName();
+			const bool         isSelected = (name == selectedName);
+			const float        avail      = ImGui::GetContentRegionAvail().x;
+			const float        rowH       = ImGui::GetFrameHeight();
+			const ImVec2       rowMin     = ImGui::GetCursorScreenPos();
+			const ImU32        dotClr     = ImGui::ColorConvertFloat4ToU32(col);
 
-	    ImGui::EndChild();
+			if (isSelected)
+				dl->AddRectFilled(rowMin, {rowMin.x + avail, rowMin.y + rowH},
+					ImGui::GetColorU32({col.x, col.y, col.z, 0.15f}), 3.0f);
+
+			ImGui::Selectable(("##ew_" + name).c_str(), false, 0, {avail, rowH});
+			if (ImGui::IsItemClicked())
+				selectedName = isSelected ? "" : name;
+
+			// Dot — vertically centred with text
+			const float textOffY = (rowH - ImGui::GetTextLineHeight()) * 0.5f;
+			dl->AddCircleFilled({rowMin.x + 10.f, rowMin.y + textOffY + ImGui::GetTextLineHeight() * 0.5f}, 5.f, dotClr);
+
+			ImGui::SetCursorScreenPos({rowMin.x + 22.f, rowMin.y + textOffY});
+			if (isSelected) ImGui::PushFont(g_BlackMediumFont);
+			ImGui::TextUnformatted(name.c_str());
+			if (isSelected) ImGui::PopFont();
+
+			if (isSelected)
+			{
+				const bool  has1D  = e->getElementCommonParameters().dimensionParameters.dimensionality == 1;
+				float       panelH = PanelHeightFor(e);
+				if (has1D)  panelH += lineH;   // "Dimensions" SeparatorText
+
+				PanelScope scope = beginElementPanel(col, {avail, panelH});
+				{
+					if (has1D)
+					{
+						ImGui::SeparatorText("Dimensions");
+						renderDimensionControls(e);
+					}
+					switchElementToModify(e);
+				}
+				endElementPanel(scope);
+			}
+		};
+
+		// Pin the selected element at the top
+		if (!selectedName.empty())
+		{
+			for (const auto& e : simulation->getElements())
+			{
+				if (e->getUniqueName() == selectedName)
+				{
+					renderRow(e, getColorForElementType(e->getLabel()), shortTypeName(e->getLabel()));
+					ImGui::Separator();
+					ImGui::Spacing();
+					break;
+				}
+			}
+		}
+
+		// Grouped list — selected element is skipped (already pinned above)
+		for (const auto& [label, elems] : byType)
+		{
+			std::vector<std::shared_ptr<element::Element>> filtered;
+			for (const auto& e : elems)
+			{
+				if (e->getUniqueName() == selectedName) continue;
+				if (searchLower.empty()) { filtered.push_back(e); continue; }
+				std::string nameLow = e->getUniqueName();
+				std::transform(nameLow.begin(), nameLow.end(), nameLow.begin(),
+					[](unsigned char c) { return std::tolower(c); });
+				std::string typeLow = shortTypeName(label);
+				std::transform(typeLow.begin(), typeLow.end(), typeLow.begin(),
+					[](unsigned char c) { return std::tolower(c); });
+				if (nameLow.find(searchLower) != std::string::npos ||
+					typeLow.find(searchLower) != std::string::npos)
+					filtered.push_back(e);
+			}
+			if (filtered.empty()) continue;
+
+			const std::string hdr = getElementTypeDisplayName(label) + "  \xc2\xb7  " + std::to_string(filtered.size());
+			ImGui::TextDisabled("%s", hdr.c_str());
+			ImGui::Separator();
+
+			const ImVec4 col   = getColorForElementType(label);
+			const char*  badge = shortTypeName(label);
+
+			for (const auto& e : filtered)
+				renderRow(e, col, badge);
+
+			ImGui::Spacing();
+		}
+
+		ImGui::EndChild();
 	}
 
 	void ElementWindow::renderModifyElementParameters()
@@ -246,35 +368,54 @@ namespace dnf_composer::user_interface
 			stagedDx   = static_cast<float>(dim.d_x);
 		}
 
-		ImGui::Separator();
 		ImGui::PushID(("##dim_" + elemId).c_str());
 
-		ImGui::SetNextItemWidth(inputW);
-		ImGui::InputFloat("##x_max", &stagedXmax, 0.0f, 0.0f, "%.1f");
-		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
-		{
-			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
-			simulation->changeDimensions(elemId, newDim);
-			stagedXmax = static_cast<float>(newDim.x_max);
-			stagedDx   = static_cast<float>(newDim.d_x);
-		}
-		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out size" : "Size");
-		ImGui::SameLine();
-		widgets::renderHelpMarker(
-			"Changing the field size will disconnect all existing connections\n"
-			"to and from this element. Press Enter to commit the new size."
-		);
+		if (ewBeginTable("##dim_tbl")) {
+			ewTableSetup();
 
-		ImGui::SetNextItemWidth(inputW);
-		ImGui::InputFloat("##dx", &stagedDx, 0.0f, 0.0f, "%.2f");
-		if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
-		{
-			const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
-			simulation->changeDimensions(elemId, newDim);
-			stagedXmax = static_cast<float>(newDim.x_max);
-			stagedDx   = static_cast<float>(newDim.d_x);
+			// Size row
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextUnformatted(isCoupling ? "Out size" : "Size");
+			ImGui::SameLine();
+			widgets::renderHelpMarker(
+				"Changing the field size will disconnect all existing connections\n"
+				"to and from this element. Press Enter to commit the new size."
+			);
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::InputFloat("##x_max", &stagedXmax, 0.0f, 0.0f, "%.1f");
+			ImGui::PopFont();
+			if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+			{
+				const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+				simulation->changeDimensions(elemId, newDim);
+				stagedXmax = static_cast<float>(newDim.x_max);
+				stagedDx   = static_cast<float>(newDim.d_x);
+			}
+
+			// Step row
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextUnformatted(isCoupling ? "Out step" : "Step");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::InputFloat("##dx", &stagedDx, 0.0f, 0.0f, "%.2f");
+			ImGui::PopFont();
+			if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+			{
+				const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
+				simulation->changeDimensions(elemId, newDim);
+				stagedXmax = static_cast<float>(newDim.x_max);
+				stagedDx   = static_cast<float>(newDim.d_x);
+			}
+
+			ewEndTable();
 		}
-		ImGui::SameLine(); ImGui::TextUnformatted(isCoupling ? "Out step" : "Step");
 
 		if (isCoupling)
 		{
@@ -311,15 +452,27 @@ namespace dnf_composer::user_interface
 				stagedInDx   = static_cast<float>(newInDim.d_x);
 			};
 
-			ImGui::SetNextItemWidth(inputW);
-			ImGui::InputFloat("##in_x_max", &stagedInXmax, 0.0f, 0.0f, "%.1f");
-			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
-			ImGui::SameLine(); ImGui::TextUnformatted("In size");
+			if (ewBeginTable("##in_dim_tbl")) {
+				ewTableSetup();
 
-			ImGui::SetNextItemWidth(inputW);
-			ImGui::InputFloat("##in_dx", &stagedInDx, 0.0f, 0.0f, "%.2f");
-			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
-			ImGui::SameLine(); ImGui::TextUnformatted("In step");
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("In size");
+				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont);
+				ImGui::InputFloat("##in_x_max", &stagedInXmax, 0.0f, 0.0f, "%.1f");
+				ImGui::PopFont();
+				if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("In step");
+				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont);
+				ImGui::InputFloat("##in_dx", &stagedInDx, 0.0f, 0.0f, "%.2f");
+				ImGui::PopFont();
+				if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+
+				ewEndTable();
+			}
 		}
 
 		ImGui::PopID();
@@ -419,246 +572,186 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementNeuralField(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
 		element::NeuralFieldParameters nfp = neuralField->getParameters();
 		bool updated = false;
+		const std::string uid = element->getUniqueName();
 
-		auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
-		std::string label = "##" + element->getUniqueName() + "RestingLevel";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		if (ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 0.0f))
-		{
-			nfp.startingRestingLevel = restingLevel;
-			updated = true;
+		ImGui::SeparatorText("Dynamics");
+		if (ewBeginTable(("##nf_dyn" + uid).c_str())) {
+			ewTableSetup();
+			auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
+			ewRowDrag("Resting level", ("##nf_rl" + uid).c_str(), &restingLevel, 0.1f, -30.0f, 0.0f);
+			if (ImGui::IsItemDeactivatedAfterEdit()) { nfp.startingRestingLevel = restingLevel; updated = true; }
+			auto tau = static_cast<float>(nfp.tau);
+			ewRowDrag("Tau", ("##nf_tau" + uid).c_str(), &tau, 0.5f, 1.0f, 300.0f);
+			if (ImGui::IsItemDeactivatedAfterEdit()) { nfp.tau = tau; updated = true; }
+			ewEndTable();
 		}
-		ImGui::SameLine(); ImGui::Text("Resting level");
 
-		auto tau = static_cast<float>(nfp.tau);
-		label = "##" + element->getUniqueName() + "Tau";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		if (ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 300.0f))
-		{
-			nfp.tau = tau;
-			updated = true;
-		}
-		ImGui::SameLine(); ImGui::Text("Tau");
-
-		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
-		int actFnType = nfp.activationFunction
-			? static_cast<int>(nfp.activationFunction->type)
-			: element::SIGMOID;
-		label = "##" + element->getUniqueName() + "ActFnType";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		if (ImGui::Combo(label.c_str(), &actFnType, actFnNames, 3))
-		{
-			switch (actFnType)
+		ImGui::SeparatorText("Activation function");
+		if (ewBeginTable(("##nf_act" + uid).c_str())) {
+			ewTableSetup();
+			static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+			int actFnType = nfp.activationFunction
+				? static_cast<int>(nfp.activationFunction->type) : element::SIGMOID;
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::Combo(("##nf_fn" + uid).c_str(), &actFnType, actFnNames, 3))
 			{
-			case element::SIGMOID:    nfp.activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0); break;
-			case element::HEAVISIDE:  nfp.activationFunction = std::make_unique<element::HeavisideFunction>(0.0); break;
-			case element::ABSSIGMOID: nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(0.0, 100.0); break;
-			default: break;
-			}
-			updated = true;
-		}
-		ImGui::SameLine(); ImGui::Text("Activation fn.");
-
-		if (actFnType == element::SIGMOID)
-		{
-			const auto* sig = dynamic_cast<const element::SigmoidFunction*>(nfp.activationFunction.get());
-			auto xShift    = sig ? static_cast<float>(sig->getXShift())    : 0.0f;
-			auto steepness = sig ? static_cast<float>(sig->getSteepness()) : 10.0f;
-
-			label = "##" + element->getUniqueName() + "SigXShift";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
-			{
-				nfp.activationFunction = std::make_unique<element::SigmoidFunction>(
-					static_cast<double>(xShift), static_cast<double>(steepness));
+				switch (actFnType) {
+				case element::SIGMOID:    nfp.activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0); break;
+				case element::HEAVISIDE:  nfp.activationFunction = std::make_unique<element::HeavisideFunction>(0.0); break;
+				case element::ABSSIGMOID: nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(0.0, 100.0); break;
+				default: break;
+				}
 				updated = true;
 			}
-			ImGui::SameLine(); ImGui::Text("X shift");
-
-			label = "##" + element->getUniqueName() + "SigSteepness";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			if (ImGui::DragFloat(label.c_str(), &steepness, 0.5f, 0.1f, 500.0f))
+			if (actFnType == element::SIGMOID)
 			{
-				nfp.activationFunction = std::make_unique<element::SigmoidFunction>(
-					static_cast<double>(xShift), static_cast<double>(steepness));
-				updated = true;
+				const auto* sig = dynamic_cast<const element::SigmoidFunction*>(nfp.activationFunction.get());
+				auto xShift    = sig ? static_cast<float>(sig->getXShift())    : 0.0f;
+				auto steepness = sig ? static_cast<float>(sig->getSteepness()) : 10.0f;
+				ewRowDrag("X shift",   ("##nf_xs" + uid).c_str(), &xShift,    0.1f,  -30.0f, 30.0f);
+				if (ImGui::IsItemDeactivatedAfterEdit()) {
+					nfp.activationFunction = std::make_unique<element::SigmoidFunction>(static_cast<double>(xShift), static_cast<double>(steepness));
+					updated = true;
+				}
+				ewRowDrag("Steepness", ("##nf_st" + uid).c_str(), &steepness, 0.5f,    0.1f, 500.0f);
+				if (ImGui::IsItemDeactivatedAfterEdit()) {
+					nfp.activationFunction = std::make_unique<element::SigmoidFunction>(static_cast<double>(xShift), static_cast<double>(steepness));
+					updated = true;
+				}
 			}
-			ImGui::SameLine(); ImGui::Text("Steepness");
-		}
-		else if (actFnType == element::HEAVISIDE)
-		{
-			const auto* h = dynamic_cast<const element::HeavisideFunction*>(nfp.activationFunction.get());
-			auto xShift = h ? static_cast<float>(h->getXShift()) : 0.0f;
-
-			label = "##" + element->getUniqueName() + "HeavXShift";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			else if (actFnType == element::HEAVISIDE)
 			{
-				nfp.activationFunction = std::make_unique<element::HeavisideFunction>(
-					static_cast<double>(xShift));
-				updated = true;
+				const auto* hv = dynamic_cast<const element::HeavisideFunction*>(nfp.activationFunction.get());
+				auto xShift = hv ? static_cast<float>(hv->getXShift()) : 0.0f;
+				ewRowDrag("X shift", ("##nf_hxs" + uid).c_str(), &xShift, 0.1f, -30.0f, 30.0f);
+				if (ImGui::IsItemDeactivatedAfterEdit()) {
+					nfp.activationFunction = std::make_unique<element::HeavisideFunction>(static_cast<double>(xShift));
+					updated = true;
+				}
 			}
-			ImGui::SameLine(); ImGui::Text("X shift");
-		}
-		else if (actFnType == element::ABSSIGMOID)
-		{
-			const auto* abs = dynamic_cast<const element::AbsSigmoidFunction*>(nfp.activationFunction.get());
-			auto xShift = abs ? static_cast<float>(abs->getXShift()) : 0.0f;
-			auto beta   = abs ? static_cast<float>(abs->getBeta())   : 100.0f;
-
-			label = "##" + element->getUniqueName() + "AbsXShift";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			if (ImGui::DragFloat(label.c_str(), &xShift, 0.1f, -30.0f, 30.0f))
+			else if (actFnType == element::ABSSIGMOID)
 			{
-				nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
-					static_cast<double>(xShift), static_cast<double>(beta));
-				updated = true;
+				const auto* ab = dynamic_cast<const element::AbsSigmoidFunction*>(nfp.activationFunction.get());
+				auto xShift = ab ? static_cast<float>(ab->getXShift()) : 0.0f;
+				auto beta   = ab ? static_cast<float>(ab->getBeta())   : 100.0f;
+				ewRowDrag("X shift", ("##nf_axs" + uid).c_str(), &xShift, 0.1f,  -30.0f,  30.0f);
+				if (ImGui::IsItemDeactivatedAfterEdit()) {
+					nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(static_cast<double>(xShift), static_cast<double>(beta));
+					updated = true;
+				}
+				ewRowDrag("Beta",    ("##nf_ab"  + uid).c_str(), &beta,   1.0f,    0.1f, 1000.0f);
+				if (ImGui::IsItemDeactivatedAfterEdit()) {
+					nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(static_cast<double>(xShift), static_cast<double>(beta));
+					updated = true;
+				}
 			}
-			ImGui::SameLine(); ImGui::Text("X shift");
-
-			label = "##" + element->getUniqueName() + "AbsBeta";
-			ImGui::SetNextItemWidth(150.0f * ui);
-			if (ImGui::DragFloat(label.c_str(), &beta, 1.0f, 0.1f, 1000.0f))
-			{
-				nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
-					static_cast<double>(xShift), static_cast<double>(beta));
-				updated = true;
-			}
-			ImGui::SameLine(); ImGui::Text("Beta");
+			ewEndTable();
 		}
-
-		if (updated) {
-			neuralField->setParameters(nfp);
-		}
+		if (updated) neuralField->setParameters(nfp);
 	}
 
 	void ElementWindow::modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto stimulus = std::dynamic_pointer_cast<element::GaussStimulus>(element);
 		element::GaussStimulusParameters gsp = stimulus->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto amplitude = static_cast<float>(gsp.amplitude);
-		auto width = static_cast<float>(gsp.width);
-		auto position = static_cast<float>(gsp.position);
-		bool circular = gsp.circular;
+		auto width     = static_cast<float>(gsp.width);
+		auto position  = static_cast<float>(gsp.position);
+		bool circular  = gsp.circular;
 		bool normalized = gsp.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0, 30);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.01f, 0, 30);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Position";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &position, 0.1f,
-			0.0f, static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
-		ImGui::SameLine(); ImGui::Text("Position");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##gs_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##gs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
+			ewRowDrag("Width",     ("##gs_w"   + uid).c_str(), &width,     0.01f, 0.0f, 30.0f);
+			ewRowDrag("Position",  ("##gs_pos" + uid).c_str(), &position,  0.1f,  0.0f,
+				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##gs_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",  ("##gs_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",("##gs_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude - static_cast<float>(gsp.amplitude)) > epsilon ||
-			std::abs(width - static_cast<float>(gsp.width)) > epsilon ||
-			std::abs(position - static_cast<float>(gsp.position)) > epsilon ||
-			circular != gsp.circular ||
-			normalized != gsp.normalized)
+			std::abs(width     - static_cast<float>(gsp.width))     > epsilon ||
+			std::abs(position  - static_cast<float>(gsp.position))  > epsilon ||
+			circular != gsp.circular || normalized != gsp.normalized)
 		{
-			gsp.amplitude = amplitude;
-			gsp.width = width;
-			gsp.position = position;
-			gsp.circular = circular;
-			gsp.normalized = normalized;
+			gsp.amplitude = amplitude; gsp.width = width; gsp.position = position;
+			gsp.circular = circular;   gsp.normalized = normalized;
 			stimulus->setParameters(gsp);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementTimedGaussStimulus(const std::shared_ptr<element::Element>& element)
 	{
 		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto stimulus = std::dynamic_pointer_cast<element::TimedGaussStimulus>(element);
 		element::TimedGaussStimulusParameters tgsp = stimulus->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto amplitude = static_cast<float>(tgsp.amplitude);
-		auto width     = static_cast<float>(tgsp.width);
-		auto position  = static_cast<float>(tgsp.position);
-		bool circular  = tgsp.circular;
+		auto amplitude  = static_cast<float>(tgsp.amplitude);
+		auto width      = static_cast<float>(tgsp.width);
+		auto position   = static_cast<float>(tgsp.position);
+		bool circular   = tgsp.circular;
 		bool normalized = tgsp.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0, 30);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##tgs_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##tgs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
+			ewRowDrag("Width",     ("##tgs_w"   + uid).c_str(), &width,     0.01f, 0.0f, 30.0f);
+			ewRowDrag("Position",  ("##tgs_pos" + uid).c_str(), &position,  0.1f,  0.0f,
+				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##tgs_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",   ("##tgs_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized", ("##tgs_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.01f, 0, 30);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Position";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &position, 0.1f,
-			0.0f, static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
-		ImGui::SameLine(); ImGui::Text("Position");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
-		// On-times: display current list
+		ImGui::SeparatorText("Timing");
+		// On-times list
 		ImGui::Text("On-times (%d):", static_cast<int>(tgsp.onTimes.size()));
 		for (int i = 0; i < static_cast<int>(tgsp.onTimes.size()); ++i)
 		{
 			ImGui::Text("  [%d] %.2f - %.2f", i, tgsp.onTimes[i].first, tgsp.onTimes[i].second);
 			ImGui::SameLine();
-			label = "X##" + element->getUniqueName() + "Del" + std::to_string(i);
-			if (ImGui::SmallButton(label.c_str()))
+			if (ImGui::SmallButton(("X##tgs_del" + uid + std::to_string(i)).c_str()))
 			{
 				tgsp.onTimes.erase(tgsp.onTimes.begin() + i);
 				stimulus->setParameters(tgsp);
-				
 				return;
 			}
 		}
-
-		// Add new interval
+		// Add interval
 		static float newStart = 0.0f, newEnd = 1.0f;
-		label = "##" + element->getUniqueName() + "NewStart";
 		ImGui::SetNextItemWidth(70.0f * ui);
-		ImGui::DragFloat(label.c_str(), &newStart, 0.1f, 0, 1e6f);
+		ImGui::DragFloat(("##tgs_ns" + uid).c_str(), &newStart, 0.1f, 0, 1e6f);
 		ImGui::SameLine();
-		label = "##" + element->getUniqueName() + "NewEnd";
 		ImGui::SetNextItemWidth(70.0f * ui);
-		ImGui::DragFloat(label.c_str(), &newEnd, 0.1f, 0, 1e6f);
+		ImGui::DragFloat(("##tgs_ne" + uid).c_str(), &newEnd, 0.1f, 0, 1e6f);
 		ImGui::SameLine();
-		label = "Add##" + element->getUniqueName();
-		if (ImGui::SmallButton(label.c_str()) && newStart < newEnd)
+		if (ImGui::SmallButton(("Add##tgs_add" + uid).c_str()) && newStart < newEnd)
 		{
 			tgsp.onTimes.emplace_back(newStart, newEnd);
 			stimulus->setParameters(tgsp);
-			
 			return;
 		}
 
@@ -666,25 +759,20 @@ namespace dnf_composer::user_interface
 		if (std::abs(amplitude - static_cast<float>(tgsp.amplitude)) > epsilon ||
 		    std::abs(width     - static_cast<float>(tgsp.width))     > epsilon ||
 		    std::abs(position  - static_cast<float>(tgsp.position))  > epsilon ||
-		    circular  != tgsp.circular ||
-		    normalized != tgsp.normalized)
+		    circular != tgsp.circular || normalized != tgsp.normalized)
 		{
-			tgsp.amplitude  = amplitude;
-			tgsp.width      = width;
-			tgsp.position   = position;
-			tgsp.circular   = circular;
-			tgsp.normalized = normalized;
+			tgsp.amplitude = amplitude; tgsp.width = width; tgsp.position = position;
+			tgsp.circular  = circular;  tgsp.normalized = normalized;
 			stimulus->setParameters(tgsp);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementTimedGaussStimulus2D(const std::shared_ptr<element::Element>& element)
 	{
 		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto stimulus = std::dynamic_pointer_cast<element::TimedGaussStimulus2D>(element);
 		element::TimedGaussStimulus2DParameters p = stimulus->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto amplitude  = static_cast<float>(p.amplitude);
 		auto width      = static_cast<float>(p.width);
@@ -693,723 +781,494 @@ namespace dnf_composer::user_interface
 		bool circular   = p.circular;
 		bool normalized = p.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0, 30);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##tgs2_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",  ("##tgs2_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
+			ewRowDrag("Width",      ("##tgs2_w"   + uid).c_str(), &width,     0.01f, 0.0f, 30.0f);
+			ewRowDrag("Position x", ("##tgs2_px"  + uid).c_str(), &posX,      0.5f,  0.0f,
+				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
+			ewRowDrag("Position y", ("##tgs2_py"  + uid).c_str(), &posY,      0.5f,  0.0f,
+				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.y_max));
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##tgs2_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",   ("##tgs2_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized", ("##tgs2_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.01f, 0, 30);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "PosX";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &posX, 0.5f, 0.0f,
-			static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
-		ImGui::SameLine(); ImGui::Text("Position x");
-
-		label = "##" + element->getUniqueName() + "PosY";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &posY, 0.5f, 0.0f,
-			static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.y_max));
-		ImGui::SameLine(); ImGui::Text("Position y");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
-		// On-times: display current list
+		ImGui::SeparatorText("Timing");
 		ImGui::Text("On-times (%d):", static_cast<int>(p.onTimes.size()));
 		for (int i = 0; i < static_cast<int>(p.onTimes.size()); ++i)
 		{
 			ImGui::Text("  [%d] %.2f - %.2f", i, p.onTimes[i].first, p.onTimes[i].second);
 			ImGui::SameLine();
-			label = "X##" + element->getUniqueName() + "Del" + std::to_string(i);
-			if (ImGui::SmallButton(label.c_str()))
+			if (ImGui::SmallButton(("X##tgs2_del" + uid + std::to_string(i)).c_str()))
 			{
 				p.onTimes.erase(p.onTimes.begin() + i);
 				stimulus->setParameters(p);
-				
 				return;
 			}
 		}
-
-		// Add new interval
 		static float newStart = 0.0f, newEnd = 1.0f;
-		label = "##" + element->getUniqueName() + "NewStart";
 		ImGui::SetNextItemWidth(70.0f * ui);
-		ImGui::DragFloat(label.c_str(), &newStart, 0.1f, 0, 1e6f);
+		ImGui::DragFloat(("##tgs2_ns" + uid).c_str(), &newStart, 0.1f, 0, 1e6f);
 		ImGui::SameLine();
-		label = "##" + element->getUniqueName() + "NewEnd";
 		ImGui::SetNextItemWidth(70.0f * ui);
-		ImGui::DragFloat(label.c_str(), &newEnd, 0.1f, 0, 1e6f);
+		ImGui::DragFloat(("##tgs2_ne" + uid).c_str(), &newEnd, 0.1f, 0, 1e6f);
 		ImGui::SameLine();
-		label = "Add##" + element->getUniqueName();
-		if (ImGui::SmallButton(label.c_str()) && newStart < newEnd)
+		if (ImGui::SmallButton(("Add##tgs2_add" + uid).c_str()) && newStart < newEnd)
 		{
 			p.onTimes.emplace_back(newStart, newEnd);
 			stimulus->setParameters(p);
-			
 			return;
 		}
 
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
-		    std::abs(width     - static_cast<float>(p.width))     > epsilon ||
-		    std::abs(posX      - static_cast<float>(p.position_x)) > epsilon ||
-		    std::abs(posY      - static_cast<float>(p.position_y)) > epsilon ||
-		    circular  != p.circular ||
-		    normalized != p.normalized)
+		if (std::abs(amplitude - static_cast<float>(p.amplitude))   > epsilon ||
+		    std::abs(width     - static_cast<float>(p.width))       > epsilon ||
+		    std::abs(posX      - static_cast<float>(p.position_x))  > epsilon ||
+		    std::abs(posY      - static_cast<float>(p.position_y))  > epsilon ||
+		    circular != p.circular || normalized != p.normalized)
 		{
-			p.amplitude   = amplitude;
-			p.width       = width;
-			p.position_x  = posX;
-			p.position_y  = posY;
-			p.circular    = circular;
-			p.normalized  = normalized;
+			p.amplitude = amplitude; p.width = width;
+			p.position_x = posX;    p.position_y = posY;
+			p.circular = circular;  p.normalized = normalized;
 			stimulus->setParameters(p);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto fieldCoupling = std::dynamic_pointer_cast<element::FieldCoupling>(element);
 		element::FieldCouplingParameters fcp = fieldCoupling->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto scalar = static_cast<float>(fcp.scalar);
+		auto scalar       = static_cast<float>(fcp.scalar);
 		auto learningRate = static_cast<float>(fcp.learningRate);
 		bool activateLearning = fcp.isLearningActive;
 
-		std::string label = "##" + element->getUniqueName() + "Learning rule";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		if (ImGui::BeginCombo(label.c_str(), LearningRuleToString.at(fcp.learningRule).c_str()))
-		{
-			for (size_t i = 0; i < LearningRuleToString.size(); ++i)
+		ImGui::SeparatorText("Parameters");
+		if (ewBeginTable(("##fc_tbl" + uid).c_str())) {
+			ewTableSetup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Learning rule");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(("##fc_lr" + uid).c_str(), LearningRuleToString.at(fcp.learningRule).c_str()))
 			{
-				const char* name = LearningRuleToString.at(static_cast<LearningRule>(i)).c_str();
-				if (ImGui::Selectable(name, fcp.learningRule == static_cast<LearningRule>(i)))
+				for (size_t i = 0; i < LearningRuleToString.size(); ++i)
 				{
-					fcp.learningRule = static_cast<LearningRule>(i);
-					fieldCoupling->setParameters(fcp);
-					
+					const char* name = LearningRuleToString.at(static_cast<LearningRule>(i)).c_str();
+					if (ImGui::Selectable(name, fcp.learningRule == static_cast<LearningRule>(i)))
+					{
+						fcp.learningRule = static_cast<LearningRule>(i);
+						fieldCoupling->setParameters(fcp);
+					}
 				}
+				ImGui::EndCombo();
 			}
-			ImGui::EndCombo();
+
+			ewRowDrag("Learning rate", ("##fc_lrate" + uid).c_str(), &learningRate, 0.01f, 0.0f, 10.0f);
+			ewRowDrag("Scalar",        ("##fc_sc"    + uid).c_str(), &scalar,       0.1f, -20.0f, 20.0f);
+			ewRowBool("Activate learning", ("##fc_al" + uid).c_str(), &activateLearning);
+
+			ewEndTable();
 		}
-		ImGui::SameLine(); ImGui::Text("Learning rule");
-
-		label = "##" + element->getUniqueName() + "Learning rate";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &learningRate, 0.01f, 0, 10);
-		ImGui::SameLine(); ImGui::Text("Learning rate");
-
-		label = "##" + element->getUniqueName() + "Scalar";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &scalar, 0.1f, -20, 20);
-		ImGui::SameLine(); ImGui::Text("Scalar");
-
-		label = "##" + element->getUniqueName() + "Activate learning";
-		ImGui::Checkbox(label.c_str(), &activateLearning);
-		ImGui::SameLine(); ImGui::Text("Activate learning");
 
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(scalar - static_cast<float>(fcp.scalar)) > epsilon)
-		{
-			fcp.scalar = scalar;
-			fieldCoupling->setParameters(fcp);
-			
-		}
+			{ fcp.scalar = scalar; fieldCoupling->setParameters(fcp); }
 		if (activateLearning != fcp.isLearningActive)
-		{
-			fcp.isLearningActive = activateLearning;
-			fieldCoupling->setParameters(fcp);
-			
-		}
+			{ fcp.isLearningActive = activateLearning; fieldCoupling->setParameters(fcp); }
 		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) > epsilon)
-		{
-			fcp.learningRate = learningRate;
-			fieldCoupling->setParameters(fcp);
-			
-		}
+			{ fcp.learningRate = learningRate; fieldCoupling->setParameters(fcp); }
 
-		ImGui::PushID(element->getUniqueName().c_str()); // Use unique ID for scope
-
-		if (ImGui::Button("Load"))
-		{
-			fieldCoupling->readWeights();
-		}
+		ImGui::PushID(uid.c_str());
+		if (ImGui::Button("Load"))  fieldCoupling->readWeights();
 		ImGui::SameLine();
-
-		if (ImGui::Button("Save"))
-		{
-			fieldCoupling->writeWeights();
-		}
+		if (ImGui::Button("Save"))  fieldCoupling->writeWeights();
 		ImGui::SameLine();
-
-		if (ImGui::Button("Clear"))
-		{
-			fieldCoupling->clearWeights();
-		}
-
-		ImGui::PopID(); // End unique ID scope
+		if (ImGui::Button("Clear")) fieldCoupling->clearWeights();
+		ImGui::PopID();
 	}
 
 	void ElementWindow::modifyElementGaussKernel(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto kernel = std::dynamic_pointer_cast<element::GaussKernel>(element);
 		element::GaussKernelParameters gkp = kernel->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto amplitude = static_cast<float>(gkp.amplitude);
-		auto width = static_cast<float>(gkp.width);
+		auto amplitude       = static_cast<float>(gkp.amplitude);
+		auto width           = static_cast<float>(gkp.width);
 		auto amplitudeGlobal = static_cast<float>(gkp.amplitudeGlobal);
-		bool circular = gkp.circular;
-		bool normalized = gkp.normalized;
+		bool circular        = gkp.circular;
+		bool normalized      = gkp.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -50.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Amp. global";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.1f, -10, 10);
-		ImGui::SameLine(); ImGui::Text("Amp. global");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##gk_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",   ("##gk_amp" + uid).c_str(), &amplitude,       0.1f, -50.0f, 50.0f);
+			ewRowDrag("Width",       ("##gk_w"   + uid).c_str(), &width,           0.1f,   0.0f, 30.0f);
+			ewRowDrag("Amp. global", ("##gk_ag"  + uid).c_str(), &amplitudeGlobal, 0.1f, -10.0f, 10.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##gk_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",    ("##gk_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",  ("##gk_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(amplitude - static_cast<float>(gkp.amplitude)) > epsilon ||
-			std::abs(width - static_cast<float>(gkp.width)) > epsilon ||
+		if (std::abs(amplitude       - static_cast<float>(gkp.amplitude))       > epsilon ||
+			std::abs(width           - static_cast<float>(gkp.width))           > epsilon ||
 			std::abs(amplitudeGlobal - static_cast<float>(gkp.amplitudeGlobal)) > epsilon ||
-			circular != gkp.circular ||
-			normalized != gkp.normalized)
+			circular != gkp.circular || normalized != gkp.normalized)
 		{
-			gkp.amplitude = amplitude;
-			gkp.width = width;
-			gkp.amplitudeGlobal = amplitudeGlobal;
-			gkp.circular = circular;
-			gkp.normalized = normalized;
+			gkp.amplitude = amplitude; gkp.width = width; gkp.amplitudeGlobal = amplitudeGlobal;
+			gkp.circular  = circular;  gkp.normalized = normalized;
 			kernel->setParameters(gkp);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementMexicanHatKernel(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto kernel = std::dynamic_pointer_cast<element::MexicanHatKernel>(element);
 		element::MexicanHatKernelParameters mhkp = kernel->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto amplitudeExc = static_cast<float>(mhkp.amplitudeExc);
-		auto widthExc = static_cast<float>(mhkp.widthExc);
-		auto amplitudeInh = static_cast<float>(mhkp.amplitudeInh);
-		auto widthInh = static_cast<float>(mhkp.widthInh);
+		auto amplitudeExc    = static_cast<float>(mhkp.amplitudeExc);
+		auto widthExc        = static_cast<float>(mhkp.widthExc);
+		auto amplitudeInh    = static_cast<float>(mhkp.amplitudeInh);
+		auto widthInh        = static_cast<float>(mhkp.widthInh);
 		auto amplitudeGlobal = static_cast<float>(mhkp.amplitudeGlobal);
-		bool circular = mhkp.circular;
-		bool normalized = mhkp.normalized;
+		bool circular        = mhkp.circular;
+		bool normalized      = mhkp.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amp. exc.";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeExc, 0.1f, -50.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amp. exc.");
-
-		label = "##" + element->getUniqueName() + "Width exc.";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &widthExc, 0.1f, 0.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Width exc.");
-
-		label = "##" + element->getUniqueName() + "Amp. inh.";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeInh, 0.1f, 0.0f, 100.0f);
-		ImGui::SameLine(); ImGui::Text("Amp. inh.");
-
-		label = "##" + element->getUniqueName() + "Width inh.";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &widthInh, 0.1f, 0.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Width inh.");
-
-		label = "##" + element->getUniqueName() + "Amp. global";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.01f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amp. global");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##mhk_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amp. exc.",   ("##mhk_ae" + uid).c_str(), &amplitudeExc,    0.1f,  -50.0f,  50.0f);
+			ewRowDrag("Width exc.",  ("##mhk_we" + uid).c_str(), &widthExc,        0.1f,    0.0f,  30.0f);
+			ewRowDrag("Amp. inh.",   ("##mhk_ai" + uid).c_str(), &amplitudeInh,    0.1f,    0.0f, 100.0f);
+			ewRowDrag("Width inh.",  ("##mhk_wi" + uid).c_str(), &widthInh,        0.1f,    0.0f,  30.0f);
+			ewRowDrag("Amp. global", ("##mhk_ag" + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,   0.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##mhk_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",    ("##mhk_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",  ("##mhk_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 
 		static constexpr double epsilon = 1e-6;
-		if(std::abs(amplitudeExc - static_cast<float>(mhkp.amplitudeExc)) > epsilon ||
-			std::abs(widthExc - static_cast<float>(mhkp.widthExc)) > epsilon ||
-			std::abs(amplitudeInh - static_cast<float>(mhkp.amplitudeInh)) > epsilon ||
-			std::abs(widthInh - static_cast<float>(mhkp.widthInh)) > epsilon ||
+		if (std::abs(amplitudeExc    - static_cast<float>(mhkp.amplitudeExc))    > epsilon ||
+			std::abs(widthExc        - static_cast<float>(mhkp.widthExc))        > epsilon ||
+			std::abs(amplitudeInh    - static_cast<float>(mhkp.amplitudeInh))    > epsilon ||
+			std::abs(widthInh        - static_cast<float>(mhkp.widthInh))        > epsilon ||
 			std::abs(amplitudeGlobal - static_cast<float>(mhkp.amplitudeGlobal)) > epsilon ||
-			circular != mhkp.circular ||
-			normalized != mhkp.normalized)
+			circular != mhkp.circular || normalized != mhkp.normalized)
 		{
-			mhkp.amplitudeExc = amplitudeExc;
-			mhkp.widthExc = widthExc;
-			mhkp.amplitudeInh = amplitudeInh;
-			mhkp.widthInh = widthInh;
+			mhkp.amplitudeExc = amplitudeExc; mhkp.widthExc = widthExc;
+			mhkp.amplitudeInh = amplitudeInh; mhkp.widthInh = widthInh;
 			mhkp.amplitudeGlobal = amplitudeGlobal;
-			mhkp.circular = circular;
-			mhkp.normalized = normalized;
+			mhkp.circular = circular; mhkp.normalized = normalized;
 			kernel->setParameters(mhkp);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementNormalNoise(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto normalNoise = std::dynamic_pointer_cast<element::NormalNoise>(element);
 		element::NormalNoiseParameters nnp = normalNoise->getParameters();
-
+		const std::string uid = element->getUniqueName();
 		auto amplitude = static_cast<float>(nnp.amplitude);
 
-		const std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.01f, 0.0f, 5.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
+		ImGui::SeparatorText("Parameters");
+		if (ewBeginTable(("##nn_tbl" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##nn_amp" + uid).c_str(), &amplitude, 0.01f, 0.0f, 5.0f);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude - static_cast<float>(nnp.amplitude)) > epsilon)
-		{
-			nnp.amplitude = amplitude;
-			normalNoise->setParameters(nnp);
-			
-		}
+			{ nnp.amplitude = amplitude; normalNoise->setParameters(nnp); }
 	}
 
 	void ElementWindow::modifyElementCorrelatedNormalNoise(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise>(element);
 		element::CorrelatedNormalNoiseParameters p = cnn->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto amplitude = static_cast<float>(p.amplitude);
-		auto width = static_cast<float>(p.width);
-		bool circular = p.circular;
+		auto width     = static_cast<float>(p.width);
+		bool circular  = p.circular;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.001f, 0.0f, 5.0f, "%.4f");
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##cnn_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##cnn_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f,  5.0f, "%.4f");
+			ewRowDrag("Width",     ("##cnn_w"   + uid).c_str(), &width,     0.1f,   0.1f, 30.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##cnn_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",  ("##cnn_c" + uid).c_str(), &circular);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
-		    std::abs(width - static_cast<float>(p.width)) > epsilon ||
+		    std::abs(width     - static_cast<float>(p.width))     > epsilon ||
 		    circular != p.circular)
-		{
-			p.amplitude = amplitude;
-			p.width = width;
-			p.circular = circular;
-			cnn->setParameters(p);
-			
-		}
+			{ p.amplitude = amplitude; p.width = width; p.circular = circular; cnn->setParameters(p); }
 	}
 
 	void ElementWindow::modifyElementGaussFieldCoupling(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
 		element::GaussFieldCouplingParameters gfcp = gfc->getParameters();
-		const int size = gfc->getMaxSpatialDimension();
+		const std::string uid = element->getUniqueName();
+		const int  size       = gfc->getMaxSpatialDimension();
 		const auto other_size = gfc->getInputFieldDimensions().x_max;
 
 		bool normalized = gfcp.normalized;
-		bool circular = gfcp.circular;
+		bool circular   = gfcp.circular;
 
-		std::string label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		std::string text = "Circular";
-		ImGui::SameLine(); ImGui::Text(text.c_str());
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##gfc_hdr" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",   ("##gfc_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized", ("##gfc_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		text = "Normalized";
-		ImGui::SameLine(); ImGui::Text(text.c_str());
-
-		for (size_t couplingIndex = 0; couplingIndex < gfcp.couplings.size(); ++couplingIndex)
+		static constexpr double epsilon = 1e-6;
+		for (size_t ci = 0; ci < gfcp.couplings.size(); ++ci)
 		{
-			auto& coupling = gfcp.couplings[couplingIndex];
-
-			auto x_i = static_cast<float>(coupling.x_i);
-			auto x_j = static_cast<float>(coupling.x_j);
-			auto amplitude = static_cast<float>(coupling.amplitude);
-			auto width = static_cast<float>(coupling.width);
+			auto& coupling  = gfcp.couplings[ci];
+			const std::string cs = std::to_string(ci);
+			auto x_i        = static_cast<float>(coupling.x_i);
+			auto x_j        = static_cast<float>(coupling.x_j);
+			auto amplitude  = static_cast<float>(coupling.amplitude);
+			auto width      = static_cast<float>(coupling.width);
 
 			ImGui::Text("from (%.1f) to (%.1f)", x_i, x_j);
-
-			label = "##" + element->getUniqueName() + "x_i" + std::to_string(couplingIndex);
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &x_i, 0.05f, 0.0f, static_cast<float>(other_size));
-			text = "x_i " + std::to_string(couplingIndex);
-			ImGui::SameLine(); ImGui::Text(text.c_str());
-
-			label = "##" + element->getUniqueName() + "x_j" + std::to_string(couplingIndex);
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &x_j, 0.05f, 0.0f, static_cast<float>(size));
-			text = "x_j " + std::to_string(couplingIndex);
-			ImGui::SameLine(); ImGui::Text(text.c_str());
-
-			label = "##" + element->getUniqueName() + "Amplitude" + std::to_string(couplingIndex);
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0.0f, 100.0f);
-			text = "Amplitude " + std::to_string(couplingIndex);
-			ImGui::SameLine(); ImGui::Text(text.c_str());
-
-			label = "##" + element->getUniqueName() + "Width" + std::to_string(couplingIndex);
-			ImGui::SetNextItemWidth(150.0f * ui);
-			ImGui::DragFloat(label.c_str(), &width, 0.1f,1.0f, 30.0f);
-			text = "Width " + std::to_string(couplingIndex);
-			ImGui::SameLine(); ImGui::Text(text.c_str());
-
-			static constexpr double epsilon = 1e-6;
+			if (ewBeginTable(("##gfc_c" + uid + cs).c_str())) {
+				ewTableSetup();
+				ewRowDrag(("x_i " + cs).c_str(),        ("##gfc_xi" + uid + cs).c_str(), &x_i,       0.05f, 0.0f, static_cast<float>(other_size));
+				ewRowDrag(("x_j " + cs).c_str(),        ("##gfc_xj" + uid + cs).c_str(), &x_j,       0.05f, 0.0f, static_cast<float>(size));
+				ewRowDrag(("Amplitude " + cs).c_str(),  ("##gfc_a"  + uid + cs).c_str(), &amplitude, 0.1f,  0.0f, 100.0f);
+				ewRowDrag(("Width " + cs).c_str(),      ("##gfc_w"  + uid + cs).c_str(), &width,     0.1f,  1.0f,  30.0f);
+				ewEndTable();
+			}
 			if (std::abs(x_i - static_cast<float>(coupling.x_i)) > epsilon ||
 				std::abs(x_j - static_cast<float>(coupling.x_j)) > epsilon ||
 				std::abs(amplitude - static_cast<float>(coupling.amplitude)) > epsilon ||
 				std::abs(width - static_cast<float>(coupling.width)) > epsilon ||
-				normalized != gfcp.normalized ||
-				circular != gfcp.circular)
+				normalized != gfcp.normalized || circular != gfcp.circular)
 			{
-				gfcp.normalized = normalized;
-				gfcp.circular = circular;
-				coupling.x_i = x_i;
-				coupling.x_j = x_j;
-				coupling.amplitude = amplitude;
-				coupling.width = width;
+				gfcp.normalized = normalized; gfcp.circular = circular;
+				coupling.x_i = x_i; coupling.x_j = x_j;
+				coupling.amplitude = amplitude; coupling.width = width;
 				gfc->setParameters(gfcp);
-				
 			}
 		}
 
-		// Button to open the modal
-		if (ImGui::Button("Add new coupling"))
-		{
-			ImGui::OpenPopup("Add Coupling Modal");
-		}
+		if (ImGui::Button("Add new coupling")) ImGui::OpenPopup("Add Coupling Modal");
 
-		// Modal dialog for adding a coupling
 		if (ImGui::BeginPopupModal("Add Coupling Modal", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			static float new_x_i = 0.0f, new_x_j = 0.0f, new_amplitude = 1.0f, new_width = 1.0f;
-
 			ImGui::Text("Specify new coupling parameters:");
 			ImGui::Separator();
-
-			std::string label_new_params = "##New_x_i";
-			ImGui::SetNextItemWidth(250);
-			ImGui::SliderFloat(label_new_params.c_str(), &new_x_i, 0, static_cast<float>(other_size));
-			ImGui::SameLine(); ImGui::Text("New x_i");
-
-			label_new_params = "##New_x_j";
-			ImGui::SetNextItemWidth(250);
-			ImGui::SliderFloat(label_new_params.c_str(), &new_x_j, 0, static_cast<float>(size));
-			ImGui::SameLine(); ImGui::Text("New x_j");
-
-			label_new_params = "##NewAmplitude";
-			ImGui::SetNextItemWidth(250);
-			ImGui::SliderFloat(label_new_params.c_str(), &new_amplitude, 0, 100);
-			ImGui::SameLine(); ImGui::Text("New Amplitude");
-
-			label_new_params = "##NewWidth";
-			ImGui::SetNextItemWidth(250);
-			ImGui::SliderFloat(label_new_params.c_str(), &new_width, 1, 30);
-			ImGui::SameLine(); ImGui::Text("New Width");
-
+			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_xi",  &new_x_i,        0, static_cast<float>(other_size)); ImGui::SameLine(); ImGui::Text("New x_i");
+			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_xj",  &new_x_j,        0, static_cast<float>(size));       ImGui::SameLine(); ImGui::Text("New x_j");
+			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_amp", &new_amplitude,  0, 100);                            ImGui::SameLine(); ImGui::Text("New Amplitude");
+			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_w",   &new_width,      1, 30);                             ImGui::SameLine(); ImGui::Text("New Width");
 			if (ImGui::Button("Add Coupling", ImVec2(120, 0)))
 			{
-				element::GaussCoupling newCoupling{
-					static_cast<double>(new_x_i),
-					static_cast<double>(new_x_j),
-					static_cast<double>(new_amplitude),
-					static_cast<double>(new_width)
-				};
-				gfc->addCoupling(newCoupling);
+				gfc->addCoupling({ static_cast<double>(new_x_i), static_cast<double>(new_x_j),
+				                   static_cast<double>(new_amplitude), static_cast<double>(new_width) });
 				gfc->init();
-				
-
-				// Reset parameters
-				new_x_i = 0.0f;
-				new_x_j = 0.0f;
-				new_amplitude = 1.0f;
-				new_width = 1.0f;
-
+				new_x_i = 0.0f; new_x_j = 0.0f; new_amplitude = 1.0f; new_width = 1.0f;
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Cancel", ImVec2(120, 0)))
-			{
-				ImGui::CloseCurrentPopup();
-			}
-
+			if (ImGui::Button("Cancel", ImVec2(120, 0))) ImGui::CloseCurrentPopup();
 			ImGui::EndPopup();
 		}
 	}
 
 	void ElementWindow::modifyElementOscillatoryKernel(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto kernel = std::dynamic_pointer_cast<element::OscillatoryKernel>(element);
 		element::OscillatoryKernelParameters okp = kernel->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto amplitude = static_cast<float>(okp.amplitude);
-		auto decay = static_cast<float>(okp.decay);
-		auto zeroCrossings = static_cast<float>(okp.zeroCrossings);
+		auto amplitude       = static_cast<float>(okp.amplitude);
+		auto decay           = static_cast<float>(okp.decay);
+		auto zeroCrossings   = static_cast<float>(okp.zeroCrossings);
 		auto amplitudeGlobal = static_cast<float>(okp.amplitudeGlobal);
-		bool circular = okp.circular;
-		bool normalized = okp.normalized;
+		bool circular        = okp.circular;
+		bool normalized      = okp.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Decay";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &decay, 0.005f, 0.001f, 10.0f);
-		ImGui::SameLine(); ImGui::Text("Decay");
-
-		label = "##" + element->getUniqueName() + "Zero crossings";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &zeroCrossings, 0.005f, 0.0f, 1.0f);
-		ImGui::SameLine(); ImGui::Text("Zero crossings");
-
-		label = "##" + element->getUniqueName() + "Amp. global";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.01f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amp. global");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##ok_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",      ("##ok_amp" + uid).c_str(), &amplitude,       0.1f,   0.0f,  50.0f);
+			ewRowDrag("Decay",          ("##ok_dec" + uid).c_str(), &decay,           0.005f, 0.001f, 10.0f);
+			ewRowDrag("Zero crossings", ("##ok_zc"  + uid).c_str(), &zeroCrossings,   0.005f, 0.0f,   1.0f);
+			ewRowDrag("Amp. global",    ("##ok_ag"  + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,  0.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##ok_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",       ("##ok_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",     ("##ok_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(amplitude - static_cast<float>(okp.amplitude)) > epsilon ||
-			std::abs(decay - static_cast<float>(okp.decay)) > epsilon ||
-			std::abs(zeroCrossings - static_cast<float>(okp.zeroCrossings)) > epsilon ||
+		if (std::abs(amplitude       - static_cast<float>(okp.amplitude))       > epsilon ||
+			std::abs(decay           - static_cast<float>(okp.decay))           > epsilon ||
+			std::abs(zeroCrossings   - static_cast<float>(okp.zeroCrossings))   > epsilon ||
 			std::abs(amplitudeGlobal - static_cast<float>(okp.amplitudeGlobal)) > epsilon ||
-			circular != okp.circular ||
-			normalized != okp.normalized)
+			circular != okp.circular || normalized != okp.normalized)
 		{
-			okp.amplitude = amplitude;
-			okp.decay = decay;
-			okp.zeroCrossings = zeroCrossings;
-			okp.amplitudeGlobal = amplitudeGlobal;
-			okp.circular = circular;
-			okp.normalized = normalized;
+			okp.amplitude = amplitude; okp.decay = decay; okp.zeroCrossings = zeroCrossings;
+			okp.amplitudeGlobal = amplitudeGlobal; okp.circular = circular; okp.normalized = normalized;
 			kernel->setParameters(okp);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto kernel = std::dynamic_pointer_cast<element::AsymmetricGaussKernel>(element);
 		element::AsymmetricGaussKernelParameters agkp = kernel->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto amplitude = static_cast<float>(agkp.amplitude);
-		auto width = static_cast<float>(agkp.width);
+		auto amplitude       = static_cast<float>(agkp.amplitude);
+		auto width           = static_cast<float>(agkp.width);
 		auto amplitudeGlobal = static_cast<float>(agkp.amplitudeGlobal);
-		auto timeShift = static_cast<float>(agkp.timeShift);
-		bool circular = agkp.circular;
-		bool normalized = agkp.normalized;
+		auto timeShift       = static_cast<float>(agkp.timeShift);
+		bool circular        = agkp.circular;
+		bool normalized      = agkp.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.05f, -30.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.005f, 0.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Amp. global";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.005f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amp. global");
-
-		label = "##" + element->getUniqueName() + "Time shift";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &timeShift, 0.01f, -10, 10);
-		ImGui::SameLine(); ImGui::Text("Time shift");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##agk_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",   ("##agk_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
+			ewRowDrag("Width",       ("##agk_w"   + uid).c_str(), &width,           0.005f,   0.0f, 30.0f);
+			ewRowDrag("Amp. global", ("##agk_ag"  + uid).c_str(), &amplitudeGlobal, 0.005f, -10.0f,  0.0f);
+			ewRowDrag("Time shift",  ("##agk_ts"  + uid).c_str(), &timeShift,       0.01f,  -10.0f, 10.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##agk_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",    ("##agk_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",  ("##agk_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(amplitude - static_cast<float>(agkp.amplitude)) > epsilon ||
-			std::abs(width - static_cast<float>(agkp.width)) > epsilon ||
+		if (std::abs(amplitude       - static_cast<float>(agkp.amplitude))       > epsilon ||
+			std::abs(width           - static_cast<float>(agkp.width))           > epsilon ||
 			std::abs(amplitudeGlobal - static_cast<float>(agkp.amplitudeGlobal)) > epsilon ||
-			std::abs(timeShift - static_cast<float>(agkp.timeShift)) > epsilon ||
-			circular != agkp.circular ||
-			normalized != agkp.normalized)
+			std::abs(timeShift       - static_cast<float>(agkp.timeShift))       > epsilon ||
+			circular != agkp.circular || normalized != agkp.normalized)
 		{
-			agkp.amplitude = amplitude;
-			agkp.width = width;
-			agkp.amplitudeGlobal = amplitudeGlobal;
-			agkp.timeShift = timeShift;
-			agkp.circular = circular;
-			agkp.normalized = normalized;
+			agkp.amplitude = amplitude; agkp.width = width;
+			agkp.amplitudeGlobal = amplitudeGlobal; agkp.timeShift = timeShift;
+			agkp.circular = circular; agkp.normalized = normalized;
 			kernel->setParameters(agkp);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementBoostStimulus(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto boostStimulus = std::dynamic_pointer_cast<element::BoostStimulus>(element);
 		element::BoostStimulusParameters bsp = boostStimulus->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto amplitude = static_cast<float>(bsp.amplitude);
-		bool isActive = bsp.isActive;
+		bool isActive  = bsp.isActive;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "IsActive";
-		ImGui::Checkbox(label.c_str(), &isActive);
-		ImGui::SameLine(); ImGui::Text("Active");
-
-		static constexpr double epsilon = 1e-6;
-		if (std::abs(amplitude - static_cast<float>(bsp.amplitude)) > epsilon ||
-			isActive != bsp.isActive)
-		{
-			bsp.amplitude = amplitude;
-			bsp.isActive = isActive;
-			boostStimulus->setParameters(bsp);
-			
+		ImGui::SeparatorText("Parameters");
+		if (ewBeginTable(("##bs_tbl" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##bs_amp" + uid).c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
+			ewRowBool("Active",    ("##bs_act" + uid).c_str(), &isActive);
+			ewEndTable();
 		}
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(bsp.amplitude)) > epsilon || isActive != bsp.isActive)
+			{ bsp.amplitude = amplitude; bsp.isActive = isActive; boostStimulus->setParameters(bsp); }
 	}
 
 	void ElementWindow::modifyElementBoostStimulus2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto stimulus = std::dynamic_pointer_cast<element::BoostStimulus2D>(element);
 		element::BoostStimulus2DParameters p = stimulus->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto amplitude = static_cast<float>(p.amplitude);
 		bool isActive  = p.isActive;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "IsActive";
-		ImGui::Checkbox(label.c_str(), &isActive);
-		ImGui::SameLine(); ImGui::Text("Active");
-
-		static constexpr double epsilon = 1e-6;
-		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
-		    isActive != p.isActive)
-		{
-			p.amplitude = amplitude;
-			p.isActive  = isActive;
-			stimulus->setParameters(p);
-			
+		ImGui::SeparatorText("Parameters");
+		if (ewBeginTable(("##bs2_tbl" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##bs2_amp" + uid).c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
+			ewRowBool("Active",    ("##bs2_act" + uid).c_str(), &isActive);
+			ewEndTable();
 		}
+		static constexpr double epsilon = 1e-6;
+		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon || isActive != p.isActive)
+			{ p.amplitude = amplitude; p.isActive = isActive; stimulus->setParameters(p); }
 	}
 
 	void ElementWindow::modifyElementCorrelatedNormalNoise2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto cnn = std::dynamic_pointer_cast<element::CorrelatedNormalNoise2D>(element);
 		element::CorrelatedNormalNoise2DParameters p = cnn->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto amplitude = static_cast<float>(p.amplitude);
 		auto width     = static_cast<float>(p.width);
 		bool circular  = p.circular;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.001f, 0.0f, 5.0f, "%.4f");
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##cnn2_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##cnn2_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f,  5.0f, "%.4f");
+			ewRowDrag("Width",     ("##cnn2_w"   + uid).c_str(), &width,     0.1f,   0.1f, 30.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##cnn2_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",  ("##cnn2_c" + uid).c_str(), &circular);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
-		    std::abs(width     - static_cast<float>(p.width))     > epsilon ||
-		    circular != p.circular)
-		{
-			p.amplitude = amplitude;
-			p.width     = width;
-			p.circular  = circular;
-			cnn->setParameters(p);
-			
-		}
+		    std::abs(width     - static_cast<float>(p.width))     > epsilon || circular != p.circular)
+			{ p.amplitude = amplitude; p.width = width; p.circular = circular; cnn->setParameters(p); }
 	}
 
 	void ElementWindow::modifyElementAsymmetricGaussKernel2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto kernel = std::dynamic_pointer_cast<element::AsymmetricGaussKernel2D>(element);
 		element::AsymmetricGaussKernel2DParameters p = kernel->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto amplitude       = static_cast<float>(p.amplitude);
 		auto width           = static_cast<float>(p.width);
@@ -1419,39 +1278,23 @@ namespace dnf_composer::user_interface
 		bool circular        = p.circular;
 		bool normalized      = p.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.05f, -30.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.005f, 0.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Amp. global";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.005f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amp. global");
-
-		label = "##" + element->getUniqueName() + "Time shift x";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &timeShift_x, 0.01f, -10.0f, 10.0f);
-		ImGui::SameLine(); ImGui::Text("Time shift x");
-
-		label = "##" + element->getUniqueName() + "Time shift y";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &timeShift_y, 0.01f, -10.0f, 10.0f);
-		ImGui::SameLine(); ImGui::Text("Time shift y");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##agk2_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",    ("##agk2_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
+			ewRowDrag("Width",        ("##agk2_w"   + uid).c_str(), &width,           0.005f,   0.0f, 30.0f);
+			ewRowDrag("Amp. global",  ("##agk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.005f, -10.0f,  0.0f);
+			ewRowDrag("Time shift x", ("##agk2_tsx" + uid).c_str(), &timeShift_x,     0.01f,  -10.0f, 10.0f);
+			ewRowDrag("Time shift y", ("##agk2_tsy" + uid).c_str(), &timeShift_y,     0.01f,  -10.0f, 10.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##agk2_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",     ("##agk2_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",   ("##agk2_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude       - static_cast<float>(p.amplitude))       > epsilon ||
 		    std::abs(width           - static_cast<float>(p.width))           > epsilon ||
@@ -1460,131 +1303,90 @@ namespace dnf_composer::user_interface
 		    std::abs(timeShift_y     - static_cast<float>(p.timeShift_y))     > epsilon ||
 		    circular != p.circular || normalized != p.normalized)
 		{
-			p.amplitude       = amplitude;
-			p.width           = width;
-			p.amplitudeGlobal = amplitudeGlobal;
-			p.timeShift_x     = timeShift_x;
-			p.timeShift_y     = timeShift_y;
-			p.circular        = circular;
-			p.normalized      = normalized;
+			p.amplitude = amplitude; p.width = width; p.amplitudeGlobal = amplitudeGlobal;
+			p.timeShift_x = timeShift_x; p.timeShift_y = timeShift_y;
+			p.circular = circular; p.normalized = normalized;
 			kernel->setParameters(p);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementMemoryTrace2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto mt = std::dynamic_pointer_cast<element::MemoryTrace2D>(element);
 		element::MemoryTrace2DParameters p = mt->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto tauBuild  = static_cast<float>(p.tauBuild);
 		auto tauDecay  = static_cast<float>(p.tauDecay);
 		auto threshold = static_cast<float>(p.threshold);
 
-		std::string label = "##" + element->getUniqueName() + "TauBuild";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &tauBuild, 1.0f, 1.0f, 10000.0f);
-		ImGui::SameLine(); ImGui::Text("Tau build");
-
-		label = "##" + element->getUniqueName() + "TauDecay";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &tauDecay, 5.0f, 1.0f, 100000.0f);
-		ImGui::SameLine(); ImGui::Text("Tau decay");
-
-		label = "##" + element->getUniqueName() + "Threshold";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &threshold, 0.01f, -2.0f, 2.0f);
-		ImGui::SameLine(); ImGui::Text("Threshold");
-
+		ImGui::SeparatorText("Dynamics");
+		if (ewBeginTable(("##mt2_tbl" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Tau build",  ("##mt2_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
+			ewRowDrag("Tau decay",  ("##mt2_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
+			ewRowDrag("Threshold",  ("##mt2_th" + uid).c_str(), &threshold, 0.01f, -2.0f,     2.0f);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(tauBuild  - static_cast<float>(p.tauBuild))  > epsilon ||
 		    std::abs(tauDecay  - static_cast<float>(p.tauDecay))  > epsilon ||
 		    std::abs(threshold - static_cast<float>(p.threshold)) > epsilon)
-		{
-			p.tauBuild  = tauBuild;
-			p.tauDecay  = tauDecay;
-			p.threshold = threshold;
-			mt->setParameters(p);
-			
-		}
+			{ p.tauBuild = tauBuild; p.tauDecay = tauDecay; p.threshold = threshold; mt->setParameters(p); }
 	}
 
 	void ElementWindow::modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto memoryTrace = std::dynamic_pointer_cast<element::MemoryTrace>(element);
 		element::MemoryTraceParameters mtp = memoryTrace->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto tauBuild  = static_cast<float>(mtp.tauBuild);
 		auto tauDecay  = static_cast<float>(mtp.tauDecay);
 		auto threshold = static_cast<float>(mtp.threshold);
 
-		std::string label = "##" + element->getUniqueName() + "TauBuild";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &tauBuild, 1.0f, 1.0f, 10000.0f);
-		ImGui::SameLine(); ImGui::Text("Tau build");
-
-		label = "##" + element->getUniqueName() + "TauDecay";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &tauDecay, 5.0f, 1.0f, 100000.0f);
-		ImGui::SameLine(); ImGui::Text("Tau decay");
-
-		label = "##" + element->getUniqueName() + "Threshold";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &threshold, 0.01f, -2.0f, 2.0f);
-		ImGui::SameLine(); ImGui::Text("Threshold");
-
+		ImGui::SeparatorText("Dynamics");
+		if (ewBeginTable(("##mt_tbl" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Tau build",  ("##mt_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
+			ewRowDrag("Tau decay",  ("##mt_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
+			ewRowDrag("Threshold",  ("##mt_th" + uid).c_str(), &threshold, 0.01f, -2.0f,     2.0f);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(tauBuild  - static_cast<float>(mtp.tauBuild))  > epsilon ||
 			std::abs(tauDecay  - static_cast<float>(mtp.tauDecay))  > epsilon ||
 			std::abs(threshold - static_cast<float>(mtp.threshold)) > epsilon)
-		{
-			mtp.tauBuild  = tauBuild;
-			mtp.tauDecay  = tauDecay;
-			mtp.threshold = threshold;
-			memoryTrace->setParameters(mtp);
-			
-		}
+			{ mtp.tauBuild = tauBuild; mtp.tauDecay = tauDecay; mtp.threshold = threshold; memoryTrace->setParameters(mtp); }
 	}
 
 	void ElementWindow::modifyElementNeuralField2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
 		const auto nf = std::dynamic_pointer_cast<element::NeuralField2D>(element);
 		element::NeuralField2DParameters p = nf->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto tau           = static_cast<float>(p.tau);
-		auto restingLevel  = static_cast<float>(p.startingRestingLevel);
+		auto tau          = static_cast<float>(p.tau);
+		auto restingLevel = static_cast<float>(p.startingRestingLevel);
 
-		std::string label = "##" + element->getUniqueName() + "Tau";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &tau, 0.5f, 1.0f, 1000.0f);
-		ImGui::SameLine(); ImGui::Text("Tau");
-
-		label = "##" + element->getUniqueName() + "RestingLevel";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &restingLevel, 0.1f, -30.0f, 30.0f);
-		ImGui::SameLine(); ImGui::Text("Resting level");
-
+		ImGui::SeparatorText("Dynamics");
+		if (ewBeginTable(("##nf2_tbl" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Tau",           ("##nf2_tau" + uid).c_str(), &tau,          0.5f, 1.0f,  1000.0f);
+			ewRowDrag("Resting level", ("##nf2_rl"  + uid).c_str(), &restingLevel, 0.1f, -30.0f,  30.0f);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(tau - static_cast<float>(p.tau)) > epsilon ||
 			std::abs(restingLevel - static_cast<float>(p.startingRestingLevel)) > epsilon)
-		{
-			p.tau = tau;
-			p.startingRestingLevel = restingLevel;
-			nf->setParameters(p);
-			
-		}
+			{ p.tau = tau; p.startingRestingLevel = restingLevel; nf->setParameters(p); }
 	}
 
 	void ElementWindow::modifyElementGaussStimulus2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
 		const auto gs = std::dynamic_pointer_cast<element::GaussStimulus2D>(element);
 		element::GaussStimulusParameters2D p = gs->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto width      = static_cast<float>(p.width);
 		auto amplitude  = static_cast<float>(p.amplitude);
@@ -1593,34 +1395,22 @@ namespace dnf_composer::user_interface
 		bool circular   = p.circular;
 		bool normalized = p.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 100.0f);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.5f, -50.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "PosX";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &posX, 0.5f, 0.0f, 1000.0f);
-		ImGui::SameLine(); ImGui::Text("Position x");
-
-		label = "##" + element->getUniqueName() + "PosY";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &posY, 0.5f, 0.0f, 1000.0f);
-		ImGui::SameLine(); ImGui::Text("Position y");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-		ImGui::SameLine();
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##gs2_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",  ("##gs2_amp" + uid).c_str(), &amplitude, 0.5f,  -50.0f,   50.0f);
+			ewRowDrag("Width",      ("##gs2_w"   + uid).c_str(), &width,     0.1f,    0.1f,  100.0f);
+			ewRowDrag("Position x", ("##gs2_px"  + uid).c_str(), &posX,      0.5f,    0.0f, 1000.0f);
+			ewRowDrag("Position y", ("##gs2_py"  + uid).c_str(), &posY,      0.5f,    0.0f, 1000.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##gs2_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",   ("##gs2_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized", ("##gs2_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(width - static_cast<float>(p.width)) > epsilon ||
 			std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
@@ -1632,111 +1422,84 @@ namespace dnf_composer::user_interface
 			p.position_x = posX; p.position_y = posY;
 			p.circular = circular; p.normalized = normalized;
 			gs->setParameters(p);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementGaussKernel2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
 		const auto gk = std::dynamic_pointer_cast<element::GaussKernel2D>(element);
 		element::GaussKernel2DParameters p = gk->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto width           = static_cast<float>(p.width);
 		auto amplitude       = static_cast<float>(p.amplitude);
 		auto amplitudeGlobal = static_cast<float>(p.amplitudeGlobal);
-		bool circular   = p.circular;
-		bool normalized = p.normalized;
+		bool circular        = p.circular;
+		bool normalized      = p.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Width";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &width, 0.1f, 0.1f, 100.0f);
-		ImGui::SameLine(); ImGui::Text("Width");
-
-		label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, -50.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "AmplitudeGlobal";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.001f, -1.0f, 1.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude global");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-		ImGui::SameLine();
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##gk2_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",        ("##gk2_amp" + uid).c_str(), &amplitude,       0.1f,  -50.0f, 50.0f);
+			ewRowDrag("Width",            ("##gk2_w"   + uid).c_str(), &width,           0.1f,    0.1f, 100.0f);
+			ewRowDrag("Amplitude global", ("##gk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.001f,  -1.0f,  1.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##gk2_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",         ("##gk2_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",       ("##gk2_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(width - static_cast<float>(p.width)) > epsilon ||
 			std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon ||
 			std::abs(amplitudeGlobal - static_cast<float>(p.amplitudeGlobal)) > epsilon ||
 			circular != p.circular || normalized != p.normalized)
 		{
-			p.width = width; p.amplitude = amplitude;
-			p.amplitudeGlobal = amplitudeGlobal;
+			p.width = width; p.amplitude = amplitude; p.amplitudeGlobal = amplitudeGlobal;
 			p.circular = circular; p.normalized = normalized;
 			gk->setParameters(p);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementMexicanHatKernel2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
 		const auto mhk = std::dynamic_pointer_cast<element::MexicanHatKernel2D>(element);
 		element::MexicanHatKernel2DParameters p = mhk->getParameters();
+		const std::string uid = element->getUniqueName();
 
 		auto widthExc        = static_cast<float>(p.widthExc);
 		auto amplitudeExc    = static_cast<float>(p.amplitudeExc);
 		auto widthInh        = static_cast<float>(p.widthInh);
 		auto amplitudeInh    = static_cast<float>(p.amplitudeInh);
 		auto amplitudeGlobal = static_cast<float>(p.amplitudeGlobal);
-		bool circular   = p.circular;
-		bool normalized = p.normalized;
+		bool circular        = p.circular;
+		bool normalized      = p.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "WidthExc";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &widthExc, 0.1f, 0.1f, 100.0f);
-		ImGui::SameLine(); ImGui::Text("Width exc");
-
-		label = "##" + element->getUniqueName() + "AmpExc";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeExc, 0.1f, -50.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude exc");
-
-		label = "##" + element->getUniqueName() + "WidthInh";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &widthInh, 0.1f, 0.1f, 100.0f);
-		ImGui::SameLine(); ImGui::Text("Width inh");
-
-		label = "##" + element->getUniqueName() + "AmpInh";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeInh, 0.1f, -50.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude inh");
-
-		label = "##" + element->getUniqueName() + "AmpGlobal";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.001f, -1.0f, 1.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude global");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-		ImGui::SameLine();
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##mhk2_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude exc",    ("##mhk2_ae" + uid).c_str(), &amplitudeExc,    0.1f,   -50.0f, 50.0f);
+			ewRowDrag("Width exc",        ("##mhk2_we" + uid).c_str(), &widthExc,        0.1f,     0.1f, 100.0f);
+			ewRowDrag("Amplitude inh",    ("##mhk2_ai" + uid).c_str(), &amplitudeInh,    0.1f,   -50.0f, 50.0f);
+			ewRowDrag("Width inh",        ("##mhk2_wi" + uid).c_str(), &widthInh,        0.1f,     0.1f, 100.0f);
+			ewRowDrag("Amplitude global", ("##mhk2_ag" + uid).c_str(), &amplitudeGlobal, 0.001f,  -1.0f,   1.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##mhk2_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",         ("##mhk2_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",       ("##mhk2_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(widthExc - static_cast<float>(p.widthExc)) > epsilon ||
-			std::abs(amplitudeExc - static_cast<float>(p.amplitudeExc)) > epsilon ||
-			std::abs(widthInh - static_cast<float>(p.widthInh)) > epsilon ||
-			std::abs(amplitudeInh - static_cast<float>(p.amplitudeInh)) > epsilon ||
+		if (std::abs(widthExc        - static_cast<float>(p.widthExc))        > epsilon ||
+			std::abs(amplitudeExc    - static_cast<float>(p.amplitudeExc))    > epsilon ||
+			std::abs(widthInh        - static_cast<float>(p.widthInh))        > epsilon ||
+			std::abs(amplitudeInh    - static_cast<float>(p.amplitudeInh))    > epsilon ||
 			std::abs(amplitudeGlobal - static_cast<float>(p.amplitudeGlobal)) > epsilon ||
 			circular != p.circular || normalized != p.normalized)
 		{
@@ -1745,89 +1508,66 @@ namespace dnf_composer::user_interface
 			p.amplitudeGlobal = amplitudeGlobal;
 			p.circular = circular; p.normalized = normalized;
 			mhk->setParameters(p);
-			
 		}
 	}
 
 	void ElementWindow::modifyElementNormalNoise2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
 		const auto nn = std::dynamic_pointer_cast<element::NormalNoise2D>(element);
 		element::NormalNoise2DParameters p = nn->getParameters();
-
+		const std::string uid = element->getUniqueName();
 		auto amplitude = static_cast<float>(p.amplitude);
 
-		const std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.001f, 0.0f, 10.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
+		ImGui::SeparatorText("Parameters");
+		if (ewBeginTable(("##nn2_tbl" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude", ("##nn2_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f, 10.0f);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
 		if (std::abs(amplitude - static_cast<float>(p.amplitude)) > epsilon)
-		{
-			p.amplitude = amplitude;
-			nn->setParameters(p);
-			
-		}
+			{ p.amplitude = amplitude; nn->setParameters(p); }
 	}
 
 	void ElementWindow::modifyElementOscillatoryKernel2D(const std::shared_ptr<element::Element>& element)
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-
 		const auto kernel = std::dynamic_pointer_cast<element::OscillatoryKernel2D>(element);
 		element::OscillatoryKernel2DParameters p = kernel->getParameters();
+		const std::string uid = element->getUniqueName();
 
-		auto amplitude      = static_cast<float>(p.amplitude);
-		auto decay          = static_cast<float>(p.decay);
-		auto zeroCrossings  = static_cast<float>(p.zeroCrossings);
+		auto amplitude       = static_cast<float>(p.amplitude);
+		auto decay           = static_cast<float>(p.decay);
+		auto zeroCrossings   = static_cast<float>(p.zeroCrossings);
 		auto amplitudeGlobal = static_cast<float>(p.amplitudeGlobal);
-		bool circular       = p.circular;
-		bool normalized     = p.normalized;
+		bool circular        = p.circular;
+		bool normalized      = p.normalized;
 
-		std::string label = "##" + element->getUniqueName() + "Amplitude";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitude, 0.1f, 0.0f, 50.0f);
-		ImGui::SameLine(); ImGui::Text("Amplitude");
-
-		label = "##" + element->getUniqueName() + "Decay";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &decay, 0.005f, 0.001f, 10.0f);
-		ImGui::SameLine(); ImGui::Text("Decay");
-
-		label = "##" + element->getUniqueName() + "Zero crossings";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &zeroCrossings, 0.005f, 0.0f, 1.0f);
-		ImGui::SameLine(); ImGui::Text("Zero crossings");
-
-		label = "##" + element->getUniqueName() + "Amp. global";
-		ImGui::SetNextItemWidth(150.0f * ui);
-		ImGui::DragFloat(label.c_str(), &amplitudeGlobal, 0.01f, -10.0f, 0.0f);
-		ImGui::SameLine(); ImGui::Text("Amp. global");
-
-		label = "##" + element->getUniqueName() + "Circular";
-		ImGui::Checkbox(label.c_str(), &circular);
-		ImGui::SameLine(); ImGui::Text("Circular");
-
-		label = "##" + element->getUniqueName() + "Normalized";
-		ImGui::SameLine(); ImGui::Checkbox(label.c_str(), &normalized);
-		ImGui::SameLine(); ImGui::Text("Normalized");
-
+		ImGui::SeparatorText("Shape");
+		if (ewBeginTable(("##ok2_shp" + uid).c_str())) {
+			ewTableSetup();
+			ewRowDrag("Amplitude",      ("##ok2_amp" + uid).c_str(), &amplitude,       0.1f,   0.0f,  50.0f);
+			ewRowDrag("Decay",          ("##ok2_dec" + uid).c_str(), &decay,           0.005f, 0.001f, 10.0f);
+			ewRowDrag("Zero crossings", ("##ok2_zc"  + uid).c_str(), &zeroCrossings,   0.005f, 0.0f,   1.0f);
+			ewRowDrag("Amp. global",    ("##ok2_ag"  + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,  0.0f);
+			ewEndTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (ewBeginTable(("##ok2_opt" + uid).c_str())) {
+			ewTableSetup();
+			ewRowBool("Circular",       ("##ok2_c" + uid).c_str(), &circular);
+			ewRowBool("Normalized",     ("##ok2_n" + uid).c_str(), &normalized);
+			ewEndTable();
+		}
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(amplitude     - static_cast<float>(p.amplitude))     > epsilon ||
-		    std::abs(decay         - static_cast<float>(p.decay))         > epsilon ||
-		    std::abs(zeroCrossings - static_cast<float>(p.zeroCrossings)) > epsilon ||
+		if (std::abs(amplitude       - static_cast<float>(p.amplitude))       > epsilon ||
+		    std::abs(decay           - static_cast<float>(p.decay))           > epsilon ||
+		    std::abs(zeroCrossings   - static_cast<float>(p.zeroCrossings))   > epsilon ||
 		    std::abs(amplitudeGlobal - static_cast<float>(p.amplitudeGlobal)) > epsilon ||
 		    circular != p.circular || normalized != p.normalized)
 		{
-			p.amplitude      = amplitude;
-			p.decay          = decay;
-			p.zeroCrossings  = zeroCrossings;
-			p.amplitudeGlobal = amplitudeGlobal;
-			p.circular       = circular;
-			p.normalized     = normalized;
+			p.amplitude = amplitude; p.decay = decay; p.zeroCrossings = zeroCrossings;
+			p.amplitudeGlobal = amplitudeGlobal; p.circular = circular; p.normalized = normalized;
 			kernel->setParameters(p);
-			
 		}
 	}
 
