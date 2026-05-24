@@ -1,6 +1,5 @@
 #include "user_interface/simulation_window.h"
 #include "elements/neural_field.h"
-#include <sstream>
 
 extern ImFont* g_MonoMediumFont;
 extern ImFont* g_MediumMediumFont;
@@ -30,17 +29,17 @@ namespace dnf_composer::user_interface
 	void SimulationWindow::renderSidebarContents() const
 	{
 		const float ui       = ImGui::GetIO().FontGlobalScale;
-		const float sideW    = 58.0f * ui;
-		const float gap      = 6.0f * ui;
+		const float sideW    = 58.0F * ui;
+		const float gap      = 6.0F * ui;
 		const float totalH   = ImGui::GetContentRegionAvail().y;
 		const float contentW = ImGui::GetContentRegionAvail().x - sideW - gap;
-		constexpr float rounding = 8.0f;
+		constexpr float rounding = 8.0F;
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0f * ui, 4.0f * ui));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0F * ui, 4.0F * ui));
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
-		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, true,
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
+		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, 1,
 			ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 		{
 			drawIconStrip();
@@ -53,11 +52,11 @@ namespace dnf_composer::user_interface
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
-		if (ImGui::BeginChild("##sim_content", {contentW, totalH}, true,
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
+		if (ImGui::BeginChild("##sim_content", {contentW, totalH}, 1,
 			ImGuiWindowFlags_NoSavedSettings))
 		{
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
 			renderContentPaneTitle();
 			switch (activePane)
 			{
@@ -82,12 +81,12 @@ namespace dnf_composer::user_interface
 
 		struct PaneInfo { const char* icon; const char* name; };
 		static constexpr PaneInfo kInfo[] = {
-			{ ICON_FA_PLUS,     "Add elements"      },
-			{ ICON_FA_TRASH,    "Remove elements"   },
-			{ ICON_FA_LINK,     "Set interactions" },
-			{ ICON_FA_TERMINAL, "Log parameters"   },
-			{ ICON_FA_DOWNLOAD, "Export data"      },
-			{ ICON_FA_BINOCULARS, "Monitoring"       },
+			{ .icon=ICON_FA_PLUS,     .name="Add elements"      },
+			{ .icon=ICON_FA_TRASH,    .name="Remove elements"   },
+			{ .icon=ICON_FA_LINK,     .name="Set interactions" },
+			{ .icon=ICON_FA_TERMINAL, .name="Log parameters"   },
+			{ .icon=ICON_FA_DOWNLOAD, .name="Export data"      },
+			{ .icon=ICON_FA_BINOCULARS, .name="Monitoring"       },
 		};
 
 		ImGui::PushFont(g_MediumIconsFont);
@@ -96,7 +95,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 		ImGui::PopFont();
 
-		ImGui::SameLine(0, 8.0f);
+		ImGui::SameLine(0, 8.0F);
 		ImGui::PushFont(g_BlackMediumFont);
 		ImGui::TextUnformatted(kInfo[activePane].name);
 		ImGui::PopFont();
@@ -109,22 +108,26 @@ namespace dnf_composer::user_interface
 	{
 		struct PaneTab { const char* icon; const char* tooltip; };
 		static constexpr PaneTab kPanes[] = {
-			{ ICON_FA_PLUS,     "Add elements"     },
-			{ ICON_FA_TRASH,    "Remove elements"  },
-			{ ICON_FA_LINK,     "Set interactions" },
-			{ ICON_FA_TERMINAL, "Log parameters"  },
-			{ ICON_FA_DOWNLOAD, "Export data"     },
-			{ ICON_FA_BINOCULARS, "Monitoring"      },
+			{ .icon=ICON_FA_PLUS,     .tooltip="Add elements"      },
+			{ .icon=ICON_FA_TRASH,    .tooltip="Remove elements"   },
+			{ .icon=ICON_FA_LINK,     .tooltip="Set interactions" },
+			{ .icon=ICON_FA_TERMINAL, .tooltip="Log parameters"   },
+			{ .icon=ICON_FA_DOWNLOAD, .tooltip="Export data"      },
+			{ .icon=ICON_FA_BINOCULARS, .tooltip="Monitoring"       },
 		};
 
-		ImGui::SetCursorPos(ImVec2(0.0f, 16.0f));
+		ImGui::SetCursorPos(ImVec2(0.0F, 16.0F));
 		ImGui::BeginGroup();
 		for (int i = 0; i < 6; ++i)
 		{
 			if (widgets::renderSidebarTab(kPanes[i].icon, "", activePane == i))
+			{
 				activePane = i;
+			}
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetTooltip("%s", kPanes[i].tooltip);
+			}
 		}
 		ImGui::EndGroup();
 	}
@@ -145,7 +148,7 @@ namespace dnf_composer::user_interface
 			const ImVec4 accent  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			const ImVec4 bg      = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
 			const ImVec4 bgHov   = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered);
-			const ImVec4 textSel(1.f, 1.f, 1.f, 1.f);
+			constexpr ImVec4 textSel(1.f, 1.f, 1.f, 1.f);
 			const ImVec4 textNorm = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 
 			auto dimBtn = [&](const char* label, int dim)
@@ -258,8 +261,8 @@ namespace dnf_composer::user_interface
 			const float addBtnH = ImGui::GetFrameHeight() * 1.5f;
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
 			if (ImGui::Button("     Add element", {-FLT_MIN, addBtnH}))
 				s_addRequested = true;
@@ -291,8 +294,8 @@ namespace dnf_composer::user_interface
 
 	static void paramTableSetup()
 	{
-		ImGui::TableSetupColumn("##l", ImGuiTableColumnFlags_WidthStretch, 1.0f);
-		ImGui::TableSetupColumn("##v", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+		ImGui::TableSetupColumn("##l", ImGuiTableColumnFlags_WidthStretch, 1.0F);
+		ImGui::TableSetupColumn("##v", ImGuiTableColumnFlags_WidthStretch, 1.0F);
 	}
 
 	static void endParamTable()
@@ -1407,9 +1410,9 @@ namespace dnf_composer::user_interface
 		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
 
 		const float rowH   = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
-		const float dotR   = 5.0f;
-		const float trashW = ImGui::GetFrameHeight() + 10.0f;
-		const float typeW  = 65.0f * ImGui::GetIO().FontGlobalScale;
+		const float dotR   = 5.0F;
+		const float trashW = ImGui::GetFrameHeight() + 10.0F;
+		const float typeW  = 65.0F * ImGui::GetIO().FontGlobalScale;
 
 		if (ImGui::BeginChild("##re_list", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
 		{
@@ -1439,12 +1442,12 @@ namespace dnf_composer::user_interface
 
 				ImDrawList* dl = ImGui::GetWindowDrawList();
 				const float cy    = rowMin.y + selH * 0.5f;
-				const float cx    = rowMin.x + 12.0f;
+				const float cx    = rowMin.x + 12.0F;
 				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
 
 				dl->AddCircleFilled({cx, cy}, dotR, cat.color);
-				dl->AddText({cx + dotR + 8.0f, textY}, ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
-				dl->AddText({rowMin.x + avail - trashW - typeW - 4.0f, textY},
+				dl->AddText({cx + dotR + 8.0F, textY}, ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
+				dl->AddText({rowMin.x + avail - trashW - typeW - 4.0F, textY},
 					ImGui::GetColorU32(ImGuiCol_TextDisabled), cat.label);
 
 				ImGui::SetCursorScreenPos({rowMin.x + avail - trashW, rowMin.y});
@@ -1509,9 +1512,9 @@ namespace dnf_composer::user_interface
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0f));
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0f));
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
 			ImGui::BeginDisabled(!canConn);
 			const bool pressed = ImGui::Button("     Connect", {-FLT_MIN, btnH});
@@ -1557,7 +1560,7 @@ namespace dnf_composer::user_interface
 		std::string filterLower(connSearch);
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
 
-		const float unlinkW = ImGui::GetFrameHeight() + 6.0f;
+		const float unlinkW = ImGui::GetFrameHeight() + 6.0F;
 
 		if (ImGui::BeginChild("##si_connections", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
 		{
@@ -1589,7 +1592,7 @@ namespace dnf_composer::user_interface
 
 					ImDrawList* dl = ImGui::GetWindowDrawList();
 					const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
-					dl->AddText({rowMin.x + 6.0f, textY}, ImGui::GetColorU32(ImGuiCol_Text),
+					dl->AddText({rowMin.x + 6.0F, textY}, ImGui::GetColorU32(ImGuiCol_Text),
 						label.c_str());
 
 					if (hov)
@@ -1597,9 +1600,9 @@ namespace dnf_composer::user_interface
 						ImGui::SetCursorScreenPos({rowMin.x + avail - unlinkW, rowMin.y});
 						ImGui::PushFont(g_MediumIconsFont);
 						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.0f, 0.0f, 0.12f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0f, 0.0f, 0.0f, 0.22f));
-						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85f, 0.15f, 0.15f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0F, 0.0F, 0.0F, 0.12f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0F, 0.0F, 0.0F, 0.22f));
+						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85f, 0.15f, 0.15f, 1.0F));
 						if (ImGui::Button(ICON_FA_LINK_SLASH, {unlinkW, selH}))
 						{
 							pendingRemoveTarget = tgt->getUniqueName();
@@ -1640,14 +1643,12 @@ namespace dnf_composer::user_interface
 		static std::string selectedElementId;
 		static std::string selectedComponent;
 
-		ImGui::TextUnformatted("EXPORT DATA");
-		ImGui::Spacing();
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Export");
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-		const char* elemPreview = selectedElementId.empty() ? "element" : selectedElementId.c_str();
-		ImGui::SetNextItemWidth(140.0f * ImGui::GetIO().FontGlobalScale);
+		// ── Element ───────────────────────────────────────────────────────────
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Element");
+		ImGui::PopStyleColor();
+		const char* elemPreview = selectedElementId.empty() ? "Select and element..." : selectedElementId.c_str();
+		ImGui::SetNextItemWidth(-FLT_MIN);
 		if (ImGui::BeginCombo("##export_elem_combo", elemPreview))
 		{
 			for (const auto& e : simulation->getElements())
@@ -1655,43 +1656,74 @@ namespace dnf_composer::user_interface
 				const std::string& name = e->getUniqueName();
 				const bool is_sel = (selectedElementId == name);
 				if (ImGui::Selectable(name.c_str(), is_sel))
+				{
 					selectedElementId = name;
+					selectedComponent.clear();
+				}
 				if (is_sel) ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::Spacing();
 
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-		ImGui::AlignTextToFramePadding();
-
-		const char* compPreview = selectedComponent.empty() ? "component" : selectedComponent.c_str();
-		ImGui::SetNextItemWidth(160.0f * ImGui::GetIO().FontGlobalScale);
+		// ── Component ─────────────────────────────────────────────────────────
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Component");
+		ImGui::PopStyleColor();
+		const char* compPreview = selectedComponent.empty() ? "Select a component..." : selectedComponent.c_str();
+		ImGui::BeginDisabled(selectedElementId.empty());
+		ImGui::SetNextItemWidth(-FLT_MIN);
 		if (ImGui::BeginCombo("##export_comp_combo", compPreview))
 		{
-			if (!selectedElementId.empty())
+			if (const auto elem = simulation->getElement(selectedElementId))
 			{
-				if (const auto elem = simulation->getElement(selectedElementId))
+				for (const auto& comp : elem->getComponentList())
 				{
-					for (const auto& comp : elem->getComponentList())
-					{
-						const bool is_sel = (selectedComponent == comp);
-						if (ImGui::Selectable(comp.c_str(), is_sel))
-							selectedComponent = comp;
-						if (is_sel) ImGui::SetItemDefaultFocus();
-					}
+					const bool is_sel = (selectedComponent == comp);
+					if (ImGui::Selectable(comp.c_str(), is_sel))
+						selectedComponent = comp;
+					if (is_sel) ImGui::SetItemDefaultFocus();
 				}
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::EndDisabled();
+		ImGui::Spacing();
 
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-		const float h = ImGui::GetFrameHeight();
-		ImGui::PushFont(g_MediumIconsFont);
-		const bool exportClicked = ImGui::Button(ICON_FA_DOWNLOAD, ImVec2(h + 10.0f, h));
-		ImGui::PopFont();
+		// ── Export button ─────────────────────────────────────────────────────
+		{
+			const bool canExport = !selectedElementId.empty() && !selectedComponent.empty();
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			const float  btnH   = ImGui::GetFrameHeight() * 1.5f;
+			ImGui::PushStyleColor(ImGuiCol_Button,
+				ImVec4(accent.x, accent.y, accent.z, canExport ? 1.0F : accent.w));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+			ImGui::BeginDisabled(!canExport);
+			const bool pressed = ImGui::Button("     Export", {-FLT_MIN, btnH});
+			ImGui::EndDisabled();
+			ImGui::PopStyleColor(4);
 
-		if (exportClicked && !selectedElementId.empty() && !selectedComponent.empty())
-			simulation->exportComponentToFile(selectedElementId, selectedComponent);
+			{
+				const ImVec2 bMin = ImGui::GetItemRectMin();
+				const ImVec2 bMax = ImGui::GetItemRectMax();
+				ImGui::PushFont(g_MediumIconsFont);
+				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_DOWNLOAD);
+				const float  labelW = ImGui::CalcTextSize("     Export").x;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const ImU32  col    = canExport ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+					{iconX, iconY}, col, ICON_FA_DOWNLOAD);
+				ImGui::PopFont();
+			}
+
+			if (pressed)
+				simulation->exportComponentToFile(selectedElementId, selectedComponent);
+		}
 
 		ImGui::PopID();
 	}
@@ -1733,13 +1765,14 @@ namespace dnf_composer::user_interface
 		ImGui::InputTextWithHint("##lp_search", "Search...", searchBuf, sizeof(searchBuf));
 		ImGui::Spacing();
 
-		// ── Element list (bounded, filtered) ─────────────────────────────────
+		// ── Element list (fills all space above the button) ───────────────────
 		std::string filterLower(searchBuf);
 		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
 
 		const float rowH  = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
-		const float dotR  = 5.0f;
-		const float typeW = 65.0f * ImGui::GetIO().FontGlobalScale;
+		const float dotR  = 5.0F;
+		const float typeW = 65.0F * ImGui::GetIO().FontGlobalScale;
+		const float btnH  = ImGui::GetFrameHeight() * 1.5f;
 
 		int matchCount = 0;
 		for (const auto& e : simulation->getElements())
@@ -1758,6 +1791,8 @@ namespace dnf_composer::user_interface
 
 		if (ImGui::BeginChild("##lp_list", {0, listH}, false, ImGuiWindowFlags_NoSavedSettings))
 		{
+			const auto& style = ImGui::GetStyle();
+
 			for (const auto& e : simulation->getElements())
 			{
 				const std::string& name = e->getUniqueName();
@@ -1777,7 +1812,7 @@ namespace dnf_composer::user_interface
 
 				const ImVec2 rowMin  = ImGui::GetCursorScreenPos();
 				const float  avail   = ImGui::GetContentRegionAvail().x;
-				const float  selH    = rowH - ImGui::GetStyle().ItemSpacing.y;
+				const float  selH    = rowH - style.ItemSpacing.y;
 				const bool   selected = (selectedId == name);
 
 				if (ImGui::Selectable("##lp_row", selected, 0, {avail, selH}))
@@ -1787,8 +1822,8 @@ namespace dnf_composer::user_interface
 				const float cy    = rowMin.y + selH * 0.5f;
 				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
 
-				dl->AddCircleFilled({rowMin.x + 12.0f, cy}, dotR, cat.color);
-				dl->AddText({rowMin.x + 12.0f + dotR + 8.0f, textY},
+				dl->AddCircleFilled({rowMin.x + 12.0F, cy}, dotR, cat.color);
+				dl->AddText({rowMin.x + 12.0F + dotR + 8.0F, textY},
 					ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
 				dl->AddText({rowMin.x + avail - typeW, textY},
 					ImGui::GetColorU32(ImGuiCol_TextDisabled), cat.label);
@@ -1798,208 +1833,55 @@ namespace dnf_composer::user_interface
 		}
 		ImGui::EndChild();
 
-		// ── "Parameters" header + copy button ────────────────────────────────
-		ImGui::Spacing();
-		ImGui::Separator();
-		ImGui::Spacing();
-
-		const std::string paramText = [&]() -> std::string {
-			if (selectedId.empty()) return {};
-			const auto elem = simulation->getElement(selectedId);
-			return elem ? elem->toString() : std::string{};
-		}();
-
-		const float copyW = ImGui::GetFrameHeight() + 6.0f;
-		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
-		ImGui::TextUnformatted("Parameters");
-		ImGui::PopStyleColor();
-		ImGui::SameLine(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - copyW);
-		ImGui::PushFont(g_MediumIconsFont);
-		ImGui::BeginDisabled(paramText.empty());
-		if (ImGui::Button(ICON_FA_COPY, {copyW, ImGui::GetFrameHeight()}))
-			ImGui::SetClipboardText(paramText.c_str());
-		ImGui::EndDisabled();
-		ImGui::PopFont();
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-			ImGui::SetTooltip("Copy parameters to clipboard");
-		ImGui::Spacing();
-
-		// ── Parameter display panel ───────────────────────────────────────────
-		// Bracket-aware parser: splits "key: value, key: [nested], ..." into pairs.
-		// Values enclosed in [] or {} are marked isList=true; plain values are isList=false.
-		struct LpParam { std::string key, value; bool isList; };
-		auto parseBlock = [](const std::string& content) -> std::vector<LpParam>
+		// ── Log to console button ─────────────────────────────────────────────
 		{
-			std::vector<LpParam> result;
-			size_t i = 0;
-			const size_t n = content.size();
-			while (i < n)
+			const bool canLog = !selectedId.empty();
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			ImGui::PushStyleColor(ImGuiCol_Button,
+				ImVec4(accent.x, accent.y, accent.z, canLog ? 1.0F : accent.w));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+			ImGui::BeginDisabled(!canLog);
+			const bool pressed = ImGui::Button("     Log to console", {-FLT_MIN, btnH});
+			ImGui::EndDisabled();
+			ImGui::PopStyleColor(4);
+
 			{
-				while (i < n && (content[i] == ' ' || content[i] == ',')) ++i;
-				if (i >= n) break;
-
-				// Key: read until ':' at depth 0 (parens/brackets count as depth)
-				const size_t keyStart = i;
-				int depth = 0;
-				while (i < n) {
-					if (content[i] == '[' || content[i] == '{' || content[i] == '(') ++depth;
-					else if (content[i] == ']' || content[i] == '}' || content[i] == ')') {
-						if (depth > 0) --depth; else break;
-					}
-					else if (content[i] == ':' && depth == 0) break;
-					++i;
-				}
-				if (i >= n || content[i] != ':') break;
-
-				std::string key = content.substr(keyStart, i - keyStart);
-				while (!key.empty() && (key.front() == ' ' || key.back() == ' '))
-					{ if (key.front() == ' ') key.erase(0, 1); if (!key.empty() && key.back() == ' ') key.pop_back(); }
-				++i; // skip ':'
-				while (i < n && content[i] == ' ') ++i;
-
-				// Value: bracket-enclosed (strip brackets) or plain (read until depth-0 comma)
-				std::string value;
-				bool isList = false;
-				if (i < n && (content[i] == '[' || content[i] == '{'))
-				{
-					const char open = content[i], close = (open == '[') ? ']' : '}';
-					int d = 0; ++i;
-					const size_t vs = i;
-					while (i < n) {
-						if (content[i] == open) ++d;
-						else if (content[i] == close) { if (d == 0) break; --d; }
-						++i;
-					}
-					value = content.substr(vs, i - vs);
-					if (i < n) ++i;
-					isList = true;
-				}
-				else
-				{
-					const size_t vs = i;
-					int vd = 0;
-					while (i < n) {
-						if (content[i] == '(' || content[i] == '[' || content[i] == '{') ++vd;
-						else if (content[i] == ')' || content[i] == ']' || content[i] == '}') {
-							if (vd > 0) --vd; else break;
-						}
-						else if (content[i] == ',' && vd == 0) break;
-						++i;
-					}
-					value = content.substr(vs, i - vs);
-					while (!value.empty() && value.back() == ' ') value.pop_back();
-				}
-				if (!key.empty()) result.push_back({std::move(key), std::move(value), isList});
+				const ImVec2 bMin = ImGui::GetItemRectMin();
+				const ImVec2 bMax = ImGui::GetItemRectMax();
+				ImGui::PushFont(g_MediumIconsFont);
+				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_TERMINAL);
+				const float  labelW = ImGui::CalcTextSize("     Log to console").x;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const ImU32  col    = canLog ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+					{iconX, iconY}, col, ICON_FA_TERMINAL);
+				ImGui::PopFont();
 			}
-			return result;
-		};
 
-		if (ImGui::BeginChild("##lp_params", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
-		{
-			if (paramText.empty())
+			if (pressed)
 			{
-				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
-				ImGui::TextUnformatted("Select an element to view its parameters.");
-				ImGui::PopStyleColor();
-			}
-			else
-			{
-				const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
-				std::istringstream stream(paramText);
-				std::string line;
-				bool firstLine = true;
-
-				while (std::getline(stream, line))
-				{
-					if (line.empty()) { ImGui::Spacing(); firstLine = false; continue; }
-
-					if (firstLine)
-					{
-						// Title: element type name — black medium font, accent color
-						ImGui::PushFont(g_BlackMediumFont);
-						ImGui::TextUnformatted(line.c_str());
-						ImGui::PopFont();
-						ImGui::Separator();
-						ImGui::Spacing();
-						firstLine = false;
-					}
-					else
-					{
-						// Find the first '[' or '{' to split the section name from content
-						const size_t brk = line.find_first_of("[{");
-						if (brk == std::string::npos)
-						{
-							ImGui::PushFont(g_MonoMediumFont);
-							ImGui::TextWrapped("%s", line.c_str());
-							ImGui::PopFont();
-							continue;
-						}
-
-						// Section name: text before the bracket, strip trailing ':' and spaces
-						std::string section = line.substr(0, brk);
-						while (!section.empty() && (section.back() == ':' || section.back() == ' '))
-							section.pop_back();
-
-						// Extract the inner content of the outer bracket
-						const char outerOpen  = line[brk];
-						const char outerClose = (outerOpen == '[') ? ']' : '}';
-						int depth = 0;
-						size_t innerStart = brk + 1, innerEnd = brk + 1;
-						for (size_t j = brk; j < line.size(); ++j) {
-							if (line[j] == outerOpen)  ++depth;
-							else if (line[j] == outerClose) { --depth; if (depth == 0) { innerEnd = j; break; } }
-						}
-						const std::string inner = line.substr(innerStart, innerEnd - innerStart);
-
-						// Subtitle: section name — black medium font, normal text color
-						if (!section.empty())
-						{
-							ImGui::PushFont(g_LightMediumFont);
-							ImGui::TextUnformatted(section.c_str());
-							ImGui::PopFont();
-						}
-
-						const auto params = parseBlock(inner);
-						for (const auto& p : params)
-						{
-							if (p.isList)
-							{
-								// Sub-subtitle: key — medium font, accent color
-								ImGui::PushFont(g_LightMediumFont);
-								ImGui::TextUnformatted(("  " + p.key).c_str());
-								ImGui::PopFont();
-
-								// Each sub-param on its own line in mono
-								const auto subParams = parseBlock(p.value);
-								for (const auto& sp : subParams)
-								{
-									ImGui::PushFont(g_MonoMediumFont);
-									ImGui::TextWrapped("    %s: %s", sp.key.c_str(), sp.value.c_str());
-									ImGui::PopFont();
-								}
-							}
-							else
-							{
-								// Plain param: mono, indented
-								ImGui::PushFont(g_MonoMediumFont);
-								ImGui::TextWrapped("  %s: %s", p.key.c_str(), p.value.c_str());
-								ImGui::PopFont();
-							}
-						}
-						ImGui::Spacing();
-					}
-				}
+				const auto elem = simulation->getElement(selectedId);
+				if (elem)
+					tools::logger::log(tools::logger::LogLevel::INFO, elem->toString());
 			}
 		}
-		ImGui::EndChild();
 	}
 
 	void SimulationWindow::renderMonitoringCard() const
 	{
 		ImGui::PushID("monitoring_section");
 
-		ImGui::TextUnformatted("MONITORING");
-		ImGui::Spacing();
+		static constexpr ImVec4 kCardBg     = { 0.96f, 0.97f, 0.98f, 1.0f };
+		static constexpr ImVec4 kCardBorder = { 0.82f, 0.85f, 0.89f, 1.0f };
+		static constexpr float  kCardRound  = 8.0f;
+		static constexpr float  kCardBordSz = 1.5f;
+		static constexpr float  kBarH       = 6.0f;
+		static constexpr float  kDotR       = 5.0f;
 
 		bool anyNF = false;
 		for (const auto& e : simulation->getElements())
@@ -2011,24 +1893,155 @@ namespace dnf_composer::user_interface
 			const auto* nf = dynamic_cast<const element::NeuralField*>(e.get());
 			if (!nf) continue;
 
-			ImGui::PushFont(g_BlackMediumFont);
-			ImGui::TextUnformatted(e->getUniqueName().c_str());
-			ImGui::PopFont();
-			ImGui::Separator();
+			const std::string& name   = e->getUniqueName();
+			const bool         stable = nf->isStable();
+			const float        lo     = static_cast<float>(nf->getLowestActivation());
+			const float        hi     = static_cast<float>(nf->getHighestActivation());
+			const auto         bumps  = nf->getBumps();
+			const int          bn     = static_cast<int>(bumps.size());
 
-			ImGui::Text("Stability: %s", nf->isStable() ? "Stable" : "Unstable");
-			ImGui::Text("Lowest activation: %.2f",  nf->getLowestActivation());
-			ImGui::Text("Highest activation: %.2f", nf->getHighestActivation());
+			const float padV    = ImGui::GetStyle().WindowPadding.y;
+			const float spacing = ImGui::GetStyle().ItemSpacing.y;
+			const float lineH   = ImGui::GetTextLineHeightWithSpacing();
 
-			const auto bumps = nf->getBumps();
-			ImGui::Text("Number of bumps: %d", static_cast<int>(bumps.size()));
+			// Separator() advances only (1px + ItemSpacing.y), not a full lineH.
+			// InvisibleButton auto-appends ItemSpacing.y, so bar accounts for kBarH + spacing.
+			const float sepH = 1.0f + spacing;
+			float cardH = padV * 2.0f
+				+ lineH            // header row
+				+ spacing          // Spacing() after header
+				+ kBarH + spacing  // bar InvisibleButton (auto item-spacing included)
+				+ spacing          // Spacing() after bar
+				+ lineH            // Range row
+				+ lineH;           // Bumps row
 
-			for (int i = 0; i < static_cast<int>(bumps.size()); ++i)
+			if (bn > 0)
+				cardH += float(bn) * (sepH + 3.0f * lineH); // (sep + 3 text lines) per bump
+
+			const float avail = ImGui::GetContentRegionAvail().x;
+
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, kCardBg);
+			ImGui::PushStyleColor(ImGuiCol_Border,  kCardBorder);
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   kCardRound);
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, kCardBordSz);
+
+			const std::string cid = "##mc_" + name;
+			if (ImGui::BeginChild(cid.c_str(), { avail, cardH }, true,
+				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
-				const auto& b = bumps[i];
-				ImGui::Text("  Bump %d: pos %.2f  amp %.2f  width %.2f", i, b.centroid, b.amplitude, b.width);
-				ImGui::Text("           vel %.2f  acc %.2f", b.velocity, b.acceleration);
+				const float innerW = ImGui::GetContentRegionAvail().x;
+				const float maxX   = ImGui::GetContentRegionMax().x;
+				ImDrawList* dl     = ImGui::GetWindowDrawList();
+
+				// ── Header: dot + name + stable badge ─────────────────────────
+				{
+					const ImVec2 pos = ImGui::GetCursorScreenPos();
+					const float  lh  = ImGui::GetTextLineHeight();
+					dl->AddCircleFilled({ pos.x + kDotR, pos.y + lh * 0.5f }, kDotR,
+						IM_COL32(74, 144, 217, 255));
+
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + kDotR * 2.0f + 6.0f);
+					ImGui::PushFont(g_BlackMediumFont);
+					ImGui::TextUnformatted(name.c_str());
+					ImGui::PopFont();
+
+					const char*  badge    = stable ? "Stable" : "Unstable";
+					const ImVec4 badgeCol = stable
+						? ImVec4(0.22f, 0.75f, 0.35f, 1.0f)
+						: ImVec4(0.90f, 0.55f, 0.10f, 1.0f);
+					const float badgeW = ImGui::CalcTextSize(badge).x;
+					ImGui::SameLine();
+					ImGui::SetCursorPosX(maxX - badgeW);
+					ImGui::TextColored(badgeCol, "%s", badge);
+				}
+
+				ImGui::Spacing();
+
+				// ── Range bar ─────────────────────────────────────────────────
+				{
+					const ImVec2 barMin = ImGui::GetCursorScreenPos();
+					const ImVec2 barMax = { barMin.x + innerW, barMin.y + kBarH };
+					const float  span   = hi - lo;
+
+					dl->AddRectFilled(barMin, barMax, IM_COL32(60, 60, 60, 80), 3.0f);
+
+					if (span > 0.0001f)
+					{
+						const ImU32 fillCol = stable
+							? IM_COL32(56,  200, 90,  180)
+							: IM_COL32(230, 140, 25,  180);
+
+						if (hi > 0.0f)
+						{
+							const float zeroX = (lo < 0.0f)
+								? barMin.x + innerW * (-lo / span)
+								: barMin.x;
+							dl->AddRectFilled({ zeroX, barMin.y }, barMax, fillCol, 3.0f);
+
+							if (lo < 0.0f)
+								dl->AddLine({ zeroX, barMin.y - 1.0f }, { zeroX, barMax.y + 1.0f },
+									IM_COL32(255, 255, 255, 150), 1.5f);
+						}
+						else
+						{
+							dl->AddRectFilled(barMin, barMax, IM_COL32(180, 60, 60, 80), 3.0f);
+						}
+					}
+
+					ImGui::InvisibleButton("##bar_hover", { innerW, kBarH });
+					if (ImGui::IsItemHovered())
+						ImGui::SetTooltip(
+							"Activation range: %.2f to %.2f\n"
+							"Colored fill = above-zero (excitatory) activation.\n"
+							"White tick = zero crossing.",
+							lo, hi);
+				}
+
+				ImGui::Spacing();
+
+				// ── Range row ─────────────────────────────────────────────────
+				{
+					char buf[64];
+					snprintf(buf, sizeof(buf), "%.2f ... %.2f", lo, hi);
+					const float valW = ImGui::CalcTextSize(buf).x;
+					ImGui::TextDisabled("Range");
+					ImGui::SameLine();
+					ImGui::SetCursorPosX(maxX - valW);
+					ImGui::TextUnformatted(buf);
+				}
+
+				// ── Bumps row ─────────────────────────────────────────────────
+				{
+					char buf[16];
+					snprintf(buf, sizeof(buf), "%d", bn);
+					const float valW = ImGui::CalcTextSize(buf).x;
+					ImGui::TextDisabled("Bumps");
+					ImGui::SameLine();
+					ImGui::SetCursorPosX(maxX - valW);
+					ImGui::TextUnformatted(buf);
+				}
+
+				// ── Per-bump detail ───────────────────────────────────────────
+				if (bn > 0)
+				{
+					ImGui::Separator();
+					for (int i = 0; i < bn; ++i)
+					{
+						const auto& b = bumps[i];
+						ImGui::PushFont(g_BlackSmallFont);
+						ImGui::Text("Bump %d", i);
+						ImGui::PopFont();
+						ImGui::Text("Pos %.2f   Amp %.2f",   b.centroid, b.amplitude);
+						ImGui::Text("Width %.2f   Vel %.2f", b.width,    b.velocity);
+						if (i < bn - 1)
+							ImGui::Separator();
+					}
+				}
 			}
+			ImGui::EndChild();
+			ImGui::PopStyleVar(2);
+			ImGui::PopStyleColor(2);
+
 			ImGui::Spacing();
 		}
 
