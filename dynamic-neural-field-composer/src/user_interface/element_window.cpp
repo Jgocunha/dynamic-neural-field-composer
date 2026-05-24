@@ -85,58 +85,7 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::renderElementControlCard()
 	{
-		const float ui       = ImGui::GetIO().FontGlobalScale;
-		const float dragW    = 130.0f * ui;
-
-		auto PanelHeightFor = [&](const std::shared_ptr<element::Element>& e) -> float
-		{
-			const float frameH   = ImGui::GetFrameHeight();
-			const float spacingY = ImGui::GetStyle().ItemSpacing.y;
-			const float rowH     = frameH + spacingY;
-			const float panelPad = 3.0f * 8.0f * ui;
-
-			auto h   = [&](const int rows) { return rows * rowH - spacingY + panelPad; };
-			auto sep = [&](const int n)    { return n * rowH; };
-
-			constexpr int dimRows  = 2;
-			constexpr int kDimRows = 4;
-
-			switch (e->getLabel())
-			{
-				// 2D types (no dimension rows)
-				case element::ElementLabel::NEURAL_FIELD_2D:            return h(2)  + sep(1);  // Dynamics
-				case element::ElementLabel::GAUSS_STIMULUS_2D:          return h(6)  + sep(2);  // Shape + Options
-				case element::ElementLabel::GAUSS_KERNEL_2D:            return h(5)  + sep(2);  // Shape + Options
-				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      return h(7)  + sep(2);  // Shape + Options
-				case element::ElementLabel::NORMAL_NOISE_2D:            return h(1)  + sep(1);  // Parameters
-				case element::ElementLabel::OSCILLATORY_KERNEL_2D:      return h(6)  + sep(2);  // Shape + Options
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS:       return h(7)  + sep(3);  // Shape + Timing + Options
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    return h(8)  + sep(3);  // Shape + Timing + Options
-				case element::ElementLabel::BOOST_STIMULUS_2D:          return h(2)  + sep(1);  // Parameters
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return h(3)  + sep(2);  // Shape + Options
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return h(7)  + sep(2);  // Shape + Options
-				case element::ElementLabel::MEMORY_TRACE_2D:            return h(3)  + sep(1);  // Dynamics
-				// 1D types (include dimension rows)
-				case element::ElementLabel::NORMAL_NOISE:               return h(1  + dimRows)  + sep(1);  // Parameters
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE:    return h(3  + dimRows)  + sep(2);  // Shape + Options
-				case element::ElementLabel::NEURAL_FIELD:               return h(5  + dimRows)  + sep(2);  // Dynamics + Activation function
-				case element::ElementLabel::GAUSS_STIMULUS:             return h(5  + dimRows)  + sep(2);  // Shape + Options
-				case element::ElementLabel::GAUSS_KERNEL:               return h(5  + kDimRows) + sep(2);  // Shape + Options
-				case element::ElementLabel::FIELD_COUPLING:             return h(5  + dimRows)  + sep(1);  // Parameters
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:         return h(7  + kDimRows) + sep(2);  // Shape + Options
-				case element::ElementLabel::OSCILLATORY_KERNEL:         return h(6  + kDimRows) + sep(2);  // Shape + Options
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    return h(6  + kDimRows) + sep(2);  // Shape + Options
-				case element::ElementLabel::BOOST_STIMULUS:             return h(2  + dimRows)  + sep(1);  // Parameters
-				case element::ElementLabel::MEMORY_TRACE:               return h(3  + dimRows)  + sep(1);  // Dynamics
-				case element::ElementLabel::GAUSS_FIELD_COUPLING:
-				{
-					const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(e);
-					const int numCouplings = static_cast<int>(gfc->getParameters().couplings.size());
-					return h(4 + (5 * numCouplings) + dimRows) + sep(1);  // Options
-				}
-				default: return h(4 + dimRows) + sep(1);
-			}
-		};
+		const float ui = ImGui::GetIO().FontGlobalScale;
 
 		// Validate focusedElement still in simulation
 		if (focusedElement)
@@ -212,55 +161,86 @@ namespace dnf_composer::user_interface
 			return;
 		}
 
-		ImDrawList* dl = ImGui::GetWindowDrawList();
-		const float frameH   = ImGui::GetFrameHeight();
-		const float spacingY = ImGui::GetStyle().ItemSpacing.y;
-		const float lineH    = frameH + spacingY;
+		ImDrawList* dl       = ImGui::GetWindowDrawList();
+		const float rowH     = ImGui::GetFrameHeight();
+		const float padX     = 10.0f * ui;
+		const float padY     =  8.0f * ui;
+		const float rounding = 12.0f * ui;
 
-		// Shared lambda — renders one row (highlight + dot + name + badge) and, if selected, the inline card
+		// renderRow: collapsed row or, if selected, a fully auto-sized bordered card
 		auto renderRow = [&](const std::shared_ptr<element::Element>& e,
-		                     const ImVec4& col, const char* badge)
+		                     const ImVec4& col, const char* /*badge*/)
 		{
-			const std::string& name       = e->getUniqueName();
-			const bool         isSelected = (name == selectedName);
-			const float        avail      = ImGui::GetContentRegionAvail().x;
-			const float        rowH       = ImGui::GetFrameHeight();
-			const ImVec2       rowMin     = ImGui::GetCursorScreenPos();
-			const ImU32        dotClr     = ImGui::ColorConvertFloat4ToU32(col);
+			const std::string& name   = e->getUniqueName();
+			const bool         isSel  = (name == selectedName);
+			const float        avail  = ImGui::GetContentRegionAvail().x;
+			const ImU32        dotClr = ImGui::ColorConvertFloat4ToU32(col);
 
-			if (isSelected)
-				dl->AddRectFilled(rowMin, {rowMin.x + avail, rowMin.y + rowH},
-					ImGui::GetColorU32({col.x, col.y, col.z, 0.15f}), 3.0f);
-
-			ImGui::Selectable(("##ew_" + name).c_str(), false, 0, {avail, rowH});
-			if (ImGui::IsItemClicked())
-				selectedName = isSelected ? "" : name;
-
-			// Dot — vertically centred with text
-			const float textOffY = (rowH - ImGui::GetTextLineHeight()) * 0.5f;
-			dl->AddCircleFilled({rowMin.x + 10.f, rowMin.y + textOffY + ImGui::GetTextLineHeight() * 0.5f}, 5.f, dotClr);
-
-			ImGui::SetCursorScreenPos({rowMin.x + 22.f, rowMin.y + textOffY});
-			if (isSelected) ImGui::PushFont(g_BlackMediumFont);
-			ImGui::TextUnformatted(name.c_str());
-			if (isSelected) ImGui::PopFont();
-
-			if (isSelected)
+			if (!isSel)
 			{
-				const bool  has1D  = e->getElementCommonParameters().dimensionParameters.dimensionality == 1;
-				float       panelH = PanelHeightFor(e);
-				if (has1D)  panelH += lineH;   // "Dimensions" SeparatorText
+				// ── Collapsed row ─────────────────────────────────────────────
+				const ImVec2 rowMin = ImGui::GetCursorScreenPos();
+				ImGui::Selectable(("##ew_" + name).c_str(), false, 0, {avail, rowH});
+				if (ImGui::IsItemClicked())
+					selectedName = name;
 
-				PanelScope scope = beginElementPanel(col, {avail, panelH});
+				dl->AddCircleFilled({rowMin.x + 10.f, rowMin.y + rowH * 0.5f}, 5.f, dotClr);
+				ImGui::SetCursorScreenPos({rowMin.x + 22.f,
+					rowMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5f});
+				ImGui::TextUnformatted(name.c_str());
+			}
+			else
+			{
+				// ── Expanded card — panel auto-sizes via draw-list channels ───
+				const bool   has1D   = e->getElementCommonParameters()
+				                         .dimensionParameters.dimensionality == 1;
+				const ImVec2 panelTL = ImGui::GetCursorScreenPos();
+				const ImU32  fill    = ImGui::GetColorU32(ImVec4(col.x, col.y, col.z, 0.18f));
+				const ImU32  border  = ImGui::GetColorU32(ImVec4(col.x, col.y, col.z, 0.40f));
+
+				// Channel 0 = background rect (written after content is measured)
+				// Channel 1 = content
+				dl->ChannelsSplit(2);
+				dl->ChannelsSetCurrent(1);
+
+				const float innerW = avail - padX * 2.0f;
+				ImGui::SetCursorScreenPos({panelTL.x + padX, panelTL.y + padY});
+				ImGui::BeginGroup();
+
+				// Header row — dot + bold name, click to deselect
 				{
-					if (has1D)
-					{
-						ImGui::SeparatorText("Dimensions");
-						renderDimensionControls(e);
-					}
-					switchElementToModify(e);
+					const ImVec2 hMin = ImGui::GetCursorScreenPos();
+					ImGui::Selectable(("##ew_hdr_" + name).c_str(), false, 0, {innerW, rowH});
+					if (ImGui::IsItemClicked())
+						selectedName = "";
+
+					dl->AddCircleFilled({hMin.x + 10.f, hMin.y + rowH * 0.5f}, 5.f, dotClr);
+					ImGui::SetCursorScreenPos({hMin.x + 22.f,
+						hMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5f});
+					ImGui::PushFont(g_BlackMediumFont);
+					ImGui::TextUnformatted(name.c_str());
+					ImGui::PopFont();
 				}
-				endElementPanel(scope);
+
+				if (has1D)
+				{
+					ImGui::SeparatorText("Dimensions");
+					renderDimensionControls(e);
+				}
+				switchElementToModify(e);
+
+				ImGui::EndGroup();
+
+				// Measure actual content bounds, then draw background behind it
+				const ImVec2 contentMax = ImGui::GetItemRectMax();
+				const ImVec2 panelBR    = {panelTL.x + avail, contentMax.y + padY};
+
+				dl->ChannelsSetCurrent(0);
+				dl->AddRectFilled(panelTL, panelBR, fill,   rounding);
+				dl->AddRect      (panelTL, panelBR, border, rounding, 0, 1.5f * ui);
+				dl->ChannelsMerge();
+
+				ImGui::SetCursorScreenPos({panelTL.x, panelBR.y + 6.0f * ui});
 			}
 		};
 
