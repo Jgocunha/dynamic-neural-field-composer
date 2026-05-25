@@ -99,7 +99,8 @@ namespace dnf_composer::user_interface
 		const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
 			| ImGuiWindowFlags_NoTitleBar
 			| ImGuiWindowFlags_NoScrollbar
-			| ImGuiWindowFlags_NoScrollWithMouse;
+			| ImGuiWindowFlags_NoScrollWithMouse
+			| ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 		const bool open = ImGui::Begin("##node_graph", nullptr, flags);
 
