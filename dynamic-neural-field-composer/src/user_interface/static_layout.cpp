@@ -151,11 +151,13 @@ namespace dnf_composer
 		void StaticLayoutWindow::drawPanelSimulation(const ImVec2 pos, const ImVec2 size) const
 		{
 			ImGui::SetCursorScreenPos(pos);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 			if (ImGui::BeginChild("##sl_sim", size, false,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
 				simulationWindow->renderSidebarContents();
 			}
+			ImGui::PopStyleColor();
 			ImGui::EndChild();
 		}
 

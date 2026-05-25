@@ -133,7 +133,7 @@ namespace dnf_composer::user_interface
 		ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
 		ImGui::PopStyleColor();
 
-		// Build lowercase search string
+		// Build a lowercase search string
 		std::string searchLower(searchBuf);
 		std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
 			[](unsigned char c) { return std::tolower(c); });
@@ -279,7 +279,7 @@ namespace dnf_composer::user_interface
 			}
 		}
 
-		// Grouped list — selected element is skipped (already pinned above)
+		// Grouped list — a selected element is skipped (already pinned above)
 		for (const auto& [label, elems] : byType)
 		{
 			std::vector<std::shared_ptr<element::Element>> filtered;

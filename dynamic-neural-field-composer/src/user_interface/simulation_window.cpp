@@ -28,7 +28,7 @@ namespace dnf_composer::user_interface
 		{
 			ImGui::SetCursorPos({14.0F, 8.0F});
 			const float startY = ImGui::GetCursorPosY();
-			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 			ImGui::PushFont(g_MediumIconsFont);
@@ -59,7 +59,7 @@ namespace dnf_composer::user_interface
 		constexpr float rounding = 1.0F;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0F * ui, 4.0F * ui));
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.878f, 0.878f, 0.878f, 1.0f));  // tone c
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.878f, 0.878f, 0.878f, 1.0F));  // tone c
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, 1,
@@ -73,13 +73,12 @@ namespace dnf_composer::user_interface
 
 		ImGui::SameLine(0, gap);
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.922f, 0.922f, 0.922f, 1.0f));  // tone b
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.922f, 0.922f, 0.922f, 1.0F));  // tone b
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_content", {contentW, totalH}, 1,
 			ImGuiWindowFlags_NoSavedSettings))
 		{
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
 			renderContentPaneTitle();
 			switch (activePane)
 			{
@@ -91,7 +90,6 @@ namespace dnf_composer::user_interface
 				case 5: renderMonitoringCard();             break;
 				default: break;
 			}
-			ImGui::PopStyleColor();
 		}
 		ImGui::EndChild();
 		ImGui::PopStyleVar(2);
@@ -1809,7 +1807,7 @@ namespace dnf_composer::user_interface
 				++matchCount;
 		}
 
-		const float maxListH = rowH * 8.0f;
+		const float maxListH = rowH * 8.0F;
 		const float listH    = std::min(static_cast<float>(std::max(matchCount, 1)) * rowH, maxListH);
 
 		if (ImGui::BeginChild("##lp_list", {0, listH}, false, ImGuiWindowFlags_NoSavedSettings))
@@ -1899,12 +1897,12 @@ namespace dnf_composer::user_interface
 	{
 		ImGui::PushID("monitoring_section");
 
-		static constexpr ImVec4 kCardBg     = { 0.96f, 0.97f, 0.98f, 1.0f };
-		static constexpr ImVec4 kCardBorder = { 0.82f, 0.85f, 0.89f, 1.0f };
-		static constexpr float  kCardRound  = 8.0f;
+		static constexpr ImVec4 kCardBg     = { 0.96f, 0.97f, 0.98f, 1.0F };
+		static constexpr ImVec4 kCardBorder = { 0.82f, 0.85f, 0.89f, 1.0F };
+		static constexpr float  kCardRound  = 8.0F;
 		static constexpr float  kCardBordSz = 1.5f;
-		static constexpr float  kBarH       = 6.0f;
-		static constexpr float  kDotR       = 5.0f;
+		static constexpr float  kBarH       = 6.0F;
+		static constexpr float  kDotR       = 5.0F;
 
 		bool anyNF = false;
 		for (const auto& e : simulation->getElements())
@@ -1939,8 +1937,8 @@ namespace dnf_composer::user_interface
 
 			// Separator() advances only (1px + ItemSpacing.y), not a full lineH.
 			// InvisibleButton auto-appends ItemSpacing.y, so bar accounts for kBarH + spacing.
-			const float sepH = 1.0f + spacing;
-			float cardH = padV * 2.0f
+			const float sepH = 1.0F + spacing;
+			float cardH = padV * 2.0F
 				+ lineH            // header row
 				+ spacing          // Spacing() after header
 				+ kBarH + spacing  // bar InvisibleButton (auto item-spacing included)
@@ -1949,7 +1947,7 @@ namespace dnf_composer::user_interface
 				+ rowH;            // Bumps row  (mixed default+mono)
 
 			if (bn > 0)
-				cardH += float(bn) * (sepH + lineH + 2.0f * rowH); // sep + "Bump N" + 2 data rows
+				cardH += float(bn) * (sepH + lineH + 2.0F * rowH); // sep + "Bump N" + 2 data rows
 
 			const float avail = ImGui::GetContentRegionAvail().x;
 
@@ -1973,15 +1971,15 @@ namespace dnf_composer::user_interface
 					dl->AddCircleFilled({ pos.x + kDotR, pos.y + lh * 0.5f }, kDotR,
 						IM_COL32(74, 144, 217, 255));
 
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + kDotR * 2.0f + 6.0f);
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + kDotR * 2.0F + 6.0F);
 					ImGui::PushFont(g_BoldLargeFont);
 					ImGui::TextUnformatted(name.c_str());
 					ImGui::PopFont();
 
 					const char*  badge    = stable ? "Stable" : "Unstable";
 					const ImVec4 badgeCol = stable
-						? ImVec4(0.22f, 0.75f, 0.35f, 1.0f)
-						: ImVec4(0.90f, 0.55f, 0.10f, 1.0f);
+						? ImVec4(0.22f, 0.75f, 0.35f, 1.0F)
+						: ImVec4(0.90f, 0.55f, 0.10f, 1.0F);
 					const float badgeW = ImGui::CalcTextSize(badge).x;
 					ImGui::SameLine();
 					ImGui::SetCursorPosX(maxX - badgeW);
@@ -1996,7 +1994,7 @@ namespace dnf_composer::user_interface
 					const ImVec2 barMax = { barMin.x + innerW, barMin.y + kBarH };
 					const float  span   = hi - lo;
 
-					dl->AddRectFilled(barMin, barMax, IM_COL32(60, 60, 60, 80), 3.0f);
+					dl->AddRectFilled(barMin, barMax, IM_COL32(60, 60, 60, 80), 3.0F);
 
 					if (span > 0.0001f)
 					{
@@ -2004,20 +2002,20 @@ namespace dnf_composer::user_interface
 							? IM_COL32(56,  200, 90,  180)
 							: IM_COL32(230, 140, 25,  180);
 
-						if (hi > 0.0f)
+						if (hi > 0.0F)
 						{
-							const float zeroX = (lo < 0.0f)
+							const float zeroX = (lo < 0.0F)
 								? barMin.x + innerW * (-lo / span)
 								: barMin.x;
-							dl->AddRectFilled({ zeroX, barMin.y }, barMax, fillCol, 3.0f);
+							dl->AddRectFilled({ zeroX, barMin.y }, barMax, fillCol, 3.0F);
 
-							if (lo < 0.0f)
-								dl->AddLine({ zeroX, barMin.y - 1.0f }, { zeroX, barMax.y + 1.0f },
+							if (lo < 0.0F)
+								dl->AddLine({ zeroX, barMin.y - 1.0F }, { zeroX, barMax.y + 1.0F },
 									IM_COL32(255, 255, 255, 150), 1.5f);
 						}
 						else
 						{
-							dl->AddRectFilled(barMin, barMax, IM_COL32(180, 60, 60, 80), 3.0f);
+							dl->AddRectFilled(barMin, barMax, IM_COL32(180, 60, 60, 80), 3.0F);
 						}
 					}
 
