@@ -15,10 +15,10 @@ namespace dnf_composer
 	{
 		// ── Column widths (fixed px at a UI scale = 1.0, scale with zoom) ──────────
 		static constexpr float kColABase   = 515.0F;  // Simulation Control
-		static constexpr float kColBBase   = 360.0F;  // Element Control (rightmost)
+		static constexpr float kColBBase   = 400.0F;  // Element Control (rightmost)
 		static constexpr float kStatusBarH = 30.0F;   // status bar height (bottom)
 		static constexpr float kTopBarH    = 50.0F;   // top control bar height
-		static constexpr float kMargin     = 0.0F;
+		static constexpr float kMargin     = -3.0F;
 		static constexpr float kRounding   = 1.0F;
 
 		static bool beginPanelFixed(const char* id, const ImVec2 pos, const ImVec2 size)

@@ -337,6 +337,15 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, logMessage);
 	}
 
+	void Simulation::renameElement(const std::string& oldName, const std::string& newName)
+	{
+		if (oldName == newName) return;
+		const auto elem = getElement(oldName);
+		if (!elem) return;
+		if (getElement(newName)) return; // newName already in use
+		elem->setUniqueName(newName);
+	}
+
 	void Simulation::createInteraction(const std::string& stimulusElementId,
 		const std::string& stimulusComponent, const std::string& receivingElementId) const
 	{

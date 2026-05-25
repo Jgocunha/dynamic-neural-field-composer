@@ -107,6 +107,9 @@ namespace dnf_composer
 		/// @param newDimensions  New spatial discretization.
 		void changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions);
 
+		/// @brief Rename an element. No-op if oldName does not exist or newName is already in use.
+		void renameElement(const std::string& oldName, const std::string& newName);
+
 		/// @brief Wire @p stimulusElementId's @p stimulusComponent as input to @p receivingElementId.
 		/// @param stimulusElementId   Source element name.
 		/// @param stimulusComponent   Component name on the source (e.g. "output").

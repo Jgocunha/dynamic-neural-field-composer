@@ -103,6 +103,7 @@ namespace dnf_composer::element
 		ElementCommonParameters getElementCommonParameters() const;
 		int getUniqueIdentifier() const;
 		std::string getUniqueName() const;
+		void setUniqueName(const std::string& name);
 		ElementLabel getLabel() const;
 		bool hasOutput() const;
 		bool hasInput() const;

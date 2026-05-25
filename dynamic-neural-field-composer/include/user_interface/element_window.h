@@ -38,7 +38,9 @@ namespace dnf_composer::user_interface
 		static void setFocusedElement(const std::shared_ptr<element::Element>& element);
 		~ElementWindow() override = default;
 	private:
+		void renderIdentifiersSection(const std::shared_ptr<element::Element>& element) const;
 		void renderDimensionControls(const std::shared_ptr<element::Element>& element) const;
+		void renderDimensionControls2D(const std::shared_ptr<element::Element>& element) const;
 		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element);

@@ -247,6 +247,11 @@ namespace dnf_composer::element
 		return commonParameters.identifiers.uniqueName;
 	}
 
+	void Element::setUniqueName(const std::string& name)
+	{
+		commonParameters.identifiers.uniqueName = name;
+	}
+
 	int Element::getUniqueIdentifier() const
 	{
 		return commonParameters.identifiers.uniqueIdentifier;
