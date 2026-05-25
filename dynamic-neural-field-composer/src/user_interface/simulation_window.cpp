@@ -43,9 +43,20 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::SetCursorPosX(0.0F);
 			ImGui::Separator();
-			//ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetStyle().ItemSpacing.y);
-
-			renderSidebarContents();
+			constexpr float kMargin = 8.0F;
+			ImGui::SetCursorPos({kMargin, ImGui::GetCursorPosY() + kMargin});
+			const ImVec2 insetSz = {
+				ImGui::GetContentRegionAvail().x - kMargin,
+				ImGui::GetContentRegionAvail().y - kMargin
+			};
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+			if (ImGui::BeginChild("##sim_inset", insetSz, false,
+				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoSavedSettings))
+			{
+				renderSidebarContents();
+			}
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
 		}
 		ImGui::End();
 	}
