@@ -82,7 +82,7 @@ namespace dnf_composer::user_interface
             	{
             		simulation->setUniqueIdentifier(std::string(idBuf.data()));
             	}
-            	
+
                 ImGui::Separator();
 
                 ImGui::Text("Simulation time");

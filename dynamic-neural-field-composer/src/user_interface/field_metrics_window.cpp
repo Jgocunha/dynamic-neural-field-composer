@@ -11,7 +11,7 @@ extern ImFont* g_MonoMediumFont;
 
 namespace dnf_composer::user_interface
 {
-	static constexpr ImVec4 kCardBg     = { 0.96f, 0.97f, 0.98f, 1.0f };
+		static constexpr ImVec4 kCardBg     = { 1.0f, 1.0f, 1.0f, 1.0f };
 	static constexpr ImVec4 kCardBorder = { 0.82f, 0.85f, 0.89f, 1.0f };
 	static constexpr float  kCardRound  = 8.0f;
 	static constexpr float  kCardBordSz = 1.5f;

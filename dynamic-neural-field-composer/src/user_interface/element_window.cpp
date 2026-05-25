@@ -31,6 +31,7 @@
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_MonoMediumFont;
+extern ImFont* g_BlackSmallFont;
 
 namespace dnf_composer::user_interface
 {
@@ -99,6 +100,12 @@ namespace dnf_composer::user_interface
 				ImGui::GetColorU32(ImGuiCol_Text),
 				name.c_str());
 			ImGui::PopClipRect();
+		}
+		static void ewSectionLabel(const char* lbl) {
+			ImGui::Spacing();
+			ImGui::PushFont(g_BlackSmallFont);
+			ImGui::TextDisabled("%s", lbl);
+			ImGui::PopFont();
 		}
 	}
 
@@ -198,23 +205,23 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::NORMAL_NOISE:                return "Noise";
 				case element::ElementLabel::MEMORY_TRACE:                return "Memory";
 				case element::ElementLabel::FIELD_COUPLING:              return "Coupling";
-				case element::ElementLabel::GAUSS_FIELD_COUPLING:        return "GFC";
-				case element::ElementLabel::MEXICAN_HAT_KERNEL:          return "MHKernel";
-				case element::ElementLabel::OSCILLATORY_KERNEL:          return "Osc";
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:     return "AGKernel";
-				case element::ElementLabel::BOOST_STIMULUS:              return "Boost";
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE:     return "CorrNoise";
+				case element::ElementLabel::GAUSS_FIELD_COUPLING:        return "Coupling";
+				case element::ElementLabel::MEXICAN_HAT_KERNEL:          return "Kernel";
+				case element::ElementLabel::OSCILLATORY_KERNEL:          return "Kernel";
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:     return "Kernel";
+				case element::ElementLabel::BOOST_STIMULUS:              return "Stimulus";
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE:     return "Noise";
 				case element::ElementLabel::NEURAL_FIELD_2D:             return "Field2D";
 				case element::ElementLabel::GAUSS_STIMULUS_2D:           return "Stim2D";
 				case element::ElementLabel::GAUSS_KERNEL_2D:             return "Kernel2D";
-				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:       return "MHK2D";
+				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:       return "Kernel2D";
 				case element::ElementLabel::NORMAL_NOISE_2D:             return "Noise2D";
-				case element::ElementLabel::OSCILLATORY_KERNEL_2D:       return "Osc2D";
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS:        return "TimedStim";
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:     return "TimedStim2D";
-				case element::ElementLabel::BOOST_STIMULUS_2D:           return "Boost2D";
-				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:  return "CorrNoise2D";
-				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:  return "AGK2D";
+				case element::ElementLabel::OSCILLATORY_KERNEL_2D:       return "Kernel2D";
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS:        return "Stimulus";
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:     return "Stim2D";
+				case element::ElementLabel::BOOST_STIMULUS_2D:           return "Stim2D";
+				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:  return "Noise2D";
+				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:  return "Kernel2D";
 				case element::ElementLabel::MEMORY_TRACE_2D:             return "Memory2D";
 				default:                                                  return "Element";
 			}
@@ -227,16 +234,21 @@ namespace dnf_composer::user_interface
 
 		if (byType.empty())
 		{
-			ImGui::TextDisabled("Add elements to see them here.");
+			ImGui::TextDisabled("Add elements to the simulation.");
 			ImGui::EndChild();
 			return;
 		}
 
-		ImDrawList* dl       = ImGui::GetWindowDrawList();
-		const float rowH     = ImGui::GetFrameHeight();
-		const float padX     = 10.0f * ui;
-		const float padY     =  8.0f * ui;
-		const float rounding = 12.0f * ui;
+		static constexpr ImVec4 kCardBg     = { 1.0f, 1.0f, 1.0f, 1.0f };
+		static constexpr ImVec4 kCardBorder = { 0.82f, 0.85f, 0.89f, 1.0f };
+		static constexpr float  kCardRound  = 8.0f;
+		static constexpr float  kCardBordSz = 1.5f;
+		static constexpr float  kStripW     = 4.0f;
+
+		ImDrawList* dl   = ImGui::GetWindowDrawList();
+		const float rowH = ImGui::GetFrameHeight();
+		const float padX = 10.0f * ui;
+		const float padY =  8.0f * ui;
 
 		// renderRow: collapsed row or, if selected, a fully auto-sized bordered card
 		auto renderRow = [&](const std::shared_ptr<element::Element>& e,
@@ -265,17 +277,17 @@ namespace dnf_composer::user_interface
 				// ── Expanded card — panel auto-sizes via draw-list channels ───
 				const int    dimN    = e->getElementCommonParameters()
 				                         .dimensionParameters.dimensionality;
-				const ImVec2 panelTL = ImGui::GetCursorScreenPos();
-				const ImU32  fill    = ImGui::GetColorU32(ImVec4(col.x, col.y, col.z, 0.18f));
-				const ImU32  border  = ImGui::GetColorU32(ImVec4(col.x, col.y, col.z, 0.40f));
+				const ImVec2 panelTL  = ImGui::GetCursorScreenPos();
+				const ImU32  fillClr  = ImGui::GetColorU32(kCardBg);
+				const ImU32  borderClr = ImGui::GetColorU32(kCardBorder);
 
 				// Channel 0 = background rect (written after content is measured)
 				// Channel 1 = content
 				dl->ChannelsSplit(2);
 				dl->ChannelsSetCurrent(1);
 
-				const float innerW = avail - padX * 2.0f;
-				ImGui::SetCursorScreenPos({panelTL.x + padX, panelTL.y + padY});
+				const float innerW = avail - kStripW - padX * 2.0f;
+				ImGui::SetCursorScreenPos({panelTL.x + kStripW + padX, panelTL.y + padY});
 				ImGui::BeginGroup();
 
 				// Header row — dot + bold name, click to deselect
@@ -289,20 +301,27 @@ namespace dnf_composer::user_interface
 					ImGui::SetCursorScreenPos({hMin.x + 22.f,
 						hMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5f});
 					ImGui::PushFont(g_BlackMediumFont);
-					ewScrollingText(name, innerW - 22.f, e->getUniqueIdentifier());
+					const char* badge  = shortTypeName(e->getLabel());
+					const float badgeW = ImGui::CalcTextSize(badge).x;
+					ewScrollingText(name, innerW - 22.f - badgeW - 8.f, e->getUniqueIdentifier());
 					ImGui::PopFont();
+					dl->AddText(
+						ImVec2(hMin.x + innerW - badgeW,
+						       hMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5f),
+						ImGui::GetColorU32(ImGuiCol_TextDisabled),
+						badge);
 				}
 
 				renderIdentifiersSection(e);
 
 				if (dimN == 1)
 				{
-					ImGui::SeparatorText("Dimensions");
+					ewSectionLabel("Dimensions");
 					renderDimensionControls(e);
 				}
 				else if (dimN == 2)
 				{
-					ImGui::SeparatorText("Dimensions");
+					ewSectionLabel("Dimensions");
 					renderDimensionControls2D(e);
 				}
 				switchElementToModify(e);
@@ -314,8 +333,10 @@ namespace dnf_composer::user_interface
 				const ImVec2 panelBR    = {panelTL.x + avail, contentMax.y + padY};
 
 				dl->ChannelsSetCurrent(0);
-				dl->AddRectFilled(panelTL, panelBR, fill,   rounding);
-				dl->AddRect      (panelTL, panelBR, border, rounding, 0, 1.5f * ui);
+				dl->AddRectFilled(panelTL, panelBR, fillClr,   kCardRound);
+				dl->AddRect      (panelTL, panelBR, borderClr, kCardRound, 0, kCardBordSz);
+				dl->AddRectFilled(panelTL, {panelTL.x + kStripW, panelBR.y},
+				                  dotClr, kCardRound, ImDrawFlags_RoundCornersLeft);
 				dl->ChannelsMerge();
 
 				ImGui::SetCursorScreenPos({panelTL.x, panelBR.y + 6.0f * ui});
@@ -407,7 +428,7 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::renderIdentifiersSection(const std::shared_ptr<element::Element>& element) const
 	{
-		ImGui::SeparatorText("Identifiers");
+		ewSectionLabel("Identifiers");
 
 		static std::unordered_map<int, std::string> stagedName;
 		const int uid    = element->getUniqueIdentifier();
@@ -762,7 +783,7 @@ namespace dnf_composer::user_interface
 		auto restingLevel = static_cast<float>(nfp.startingRestingLevel);
 		auto tau          = static_cast<float>(nfp.tau);
 
-		ImGui::SeparatorText("Dynamics");
+		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##nf_dyn" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Resting level", ("##nf_rl"  + uid).c_str(), &restingLevel, 0.1f, -30.0f,   0.0f);
@@ -779,7 +800,7 @@ namespace dnf_composer::user_interface
 		}
 
 		bool updated = false;
-		ImGui::SeparatorText("Activation function");
+		ewSectionLabel("Activation function");
 		if (ewBeginTable(("##nf_act" + uid).c_str())) {
 			ewTableSetup();
 			static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
@@ -859,7 +880,7 @@ namespace dnf_composer::user_interface
 		bool circular  = gsp.circular;
 		bool normalized = gsp.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gs_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##gs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
@@ -868,7 +889,7 @@ namespace dnf_composer::user_interface
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##gs_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",  ("##gs_c" + uid).c_str(), &circular);
@@ -901,7 +922,7 @@ namespace dnf_composer::user_interface
 		bool circular   = tgsp.circular;
 		bool normalized = tgsp.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##tgs_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##tgs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
@@ -910,7 +931,7 @@ namespace dnf_composer::user_interface
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##tgs_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",   ("##tgs_c" + uid).c_str(), &circular);
@@ -918,7 +939,7 @@ namespace dnf_composer::user_interface
 			ewEndTable();
 		}
 
-		ImGui::SeparatorText("Timing");
+		ewSectionLabel("Timing");
 		static std::unordered_map<int, std::pair<float, float>> tgsPending;
 		const int tgsEid = element->getUniqueIdentifier();
 		if (!tgsPending.count(tgsEid)) tgsPending[tgsEid] = { 0.0f, 1.0f };
@@ -1038,7 +1059,7 @@ namespace dnf_composer::user_interface
 		bool circular   = p.circular;
 		bool normalized = p.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##tgs2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",  ("##tgs2_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
@@ -1049,7 +1070,7 @@ namespace dnf_composer::user_interface
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.y_max));
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##tgs2_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",   ("##tgs2_c" + uid).c_str(), &circular);
@@ -1057,7 +1078,7 @@ namespace dnf_composer::user_interface
 			ewEndTable();
 		}
 
-		ImGui::SeparatorText("Timing");
+		ewSectionLabel("Timing");
 		static std::unordered_map<int, std::pair<float, float>> tgs2Pending;
 		const int tgs2Eid = element->getUniqueIdentifier();
 		if (!tgs2Pending.count(tgs2Eid)) tgs2Pending[tgs2Eid] = { 0.0f, 1.0f };
@@ -1175,7 +1196,7 @@ namespace dnf_composer::user_interface
 		auto learningRate = static_cast<float>(fcp.learningRate);
 		bool activateLearning = fcp.isLearningActive;
 
-		ImGui::SeparatorText("Parameters");
+		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##fc_tbl" + uid).c_str())) {
 			ewTableSetup();
 
@@ -1232,7 +1253,7 @@ namespace dnf_composer::user_interface
 		bool circular        = gkp.circular;
 		bool normalized      = gkp.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gk_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",   ("##gk_amp" + uid).c_str(), &amplitude,       0.1f, -50.0f, 50.0f);
@@ -1240,7 +1261,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Amp. global", ("##gk_ag"  + uid).c_str(), &amplitudeGlobal, 0.1f, -10.0f, 10.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##gk_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",    ("##gk_c" + uid).c_str(), &circular);
@@ -1274,7 +1295,7 @@ namespace dnf_composer::user_interface
 		bool circular        = mhkp.circular;
 		bool normalized      = mhkp.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##mhk_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amp. exc.",   ("##mhk_ae" + uid).c_str(), &amplitudeExc,    0.1f,  -50.0f,  50.0f);
@@ -1284,7 +1305,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Amp. global", ("##mhk_ag" + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,   0.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##mhk_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",    ("##mhk_c" + uid).c_str(), &circular);
@@ -1315,7 +1336,7 @@ namespace dnf_composer::user_interface
 		const std::string uid = element->getUniqueName();
 		auto amplitude = static_cast<float>(nnp.amplitude);
 
-		ImGui::SeparatorText("Parameters");
+		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##nn_tbl" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##nn_amp" + uid).c_str(), &amplitude, 0.01f, 0.0f, 5.0f);
@@ -1336,14 +1357,14 @@ namespace dnf_composer::user_interface
 		auto width     = static_cast<float>(p.width);
 		bool circular  = p.circular;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##cnn_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##cnn_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f,  5.0f, "%.4f");
 			ewRowDrag("Width",     ("##cnn_w"   + uid).c_str(), &width,     0.1f,   0.1f, 30.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##cnn_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",  ("##cnn_c" + uid).c_str(), &circular);
@@ -1367,7 +1388,7 @@ namespace dnf_composer::user_interface
 		bool normalized = gfcp.normalized;
 		bool circular   = gfcp.circular;
 
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##gfc_hdr" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",   ("##gfc_c" + uid).c_str(), &circular);
@@ -1445,7 +1466,7 @@ namespace dnf_composer::user_interface
 		bool circular        = okp.circular;
 		bool normalized      = okp.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##ok_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",      ("##ok_amp" + uid).c_str(), &amplitude,       0.1f,   0.0f,  50.0f);
@@ -1454,7 +1475,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Amp. global",    ("##ok_ag"  + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,  0.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##ok_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",       ("##ok_c" + uid).c_str(), &circular);
@@ -1487,7 +1508,7 @@ namespace dnf_composer::user_interface
 		bool circular        = agkp.circular;
 		bool normalized      = agkp.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##agk_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",   ("##agk_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
@@ -1496,7 +1517,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Time shift",  ("##agk_ts"  + uid).c_str(), &timeShift,       0.01f,  -10.0f, 10.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##agk_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",    ("##agk_c" + uid).c_str(), &circular);
@@ -1526,7 +1547,7 @@ namespace dnf_composer::user_interface
 		auto amplitude = static_cast<float>(bsp.amplitude);
 		bool isActive  = bsp.isActive;
 
-		ImGui::SeparatorText("Parameters");
+		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##bs_tbl" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##bs_amp" + uid).c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
@@ -1547,7 +1568,7 @@ namespace dnf_composer::user_interface
 		auto amplitude = static_cast<float>(p.amplitude);
 		bool isActive  = p.isActive;
 
-		ImGui::SeparatorText("Parameters");
+		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##bs2_tbl" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##bs2_amp" + uid).c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
@@ -1569,14 +1590,14 @@ namespace dnf_composer::user_interface
 		auto width     = static_cast<float>(p.width);
 		bool circular  = p.circular;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##cnn2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##cnn2_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f,  5.0f, "%.4f");
 			ewRowDrag("Width",     ("##cnn2_w"   + uid).c_str(), &width,     0.1f,   0.1f, 30.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##cnn2_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",  ("##cnn2_c" + uid).c_str(), &circular);
@@ -1602,7 +1623,7 @@ namespace dnf_composer::user_interface
 		bool circular        = p.circular;
 		bool normalized      = p.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##agk2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",    ("##agk2_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
@@ -1612,7 +1633,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Time shift y", ("##agk2_tsy" + uid).c_str(), &timeShift_y,     0.01f,  -10.0f, 10.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##agk2_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",     ("##agk2_c" + uid).c_str(), &circular);
@@ -1644,7 +1665,7 @@ namespace dnf_composer::user_interface
 		auto tauDecay  = static_cast<float>(p.tauDecay);
 		auto threshold = static_cast<float>(p.threshold);
 
-		ImGui::SeparatorText("Dynamics");
+		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##mt2_tbl" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Tau build",  ("##mt2_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
@@ -1669,7 +1690,7 @@ namespace dnf_composer::user_interface
 		auto tauDecay  = static_cast<float>(mtp.tauDecay);
 		auto threshold = static_cast<float>(mtp.threshold);
 
-		ImGui::SeparatorText("Dynamics");
+		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##mt_tbl" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Tau build",  ("##mt_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
@@ -1693,7 +1714,7 @@ namespace dnf_composer::user_interface
 		auto tau          = static_cast<float>(p.tau);
 		auto restingLevel = static_cast<float>(p.startingRestingLevel);
 
-		ImGui::SeparatorText("Dynamics");
+		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##nf2_tbl" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Tau",           ("##nf2_tau" + uid).c_str(), &tau,          0.5f,   1.0f, 1000.0f);
@@ -1710,7 +1731,7 @@ namespace dnf_composer::user_interface
 		}
 
 		bool updated = false;
-		ImGui::SeparatorText("Activation function");
+		ewSectionLabel("Activation function");
 		if (ewBeginTable(("##nf2_act" + uid).c_str())) {
 			ewTableSetup();
 			static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
@@ -1791,7 +1812,7 @@ namespace dnf_composer::user_interface
 		bool circular   = p.circular;
 		bool normalized = p.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gs2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",  ("##gs2_amp" + uid).c_str(), &amplitude, 0.5f,  -50.0f,   50.0f);
@@ -1800,7 +1821,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Position y", ("##gs2_py"  + uid).c_str(), &posY,      0.5f,    0.0f, 1000.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##gs2_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",   ("##gs2_c" + uid).c_str(), &circular);
@@ -1833,7 +1854,7 @@ namespace dnf_composer::user_interface
 		bool circular        = p.circular;
 		bool normalized      = p.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gk2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",        ("##gk2_amp" + uid).c_str(), &amplitude,       0.1f,  -50.0f, 50.0f);
@@ -1841,7 +1862,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Amplitude global", ("##gk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.001f,  -1.0f,  1.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##gk2_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",         ("##gk2_c" + uid).c_str(), &circular);
@@ -1874,7 +1895,7 @@ namespace dnf_composer::user_interface
 		bool circular        = p.circular;
 		bool normalized      = p.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##mhk2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude exc",    ("##mhk2_ae" + uid).c_str(), &amplitudeExc,    0.1f,   -50.0f, 50.0f);
@@ -1884,7 +1905,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Amplitude global", ("##mhk2_ag" + uid).c_str(), &amplitudeGlobal, 0.001f,  -1.0f,   1.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##mhk2_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",         ("##mhk2_c" + uid).c_str(), &circular);
@@ -1914,7 +1935,7 @@ namespace dnf_composer::user_interface
 		const std::string uid = element->getUniqueName();
 		auto amplitude = static_cast<float>(p.amplitude);
 
-		ImGui::SeparatorText("Parameters");
+		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##nn2_tbl" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##nn2_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f, 10.0f);
@@ -1938,7 +1959,7 @@ namespace dnf_composer::user_interface
 		bool circular        = p.circular;
 		bool normalized      = p.normalized;
 
-		ImGui::SeparatorText("Shape");
+		ewSectionLabel("Shape");
 		if (ewBeginTable(("##ok2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",      ("##ok2_amp" + uid).c_str(), &amplitude,       0.1f,   0.0f,  50.0f);
@@ -1947,7 +1968,7 @@ namespace dnf_composer::user_interface
 			ewRowDrag("Amp. global",    ("##ok2_ag"  + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,  0.0f);
 			ewEndTable();
 		}
-		ImGui::SeparatorText("Options");
+		ewSectionLabel("Options");
 		if (ewBeginTable(("##ok2_opt" + uid).c_str())) {
 			ewTableSetup();
 			ewRowBool("Circular",       ("##ok2_c" + uid).c_str(), &circular);
