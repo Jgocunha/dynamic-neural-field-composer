@@ -71,7 +71,7 @@ namespace dnf_composer::user_interface
                 	initialized = true;
                 }
 
-                ImGui::Text("Simulation ID");
+                ImGui::Text("Simulation identifier");
             	static std::array<char, 128> idBuf{};
             	std::snprintf(idBuf.data(), idBuf.size(), "%s", simulation->getUniqueIdentifier().c_str());
             	const bool idEdited = ImGui::InputText("##sim_id", idBuf.data(), idBuf.size(),
@@ -82,33 +82,25 @@ namespace dnf_composer::user_interface
             	{
             		simulation->setUniqueIdentifier(std::string(idBuf.data()));
             	}
-
-                ImGui::Separator();
-
-                static auto deltaT = static_cast<float>(simulation->getDeltaT());
-                ImGui::Text("Simulation time step (dt)");
-                ImGui::SliderFloat("##menu_deltaT_slider", &deltaT, 0.1F, 25.0, "%.2f");
-                if (ImGui::IsItemDeactivatedAfterEdit())
-                {
-                    if (std::isfinite(deltaT) && deltaT > 0.0F)
-                    {
-                        simulation->setDeltaT(deltaT);
-                    }
-                    deltaT = static_cast<float>(simulation->getDeltaT());  // revert to last valid value on invalid input
-                }
-
+            	
                 ImGui::Separator();
 
                 ImGui::Text("Simulation time");
                 ImGui::SameLine();
+            	ImGui::PushFont(g_MonoMediumFont);
                 ImGui::Text("%.2f", simulation->getT());
                 ImGui::SameLine();
+            	ImGui::PopFont();
                 ImGui::Text(" ticks");
 
                 const long long stepNs = simulation->getLastStepDuration().count();
                 ImGui::Text("Real-time per step");
                 ImGui::SameLine();
-                ImGui::Text("%lld ns", stepNs);
+            	ImGui::PushFont(g_MonoMediumFont);
+            	ImGui::Text("%lld", stepNs);
+            	ImGui::SameLine();
+            	ImGui::PopFont();
+            	ImGui::Text(" ns");
 
                 const long long totalNs  = simulation->getTotalRunDuration().count();
                 const long long totalUs  = totalNs / 1'000LL;
@@ -118,7 +110,9 @@ namespace dnf_composer::user_interface
                 const long long ms       = (totalUs % 1'000'000LL) / 1'000LL;
                 ImGui::Text("Real time");
                 ImGui::SameLine();
+            	ImGui::PushFont(g_MonoMediumFont);
                 ImGui::Text("%lldh %lldm %llds %lldms", h, m, s, ms);
+            	ImGui::PopFont();
 
                 ImGui::EndMenu();
             }
