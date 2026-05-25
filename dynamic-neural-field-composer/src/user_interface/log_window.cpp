@@ -70,16 +70,26 @@ namespace dnf_composer::user_interface
 
 	void LogWindow::draw()
 	{
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Logs", &isWindowActive, imgui_kit::getGlobalWindowFlags());
-		ImGui::PopFont();
-
-		if (!open)
+		const bool open = ImGui::Begin("##log_window", &isWindowActive,
+			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
+		if (open)
 		{
-			ImGui::End();
-			return;
+			const float startY = ImGui::GetCursorPosY();
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			ImGui::SetCursorPosY(startY + yOff);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::TextUnformatted(ICON_FA_TERMINAL);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::SameLine(0, 8.0f);
+			ImGui::SetCursorPosY(startY);
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::TextUnformatted("Logs");
+			ImGui::PopFont();
+			ImGui::Separator();
+			renderContent();
 		}
-		renderContent();
 		ImGui::End();
 	}
 } 

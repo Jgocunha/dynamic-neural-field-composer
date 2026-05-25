@@ -1,4 +1,5 @@
 #include "user_interface/simulation_window.h"
+#include "user_interface/field_metrics_window.h"
 #include "elements/neural_field.h"
 #include "elements/neural_field_2d.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
@@ -32,7 +33,7 @@ namespace dnf_composer::user_interface
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::TextUnformatted(ICON_FA_BRAIN);
+			ImGui::TextUnformatted(ICON_FA_MICROCHIP);
 			ImGui::PopFont();
 			ImGui::PopStyleColor();
 			ImGui::SameLine(0, 8.0F);
@@ -42,7 +43,7 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::SetCursorPosX(0.0F);
 			ImGui::Separator();
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetStyle().ItemSpacing.y);
+			//ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetStyle().ItemSpacing.y);
 
 			renderSidebarContents();
 		}
@@ -58,8 +59,10 @@ namespace dnf_composer::user_interface
 		const float contentW = ImGui::GetContentRegionAvail().x - sideW - gap;
 		constexpr float rounding = 1.0F;
 
+		const ImVec4 wbg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0F * ui, 4.0F * ui));
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.878f, 0.878f, 0.878f, 1.0F));  // tone c
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(wbg.x * 0.96f, wbg.y * 0.96f, wbg.z * 0.96f, wbg.w));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, 1,
@@ -73,7 +76,7 @@ namespace dnf_composer::user_interface
 
 		ImGui::SameLine(0, gap);
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.922f, 0.922f, 0.922f, 1.0F));  // tone b
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_content", {contentW, totalH}, 1,
@@ -98,7 +101,7 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::renderContentPaneTitle()
 	{
-		ImGui::Spacing();
+		//ImGui::Spacing();
 
 		struct PaneInfo { const char* icon; const char* name; };
 		static constexpr PaneInfo kInfo[] = {
@@ -107,7 +110,7 @@ namespace dnf_composer::user_interface
 			{ .icon=ICON_FA_LINK,     .name="Set interactions" },
 			{ .icon=ICON_FA_TERMINAL, .name="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .name="Export data"      },
-			{ .icon=ICON_FA_BINOCULARS, .name="Monitoring"       },
+			{ .icon=ICON_FA_HEART_PULSE, .name="Monitoring"       },
 		};
 
 		ImGui::PushFont(g_LargeIconsFont);
@@ -134,7 +137,7 @@ namespace dnf_composer::user_interface
 			{ .icon=ICON_FA_LINK,     .tooltip="Set interactions" },
 			{ .icon=ICON_FA_TERMINAL, .tooltip="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .tooltip="Export data"      },
-			{ .icon=ICON_FA_BINOCULARS, .tooltip="Monitoring"       },
+			{ .icon=ICON_FA_HEART_PULSE, .tooltip="Monitoring"       },
 		};
 
 		ImGui::SetCursorPos(ImVec2(0.0F, 16.0F));
@@ -153,6 +156,7 @@ namespace dnf_composer::user_interface
 		ImGui::EndGroup();
 	}
 
+	// Clang-Tidy: Function 'renderAddElementCard' has cognitive complexity of 28 (threshold 25)
 	void SimulationWindow::renderAddElementCard() const
 	{
 		ImGui::PushID("add_element_section");
@@ -1749,6 +1753,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopID();
 	}
 
+	// Clang-Tidy: Function 'renderLogElementParametersCard' has cognitive complexity of 27 (threshold 25)
 	void SimulationWindow::renderLogElementParametersCard() const
 	{
 		struct ElemCategory { const char* label; ImU32 color; };
@@ -1803,27 +1808,29 @@ namespace dnf_composer::user_interface
 			std::ranges::transform(nl, nl.begin(), ::tolower);
 			std::string cl(getCat(e->getLabel()).label);
 			std::ranges::transform(cl, cl.begin(), ::tolower);
-			if (nl.find(filterLower) != std::string::npos || cl.find(filterLower) != std::string::npos)
+			if (nl.find(filterLower) != std::string::npos || cl.find(filterLower) != std::string::npos) {
 				++matchCount;
+			}
 		}
 
-		const float maxListH = rowH * 8.0F;
+		const float availH   = ImGui::GetContentRegionAvail().y;
+		const float maxListH = std::max(availH - btnH - ImGui::GetStyle().ItemSpacing.y, rowH);
 		const float listH    = std::min(static_cast<float>(std::max(matchCount, 1)) * rowH, maxListH);
 
-		if (ImGui::BeginChild("##lp_list", {0, listH}, false, ImGuiWindowFlags_NoSavedSettings))
+		if (ImGui::BeginChild("##lp_list", {0, listH}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			const auto& style = ImGui::GetStyle();
 
 			for (const auto& e : simulation->getElements())
 			{
 				const std::string& name = e->getUniqueName();
-				const auto cat = getCat(e->getLabel());
+				const auto [label, color] = getCat(e->getLabel());
 
 				if (!filterLower.empty())
 				{
 					std::string nl(name);
 					std::ranges::transform(nl, nl.begin(), ::tolower);
-					std::string cl(cat.label);
+					std::string cl(label);
 					std::ranges::transform(cl, cl.begin(), ::tolower);
 					if (nl.find(filterLower) == std::string::npos && cl.find(filterLower) == std::string::npos)
 						continue;
@@ -1843,18 +1850,17 @@ namespace dnf_composer::user_interface
 				const float cy    = rowMin.y + selH * 0.5f;
 				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
 
-				dl->AddCircleFilled({rowMin.x + 12.0F, cy}, dotR, cat.color);
+				dl->AddCircleFilled({rowMin.x + 12.0F, cy}, dotR, color);
 				dl->AddText({rowMin.x + 12.0F + dotR + 8.0F, textY},
 					ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
 				dl->AddText({rowMin.x + avail - typeW, textY},
-					ImGui::GetColorU32(ImGuiCol_TextDisabled), cat.label);
+					ImGui::GetColorU32(ImGuiCol_TextDisabled), label);
 
 				ImGui::PopID();
 			}
 		}
 		ImGui::EndChild();
 
-		// ── Log to console button ─────────────────────────────────────────────
 		{
 			const bool canLog = !selectedId.empty();
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
@@ -1886,9 +1892,10 @@ namespace dnf_composer::user_interface
 
 			if (pressed)
 			{
-				const auto elem = simulation->getElement(selectedId);
-				if (elem)
+				if (const auto elem = simulation->getElement(selectedId))
+				{
 					tools::logger::log(tools::logger::LogLevel::INFO, elem->toString());
+				}
 			}
 		}
 	}
@@ -1896,224 +1903,7 @@ namespace dnf_composer::user_interface
 	void SimulationWindow::renderMonitoringCard() const
 	{
 		ImGui::PushID("monitoring_section");
-
-		static constexpr ImVec4 kCardBg     = { 0.96f, 0.97f, 0.98f, 1.0F };
-		static constexpr ImVec4 kCardBorder = { 0.82f, 0.85f, 0.89f, 1.0F };
-		static constexpr float  kCardRound  = 8.0F;
-		static constexpr float  kCardBordSz = 1.5f;
-		static constexpr float  kBarH       = 6.0F;
-		static constexpr float  kDotR       = 5.0F;
-
-		bool anyNF = false;
-		for (const auto& e : simulation->getElements())
-		{
-			const bool is1D = (e->getLabel() == element::ElementLabel::NEURAL_FIELD);
-			const bool is2D = (e->getLabel() == element::ElementLabel::NEURAL_FIELD_2D);
-			if (!is1D && !is2D) continue;
-			anyNF = true;
-
-			const auto* nf1d = is1D ? dynamic_cast<const element::NeuralField*>(e.get())   : nullptr;
-			const auto* nf2d = is2D ? dynamic_cast<const element::NeuralField2D*>(e.get()) : nullptr;
-			if (!nf1d && !nf2d) continue;
-
-			const std::string& name   = e->getUniqueName();
-			const bool  stable = is1D ? nf1d->isStable()             : nf2d->isStable();
-			const float lo     = is1D ? static_cast<float>(nf1d->getLowestActivation())
-			                          : static_cast<float>(nf2d->getLowestActivation());
-			const float hi     = is1D ? static_cast<float>(nf1d->getHighestActivation())
-			                          : static_cast<float>(nf2d->getHighestActivation());
-			const auto  bumps1d = is1D ? nf1d->getBumps() : std::vector<element::NeuralFieldBump>{};
-			const auto  bumps2d = is2D ? nf2d->getBumps() : std::vector<element::NeuralField2DBump>{};
-			const int   bn      = is1D ? static_cast<int>(bumps1d.size())
-			                           : static_cast<int>(bumps2d.size());
-
-			const float padV      = ImGui::GetStyle().WindowPadding.y;
-			const float spacing   = ImGui::GetStyle().ItemSpacing.y;
-			const float lineH     = ImGui::GetTextLineHeightWithSpacing();
-			const float monoLineH = (g_MonoMediumFont ? g_MonoMediumFont->LegacySize
-			                                          : ImGui::GetTextLineHeight()) + spacing;
-			// Mixed default+mono lines take the height of the taller font.
-			const float rowH = std::max(lineH, monoLineH);
-
-			// Separator() advances only (1px + ItemSpacing.y), not a full lineH.
-			// InvisibleButton auto-appends ItemSpacing.y, so bar accounts for kBarH + spacing.
-			const float sepH = 1.0F + spacing;
-			float cardH = padV * 2.0F
-				+ lineH            // header row
-				+ spacing          // Spacing() after header
-				+ kBarH + spacing  // bar InvisibleButton (auto item-spacing included)
-				+ spacing          // Spacing() after bar
-				+ rowH             // Range row  (mixed default+mono)
-				+ rowH;            // Bumps row  (mixed default+mono)
-
-			if (bn > 0)
-				cardH += float(bn) * (sepH + lineH + 2.0F * rowH); // sep + "Bump N" + 2 data rows
-
-			const float avail = ImGui::GetContentRegionAvail().x;
-
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, kCardBg);
-			ImGui::PushStyleColor(ImGuiCol_Border,  kCardBorder);
-			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   kCardRound);
-			ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, kCardBordSz);
-
-			const std::string cid = "##mc_" + name;
-			if (ImGui::BeginChild(cid.c_str(), { avail, cardH }, true,
-				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
-			{
-				const float innerW = ImGui::GetContentRegionAvail().x;
-				const float maxX   = ImGui::GetContentRegionMax().x;
-				ImDrawList* dl     = ImGui::GetWindowDrawList();
-
-				// ── Header: dot + name + stable badge ─────────────────────────
-				{
-					const ImVec2 pos = ImGui::GetCursorScreenPos();
-					const float  lh  = ImGui::GetTextLineHeight();
-					dl->AddCircleFilled({ pos.x + kDotR, pos.y + lh * 0.5f }, kDotR,
-						IM_COL32(74, 144, 217, 255));
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + kDotR * 2.0F + 6.0F);
-					ImGui::PushFont(g_BoldLargeFont);
-					ImGui::TextUnformatted(name.c_str());
-					ImGui::PopFont();
-
-					const char*  badge    = stable ? "Stable" : "Unstable";
-					const ImVec4 badgeCol = stable
-						? ImVec4(0.22f, 0.75f, 0.35f, 1.0F)
-						: ImVec4(0.90f, 0.55f, 0.10f, 1.0F);
-					const float badgeW = ImGui::CalcTextSize(badge).x;
-					ImGui::SameLine();
-					ImGui::SetCursorPosX(maxX - badgeW);
-					ImGui::TextColored(badgeCol, "%s", badge);
-				}
-
-				ImGui::Spacing();
-
-				// ── Range bar ─────────────────────────────────────────────────
-				{
-					const ImVec2 barMin = ImGui::GetCursorScreenPos();
-					const ImVec2 barMax = { barMin.x + innerW, barMin.y + kBarH };
-					const float  span   = hi - lo;
-
-					dl->AddRectFilled(barMin, barMax, IM_COL32(60, 60, 60, 80), 3.0F);
-
-					if (span > 0.0001f)
-					{
-						const ImU32 fillCol = stable
-							? IM_COL32(56,  200, 90,  180)
-							: IM_COL32(230, 140, 25,  180);
-
-						if (hi > 0.0F)
-						{
-							const float zeroX = (lo < 0.0F)
-								? barMin.x + innerW * (-lo / span)
-								: barMin.x;
-							dl->AddRectFilled({ zeroX, barMin.y }, barMax, fillCol, 3.0F);
-
-							if (lo < 0.0F)
-								dl->AddLine({ zeroX, barMin.y - 1.0F }, { zeroX, barMax.y + 1.0F },
-									IM_COL32(255, 255, 255, 150), 1.5f);
-						}
-						else
-						{
-							dl->AddRectFilled(barMin, barMax, IM_COL32(180, 60, 60, 80), 3.0F);
-						}
-					}
-
-					ImGui::InvisibleButton("##bar_hover", { innerW, kBarH });
-					if (ImGui::IsItemHovered())
-						ImGui::SetTooltip(
-							"Activation range: %.2f to %.2f\n"
-							"Colored fill = above-zero (excitatory) activation.\n"
-							"White tick = zero crossing.",
-							lo, hi);
-				}
-
-				ImGui::Spacing();
-
-				// ── Range row ─────────────────────────────────────────────────
-				{
-					char buf[64];
-					snprintf(buf, sizeof(buf), "%.2f ... %.2f", lo, hi);
-					ImGui::PushFont(g_MonoMediumFont);
-					const float valW = ImGui::CalcTextSize(buf).x;
-					ImGui::PopFont();
-					ImGui::TextDisabled("Range");
-					ImGui::SameLine();
-					ImGui::SetCursorPosX(maxX - valW);
-					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::TextUnformatted(buf);
-					ImGui::PopFont();
-				}
-
-				// ── Bumps row ─────────────────────────────────────────────────
-				{
-					char buf[16];
-					snprintf(buf, sizeof(buf), "%d", bn);
-					ImGui::PushFont(g_MonoMediumFont);
-					const float valW = ImGui::CalcTextSize(buf).x;
-					ImGui::PopFont();
-					ImGui::TextDisabled("Bumps");
-					ImGui::SameLine();
-					ImGui::SetCursorPosX(maxX - valW);
-					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::TextUnformatted(buf);
-					ImGui::PopFont();
-				}
-
-				// ── Per-bump detail ───────────────────────────────────────────
-				if (bn > 0)
-				{
-					ImGui::Separator();
-					for (int i = 0; i < bn; ++i)
-					{
-						ImGui::PushFont(g_BoldMediumFont);
-						ImGui::Text("Bump %d", i);
-						ImGui::PopFont();
-						if (is1D)
-						{
-							const auto& b = bumps1d[i];
-							ImGui::TextDisabled("Pos");   ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.centroid);  ImGui::PopFont();
-							ImGui::SameLine(0, 12);
-							ImGui::TextDisabled("Amp");   ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.amplitude); ImGui::PopFont();
-
-							ImGui::TextDisabled("Width"); ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.width);     ImGui::PopFont();
-							ImGui::SameLine(0, 12);
-							ImGui::TextDisabled("Vel");   ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.velocity);  ImGui::PopFont();
-						}
-						else
-						{
-							const auto& b = bumps2d[i];
-							ImGui::TextDisabled("Pos");  ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("(%.2f, %.2f)", b.centroid_x, b.centroid_y); ImGui::PopFont();
-							ImGui::SameLine(0, 12);
-							ImGui::TextDisabled("Amp");  ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.amplitude); ImGui::PopFont();
-
-							ImGui::TextDisabled("Area"); ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("%.2f", b.area);      ImGui::PopFont();
-							ImGui::SameLine(0, 12);
-							ImGui::TextDisabled("Vel");  ImGui::SameLine(0, 4);
-							ImGui::PushFont(g_MonoMediumFont); ImGui::Text("(%.2f, %.2f)", b.velocity_x, b.velocity_y); ImGui::PopFont();
-						}
-						if (i < bn - 1)
-							ImGui::Separator();
-					}
-				}
-			}
-			ImGui::EndChild();
-			ImGui::PopStyleVar(2);
-			ImGui::PopStyleColor(2);
-
-			ImGui::Spacing();
-		}
-
-		if (!anyNF)
-			ImGui::TextDisabled("No neural fields in simulation.");
-
+		FieldMetricsWindow::renderContents(simulation);
 		ImGui::PopID();
 	}
 }

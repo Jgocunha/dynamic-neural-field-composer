@@ -111,7 +111,7 @@ namespace dnf_composer::user_interface
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::TextUnformatted(ICON_FA_SHARE_NODES);
+			ImGui::TextUnformatted(ICON_FA_DIAGRAM_PROJECT);
 			ImGui::PopFont();
 			ImGui::PopStyleColor();
 			ImGui::SameLine(0, 8.0F);
@@ -278,20 +278,12 @@ namespace dnf_composer::user_interface
 		util::BlueprintNodeBuilder builder;
 		builder.Begin(nodeId);
 
-		bool showTooltip = false;
-
 		builder.Header(bodyVec4);
 		{
 			static constexpr float minNodeSize = 280.0F;
 			ImGui::Dummy(ImVec2(minNodeSize, 0));
 
 			renderNodeScrollingName(element, minNodeSize);
-
-			ImGui::Spacing();
-			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::TextUnformatted(ICON_FA_CIRCLE_INFO);
-			ImGui::PopFont();
-			showTooltip = ImGui::IsItemHovered();
 			ImGui::Spacing();
 
 			renderNodeInlinePreview(element, minNodeSize);
@@ -304,15 +296,6 @@ namespace dnf_composer::user_interface
 
 		ImNodeEditor::PopStyleColor(2);
 		ImNodeEditor::PopStyleVar(3);
-
-		// Suspend/Resume outside the BeginHorizontal (builder.Header) context to
-		// avoid corrupting the draw list clip-rect stack on long-name nodes.
-		if (showTooltip)
-		{
-			ImNodeEditor::Suspend();
-			renderElementTooltip(element);
-			ImNodeEditor::Resume();
-		}
 	}
 
 	void NodeGraphWindow::renderNodeScrollingName(const std::shared_ptr<element::Element>& element, const float minNodeSize)

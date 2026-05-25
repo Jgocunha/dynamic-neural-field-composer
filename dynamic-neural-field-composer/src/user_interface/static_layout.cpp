@@ -164,7 +164,7 @@ namespace dnf_composer
 		void StaticLayoutWindow::drawPanelElement(const ImVec2 pos, const ImVec2 size) const
 		{
 			ImGui::SetCursorScreenPos(pos);
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.922f, 0.922f, 0.922f, 1.0f));  // tone b
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   kRounding);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 			if (ImGui::BeginChild("##sl_elem", size, static_cast<int>(true),
@@ -204,7 +204,7 @@ namespace dnf_composer
 				ImGui::SetCursorPosY(startY + yOff);
 				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 				ImGui::PushFont(g_MediumIconsFont);
-				ImGui::TextUnformatted(ICON_FA_SHARE_NODES);
+				ImGui::TextUnformatted(ICON_FA_DIAGRAM_PROJECT);
 				ImGui::PopFont();
 				ImGui::PopStyleColor();
 				ImGui::SameLine(0, 8.0F);
