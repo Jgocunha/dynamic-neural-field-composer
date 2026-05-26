@@ -2,6 +2,7 @@
 #include <memory>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
 
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/gauss_stimulus_2d.h"
@@ -37,7 +38,7 @@ TEST(AsymmetricGaussKernel2DStep, OutputSizeMatchesDimensions)
 {
     auto stimulus = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
     stimulus->init();
 
     auto agk = std::make_shared<AsymmetricGaussKernel2D>(
@@ -53,7 +54,7 @@ TEST(AsymmetricGaussKernel2DStep, PositiveAmplitudeGivesPositiveOutput)
 {
     auto stimulus = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
     stimulus->init();
 
     auto agk = std::make_shared<AsymmetricGaussKernel2D>(
@@ -87,4 +88,43 @@ TEST(AsymmetricGaussKernel2DToString, NonEmpty)
 {
     AsymmetricGaussKernel2D agk(makeCP("agk"), makeAGKP());
     EXPECT_FALSE(agk.toString().empty());
+}
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(AsymmetricGaussKernel2DEdgeCases, ZeroAmplitudeOutputAllZeros)
+{
+    auto stimulus = std::make_shared<GaussStimulus2D>(
+        makeCP("gs", 20, 20),
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
+    stimulus->init();
+
+    auto agk = std::make_shared<AsymmetricGaussKernel2D>(
+        makeCP("agk", 20, 20), makeAGKP(3.0, 0.0, 0.0, 0.0, 0.0, false, false));
+    agk->addInput(stimulus);
+    agk->init();
+    agk->step(0.0, 1.0);
+
+    for (double v : agk->getComponent("output"))
+        EXPECT_NEAR(v, 0.0, 1e-10);
+}
+
+TEST(AsymmetricGaussKernel2DEdgeCases, OutputNoNaNOrInfAfterMultipleSteps)
+{
+    auto stimulus = std::make_shared<GaussStimulus2D>(
+        makeCP("gs", 20, 20),
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
+    stimulus->init();
+
+    auto agk = std::make_shared<AsymmetricGaussKernel2D>(
+        makeCP("agk", 20, 20), makeAGKP(3.0, 1.0, 0.0, 0.5, 0.5, false, false));
+    agk->addInput(stimulus);
+    agk->init();
+    for (int i = 0; i < 10; ++i)
+        agk->step(static_cast<double>(i), 1.0);
+
+    for (double v : agk->getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
 }

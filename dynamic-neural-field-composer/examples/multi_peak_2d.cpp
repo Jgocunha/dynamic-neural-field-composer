@@ -21,15 +21,15 @@ int main()
 
 		// Three spatially distributed stimuli driving the field
 		const auto sAcp = element::ElementCommonParameters{ "stimulus A", dimensions2D };
-		const auto sAp  = element::GaussStimulusParameters2D{ 3.0, 8.0, 15.0, 15.0 };
+		const auto sAp  = element::GaussStimulus2DParameters{ 3.0, 8.0, 15.0, 15.0 };
 		const auto sA   = std::make_shared<element::GaussStimulus2D>(sAcp, sAp);
 
 		const auto sBcp = element::ElementCommonParameters{ "stimulus B", dimensions2D };
-		const auto sBp  = element::GaussStimulusParameters2D{ 3.0, 8.0, 35.0, 35.0 };
+		const auto sBp  = element::GaussStimulus2DParameters{ 3.0, 8.0, 35.0, 35.0 };
 		const auto sB   = std::make_shared<element::GaussStimulus2D>(sBcp, sBp);
 
 		const auto sCcp = element::ElementCommonParameters{ "stimulus C", dimensions2D };
-		const auto sCp  = element::GaussStimulusParameters2D{ 3.0, 8.0, 15.0, 35.0 };
+		const auto sCp  = element::GaussStimulus2DParameters{ 3.0, 8.0, 15.0, 35.0 };
 		const auto sC   = std::make_shared<element::GaussStimulus2D>(sCcp, sCp);
 
 		// Neural field

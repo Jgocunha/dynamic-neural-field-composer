@@ -22,15 +22,15 @@ int main()
 		// Three options at positions (25, 25), (50, 50) , (75, 75).
 		// Amplitudes are intentionally the same, so small changes (noise) shift the winner.
 		const auto sAcp = element::ElementCommonParameters{ "option A stimulus", dimensions2D};
-		const auto sAp  = element::GaussStimulusParameters2D{ 3.0, 8.0, 25.0, 25.0 };
+		const auto sAp  = element::GaussStimulus2DParameters{ 3.0, 8.0, 25.0, 25.0 };
 		const auto sA   = std::make_shared<element::GaussStimulus2D>(sAcp, sAp);
 
 		const auto sBcp = element::ElementCommonParameters{ "option B stimulus", dimensions2D};
-		const auto sBp  = element::GaussStimulusParameters2D{3.0, 8.0, 50, 50};
+		const auto sBp  = element::GaussStimulus2DParameters{3.0, 8.0, 50, 50};
 		const auto sB   = std::make_shared<element::GaussStimulus2D>(sBcp, sBp);
 
 		const auto sCcp = element::ElementCommonParameters{ "option C stimulus", dimensions2D};
-		const auto sCp  = element::GaussStimulusParameters2D{ 3.0, 8.0, 75.0, 75.0};
+		const auto sCp  = element::GaussStimulus2DParameters{ 3.0, 8.0, 75.0, 75.0};
 		const auto sC   = std::make_shared<element::GaussStimulus2D>(sCcp, sCp);
 
 		// ── Selection field ───────────────────────────────────────────────────

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
 
 #include "elements/gauss_stimulus_2d.h"
 #include "exceptions/exception.h"
@@ -13,10 +14,10 @@ static ElementCommonParameters makeCP(const std::string& name, int x_max = 50, i
     return ElementCommonParameters{ name, ElementDimensions(x_max, y_max, 1.0, 1.0) };
 }
 
-static GaussStimulusParameters2D makeGSP2D(double width = 5.0, double amp = 15.0,
+static GaussStimulus2DParameters makeGSP2D(double width = 5.0, double amp = 15.0,
     double px = 25.0, double py = 25.0, bool circ = true, bool norm = false)
 {
-    return GaussStimulusParameters2D{ width, amp, px, py, circ, norm };
+    return GaussStimulus2DParameters{ width, amp, px, py, circ, norm };
 }
 
 // ---------------------------------------------------------------------------
@@ -133,4 +134,40 @@ TEST(GaussStimulus2DClone, CloneHasSameParameters)
     const auto cloned = std::dynamic_pointer_cast<GaussStimulus2D>(gs.clone());
     ASSERT_NE(cloned, nullptr);
     EXPECT_EQ(cloned->getParameters(), gs.getParameters());
+}
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(GaussStimulus2DEdgeCases, ZeroAmplitudeOutputAllZeros)
+{
+    GaussStimulus2D gs(makeCP("gs"), makeGSP2D(5.0, 0.0));
+    gs.init();
+    for (double v : gs.getComponent("output"))
+        EXPECT_DOUBLE_EQ(v, 0.0);
+}
+
+TEST(GaussStimulus2DEdgeCases, PositionAtXMaxThrows)
+{
+    EXPECT_THROW(GaussStimulus2D(makeCP("gs", 50, 50), makeGSP2D(3.0, 10.0, 50.0, 25.0)), Exception);
+}
+
+TEST(GaussStimulus2DEdgeCases, PositionAtYMaxThrows)
+{
+    EXPECT_THROW(GaussStimulus2D(makeCP("gs", 50, 50), makeGSP2D(3.0, 10.0, 25.0, 50.0)), Exception);
+}
+
+TEST(GaussStimulus2DEdgeCases, PositionJustBelowMaxDoesNotThrow)
+{
+    EXPECT_NO_THROW(GaussStimulus2D(makeCP("gs", 50, 50), makeGSP2D(3.0, 10.0, 49.0, 49.0)));
+}
+
+TEST(GaussStimulus2DEdgeCases, OutputNoNaNOrInf)
+{
+    GaussStimulus2D gs(makeCP("gs"), makeGSP2D());
+    gs.init();
+    gs.step(0.0, 1.0);
+    for (double v : gs.getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
 }

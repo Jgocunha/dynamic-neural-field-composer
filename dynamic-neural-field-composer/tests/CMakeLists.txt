@@ -29,6 +29,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "elements/test_correlated_normal_noise_2d.cpp"
             "elements/test_asymmetric_gauss_kernel_2d.cpp"
             "elements/test_memory_trace_2d.cpp"
+            "elements/test_mexican_hat_kernel_2d.cpp"
             "elements/test_change_dimensions.cpp"
             # simulation
             "simulation/test_simulation.cpp"

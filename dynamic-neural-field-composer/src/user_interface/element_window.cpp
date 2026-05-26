@@ -1802,7 +1802,7 @@ namespace dnf_composer::user_interface
 	void ElementWindow::modifyElementGaussStimulus2D(const std::shared_ptr<element::Element>& element)
 	{
 		const auto gs = std::dynamic_pointer_cast<element::GaussStimulus2D>(element);
-		element::GaussStimulusParameters2D p = gs->getParameters();
+		element::GaussStimulus2DParameters p = gs->getParameters();
 		const std::string uid = element->getUniqueName();
 
 		auto width      = static_cast<float>(p.width);

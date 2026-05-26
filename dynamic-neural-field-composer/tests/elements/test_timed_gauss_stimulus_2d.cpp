@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
+#include <cmath>
 
 #include "elements/timed_gauss_stimulus_2d.h"
 #include "exceptions/exception.h"
@@ -207,4 +208,32 @@ TEST(TimedGaussStimulus2DToString, NonEmpty)
 {
     TimedGaussStimulus2D tgs(makeCP("s"), makeTGSP2());
     EXPECT_FALSE(tgs.toString().empty());
+}
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(TimedGaussStimulus2DEdgeCases, PositionYAtYMaxThrows)
+{
+    EXPECT_THROW(TimedGaussStimulus2D(makeCP("s", 50, 50),
+        makeTGSP2(5.0, 15.0, 25.0, 50.0)), Exception);
+}
+
+TEST(TimedGaussStimulus2DEdgeCases, ZeroAmplitudeOutputAllZerosWhenActive)
+{
+    TimedGaussStimulus2D tgs(makeCP("s"), makeTGSP2(5.0, 0.0, 25.0, 25.0, {{0.0, 100.0}}));
+    tgs.init();
+    tgs.step(1.0, 1.0);
+    for (double v : tgs.getComponent("output"))
+        EXPECT_DOUBLE_EQ(v, 0.0);
+}
+
+TEST(TimedGaussStimulus2DEdgeCases, OutputNoNaNOrInfWhenActive)
+{
+    TimedGaussStimulus2D tgs(makeCP("s"), makeTGSP2(5.0, 15.0, 25.0, 25.0, {{0.0, 100.0}}));
+    tgs.init();
+    tgs.step(1.0, 1.0);
+    for (double v : tgs.getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
 }

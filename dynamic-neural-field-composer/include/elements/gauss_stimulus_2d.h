@@ -9,7 +9,7 @@
 
 namespace dnf_composer::element
 {
-	struct GaussStimulusParameters2D final : ElementSpecificParameters
+	struct GaussStimulus2DParameters final : ElementSpecificParameters
 	{
 		double width;         // isotropic sigma
 		double amplitude;
@@ -18,7 +18,7 @@ namespace dnf_composer::element
 		bool circular;
 		bool normalized;
 
-		explicit GaussStimulusParameters2D(double width = 5.0, double amplitude = 15.0,
+		explicit GaussStimulus2DParameters(double width = 5.0, double amplitude = 15.0,
 		                                   double position_x = 50.0, double position_y = 50.0,
 		                                   bool circular = true, bool normalized = false)
 			: width(width), amplitude(amplitude),
@@ -26,7 +26,7 @@ namespace dnf_composer::element
 			  circular(circular), normalized(normalized)
 		{}
 
-		bool operator==(const GaussStimulusParameters2D& other) const
+		bool operator==(const GaussStimulus2DParameters& other) const
 		{
 			constexpr double epsilon = 1e-6;
 			return std::abs(width - other.width) < epsilon &&
@@ -55,17 +55,17 @@ namespace dnf_composer::element
 	class GaussStimulus2D final : public Element
 	{
 	private:
-		GaussStimulusParameters2D parameters;
+		GaussStimulus2DParameters parameters;
 	public:
 		GaussStimulus2D(const ElementCommonParameters& elementCommonParameters,
-		                const GaussStimulusParameters2D& parameters);
+		                const GaussStimulus2DParameters& parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
-		void setParameters(const GaussStimulusParameters2D& parameters);
-		GaussStimulusParameters2D getParameters() const;
+		void setParameters(const GaussStimulus2DParameters& parameters);
+		GaussStimulus2DParameters getParameters() const;
 	};
 }

@@ -1072,7 +1072,7 @@ namespace dnf_composer::user_interface
 
 		if (addRequested)
 		{
-			const element::GaussStimulusParameters2D gsp( width, amplitude, pos_x, pos_y, circular, normalized );
+			const element::GaussStimulus2DParameters gsp( width, amplitude, pos_x, pos_y, circular, normalized );
 			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
 			simulation->addElement(std::make_shared<element::GaussStimulus2D>(common, gsp));
 		}

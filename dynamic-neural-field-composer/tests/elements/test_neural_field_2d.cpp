@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <algorithm>
+#include <cmath>
 
 #include "elements/neural_field_2d.h"
 #include "exceptions/exception.h"
@@ -119,4 +120,28 @@ TEST(NeuralField2DToString, NonEmpty)
 {
     NeuralField2D nf(makeCP("nf"), makeNFP());
     EXPECT_FALSE(nf.toString().empty());
+}
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(NeuralField2DEdgeCases, ActivationRemainsFiniteAfterManySteps)
+{
+    NeuralField2D nf(makeCP("nf", 4, 4), makeNFP(25.0, -5.0));
+    nf.init();
+    for (int i = 0; i < 200; ++i)
+        nf.step(static_cast<double>(i), 1.0);
+    for (double v : nf.getComponent("activation"))
+        EXPECT_TRUE(std::isfinite(v));
+}
+
+TEST(NeuralField2DEdgeCases, HighRestingLevelRemainsFinite)
+{
+    NeuralField2D nf(makeCP("nf", 4, 4), makeNFP(25.0, 10.0));
+    nf.init();
+    for (int i = 0; i < 100; ++i)
+        nf.step(static_cast<double>(i), 1.0);
+    for (double v : nf.getComponent("activation"))
+        EXPECT_TRUE(std::isfinite(v));
 }

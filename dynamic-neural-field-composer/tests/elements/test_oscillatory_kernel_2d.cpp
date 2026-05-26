@@ -2,6 +2,7 @@
 #include <memory>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
 
 #include "elements/oscillatory_kernel_2d.h"
 #include "elements/gauss_stimulus_2d.h"
@@ -68,7 +69,7 @@ TEST(OscillatoryKernel2DStep, OutputSizeMatchesDimensions)
 {
     auto stim = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
     stim->init();
 
     auto ok = std::make_shared<OscillatoryKernel2D>(makeCP("ok2d", 20, 20), makeOKP(1.0, 0.1, 0.3, 0.0, false, false));
@@ -83,7 +84,7 @@ TEST(OscillatoryKernel2DStep, PositiveAmplitudeProducesNonZeroOutput)
 {
     auto stim = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
     stim->init();
 
     auto ok = std::make_shared<OscillatoryKernel2D>(makeCP("ok2d", 20, 20), makeOKP(1.0, 0.1, 0.3, 0.0, false, false));
@@ -100,7 +101,7 @@ TEST(OscillatoryKernel2DStep, ZeroAmplitudeGivesAllZeroOutput)
 {
     auto stim = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
     stim->init();
 
     auto ok = std::make_shared<OscillatoryKernel2D>(makeCP("ok2d", 20, 20), makeOKP(0.0, 0.1, 0.3, 0.0, false, false));
@@ -119,7 +120,7 @@ TEST(OscillatoryKernel2DStep, GlobalTermShiftsOutput)
     // With a positive amplitudeGlobal the mean output should shift up.
     auto stim = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 10, 10),
-        GaussStimulusParameters2D{ 50.0, 1.0, 5.0, 5.0, false, false });
+        GaussStimulus2DParameters{ 50.0, 1.0, 5.0, 5.0, false, false });
     stim->init();
 
     auto okNoG = std::make_shared<OscillatoryKernel2D>(makeCP("ok1", 10, 10), makeOKP(1.0, 0.1, 0.3, 0.0,  false, false));
@@ -171,11 +172,32 @@ TEST(OscillatoryKernel2DClone, CloneHasSameParameters)
     EXPECT_EQ(cloned->getParameters(), ok.getParameters());
 }
 
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(OscillatoryKernel2DEdgeCases, OutputNoNaNOrInfAfterMultipleSteps)
+{
+    auto stim = std::make_shared<GaussStimulus2D>(
+        makeCP("gs", 20, 20),
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
+    stim->init();
+
+    auto ok = std::make_shared<OscillatoryKernel2D>(makeCP("ok2d", 20, 20), makeOKP(1.0, 0.1, 0.3, 0.0, false, false));
+    ok->addInput(stim);
+    ok->init();
+    for (int i = 0; i < 10; ++i)
+        ok->step(static_cast<double>(i), 1.0);
+
+    for (double v : ok->getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
+}
+
 TEST(OscillatoryKernel2DClone, CloneProducesSameOutput)
 {
     auto stim = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 5.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 5.0, 10.0, 10.0, false, false });
     stim->init();
 
     auto ok = std::make_shared<OscillatoryKernel2D>(makeCP("ok2d", 20, 20), makeOKP(1.0, 0.1, 0.3, 0.0, false, false));

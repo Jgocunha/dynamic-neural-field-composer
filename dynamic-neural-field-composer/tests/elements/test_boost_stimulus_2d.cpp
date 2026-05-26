@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <memory>
+#include <cmath>
 
 #include "elements/boost_stimulus_2d.h"
 #include "exceptions/exception.h"
@@ -129,4 +130,25 @@ TEST(BoostStimulus2DToString, NonEmpty)
 {
     BoostStimulus2D bs(makeCP("b"), BoostStimulus2DParameters{});
     EXPECT_FALSE(bs.toString().empty());
+}
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(BoostStimulus2DEdgeCases, ZeroAmplitudeActiveOutputAllZeros)
+{
+    BoostStimulus2D bs(makeCP("b"), BoostStimulus2DParameters{ 0.0, true });
+    bs.init();
+    for (double v : bs.getComponent("output"))
+        EXPECT_DOUBLE_EQ(v, 0.0);
+}
+
+TEST(BoostStimulus2DEdgeCases, OutputNoNaNOrInf)
+{
+    BoostStimulus2D bs(makeCP("b"), BoostStimulus2DParameters{ 5.0, true });
+    bs.init();
+    bs.step(0.0, 1.0);
+    for (double v : bs.getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
 }
