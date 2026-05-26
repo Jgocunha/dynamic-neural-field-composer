@@ -10,43 +10,46 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("Memory trace (example)", 15.0, 0.0, 0.0);
+		const auto simulation = std::make_shared<Simulation>("Memory trace 2d (example)", 15.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
 		app.addWindow<user_interface::MainMenuBar>();
 		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
+		const element::ElementDimensions dimensions2D(50, 50, 1.0, 1.0);
 		// Gauss stimulus — localized input; set amplitude to 0 via the parameter panel to simulate removal
-		const auto gscp = element::ElementCommonParameters{ "Gauss stimulus" };
-		const auto gsp = element::TimedGaussStimulusParameters{ 5.0, 12.0, 50.0,
-			{{0, 500}} };
-		const auto gs = std::make_shared<element::TimedGaussStimulus>(gscp, gsp);
+		const auto gscp = element::ElementCommonParameters{ "Gauss stimulus", dimensions2D};
+		const auto gsp = element::TimedGaussStimulus2DParameters{5, 12, 12, 12,
+			{{0, 500}}};
+		const auto gs = std::make_shared<element::TimedGaussStimulus2D>(gscp, gsp);
 
 		// Memory trace — captures field output and sustains it after input is removed
-		const auto mtcp = element::ElementCommonParameters{ "Memory trace" };
-		const auto mtp = element::MemoryTraceParameters{ 50.0, 500.0, 0.5 };
-		const auto mt = std::make_shared<element::MemoryTrace>(mtcp, mtp);
+		const auto mtcp = element::ElementCommonParameters{ "Memory trace", dimensions2D };
+		const auto mtp = element::MemoryTrace2DParameters{ 50.0, 250.0, 0.5 };
+		const auto mt = std::make_shared<element::MemoryTrace2D>(mtcp, mtp);
 
 		// Gauss kernel — feeds memory trace output back into the field
-		const auto gkcp = element::ElementCommonParameters{ "Feedback kernel" };
-		const auto gkp = element::GaussKernelParameters{ 3.0, 12.0, 0.0, true, true };
-		const auto gk = std::make_shared<element::GaussKernel>(gkcp, gkp);
+		const auto gkcp = element::ElementCommonParameters{ "Feedback kernel", dimensions2D };
+		const auto gkp = element::GaussKernel2DParameters{ 3.0, 12.0, 0.0,
+			true, true };
+		const auto gk = std::make_shared<element::GaussKernel2D>(gkcp, gkp);
 
 		// Mexican hat kernel — lateral interactions for self-sustaining peak
-		const auto mhcp = element::ElementCommonParameters{ "Mexican hat kernel" };
-		const auto mhp = element::MexicanHatKernelParameters{};
-		const auto mh = std::make_shared<element::MexicanHatKernel>(mhcp, mhp);
+		const auto mhcp = element::ElementCommonParameters{ "Mexican hat kernel", dimensions2D };
+		const auto mhp = element::MexicanHatKernel2DParameters{ 3.0, 12.0,
+			5.0, 11.0, -0.01};
+		const auto mh = std::make_shared<element::MexicanHatKernel2D>(mhcp, mhp);
 
 		// Neural field — the main field whose activation is memorized
-		const auto nfcp = element::ElementCommonParameters{ "Neural field" };
-		const auto nfp = element::NeuralFieldParameters{};
-		const auto nf = std::make_shared<element::NeuralField>(nfcp, nfp);
+		const auto nfcp = element::ElementCommonParameters{ "Neural field", dimensions2D };
+		const auto nfp = element::NeuralField2DParameters{};
+		const auto nf = std::make_shared<element::NeuralField2D>(nfcp, nfp);
 
 		// Normal noise
-		const auto nncp = element::ElementCommonParameters{ "Normal noise" };
-		const auto nnp = element::NormalNoiseParameters{};
-		const auto nn = std::make_shared<element::NormalNoise>(nncp, nnp);
+		const auto nncp = element::ElementCommonParameters{ "Normal noise", dimensions2D};
+		const auto nnp = element::NormalNoise2DParameters{0.05};
+		const auto nn = std::make_shared<element::NormalNoise2D>(nncp, nnp);
 
 		simulation->addElement(gs);
 		simulation->addElement(mt);
@@ -70,11 +73,18 @@ int main()
 		// Lateral interactions
 		mh->addInput(nf);
 
-		visualization->plot({ {nf->getUniqueName(), "activation"},
-								{nf->getUniqueName(), "output"},
-								{nf->getUniqueName(), "input"} });
-		visualization->plot({ {mt->getUniqueName(), "output"},
-								{gs->getUniqueName(), "output"} });
+		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+			PlotAnnotations{"Neural field activation", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			HeatmapParameters{},
+			{ {nf->getUniqueName(), "activation"} });
+		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+			PlotAnnotations{"Stimulus", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			HeatmapParameters{},
+			{ {gs->getUniqueName(), "output"} });
+		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+			PlotAnnotations{"Memory trace output", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			HeatmapParameters{},
+			{ {mt->getUniqueName(), "output"} });
 
 		app.init();
 

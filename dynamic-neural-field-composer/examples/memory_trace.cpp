@@ -10,7 +10,7 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("Memory trace (example)", 10.0, 0.0, 0.0);
+		const auto simulation = std::make_shared<Simulation>("Memory trace (example)", 15.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
 
@@ -19,7 +19,8 @@ int main()
 
 		// Gauss stimulus — localized input; set amplitude to 0 via the parameter panel to simulate removal
 		const auto gscp = element::ElementCommonParameters{ "Gauss stimulus" };
-		const auto gsp = element::TimedGaussStimulusParameters{ 5.0, 12.0, 50.0, {{0, 500}} };
+		const auto gsp = element::TimedGaussStimulusParameters{ 5.0, 12.0, 50.0,
+			{{0, 500}} };
 		const auto gs = std::make_shared<element::TimedGaussStimulus>(gscp, gsp);
 
 		// Memory trace — captures field output and sustains it after input is removed
@@ -29,7 +30,7 @@ int main()
 
 		// Gauss kernel — feeds memory trace output back into the field
 		const auto gkcp = element::ElementCommonParameters{ "Feedback kernel" };
-		const auto gkp = element::GaussKernelParameters{ 5.0, 3.0, 0.0, true, true };
+		const auto gkp = element::GaussKernelParameters{ 3.0, 12.0, 0.0, true, true };
 		const auto gk = std::make_shared<element::GaussKernel>(gkcp, gkp);
 
 		// Mexican hat kernel — lateral interactions for self-sustaining peak

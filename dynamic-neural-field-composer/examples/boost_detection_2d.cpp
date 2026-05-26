@@ -13,7 +13,7 @@ int main()
         using namespace dnf_composer;
 
         const auto simulation = std::make_shared<Simulation>("Boost detection 2D (example)",
-            5.0, 0.0, 0.0);
+            1.0, 0.0, 0.0);
         const auto visualization = std::make_shared<Visualization>(simulation);
         const Application app{ simulation, visualization };
 
@@ -31,7 +31,8 @@ int main()
         const auto bs = std::make_shared<element::BoostStimulus2D>(
             element::ElementCommonParameters{ "boost 2d", dims }, bsp);
 
-        element::TimedGaussStimulus2DParameters tgsp{5, 8, 25, 25, {{0, 500}}};
+        element::TimedGaussStimulus2DParameters tgsp{5, 8, 25, 25,
+            {{0, 500}, {800, 1200}}};
         const auto tgs = std::make_shared<element::TimedGaussStimulus2D>(
             element::ElementCommonParameters{ "timed stim 2d", dims }, tgsp);
 

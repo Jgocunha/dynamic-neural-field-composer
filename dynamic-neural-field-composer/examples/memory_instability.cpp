@@ -9,7 +9,7 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("Detection instability (example)",
+		const auto simulation = std::make_shared<Simulation>("Memory instability (example)",
 			5.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
@@ -22,29 +22,28 @@ int main()
 		const auto gsp  = element::TimedGaussStimulusParameters{ 3.0, 5.0, 50.0, {{0, 500}} };
 		const auto gs   = std::make_shared<element::TimedGaussStimulus>(gscp, gsp);
 
-		// Detection field — sub-threshold at rest; stimulus drives it above threshold
-		const auto nfcp = element::ElementCommonParameters{ "detection field" };
-		const auto nfp  = element::NeuralFieldParameters{ 25.0, -5.0, element::SigmoidFunction{0.0, 5.0} };
+		// Memory field — Mexican hat kernel enables self-sustaining peak after stimulus off
+		const auto nfcp = element::ElementCommonParameters{ "memory field" };
+		const auto nfp  = element::NeuralFieldParameters{};
 		const auto nf   = std::make_shared<element::NeuralField>(nfcp, nfp);
 
-		// Gauss kernel — sub-critical coupling; peak does not self-sustain after stimulus off
-		const auto gkcp = element::ElementCommonParameters{ "detection kernel" };
-		const auto gkp  = element::GaussKernelParameters{ 3.0, 5.0, -0.25, true, true };
-		const auto gk   = std::make_shared<element::GaussKernel>(gkcp, gkp);
+		const auto mhcp = element::ElementCommonParameters{ "memory kernel" };
+		const auto mhp  = element::MexicanHatKernelParameters{3, 20, 5, 10, -0.01};
+		const auto mh   = std::make_shared<element::MexicanHatKernel>(mhcp, mhp);
 
 		const auto nncp = element::ElementCommonParameters{ "normal noise" };
-		const auto nnp  = element::NormalNoiseParameters{ 0.2 };
+		const auto nnp  = element::NormalNoiseParameters{ 0.05 };
 		const auto nn   = std::make_shared<element::NormalNoise>(nncp, nnp);
 
 		simulation->addElement(gs);
 		simulation->addElement(nf);
-		simulation->addElement(gk);
+		simulation->addElement(mh);
 		simulation->addElement(nn);
 
 		nf->addInput(gs);
-		nf->addInput(gk);
+		nf->addInput(mh);
 		nf->addInput(nn);
-		gk->addInput(nf);
+		mh->addInput(nf);
 
 		visualization->plot({ {nf->getUniqueName(), "activation"},
 		                      {nf->getUniqueName(), "output"},

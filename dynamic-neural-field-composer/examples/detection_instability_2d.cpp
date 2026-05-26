@@ -9,7 +9,7 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("Detection instability (example)",
+		const auto simulation = std::make_shared<Simulation>("Detection instability 2d (example)",
 			5.0, 0.0, 0.0);
 		const auto visualization = std::make_shared<Visualization>(simulation);
 		const Application app{ simulation, visualization };
@@ -17,24 +17,26 @@ int main()
 		app.addWindow<user_interface::MainMenuBar>();
 		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
+		const element::ElementDimensions dimensions2D(100, 100, 1.0, 1.0);
+
 		// Single timed stimulus — present for 500 ms, then removed
-		const auto gscp = element::ElementCommonParameters{ "Gauss stimulus" };
-		const auto gsp  = element::TimedGaussStimulusParameters{ 3.0, 5.0, 50.0, {{0, 500}} };
-		const auto gs   = std::make_shared<element::TimedGaussStimulus>(gscp, gsp);
+		const auto gscp = element::ElementCommonParameters{ "Gauss stimulus", dimensions2D };
+		const auto gsp  = element::TimedGaussStimulus2DParameters{ 3.0, 8.0, 50.0, 50.0, {{0, 500}} };
+		const auto gs   = std::make_shared<element::TimedGaussStimulus2D>(gscp, gsp);
 
 		// Detection field — sub-threshold at rest; stimulus drives it above threshold
-		const auto nfcp = element::ElementCommonParameters{ "detection field" };
-		const auto nfp  = element::NeuralFieldParameters{ 25.0, -5.0, element::SigmoidFunction{0.0, 5.0} };
-		const auto nf   = std::make_shared<element::NeuralField>(nfcp, nfp);
+		const auto nfcp = element::ElementCommonParameters{ "detection field", dimensions2D };
+		const auto nfp  = element::NeuralField2DParameters{ 25.0, -7.8, element::SigmoidFunction{0.0, 5.0} };
+		const auto nf   = std::make_shared<element::NeuralField2D>(nfcp, nfp);
 
 		// Gauss kernel — sub-critical coupling; peak does not self-sustain after stimulus off
-		const auto gkcp = element::ElementCommonParameters{ "detection kernel" };
-		const auto gkp  = element::GaussKernelParameters{ 3.0, 5.0, -0.25, true, true };
-		const auto gk   = std::make_shared<element::GaussKernel>(gkcp, gkp);
+		const auto gkcp = element::ElementCommonParameters{ "detection kernel", dimensions2D };
+		const auto gkp  = element::GaussKernel2DParameters{ 3.0, 5.0, -0.25, true, true };
+		const auto gk   = std::make_shared<element::GaussKernel2D>(gkcp, gkp);
 
-		const auto nncp = element::ElementCommonParameters{ "normal noise" };
-		const auto nnp  = element::NormalNoiseParameters{ 0.2 };
-		const auto nn   = std::make_shared<element::NormalNoise>(nncp, nnp);
+		const auto nncp = element::ElementCommonParameters{ "normal noise", dimensions2D };
+		const auto nnp  = element::NormalNoise2DParameters{ 0.2 };
+		const auto nn   = std::make_shared<element::NormalNoise2D>(nncp, nnp);
 
 		simulation->addElement(gs);
 		simulation->addElement(nf);
@@ -46,10 +48,14 @@ int main()
 		nf->addInput(nn);
 		gk->addInput(nf);
 
-		visualization->plot({ {nf->getUniqueName(), "activation"},
-		                      {nf->getUniqueName(), "output"},
-		                      {nf->getUniqueName(), "input"} });
-		visualization->plot({ {gs->getUniqueName(), "output"} });
+		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+			PlotAnnotations{"Neural field activation", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			HeatmapParameters{},
+			{ {nf->getUniqueName(), "activation"} });
+		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
+			PlotAnnotations{"Stimulus", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			HeatmapParameters{},
+			{ {gs->getUniqueName(), "output"} });
 
 		app.init();
 

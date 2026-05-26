@@ -69,15 +69,15 @@ int main()
 			HeatmapParameters{},
 			{ {nf->getUniqueName(), "activation"} });
 		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
-			PlotAnnotations{"Simulus A", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			PlotAnnotations{"Stimulus A", "Spatial dimension (x)", "Spatial dimension (y)"}},
 			HeatmapParameters{},
 			{ {sA->getUniqueName(), "output"} });
 		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
-			PlotAnnotations{"Simulus B", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			PlotAnnotations{"Stimulus B", "Spatial dimension (x)", "Spatial dimension (y)"}},
 			HeatmapParameters{},
 			{ {sB->getUniqueName(), "output"} });
 		visualization->plot(PlotCommonParameters{PlotType::HEATMAP,
-			PlotAnnotations{"Simulus C", "Spatial dimension (x)", "Spatial dimension (y)"}},
+			PlotAnnotations{"Stimulus C", "Spatial dimension (x)", "Spatial dimension (y)"}},
 			HeatmapParameters{},
 			{ {sC->getUniqueName(), "output"} });
 
