@@ -1,5 +1,6 @@
 #include "user_interface/simulation_window.h"
 #include "user_interface/field_metrics_window.h"
+#include "user_interface/log_window.h"
 #include "elements/neural_field.h"
 #include "elements/neural_field_2d.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
@@ -165,6 +166,14 @@ namespace dnf_composer::user_interface
 			}
 		}
 		ImGui::EndGroup();
+
+		const float consoleY = ImGui::GetWindowHeight() - 48.0f;
+		ImGui::SetCursorPos(ImVec2(0.0f, consoleY));
+		const bool consoleOpen = LogWindow::isActive();
+		if (widgets::renderSidebarTab(ICON_FA_TERMINAL, "", consoleOpen))
+			LogWindow::setActive(!consoleOpen);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Console");
 	}
 
 	// Clang-Tidy: Function 'renderAddElementCard' has cognitive complexity of 28 (threshold 25)

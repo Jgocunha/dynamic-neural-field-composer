@@ -54,7 +54,6 @@ namespace dnf_composer
             ImGui::SameLine(0, 20.0f * ui);
 
             drawRunControl();
-            drawConsoleButton();
         }
 
         void ControlBarWindow::drawSimulationInfo() const
@@ -209,47 +208,5 @@ namespace dnf_composer
             ImGui::PopStyleColor(5);
         }
 
-        void ControlBarWindow::drawConsoleButton()
-        {
-            const float  ui   = ImGui::GetIO().FontGlobalScale;
-            const bool   open = LogWindow::isActive();
-
-            // Right-align: jump to the window right edge minus group width
-            const float iconW    = g_MediumIconsFont->LegacySize * ui;
-            const float textW    = ImGui::CalcTextSize("Console").x;
-            const float chevronW = g_SmallIconsFont->LegacySize * ui;
-            const float groupW   = iconW + 6.0f * ui + textW + 6.0f * ui + chevronW;
-            ImGui::SameLine(ImGui::GetWindowWidth() - groupW - ImGui::GetStyle().WindowPadding.x);
-
-            const ImVec4 color = open
-                ? ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight)
-                : ImGui::GetStyleColorVec4(ImGuiCol_Text);
-
-            ImGui::PushStyleColor(ImGuiCol_Text, color);
-            ImGui::BeginGroup();
-
-            ImGui::PushFont(g_MediumIconsFont);
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted(ICON_FA_TERMINAL);
-            ImGui::PopFont();
-            ImGui::SameLine(0, 6.0f * ui);
-
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Console");
-            ImGui::SameLine(0, 6.0f * ui);
-
-            ImGui::PushFont(g_SmallIconsFont);
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted(open ? ICON_FA_ANGLE_UP : ICON_FA_ANGLE_DOWN);
-            ImGui::PopFont();
-
-            ImGui::EndGroup();
-            ImGui::PopStyleColor();
-
-            if (ImGui::IsItemHovered())
-                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            if (ImGui::IsItemClicked())
-                LogWindow::setActive(!open);
-        }
     }
 }
