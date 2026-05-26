@@ -83,10 +83,9 @@ namespace dnf_composer
 		static void registerSettingsHandler();
 
 		/// @brief Register a window that needs no Simulation or Visualization pointer.
-		template<typename WindowType, typename... Args,
-			std::enable_if_t<!has_simulation_constructor<WindowType>::value &&
-			!has_visualization_constructor<WindowType>::value, int> = 0>
-		void addWindow(Args&&... args) const {
+		template<typename WindowType, typename... Args>
+		void addWindow(Args&&... args) const requires (!has_simulation_constructor<WindowType>::value &&
+			!has_visualization_constructor<WindowType>::value) {
 			gui->addWindow<WindowType>(std::forward<Args>(args)...);
 		}
 

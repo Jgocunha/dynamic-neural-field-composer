@@ -88,7 +88,7 @@ namespace dnf_composer::user_interface::widgets
 		ImGui::PushFont(g_LargeIconsFont);
 		const float icon_y = centerTextY(g_LargeIconsFont, bb.Min.y, line_h);
 		const ImVec2 icon_size = ImGui::CalcTextSize(icon);
-		const float icon_x = bb.Min.x + (total_w - icon_size.x) * 0.5f;
+		const float icon_x = window->Pos.x + (window->Size.x - icon_size.x) * 0.5f;
 		dl->AddText(ImVec2(icon_x, icon_y), ImColor(icon_col), icon);
 		ImGui::PopFont();
 

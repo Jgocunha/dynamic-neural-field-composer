@@ -80,8 +80,9 @@ namespace dnf_composer
 	void Application::close() const
 	{
 		simulation->close();
-		if (guiActive)
+		if (guiActive) {
 			gui->shutdown();
+		}
 		log(tools::logger::LogLevel::INFO, "Application closed successfully.");
 	}
 
@@ -210,7 +211,7 @@ namespace dnf_composer
 	void Application::defineImGuiStyle()
 	{
 		const std::string root = tools::utils::getResourceRoot();
-		applyImGuiStyle(root + "/resources/style_modern_light.json");
+		applyImGuiStyle(root + "/resources/style.json");
 	}
 
 }
