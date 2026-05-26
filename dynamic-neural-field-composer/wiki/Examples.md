@@ -135,7 +135,7 @@ Demonstrates how a spatially uniform `BoostStimulus` can raise the field's globa
 
 ---
 
-## Memory examples
+## Memory trace examples
 
 ### memory_trace
 
@@ -296,7 +296,11 @@ Demonstrates `GaussFieldCoupling` — a fixed (non-learnable) coupling using a G
 
 ## Common pattern
 
-Every example follows this structure:
+Every example follows the same seven-step skeleton. Two construction styles are available for step 3.
+
+### Direct construction (`std::make_shared`)
+
+Used by all current examples. Type-safe and IDE-friendly — parameters are checked at compile time.
 
 ```cpp
 // 1. Simulation + visualization + app
@@ -308,7 +312,7 @@ Application app{ sim, viz };
 app.addWindow<user_interface::MainMenuBar>();
 app.addWindow<user_interface::StaticLayoutWindow>(sim, viz);
 
-// 3. Elements (direct construction — no factory)
+// 3. Elements — direct construction
 const element::ElementDimensions dims{ 100, 1.0 };
 
 const auto nf_cp = element::ElementCommonParameters{ "field", dims };
@@ -333,4 +337,45 @@ app.init();
 while (!app.hasGUIBeenClosed())
     app.step();
 app.close();
+```
+
+### Factory construction (`ElementFactory`)
+
+`ElementFactory` creates any registered element from its `ElementLabel` enum, returning a base `Element` pointer. Useful when element types are selected at runtime or loaded from configuration.
+
+```cpp
+#include "elements/element_factory.h"
+
+using namespace dnf_composer::element;
+
+// 3. Elements — via factory
+const ElementDimensions dims{ 100, 1.0 };
+ElementFactory factory;
+
+auto nf = factory.createElement(
+    ElementLabel::NEURAL_FIELD,
+    ElementCommonParameters{ "field", dims },
+    NeuralFieldParameters{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } });
+
+auto gk = factory.createElement(
+    ElementLabel::GAUSS_KERNEL,
+    ElementCommonParameters{ "kernel", dims },
+    GaussKernelParameters{ 3.0, 3.0, -0.01 });
+
+// Steps 4–7 are identical to the direct-construction pattern above.
+sim->addElement(nf);
+sim->addElement(gk);
+nf->addInput(gk);
+gk->addInput(nf);
+viz->plot({ { nf->getUniqueName(), "activation" } });
+app.init();
+while (!app.hasGUIBeenClosed())
+    app.step();
+app.close();
+```
+
+For elements that have only default parameters, a shorter overload is available:
+
+```cpp
+auto nf = factory.createElement(ElementLabel::NEURAL_FIELD);
 ```
