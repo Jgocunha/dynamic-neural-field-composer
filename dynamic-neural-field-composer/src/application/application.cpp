@@ -1,4 +1,6 @@
-﻿#include "application/application.h"
+﻿#include <utility>
+
+#include "application/application.h"
 
 #include "application/style.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
@@ -7,7 +9,7 @@
 
 namespace dnf_composer
 {
-	float   Application::uiScalePct = 100.0f;
+	float   Application::uiScalePct = 100.0F;
 
 	Application::Application(const std::shared_ptr<Simulation>& simulation,
 		const std::shared_ptr<Visualization>& visualization)
@@ -16,8 +18,9 @@ namespace dnf_composer
 		visualization(visualization ? visualization : std::make_shared<Visualization>(this->simulation)),
 		guiActive(true)
 	{
-		if (this->visualization->getSimulation() != this->simulation)
+		if (this->visualization->getSimulation() != this->simulation) {
 			throw Exception(ErrorCode::APP_VIS_SIM_MISMATCH);
+		}
 		setGUIParameters();
 	}
 
@@ -47,16 +50,17 @@ namespace dnf_composer
 		// called for each key=value line inside the section
 		handler.ReadLineFn = [](ImGuiContext*, ImGuiSettingsHandler*, void*, const char* line)
 		{
-			float scale = 100.0f;
-			if (sscanf(line, "UiScale=%f", &scale) == 1)
-				Application::setUiScalePct(scale);
+			float scale = 100.0F;
+			if (sscanf(line, "UiScale=%f", &scale) == 1) {
+				setUiScalePct(scale);
+			}
 		};
 
 		// called when ImGui writes imgui.ini to disk
 		handler.WriteAllFn = [](ImGuiContext*, ImGuiSettingsHandler* h, ImGuiTextBuffer* buf)
 		{
 			buf->appendf("[%s][Data]\n", h->TypeName);
-			buf->appendf("UiScale=%.0f\n", Application::getUiScalePct());
+			buf->appendf("UiScale=%.0F\n", Application::getUiScalePct());
 			buf->appendf("\n");
 		};
 
@@ -68,7 +72,7 @@ namespace dnf_composer
 		simulation->step();
 		if (guiActive)
 		{
-			ImGui::GetIO().FontGlobalScale = uiScalePct / 100.0f;
+			ImGui::GetIO().FontGlobalScale = uiScalePct / 100.0F;
 			gui->render();
 		}
 	}
@@ -89,8 +93,9 @@ namespace dnf_composer
 
 	bool Application::hasGUIBeenClosed() const
 	{
-		if (guiActive)
+		if (guiActive) {
 			return gui->isShutdownRequested();
+		}
 		return false;
 	}
 
@@ -155,7 +160,7 @@ namespace dnf_composer
 		// If you want *maximum* crispness at small sizes (old-school look), try:
 		 cfg.FontLoaderFlags = ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
 
-		if (io.Fonts->Fonts.size() < g_FontCount)
+		if (std::cmp_less(io.Fonts->Fonts.size() , g_FontCount))
 		{
 			tools::logger::log(tools::logger::FATAL, "Not enough fonts in the font stack."
 											" Please add more fonts to the font stack.");
@@ -188,15 +193,15 @@ namespace dnf_composer
 		icons_config.MergeMode = false;
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 12.0f, &icons_config, icons_ranges);
+			FA_compressed_size, 12.0F, &icons_config, icons_ranges);
 		g_SmallIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 18.0f, &icons_config, icons_ranges);
+			FA_compressed_size, 18.0F, &icons_config, icons_ranges);
 		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 26.0f, &icons_config, icons_ranges);
+			FA_compressed_size, 26.0F, &icons_config, icons_ranges);
 		g_LargeIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->Build();

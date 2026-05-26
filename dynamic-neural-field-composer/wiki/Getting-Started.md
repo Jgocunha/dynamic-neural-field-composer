@@ -152,21 +152,27 @@ build\x64-release\Release\dnf-composer-dynamic.exe
 
 ## Running the examples
 
-Eight example executables are built alongside the application:
+Seventeen example executables are built alongside the application:
 
 ```bash
 # Windows
-build\x64-release\Release\ex_field_couplings.exe
-build\x64-release\Release\ex_complementary_action_selection.exe
+build\x64-release\Release\example_detection_instability.exe
+build\x64-release\Release\example_memory_instability.exe
+build\x64-release\Release\example_selection_instability.exe
+build\x64-release\Release\example_multi_peak.exe
 # ... etc.
 
 # Linux
-./build/ex_field_couplings
-./build/ex_complementary_action_selection
+./build/example_detection_instability
+./build/example_memory_instability
+./build/example_selection_instability
+./build/example_multi_peak
 
 # macOS
-./build/macos-release/ex_field_couplings
-./build/macos-release/ex_complementary_action_selection
+./build/macos-release/example_detection_instability
+./build/macos-release/example_memory_instability
+./build/macos-release/example_selection_instability
+./build/macos-release/example_multi_peak
 ```
 
 See [Examples](Examples) for a description of each.

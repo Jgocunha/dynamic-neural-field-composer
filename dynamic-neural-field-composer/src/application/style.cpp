@@ -69,8 +69,9 @@ namespace dnf_composer
     void applyImGuiStyle(const std::string& jsonPath)
     {
         std::ifstream f(jsonPath);
-        if (!f.is_open())
+        if (!f.is_open()) {
             throw Exception(ErrorCode::APP_INIT);
+        }
 
         const auto j = nlohmann::json::parse(f);
         ImGuiStyle& s = ImGui::GetStyle();
@@ -83,7 +84,8 @@ namespace dnf_composer
         s.WindowBorderSize           = m.value("WindowBorderSize",     s.WindowBorderSize);
         s.WindowMinSize              = toVec2(m.at("WindowMinSize"));
         s.WindowTitleAlign           = toVec2(m.at("WindowTitleAlign"));
-        s.WindowMenuButtonPosition   = static_cast<ImGuiDir>(m.value("WindowMenuButtonPosition", static_cast<int>(s.WindowMenuButtonPosition)));
+        s.WindowMenuButtonPosition   = static_cast<ImGuiDir>(m.value("WindowMenuButtonPosition",
+            static_cast<int>(s.WindowMenuButtonPosition)));
         s.ChildRounding              = m.value("ChildRounding",        s.ChildRounding);
         s.ChildBorderSize            = m.value("ChildBorderSize",      s.ChildBorderSize);
         s.PopupRounding              = m.value("PopupRounding",        s.PopupRounding);
@@ -102,7 +104,8 @@ namespace dnf_composer
         s.GrabRounding               = m.value("GrabRounding",         s.GrabRounding);
         s.TabRounding                = m.value("TabRounding",          s.TabRounding);
         s.TabBorderSize              = m.value("TabBorderSize",        s.TabBorderSize);
-        s.ColorButtonPosition        = static_cast<ImGuiDir>(m.value("ColorButtonPosition", static_cast<int>(s.ColorButtonPosition)));
+        s.ColorButtonPosition        = static_cast<ImGuiDir>(m.value("ColorButtonPosition",
+            static_cast<int>(s.ColorButtonPosition)));
         s.ButtonTextAlign            = toVec2(m.at("ButtonTextAlign"));
         s.SelectableTextAlign        = toVec2(m.at("SelectableTextAlign"));
 

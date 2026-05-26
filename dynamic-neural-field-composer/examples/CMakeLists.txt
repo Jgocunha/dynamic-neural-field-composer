@@ -31,8 +31,3 @@ add_example_executable(example_hebbian_learning         hebbian_learning.cpp)
 
 
 
-add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
-
-
-
-
