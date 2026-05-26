@@ -21,11 +21,16 @@ add_example_executable(example_memory_trace             memory_trace.cpp)
 add_example_executable(example_memory_trace_2d          memory_trace_2d.cpp)
 add_example_executable(example_travelling_bump          travelling_bump.cpp)
 add_example_executable(example_travelling_bump_2d       travelling_bump_2d.cpp)
+add_example_executable(example_multi_peak               multi_peak.cpp)
+add_example_executable(example_multi_peak_2d            multi_peak_2d.cpp)
+add_example_executable(example_weighted_field_coupling  weighted_field_coupling.cpp)
+add_example_executable(example_hebbian_learning         hebbian_learning.cpp)
+#add_example_executable(example_oja_learning             oja_learning.cpp)
+#add_example_executable(example_delta_rule_learning      delta_rule_learning.cpp)
 
 
-add_example_executable(ex_field_couplings ex_field_couplings.cpp)
+
 add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
-add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
 
 
 
