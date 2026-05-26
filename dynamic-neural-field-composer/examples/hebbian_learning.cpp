@@ -1,26 +1,8 @@
 #include "visualization/visualization.h"
 #include "application/application.h"
-#include "user_interface/static_layout_window.h"
+#include "elements/element_factory.h"
 #include "user_interface/main_menu_bar.h"
-
-// Field Coupling Learning example
-//
-// Demonstrates Hebbian associative learning in a FieldCoupling element.
-// A source field (200 nodes) is stimulated at position 80; an output field
-// (400 nodes) receives two teaching stimuli at positions 20 and 50.
-// During the learning phase the FieldCoupling weight matrix is updated
-// according to the chosen learning rule (HEBB by default). After learning,
-// the teaching stimulus is removed and the output field is driven solely
-// by the learned coupling from the source.
-//
-// Architecture (learning phase):
-//   stimulus_src --> source field <--> MexicanHatKernel
-//   stimulus_out_i + stimulus_out_ii --> output field <--> GaussKernel
-//   source field --> FieldCoupling --> output field   (weights updated)
-//
-// Try it:
-//   - Inspect the coupling weight heatmap before and after learning.
-//   - Change the learning rate or rule (HEBB / OJA) and compare weight patterns.
+#include "user_interface/static_layout.h"
 
 int main()
 {
@@ -28,7 +10,8 @@ int main()
 	{
 		using namespace dnf_composer;
 
-		const auto simulation = std::make_shared<Simulation>("example field coupling learning", 1.0, 0.0, 0.0);
+		const auto simulation = std::make_shared<Simulation>("Hebbian learning (example)",
+			1.0, 0.0, 0.0);
 
 		element::ElementFactory factory;
 		const element::ElementDimensions input_dimensions{200, 1.0};
@@ -105,12 +88,12 @@ int main()
 		// Check where weights are being saved and read from
 		const std::string weights_directory = field_coupling->getWeightsDirectory();
 		// Set the parameters individually
-		field_coupling->setLearningRate(0.1f);
+		field_coupling->setLearningRate(0.1F);
 		field_coupling->setWeightsDirectory(weights_directory);
 		// Set all the parameters at once
 		constexpr auto rule = LearningRule::HEBB;
-		constexpr double scalar = 1.0f;
-		constexpr double learningRate = 0.5f;
+		constexpr double scalar = 1.0F;
+		constexpr double learningRate = 0.5F;
 		const element::FieldCouplingParameters parameters{input_dimensions, rule, scalar, learningRate};
 		field_coupling->setParameters(parameters);
 
@@ -118,8 +101,9 @@ int main()
 		// so you can perform associative learning
 		field_coupling->setLearning(true);
 		constexpr int learningIterations = 50; // Whether these iterations are enough depends on the learning rate and the simulation delta_t
-		for (int i = 0; i < learningIterations; ++i)
+		for (int i = 0; i < learningIterations; ++i) {
 		 	simulation->step();
+		}
 
 		// Turn off learning and save the weights
 		field_coupling->setLearning(false);
