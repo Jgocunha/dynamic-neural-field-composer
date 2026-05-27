@@ -77,7 +77,7 @@ namespace dnf_composer
 				const int offY = (ky - static_cast<int>(kyVec.size())) / 2;
 				for (int i = 0; i < static_cast<int>(kxVec.size()); ++i)
 					for (int j = 0; j < static_cast<int>(kyVec.size()); ++j)
-						components["kernel"][(i + offX) * ky + (j + offY)] += sign * kxVec[i] * kyVec[j];
+						components["kernel"][(j + offY) * kx + (i + offX)] += sign * kxVec[i] * kyVec[j];
 			};
 			addProduct(kernelExc_x, kernelExc_y, +1.0);
 			addProduct(kernelInh_x, kernelInh_y, -1.0);
@@ -103,13 +103,13 @@ namespace dnf_composer
 
 			tools::math::conv2d_separable_into(
 				scratchExcConv_, scratchTmp_,
-				components["input"], kernelExc_x, kernelExc_y,
-				size_x, size_y, extIndexExc_x, extIndexExc_y);
+				components["input"], kernelExc_y, kernelExc_x,
+				size_y, size_x, extIndexExc_y, extIndexExc_x);
 
 			tools::math::conv2d_separable_into(
 				scratchInhConv_, scratchTmp_,
-				components["input"], kernelInh_x, kernelInh_y,
-				size_x, size_y, extIndexInh_x, extIndexInh_y);
+				components["input"], kernelInh_y, kernelInh_x,
+				size_y, size_x, extIndexInh_y, extIndexInh_x);
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)

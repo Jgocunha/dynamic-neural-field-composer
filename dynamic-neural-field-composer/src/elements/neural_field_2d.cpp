@@ -95,7 +95,7 @@ namespace dnf_composer::element
 		{
 			for (int yi = 0; yi < size_y; ++yi)
 			{
-				const int idx = xi * size_y + yi;
+				const int idx = yi * size_x + xi;
 				if (act_[idx] <= threshold || visited[idx])
 					continue;
 
@@ -110,8 +110,8 @@ namespace dnf_composer::element
 				while (!q.empty())
 				{
 					const int curr = q.front(); q.pop();
-					const int cx = curr / size_y;
-					const int cy = curr % size_y;
+					const int cx = curr % size_x;
+					const int cy = curr / size_x;
 					const double a = act_[curr];
 
 					bump.amplitude = std::max(bump.amplitude, a);
@@ -126,7 +126,7 @@ namespace dnf_composer::element
 					{
 						if (nx[k] < 0 || nx[k] >= size_x || ny[k] < 0 || ny[k] >= size_y)
 							continue;
-						const int nIdx = nx[k] * size_y + ny[k];
+						const int nIdx = ny[k] * size_x + nx[k];
 						if (!visited[nIdx] && act_[nIdx] > threshold)
 						{
 							visited[nIdx] = true;

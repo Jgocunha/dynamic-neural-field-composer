@@ -233,7 +233,7 @@ namespace dnf_composer
 				flattened_matrix->data(),
 				rows, cols,
 				scaleMin, scaleMax, nullptr,
-				ImPlotPoint(y_min, y_max), ImPlotPoint(x_max, x_min)
+				ImPlotPoint(x_min, y_max), ImPlotPoint(x_max, y_min)
 			);
 			ImPlot::EndPlot();
 		}

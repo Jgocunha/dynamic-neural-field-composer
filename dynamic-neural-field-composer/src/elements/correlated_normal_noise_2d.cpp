@@ -66,8 +66,8 @@ namespace dnf_composer::element
 
 		tools::math::conv2d_separable_into(
 			scratchConv_, scratchTmp_,
-			whiteNoise, correlationKernel_x, correlationKernel_y,
-			size_x, size_y, extIndex_x, extIndex_y);
+			whiteNoise, correlationKernel_y, correlationKernel_x,
+			size_y, size_x, extIndex_y, extIndex_x);
 
 		const double scale = parameters.amplitude / std::sqrt(deltaT);
 		for (int i = 0; i < totalSize; ++i)

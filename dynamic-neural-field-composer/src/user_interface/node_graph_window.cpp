@@ -412,8 +412,8 @@ namespace dnf_composer::user_interface
 			if (comps->contains(compName))
 			{
 				const auto& dp   = element->getElementCommonParameters().dimensionParameters;
-				const int   rows = dp.size_x;
-				const int   cols = dp.size_y;
+				const int   rows = dp.size_y;
+				const int   cols = dp.size_x;
 				if (const auto& data = comps->at(compName); rows > 0 && cols > 0
 					&& static_cast<int>(data.size()) == rows * cols)
 				{
@@ -882,8 +882,8 @@ namespace dnf_composer::user_interface
 			int rows, cols;
 			if (dp.size_x * dp.size_y == total)
 			{
-				rows = dp.size_x;
-				cols = dp.size_y;
+				rows = dp.size_y;
+				cols = dp.size_x;
 			}
 			else
 			{
@@ -932,7 +932,7 @@ namespace dnf_composer::user_interface
 				{
 					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
 					ImPlot::PlotHeatmap("##data", data.data(), rows, cols, scMin, scMax, nullptr,
-						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
 				}
 				ImGui::SameLine(0, 4.0f);

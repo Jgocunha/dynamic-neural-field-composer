@@ -48,7 +48,7 @@ namespace dnf_composer::element
 					val = tools::math::gaussian_2d(x, y,
 						parameters.position_x, parameters.position_y,
 						parameters.width, parameters.width, 1.0);
-				stimulusPattern[xi * size_y + yi] = val;
+				stimulusPattern[yi * size_x + xi] = val;
 				sum += val;
 			}
 		}

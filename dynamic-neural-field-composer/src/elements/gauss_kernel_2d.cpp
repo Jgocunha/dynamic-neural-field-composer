@@ -61,7 +61,7 @@ namespace dnf_composer
 			components["kernel"].resize(kx * ky);
 			for (int i = 0; i < kx; ++i)
 				for (int j = 0; j < ky; ++j)
-					components["kernel"][i * ky + j] = kernel_1d_x[i] * kernel_1d_y[j];
+					components["kernel"][j * kx + i] = kernel_1d_x[i] * kernel_1d_y[j];
 
 			const int totalSize = size_x * size_y;
 			scratchTmp_.assign(totalSize, 0.0);
@@ -83,8 +83,8 @@ namespace dnf_composer
 
 			tools::math::conv2d_separable_into(
 				scratchConvolution_, scratchTmp_,
-				components["input"], kernel_1d_x, kernel_1d_y,
-				size_x, size_y, extIndex_x, extIndex_y);
+				components["input"], kernel_1d_y, kernel_1d_x,
+				size_y, size_x, extIndex_y, extIndex_x);
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
