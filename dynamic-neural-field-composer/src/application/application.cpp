@@ -211,7 +211,7 @@ namespace dnf_composer
 	void Application::defineImGuiStyle()
 	{
 		const std::string root = tools::utils::getResourceRoot();
-		applyImGuiStyle(root + "/resources/style_modern_light.json");
+		applyImGuiStyle(root + "/resources/style.json");
 	}
 
 }

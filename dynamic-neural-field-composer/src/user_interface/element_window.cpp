@@ -223,7 +223,7 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:  return "Noise2D";
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:  return "Kernel2D";
 				case element::ElementLabel::MEMORY_TRACE_2D:             return "Memory2D";
-				default:                                                  return "Element";
+				default:                                                 return "Element";
 			}
 		};
 
