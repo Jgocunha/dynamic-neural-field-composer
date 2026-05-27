@@ -1477,6 +1477,7 @@ namespace dnf_composer::user_interface
 		const float trashW = ImGui::GetFrameHeight() + 10.0F;
 		const float typeW  = 65.0F * ImGui::GetIO().FontGlobalScale;
 
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		if (ImGui::BeginChild("##re_list", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
 		{
 			for (const auto& e : simulation->getElements())
@@ -1527,6 +1528,7 @@ namespace dnf_composer::user_interface
 			}
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleColor();
 
 		if (!pendingRemove.empty())
 		{
@@ -1625,6 +1627,7 @@ namespace dnf_composer::user_interface
 
 		const float unlinkW = ImGui::GetFrameHeight() + 6.0F;
 
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		if (ImGui::BeginChild("##si_connections", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
 		{
 			bool any = false;
@@ -1686,6 +1689,7 @@ namespace dnf_composer::user_interface
 			}
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleColor();
 
 		if (!pendingRemoveTarget.empty())
 		{
@@ -1855,6 +1859,7 @@ namespace dnf_composer::user_interface
 		const float maxListH = std::max(availH - btnH - ImGui::GetStyle().ItemSpacing.y, rowH);
 		const float listH    = std::min(static_cast<float>(std::max(matchCount, 1)) * rowH, maxListH);
 
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		if (ImGui::BeginChild("##lp_list", {0, listH}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			const auto& style = ImGui::GetStyle();
@@ -1898,6 +1903,7 @@ namespace dnf_composer::user_interface
 			}
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleColor();
 
 		{
 			const bool canLog = !selectedId.empty();
