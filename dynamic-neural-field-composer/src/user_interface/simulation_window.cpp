@@ -170,8 +170,10 @@ namespace dnf_composer::user_interface
 		const float consoleY = ImGui::GetWindowHeight() - 48.0f;
 		ImGui::SetCursorPos(ImVec2(0.0f, consoleY));
 		const bool consoleOpen = LogWindow::isActive();
+		ImGui::PushID("##console_btn");
 		if (widgets::renderSidebarTab(ICON_FA_TERMINAL, "", consoleOpen))
 			LogWindow::setActive(!consoleOpen);
+		ImGui::PopID();
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Console");
 	}
