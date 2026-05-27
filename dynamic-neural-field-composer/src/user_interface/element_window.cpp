@@ -197,7 +197,7 @@ namespace dnf_composer::user_interface
 			[](unsigned char c) { return std::tolower(c); });
 
 		// Short badge label per type
-		auto shortTypeName = [](element::ElementLabel lbl) -> const char* {
+		auto shortTypeName = [](const element::ElementLabel lbl) -> const char* {
 			switch (lbl) {
 				case element::ElementLabel::GAUSS_STIMULUS:              return "Stimulus";
 				case element::ElementLabel::NEURAL_FIELD:                return "Field";

@@ -120,7 +120,7 @@ namespace dnf_composer::user_interface
 			{ .icon=ICON_FA_PLUS,     .name="Add elements"      },
 			{ .icon=ICON_FA_TRASH,    .name="Remove elements"   },
 			{ .icon=ICON_FA_LINK,     .name="Set interactions" },
-			{ .icon=ICON_FA_TERMINAL, .name="Log parameters"   },
+			{ .icon=ICON_FA_FILE_LINES , .name="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .name="Export data"      },
 			{ .icon=ICON_FA_HEART_PULSE, .name="Monitoring"       },
 		};
@@ -147,7 +147,7 @@ namespace dnf_composer::user_interface
 			{ .icon=ICON_FA_PLUS,     .tooltip="Add elements"      },
 			{ .icon=ICON_FA_TRASH,    .tooltip="Remove elements"   },
 			{ .icon=ICON_FA_LINK,     .tooltip="Set interactions" },
-			{ .icon=ICON_FA_TERMINAL, .tooltip="Log parameters"   },
+			{ .icon=ICON_FA_FILE_LINES , .tooltip="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .tooltip="Export data"      },
 			{ .icon=ICON_FA_HEART_PULSE, .tooltip="Monitoring"       },
 		};
