@@ -15,6 +15,7 @@
 #include "tools/utils.h"
 #include "user_interface/widgets.h"
 #include "user_interface/log_window.h"
+#include "user_interface/help_window.h"
 #include "user_interface/control_bar_window.h"
 #include "user_interface/status_bar_window.h"
 
@@ -33,6 +34,7 @@ namespace dnf_composer::user_interface
 		std::unique_ptr<PlotsWindow>		plotsWindow;
 		std::unique_ptr<StatusBarWindow>    statusBarWindow;
 		std::unique_ptr<LogWindow>			logWindow;
+		std::unique_ptr<HelpWindow>			helpWindow;
 
 	public:
 		StaticLayoutWindow(const std::shared_ptr<Simulation>&    simulation,

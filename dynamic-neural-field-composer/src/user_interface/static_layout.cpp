@@ -50,6 +50,7 @@ namespace dnf_composer
 			plotsWindow		 = std::make_unique<PlotsWindow>(visualization);
 			statusBarWindow  = std::make_unique<StatusBarWindow>(simulation);
 			logWindow        = std::make_unique<LogWindow>();
+		helpWindow       = std::make_unique<HelpWindow>();
 		}
 
 		void StaticLayoutWindow::render()
@@ -88,6 +89,10 @@ namespace dnf_composer
 			if (LogWindow::isActive())
 			{
 				logWindow->render();
+			}
+			if (HelpWindow::isActive())
+			{
+				helpWindow->render();
 			}
 		}
 
