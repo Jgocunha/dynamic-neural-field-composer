@@ -96,13 +96,20 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::render()
 	{
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		const float panelY = vp->WorkPos.y + 52.0f;
+		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
+		const float panelX = vp->WorkPos.x + vp->WorkSize.x * 0.47f;
+		ImGui::SetNextWindowPos(ImVec2(panelX, panelY), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.53f, panelH), ImGuiCond_FirstUseEver);
+
 		const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
 			| ImGuiWindowFlags_NoTitleBar
 			| ImGuiWindowFlags_NoScrollbar
 			| ImGuiWindowFlags_NoScrollWithMouse
 			| ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-		const bool open = ImGui::Begin("##node_graph", nullptr, flags);
+		const bool open = ImGui::Begin("Node Graph##node_graph", nullptr, flags);
 
 		ImVec2 ngPos{}, ngSize{};
 		if (open)

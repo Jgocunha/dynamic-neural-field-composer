@@ -70,7 +70,10 @@ namespace dnf_composer::user_interface
 
 	void LogWindow::draw()
 	{
-		const bool open = ImGui::Begin("##log_window", &isWindowActive,
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.3f, vp->WorkPos.y + vp->WorkSize.y * 0.6f), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(700.0f, 300.0f), ImGuiCond_FirstUseEver);
+		const bool open = ImGui::Begin("Log##log_window", &isWindowActive,
 			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
 		if (open)
 		{

@@ -28,6 +28,11 @@ namespace dnf_composer
 	{
 		simulation->init();
 		gui->initialize();
+
+		static std::string iniPath;
+		iniPath = tools::utils::getResourceRoot() + "/resources/imgui.ini";
+		ImGui::GetIO().IniFilename = iniPath.c_str();
+
 		registerSettingsHandler();
 		enableKeyboardShortcuts();
 		appendFonts();

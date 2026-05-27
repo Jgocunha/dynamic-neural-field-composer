@@ -24,7 +24,10 @@ namespace dnf_composer::user_interface
 
 	void FieldMetricsWindow::render()
 	{
-		const bool open = ImGui::Begin("##field_metrics", nullptr,
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x + 20.0f, vp->WorkPos.y + 80.0f), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(440.0f, 520.0f), ImGuiCond_FirstUseEver);
+		const bool open = ImGui::Begin("Field Metrics##field_metrics", nullptr,
 			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
 		if (open)
 		{

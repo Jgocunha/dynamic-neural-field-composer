@@ -1,6 +1,7 @@
 ﻿#include "dynamic-neural-field-composer-dynamic.h"
 
 #include "user_interface/control_bar_window.h"
+#include "user_interface/static_layout.h"
 #include "user_interface/status_bar_window.h"
 
 
@@ -22,10 +23,10 @@ int main()
 		app.addWindow<user_interface::SimulationWindow>();
 		app.addWindow<user_interface::ElementWindow>();
 		app.addWindow<user_interface::FieldMetricsWindow>();
-		app.addWindow<user_interface::PlotControlWindow>();
 		app.addWindow<user_interface::PlotsWindow>();
 		app.addWindow<user_interface::NodeGraphWindow>();
 		app.addWindow<user_interface::LogWindow>();
+		app.addWindow<user_interface::HelpWindow>();
 
 		app.init();
 

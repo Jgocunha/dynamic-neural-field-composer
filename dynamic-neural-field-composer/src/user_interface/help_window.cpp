@@ -364,7 +364,7 @@ namespace dnf_composer::user_interface
 			ImGui::SetTooltip("Click to copy");
 		}
 		ImGui::Spacing();
-		ImGui::TextWrapped("Found a bug or have a feature request? Open an issue on GitHub:");
+		ImGui::TextWrapped("Found a bug or have a feature request? Open an issue on GitHub.");
 
 
 		ImGui::PopTextWrapPos();

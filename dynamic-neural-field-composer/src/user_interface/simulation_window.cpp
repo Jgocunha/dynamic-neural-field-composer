@@ -20,8 +20,13 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::render()
 	{
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		const float panelY = vp->WorkPos.y + 52.0f;
+		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
+		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, panelY), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.25f, panelH), ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
-		const bool open = ImGui::Begin("##simulation_control", nullptr,
+		const bool open = ImGui::Begin("Simulation Control##simulation_control", nullptr,
 			imgui_kit::getGlobalWindowFlags()
 			| ImGuiWindowFlags_NoTitleBar
 			| ImGuiWindowFlags_NoScrollbar
@@ -988,8 +993,8 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dynamics");
 		if (beginParamTable("##mt_dyn")) {
 			paramTableSetup();
-			paramRowDouble("Tau build",  "##mt_tauB", &tauBuild,  "%.2f");
-			paramRowDouble("Tau decay",  "##mt_tauD", &tauDecay,  "%.2f");
+			paramRowDouble("Time scale build",  "##mt_tauB", &tauBuild,  "%.2f");
+			paramRowDouble("Time scale decay",  "##mt_tauD", &tauDecay,  "%.2f");
 			paramRowDouble("Threshold",  "##mt_thr",  &threshold, "%.2f");
 			endParamTable();
 		}
@@ -1408,8 +1413,8 @@ namespace dnf_composer::user_interface
 		ImGui::SeparatorText("Dynamics");
 		if (beginParamTable("##mt2_dyn")) {
 			paramTableSetup();
-			paramRowDouble("Tau build",  "##mt2_tauB", &tauBuild,  "%.2f");
-			paramRowDouble("Tau decay",  "##mt2_tauD", &tauDecay,  "%.2f");
+			paramRowDouble("Time scale build",  "##mt2_tauB", &tauBuild,  "%.2f");
+			paramRowDouble("Time scale decay",  "##mt2_tauD", &tauDecay,  "%.2f");
 			paramRowDouble("Threshold",  "##mt2_thr",  &threshold, "%.2f");
 			endParamTable();
 		}

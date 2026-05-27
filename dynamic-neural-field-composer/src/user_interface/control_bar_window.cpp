@@ -19,9 +19,14 @@ namespace dnf_composer
 
         void ControlBarWindow::render()
         {
+            const ImGuiViewport* vp = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(vp->WorkPos, ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x, 52.0f), ImGuiCond_FirstUseEver);
+
             const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
                 | ImGuiWindowFlags_NoScrollbar
-                | ImGuiWindowFlags_NoScrollWithMouse;
+                | ImGuiWindowFlags_NoScrollWithMouse
+                | ImGuiWindowFlags_NoDocking;
 
             const bool open = ImGui::Begin("##control", nullptr, flags | ImGuiWindowFlags_NoTitleBar);
 

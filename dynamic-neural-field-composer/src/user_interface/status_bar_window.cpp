@@ -20,9 +20,14 @@ namespace dnf_composer
 
     void StatusBarWindow::render()
     {
+        const ImGuiViewport* vp = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, vp->WorkPos.y + vp->WorkSize.y - 28.0f), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x, 28.0f), ImGuiCond_FirstUseEver);
+
         const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
             | ImGuiWindowFlags_NoScrollbar
-            | ImGuiWindowFlags_NoScrollWithMouse;
+            | ImGuiWindowFlags_NoScrollWithMouse
+            | ImGuiWindowFlags_NoDocking;
 
         const bool open = ImGui::Begin("##status", nullptr, flags | ImGuiWindowFlags_NoTitleBar);
 

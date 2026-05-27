@@ -103,9 +103,18 @@ namespace dnf_composer::user_interface
 		}
 		static void ewSectionLabel(const char* lbl) {
 			ImGui::Spacing();
-			ImGui::PushFont(g_BlackSmallFont);
-			ImGui::TextDisabled("%s", lbl);
-			ImGui::PopFont();
+			const float ui    = ImGui::GetIO().FontGlobalScale;
+			const float lineW = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+			const ImVec2 pos  = ImGui::GetCursorScreenPos();
+			const float textW = ImGui::CalcTextSize(lbl).x;
+			const float lineY = pos.y + ImGui::GetTextLineHeight() * 0.5f;
+			const float x0    = pos.x + textW + 6.0f * ui;
+			const float x1    = pos.x + lineW;
+			ImGui::TextUnformatted(lbl);
+			if (x1 > x0)
+				ImGui::GetWindowDrawList()->AddLine(
+					ImVec2(x0, lineY), ImVec2(x1, lineY),
+					ImGui::GetColorU32(ImGuiCol_Separator), 1.0f);
 		}
 	}
 
@@ -126,8 +135,13 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::render()
 	{
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		const float panelY = vp->WorkPos.y + 52.0f;
+		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
+		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.25f, panelY), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.22f, panelH), ImGuiCond_FirstUseEver);
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
-		const bool open = ImGui::Begin("##element_control", nullptr,
+		const bool open = ImGui::Begin("Element Control##element_control", nullptr,
 			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
 		ImGui::PopStyleColor();
 		if (open)
@@ -212,14 +226,14 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::BOOST_STIMULUS:              return "Stimulus";
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE:     return "Noise";
 				case element::ElementLabel::NEURAL_FIELD_2D:             return "Field2D";
-				case element::ElementLabel::GAUSS_STIMULUS_2D:           return "Stim2D";
+				case element::ElementLabel::GAUSS_STIMULUS_2D:           return "Stimulus2D";
 				case element::ElementLabel::GAUSS_KERNEL_2D:             return "Kernel2D";
 				case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:       return "Kernel2D";
 				case element::ElementLabel::NORMAL_NOISE_2D:             return "Noise2D";
 				case element::ElementLabel::OSCILLATORY_KERNEL_2D:       return "Kernel2D";
 				case element::ElementLabel::TIMED_GAUSS_STIMULUS:        return "Stimulus";
-				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:     return "Stim2D";
-				case element::ElementLabel::BOOST_STIMULUS_2D:           return "Stim2D";
+				case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:     return "Stimulus2D";
+				case element::ElementLabel::BOOST_STIMULUS_2D:           return "Stimulus2D";
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:  return "Noise2D";
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:  return "Kernel2D";
 				case element::ElementLabel::MEMORY_TRACE_2D:             return "Memory2D";
@@ -286,8 +300,8 @@ namespace dnf_composer::user_interface
 				dl->ChannelsSplit(2);
 				dl->ChannelsSetCurrent(1);
 
-				const float innerW = avail - kStripW - padX * 2.0f;
-				ImGui::SetCursorScreenPos({panelTL.x + kStripW + padX, panelTL.y + padY});
+				const float innerW = avail - padX * 2.0f;
+				ImGui::SetCursorScreenPos({panelTL.x + padX, panelTL.y + padY});
 				ImGui::BeginGroup();
 
 				// Header row — dot + bold name, click to deselect
@@ -335,8 +349,6 @@ namespace dnf_composer::user_interface
 				dl->ChannelsSetCurrent(0);
 				dl->AddRectFilled(panelTL, panelBR, fillClr,   kCardRound);
 				dl->AddRect      (panelTL, panelBR, borderClr, kCardRound, 0, kCardBordSz);
-				dl->AddRectFilled(panelTL, {panelTL.x + kStripW, panelBR.y},
-				                  dotClr, kCardRound, ImDrawFlags_RoundCornersLeft);
 				dl->ChannelsMerge();
 
 				ImGui::SetCursorScreenPos({panelTL.x, panelBR.y + 6.0f * ui});
@@ -379,7 +391,9 @@ namespace dnf_composer::user_interface
 			if (filtered.empty()) continue;
 
 			const std::string hdr = getElementTypeDisplayName(label) + "  \xc2\xb7  " + std::to_string(filtered.size());
-			ImGui::TextDisabled("%s", hdr.c_str());
+			ImGui::PushFont(g_BlackSmallFont);
+			ImGui::Text("%s", hdr.c_str());
+			ImGui::PopFont();
 			ImGui::Separator();
 
 			const ImVec4 col   = getColorForElementType(label);
@@ -585,7 +599,7 @@ namespace dnf_composer::user_interface
 			ImGui::SameLine();
 			widgets::renderHelpMarker(
 				"Changing the field size will disconnect all existing connections\n"
-				"to and from this element. Press Enter to commit the new size."
+				"to and from this element."
 			);
 			ImGui::TableSetColumnIndex(1);
 			ImGui::SetNextItemWidth(-FLT_MIN);
@@ -787,7 +801,7 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##nf_dyn" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Resting level", ("##nf_rl"  + uid).c_str(), &restingLevel, 0.1f, -30.0f,   0.0f);
-			ewRowDrag("Tau",           ("##nf_tau"  + uid).c_str(), &tau,          0.5f,   1.0f, 300.0f);
+			ewRowDrag("Time scale",           ("##nf_tau"  + uid).c_str(), &tau,          0.5f,   1.0f, 300.0f);
 			ewEndTable();
 		}
 		static constexpr double epsilon = 1e-6;
@@ -884,7 +898,7 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##gs_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##gs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
-			ewRowDrag("Width",     ("##gs_w"   + uid).c_str(), &width,     0.01f, 0.0f, 30.0f);
+			ewRowDrag("Width",     ("##gs_w"   + uid).c_str(), &width,     0.01f, 0.1f, 30.0f);
 			ewRowDrag("Position",  ("##gs_pos" + uid).c_str(), &position,  0.1f,  0.0f,
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 			ewEndTable();
@@ -926,7 +940,7 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##tgs_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude", ("##tgs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
-			ewRowDrag("Width",     ("##tgs_w"   + uid).c_str(), &width,     0.01f, 0.0f, 30.0f);
+			ewRowDrag("Width",     ("##tgs_w"   + uid).c_str(), &width,     0.01f, 0.1f, 30.0f);
 			ewRowDrag("Position",  ("##tgs_pos" + uid).c_str(), &position,  0.1f,  0.0f,
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 			ewEndTable();
@@ -1063,7 +1077,7 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##tgs2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",  ("##tgs2_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
-			ewRowDrag("Width",      ("##tgs2_w"   + uid).c_str(), &width,     0.01f, 0.0f, 30.0f);
+			ewRowDrag("Width",      ("##tgs2_w"   + uid).c_str(), &width,     0.01f, 0.1f, 30.0f);
 			ewRowDrag("Position x", ("##tgs2_px"  + uid).c_str(), &posX,      0.5f,  0.0f,
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 			ewRowDrag("Position y", ("##tgs2_py"  + uid).c_str(), &posY,      0.5f,  0.0f,
@@ -1257,7 +1271,7 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##gk_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",   ("##gk_amp" + uid).c_str(), &amplitude,       0.1f, -50.0f, 50.0f);
-			ewRowDrag("Width",       ("##gk_w"   + uid).c_str(), &width,           0.1f,   0.0f, 30.0f);
+			ewRowDrag("Width",       ("##gk_w"   + uid).c_str(), &width,           0.1f,   0.1f, 30.0f);
 			ewRowDrag("Amp. global", ("##gk_ag"  + uid).c_str(), &amplitudeGlobal, 0.1f, -10.0f, 10.0f);
 			ewEndTable();
 		}
@@ -1299,9 +1313,9 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##mhk_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amp. exc.",   ("##mhk_ae" + uid).c_str(), &amplitudeExc,    0.1f,  -50.0f,  50.0f);
-			ewRowDrag("Width exc.",  ("##mhk_we" + uid).c_str(), &widthExc,        0.1f,    0.0f,  30.0f);
+			ewRowDrag("Width exc.",  ("##mhk_we" + uid).c_str(), &widthExc,        0.1f,    0.1f,  30.0f);
 			ewRowDrag("Amp. inh.",   ("##mhk_ai" + uid).c_str(), &amplitudeInh,    0.1f,    0.0f, 100.0f);
-			ewRowDrag("Width inh.",  ("##mhk_wi" + uid).c_str(), &widthInh,        0.1f,    0.0f,  30.0f);
+			ewRowDrag("Width inh.",  ("##mhk_wi" + uid).c_str(), &widthInh,        0.1f,    0.1f,  30.0f);
 			ewRowDrag("Amp. global", ("##mhk_ag" + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,   0.0f);
 			ewEndTable();
 		}
@@ -1379,6 +1393,7 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::modifyElementGaussFieldCoupling(const std::shared_ptr<element::Element>& element)
 	{
+		const float ui = ImGui::GetIO().FontGlobalScale;
 		const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
 		element::GaussFieldCouplingParameters gfcp = gfc->getParameters();
 		const std::string uid = element->getUniqueName();
@@ -1395,61 +1410,130 @@ namespace dnf_composer::user_interface
 			ewRowBool("Normalized", ("##gfc_n" + uid).c_str(), &normalized);
 			ewEndTable();
 		}
-
-		static constexpr double epsilon = 1e-6;
-		for (size_t ci = 0; ci < gfcp.couplings.size(); ++ci)
+		if (normalized != gfcp.normalized || circular != gfcp.circular)
 		{
-			auto& coupling  = gfcp.couplings[ci];
-			const std::string cs = std::to_string(ci);
-			auto x_i        = static_cast<float>(coupling.x_i);
-			auto x_j        = static_cast<float>(coupling.x_j);
-			auto amplitude  = static_cast<float>(coupling.amplitude);
-			auto width      = static_cast<float>(coupling.width);
-
-			ImGui::Text("from (%.1f) to (%.1f)", x_i, x_j);
-			if (ewBeginTable(("##gfc_c" + uid + cs).c_str())) {
-				ewTableSetup();
-				ewRowDrag(("x_i " + cs).c_str(),        ("##gfc_xi" + uid + cs).c_str(), &x_i,       0.05f, 0.0f, static_cast<float>(other_size));
-				ewRowDrag(("x_j " + cs).c_str(),        ("##gfc_xj" + uid + cs).c_str(), &x_j,       0.05f, 0.0f, static_cast<float>(size));
-				ewRowDrag(("Amplitude " + cs).c_str(),  ("##gfc_a"  + uid + cs).c_str(), &amplitude, 0.1f,  0.0f, 100.0f);
-				ewRowDrag(("Width " + cs).c_str(),      ("##gfc_w"  + uid + cs).c_str(), &width,     0.1f,  1.0f,  30.0f);
-				ewEndTable();
-			}
-			if (std::abs(x_i - static_cast<float>(coupling.x_i)) > epsilon ||
-				std::abs(x_j - static_cast<float>(coupling.x_j)) > epsilon ||
-				std::abs(amplitude - static_cast<float>(coupling.amplitude)) > epsilon ||
-				std::abs(width - static_cast<float>(coupling.width)) > epsilon ||
-				normalized != gfcp.normalized || circular != gfcp.circular)
-			{
-				gfcp.normalized = normalized; gfcp.circular = circular;
-				coupling.x_i = x_i; coupling.x_j = x_j;
-				coupling.amplitude = amplitude; coupling.width = width;
-				gfc->setParameters(gfcp);
-			}
+			gfcp.normalized = normalized; gfcp.circular = circular;
+			gfc->setParameters(gfcp);
 		}
 
-		if (ImGui::Button("Add new coupling")) ImGui::OpenPopup("Add Coupling Modal");
+		ewSectionLabel("Couplings");
 
-		if (ImGui::BeginPopupModal("Add Coupling Modal", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		static std::unordered_map<int, std::tuple<float, float, float, float>> gfcPending;
+		const int gfcEid = element->getUniqueIdentifier();
+		if (!gfcPending.count(gfcEid)) gfcPending[gfcEid] = { 0.0f, 0.0f, 1.0f, 1.0f };
+		auto& [gfcNxi, gfcNxj, gfcNamp, gfcNw] = gfcPending[gfcEid];
+
+		int  gfcDeleteIdx  = -1;
+		bool gfcAddClicked = false;
+
+		const float gfcBtnColW = g_MediumIconsFont->LegacySize
+			+ ImGui::GetStyle().FramePadding.x * 2.0f
+			+ ImGui::GetStyle().CellPadding.x  * 2.0f;
+		const float gfcTableW = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+		constexpr ImGuiTableFlags gfcTFlags =
+			ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV;
+
+		if (ImGui::BeginTable(("##gfc_tbl" + uid).c_str(), 5, gfcTFlags, ImVec2(gfcTableW, 0)))
 		{
-			static float new_x_i = 0.0f, new_x_j = 0.0f, new_amplitude = 1.0f, new_width = 1.0f;
-			ImGui::Text("Specify new coupling parameters:");
-			ImGui::Separator();
-			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_xi",  &new_x_i,        0, static_cast<float>(other_size)); ImGui::SameLine(); ImGui::Text("New x_i");
-			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_xj",  &new_x_j,        0, static_cast<float>(size));       ImGui::SameLine(); ImGui::Text("New x_j");
-			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_amp", &new_amplitude,  0, 100);                            ImGui::SameLine(); ImGui::Text("New Amplitude");
-			ImGui::SetNextItemWidth(250); ImGui::SliderFloat("##nc_w",   &new_width,      1, 30);                             ImGui::SameLine(); ImGui::Text("New Width");
-			if (ImGui::Button("Add Coupling", ImVec2(120, 0)))
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, gfcBtnColW);
+
+			static constexpr float gfcEps = 1e-4f;
+			for (int i = 0; i < static_cast<int>(gfcp.couplings.size()); ++i)
 			{
-				gfc->addCoupling({ static_cast<double>(new_x_i), static_cast<double>(new_x_j),
-				                   static_cast<double>(new_amplitude), static_cast<double>(new_width) });
-				gfc->init();
-				new_x_i = 0.0f; new_x_j = 0.0f; new_amplitude = 1.0f; new_width = 1.0f;
-				ImGui::CloseCurrentPopup();
+				auto& c = gfcp.couplings[i];
+				const std::string si = std::to_string(i);
+				auto xi  = static_cast<float>(c.x_i);
+				auto xj  = static_cast<float>(c.x_j);
+				auto amp = static_cast<float>(c.amplitude);
+				auto w   = static_cast<float>(c.width);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont);
+				ImGui::DragFloat(("##gfc_xi"  + uid + si).c_str(), &xi,  0.05f, 0.0f, static_cast<float>(other_size), "%.1f");
+				ImGui::PopFont();
+				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont);
+				ImGui::DragFloat(("##gfc_xj"  + uid + si).c_str(), &xj,  0.05f, 0.0f, static_cast<float>(size), "%.1f");
+				ImGui::PopFont();
+				ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont);
+				ImGui::DragFloat(("##gfc_amp" + uid + si).c_str(), &amp, 0.1f,  0.0f, 100.0f, "%.2f");
+				ImGui::PopFont();
+				ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont);
+				ImGui::DragFloat(("##gfc_w"   + uid + si).c_str(), &w,   0.1f,  1.0f,  30.0f, "%.2f");
+				ImGui::PopFont();
+				ImGui::TableSetColumnIndex(4);
+				ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85f, 0.25f, 0.25f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+				ImGui::PushFont(g_MediumIconsFont);
+				if (ImGui::Button((ICON_FA_TRASH "##gfc_del" + uid + si).c_str()))
+					gfcDeleteIdx = i;
+				ImGui::PopFont();
+				ImGui::PopStyleColor(4);
+				if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove coupling");
+
+				if (std::abs(xi  - static_cast<float>(c.x_i))        > gfcEps ||
+				    std::abs(xj  - static_cast<float>(c.x_j))        > gfcEps ||
+				    std::abs(amp - static_cast<float>(c.amplitude))   > gfcEps ||
+				    std::abs(w   - static_cast<float>(c.width))       > gfcEps)
+				{
+					c.x_i = xi; c.x_j = xj; c.amplitude = amp; c.width = w;
+					gfc->setParameters(gfcp);
+				}
 			}
-			ImGui::SameLine();
-			if (ImGui::Button("Cancel", ImVec2(120, 0))) ImGui::CloseCurrentPopup();
-			ImGui::EndPopup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::DragFloat(("##gfc_nxi"  + uid).c_str(), &gfcNxi,  0.05f, 0.0f, static_cast<float>(other_size), "%.1f");
+			ImGui::PopFont();
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::DragFloat(("##gfc_nxj"  + uid).c_str(), &gfcNxj,  0.05f, 0.0f, static_cast<float>(size), "%.1f");
+			ImGui::PopFont();
+			ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::DragFloat(("##gfc_namp" + uid).c_str(), &gfcNamp, 0.1f,  0.0f, 100.0f, "%.2f");
+			ImGui::PopFont();
+			ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::PushFont(g_MonoMediumFont);
+			ImGui::DragFloat(("##gfc_nw"   + uid).c_str(), &gfcNw,   0.1f,  1.0f,  30.0f, "%.2f");
+			ImGui::PopFont();
+			ImGui::TableSetColumnIndex(4);
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+			gfcAddClicked = ImGui::Button((ICON_FA_CIRCLE_PLUS "##gfc_add" + uid).c_str());
+			ImGui::PopFont();
+			ImGui::PopStyleColor(3);
+			if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add coupling");
+
+			ImGui::EndTable();
+		}
+
+		if (gfcDeleteIdx >= 0)
+		{
+			gfcp.couplings.erase(gfcp.couplings.begin() + gfcDeleteIdx);
+			gfc->setParameters(gfcp);
+			gfc->init();
+			return;
+		}
+		if (gfcAddClicked)
+		{
+			gfc->addCoupling({ static_cast<double>(gfcNxi), static_cast<double>(gfcNxj),
+			                   static_cast<double>(gfcNamp), static_cast<double>(gfcNw) });
+			gfc->init();
+			gfcNxi = 0.0f; gfcNxj = 0.0f; gfcNamp = 1.0f; gfcNw = 1.0f;
+			return;
 		}
 	}
 
@@ -1512,7 +1596,7 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##agk_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",   ("##agk_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
-			ewRowDrag("Width",       ("##agk_w"   + uid).c_str(), &width,           0.005f,   0.0f, 30.0f);
+			ewRowDrag("Width",       ("##agk_w"   + uid).c_str(), &width,           0.005f,   0.1f, 30.0f);
 			ewRowDrag("Amp. global", ("##agk_ag"  + uid).c_str(), &amplitudeGlobal, 0.005f, -10.0f,  0.0f);
 			ewRowDrag("Time shift",  ("##agk_ts"  + uid).c_str(), &timeShift,       0.01f,  -10.0f, 10.0f);
 			ewEndTable();
@@ -1627,7 +1711,7 @@ namespace dnf_composer::user_interface
 		if (ewBeginTable(("##agk2_shp" + uid).c_str())) {
 			ewTableSetup();
 			ewRowDrag("Amplitude",    ("##agk2_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
-			ewRowDrag("Width",        ("##agk2_w"   + uid).c_str(), &width,           0.005f,   0.0f, 30.0f);
+			ewRowDrag("Width",        ("##agk2_w"   + uid).c_str(), &width,           0.005f,   0.1f, 30.0f);
 			ewRowDrag("Amp. global",  ("##agk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.005f, -10.0f,  0.0f);
 			ewRowDrag("Time shift x", ("##agk2_tsx" + uid).c_str(), &timeShift_x,     0.01f,  -10.0f, 10.0f);
 			ewRowDrag("Time shift y", ("##agk2_tsy" + uid).c_str(), &timeShift_y,     0.01f,  -10.0f, 10.0f);
@@ -1668,8 +1752,8 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##mt2_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Tau build",  ("##mt2_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
-			ewRowDrag("Tau decay",  ("##mt2_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
+			ewRowDrag("Time scale build",  ("##mt2_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
+			ewRowDrag("Time scale decay",  ("##mt2_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
 			ewRowDrag("Threshold",  ("##mt2_th" + uid).c_str(), &threshold, 0.01f, -2.0f,     2.0f);
 			ewEndTable();
 		}
@@ -1693,8 +1777,8 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##mt_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Tau build",  ("##mt_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
-			ewRowDrag("Tau decay",  ("##mt_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
+			ewRowDrag("Time scale build",  ("##mt_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
+			ewRowDrag("Time scale decay",  ("##mt_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
 			ewRowDrag("Threshold",  ("##mt_th" + uid).c_str(), &threshold, 0.01f, -2.0f,     2.0f);
 			ewEndTable();
 		}
@@ -1717,7 +1801,7 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##nf2_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Tau",           ("##nf2_tau" + uid).c_str(), &tau,          0.5f,   1.0f, 1000.0f);
+			ewRowDrag("Time scale",           ("##nf2_tau" + uid).c_str(), &tau,          0.5f,   1.0f, 1000.0f);
 			ewRowDrag("Resting level", ("##nf2_rl"  + uid).c_str(), &restingLevel, 0.1f, -30.0f,   30.0f);
 			ewEndTable();
 		}

@@ -239,6 +239,12 @@ namespace dnf_composer
 			const std::string visible = "Plot #" + std::to_string(plotID);
 			const std::string plotWindowTitle = visible + "##" + (windowSuffix.empty() ? "default" : windowSuffix);
 
+			const ImGuiViewport* vp = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(
+				ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.47f, vp->WorkPos.y + 52.0f),
+				ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(500.0f, 350.0f), ImGuiCond_FirstUseEver);
+
 			const float ui = ImGui::GetIO().FontGlobalScale;
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
 			ImGui::PushFont(g_BlackLargeFont);
