@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.0] - 2026-05-28
+
+### Added
+- **`ControlBarWindow`** and **`StatusBarWindow`** — persistent playback controls and simulation
+  status strip displayed at all times
+- **`StaticLayoutWindow`** — fixed panel layout integrating node graph, control bar, status bar,
+  and log window into a single coherent workspace
+- **`HelpWindow`** — in-app help overlay accessible from the menu bar
+- NodeGraphWindow: mini-map, node-overlap prevention during drag, improved pin interaction and
+  connection logic, flag to prevent bringing the window to front on focus
+- Dynamic ImGui style applied from a JSON configuration file at startup; new modern light-theme
+  style configuration added
+- Memory usage display in the status bar (`getProcessMemoryMb`)
+- New examples: travelling bump (1D/2D), boost detection (1D/2D), selection instability (1D/2D),
+  memory trace (1D/2D), Hebbian learning, weighted field couplings, multi-peak (1D/2D), Gaussian
+  field coupling, timed stimuli (1D/2D)
+
+### Fixed
+- `GaussFieldCoupling` double-click heatmap was vertically mirrored relative to the
+  visualization-window and inline node-card views; corrected `ImPlot::PlotHeatmap` bounds to
+  `ImPlotPoint(0, rows), ImPlotPoint(cols, 0)` so input index 0 appears at the bottom in all
+  three views
+- `GaussFieldCoupling` coupling table now shows column headers ("x in", "x out", "amp", "width")
+  and an outer border, making coupling parameters immediately identifiable
+- Coupling table button column was oversized due to double-counted `CellPadding.x`; fixed by
+  removing the redundant term from the fixed column width calculation
+- Y-major 2D indexing standardised across `GaussStimulus2D`, all 2D kernel elements, and
+  `tools::conv2d`; unit tests updated to match the corrected `index = yi * size_x + xi` convention
+- `Simulation::renameElement` silent early-returns replaced with `WARNING` log messages so UI
+  rename failures are visible to users; successful renames now emit an `INFO` log
+- `style.cpp` exception thrown when the JSON style file cannot be opened now includes the failing
+  path as `errorElement` for easier diagnosis
+- Missing `#include <cstring>` in `element_window.cpp` caused `std::strncpy` build error on
+  GCC / Linux
+- `imgui.ini` added to `.gitignore` to prevent tracking of per-machine UI layout state
+
 ## [2.5.0] - 2026-05-18
 
 ### Added
