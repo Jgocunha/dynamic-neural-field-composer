@@ -132,3 +132,39 @@ TEST(MemoryTrace2DElement, LabelStringIsMemoryTrace2D)
     const auto labelStr = ElementLabelToString.at(mt.getLabel());
     EXPECT_EQ(labelStr, "memory trace 2d");
 }
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(MemoryTrace2DEdgeCases, OutputRemainsFiniteAfterManySteps)
+{
+    auto bs = std::make_shared<BoostStimulus2D>(makeCP("bs", 5, 4), BoostStimulus2DParameters{0.8, true});
+    bs->init();
+    bs->step(0.0, 1.0);
+
+    auto mt = std::make_shared<MemoryTrace2D>(makeCP("mt", 5, 4), makeMTP(10.0, 1000.0, 0.5));
+    mt->addInput(bs);
+    mt->init();
+    for (int i = 0; i < 500; ++i)
+        mt->step(static_cast<double>(i), 1.0);
+
+    for (double v : mt->getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
+}
+
+TEST(MemoryTrace2DEdgeCases, ZeroThresholdAlwaysBuilds)
+{
+    auto bs = std::make_shared<BoostStimulus2D>(makeCP("bs"), BoostStimulus2DParameters{0.1, true});
+    bs->init();
+    bs->step(0.0, 1.0);
+
+    auto mt = std::make_shared<MemoryTrace2D>(makeCP("mt"), makeMTP(100.0, 1000.0, 0.0));
+    mt->addInput(bs);
+    mt->init();
+    mt->step(0.0, 1.0);
+
+    const auto out = mt->getComponent("output");
+    for (double v : out)
+        EXPECT_GT(v, 0.0);
+}

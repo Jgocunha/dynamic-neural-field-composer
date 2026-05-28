@@ -88,7 +88,7 @@ namespace dnf_composer::element
 		components["kernel"].resize(kx * ky);
 		for (int i = 0; i < kx; ++i)
 			for (int j = 0; j < ky; ++j)
-				components["kernel"][i * ky + j] = kernel_1d_x[i] * kernel_1d_y[j];
+				components["kernel"][j * kx + i] = kernel_1d_x[i] * kernel_1d_y[j];
 
 		const int totalSize = size_x * size_y;
 		scratchTmp_.assign(totalSize, 0.0);

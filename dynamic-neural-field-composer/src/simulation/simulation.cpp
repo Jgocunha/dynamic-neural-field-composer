@@ -147,7 +147,7 @@ namespace dnf_composer
 		{
 			return;
 		}
-		if (measureStepDuration_)
+		if (measureStepDuration)
 		{
 			const auto t0 = std::chrono::steady_clock::now();
 			t += deltaT;
@@ -201,7 +201,7 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, "Simulation cleaned.");
 	}
 
-	void Simulation::save(const std::string& savePath)  
+	void Simulation::save(const std::string& savePath)
 	{
 		const SimulationFileManager sfm{ shared_from_this(), savePath };
 		sfm.saveElementsToJson();
@@ -332,8 +332,27 @@ namespace dnf_composer
 		element->removeInputs();
 		element->removeOutputs();
 		element->changeDimensions(newDimensions);
+
 		const std::string logMessage = "Element '" + elementId + "' resized to " + newDimensions.toString() + ".";
 		log(tools::logger::LogLevel::INFO, logMessage);
+	}
+
+	void Simulation::renameElement(const std::string& oldName, const std::string& newName)
+	{
+		if (oldName == newName) return;
+		const auto elem = getElement(oldName);
+		if (!elem)
+		{
+			log(tools::logger::LogLevel::WARNING, "Element '" + oldName + "' was not found and consequently not renamed.");
+			return;
+		}
+		if (getElement(newName))
+		{
+			log(tools::logger::LogLevel::WARNING, "Element '" + newName + "' already exists; '" + oldName + "' was not renamed.");
+			return;
+		}
+		elem->setUniqueName(newName);
+		log(tools::logger::LogLevel::INFO, "Element '" + oldName + "' renamed to '" + newName + "'.");
 	}
 
 	void Simulation::createInteraction(const std::string& stimulusElementId,
@@ -392,9 +411,7 @@ namespace dnf_composer
 				return element;
 			}
 		}
-
 		return nullptr;
-		//throw Exception(ErrorCode::SIM_ELEM_NOT_FOUND, id);
 	}
 
 	std::shared_ptr<element::Element> Simulation::getElement(const int index) const 

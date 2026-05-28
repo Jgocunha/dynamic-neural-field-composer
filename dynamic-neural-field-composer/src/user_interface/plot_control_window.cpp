@@ -1,6 +1,8 @@
 #include "user_interface/plot_control_window.h"
 #include <unordered_set>
 
+#include "user_interface/fonts/IconsFontAwesome6.h"
+
 
 namespace dnf_composer::user_interface
 {
@@ -185,11 +187,26 @@ namespace dnf_composer::user_interface
 
 	void PlotControlWindow::render()
 	{
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Plot Control", nullptr, imgui_kit::getGlobalWindowFlags());
-		ImGui::PopFont();
+		const bool open = ImGui::Begin("##plot_control", nullptr,
+			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
 		if (open)
+		{
+			const float startY = ImGui::GetCursorPosY();
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			ImGui::SetCursorPosY(startY + yOff);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::TextUnformatted(ICON_FA_CHART_LINE);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::SameLine(0, 8.0f);
+			ImGui::SetCursorPosY(startY);
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::TextUnformatted("Plot Control");
+			ImGui::PopFont();
+			ImGui::Separator();
 			renderContent();
+		}
 		ImGui::End();
 	}
 }

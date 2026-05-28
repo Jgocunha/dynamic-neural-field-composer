@@ -2,6 +2,7 @@
 #include <memory>
 #include <numeric>
 #include <algorithm>
+#include <cmath>
 
 #include "elements/gauss_kernel_2d.h"
 #include "elements/gauss_stimulus_2d.h"
@@ -50,7 +51,7 @@ TEST(GaussKernel2DStep, OutputSizeMatchesDimensions)
 {
     auto stimulus = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
     stimulus->init();
 
     auto gk = std::make_shared<GaussKernel2D>(makeCP("gk", 20, 20), makeGKP(2.0, 1.0, 0.0, false, false));
@@ -65,7 +66,7 @@ TEST(GaussKernel2DStep, PositiveAmplitudeGivesPositiveOutput)
 {
     auto stimulus = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 20, 20),
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, false, false });
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
     stimulus->init();
 
     auto gk = std::make_shared<GaussKernel2D>(makeCP("gk", 20, 20), makeGKP(2.0, 1.0, 0.0, false, false));
@@ -83,7 +84,7 @@ TEST(GaussKernel2DStep, GlobalTermAddsConstantOffset)
     // With a uniform input (boost), globalTerm shifts all outputs by amp * fullSum
     auto stimulus = std::make_shared<GaussStimulus2D>(
         makeCP("gs", 10, 10),
-        GaussStimulusParameters2D{ 20.0, 1.0, 5.0, 5.0, false, false });  // very wide → near-uniform
+        GaussStimulus2DParameters{ 20.0, 1.0, 5.0, 5.0, false, false });  // very wide → near-uniform
     stimulus->init();
 
     const double ampG = 0.5;
@@ -127,4 +128,41 @@ TEST(GaussKernel2DClone, CloneHasSameParameters)
     const auto cloned = std::dynamic_pointer_cast<GaussKernel2D>(gk.clone());
     ASSERT_NE(cloned, nullptr);
     EXPECT_EQ(cloned->getParameters(), gk.getParameters());
+}
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(GaussKernel2DEdgeCases, ZeroAmplitudeOutputAllZeros)
+{
+    auto stimulus = std::make_shared<GaussStimulus2D>(
+        makeCP("gs", 20, 20),
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
+    stimulus->init();
+
+    auto gk = std::make_shared<GaussKernel2D>(makeCP("gk", 20, 20), makeGKP(2.0, 0.0, 0.0, false, false));
+    gk->addInput(stimulus);
+    gk->init();
+    gk->step(0.0, 1.0);
+
+    for (double v : gk->getComponent("output"))
+        EXPECT_NEAR(v, 0.0, 1e-10);
+}
+
+TEST(GaussKernel2DEdgeCases, OutputNoNaNOrInfAfterMultipleSteps)
+{
+    auto stimulus = std::make_shared<GaussStimulus2D>(
+        makeCP("gs", 20, 20),
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, false, false });
+    stimulus->init();
+
+    auto gk = std::make_shared<GaussKernel2D>(makeCP("gk", 20, 20), makeGKP(2.0, 1.0, 0.0, false, false));
+    gk->addInput(stimulus);
+    gk->init();
+    for (int i = 0; i < 10; ++i)
+        gk->step(static_cast<double>(i), 1.0);
+
+    for (double v : gk->getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
 }

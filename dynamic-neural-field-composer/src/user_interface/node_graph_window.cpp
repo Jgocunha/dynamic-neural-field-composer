@@ -1,7 +1,8 @@
 #include "user_interface/node_graph_window.h"
 #include <cstring>
 
-extern ImFont* g_BlackSmallFont;
+#include "elements/correlated_normal_noise_2d.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 namespace dnf_composer::user_interface
 {
@@ -16,6 +17,7 @@ namespace dnf_composer::user_interface
 	{
 		widgets::renderHelpMarker(
 			"Visualize elements and their interactions.\n"
+			"Zoom in/out by scrolling.\n"
 			"Drag from an Output pin to an Input pin to create a connection.\n"
 			"Double-click a link to remove it.\n"
 			"Double-click a node to open/close its plot card.");
@@ -27,6 +29,63 @@ namespace dnf_composer::user_interface
 		handleInteractions();
 		ImNodeEditor::End();
 		restoreCanvasStyle();
+
+		// Overlap prevention: check only when the drag ends, not every frame.
+		// This avoids fighting imgui-node-editor's drag system (which would cause flashing).
+		{
+			const bool mouseHeld = ImGui::IsMouseDown(ImGuiMouseButton_Left);
+			for (size_t i = 0; i < cachedNodeRects.size(); ++i)
+			{
+				const size_t idA  = cachedNodeIds[i];
+				const ImVec2 posA = cachedNodeRects[i].first;
+				const ImVec2 szA  = cachedNodeRects[i].second;
+
+				if (!prevNodePositions.contains(idA))
+				{
+					prevNodePositions[idA] = posA;
+					continue;
+				}
+				const ImVec2 prevA = prevNodePositions[idA];
+				const bool movedA = std::abs(posA.x - prevA.x) > 0.5f ||
+				                    std::abs(posA.y - prevA.y) > 0.5f;
+
+				if (movedA && !dragStartPositions.count(idA))
+					dragStartPositions[idA] = prevA;
+
+				if (!movedA && !mouseHeld && dragStartPositions.count(idA))
+				{
+					bool finalOverlaps = false;
+					for (size_t j = 0; j < cachedNodeRects.size(); ++j)
+					{
+						if (i == j) continue;
+						const ImVec2 posB = cachedNodeRects[j].first;
+						const ImVec2 szB  = cachedNodeRects[j].second;
+						const float ox = std::min(posA.x + szA.x, posB.x + szB.x) - std::max(posA.x, posB.x);
+						const float oy = std::min(posA.y + szA.y, posB.y + szB.y) - std::max(posA.y, posB.y);
+						if (ox > 0.0f && oy > 0.0f &&
+						    ox * oy > 0.30f * std::min(szA.x * szA.y, szB.x * szB.y))
+						{
+							finalOverlaps = true;
+							break;
+						}
+					}
+					if (finalOverlaps)
+					{
+						ImNodeEditor::SetNodePosition(idA, dragStartPositions[idA]);
+						prevNodePositions[idA] = dragStartPositions[idA];
+					}
+					else
+					{
+						prevNodePositions[idA] = posA;
+					}
+					dragStartPositions.erase(idA);
+					continue;
+				}
+
+				prevNodePositions[idA] = posA;
+			}
+		}
+
 		ImNodeEditor::SetCurrentEditor(nullptr);
 
 		const ImVec2 ngPos  = ImGui::GetWindowPos();
@@ -37,29 +96,63 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::render()
 	{
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		const float panelY = vp->WorkPos.y + 52.0f;
+		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
+		const float panelX = vp->WorkPos.x + vp->WorkSize.x * 0.47f;
+		ImGui::SetNextWindowPos(ImVec2(panelX, panelY), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.53f, panelH), ImGuiCond_FirstUseEver);
+
 		const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
+			| ImGuiWindowFlags_NoTitleBar
 			| ImGuiWindowFlags_NoScrollbar
-			| ImGuiWindowFlags_NoScrollWithMouse;
+			| ImGuiWindowFlags_NoScrollWithMouse
+			| ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Node Graph", nullptr, flags);
-		ImGui::PopFont();
+		const bool open = ImGui::Begin("Node Graph##node_graph", nullptr, flags);
 
+		ImVec2 ngPos{}, ngSize{};
 		if (open)
 		{
+			const float startY = ImGui::GetCursorPosY();
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			ImGui::SetCursorPosY(startY + yOff);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::TextUnformatted(ICON_FA_DIAGRAM_PROJECT);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::SameLine(0, 8.0F);
+			ImGui::SetCursorPosY(startY);
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::TextUnformatted("Node Graph");
+			ImGui::PopFont();
+			ImGui::Separator();
+
+			ngPos  = ImGui::GetWindowPos();
+			ngSize = ImGui::GetWindowSize();
 			renderGraphContent();
 		}
 
 		ImGui::End();
 
-		// Plot cards are separate top-level windows, must be rendered outside Begin/End.
+		// Plot cards, minimap, and nav controls are separate top-level windows — render outside Begin/End.
 		renderNodePlotCards();
+		if (open)
+		{
+			renderMiniMap(ngPos, ngSize);
+			renderNavigationControls(ngPos, ngSize);
+		}
 	}
 
 	void NodeGraphWindow::renderEmbedded() const
 	{
+		const ImVec2 pos  = ImGui::GetWindowPos();
+		const ImVec2 size = ImGui::GetWindowSize();
 		renderGraphContent();
 		renderNodePlotCards();
+		renderMiniMap(pos, size);
+		renderNavigationControls(pos, size);
 	}
 
 	void NodeGraphWindow::applyCanvasStyle()
@@ -152,6 +245,20 @@ namespace dnf_composer::user_interface
 		{
 			renderElementNodeConnections(element);
 		}
+
+		// Cache node canvas rects for mini-map and overlap prevention (must happen inside Begin/End).
+		cachedNodeRects.clear();
+		cachedNodeLabels.clear();
+		cachedNodeIds.clear();
+		for (const auto& element : elements)
+		{
+			const size_t id = getNodeId(element);
+			cachedNodeRects.emplace_back(ImNodeEditor::GetNodePosition(id), ImNodeEditor::GetNodeSize(id));
+			cachedNodeLabels.push_back(element->getLabel());
+			cachedNodeIds.push_back(id);
+		}
+		cachedVpMin = ImNodeEditor::ScreenToCanvas(ngBoundsMin);
+		cachedVpMax = ImNodeEditor::ScreenToCanvas(ngBoundsMax);
 	}
 
 	void NodeGraphWindow::renderElementNode(const std::shared_ptr<element::Element>& element)
@@ -179,20 +286,12 @@ namespace dnf_composer::user_interface
 		util::BlueprintNodeBuilder builder;
 		builder.Begin(nodeId);
 
-		bool showTooltip = false;
-
 		builder.Header(bodyVec4);
 		{
 			static constexpr float minNodeSize = 280.0F;
 			ImGui::Dummy(ImVec2(minNodeSize, 0));
 
 			renderNodeScrollingName(element, minNodeSize);
-
-			ImGui::Spacing();
-			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::TextUnformatted(ICON_FA_CIRCLE_INFO);
-			ImGui::PopFont();
-			showTooltip = ImGui::IsItemHovered();
 			ImGui::Spacing();
 
 			renderNodeInlinePreview(element, minNodeSize);
@@ -205,15 +304,6 @@ namespace dnf_composer::user_interface
 
 		ImNodeEditor::PopStyleColor(2);
 		ImNodeEditor::PopStyleVar(3);
-
-		// Suspend/Resume outside the BeginHorizontal (builder.Header) context to
-		// avoid corrupting the draw list clip-rect stack on long-name nodes.
-		if (showTooltip)
-		{
-			ImNodeEditor::Suspend();
-			renderElementTooltip(element);
-			ImNodeEditor::Resume();
-		}
 	}
 
 	void NodeGraphWindow::renderNodeScrollingName(const std::shared_ptr<element::Element>& element, const float minNodeSize)
@@ -274,9 +364,7 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
 		constexpr float pad       = 0.0f;
-		//constexpr float axisLeft  = 24.0f;  // reserved for y-axis labels
-		//constexpr float axisBot   = 13.0f;  // reserved for x-axis labels
-		constexpr float axisRight = 26.0f;  // reserved for amplitude colorbar
+		constexpr float axisRight = 30.0f;  // reserved for amplitude colorbar
 
 		const auto  label       = element->getLabel();
 		const bool  isWeightMap = isWeightMapElement(label);
@@ -317,7 +405,6 @@ namespace dnf_composer::user_interface
 					auto& [stableMin, stableMax] = s_wmRangeCache[key];
 					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
 
-					constexpr float axisRight = 30.0f;
 					const ImRect hmRect(rect.Min, ImVec2(rect.Max.x - axisRight, rect.Max.y));
 					draw2DFieldHeatmap(dl, hmRect, weights, rows, cols, stableMin, stableMax);
 					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
@@ -332,8 +419,8 @@ namespace dnf_composer::user_interface
 			if (comps->contains(compName))
 			{
 				const auto& dp   = element->getElementCommonParameters().dimensionParameters;
-				const int   rows = dp.size_x;
-				const int   cols = dp.size_y;
+				const int   rows = dp.size_y;
+				const int   cols = dp.size_x;
 				if (const auto& data = comps->at(compName); rows > 0 && cols > 0
 					&& static_cast<int>(data.size()) == rows * cols)
 				{
@@ -481,33 +568,86 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::handlePinInteractions() const
 	{
-		static bool isAttemptingConnection = false;
-		static ImNodeEditor::PinId outputPinId = 0;
+		// pendingOutputPin: set when user clicks an output pin; cleared when they click an input
+		// pin (completing the connection), click elsewhere, or start a successful drag.
+		static ImNodeEditor::PinId pendingOutputPin = 0;
 
-		if (ImNodeEditor::GetHoveredPin() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+		const int maxIdx = simulation->getHighestElementIndex();
+
+		// Cancel with Escape or right-click.
+		if (pendingOutputPin &&
+			(ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
+			pendingOutputPin = 0;
+
+		// Click-to-click: handle every left-click directly via GetHoveredPin().
+		// This runs before BeginCreate so it fires even when clicking a pin starts a new session.
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
-			outputPinId = ImNodeEditor::GetHoveredPin();
-			isAttemptingConnection = true;
-			return;
+			const ImNodeEditor::PinId hovered = ImNodeEditor::GetHoveredPin();
+			if (hovered)
+			{
+				const int asOutput = static_cast<int>(hovered.Get()) - startingOutputPinId;
+				const int asInput  = static_cast<int>(hovered.Get()) - startingInputPinId;
+				const bool isValidOutput = asOutput >= 0 && asOutput <= maxIdx;
+				const bool isValidInput  = asInput  >= 0 && asInput  <= maxIdx;
+
+				if (pendingOutputPin && isValidInput)
+				{
+					// Second click on an input pin: complete the connection.
+					const int srcId = static_cast<int>(pendingOutputPin.Get()) - startingOutputPinId;
+					simulation->createInteraction(
+						simulation->getElement(srcId)->getUniqueName(), "output",
+						simulation->getElement(asInput)->getUniqueName());
+					pendingOutputPin = 0;
+				}
+				else if (isValidOutput)
+				{
+					// First click (or change of mind): record this output pin.
+					pendingOutputPin = hovered;
+				}
+				else
+				{
+					pendingOutputPin = 0;
+				}
+			}
+			else
+			{
+				// Clicked empty space: cancel any pending connection.
+				pendingOutputPin = 0;
+			}
 		}
 
-		if (ImNodeEditor::GetHoveredPin() && isAttemptingConnection)
+		// Drag-to-connect via imgui-node-editor's BeginCreate API.
+		if (ImNodeEditor::BeginCreate())
 		{
-			const int srcId  = static_cast<int>(outputPinId.Get()) - startingOutputPinId;
-			const int dstId  = static_cast<int>(ImNodeEditor::GetHoveredPin().Get()) - startingInputPinId;
-			const int maxIdx = simulation->getHighestElementIndex();
-
-			if (srcId < 0 || dstId < 0 || srcId > maxIdx || dstId > maxIdx)
+			ImNodeEditor::PinId startPin, endPin;
+			if (ImNodeEditor::QueryNewLink(&startPin, &endPin))
 			{
-				isAttemptingConnection = false;
-				return;
+				const int srcId = static_cast<int>(startPin.Get()) - startingOutputPinId;
+				const int dstId = static_cast<int>(endPin.Get())   - startingInputPinId;
+
+				if (srcId >= 0 && srcId <= maxIdx && dstId >= 0 && dstId <= maxIdx)
+				{
+					if (ImNodeEditor::AcceptNewItem())
+					{
+						simulation->createInteraction(
+							simulation->getElement(srcId)->getUniqueName(), "output",
+							simulation->getElement(dstId)->getUniqueName());
+						pendingOutputPin = 0;
+					}
+				}
+				else
+				{
+					ImNodeEditor::RejectNewItem();
+				}
 			}
 
-			simulation->createInteraction(
-				simulation->getElement(srcId)->getUniqueName(), "output",
-				simulation->getElement(dstId)->getUniqueName());
+			// Reject node-creation prompts (not supported).
+			ImNodeEditor::PinId newNodePin;
+			if (ImNodeEditor::QueryNewNode(&newNodePin))
+				ImNodeEditor::RejectNewItem();
 
-			isAttemptingConnection = false;
+			ImNodeEditor::EndCreate();
 		}
 	}
 
@@ -728,7 +868,7 @@ namespace dnf_composer::user_interface
 				{
 					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
 					ImPlot::PlotHeatmap("##data", weights.data(), rows, cols, scMin, scMax, nullptr,
-						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
 				}
 				ImGui::SameLine(0, 4.0f);
@@ -749,8 +889,8 @@ namespace dnf_composer::user_interface
 			int rows, cols;
 			if (dp.size_x * dp.size_y == total)
 			{
-				rows = dp.size_x;
-				cols = dp.size_y;
+				rows = dp.size_y;
+				cols = dp.size_x;
 			}
 			else
 			{
@@ -799,7 +939,7 @@ namespace dnf_composer::user_interface
 				{
 					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
 					ImPlot::PlotHeatmap("##data", data.data(), rows, cols, scMin, scMax, nullptr,
-						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
 				}
 				ImGui::SameLine(0, 4.0f);
@@ -1194,30 +1334,6 @@ namespace dnf_composer::user_interface
 		constexpr int    nTicks  = 4;
 		ImFont* const    font    = ImGui::GetFont();
 
-		// // X-axis ticks (column indices) below the heatmap
-		// for (int i = 0; i <= nTicks; ++i)
-		// {
-		// 	const float t   = static_cast<float>(i) / nTicks;
-		// 	const float x   = hmRect.Min.x + t * hmRect.GetWidth();
-		// 	const int   idx = static_cast<int>(std::round(t * (cols - 1)));
-		// 	char buf[8];
-		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
-		// 	dl->AddLine(ImVec2(x, hmRect.Max.y), ImVec2(x, hmRect.Max.y + 2.0f), tickCol, 1.0f);
-		// 	dl->AddText(font, fs, ImVec2(x - 5.0f, hmRect.Max.y + 2.0f), textCol, buf);
-		// }
-		//
-		// // Y-axis ticks (row indices) left of the heatmap
-		// for (int i = 0; i <= nTicks; ++i)
-		// {
-		// 	const float t   = static_cast<float>(i) / nTicks;
-		// 	const float y   = hmRect.Min.y + t * hmRect.GetHeight();
-		// 	const int   idx = static_cast<int>(std::round((1.0f - t) * (rows - 1)));
-		// 	char buf[8];
-		// 	std::snprintf(buf, sizeof(buf), "%d", idx);
-		// 	dl->AddLine(ImVec2(hmRect.Min.x, y), ImVec2(hmRect.Min.x - 2.0f, y), tickCol, 1.0f);
-		// 	dl->AddText(font, fs, ImVec2(hmRect.Min.x - 21.0f, y - fs * 0.5f), textCol, buf);
-		// }
-
 		// Amplitude colorbar: vertical strip to the right of the heatmap
 		constexpr float barGap = 3.0f;
 		constexpr float barW   = 7.0f;
@@ -1247,6 +1363,137 @@ namespace dnf_composer::user_interface
 			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0f, y), tickCol, 1.0f);
 			dl->AddText(font, fs, ImVec2(barX1 + 3.0f, y - fs * 0.5f), textCol, buf);
 		}
+	}
+
+	void NodeGraphWindow::renderNavigationControls(const ImVec2 winPos, const ImVec2 winSize) const
+	{
+		constexpr float kBtnSize = 40.0f;
+		constexpr float kGap     = 8.0f;
+		constexpr float kPad     = 10.0f;
+
+		ImGui::SetNextWindowPos(
+			ImVec2(winPos.x + kPad, winPos.y + winSize.y - kBtnSize - kPad * 3.0f),
+			ImGuiCond_Always);
+		ImGui::SetNextWindowBgAlpha(0.9f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPad, kPad));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
+
+		const bool open = ImGui::Begin("##ng_nav", nullptr,
+			ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav |
+			ImGuiWindowFlags_NoFocusOnAppearing);
+
+		ImGui::PopStyleVar(2);
+
+		if (open)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.92f, 0.92f, 0.93f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.80f, 0.84f, 0.95f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.65f, 0.72f, 0.92f, 1.0f));
+
+			ImGui::PushFont(g_MediumIconsFont);
+			const bool fitAll = ImGui::Button(ICON_FA_EXPAND,   ImVec2(kBtnSize, kBtnSize));
+			const bool hovAll = ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort);
+			ImGui::SameLine(0, kGap);
+			const bool fitSel = ImGui::Button(ICON_FA_COMPRESS, ImVec2(kBtnSize, kBtnSize));
+			const bool hovSel = ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort);
+			ImGui::PopFont();
+
+			ImGui::PopStyleColor(3);
+			ImGui::PopStyleVar(1);
+
+			// Tooltips are set after PopFont so they render with the default font.
+			if (hovAll) ImGui::SetTooltip("Fit all");
+			if (hovSel) ImGui::SetTooltip("Fit selection");
+
+			if (fitAll)
+			{
+				ImNodeEditor::SetCurrentEditor(context);
+				ImNodeEditor::NavigateToContent(0.3f);
+				ImNodeEditor::SetCurrentEditor(nullptr);
+			}
+			if (fitSel)
+			{
+				ImNodeEditor::SetCurrentEditor(context);
+				ImNodeEditor::NavigateToSelection(false, 0.3f);
+				ImNodeEditor::SetCurrentEditor(nullptr);
+			}
+		}
+		ImGui::End();
+	}
+
+	void NodeGraphWindow::renderMiniMap(const ImVec2 winPos, const ImVec2 winSize) const
+	{
+		constexpr float kW       = 200.0f;
+		constexpr float kH       = 130.0f;
+		constexpr float kPad     = 8.0f;
+		constexpr float kBBoxPad = 60.0f;
+		ImGui::SetNextWindowPos(
+			ImVec2(winPos.x + winSize.x - kW - kPad * 3.0f,
+			       winPos.y + winSize.y - kH - kPad * 3.0f),
+			ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(kW + kPad * 2.0f, kH + kPad * 2.0f), ImGuiCond_Always);
+		ImGui::SetNextWindowBgAlpha(0.88f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPad, kPad));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
+		const bool open = ImGui::Begin("##ng_minimap", nullptr,
+			ImGuiWindowFlags_NoDecoration    | ImGuiWindowFlags_NoMove              |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking           |
+			ImGuiWindowFlags_NoNav           | ImGuiWindowFlags_NoFocusOnAppearing  |
+			ImGuiWindowFlags_NoScrollbar     | ImGuiWindowFlags_NoInputs);
+		ImGui::PopStyleVar(2);
+
+		if (open && !cachedNodeRects.empty())
+		{
+			// Bounding box of all nodes in canvas space
+			ImVec2 bboxMin = cachedNodeRects[0].first;
+			ImVec2 bboxMax = { bboxMin.x + cachedNodeRects[0].second.x,
+			                   bboxMin.y + cachedNodeRects[0].second.y };
+			for (const auto& [pos, sz] : cachedNodeRects)
+			{
+				bboxMin.x = std::min(bboxMin.x, pos.x);
+				bboxMin.y = std::min(bboxMin.y, pos.y);
+				bboxMax.x = std::max(bboxMax.x, pos.x + sz.x);
+				bboxMax.y = std::max(bboxMax.y, pos.y + sz.y);
+			}
+			bboxMin.x -= kBBoxPad;  bboxMin.y -= kBBoxPad;
+			bboxMax.x += kBBoxPad;  bboxMax.y += kBBoxPad;
+
+			const float bboxW = bboxMax.x - bboxMin.x;
+			const float bboxH = bboxMax.y - bboxMin.y;
+
+			if (bboxW > 0.0f && bboxH > 0.0f)
+			{
+				const float scale = std::min(kW / bboxW, kH / bboxH);
+
+				ImDrawList* dl      = ImGui::GetWindowDrawList();
+				const ImVec2 origin = ImGui::GetCursorScreenPos();
+
+				auto toScreen = [&](const ImVec2& cp) -> ImVec2 {
+					return { origin.x + (cp.x - bboxMin.x) * scale,
+					         origin.y + (cp.y - bboxMin.y) * scale };
+				};
+
+				for (size_t i = 0; i < cachedNodeRects.size(); ++i)
+				{
+					const ImVec2 p0 = toScreen(cachedNodeRects[i].first);
+					const ImVec2 p1 = toScreen({
+						cachedNodeRects[i].first.x + cachedNodeRects[i].second.x,
+						cachedNodeRects[i].first.y + cachedNodeRects[i].second.y });
+					const ImU32 col = getHeaderColorForElementType(cachedNodeLabels[i]);
+					dl->AddRectFilled(p0, p1, col, 2.0f);
+					dl->AddRect(p0, p1, IM_COL32(255, 255, 255, 60), 2.0f);
+				}
+
+				const ImVec2 vp0 = toScreen(cachedVpMin);
+				const ImVec2 vp1 = toScreen(cachedVpMax);
+				dl->AddRect(vp0, vp1, IM_COL32(255, 255, 255, 200), 2.0f, 0, 1.5f);
+			}
+		}
+		ImGui::End();
 	}
 
 	void NodeGraphWindow::drawWeightHeatmap(ImDrawList* dl, const ImRect rect,

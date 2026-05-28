@@ -9,7 +9,7 @@ namespace dnf_composer
 	namespace element
 	{
 		GaussStimulus2D::GaussStimulus2D(const ElementCommonParameters& elementCommonParameters,
-			const GaussStimulusParameters2D& parameters)
+			const GaussStimulus2DParameters& parameters)
 			: Element(elementCommonParameters), parameters(parameters)
 		{
 			if (parameters.position_x < 0 || parameters.position_x >= elementCommonParameters.dimensionParameters.x_max)
@@ -45,7 +45,7 @@ namespace dnf_composer
 						val = tools::math::gaussian_2d(x, y,
 							parameters.position_x, parameters.position_y,
 							parameters.width, parameters.width, 1.0);
-					components["output"][xi * size_y + yi] = val;
+					components["output"][yi * size_x + xi] = val;
 					sum += val;
 				}
 			}
@@ -95,13 +95,13 @@ namespace dnf_composer
 			return std::make_shared<GaussStimulus2D>(*this);
 		}
 
-		void GaussStimulus2D::setParameters(const GaussStimulusParameters2D& p)
+		void GaussStimulus2D::setParameters(const GaussStimulus2DParameters& p)
 		{
 			parameters = p;
 			init();
 		}
 
-		GaussStimulusParameters2D GaussStimulus2D::getParameters() const
+		GaussStimulus2DParameters GaussStimulus2D::getParameters() const
 		{
 			return parameters;
 		}

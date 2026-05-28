@@ -4,179 +4,378 @@ All examples are in the [`examples/`](../examples/) directory and are built as s
 
 ---
 
-## ex_field_couplings
+## Instability examples
 
-**Source:** `examples/ex_field_couplings.cpp`
-**Executable:** `ex_field_couplings`
+### detection_instability
 
-Demonstrates field-to-field coupling across three neural fields representing different temporal contexts: *past*, *present*, and *next*.
+**Source:** `examples/detection_instability.cpp`
+**Executable:** `example_detection_instability`
 
-**Architecture:**
-- Three `NeuralField` elements, each with its own lateral interaction kernel and Gaussian stimulus
-- Two `FieldCoupling` elements bridging past→present and present→next
-- Heatmap plots for both coupling weight matrices
-
-**Key concepts:** multi-field architectures, field coupling topology, heatmap visualization of weight matrices
-
----
-
-## ex_field_coupling_learning
-
-**Source:** `examples/ex_field_coupling_learning.cpp`
-**Executable:** `ex_field_coupling_learning`
-
-Shows how `FieldCoupling` weights evolve online through co-activation of a source and target field.
-
-**Key concepts:** Hebbian learning, enabling/disabling learning at runtime (`setLearning(true)`), watching weight matrices form over time
-
----
-
-## ex_gauss_and_field_couplings
-
-**Source:** `examples/ex_gauss_and_field_couplings.cpp`
-**Executable:** `ex_gauss_and_field_couplings`
-
-Combines `GaussFieldCoupling` (fixed Gaussian basis) and `FieldCoupling` (learned) in the same architecture.
-
-**Key concepts:** comparing fixed vs. learnable coupling profiles
-
----
-
-## ex_complementary_action_selection
-
-**Source:** `examples/ex_complementary_action_selection.cpp`
-**Executable:** `ex_comp_act_selection`
-
-A classic DNF application: two competing neural fields that implement a winner-take-all (WTA) mechanism. When one field forms a stable bump, it suppresses the other through inhibitory coupling.
-
-**Key concepts:** competitive dynamics, inhibitory field coupling, action selection via DNF
-
----
-
-## ex_asymmetric_gauss_kernel
-
-**Source:** `examples/ex_asymmetric_gauss_kernel.cpp`
-**Executable:** `ex_asymmetric_gauss_kernel`
-
-Demonstrates the `AsymmetricGaussKernel` and its effect on bump dynamics. The asymmetric component (controlled by `timeShift`) introduces directional drift in the activity bump.
-
-**Key concepts:** asymmetric lateral interactions, bump propagation, `timeShift` parameter tuning
-
----
-
-## ex_two_robot_team
-
-**Source:** `examples/ex_two_robot_team.cpp`
-**Executable:** `ex_two_robot_team`
-
-A larger architecture modelling coordination between two robotic agents using DNF. Fields represent spatial locations and task-relevant dimensions; couplings encode the joint-task constraints.
-
-**Key concepts:** multi-agent DNF architectures, spatial encoding, coupling-based coordination
-
----
-
-## ex_grand_architecture
-
-**Source:** `examples/ex_grand_architecture.cpp`
-**Executable:** `ex_grand_architecture`
-
-A large, comprehensive DNF architecture combining many element types across multiple coupled fields. Useful as a stress test and as a template for complex real-world architectures.
-
-**Key concepts:** scaling to many elements, organizing large architectures, performance
-
----
-
-## ex_packaging_task
-
-**Source:** `examples/ex_packaging_task.cpp`
-**Executable:** `ex_packaging_task`
-
-A task-specific simulation modelling a packaging or manipulation scenario using DNF. Fields represent object properties and spatial locations; couplings encode task constraints between them.
-
-**Key concepts:** task-oriented DNF design, domain-specific field architecture
-
----
-
-## ex_cross_dimension_kernels
-
-**Source:** `examples/ex_cross_dimension_kernels.cpp`
-**Executable:** `ex_cross_dimension_kernels`
-
-Demonstrates kernels that couple two neural fields of different spatial dimensions. A cross-dimension kernel projects activity from a source field onto a target field of different size, enabling multi-scale or heterogeneous field architectures.
-
-**Key concepts:** cross-dimension coupling, kernel resampling, multi-scale DNF architectures
-
----
-
-## ex_boost_stimulus
-
-**Source:** `examples/ex_boost_stimulus.cpp`
-**Executable:** `ex_boost_stimulus`
-
-Demonstrates the `BoostStimulus` element as a global gain control mechanism. The boost raises the entire field's resting level, pushing it closer to or above the detection threshold without providing any spatial information.
+Demonstrates the **detection instability**: a localized stimulus drives the neural field above threshold, but once the stimulus is removed the field returns to its resting level. No self-sustained peak forms.
 
 **Architecture:**
-- One `NeuralField` with a `MexicanHatKernel` for lateral interactions
-- One `GaussStimulus` providing a localized spatial input
-- One `BoostStimulus` providing a spatially uniform activation boost
-- `NormalNoise` for sub-threshold fluctuations
+- One `TimedGaussStimulus` — active 0–500 ms (sigma 3.0, amplitude 5.0, position 50)
+- One `NeuralField` with a sub-critical `GaussKernel` (negative global inhibition) and `NormalNoise`
 
-**Key concepts:** global input vs. spatial input, resting-level control, on/off gating with `isActive`, how a boost interacts with detection threshold
+**Key concepts:** detection threshold, transient response, sub-critical lateral interactions, `TimedGaussStimulus`
 
 ---
 
-## ex_memory_trace
+### detection_instability_2d
 
-**Source:** `examples/ex_memory_trace.cpp`
-**Executable:** `ex_memory_trace`
+**Source:** `examples/detection_instability_2d.cpp`
+**Executable:** `example_detection_instability_2d`
 
-Demonstrates the `MemoryTrace` element as a working memory mechanism. A `GaussStimulus` drives the neural field into a self-sustained peak; the stimulus can then be turned off at runtime by setting its amplitude to zero via the element parameter panel. After it is removed, the memory trace retains an excitatory footprint that facilitates re-activation at the same location.
+2D version of the detection instability example on a 100×100 field.
 
 **Architecture:**
-- One `NeuralField` with a `MexicanHatKernel` for lateral interactions and `NormalNoise`
-- One `GaussStimulus` as a transient cue
-- One `MemoryTrace` receiving the field's sigmoid output
-- One `GaussKernel` projecting the memory trace back into the field as weak excitatory input
+- One `TimedGaussStimulus2D` centered at (50, 50) — active 0–500 ms
+- One `NeuralField2D` with `GaussKernel2D` (sub-critical) and `NormalNoise2D`
+- Heatmap plots for field activation and stimulus output
 
-**Key concepts:** dual-timescale learning, working memory through trace feedback, `tauBuild` / `tauDecay` parameter tuning, history-dependent field dynamics
+**Key concepts:** 2D detection dynamics, transient spatial activation
+
+---
+
+### memory_instability
+
+**Source:** `examples/memory_instability.cpp`
+**Executable:** `example_memory_instability`
+
+Demonstrates the **memory instability**: the same timed stimulus drives a peak, but after it switches off the peak **persists** — a self-sustained working-memory representation.
+
+**Architecture:**
+- One `TimedGaussStimulus` — active 0–500 ms (same timing as detection example)
+- One `NeuralField` with a `MexicanHatKernel` (enables self-sustaining recurrent dynamics) and `NormalNoise`
+
+**Key concepts:** working memory, self-sustaining peaks, `MexicanHatKernel` bistability, contrast with detection instability
+
+---
+
+### memory_instability_2d
+
+**Source:** `examples/memory_instability_2d.cpp`
+**Executable:** `example_memory_instability_2d`
+
+2D version of the memory instability example on a 50×50 field.
+
+**Architecture:**
+- One `TimedGaussStimulus2D` centered at (25, 25) — active 0–500 ms
+- One `NeuralField2D` with `MexicanHatKernel2D` and `NormalNoise2D`
+- Heatmap plots for field activation and stimulus output
+
+**Key concepts:** 2D working memory, persistent spatial representation
+
+---
+
+### selection_instability
+
+**Source:** `examples/selection_instability.cpp`
+**Executable:** `example_selection_instability`
+
+Demonstrates the **selection instability**: three equal-amplitude stimuli drive the field simultaneously. Lateral inhibition prevents co-existing peaks — small noise fluctuations break the symmetry and a single winner is selected.
+
+**Architecture:**
+- Three `GaussStimulus` elements at positions 25, 50, and 75
+- One `NeuralField` with a `GaussKernel` (strong lateral inhibition) and `NormalNoise`
+- Line plots for field activation/output/input and all stimulus outputs
+
+**Key concepts:** competitive dynamics, winner-take-all selection, symmetry breaking via noise, lateral inhibition
+
+---
+
+### selection_instability_2d
+
+**Source:** `examples/selection_instability_2d.cpp`
+**Executable:** `example_selection_instability_2d`
+
+2D version of the selection instability example on a 100×100 field.
+
+**Architecture:**
+- Three `GaussStimulus2D` elements at (25, 25), (50, 50), and (75, 75)
+- One `NeuralField2D` with `GaussKernel2D` and `NormalNoise2D`
+- Heatmap plots for field activation and each stimulus
+
+**Key concepts:** 2D winner-take-all selection, spatial competition
+
+---
+
+## Boost examples
+
+### boost_detection
+
+**Source:** `examples/boost_detection.cpp`
+**Executable:** `example_boost_detection`
+
+Demonstrates how a spatially uniform `BoostStimulus` can raise the field's global operating point, increasing its sensitivity to a localized input stimulus.
+
+**Architecture:**
+- One `BoostStimulus` providing spatially uniform drive
+- One `GaussStimulus` providing a localized spatial cue
+- One `NeuralField` with a `MexicanHatKernel` and `CorrelatedNormalNoise`
+
+**Key concepts:** global vs. spatial input, detection threshold control, `BoostStimulus`, sensitivity modulation
+
+---
+
+### boost_detection_2d
+
+**Source:** `examples/boost_detection_2d.cpp`
+**Executable:** `example_boost_detection_2d`
+
+2D version of the boost detection example on a 50×50 field with temporally gated stimuli.
+
+**Architecture:**
+- One `BoostStimulus2D` (uniform drive)
+- One `TimedGaussStimulus2D` active during 0–500 ms and 800–1200 ms
+- One `NeuralField2D` with `GaussKernel2D`
+- Heatmap plots for field activation, boost, and timed stimulus
+
+**Key concepts:** 2D boost dynamics, temporally gated stimuli, repeated detection
+
+---
+
+## Memory trace examples
+
+### memory_trace
+
+**Source:** `examples/memory_trace.cpp`
+**Executable:** `example_memory_trace`
+
+Demonstrates the `MemoryTrace` element as a working-memory mechanism. A timed stimulus drives a self-sustained peak; the memory trace captures the field's sigmoid output and feeds it back via a slow `GaussKernel`, maintaining an excitatory footprint that facilitates re-activation at the same location.
+
+**Architecture:**
+- One `TimedGaussStimulus` — active 0–500 ms (sigma 12.0, amplitude 5.0, position 50)
+- One `NeuralField` with a `MexicanHatKernel` and `NormalNoise`
+- One `MemoryTrace` monitoring the field's output, projecting back via a `GaussKernel`
+
+**Key concepts:** dual-timescale dynamics, `MemoryTrace`, `tauBuild` / `tauDecay` tuning, history-dependent field state
+
+---
+
+### memory_trace_2d
+
+**Source:** `examples/memory_trace_2d.cpp`
+**Executable:** `example_memory_trace_2d`
+
+2D version of the memory trace example on a 50×50 field.
+
+**Architecture:**
+- One `TimedGaussStimulus2D` centered at (12, 12) — active 0–500 ms
+- One `NeuralField2D` with `MexicanHatKernel2D` and `NormalNoise2D`
+- One `MemoryTrace2D` feeding back via `GaussKernel2D`
+- Heatmap plots for field activation, stimulus, and memory trace output
+
+**Key concepts:** 2D working memory via trace feedback, spatial history encoding
+
+---
+
+## Learning examples
+
+### hebbian_learning
+
+**Source:** `examples/hebbian_learning.cpp`
+**Executable:** `example_hebbian_learning`
+
+Demonstrates online Hebbian (multiplicative) learning between two neural fields via a `FieldCoupling` element. Both fields are driven simultaneously to co-activate patterns; after a fixed number of iterations the learning is disabled and the association is read out.
+
+**Architecture:**
+- Source field (200 units): `NeuralField` + `MexicanHatKernel` + `NormalNoise` + `GaussStimulus`
+- Output field (400 units): `NeuralField` + `GaussKernel` + `NormalNoise` + two `GaussStimulus` elements
+- One `FieldCoupling` (200→400) with Hebbian learning rule
+- Heatmap of the 400×200 learned weight matrix
+
+**Key concepts:** Hebbian learning, `FieldCoupling`, online weight formation, enabling/disabling learning at runtime
+
+---
+
+## Movement examples
+
+### travelling_bump
+
+**Source:** `examples/travelling_bump.cpp`
+**Executable:** `example_travelling_bump`
+
+Demonstrates a traveling bump: the `AsymmetricGaussKernel` introduces a directional bias into the lateral interactions, causing a stable activity peak to drift continuously across the field after it is initialized by a transient stimulus.
+
+**Architecture:**
+- One `TimedGaussStimulus` — active 0–500 ms (sigma 15.0, amplitude 5.0, position 50)
+- One `NeuralField` with an `AsymmetricGaussKernel` (asymmetry 1.0) and `NormalNoise`
+- Line plots for field activation, kernel shape, and kernel output
+
+**Key concepts:** asymmetric lateral interactions, bump propagation, movement generation, `timeShift` parameter
+
+---
+
+### travelling_bump_2d
+
+**Source:** `examples/travelling_bump_2d.cpp`
+**Executable:** `example_travelling_bump_2d`
+
+2D version of the travelling bump example on a 50×50 field.
+
+**Architecture:**
+- One `TimedGaussStimulus2D` centered at (25, 25) — active 0–1000 ms
+- One `NeuralField2D` with an `AsymmetricGaussKernel2D` and `NormalNoise2D`
+- Heatmap plots for field activation, kernel shape, and kernel output
+
+**Key concepts:** 2D traveling bump, directional wave propagation
+
+---
+
+## Multi-peak examples
+
+### multi_peak
+
+**Source:** `examples/multi_peak.cpp`
+**Executable:** `example_multi_peak`
+
+Demonstrates that multiple stable activity peaks can co-exist in the same field. The `OscillatoryKernel` (damped-cosine profile) provides local excitation flanked by inhibitory rings, allowing several bumps to stabilize simultaneously when driven by spatially separated stimuli.
+
+**Architecture:**
+- Three `GaussStimulus` elements at positions 25, 50, and 75
+- One `NeuralField` with an `OscillatoryKernel` and `NormalNoise`
+- Line plots for field activation/output/input and stimulus outputs
+
+**Key concepts:** oscillatory kernel, multi-stability, co-existing activity peaks, damped-cosine lateral interactions
+
+---
+
+### multi_peak_2d
+
+**Source:** `examples/multi_peak_2d.cpp`
+**Executable:** `example_multi_peak_2d`
+
+2D version of the multi-peak example on a 50×50 field.
+
+**Architecture:**
+- Three `GaussStimulus2D` elements at (15, 15), (35, 35), and (15, 35)
+- One `NeuralField2D` with an `OscillatoryKernel2D` (normalized, circular) and `NormalNoise2D`
+- Heatmap plots for field activation and each stimulus
+
+**Key concepts:** 2D multi-peak dynamics, spatial multi-stability
+
+---
+
+## Field coupling examples
+
+### weighted_field_coupling
+
+**Source:** `examples/weighted_field_coupling.cpp`
+**Executable:** `example_weighted_field_coupling`
+
+Demonstrates associative sequence memory across three coupled neural fields representing temporal contexts: *past*, *present*, and *next*. Two `FieldCoupling` elements bridge adjacent fields; their weight matrices encode the learned spatial associations.
+
+**Architecture:**
+- Three `NeuralField` elements, each with its own lateral interaction kernel, `GaussStimulus`, and `NormalNoise`
+- Two `FieldCoupling` elements: past→present and present→next
+- Heatmap plots of both weight matrices
+
+**Key concepts:** multi-field architectures, sequence memory, `FieldCoupling` topology, weight heatmaps
+
+---
+
+### gaussian_field_coupling
+
+**Source:** `examples/gaussian_field_coupling.cpp`
+**Executable:** `example_gaussian_field_coupling`
+
+Demonstrates `GaussFieldCoupling` — a fixed (non-learnable) coupling using a Gaussian basis — to project activity from a larger input field onto a smaller output field with different spatial resolution.
+
+**Architecture:**
+- Input field (200 pts, dx=0.5): `NeuralField` + `GaussKernel` + `GaussStimulus` + `NormalNoise`
+- Output field (100 pts, dx=1.0): `NeuralField` + `MexicanHatKernel` + `NormalNoise`
+- One `GaussFieldCoupling` with 3 fixed Gaussian connections: input positions {25, 50, 75} → output positions {25, 50, 75}, sigma 5.0
+- Plots: input field line plot, output field line plot, coupling weight heatmap, coupling output line plot
+
+**Key concepts:** fixed-basis inter-field projection, `GaussFieldCoupling`, heterogeneous field sizes and spacings
+
+> **Note:** The CMakeLists entry for this example is commented out by default. Uncomment `example_gaussian_field_coupling` in `examples/CMakeLists.txt` to build it.
 
 ---
 
 ## Common pattern
 
-Every example follows this structure:
+Every example follows the same seven-step skeleton. Two construction styles are available for step 3.
+
+### Direct construction (`std::make_shared`)
+
+Used by all current examples. Type-safe and IDE-friendly — parameters are checked at compile time.
 
 ```cpp
 // 1. Simulation + visualization + app
-auto simulation    = std::make_shared<Simulation>("name", deltaT);
-auto visualization = std::make_shared<Visualization>(simulation);
-Application app{ simulation, visualization };
+auto sim = std::make_shared<Simulation>("name", deltaT);
+auto viz = std::make_shared<Visualization>(sim);
+Application app{ sim, viz };
 
 // 2. Windows
 app.addWindow<user_interface::MainMenuBar>();
-app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
+app.addWindow<user_interface::StaticLayoutWindow>(sim, viz);
 
-// 3. Elements
-ElementFactory factory;
-auto field  = factory.createElement(NEURAL_FIELD, commonParams, fieldParams);
-auto kernel = factory.createElement(MEXICAN_HAT_KERNEL, commonParams, kernelParams);
-// ...
+// 3. Elements — direct construction
+const element::ElementDimensions dims{ 100, 1.0 };
+
+const auto nf_cp = element::ElementCommonParameters{ "field", dims };
+const auto nf    = std::make_shared<element::NeuralField>(nf_cp, element::NeuralFieldParameters{});
+
+const auto gk_cp = element::ElementCommonParameters{ "kernel", dims };
+const auto gk    = std::make_shared<element::GaussKernel>(gk_cp, element::GaussKernelParameters{});
 
 // 4. Register
-simulation->addElement(field);
-simulation->addElement(kernel);
+sim->addElement(nf);
+sim->addElement(gk);
 
 // 5. Wire
-field->addInput(kernel);
-kernel->addInput(field);
+nf->addInput(gk);
+gk->addInput(nf);
 
 // 6. Plots
-visualization->plot(commonPlotParams, LinePlotParameters{},
-    { { field->getUniqueName(), "activation" } });
+viz->plot({ { nf->getUniqueName(), "activation" } });
 
 // 7. Loop
 app.init();
 while (!app.hasGUIBeenClosed())
     app.step();
 app.close();
+```
+
+### Factory construction (`ElementFactory`)
+
+`ElementFactory` creates any registered element from its `ElementLabel` enum, returning a base `Element` pointer. Useful when element types are selected at runtime or loaded from configuration.
+
+```cpp
+#include "elements/element_factory.h"
+
+using namespace dnf_composer::element;
+
+// 3. Elements — via factory
+const ElementDimensions dims{ 100, 1.0 };
+ElementFactory factory;
+
+auto nf = factory.createElement(
+    ElementLabel::NEURAL_FIELD,
+    ElementCommonParameters{ "field", dims },
+    NeuralFieldParameters{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } });
+
+auto gk = factory.createElement(
+    ElementLabel::GAUSS_KERNEL,
+    ElementCommonParameters{ "kernel", dims },
+    GaussKernelParameters{ 3.0, 3.0, -0.01 });
+
+// Steps 4–7 are identical to the direct-construction pattern above.
+sim->addElement(nf);
+sim->addElement(gk);
+nf->addInput(gk);
+gk->addInput(nf);
+viz->plot({ { nf->getUniqueName(), "activation" } });
+app.init();
+while (!app.hasGUIBeenClosed())
+    app.step();
+app.close();
+```
+
+For elements that have only default parameters, a shorter overload is available:
+
+```cpp
+auto nf = factory.createElement(ElementLabel::NEURAL_FIELD);
 ```

@@ -3,6 +3,7 @@
 #include "user_interface/widgets.h"
 
 #include "application/application.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_LightMediumFont;
 extern ImFont* g_MediumMediumFont;
@@ -29,21 +30,17 @@ namespace dnf_composer::user_interface::widgets
 		}
 	}
 
-	bool renderSidebarTab(const char* icon, const char* label, bool selected)
+	bool renderSidebarTab(const char* icon, const char* /*label*/, bool selected)
 	{
 		ImGuiWindow* window = ImGui::GetCurrentWindow();
 		if (window->SkipItems) return false;
 
-		const ImGuiID id = window->GetID(std::string(icon + std::string(label)).c_str());
+		const ImGuiID id = window->GetID(icon);
 
-		//  Layout (scaled by current font size so it looks good at any DPI)
-		constexpr float line_h    = 30.0f;                  // row height
-		constexpr float pad_x     = 10.0f;                  // left padding
-		constexpr float icon_box  = 28.0f;                  // width reserved for icon
-		constexpr float gap_x     = 12.0f;                  // gap between icon and label
-		constexpr float total_w   = pad_x + icon_box + gap_x + 110.0f; // item width
+		constexpr float line_h  = 48.0f;  // row height — more vertical breathing room
+		constexpr float total_w = 52.0f;  // icon-only strip width
 
-		const ImVec2 pos  = window->DC.CursorPos;
+		const ImVec2 pos = window->DC.CursorPos;
 		const ImRect bb(pos, ImVec2(pos.x + total_w, pos.y + line_h));
 		ImGui::ItemSize(ImVec2(total_w, line_h), 0);
 		if (!ImGui::ItemAdd(bb, id)) return false;
@@ -58,24 +55,21 @@ namespace dnf_composer::user_interface::widgets
 		const ImGuiIO& io = ImGui::GetIO();
 		float& a_hover = hover_animation[id];
 		float& a_fill  = filled_animation[id]; // drives the left bar
-		float& a_mix   = fill_animation[id];   // drives text/icon color
+		float& a_mix   = fill_animation[id];   // drives icon color
 		a_hover = ImClamp(a_hover + (0.20f * io.DeltaTime * (hovered || ImGui::IsItemActive() ? 1.f : -1.f)), 0.0f, 0.15f);
-		// IMPORTANT: no lower-bound to hover — let it reach 0 when not selected
 		a_fill  = ImClamp(a_fill  + (2.55f * io.DeltaTime * (selected ? 1.f : -1.f)), 0.0f, 1.0f);
 		a_mix   = ImClamp(a_mix   + (1.75f * io.DeltaTime * (selected ? 1.f : -1.f)), 0.0f, 1.0f);
 
-		const ImVec4 text_sel  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight); // pure accent from theme
-		const ImVec4 text_uns  = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
-
+		const ImVec4 text_sel = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+		const ImVec4 text_uns = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
 		const ImVec4 icon_col = ImLerp(text_uns, text_sel, a_fill);
-		const ImVec4 text_col = ImLerp(text_uns, text_sel, a_fill);
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
 
 		if (a_fill > 0.001f)
 		{
 			ImVec4 a = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
-			a.w = a_fill; // keep dynamic alpha
+			a.w = a_fill;
 			const ImU32 col = ImGui::GetColorU32(a);
 			dl->AddRectFilled(
 				ImVec2(bb.Min.x, bb.Min.y),
@@ -83,30 +77,19 @@ namespace dnf_composer::user_interface::widgets
 				col, 7.0f);
 		}
 
-		// lamba to a center text vertically within a bounding box
 		auto centerTextY = [](const ImFont* font, const float y0, const float h) -> float
 		{
-			// in ImGui 1.92+: Ascent/Descent live on ImFontBaked, not ImFont
 			if (!font) return y0;
-			ImFontBaked* baked = const_cast<ImFont*>(font)->GetFontBaked(font->LegacySize);
+			const ImFontBaked* baked = const_cast<ImFont*>(font)->GetFontBaked(font->LegacySize);
 			const float text_h = baked ? (baked->Ascent - baked->Descent) : font->LegacySize;
 			return y0 + (h - text_h) * 0.5f;
 		};
 
-		// Icon: center using icon font metrics
-		ImGui::PushFont(g_MediumIconsFont);
-		const float icon_y = centerTextY(g_MediumIconsFont, bb.Min.y, line_h);
-		// center icon within its reserved box horizontally
+		ImGui::PushFont(g_LargeIconsFont);
+		const float icon_y = centerTextY(g_LargeIconsFont, bb.Min.y, line_h);
 		const ImVec2 icon_size = ImGui::CalcTextSize(icon);
-		const float icon_x = bb.Min.x + pad_x + (icon_box - icon_size.x) * 0.5f;
+		const float icon_x = window->Pos.x + (window->Size.x - icon_size.x) * 0.5f;
 		dl->AddText(ImVec2(icon_x, icon_y), ImColor(icon_col), icon);
-		ImGui::PopFont();
-
-		// Label: center using label font metrics
-		ImGui::PushFont(g_MediumMediumFont);
-		const float text_y = centerTextY(g_MediumMediumFont, bb.Min.y, line_h);
-		const float text_x = bb.Min.x + pad_x + icon_box + gap_x;
-		dl->AddText(ImVec2(text_x, text_y), ImColor(text_col), label);
 		ImGui::PopFont();
 
 		return pressed;

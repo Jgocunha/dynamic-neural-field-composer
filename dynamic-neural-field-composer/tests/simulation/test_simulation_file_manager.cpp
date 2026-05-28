@@ -1112,7 +1112,7 @@ TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes2D)
     // 2D stimuli
     simA->addElement(std::make_shared<GaussStimulus2D>(
         ElementCommonParameters{ "gs2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
-        GaussStimulusParameters2D{ 3.0, 10.0, 10.0, 10.0, true, false }));
+        GaussStimulus2DParameters{ 3.0, 10.0, 10.0, 10.0, true, false }));
     simA->addElement(std::make_shared<BoostStimulus2D>(
         ElementCommonParameters{ "bs2d 1", ElementDimensions(20, 20, 1.0, 1.0) },
         BoostStimulus2DParameters{ 5.0, true }));

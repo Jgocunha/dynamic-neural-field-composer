@@ -719,7 +719,7 @@ namespace dnf_composer
 
             auto gs = std::make_shared<element::GaussStimulus2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
-                element::GaussStimulusParameters2D(width, amplitude, position_x, position_y, circular, normalized)
+                element::GaussStimulus2DParameters(width, amplitude, position_x, position_y, circular, normalized)
             );
             simulation->addElement(gs);
         }

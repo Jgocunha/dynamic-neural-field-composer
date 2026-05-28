@@ -93,7 +93,7 @@ namespace dnf_composer
 
 			elementCreators[ElementLabel::GAUSS_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const GaussStimulusParameters2D*>(&elementSpecificParameters);
+					const auto params = dynamic_cast<const GaussStimulus2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<GaussStimulus2D>(elementCommonParameters, *params);
 				};
 
@@ -205,7 +205,7 @@ namespace dnf_composer
 					case ElementLabel::NEURAL_FIELD_2D:
 						return creator->second(ElementCommonParameters(type), NeuralField2DParameters());
 					case ElementLabel::GAUSS_STIMULUS_2D:
-						return creator->second(ElementCommonParameters(type), GaussStimulusParameters2D());
+						return creator->second(ElementCommonParameters(type), GaussStimulus2DParameters());
 					case ElementLabel::GAUSS_KERNEL_2D:
 						return creator->second(ElementCommonParameters(type), GaussKernel2DParameters());
 					case ElementLabel::MEXICAN_HAT_KERNEL_2D:

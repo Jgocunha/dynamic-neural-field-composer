@@ -113,3 +113,17 @@ TEST(CorrelatedNormalNoise2D, ToStringIsNonEmpty)
     const auto n = makeCNN("cnn2d");
     EXPECT_FALSE(n->toString().empty());
 }
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(CorrelatedNormalNoise2DEdgeCases, OutputNoNaNOrInfAfterMultipleSteps)
+{
+    const auto n = makeCNN("cnn2d", 0.05, 2.0, true, 10, 10);
+    n->init();
+    for (int i = 0; i < 10; ++i)
+        n->step(static_cast<double>(i), 1.0);
+    for (double v : n->getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
+}

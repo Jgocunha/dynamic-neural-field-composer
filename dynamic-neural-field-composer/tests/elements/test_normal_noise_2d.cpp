@@ -97,3 +97,17 @@ TEST(NormalNoise2DToString, NonEmpty)
     const auto n = makeNoise("nn2d");
     EXPECT_FALSE(n->toString().empty());
 }
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(NormalNoise2DEdgeCases, OutputNoNaNOrInfAfterMultipleSteps)
+{
+    const auto n = makeNoise("nn2d", 0.2, 10, 10);
+    n->init();
+    for (int i = 0; i < 10; ++i)
+        n->step(static_cast<double>(i), 1.0);
+    for (double v : n->getComponent("output"))
+        EXPECT_TRUE(std::isfinite(v));
+}

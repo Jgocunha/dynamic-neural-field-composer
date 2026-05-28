@@ -136,6 +136,17 @@ namespace dnf_composer::user_interface
 		// Node graph panel bounds (updated every frame) for plot card clamping.
 		mutable ImVec2 ngBoundsMin;
 		mutable ImVec2 ngBoundsMax;
+
+		// Mini-map cache (filled each frame inside Begin/End while editor context is active).
+		mutable std::vector<std::pair<ImVec2, ImVec2>> cachedNodeRects;
+		mutable std::vector<element::ElementLabel>     cachedNodeLabels;
+		mutable std::vector<size_t>                    cachedNodeIds;
+		mutable ImVec2                                 cachedVpMin{};
+		mutable ImVec2                                 cachedVpMax{};
+
+		// Overlap prevention: baseline positions and drag-start positions for snap-on-drop.
+		mutable std::unordered_map<size_t, ImVec2> prevNodePositions;
+		mutable std::unordered_map<size_t, ImVec2> dragStartPositions;
 	public:
 		explicit NodeGraphWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -176,5 +187,7 @@ namespace dnf_composer::user_interface
 			const std::shared_ptr<element::Element>& element, bool isWM = false);
 		static void renderPlotCardContent(const std::shared_ptr<element::Element>& element, PlotCardState& state,
 			bool isWM, bool is2DField);
+		void renderNavigationControls(ImVec2 winPos, ImVec2 winSize) const;
+		void renderMiniMap(ImVec2 winPos, ImVec2 winSize) const;
 	};
 }

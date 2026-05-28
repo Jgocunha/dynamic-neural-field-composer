@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <algorithm>
+#include <cmath>
 
 #include "elements/neural_field_2d.h"
+#include "elements/gauss_stimulus_2d.h"
 #include "exceptions/exception.h"
 
 using namespace dnf_composer;
@@ -119,4 +121,61 @@ TEST(NeuralField2DToString, NonEmpty)
 {
     NeuralField2D nf(makeCP("nf"), makeNFP());
     EXPECT_FALSE(nf.toString().empty());
+}
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+TEST(NeuralField2DEdgeCases, ActivationRemainsFiniteAfterManySteps)
+{
+    NeuralField2D nf(makeCP("nf", 4, 4), makeNFP(25.0, -5.0));
+    nf.init();
+    for (int i = 0; i < 200; ++i)
+        nf.step(static_cast<double>(i), 1.0);
+    for (double v : nf.getComponent("activation"))
+        EXPECT_TRUE(std::isfinite(v));
+}
+
+TEST(NeuralField2DStep, BumpCentroidNearStimulusPosition)
+{
+    // Drive a neural field with a strong localized stimulus at a known position.
+    // After convergence the activation peak (and bump centroid) must be near
+    // (position_x, position_y) — this validates y-major storage end-to-end.
+    constexpr int   sz   = 30;
+    constexpr double px  = 15.0;
+    constexpr double py  = 20.0;
+
+    auto stim = std::make_shared<GaussStimulus2D>(
+        ElementCommonParameters{"stim", ElementDimensions(sz, sz, 1.0, 1.0)},
+        GaussStimulus2DParameters{2.0, 20.0, px, py, false, false});
+    stim->init();
+
+    auto nf = std::make_shared<NeuralField2D>(
+        ElementCommonParameters{"nf", ElementDimensions(sz, sz, 1.0, 1.0)},
+        NeuralField2DParameters{10.0, -5.0, SigmoidFunction(0.0, 10.0)});
+    nf->addInput(stim);
+    nf->init();
+
+    for (int i = 0; i < 200; ++i)
+        nf->step(static_cast<double>(i), 1.0);
+
+    // Activation peak should be at the stimulus location in y-major index space:
+    // index = yi * size_x + xi  where xi=(px-1), yi=(py-1)
+    const auto act = nf->getComponent("activation");
+    const int peakIdx = static_cast<int>(std::ranges::max_element(act) - act.begin());
+    const int xi = peakIdx % sz;
+    const int yi = peakIdx / sz;
+    EXPECT_NEAR((xi + 1) * 1.0, px, 2.0);
+    EXPECT_NEAR((yi + 1) * 1.0, py, 2.0);
+}
+
+TEST(NeuralField2DEdgeCases, HighRestingLevelRemainsFinite)
+{
+    NeuralField2D nf(makeCP("nf", 4, 4), makeNFP(25.0, 10.0));
+    nf.init();
+    for (int i = 0; i < 100; ++i)
+        nf.step(static_cast<double>(i), 1.0);
+    for (double v : nf.getComponent("activation"))
+        EXPECT_TRUE(std::isfinite(v));
 }

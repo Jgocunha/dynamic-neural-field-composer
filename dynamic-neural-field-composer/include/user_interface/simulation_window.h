@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include <algorithm>
@@ -9,8 +9,11 @@
 #include "elements/element_factory.h"
 #include "application/application.h"
 #include "user_interface/widgets.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_BlackLargeFont;
+extern ImFont* g_BlackMediumFont;
+extern ImFont* g_MediumIconsFont;
 
 enum CharSize : size_t
 {
@@ -23,7 +26,7 @@ namespace dnf_composer::user_interface
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
-		mutable double editableDt_;
+		static int activePane;
 	public:
 		explicit SimulationWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -33,47 +36,40 @@ namespace dnf_composer::user_interface
 		SimulationWindow& operator=(SimulationWindow&&) = delete;
 
 		void render() override;
-		void renderSimulationParametersCard() const;
-		void renderSimulationControlsCard() const;
-		void renderRunForIterationsCard() const;
+		void renderSidebarContents() const;
 		void renderAddElementCard() const;
 		void renderRemoveElementCard() const;
 		void renderSetInteractionCard() const;
 		void renderExportElementComponentCard() const;
 		void renderLogElementParametersCard() const;
+		void renderMonitoringCard() const;
 		~SimulationWindow() override = default;
 	private:
-		void renderPanelContents() const;
-		void renderSimulationControlButtons() const;
-		void renderSimulationProperties() const;
-		void renderAddElement() const;
-		void renderSetInteraction() const;
-		void renderRemoveElement() const;
-		void renderElementProperties(const std::pair<int, std::string>& elementId) const;
-		void renderLogElementProperties() const;
-		void renderExportElementComponents() const;
-
-		// unfortunately, these functions need to be here like this
-		//                .=-.-.   _ __
-		//    .-.,.---.  /==/_ /.-`.' ,`.
-		//   /==/  `   \|==|, |/==/, -   \
-		//  |==|-, .=., |==|  |==| _ .=. |
-		//  |==|   '='  /==|- |==| , '=',|
-		//  |==|- ,   .'|==| ,|==|-  '..'
-		//  |==|_  . ,'.|==|- |==|,  |
-		//  /==/  /\ ,  )==/. /==/ - |
-		//  `--`-`--`--'`--`-``--`---'
-		void addElementNeuralField() const;
-		void addElementGaussStimulus() const;
-		void addElementTimedGaussStimulus() const;
-		void addElementTimedGaussStimulus2D() const;
-		void addElementBoostStimulus2D() const;
-		void addElementFieldCoupling() const;
-		void addElementGaussKernel() const;
-		void addElementMexicanHatKernel() const;
-		void addElementNormalNoise() const;
-		void addElementCorrelatedNormalNoise() const;
-		void addElementGaussFieldCoupling() const;
+		static void drawIconStrip();
+		static void renderContentPaneTitle();
+		void addElementNeuralField(const char* id, bool addRequested) const;
+		void addElementGaussStimulus(char* id, bool addRequested) const;
+		void addElementTimedGaussStimulus(char* id, bool addRequested) const;
+		void addElementTimedGaussStimulus2D(char* id, bool addRequested) const;
+		void addElementGaussKernel(char* id, bool addRequested) const;
+		void addElementMexicanHatKernel(char* id, bool addRequested) const;
+		void addElementOscillatoryKernel(char* id, bool addRequested) const;
+		void addElementAsymmetricGaussKernel(char* id, bool addRequested) const;
+		void addElementNormalNoise(char* id, bool addRequested) const;
+		void addElementCorrelatedNormalNoise(char* id, bool addRequested) const;
+		void addElementFieldCoupling(char* id, bool addRequested) const;
+		void addElementGaussFieldCoupling(char* id, bool addRequested) const;
+		void addElementBoostStimulus(char* id, bool addRequested) const;
+		void addElementMemoryTrace(char* id, bool addRequested) const;
+		void addElementNeuralField2D(char* id, bool addRequested) const;
+		void addElementGaussStimulus2D(char* id, bool addRequested) const;
+		void addElementGaussKernel2D(char* id, bool addRequested) const;
+		void addElementMexicanHatKernel2D(char* id, bool addRequested) const;
+		void addElementNormalNoise2D(char* id, bool addRequested) const;
+		void addElementOscillatoryKernel2D(char* id, bool addRequested) const;
+		void addElementAsymmetricGaussKernel2D(char* id, bool addRequested) const;
+		void addElementBoostStimulus2D(char* id, bool addRequested) const;
+		void addElementCorrelatedNormalNoise2D(char* id, bool addRequested) const;
+		void addElementMemoryTrace2D(char* id, bool addRequested) const;
 	};
 }
-

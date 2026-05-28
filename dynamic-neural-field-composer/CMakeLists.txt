@@ -99,13 +99,6 @@ set(elements_headers
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
-#"include/element_parameters/field_coupling_parameters.h"
-##"include/element_parameters/gauss_field_coupling_parameters.h"
-#"include/element_parameters/gauss_kernel_parameters.h"
-#"include/element_parameters/gauss_stimulus_parameters.h"
-#"include/element_parameters/mexican_hat_kernel_parameters.h"
-#"include/element_parameters/neural_field_parameters.h"
-#"include/element_parameters/normal_noise_parameters.h"
 )
 
 set(tools_headers
@@ -128,12 +121,17 @@ set(user_interface_headers
         "include/user_interface/widgets.h"
         "include/user_interface/plots_window.h"
         "include/user_interface/log_window.h"
-        "include/user_interface/fonts/IconsFontAwesome6.h"
-        "include/user_interface/fonts/fa.h"
-        "include/user_interface/static_layout_window.h"
+        "include/user_interface/help_window.h"
+        "include/user_interface/static_layout.h"
+        "include/user_interface/status_bar_window.h"
+        "include/user_interface/control_bar_window.h"
+
         "include/user_interface/node_utilities/builders.h"
         "include/user_interface/node_utilities/drawing.h"
         "include/user_interface/node_utilities/node_widgets.h"
+
+        "include/user_interface/fonts/IconsFontAwesome6.h"
+        "include/user_interface/fonts/fa.h"
 )
 
 set(header 
@@ -151,6 +149,7 @@ set(header
 # Set source files
 set(src 
         "src/application/application.cpp"
+        "src/application/style.cpp"
 
         "src/simulation/simulation.cpp"
         "src/simulation/simulation_file_manager.cpp"
@@ -191,14 +190,6 @@ set(src
         "src/elements/memory_trace_2d.cpp"
 
         "src/element_parameters/element_parameters.cpp"
-#"src/element_parameters/field_coupling_parameters.cpp"
-##"include/element_parameters/gauss_field_coupling_parameters.h"
-#"src/element_parameters/gauss_kernel_parameters.cpp"
-#"src/element_parameters/gauss_stimulus_parameters.cpp"
-#"src/element_parameters/lateral_interactions_parameters.cpp"
-#"src/element_parameters/mexican_hat_kernel_parameters.cpp"
-#"src/element_parameters/neural_field_parameters.cpp"
-#"src/element_parameters/normal_noise_parameters.cpp"
 
         "src/tools/math.cpp"
         "src/tools/profiling.cpp"
@@ -216,7 +207,11 @@ set(src
         "src/user_interface/widgets.cpp"
         "src/user_interface/plots_window.cpp"
         "src/user_interface/log_window.cpp"
-        "src/user_interface/static_layout_window.cpp"
+        "src/user_interface/help_window.cpp"
+        "src/user_interface/static_layout.cpp"
+        "src/user_interface/status_bar_window.cpp"
+        "src/user_interface/control_bar_window.cpp"
+
         "src/user_interface/node_utilities/builders.cpp"
         "src/user_interface/node_utilities/drawing.cpp"
         "src/user_interface/node_utilities/node_widgets.cpp"
@@ -249,6 +244,10 @@ find_package(OpenGL REQUIRED)
 # Setup imgui-platform-kit
 find_package(imgui-platform-kit REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui-platform-kit)
+
+if(WIN32)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE psapi)
+endif()
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
     DNF_COMPOSER=1
@@ -332,32 +331,10 @@ if(WIN32)
 endif()
 install(TARGETS ${LAUNCHER} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
 
-# Function to add example executables
-function(add_example_executable target_name source_file)
-    add_executable(${target_name} "examples/${source_file}" ${DNF_ICON_RC})
-    target_include_directories(${target_name} PRIVATE include)
-    target_link_libraries(${target_name} PRIVATE
-            imgui::imgui
-            imgui-platform-kit
-            ${CMAKE_PROJECT_NAME})
-    install(TARGETS ${target_name} RUNTIME DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
-endfunction()
-
-# Define all examples
-add_example_executable(ex_comp_act_selection ex_complementary_action_selection.cpp)
-add_example_executable(ex_asymmetric_gauss_kernel ex_asymmetric_gauss_kernel.cpp)
-add_example_executable(ex_two_robot_team ex_two_robot_team.cpp)
-add_example_executable(ex_field_couplings ex_field_couplings.cpp)
-add_example_executable(ex_gauss_and_field_couplings ex_gauss_and_field_couplings.cpp)
-add_example_executable(ex_field_coupling_learning ex_field_coupling_learning.cpp)
-add_example_executable(ex_boost_stimulus ex_boost_stimulus.cpp)
-add_example_executable(ex_memory_trace ex_memory_trace.cpp)
-add_example_executable(ex_neural_field_2d ex_neural_field_2d.cpp)
-add_example_executable(ex_oscillatory_kernel_2d ex_oscillatory_kernel_2d.cpp)
-add_example_executable(ex_timed_gauss_stimulus ex_timed_gauss_stimulus.cpp)
-add_example_executable(ex_timed_gauss_stimulus_2d ex_timed_gauss_stimulus_2d.cpp)
-add_example_executable(ex_boost_stimulus_2d ex_boost_stimulus_2d.cpp)
-add_example_executable(ex_competitive_selection ex_competitive_selection.cpp)
+# Examples
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/examples/CMakeLists.txt")
+    add_subdirectory(examples)
+endif()
 
 # Documentation (Doxygen)
 configure_file(
@@ -375,60 +352,8 @@ if(DOXYGEN_FOUND)
     )
 endif()
 
-# Tests (GTest)
-option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
-if(DNF_COMPOSER_BUILD_TESTS)
-    find_package(GTest CONFIG REQUIRED)
-    enable_testing()
-
-    add_executable(dnf_composer_tests
-            # elements
-            "tests/elements/test_activation_function.cpp"
-            "tests/elements/test_element.cpp"
-            "tests/elements/test_element_factory.cpp"
-            "tests/elements/test_field_coupling.cpp"
-            "tests/elements/test_gauss_field_coupling.cpp"
-            "tests/elements/test_gauss_stimulus.cpp"
-            "tests/elements/test_kernels.cpp"
-            "tests/elements/test_neural_field.cpp"
-            "tests/elements/test_normal_noise.cpp"
-            "tests/elements/test_correlated_normal_noise.cpp"
-            "tests/elements/test_boost_stimulus.cpp"
-            "tests/elements/test_memory_trace.cpp"
-            "tests/elements/test_neural_field_2d.cpp"
-            "tests/elements/test_gauss_stimulus_2d.cpp"
-            "tests/elements/test_gauss_kernel_2d.cpp"
-            "tests/elements/test_oscillatory_kernel_2d.cpp"
-            "tests/elements/test_timed_gauss_stimulus.cpp"
-            "tests/elements/test_timed_gauss_stimulus_2d.cpp"
-            "tests/elements/test_boost_stimulus_2d.cpp"
-            "tests/elements/test_normal_noise_2d.cpp"
-            "tests/elements/test_correlated_normal_noise_2d.cpp"
-            "tests/elements/test_asymmetric_gauss_kernel_2d.cpp"
-            "tests/elements/test_memory_trace_2d.cpp"
-            "tests/elements/test_change_dimensions.cpp"
-            # simulation
-            "tests/simulation/test_simulation.cpp"
-            "tests/simulation/test_simulation_extended.cpp"
-            "tests/simulation/test_simulation_file_manager.cpp"
-            # tools
-            "tests/tools/test_logger.cpp"
-            "tests/tools/test_math.cpp"
-            "tests/tools/test_utils.cpp"
-            # element_parameters
-            "tests/element_parameters/test_element_parameters.cpp"
-            # exceptions
-            "tests/exceptions/test_exception.cpp"
-    )
-    target_include_directories(dnf_composer_tests PRIVATE include)
-    target_link_libraries(dnf_composer_tests PRIVATE
-            ${CMAKE_PROJECT_NAME}
-            GTest::gtest
-            GTest::gtest_main
-            imgui::imgui
-            imgui-platform-kit
-    )
-
-    include(GoogleTest)
-    gtest_discover_tests(dnf_composer_tests)
+# Tests
+enable_testing()
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
+    add_subdirectory(tests)
 endif()

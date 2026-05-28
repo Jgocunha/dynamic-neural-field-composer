@@ -22,7 +22,7 @@ namespace dnf_composer::element
 		commonParameters.dimensionParameters = newDimensions;
 		for (auto &vec: components | std::views::values)
 			vec.assign(newDimensions.size, 0.0);
-		inputPtr_ = nullptr; // components ["input"] was reallocated; rebuild cache on next updateInput()
+		inputPtr = nullptr; // components ["input"] was reallocated; rebuild cache on next updateInput()
 		init();
 	}
 
@@ -70,7 +70,7 @@ namespace dnf_composer::element
 
 		inputs[inputElement] = inputComponent;
 		inputElement->outputs[this->shared_from_this()] = inputComponent;
-		inputPtr_ = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
+		inputPtr = nullptr;
 
 		const std::string logMessage = "Input '" + inputElement->getUniqueName() +"' added successfully to '" +  this->getUniqueName() + ".";
 		log(tools::logger::LogLevel::INFO, logMessage);
@@ -82,7 +82,7 @@ namespace dnf_composer::element
 		{
 			if (key->commonParameters.identifiers.uniqueName == inputElementId) {
 				inputs.erase(key);
-				inputPtr_ = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
+				inputPtr = nullptr;
 				log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '"
 				                                   + this->getUniqueName() + ". ");
 				return;
@@ -90,13 +90,13 @@ namespace dnf_composer::element
 		}
 	}
 
-	void Element::removeInput(int uniqueId)
+	void Element::removeInput(const int uniqueId)
 	{
 		for (auto& key : inputs | std::views::keys)
 		{
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 				inputs.erase(key);
-				inputPtr_ = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
+				inputPtr = nullptr;
 				log(tools::logger::LogLevel::INFO, "Input '" + std::to_string(uniqueId) + "' removed successfully from '"
 				                                   + this->getUniqueName() + ".");
 				return;
@@ -135,32 +135,32 @@ namespace dnf_composer::element
 			inputElement->outputs.erase(this->shared_from_this());
 		}
 		inputs.clear();
-		inputPtr_ = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
+		inputPtr = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
 	}
 
 	void Element::buildInputCache()
 	{
 		auto& inputVec = components["input"];
-		inputPtr_  = inputVec.data();
-		inputSize_ = inputVec.size();
+		inputPtr  = inputVec.data();
+		inputSize = inputVec.size();
 
-		cachedInputs_.clear();
-		cachedInputs_.reserve(inputs.size());
+		cachedInputs.clear();
+		cachedInputs.reserve(inputs.size());
 		for (const auto& [elem, compName] : inputs)
 		{
 			const auto& compVec = elem->components.at(compName);
-			cachedInputs_.push_back({compVec.data(), compVec.size()});
+			cachedInputs.push_back({compVec.data(), compVec.size()});
 		}
 	}
 
 	void Element::updateInput()
 	{
-		if (!inputPtr_)
+		if (!inputPtr)
 			buildInputCache();
-		std::fill_n(inputPtr_, inputSize_, 0.0);
-		for (const auto&[src, size] : cachedInputs_)
+		std::fill_n(inputPtr, inputSize, 0.0);
+		for (const auto&[src, size] : cachedInputs)
 			for (std::size_t i = 0; i < size; ++i)
-				inputPtr_[i] += src[i];
+				inputPtr[i] += src[i];
 	}
 
 	int Element::getMaxSpatialDimension() const
@@ -247,6 +247,11 @@ namespace dnf_composer::element
 		return commonParameters.identifiers.uniqueName;
 	}
 
+	void Element::setUniqueName(const std::string& name)
+	{
+		commonParameters.identifiers.uniqueName = name;
+	}
+
 	int Element::getUniqueIdentifier() const
 	{
 		return commonParameters.identifiers.uniqueIdentifier;
@@ -277,9 +282,9 @@ namespace dnf_composer::element
 		std::vector<std::string> componentNames;
 		componentNames.reserve(components.size());
 
-		for (const auto& pair : components)
+		for (const auto& key : components | std::views::keys)
 		{
-			const std::string& componentName = pair.first;
+			const std::string& componentName = key;
 			componentNames.push_back(componentName);
 		}
 

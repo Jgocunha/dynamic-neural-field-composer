@@ -2,8 +2,10 @@
 
 #ifdef _WIN32
 #  include <windows.h>
+#  include <psapi.h>
 #elif defined(__APPLE__)
 #  include <mach-o/dyld.h>
+#  include <mach/mach.h>
 #  include <climits>
 #else
 #  include <climits>
@@ -85,6 +87,34 @@ namespace dnf_composer::tools::utils
 		while ((pos = adjustedStr.find('/')) != std::string::npos)
 			adjustedStr.replace(pos, 1, "\\");
 		return adjustedStr;
+	}
+
+	float getProcessMemoryMb()
+	{
+#ifdef _WIN32
+		PROCESS_MEMORY_COUNTERS pmc{};
+		if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc)))
+			return static_cast<float>(pmc.WorkingSetSize) / (1024.0f * 1024.0f);
+		return 0.0f;
+#elif defined(__APPLE__)
+		task_vm_info_data_t info{};
+		mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+		if (task_info(mach_task_self(), TASK_VM_INFO,
+		              reinterpret_cast<task_info_t>(&info), &count) == KERN_SUCCESS)
+			return static_cast<float>(info.phys_footprint) / (1024.0f * 1024.0f);
+		return 0.0f;
+#else
+		std::ifstream f("/proc/self/status");
+		std::string line;
+		while (std::getline(f, line))
+			if (line.rfind("VmRSS:", 0) == 0)
+			{
+				long kb = 0;
+				sscanf(line.c_str(), "VmRSS: %ld kB", &kb);
+				return static_cast<float>(kb) / 1024.0f;
+			}
+		return 0.0f;
+#endif
 	}
 
 }

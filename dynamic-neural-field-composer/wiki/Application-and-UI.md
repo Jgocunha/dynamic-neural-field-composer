@@ -21,21 +21,9 @@ Both arguments are optional. You can pass `nullptr` for either if you do not nee
 
 ---
 
-## UI mode
+## UI scale
 
-The application supports two layout modes:
-
-| Mode | Description |
-|---|---|
-| `UIMode::Dynamic` | Each window is a free-floating, dockable ImGui panel (default) |
-| `UIMode::Static`  | All panels are embedded in a single `StaticLayoutWindow` with a fixed tiled layout |
-
-```cpp
-Application::setUIMode(UIMode::Static);   // must be set before app.init()
-Application::setUIMode(UIMode::Dynamic);  // free-floating panels
-```
-
-The UI scale (50–200%) is also a global property:
+The UI scale (50–200%) is a global property persisted across sessions via `imgui.ini`:
 
 ```cpp
 Application::setUiScalePct(125.0f);
@@ -78,10 +66,8 @@ app.close();                   // tear down GUI and simulation
 ```
 
 `step()` does the following on each call:
-1. Calls `simulation->step()` (if not paused)
-2. Calls `visualization->render()`
-3. Renders all registered ImGui windows
-4. Presents the frame
+1. Calls `simulation->step()`
+2. Calls `gui->render()`, which renders all registered ImGui windows and presents the frame (skipped if GUI is inactive)
 
 ---
 
@@ -211,11 +197,11 @@ The application loads the **Cera Pro** typeface in four weights (Light, Medium, 
 
 | Global | Weight | Size |
 |---|---|---|
-| `g_LightMediumFont` | Light (main font) | 18 px |
+| `g_LightMediumFont` | Light | 18 px |
 | `g_LightSmallFont` | Light | 12 px |
 | `g_LightLargeFont` | Light | 24 px |
 | `g_MediumSmallFont` | Medium | 12 px |
-| `g_MediumMediumFont` | Medium | 18 px |
+| `g_MediumMediumFont` | Medium (default font) | 18 px |
 | `g_MediumLargeFont` | Medium | 24 px |
 | `g_BoldSmallFont` | Bold | 12 px |
 | `g_BoldMediumFont` | Bold | 18 px |
@@ -227,8 +213,8 @@ The application loads the **Cera Pro** typeface in four weights (Light, Medium, 
 | `g_MonoMediumFont` | JetBrains Mono | 20 px |
 | `g_MonoLargeFont` | JetBrains Mono | 26 px |
 | `g_SmallIconsFont` | Font Awesome 6 | 12 px |
-| `g_MediumIconsFont` | Font Awesome 6 | 20 px |
-| `g_LargeIconsFont` | Font Awesome 6 | 48 px |
+| `g_MediumIconsFont` | Font Awesome 6 | 18 px |
+| `g_LargeIconsFont` | Font Awesome 6 | 24 px |
 
 ---
 

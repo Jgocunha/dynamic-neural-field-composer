@@ -1,1704 +1,453 @@
-﻿#include "user_interface/simulation_window.h"
+#include "user_interface/simulation_window.h"
+#include "user_interface/field_metrics_window.h"
+#include "user_interface/log_window.h"
+#include "user_interface/help_window.h"
+#include "elements/neural_field.h"
+#include "elements/neural_field_2d.h"
+#include "user_interface/fonts/IconsFontAwesome6.h"
+
+extern ImFont* g_MonoMediumFont;
+extern ImFont* g_MediumMediumFont;
 
 namespace dnf_composer::user_interface
 {
+	int SimulationWindow::activePane = 0;
+
 	SimulationWindow::SimulationWindow(const std::shared_ptr<Simulation>& simulation)
-		: simulation(simulation), editableDt_(simulation->getDeltaT())
+		: simulation(simulation)
 	{
 	}
 
 	void SimulationWindow::render()
 	{
-		ImGui::PushFont(g_BlackLargeFont);
-		const bool open = ImGui::Begin("Simulation Control", nullptr,
-			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-		ImGui::PopFont();
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		const float panelY = vp->WorkPos.y + 52.0f;
+		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
+		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, panelY), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.25f, panelH), ImGuiCond_FirstUseEver);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
+		const bool open = ImGui::Begin("Simulation Control##simulation_control", nullptr,
+			imgui_kit::getGlobalWindowFlags()
+			| ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_NoScrollbar
+			| ImGuiWindowFlags_NoScrollWithMouse);
+		ImGui::PopStyleVar();
 		if (open)
 		{
-			constexpr ImGuiWindowFlags childFlags =
-				ImGuiWindowFlags_NoSavedSettings;
-			ImGui::BeginChild("##sim_scroll", ImVec2(0, 0), false, childFlags);
-			renderSimulationParametersCard();
-			ImGui::Spacing(); ImGui::Spacing();
-			renderSimulationControlsCard();
-			ImGui::Spacing(); ImGui::Spacing();
-			renderRunForIterationsCard();
-			ImGui::Spacing(); ImGui::Spacing();
-			renderAddElementCard();
-			ImGui::Spacing(); ImGui::Spacing();
-			renderRemoveElementCard();
-			ImGui::Spacing(); ImGui::Spacing();
-			renderSetInteractionCard();
-			ImGui::Spacing(); ImGui::Spacing();
-			renderLogElementParametersCard();
-			ImGui::Spacing(); ImGui::Spacing();
-			renderExportElementComponentCard();
+			ImGui::SetCursorPos({14.0F, 8.0F});
+			const float startY = ImGui::GetCursorPosY();
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
+			ImGui::SetCursorPosY(startY + yOff);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+			ImGui::PushFont(g_MediumIconsFont);
+			ImGui::TextUnformatted(ICON_FA_MICROCHIP);
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::SameLine(0, 8.0F);
+			ImGui::SetCursorPosY(startY);
+			ImGui::PushFont(g_BlackLargeFont);
+			ImGui::TextUnformatted("Simulation Control");
+			ImGui::PopFont();
+			ImGui::SetCursorPosX(0.0F);
+			ImGui::Separator();
+			constexpr float kMargin = 8.0F;
+			ImGui::SetCursorPos({kMargin, ImGui::GetCursorPosY() + kMargin});
+			const ImVec2 insetSz = {
+				ImGui::GetContentRegionAvail().x - kMargin,
+				ImGui::GetContentRegionAvail().y - kMargin
+			};
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+			if (ImGui::BeginChild("##sim_inset", insetSz, false,
+				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoSavedSettings))
+			{
+				renderSidebarContents();
+			}
 			ImGui::EndChild();
+			ImGui::PopStyleColor();
 		}
 		ImGui::End();
 	}
 
-	void SimulationWindow::renderSimulationParametersCard() const
+	void SimulationWindow::renderSidebarContents() const
 	{
-		ImGui::PushID("sim_params");
+		const float ui       = ImGui::GetIO().FontGlobalScale;
+		const float sideW    = 58.0F * ui;
+		const float gap      = 1.0F * ui;
+		const float totalH   = ImGui::GetContentRegionAvail().y;
+		const float contentW = ImGui::GetContentRegionAvail().x - sideW - gap;
+		constexpr float rounding = 1.0F;
 
-		const float ui = ImGui::GetIO().FontGlobalScale;
+		const ImVec4 wbg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
 
-		const std::string id   = simulation->getIdentifier();
-
-		// keep local editable buffers
-		static char idBuf[128];
-		std::snprintf(idBuf, IM_ARRAYSIZE(idBuf), "%s", id.c_str());
-
-		// Simulation ID
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Simulation ID");
-		ImGui::SameLine();
-
-		ImGui::SetNextItemWidth(320.0f * ui);
-		const bool idEdited = ImGui::InputText("##sim_id", idBuf, IM_ARRAYSIZE(idBuf),
-										 ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue);
-
-		// Commit on Enter or when losing focus after modification
-		if (idEdited || (ImGui::IsItemDeactivatedAfterEdit()))
-			simulation->setUniqueIdentifier(std::string(idBuf));
-
-
-		// Time step delta_t
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Time step");
-		ImGui::SameLine();
-
-		ImGui::SetNextItemWidth(65.0f * ui);
-		ImGui::InputDouble("##dt_ms", &editableDt_, 0.0, 0.0, "%.2f");
-		if (ImGui::IsItemDeactivatedAfterEdit())
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0F * ui, 4.0F * ui));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(wbg.x * 0.96f, wbg.y * 0.96f, wbg.z * 0.96f, wbg.w));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
+		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, 1,
+			ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 		{
-			if (std::isfinite(editableDt_) && editableDt_ > 0.0)
-				simulation->setDeltaT(editableDt_);
-			editableDt_ = simulation->getDeltaT();  // revert to last valid value on invalid input
+			drawIconStrip();
 		}
-		else if (!ImGui::IsItemActive())
-			editableDt_ = simulation->getDeltaT();  // keep in sync when not editing
+		ImGui::EndChild();
+		ImGui::PopStyleVar(3);
+		ImGui::PopStyleColor();
 
-		ImGui::SameLine();
-		ImGui::TextUnformatted("\xce\x94t");  // delta t
+		ImGui::SameLine(0, gap);
 
-		ImGui::PopID();
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
+		if (ImGui::BeginChild("##sim_content", {contentW, totalH}, 1,
+			ImGuiWindowFlags_NoSavedSettings))
+		{
+			renderContentPaneTitle();
+			switch (activePane)
+			{
+				case 0: renderAddElementCard();             break;
+				case 1: renderRemoveElementCard();          break;
+				case 2: renderSetInteractionCard();         break;
+				case 3: renderLogElementParametersCard();   break;
+				case 4: renderExportElementComponentCard(); break;
+				case 5: renderMonitoringCard();             break;
+				default: break;
+			}
+		}
+		ImGui::EndChild();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
 	}
 
-	void SimulationWindow::renderSimulationControlsCard() const
+	void SimulationWindow::renderContentPaneTitle()
 	{
-		const float ui = ImGui::GetIO().FontGlobalScale;
-		const ImGuiStyle& st = ImGui::GetStyle();
+		//ImGui::Spacing();
 
-		// Tile size + spacing
-		const float tile = 90.0f * ui;
-		const float gap  = st.ItemSpacing.x * 2.5f;
+		struct PaneInfo { const char* icon; const char* name; };
+		static constexpr PaneInfo kInfo[] = {
+			{ .icon=ICON_FA_PLUS,     .name="Add elements"      },
+			{ .icon=ICON_FA_TRASH,    .name="Remove elements"   },
+			{ .icon=ICON_FA_LINK,     .name="Set interactions" },
+			{ .icon=ICON_FA_FILE_LINES , .name="Log parameters"   },
+			{ .icon=ICON_FA_DOWNLOAD, .name="Export data"      },
+			{ .icon=ICON_FA_HEART_PULSE, .name="Monitoring"       },
+		};
 
-		// Palette
-		constexpr auto bg      = ImVec4(0.96f, 0.98f, 0.99f, 1.0f);
-		constexpr auto hover   = ImVec4(0.90f, 0.97f, 0.94f, 1.0f);
-		constexpr auto active  = ImVec4(0.85f, 0.96f, 0.92f, 1.0f);
-		const auto iconCol = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);  // icon glyph color
-		const auto labelCol= ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);  // text below
+		ImGui::PushFont(g_LargeIconsFont);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
+		ImGui::TextUnformatted(kInfo[activePane].icon);
+		ImGui::PopStyleColor();
+		ImGui::PopFont();
 
-		const ImU32 cBg      = ImGui::GetColorU32(bg);
-		const ImU32 cHover   = ImGui::GetColorU32(hover);
-		const ImU32 cActive  = ImGui::GetColorU32(active);
-		const ImU32 cIcon    = ImGui::GetColorU32(iconCol);
-		const ImU32 cLabel   = ImGui::GetColorU32(labelCol);
+		ImGui::SameLine(0, 8.0F);
+		ImGui::PushFont(g_MediumLargeFont);
+		ImGui::TextUnformatted(kInfo[activePane].name);
+		ImGui::PopFont();
 
+		ImGui::Separator();
+		ImGui::Spacing();
+	}
+
+	void SimulationWindow::drawIconStrip()
+	{
+		struct PaneTab { const char* icon; const char* tooltip; };
+		static constexpr PaneTab kPanes[] = {
+			{ .icon=ICON_FA_PLUS,     .tooltip="Add elements"      },
+			{ .icon=ICON_FA_TRASH,    .tooltip="Remove elements"   },
+			{ .icon=ICON_FA_LINK,     .tooltip="Set interactions" },
+			{ .icon=ICON_FA_FILE_LINES , .tooltip="Log parameters"   },
+			{ .icon=ICON_FA_DOWNLOAD, .tooltip="Export data"      },
+			{ .icon=ICON_FA_HEART_PULSE, .tooltip="Monitoring"       },
+		};
+
+		ImGui::SetCursorPos(ImVec2(0.0F, 16.0F));
 		ImGui::BeginGroup();
-
-		if (widgets::renderIconTileButton("run",     ICON_FA_PLAY,
-			"Run",     tile, ui, cBg, cHover, cActive, cIcon, cLabel))
-			simulation->init();
-
-		ImGui::SameLine(0.0f, gap);
-		if (widgets::renderIconTileButton("pause",   ICON_FA_PAUSE,
-			"Pause",   tile, ui, cBg, cHover, cActive, cIcon, cLabel))
-			simulation->pause();
-
-		ImGui::SameLine(0.0f, gap);
-		if (widgets::renderIconTileButton("resume",  ICON_FA_FORWARD_FAST,
-			"Resume",  tile, ui, cBg, cHover, cActive, cIcon, cLabel))
-			simulation->resume();
-
-		ImGui::SameLine(0.0f, gap);
-		if (widgets::renderIconTileButton("stop",    ICON_FA_STOP,
-			"Stop",    tile, ui, cBg, cHover, cActive, cIcon, cLabel))
-			simulation->close();
-
+		for (int i = 0; i < 6; ++i)
+		{
+			if (widgets::renderSidebarTab(kPanes[i].icon, "", activePane == i))
+			{
+				activePane = i;
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("%s", kPanes[i].tooltip);
+			}
+		}
 		ImGui::EndGroup();
+
+		const float consoleY = ImGui::GetWindowHeight() - 96.0f;
+		ImGui::SetCursorPos(ImVec2(0.0f, consoleY));
+		const bool consoleOpen = LogWindow::isActive();
+		ImGui::PushID("##console_btn");
+		if (widgets::renderSidebarTab(ICON_FA_TERMINAL, "", consoleOpen))
+			LogWindow::setActive(!consoleOpen);
+		ImGui::PopID();
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Console");
+
+		const float helpY = ImGui::GetWindowHeight() - 48.0f;
+		ImGui::SetCursorPos(ImVec2(0.0f, helpY));
+		const bool helpOpen = HelpWindow::isActive();
+		ImGui::PushID("##help_btn");
+		if (widgets::renderSidebarTab(ICON_FA_CIRCLE_QUESTION, "", helpOpen))
+			HelpWindow::setActive(!helpOpen);
+		ImGui::PopID();
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Help");
 	}
 
-	void SimulationWindow::renderRunForIterationsCard() const
-	{
-		 ImGui::PushID("run_for_iterations_inline");
-
-	    const float ui   = ImGui::GetIO().FontGlobalScale;
-	    const float gap  = ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
-
-	    // persistent state for this row
-	    static int   iterationCount   = 1000;
-	    static bool  runNSteps        = false;
-	    static int   startIteration   = 0;
-
-		// ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-		// ImGui::PushFont(g_MonoMediumFont);
-		// ImGui::TextUnformatted(ICON_FA_STOPWATCH);
-		// ImGui::PopFont(); ImGui::SameLine();
-		// ImGui::PopStyleColor();
-
-	    // "Run simulation for [ N ] iterations"
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("Run simulation for");
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-	    ImGui::SetNextItemWidth(60.0f * ui);
-	    if (ImGui::InputInt("##iter_count", &iterationCount, 0, 0))
-	        if (iterationCount < 1) iterationCount = 1;
-
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("iterations");
-
-	    // ---- play icon button at the end of the line ----
-	    ImGui::SameLine(0.0f, gap);
-	    const float tile = 36.0f * ui;                       // compact square
-	    const ImVec2 iconBox(tile, tile);
-
-	    // soft tile styling
-	    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f * ui);
-	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.96f, 0.98f, 0.99f, 1.0f));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.90f, 0.97f, 0.94f, 1.0f));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.85f, 0.96f, 0.92f, 1.0f));
-	    ImGui::PushStyleColor(ImGuiCol_Text,          ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-
-	    // center the glyph inside the square
-	    ImGui::PushFont(g_MediumIconsFont);
-	    const bool clicked = ImGui::Button(ICON_FA_PLAY, iconBox);
-	    ImGui::PopFont();
-	    ImGui::PopStyleColor(4);
-	    ImGui::PopStyleVar(2);
-
-	    if (clicked)
-	    {
-	        startIteration = simulation->getT();         // where we start
-	        if (!simulation->isInitialized())            // init if needed
-	        {
-	            simulation->init();
-	            startIteration = 0;
-	        }
-	        simulation->resume();                        // run
-	        runNSteps = true;
-	        tools::logger::log(tools::logger::INFO,
-	            "Simulation has started running for " + std::to_string(iterationCount) + " steps.");
-	    }
-
-	    // auto-stop after N steps
-	    if (runNSteps)
-	    {
-	        if (simulation->getT() >= startIteration + iterationCount)
-	        {
-	            runNSteps = false;
-	            simulation->pause();
-	            tools::logger::log(tools::logger::INFO,
-	                "Simulation has finished running " + std::to_string(iterationCount) + " steps.");
-	        }
-	    }
-
-	    // "Run simulation for [ N ] ms"
-	    static float  runMs      = 500.0f;
-	    static bool   runForMs   = false;
-	    static std::chrono::steady_clock::time_point runMsStart;
-
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("Run simulation for");
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-	    ImGui::SetNextItemWidth(60.0f * ui);
-	    if (ImGui::InputFloat("##ms_count", &runMs, 0.0f, 0.0f, "%.0f"))
-	        if (runMs < 0.1f) runMs = 0.1f;
-
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("ms");
-
-	    ImGui::SameLine(0.0f, gap);
-	    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f * ui);
-	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
-	    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.96f, 0.98f, 0.99f, 1.0f));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.90f, 0.97f, 0.94f, 1.0f));
-	    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.85f, 0.96f, 0.92f, 1.0f));
-	    ImGui::PushStyleColor(ImGuiCol_Text,          ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
-
-	    ImGui::PushFont(g_MediumIconsFont);
-	    const bool clickedMs = ImGui::Button(ICON_FA_PLAY "##play_ms", iconBox);
-	    ImGui::PopFont();
-	    ImGui::PopStyleColor(4);
-	    ImGui::PopStyleVar(2);
-
-	    if (clickedMs)
-	    {
-	        if (!simulation->isInitialized())
-	            simulation->init();
-	        simulation->resume();
-	        runForMs   = true;
-	        runMsStart = std::chrono::steady_clock::now();
-	        tools::logger::log(tools::logger::INFO,
-	            "Simulation has started running for " + std::to_string(runMs) + " ms.");
-	    }
-
-	    if (runForMs)
-	    {
-	        const auto elapsed = std::chrono::duration<float, std::milli>(
-	            std::chrono::steady_clock::now() - runMsStart).count();
-	        if (elapsed >= runMs)
-	        {
-	            runForMs = false;
-	            simulation->pause();
-	            tools::logger::log(tools::logger::INFO,
-	                "Simulation has finished running for " + std::to_string(runMs) + " ms.");
-	        }
-	    }
-
-	    ImGui::PopID();
-	}
-
+	// Clang-Tidy: Function 'renderAddElementCard' has cognitive complexity of 28 (threshold 25)
 	void SimulationWindow::renderAddElementCard() const
 	{
 		ImGui::PushID("add_element_section");
 
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Add elements");
-		ImGui::PopFont();
+		// ── Dimensionality toggle ───────────────────────────────────────────
+		static int dimensionality = 1;
+		static element::ElementLabel selected1D = element::ElementLabel::NEURAL_FIELD;
+		static element::ElementLabel selected2D = element::ElementLabel::NEURAL_FIELD_2D;
+		element::ElementLabel& selected = (dimensionality == 1) ? selected1D : selected2D;
 
-		ImGui::TextUnformatted("Select type");
-
-		static element::ElementLabel selected = element::ElementLabel::NEURAL_FIELD;
-
-		ImGui::SetNextItemWidth(-FLT_MIN);
-		if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
 		{
-			for (const auto& [lbl, name] : element::ElementLabelToString)
+			using L = element::ElementLabel;
+			const float btnW    = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+			const ImVec4 accent  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			const ImVec4 bg      = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
+			const ImVec4 bgHov   = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered);
+			constexpr ImVec4 textSel(1.f, 1.f, 1.f, 1.f);
+			const ImVec4 textNorm = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+
+			auto dimBtn = [&](const char* label, int dim)
 			{
-				if (lbl == element::ElementLabel::UNINITIALIZED) continue;
-				const bool is_sel = (selected == lbl);
-				if (ImGui::Selectable(name.c_str(), is_sel)) selected = lbl;
-				if (is_sel) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
+				const bool on = (dimensionality == dim);
+				ImGui::PushStyleColor(ImGuiCol_Button,        on ? accent : bg);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, on ? accent : bgHov);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  accent);
+				ImGui::PushStyleColor(ImGuiCol_Text,          on ? textSel : textNorm);
+				if (ImGui::Button(label, {btnW, 0})) dimensionality = dim;
+				ImGui::PopStyleColor(4);
+			};
+			dimBtn("1D", 1);
+			ImGui::SameLine();
+			dimBtn("2D", 2);
 		}
 
 		ImGui::Spacing();
-		ImGui::TextUnformatted("Define parameters");
 
-		const float child_w = ImGui::GetContentRegionAvail().x;
-		const float child_h = 250.0f * ImGui::GetIO().FontGlobalScale;
+		// ── Filtered type combo ─────────────────────────────────────────────
+		{
+			using L = element::ElementLabel;
+			static constexpr L k1D[] = {
+				L::NEURAL_FIELD, L::GAUSS_STIMULUS, L::TIMED_GAUSS_STIMULUS,
+				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
+				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
+				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE
+			};
+			static constexpr L k2D[] = {
+				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
+				L::GAUSS_KERNEL_2D, L::MEXICAN_HAT_KERNEL_2D, L::OSCILLATORY_KERNEL_2D,
+				L::ASYMMETRIC_GAUSS_KERNEL_2D, L::NORMAL_NOISE_2D, L::CORRELATED_NORMAL_NOISE_2D,
+				L::BOOST_STIMULUS_2D, L::MEMORY_TRACE_2D
+			};
+			const L* pLabels = (dimensionality == 1) ? k1D : k2D;
+			const int nLabels = (dimensionality == 1) ? static_cast<int>(std::size(k1D))
+			                                          : static_cast<int>(std::size(k2D));
 
-		constexpr ImGuiWindowFlags child_flags =
-	        ImGuiWindowFlags_NoSavedSettings;
+			ImGui::TextUnformatted("Type");
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##type_select", element::ElementLabelToString.at(selected).c_str()))
+			{
+				for (int i = 0; i < nLabels; ++i)
+				{
+					const L lbl = pLabels[i];
+					const bool is_sel = (selected == lbl);
+					if (ImGui::Selectable(element::ElementLabelToString.at(lbl).c_str(), is_sel))
+						selected = lbl;
+					if (is_sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+		}
 
-		// addRequested is set by the button rendered below, persisted via static.
+		// ── Name input ──────────────────────────────────────────────────────
+		static char id[CHAR_SIZE] = {};
+		static element::ElementLabel prevSelected = element::ElementLabel::UNINITIALIZED;
+		if (selected != prevSelected)
+		{
+			prevSelected = selected;
+			int count = 0;
+			for (const auto& e : simulation->getElements())
+				if (e->getLabel() == selected) ++count;
+			const std::string& typeName = element::ElementLabelToString.at(selected);
+			std::snprintf(id, sizeof(id), "%s %d", typeName.c_str(), count + 1);
+		}
+
+		ImGui::Spacing();
+		ImGui::TextUnformatted("Name");
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##id", "enter identifier", id, IM_ARRAYSIZE(id));
+		ImGui::Spacing();
+
+		// ── Parameters ──────────────────────────────────────────────────────
 		static bool s_addRequested = false;
 		const bool addRequested = s_addRequested;
 		s_addRequested = false;
 
-	    if (ImGui::BeginChild("##params_scroll", ImVec2(child_w, child_h), true, child_flags))
-	    {
-	        switch (selected)
-	        {
-        case element::ElementLabel::NEURAL_FIELD:
-        {
-            static char   id[CHAR_SIZE] = "neural field u";
-            static int    x_max         = 100;
-            static double d_x           = 1.0;
-            static double resting       = -10.0;
-            static double tau           = 25.0;
-            static int    actFnType     = element::SIGMOID;
-            static double xShift        = 0.0;
-            static double steepness     = 5.0;
-            static double absBeta       = 100.0;
-            static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size", &x_max, 0, 0);
-            ImGui::InputDouble("Step", &d_x, 0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Resting level", &resting, 0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Time scale", &tau, 0.0, 0.0, "%.2f");
-            ImGui::Combo("Activation fn.", &actFnType, actFnNames, 3);
-            ImGui::InputDouble("X shift", &xShift, 0.0, 0.0, "%.2f");
-            if (actFnType == element::SIGMOID)
-                ImGui::InputDouble("Steepness", &steepness, 0.0, 0.0, "%.2f");
-            else if (actFnType == element::ABSSIGMOID)
-                ImGui::InputDouble("Beta", &absBeta, 0.0, 0.0, "%.2f");
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                std::unique_ptr<element::ActivationFunction> af;
-                if (actFnType == element::SIGMOID)
-                    af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
-                else if (actFnType == element::HEAVISIDE)
-                    af = std::make_unique<element::HeavisideFunction>(xShift);
-                else
-                    af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
-                const element::NeuralFieldParameters nfp{ tau, resting, *af };
-                const element::ElementIdentifiers ids{ id };
-                const element::ElementDimensions  dims{ x_max, d_x };
-                const element::ElementCommonParameters common{ ids, dims };
-                simulation->addElement(std::make_shared<element::NeuralField>(common, nfp));
-            }
-            break;
-        }
-        case element::ElementLabel::GAUSS_STIMULUS:
-        {
-            static char   id[CHAR_SIZE] = "gauss stimulus";
-            static int    x_max         = 100;
-            static double d_x           = 1.0;
-            static double width         = 5.0;
-            static double amplitude     = 15.0;
-            static double position      = 50.0;
-            static bool   circular      = true;
-            static bool   normalized    = false;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",          &x_max,     0, 0);
-            ImGui::InputDouble("Step",       &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",      &width,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude",  &amplitude, 0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Position",   &position,  0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::GaussStimulusParameters gsp{ width, amplitude, position, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
-                simulation->addElement(std::make_shared<element::GaussStimulus>(common, gsp));
-            }
-            break;
-        }
-        case element::ElementLabel::GAUSS_KERNEL:
-        {
-            static char   id[CHAR_SIZE]   = "gauss kernel";
-            static int    x_max           = 100;
-            static double d_x             = 1.0;
-            static double width           = 3.0;
-            static double amplitude       = 3.0;
-            static double amplitudeGlobal = -0.01;
-            static bool   circular        = true;
-            static bool   normalized      = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",           &x_max,           0, 0);
-            ImGui::InputDouble("Step",        &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::ElementDimensions inDims{ x_max, d_x };
-                const element::GaussKernelParameters gkp{ width, amplitude, amplitudeGlobal, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), inDims };
-                simulation->addElement(std::make_shared<element::GaussKernel>(common, gkp));
-            }
-            break;
-        }
-        case element::ElementLabel::MEXICAN_HAT_KERNEL:
-        {
-            static char   id[CHAR_SIZE]   = "mexican hat kernel";
-            static int    x_max           = 100;
-            static double d_x             = 1.0;
-            static double widthExc        = 2.5;
-            static double amplitudeExc    = 11.0;
-            static double widthInh        = 5.0;
-            static double amplitudeInh    = 15.0;
-            static double amplitudeGlobal = -0.1;
-            static bool   circular        = true;
-            static bool   normalized      = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",             &x_max,           0, 0);
-            ImGui::InputDouble("Step",          &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width exc",     &widthExc,        0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude exc", &amplitudeExc,    0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width inh",     &widthInh,        0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude inh", &amplitudeInh,    0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Global amp",    &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::ElementDimensions inDims{ x_max, d_x };
-                const element::MexicanHatKernelParameters mhkp{ widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), inDims };
-                simulation->addElement(std::make_shared<element::MexicanHatKernel>(common, mhkp));
-            }
-            break;
-        }
-        case element::ElementLabel::OSCILLATORY_KERNEL:
-        {
-            static char   id[CHAR_SIZE]   = "oscillatory kernel";
-            static int    x_max           = 100;
-            static double d_x             = 1.0;
-            static double amplitude       = 1.0;
-            static double decay           = 0.08;
-            static double zeroCrossings   = 0.3;
-            static double amplitudeGlobal = -0.01;
-            static bool   circular        = true;
-            static bool   normalized      = false;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",              &x_max,           0, 0);
-            ImGui::InputDouble("Step",           &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
-            ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Global amp",     &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::ElementDimensions inDims{ x_max, d_x };
-                const element::OscillatoryKernelParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), inDims };
-                simulation->addElement(std::make_shared<element::OscillatoryKernel>(common, okp));
-            }
-            break;
-        }
-        case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
-        {
-            static char   id[CHAR_SIZE]   = "asymmetric gauss kernel";
-            static int    x_max           = 100;
-            static double d_x             = 1.0;
-            static double width           = 3.0;
-            static double amplitude       = 3.0;
-            static double amplitudeGlobal = 0.0;
-            static double timeShift       = 0.0;
-            static bool   circular        = true;
-            static bool   normalized      = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",          &x_max,           0, 0);
-            ImGui::InputDouble("Step",       &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",      &width,           0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude",  &amplitude,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Global amp", &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::InputDouble("Time shift", &timeShift,       0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::AsymmetricGaussKernelParameters agkp{ width, amplitude, amplitudeGlobal, timeShift, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
-                simulation->addElement(std::make_shared<element::AsymmetricGaussKernel>(common, agkp));
-            }
-            break;
-        }
-        case element::ElementLabel::NORMAL_NOISE:
-        {
-            static char   id[CHAR_SIZE] = "normal noise";
-            static int    x_max         = 100;
-            static double d_x           = 1.0;
-            static double amplitude     = 0.2;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",         &x_max,     0, 0);
-            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::NormalNoiseParameters nnp{ amplitude };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
-                simulation->addElement(std::make_shared<element::NormalNoise>(common, nnp));
-            }
-            break;
-        }
-        case element::ElementLabel::CORRELATED_NORMAL_NOISE:
-        {
-            static char   id[CHAR_SIZE] = "correlated normal noise";
-            static int    x_max         = 100;
-            static double d_x           = 1.0;
-            static double amplitude     = 0.05;
-            static double width         = 2.0;
-            static bool   circular      = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",         &x_max,     0, 0);
-            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-            ImGui::PopItemWidth();
-            ImGui::Checkbox("Circular", &circular);
-
-            if (addRequested)
-            {
-                const element::CorrelatedNormalNoiseParameters cnnp{ amplitude, width, circular };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
-                simulation->addElement(std::make_shared<element::CorrelatedNormalNoise>(common, cnnp));
-            }
-            break;
-        }
-        case element::ElementLabel::FIELD_COUPLING:
-        {
-            static char        id[CHAR_SIZE] = "field coupling";
-            static int         x_max_out     = 100;
-            static double      d_x_out       = 1.0;
-            static int         x_max_in      = 100;
-            static double      d_x_in        = 1.0;
-            static LearningRule rule         = LearningRule::HEBB;
-            static double      scalar        = 1.0;
-            static double      learningRate  = 0.01;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Out size",    &x_max_out, 0, 0);
-            ImGui::InputDouble("Out step", &d_x_out,   0.0, 0.0, "%.2f");
-            ImGui::InputInt("In size",     &x_max_in,  0, 0);
-            ImGui::InputDouble("In step",  &d_x_in,    0.0, 0.0, "%.2f");
-            ImGui::PopItemWidth();
-
-            ImGui::SetNextItemWidth(110.0f * ImGui::GetIO().FontGlobalScale);
-            if (ImGui::BeginCombo("Rule", LearningRuleToString.at(rule).c_str()))
-            {
-                for (const auto& [lr, name] : LearningRuleToString)
-                {
-                    const bool sel = (rule == lr);
-                    if (ImGui::Selectable(name.c_str(), sel)) rule = lr;
-                    if (sel) ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputDouble("Scalar",        &scalar,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Learning rate", &learningRate, 0.0, 0.0, "%.4f");
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::ElementDimensions inDims{ x_max_in, d_x_in };
-                const element::FieldCouplingParameters fcp{ inDims, rule, scalar, learningRate };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
-                simulation->addElement(std::make_shared<element::FieldCoupling>(common, fcp));
-            }
-            break;
-        }
-        case element::ElementLabel::GAUSS_FIELD_COUPLING:
-        {
-            static char   id[CHAR_SIZE] = "gauss field coupling";
-            static int    x_max_out     = 100;
-            static double d_x_out       = 1.0;
-            static int    x_max_in      = 100;
-            static double d_x_in        = 1.0;
-            static bool   normalized    = true;
-            static bool   circular      = false;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Out size",    &x_max_out, 0, 0);
-            ImGui::InputDouble("Out step", &d_x_out,   0.0, 0.0, "%.2f");
-            ImGui::InputInt("In size",     &x_max_in,  0, 0);
-            ImGui::InputDouble("In step",  &d_x_in,    0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Normalized",  &normalized);
-            ImGui::Checkbox("Circular",    &circular);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::ElementDimensions inDims{ x_max_in, d_x_in };
-                const element::GaussFieldCouplingParameters gfcp{ inDims, normalized, circular };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
-                simulation->addElement(std::make_shared<element::GaussFieldCoupling>(common, gfcp));
-            }
-            break;
-        }
-        case element::ElementLabel::BOOST_STIMULUS:
-        {
-            static char   id[CHAR_SIZE] = "boost stimulus";
-            static int    x_max         = 100;
-            static double d_x           = 1.0;
-            static double amplitude     = 5.0;
-            static bool   isActive      = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",         &x_max,     0, 0);
-            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Active",       &isActive);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::BoostStimulusParameters bsp{ amplitude, isActive };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
-                simulation->addElement(std::make_shared<element::BoostStimulus>(common, bsp));
-            }
-            break;
-        }
-        case element::ElementLabel::MEMORY_TRACE:
-        {
-            static char   id[CHAR_SIZE] = "memory trace";
-            static int    x_max         = 100;
-            static double d_x           = 1.0;
-            static double tauBuild      = 100.0;
-            static double tauDecay      = 1000.0;
-            static double threshold     = 0.5;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",          &x_max,     0, 0);
-            ImGui::InputDouble("Step",       &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Tau build",  &tauBuild,  0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Tau decay",  &tauDecay,  0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Threshold",  &threshold, 0.0, 0.0, "%.2f");
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::MemoryTraceParameters mtp{ tauBuild, tauDecay, threshold };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
-                simulation->addElement(std::make_shared<element::MemoryTrace>(common, mtp));
-            }
-            break;
-        }
-        case element::ElementLabel::NEURAL_FIELD_2D:
-        {
-            static char   id[CHAR_SIZE] = "neural field 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double tau = 25.0, restingLevel = -5.0;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",            &x_max,       0, 0);
-            ImGui::InputInt("Y size",            &y_max,       0, 0);
-            ImGui::InputDouble("X step",         &d_x,         0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",         &d_y,         0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Tau",            &tau,         0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Resting level",  &restingLevel,0.0, 0.0, "%.2f");
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::NeuralField2DParameters nfp{ tau, restingLevel, element::SigmoidFunction(0.0, 10.0) };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::NeuralField2D>(common, nfp));
-            }
-            break;
-        }
-        case element::ElementLabel::GAUSS_STIMULUS_2D:
-        {
-            static char   id[CHAR_SIZE] = "gauss stimulus 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double width = 5.0, amplitude = 15.0;
-            static double pos_x = 25.0, pos_y = 25.0;
-            static bool   circular = true, normalized = false;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",       &x_max,     0, 0);
-            ImGui::InputInt("Y size",       &y_max,     0, 0);
-            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Position x",&pos_x,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Position y",&pos_y,     0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::GaussStimulusParameters2D gsp( width, amplitude, pos_x, pos_y, circular, normalized );
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::GaussStimulus2D>(common, gsp));
-            }
-            break;
-        }
-        case element::ElementLabel::GAUSS_KERNEL_2D:
-        {
-            static char   id[CHAR_SIZE] = "gauss kernel 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double width = 3.0, amplitude = 3.0, amplitudeGlobal = -0.01;
-            static bool   circular = true, normalized = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",              &x_max,           0, 0);
-            ImGui::InputInt("Y size",              &y_max,           0, 0);
-            ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",            &width,           0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude",        &amplitude,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::GaussKernel2DParameters gkp( width, amplitude, amplitudeGlobal, circular, normalized );
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::GaussKernel2D>(common, gkp));
-            }
-            break;
-        }
-        case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
-        {
-            static char   id[CHAR_SIZE] = "mexican hat kernel 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double widthExc = 2.5, amplitudeExc = 11.0;
-            static double widthInh = 5.0, amplitudeInh = 15.0;
-            static double amplitudeGlobal = -0.1;
-            static bool   circular = true, normalized = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",              &x_max,           0, 0);
-            ImGui::InputInt("Y size",              &y_max,           0, 0);
-            ImGui::InputDouble("X step",           &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",           &d_y,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width exc",        &widthExc,        0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude exc",    &amplitudeExc,    0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width inh",        &widthInh,        0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude inh",    &amplitudeInh,    0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude global", &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::MexicanHatKernel2DParameters mhkp( widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized );
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::MexicanHatKernel2D>(common, mhkp));
-            }
-            break;
-        }
-        case element::ElementLabel::NORMAL_NOISE_2D:
-        {
-            static char   id[CHAR_SIZE] = "normal noise 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double amplitude = 0.2;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",       &x_max,     0, 0);
-            ImGui::InputInt("Y size",       &y_max,     0, 0);
-            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::NormalNoise2DParameters nnp( amplitude );
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::NormalNoise2D>(common, nnp));
-            }
-            break;
-        }
-        case element::ElementLabel::OSCILLATORY_KERNEL_2D:
-        {
-            static char   id[CHAR_SIZE]   = "oscillatory kernel 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double amplitude       = 1.0;
-            static double decay           = 0.08;
-            static double zeroCrossings   = 0.3;
-            static double amplitudeGlobal = -0.01;
-            static bool   circular        = true;
-            static bool   normalized      = false;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",            &x_max,           0, 0);
-            ImGui::InputInt("Y size",            &y_max,           0, 0);
-            ImGui::InputDouble("X step",         &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",         &d_y,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude",      &amplitude,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Decay",          &decay,           0.0, 0.0, "%.4f");
-            ImGui::InputDouble("Zero crossings", &zeroCrossings,   0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Global amp",     &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::OscillatoryKernel2DParameters okp{ amplitude, decay, zeroCrossings,
-                                                                   amplitudeGlobal, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id),
-                    element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::OscillatoryKernel2D>(common, okp));
-            }
-            break;
-        }
-        case element::ElementLabel::BOOST_STIMULUS_2D:
-        {
-            static char   id[CHAR_SIZE] = "boost stimulus 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double amplitude = 5.0;
-            static bool   isActive = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",       &x_max,     0, 0);
-            ImGui::InputInt("Y size",       &y_max,     0, 0);
-            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Active", &isActive);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::BoostStimulus2DParameters bsp{ amplitude, isActive };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::BoostStimulus2D>(common, bsp));
-            }
-            break;
-        }
-        case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
-        {
-            static char   id[CHAR_SIZE] = "timed gauss stimulus 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double width = 5.0, amplitude = 15.0;
-            static double pos_x = 25.0, pos_y = 25.0;
-            static double tStart = 0.0, tEnd = 10.0;
-            static bool   circular = true, normalized = false;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",       &x_max,     0, 0);
-            ImGui::InputInt("Y size",       &y_max,     0, 0);
-            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Position x",&pos_x,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Position y",&pos_y,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("T start",   &tStart,    0.0, 0.0, "%.2f");
-            ImGui::InputDouble("T end",     &tEnd,      0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                element::TimedGaussStimulus2DParameters tgsp{ width, amplitude, pos_x, pos_y,
-                    {{tStart, tEnd}}, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::TimedGaussStimulus2D>(common, tgsp));
-            }
-            break;
-        }
-        case element::ElementLabel::TIMED_GAUSS_STIMULUS:
-        {
-            static char   id[CHAR_SIZE]  = "timed gauss stimulus";
-            static int    x_max          = 100;
-            static double d_x            = 1.0;
-            static double width          = 5.0;
-            static double amplitude      = 15.0;
-            static double position       = 50.0;
-            static double tStart         = 0.0;
-            static double tEnd           = 10.0;
-            static bool   circular       = true;
-            static bool   normalized     = false;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("Size",         &x_max,     0, 0);
-            ImGui::InputDouble("Step",      &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Position",  &position,  0.0, 0.0, "%.2f");
-            ImGui::InputDouble("T start",   &tStart,    0.0, 0.0, "%.2f");
-            ImGui::InputDouble("T end",     &tEnd,      0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                element::TimedGaussStimulusParameters tgsp{ width, amplitude, position,
-                    {{tStart, tEnd}}, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
-                simulation->addElement(std::make_shared<element::TimedGaussStimulus>(common, tgsp));
-            }
-            break;
-        }
-        case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
-        {
-            static char   id[CHAR_SIZE] = "correlated normal noise 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double amplitude = 0.05;
-            static double width = 1.0;
-            static bool   circular = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",       &x_max,     0, 0);
-            ImGui::InputInt("Y size",       &y_max,     0, 0);
-            ImGui::InputDouble("X step",    &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",    &d_y,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude", &amplitude, 0.0, 0.0, "%.4f");
-            ImGui::InputDouble("Width",     &width,     0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular", &circular);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::CorrelatedNormalNoise2DParameters cnnp{ amplitude, width, circular };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::CorrelatedNormalNoise2D>(common, cnnp));
-            }
-            break;
-        }
-        case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
-        {
-            static char   id[CHAR_SIZE] = "asymmetric gauss kernel 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double width = 3.0;
-            static double amplitude = 3.0;
-            static double amplitudeGlobal = 0.0;
-            static double timeShift_x = 0.0;
-            static double timeShift_y = 0.0;
-            static bool   circular = true;
-            static bool   normalized = true;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",         &x_max,           0, 0);
-            ImGui::InputInt("Y size",         &y_max,           0, 0);
-            ImGui::InputDouble("X step",      &d_x,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",      &d_y,             0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Width",       &width,           0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Amplitude",   &amplitude,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Global amp",  &amplitudeGlobal, 0.0, 0.0, "%.4f");
-            ImGui::InputDouble("Time shift x",&timeShift_x,     0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Time shift y",&timeShift_y,     0.0, 0.0, "%.2f");
-            ImGui::Checkbox("Circular",   &circular);
-            ImGui::Checkbox("Normalized", &normalized);
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::AsymmetricGaussKernel2DParameters agkp{ width, amplitude, amplitudeGlobal,
-                                                                        timeShift_x, timeShift_y, circular, normalized };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::AsymmetricGaussKernel2D>(common, agkp));
-            }
-            break;
-        }
-        case element::ElementLabel::MEMORY_TRACE_2D:
-        {
-            static char   id[CHAR_SIZE] = "memory trace 2d";
-            static int    x_max = 50, y_max = 50;
-            static double d_x = 1.0, d_y = 1.0;
-            static double tauBuild = 100.0;
-            static double tauDecay = 1000.0;
-            static double threshold = 0.5;
-
-            ImGui::InputTextWithHint("ID", "enter text here", id, IM_ARRAYSIZE(id));
-            ImGui::PushItemWidth(80.0f * ImGui::GetIO().FontGlobalScale);
-            ImGui::InputInt("X size",         &x_max,     0, 0);
-            ImGui::InputInt("Y size",         &y_max,     0, 0);
-            ImGui::InputDouble("X step",      &d_x,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Y step",      &d_y,       0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Tau build",   &tauBuild,  0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Tau decay",   &tauDecay,  0.0, 0.0, "%.2f");
-            ImGui::InputDouble("Threshold",   &threshold, 0.0, 0.0, "%.2f");
-            ImGui::PopItemWidth();
-
-            if (addRequested)
-            {
-                const element::MemoryTrace2DParameters mtp{ tauBuild, tauDecay, threshold };
-                const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
-                simulation->addElement(std::make_shared<element::MemoryTrace2D>(common, mtp));
-            }
-            break;
-        }
-        default:
-            break;
-        }
-
-	}
-	ImGui::EndChild();
-
-	ImGui::Spacing();
-	const float addBtnW = ImGui::GetContentRegionAvail().x;
-	const float addBtnH = ImGui::GetFrameHeight() * 1.2f;
-	if (ImGui::Button("Add element", ImVec2(addBtnW, addBtnH)))
-		s_addRequested = true;
-
-	ImGui::PopID();
-}
-
-	void SimulationWindow::renderRemoveElementCard() const
-	{
-	    ImGui::PushID("remove_element_inline");
-
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Remove elements");
-		ImGui::PopFont();
-
-	    //  Row: "Remove [combo] from simulation"
-	    // Make the label baseline align with framed widgets (combo).
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("Remove");
-
-	    // Keep a little inner spacing before the combo
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-	    static std::string selectedId; // persists across frames
-
-	    // Combo: list all current elements
-	    const char* preview = selectedId.empty() ? "element" : selectedId.c_str();
-	    ImGui::SetNextItemWidth(180.0f * ImGui::GetIO().FontGlobalScale);
-	    if (ImGui::BeginCombo("##element_combo", preview))
-	    {
-	        for (const auto& e : simulation->getElements())
-	        {
-	            const std::string& name = e->getUniqueName();
-	            const bool is_sel = (selectedId == name);
-	            if (ImGui::Selectable(name.c_str(), is_sel))
-	                selectedId = name;
-	            if (is_sel) ImGui::SetItemDefaultFocus();
-	        }
-	        ImGui::EndCombo();
-	    }
-
-	    // Keep text on the same baseline as combo
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("from simulation");
-
-	    //  Trash icon button (right after the sentence)
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-	    const float line_h  = ImGui::GetFrameHeight();
-	    const ImVec2 iconSz(line_h + 10.0f, line_h);   // slightly not square button
-
-	    ImGui::PushFont(g_MediumIconsFont);
-	    const bool clicked = ImGui::Button(ICON_FA_TRASH, iconSz);
-	    ImGui::PopFont();
-
-	    if (clicked && !selectedId.empty())
-	    {
-	        simulation->removeElement(selectedId);
-	        simulation->init();
-	    }
-
-	    ImGui::PopID();
-	}
-
-	void SimulationWindow::renderSetInteractionCard() const
-	{
-		ImGui::PushID("set_interactions_section");
-
-	    // Headline
-	    ImGui::PushFont(g_BoldLargeFont);
-	    ImGui::TextUnformatted("Set interactions");
-	    ImGui::PopFont();
-
-	    // Two columns like the mock
-	    ImGui::Columns(2, nullptr, false);
-
-	    //  Left column: target/source + connect button
-	    const float leftW = 220.0f * ImGui::GetIO().FontGlobalScale;
-	    ImGui::SetColumnWidth(0, leftW);
-
-	    // Combos persist selections
-	    static std::string selectedTarget;
-	    static std::string selectedSource;
-
-	    // Helpers to render a compact combo bound to a string
-	    auto ComboFromElements = [&](const char* label, std::string& value)
-	    {
-	        ImGui::AlignTextToFramePadding();
-	        ImGui::TextUnformatted(label);
-	        ImGui::SetNextItemWidth(leftW - 20.0f * ImGui::GetIO().FontGlobalScale);
-	        const char* preview = value.empty() ? label : value.c_str();
-	        if (ImGui::BeginCombo((std::string("##") + label).c_str(), preview))
-	        {
-	            for (const auto& e : simulation->getElements())
-	            {
-	                const std::string& name = e->getUniqueName();
-	                const bool is_sel = (value == name);
-	                if (ImGui::Selectable(name.c_str(), is_sel))
-	                    value = name;
-	                if (is_sel) ImGui::SetItemDefaultFocus();
-	            }
-	            ImGui::EndCombo();
-	        }
-	    };
-
-	    ComboFromElements("Target element", selectedTarget);
-	    ComboFromElements("Source element", selectedSource);
-
-	    ImGui::Spacing();
-
-
-
-	    //  Right column: current connections list (scrollable)
-	    ImGui::NextColumn();
-	    ImGui::TextUnformatted("Connected elements");
-		ImGui::SameLine();
-		widgets::renderHelpMarker("You can disconnect elements by pressing the 'unlink' buttons.");
-
-	    const float listH = 120.0f * ImGui::GetIO().FontGlobalScale;
-	    ImGui::BeginChild("##connections_scroll", ImVec2(0, listH), true,
-	                      ImGuiWindowFlags_NoSavedSettings);
-
-	    if (!selectedTarget.empty())
-	    {
-		    if (const auto target = simulation->getElement(selectedTarget))
-	        {
-	            const auto& inputs = target->getInputs();
-	            if (inputs.empty())
-	            {
-	                ImGui::TextDisabled("No connections.");
-	            }
-	            else
-	            {
-	                int idx = 0;
-	                for (const auto& conn : inputs)
-	                {
-	                    ImGui::PushID(idx);
-	                    // Row: element name + remove icon on the right
-	                    ImGui::TextUnformatted(conn->getUniqueName().c_str());
-
-	                    // Right-aligned red "unlink" icon
-	                    ImGui::SameLine();
-	                    const float h = ImGui::GetFrameHeight();
-
-	                    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0,0,0,0));
-	                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f,0.0f,0.0f,0.15f));
-	                    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0f,0.0f,0.0f,0.25f));
-	                    ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.90f,0.10f,0.10f,1.0f));
-	                    ImGui::PushFont(g_MediumIconsFont);
-	                    const bool removeClicked = ImGui::Button(ICON_FA_LINK_SLASH, ImVec2(h + 10.0f, h));
-	                    ImGui::PopFont();
-	                    ImGui::PopStyleColor(4);
-
-	                    if (removeClicked)
-	                    {
-	                        target->removeInput(conn->getUniqueIdentifier());
-	                        simulation->init();
-	                    }
-
-	                    ImGui::PopID();
-	                    ++idx;
-	                }
-	            }
-	        }
-	    }
-	    ImGui::EndChild();
-
-	    ImGui::Columns(1);
-
-		const float btnW = ImGui::GetContentRegionAvail().x;
-		const float btnH = ImGui::GetFrameHeight() * 1.2f;
-
-		// Disable until both target & source are chosen
-		const bool canConnect = !selectedTarget.empty() && !selectedSource.empty();
-		ImGui::BeginDisabled(!canConnect);
-		const bool connectPressed = ImGui::Button("Connect", ImVec2(btnW, btnH));
-		ImGui::EndDisabled();
-
-		if (connectPressed)
+		switch (selected)
 		{
-			const auto target = simulation->getElement(selectedTarget);
-			const auto input  = simulation->getElement(selectedSource);
-			if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
-			{
-				target->addInput(input);
-				simulation->init();
-			}
+			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id, addRequested);              break;
+			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id, addRequested);            break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id, addRequested);      break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id, addRequested);   break;
+			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id, addRequested);              break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id, addRequested);        break;
+			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id, addRequested);       break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id, addRequested);  break;
+			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id, addRequested);              break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id, addRequested);  break;
+			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id, addRequested);           break;
+			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id, addRequested);     break;
+			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id, addRequested);           break;
+			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id, addRequested);             break;
+			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id, addRequested);           break;
+			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id, addRequested);        break;
+			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id, addRequested);          break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id, addRequested);    break;
+			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id, addRequested);          break;
+			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id, addRequested);   break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id, addRequested); break;
+			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id, addRequested);        break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id, addRequested); break;
+			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id, addRequested);          break;
+			default: break;
 		}
 
-	    ImGui::PopID();
+		ImGui::Spacing();
+		{
+			const float addBtnH = ImGui::GetFrameHeight() * 1.5f;
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
+			if (ImGui::Button("     Add element", {-FLT_MIN, addBtnH}))
+				s_addRequested = true;
+			ImGui::PopStyleColor(4);
+
+			const ImVec2 bMin = ImGui::GetItemRectMin();
+			const ImVec2 bMax = ImGui::GetItemRectMax();
+			ImGui::PushFont(g_MediumIconsFont);
+			const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_PLUS);
+			const float  labelW = ImGui::CalcTextSize("     Add element").x;
+			const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+			const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+			ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+				{iconX, iconY}, IM_COL32(255, 255, 255, 255), ICON_FA_PLUS);
+			ImGui::PopFont();
+		}
+
+		ImGui::PopID();
 	}
 
-	void SimulationWindow::renderExportElementComponentCard() const
+	// ── helpers ─────────────────────────────────────────────────────────────
+	// Two-column table: label left (normal font), input right (mono font).
+	// Call beginParamTable / endParamTable around each group.
+
+	static bool beginParamTable(const char* id)
 	{
-		 ImGui::PushID("export_inline");
-
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Export data");
-		ImGui::PopFont();
-
-	    // Baseline-aligned sentence with inline combos:
-	    ImGui::AlignTextToFramePadding();
-	    ImGui::TextUnformatted("Export");
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-	    // Element combo
-	    static std::string selectedElementId;
-	    const char* elemPreview = selectedElementId.empty() ? "element" : selectedElementId.c_str();
-	    ImGui::SetNextItemWidth(140.0f * ImGui::GetIO().FontGlobalScale);
-	    if (ImGui::BeginCombo("##export_elem_combo", elemPreview))
-	    {
-	        for (const auto& e : simulation->getElements())
-	        {
-	            const std::string& name = e->getUniqueName();
-	            const bool is_sel = (selectedElementId == name);
-	            if (ImGui::Selectable(name.c_str(), is_sel))
-	                selectedElementId = name;
-	            if (is_sel) ImGui::SetItemDefaultFocus();
-	        }
-	        ImGui::EndCombo();
-	    }
-
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-	    ImGui::AlignTextToFramePadding();
-
-	    // Component combo (depends on selected element)
-	    static std::string selectedComponent;
-	    const char* compPreview = selectedComponent.empty() ? "component" : selectedComponent.c_str();
-	    ImGui::SetNextItemWidth(160.0f * ImGui::GetIO().FontGlobalScale);
-
-	    if (ImGui::BeginCombo("##export_comp_combo", compPreview))
-	    {
-	        if (!selectedElementId.empty())
-	        {
-	            if (const auto elem = simulation->getElement(selectedElementId))
-	            {
-	                for (const auto& comp : elem->getComponentList())
-	                {
-	                    const bool is_sel = (selectedComponent == comp);
-	                    if (ImGui::Selectable(comp.c_str(), is_sel))
-	                        selectedComponent = comp;
-	                    if (is_sel) ImGui::SetItemDefaultFocus();
-	                }
-	            }
-	        }
-	        ImGui::EndCombo();
-	    }
-
-	    // Inline download icon button (directly after the component combo)
-	    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-	    const float h = ImGui::GetFrameHeight();
-	    const ImVec2 iconSz(h + 10.0f, h);
-
-	    ImGui::PushFont(g_MediumIconsFont);
-	    const bool exportClicked = ImGui::Button(ICON_FA_DOWNLOAD, iconSz);
-	    ImGui::PopFont();
-
-	    if (exportClicked && !selectedElementId.empty() && !selectedComponent.empty())
-	        simulation->exportComponentToFile(selectedElementId, selectedComponent);
-
-	    ImGui::PopID();
+		return ImGui::BeginTable(id, 2, ImGuiTableFlags_None);
 	}
 
-	void SimulationWindow::renderLogElementParametersCard() const
+	static void paramTableSetup()
 	{
-		ImGui::PushID("log_inline");
+		ImGui::TableSetupColumn("##l", ImGuiTableColumnFlags_WidthStretch, 1.0F);
+		ImGui::TableSetupColumn("##v", ImGuiTableColumnFlags_WidthStretch, 1.0F);
+	}
 
-		// Headline
-		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Log parameters");
-		ImGui::PopFont();
+	static void endParamTable()
+	{
+		ImGui::EndTable();
+	}
 
+	// Render one label-left / input-right row for int input
+	static void paramRowInt(const char* label, const char* wid, int* v)
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
 		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("Log");
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-		// Element combo
-		static std::string selectedId;
-		const char* preview = selectedId.empty() ? "element" : selectedId.c_str();
-		ImGui::SetNextItemWidth(140.0f * ImGui::GetIO().FontGlobalScale);
-		if (ImGui::BeginCombo("##log_elem_combo", preview))
-		{
-			for (const auto& e : simulation->getElements())
-			{
-				const std::string& name = e->getUniqueName();
-				const bool is_sel = (selectedId == name);
-				if (ImGui::Selectable(name.c_str(), is_sel))
-					selectedId = name;
-				if (is_sel) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-		ImGui::AlignTextToFramePadding();
-		ImGui::TextUnformatted("parameters");
-
-		// Inline terminal icon button (directly after a text)
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-		const float h = ImGui::GetFrameHeight();
-		const ImVec2 iconSz(h + 10.0f, h);
-
-		ImGui::PushFont(g_MediumIconsFont);
-		const bool logClicked = ImGui::Button(ICON_FA_TERMINAL, iconSz);
+		ImGui::TextUnformatted(label);
+		ImGui::TableSetColumnIndex(1);
+		ImGui::PushFont(g_MonoMediumFont);
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputInt(wid, v, 0, 0);
 		ImGui::PopFont();
-
-		if (logClicked && !selectedId.empty())
-			if (const auto e = simulation->getElement(selectedId)) e->print();
-
-		ImGui::PopID();
 	}
 
-	void SimulationWindow::renderSimulationControlButtons() const
+	// Render one label-left / input-right row for double input
+	static void paramRowDouble(const char* label, const char* wid, double* v, const char* fmt)
 	{
-
-		if (ImGui::Button("Start"))
-			simulation->init();
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Pause"))
-			simulation->pause();
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Resume"))
-			simulation->resume();
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Stop"))
-			simulation->close();
-
-		// Section for running a specific number of iterations
-		ImGui::Separator();
-
-		static bool runNSteps = false;
-		static int iterationCount = 1000; // Default value
-		static int currentIteration = 0;
-		ImGui::SetNextItemWidth(120);
-		ImGui::InputInt("Iterations", &iterationCount, 1, 10);
-		if (iterationCount < 1) iterationCount = 1; // Ensure positive value
-
-		ImGui::SameLine();
-		if (ImGui::Button("Run N steps"))
-		{
-			// Run the simulation for the specified number of iterations
-			currentIteration = simulation->getT();
-			if (!simulation->isInitialized())
-			{
-				simulation->init();
-				currentIteration = 0;
-			}
-			simulation->resume();
-			runNSteps = true;
-			tools::logger::log(tools::logger::INFO, "Simulation has started running for "
-				+ std::to_string(iterationCount) + " steps.");
-		}
-
-		if (runNSteps)
-		{
-			// simulation has finished running the specified number of iterations
-			if (simulation->getT() >= iterationCount + currentIteration)
-			{
-				runNSteps = false;
-				simulation->pause();
-				tools::logger::log(tools::logger::INFO, "Simulation has finished running "
-					+ std::to_string(iterationCount) + " steps.");
-			}
-		}
-
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted(label);
+		ImGui::TableSetColumnIndex(1);
+		ImGui::PushFont(g_MonoMediumFont);
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputDouble(wid, v, 0.0, 0.0, fmt);
+		ImGui::PopFont();
 	}
 
-	void SimulationWindow::renderSimulationProperties() const
+	// Render one label-left / checkbox-right row
+	static void paramRowBool(const char* label, const char* wid, bool* v)
 	{
-		ImGui::Separator();
-
-		const std::string& identifier = simulation->getIdentifier();
-		const double deltaT = simulation->getDeltaT();
-		const double tZero = simulation->getTZero();
-		const double t = simulation->getT();
-
-		ImGui::Text("Identifier: ");
-		ImGui::SameLine();
-		ImGui::TextUnformatted(identifier.c_str());
-
-		ImGui::Text("Time Step (deltaT): ");
-		ImGui::SameLine();
-		ImGui::Text("%.3f", deltaT);
-
-		ImGui::Text("Start Time (tZero): ");
-		ImGui::SameLine();
-		ImGui::Text("%.3f", tZero);
-
-		ImGui::Text("Current Time (t): ");
-		ImGui::SameLine();
-		ImGui::Text("%.3f", t);
-
-		ImGui::Separator();
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextUnformatted(label);
+		ImGui::TableSetColumnIndex(1);
+		ImGui::Checkbox(wid, v);
 	}
 
-	void SimulationWindow::renderAddElement() const
+	// ── addElement functions ─────────────────────────────────────────────────
+
+	void SimulationWindow::addElementNeuralField(const char* id, const bool addRequested) const
 	{
-		ImGui::PushID("add element");
-		if (ImGui::CollapsingHeader("Add element"))
-		{
-			for (const auto& pair : element::ElementLabelToString)
-				if (pair.first != element::ElementLabel::UNINITIALIZED)
-					renderElementProperties(pair);
-		}
-		ImGui::PopID();
-	}
-
-	void SimulationWindow::renderSetInteraction() const
-	{
-		ImGui::PushID("set interaction");
-		if (ImGui::CollapsingHeader("Set interactions between elements"))
-		{
-			for (const auto& element : simulation->getElements())
-			{
-				const auto elementId = element->getUniqueName();
-				if (ImGui::TreeNode(elementId.c_str()))
-				{
-					static std::string selectedElementId{};
-					static int currentElementIdx = 0;
-
-					// Section 1: Add New Input
-					ImGui::Text("Select the element you want to define as input");
-					if (ImGui::BeginListBox("##Element list available as inputs"))
-					{
-						for (const auto& other_element : simulation->getElements())
-						{
-							std::string inputElementId = other_element->getUniqueName();
-							const bool isSelected = (currentElementIdx == other_element->getUniqueIdentifier());
-							if (ImGui::Selectable(inputElementId.c_str(), isSelected))
-							{
-								selectedElementId = inputElementId;
-								currentElementIdx = other_element->getUniqueIdentifier();
-							}
-
-							if (isSelected)
-								ImGui::SetItemDefaultFocus();
-						}
-						ImGui::EndListBox();
-					}
-
-					if (ImGui::Button("Add", { 100.0f, 30.0f }))
-					{
-						auto input = simulation->getElement(selectedElementId);
-						element->addInput(input);
-						simulation->init();
-					}
-
-					// Section 2: Show Existing Connections
-					ImGui::Separator();
-					ImGui::Text("Currently connected elements:");
-					const auto& inputs = element->getInputs();
-					if (inputs.empty())
-					{
-						ImGui::Text("No connections.");
-					}
-					else
-					{
-						for (size_t i = 0; i < inputs.size(); ++i)
-						{
-							const auto& connectedElement = inputs[i];
-							ImGui::BulletText("%s", connectedElement->getUniqueName().c_str());
-
-							// Add a "Remove" button for each connection
-							ImGui::SameLine();
-							std::string buttonLabel = "Remove##" + std::to_string(i);
-							if (ImGui::Button(buttonLabel.c_str()))
-							{
-								element->removeInput(connectedElement->getUniqueIdentifier());
-								simulation->init();
-							}
-						}
-					}
-					ImGui::Separator();
-
-					ImGui::TreePop();
-				}
-			}
-		}
-		ImGui::PopID();
-	}
-
-	void SimulationWindow::renderRemoveElement() const
-	{
-		ImGui::PushID("remove element");
-		if (ImGui::CollapsingHeader("Remove elements from simulation"))
-		{
-			for (const auto& element : simulation->getElements())
-			{
-				const auto elementId = element->getUniqueName();
-				if (ImGui::TreeNode(elementId.c_str()))
-				{
-					if (ImGui::Button("Remove", { 100.0f, 30.0f }))
-					{
-						simulation->removeElement(elementId);
-						simulation->init();
-					}
-					ImGui::TreePop();
-				}
-			}
-		}
-		ImGui::PopID();
-	}
-
-	void SimulationWindow::renderElementProperties(const std::pair<int, std::string>& elementId) const
-	{
-		if (ImGui::TreeNode(elementId.second.c_str()))
-		{
-			switch (elementId.first)
-			{
-			case element::ElementLabel::NEURAL_FIELD:
-				addElementNeuralField();
-				break;
-			case element::ElementLabel::GAUSS_STIMULUS:
-				addElementGaussStimulus();
-				break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS:
-				addElementTimedGaussStimulus();
-				break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
-				addElementTimedGaussStimulus2D();
-				break;
-			case element::ElementLabel::BOOST_STIMULUS_2D:
-				addElementBoostStimulus2D();
-				break;
-			case element::ElementLabel::FIELD_COUPLING:
-				addElementFieldCoupling();
-				break;
-			case element::ElementLabel::GAUSS_KERNEL:
-				addElementGaussKernel();
-				break;
-			case element::ElementLabel::MEXICAN_HAT_KERNEL:
-				addElementMexicanHatKernel();
-				break;
-			case element::ElementLabel::NORMAL_NOISE:
-				addElementNormalNoise();
-				break;
-			case element::ElementLabel::CORRELATED_NORMAL_NOISE:
-				addElementCorrelatedNormalNoise();
-				break;
-			case element::ElementLabel::GAUSS_FIELD_COUPLING:
-				addElementGaussFieldCoupling();
-				break;
-			default:
-				log(tools::logger::LogLevel::ERROR, "There is a missing element in the TreeNode in simulation window.");
-				break;
-			}
-			ImGui::TreePop();
-		}
-	}
-
-	void SimulationWindow::renderLogElementProperties() const
-	{
-		ImGui::PushID("log element parameters");
-		if (ImGui::CollapsingHeader("Log element parameters"))
-		{
-			for (const auto& element : simulation->getElements())
-			{
-				const auto elementId = element->getUniqueName();
-				if (ImGui::TreeNode(elementId.c_str()))
-				{
-					if (ImGui::Button("Log", { 100.0f, 30.0f }))
-											{
-						element->print();
-					}
-					ImGui::TreePop();
-				}
-			}
-		}
-		ImGui::PopID();
-	}
-
-	void SimulationWindow::renderExportElementComponents() const
-	{
-		ImGui::PushID("export element components");
-		if (ImGui::CollapsingHeader("Export element components"))
-		{
-			for (const auto& element : simulation->getElements())
-			{
-				const auto elementId = element->getUniqueName();
-				if (ImGui::TreeNode(elementId.c_str()))
-				{
-					for (const auto& componentName : element->getComponentList())
-					{
-						if (ImGui::TreeNode(componentName.c_str()))
-						{
-							if (ImGui::Button("Export", { 100.0f, 30.0f }))
-							{
-								simulation->exportComponentToFile(elementId, componentName);
-							}
-							ImGui::TreePop();
-						}
-					}
-					ImGui::TreePop();
-				}
-			}
-		}
-		ImGui::PopID();
-	}
-
-	void SimulationWindow::addElementNeuralField() const
-	{
-		ImGui::PushID("neural field");
-		static char id[CHAR_SIZE] = "neural field u";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
-		static double tau = 25;
-		ImGui::InputDouble("tau", &tau, 1.0f, 10.0f, "%.2f");
-		static double restingLevel = -10.0f;
-		ImGui::InputDouble("resting level", &restingLevel, 1.0f, 10.0f, "%.2f");
-		static int actFnType = element::SIGMOID;
-		static double xShift = 0.0;
+		static int    x_max     = 100;
+		static double d_x       = 1.0;
+		static double resting   = -10.0;
+		static double tau       = 25.0;
+		static int    actFnType = element::SIGMOID;
+		static double xShift    = 0.0;
 		static double steepness = 5.0;
-		static double absBeta = 100.0;
+		static double absBeta   = 100.0;
 		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
-		ImGui::Combo("activation fn.", &actFnType, actFnNames, 3);
-		ImGui::InputDouble("x shift", &xShift, 0.0, 0.0, "%.2f");
-		if (actFnType == element::SIGMOID)
-			ImGui::InputDouble("steepness", &steepness, 1.0f, 10.0f, "%.2f");
-		else if (actFnType == element::ABSSIGMOID)
-			ImGui::InputDouble("beta", &absBeta, 1.0f, 10.0f, "%.2f");
 
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nf_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size",  "##nf_size", &x_max);
+			paramRowDouble("Step",  "##nf_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##nf_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Resting level", "##nf_rest", &resting, "%.2f");
+			paramRowDouble("Time scale",    "##nf_tau",  &tau,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Activation function");
+		if (beginParamTable("##nf_act")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf_fn", &actFnType, actFnNames, 3);
+			paramRowDouble("Shift", "##nf_xsh", &xShift, "%.2f");
+			if (actFnType == element::SIGMOID)
+				paramRowDouble("Steepness", "##nf_steep", &steepness, "%.2f");
+			else if (actFnType == element::ABSSIGMOID)
+				paramRowDouble("Beta", "##nf_beta", &absBeta, "%.2f");
+			endParamTable();
+		}
+
+		if (addRequested)
 		{
 			std::unique_ptr<element::ActivationFunction> af;
 			if (actFnType == element::SIGMOID)
@@ -1707,330 +456,1498 @@ namespace dnf_composer::user_interface
 				af = std::make_unique<element::HeavisideFunction>(xShift);
 			else
 				af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
-			const element::NeuralFieldParameters nfp{ tau, restingLevel, *af };
-			const element::ElementCommonParameters commonParameters{ element::ElementIdentifiers{id},
-				element::ElementDimensions{ x_max, d_x } };
-			simulation->addElement(std::make_shared<element::NeuralField>(commonParameters, nfp));
+			const element::NeuralFieldParameters nfp{ tau, resting, *af };
+			const element::ElementCommonParameters common{ element::ElementIdentifiers{id}, element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::NeuralField>(common, nfp));
 		}
-		ImGui::PopID();
 	}
 
-	void SimulationWindow::addElementGaussStimulus() const
+	void SimulationWindow::addElementGaussStimulus(char* id, bool addRequested) const
 	{
-		ImGui::PushID("gauss stimulus");
-		static char id[CHAR_SIZE] = "gauss stimulus a";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
-		static double sigma = 5;
-		ImGui::InputDouble("sigma", &sigma, 1.0f, 10.0f, "%.2f");
-		static double amplitude = 20;
-		ImGui::InputDouble("amplitude", &amplitude, 1.0f, 10.0f, "%.2f");
-		static double position = 50;
-		ImGui::InputDouble("position", &position, 1.0f, 10.0f, "%.2f");
-		static bool normalized = false;
-		ImGui::Checkbox("normalized", &normalized);
-		static bool circular = false;
-		ImGui::Checkbox("circular", &circular);
+		static int    x_max      = 100;
+		static double d_x        = 1.0;
+		static double width      = 5.0;
+		static double amplitude  = 15.0;
+		static double position   = 50.0;
+		static bool   circular   = true;
+		static bool   normalized = false;
 
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gs_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gs_size", &x_max);
+			paramRowDouble("Step", "##gs_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##gs_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##gs_w",   &width,     "%.2f");
+			paramRowDouble("Amplitude", "##gs_amp", &amplitude, "%.2f");
+			paramRowDouble("Position",  "##gs_pos", &position,  "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gs_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gs_circ", &circular);
+			paramRowBool("Normalized", "##gs_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
 		{
-			const element::GaussStimulusParameters gsp( sigma, amplitude, position, circular, normalized);
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			const std::shared_ptr<element::GaussStimulus> gaussStimulus(new element::GaussStimulus ({id, dimensions}, gsp));
-			simulation->addElement(gaussStimulus);
+			const element::GaussStimulusParameters gsp{ width, amplitude, position, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::GaussStimulus>(common, gsp));
 		}
-		ImGui::PopID();
 	}
 
-	void SimulationWindow::addElementTimedGaussStimulus() const
+	void SimulationWindow::addElementTimedGaussStimulus(char* id, bool addRequested) const
 	{
-		ImGui::PushID("timed gauss stimulus");
-		static char id[CHAR_SIZE] = "timed gauss stimulus a";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("x_max", &x_max, 1, 10);
-		static double d_x = 1.0;
-		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
-		static double sigma = 5.0;
-		ImGui::InputDouble("sigma", &sigma, 1.0, 10.0, "%.2f");
-		static double amplitude = 20.0;
-		ImGui::InputDouble("amplitude", &amplitude, 1.0, 10.0, "%.2f");
-		static double position = 50.0;
-		ImGui::InputDouble("position", &position, 1.0, 10.0, "%.2f");
-		static double tStart = 0.0, tEnd = 10.0;
-		ImGui::InputDouble("t_start", &tStart, 0.1, 1.0, "%.2f");
-		ImGui::InputDouble("t_end",   &tEnd,   0.1, 1.0, "%.2f");
-		static bool normalized = false;
-		ImGui::Checkbox("normalized", &normalized);
-		static bool circular = false;
-		ImGui::Checkbox("circular", &circular);
+		static int    x_max      = 100;
+		static double d_x        = 1.0;
+		static double width      = 5.0;
+		static double amplitude  = 15.0;
+		static double position   = 50.0;
+		static double tStart     = 0.0;
+		static double tEnd       = 500.0;
+		static bool   circular   = true;
+		static bool   normalized = false;
 
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##tgs_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##tgs_size", &x_max);
+			paramRowDouble("Step", "##tgs_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##tgs_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##tgs_w",   &width,     "%.2f");
+			paramRowDouble("Amplitude", "##tgs_amp", &amplitude, "%.2f");
+			paramRowDouble("Position",  "##tgs_pos", &position,  "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Timing");
+		if (beginParamTable("##tgs_tim")) {
+			paramTableSetup();
+			paramRowDouble("t start", "##tgs_ts", &tStart, "%.2f");
+			paramRowDouble("t end",   "##tgs_te", &tEnd,   "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##tgs_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##tgs_circ", &circular);
+			paramRowBool("Normalized", "##tgs_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
 		{
-			element::TimedGaussStimulusParameters tgsp{ sigma, amplitude, position, {{tStart, tEnd}}, circular, normalized };
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			simulation->addElement(std::make_shared<element::TimedGaussStimulus>(element::ElementCommonParameters{id, dimensions}, tgsp));
+			element::TimedGaussStimulusParameters tgsp{ width, amplitude, position, {{tStart, tEnd}}, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::TimedGaussStimulus>(common, tgsp));
 		}
-		ImGui::PopID();
 	}
 
-	void SimulationWindow::addElementBoostStimulus2D() const
+	void SimulationWindow::addElementTimedGaussStimulus2D(char* id, bool addRequested) const
 	{
-		ImGui::PushID("boost stimulus 2d");
-		static char   id[CHAR_SIZE] = "boost stimulus 2d a";
 		static int    x_max = 50, y_max = 50;
 		static double d_x = 1.0, d_y = 1.0;
-		static double amplitude = 5.0;
-		static bool   isActive = true;
-
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		ImGui::InputInt("x_max",      &x_max,     1,   10);
-		ImGui::InputInt("y_max",      &y_max,     1,   10);
-		ImGui::InputDouble("d_x",     &d_x,       0.1, 0.5, "%.2f");
-		ImGui::InputDouble("d_y",     &d_y,       0.1, 0.5, "%.2f");
-		ImGui::InputDouble("amplitude",&amplitude, 1.0, 5.0, "%.2f");
-		ImGui::Checkbox("active",     &isActive);
-
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
-		{
-			const element::BoostStimulus2DParameters bsp{ amplitude, isActive };
-			const element::ElementDimensions dims{ x_max, y_max, d_x, d_y };
-			simulation->addElement(std::make_shared<element::BoostStimulus2D>(
-				element::ElementCommonParameters{ id, dims }, bsp));
-		}
-		ImGui::PopID();
-	}
-
-	void SimulationWindow::addElementTimedGaussStimulus2D() const
-	{
-		ImGui::PushID("timed gauss stimulus 2d");
-		static char   id[CHAR_SIZE] = "timed gauss stimulus 2d a";
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
-		static double sigma = 5.0, amplitude = 15.0;
+		static double width = 5.0, amplitude = 15.0;
 		static double pos_x = 25.0, pos_y = 25.0;
 		static double tStart = 0.0, tEnd = 10.0;
 		static bool   circular = true, normalized = false;
 
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		ImGui::InputInt("x_max",      &x_max,     1,   10);
-		ImGui::InputInt("y_max",      &y_max,     1,   10);
-		ImGui::InputDouble("d_x",     &d_x,       0.1, 0.5, "%.2f");
-		ImGui::InputDouble("d_y",     &d_y,       0.1, 0.5, "%.2f");
-		ImGui::InputDouble("sigma",   &sigma,     1.0, 10.0, "%.2f");
-		ImGui::InputDouble("amplitude",&amplitude,1.0, 10.0, "%.2f");
-		ImGui::InputDouble("pos_x",   &pos_x,     1.0, 10.0, "%.2f");
-		ImGui::InputDouble("pos_y",   &pos_y,     1.0, 10.0, "%.2f");
-		ImGui::InputDouble("t_start", &tStart,    0.1, 1.0,  "%.2f");
-		ImGui::InputDouble("t_end",   &tEnd,      0.1, 1.0,  "%.2f");
-		ImGui::Checkbox("circular",   &circular);
-		ImGui::Checkbox("normalized", &normalized);
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##tgs2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##tgs2_xmax", &x_max);
+			paramRowInt   ("y size", "##tgs2_ymax", &y_max);
+			paramRowDouble("x step", "##tgs2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##tgs2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##tgs2_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##tgs2_w",    &width,     "%.2f");
+			paramRowDouble("Amplitude",  "##tgs2_amp",  &amplitude, "%.2f");
+			paramRowDouble("Position x", "##tgs2_posx", &pos_x,     "%.2f");
+			paramRowDouble("Position y", "##tgs2_posy", &pos_y,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Timing");
+		if (beginParamTable("##tgs2_tim")) {
+			paramTableSetup();
+			paramRowDouble("t start", "##tgs2_ts", &tStart, "%.2f");
+			paramRowDouble("t end",   "##tgs2_te", &tEnd,   "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##tgs2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##tgs2_circ", &circular);
+			paramRowBool("Normalized", "##tgs2_norm", &normalized);
+			endParamTable();
+		}
 
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		if (addRequested)
 		{
-			element::TimedGaussStimulus2DParameters tgsp{ sigma, amplitude, pos_x, pos_y,
+			element::TimedGaussStimulus2DParameters tgsp{ width, amplitude, pos_x, pos_y,
 				{{tStart, tEnd}}, circular, normalized };
-			const element::ElementDimensions dims{ x_max, y_max, d_x, d_y };
-			simulation->addElement(std::make_shared<element::TimedGaussStimulus2D>(
-				element::ElementCommonParameters{ id, dims }, tgsp));
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::TimedGaussStimulus2D>(common, tgsp));
 		}
-		ImGui::PopID();
 	}
 
-	void SimulationWindow::addElementNormalNoise() const
+	void SimulationWindow::addElementGaussKernel(char* id, bool addRequested) const
 	{
-		ImGui::PushID("normal noise");
-		static char id[CHAR_SIZE] = "normal noise a";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
-		static double amplitude = 0.01;
-		ImGui::InputDouble("amplitude", &amplitude, 0.01f, 1.0f, "%.2f");
+		static int    x_max           = 100;
+		static double d_x             = 1.0;
+		static double width           = 3.0;
+		static double amplitude       = 3.0;
+		static double amplitudeGlobal = -0.01;
+		static bool   circular        = true;
+		static bool   normalized      = true;
 
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gk_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gk_size", &x_max);
+			paramRowDouble("Step", "##gk_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##gk_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##gk_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",  "##gk_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp", "##gk_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gk_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gk_circ", &circular);
+			paramRowBool("Normalized", "##gk_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
 		{
-			const element::NormalNoiseParameters nnp( amplitude );
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			const std::shared_ptr<element::NormalNoise> normalNoise( new element::NormalNoise({ id, dimensions}, nnp));
-			const element::GaussKernelParameters gkp( 0.25, 0.2 );
-			const std::shared_ptr<element::GaussKernel> gaussKernelNormalNoise(new element::GaussKernel({ std::string(id) + " gauss kernel", dimensions }, gkp));
-			simulation->addElement(normalNoise);
-			simulation->addElement(gaussKernelNormalNoise);
-			simulation->createInteraction(id, "output", std::string(id) + " gauss kernel");
-			simulation->createInteraction(std::string(id) + " gauss kernel", "output", id);
+			const element::GaussKernelParameters gkp{ width, amplitude, amplitudeGlobal, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::GaussKernel>(common, gkp));
 		}
-		ImGui::PopID();
 	}
 
-	void SimulationWindow::addElementCorrelatedNormalNoise() const
+	void SimulationWindow::addElementMexicanHatKernel(char* id, bool addRequested) const
 	{
-		ImGui::PushID("correlated normal noise");
-		static char id[CHAR_SIZE] = "correlated normal noise a";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
-		static double amplitude = 0.05;
-		ImGui::InputDouble("amplitude", &amplitude, 0.01f, 1.0f, "%.4f");
-		static double width = 2.0;
-		ImGui::InputDouble("width", &width, 0.1, 1.0, "%.2f");
-		static bool circular = true;
-		ImGui::Checkbox("circular", &circular);
+		static int    x_max           = 100;
+		static double d_x             = 1.0;
+		static double widthExc        = 2.5;
+		static double amplitudeExc    = 11.0;
+		static double widthInh        = 5.0;
+		static double amplitudeInh    = 15.0;
+		static double amplitudeGlobal = -0.1;
+		static bool   circular        = true;
+		static bool   normalized      = true;
 
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mhk_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##mhk_size", &x_max);
+			paramRowDouble("Step", "##mhk_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Excitatory");
+		if (beginParamTable("##mhk_exc")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk_we",   &widthExc,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk_ampe", &amplitudeExc, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Inhibitory");
+		if (beginParamTable("##mhk_inh")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk_wi",   &widthInh,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk_ampi", &amplitudeInh, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Global");
+		if (beginParamTable("##mhk_glo")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##mhk_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##mhk_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##mhk_circ", &circular);
+			paramRowBool("Normalized", "##mhk_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::MexicanHatKernelParameters mhkp{ widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::MexicanHatKernel>(common, mhkp));
+		}
+	}
+
+	void SimulationWindow::addElementOscillatoryKernel(char* id, bool addRequested) const
+	{
+		static int    x_max           = 100;
+		static double d_x             = 1.0;
+		static double amplitude       = 1.0;
+		static double decay           = 0.08;
+		static double zeroCrossings   = 0.3;
+		static double amplitudeGlobal = -0.01;
+		static bool   circular        = true;
+		static bool   normalized      = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##ok_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##ok_size", &x_max);
+			paramRowDouble("Step", "##ok_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##ok_ker")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude",      "##ok_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Decay",          "##ok_dec",  &decay,           "%.4f");
+			paramRowDouble("Zero crossings", "##ok_zc",   &zeroCrossings,   "%.2f");
+			paramRowDouble("Global amp",     "##ok_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##ok_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##ok_circ", &circular);
+			paramRowBool("Normalized", "##ok_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::OscillatoryKernelParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::OscillatoryKernel>(common, okp));
+		}
+	}
+
+	void SimulationWindow::addElementAsymmetricGaussKernel(char* id, bool addRequested) const
+	{
+		static int    x_max           = 100;
+		static double d_x             = 1.0;
+		static double width           = 3.0;
+		static double amplitude       = 3.0;
+		static double amplitudeGlobal = 0.0;
+		static double timeShift       = 0.0;
+		static bool   circular        = true;
+		static bool   normalized      = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##agk_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##agk_size", &x_max);
+			paramRowDouble("Step", "##agk_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##agk_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##agk_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",  "##agk_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp", "##agk_ampg", &amplitudeGlobal, "%.4f");
+			paramRowDouble("Time shift", "##agk_tsh",  &timeShift,       "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##agk_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##agk_circ", &circular);
+			paramRowBool("Normalized", "##agk_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::AsymmetricGaussKernelParameters agkp{ width, amplitude, amplitudeGlobal, timeShift, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::AsymmetricGaussKernel>(common, agkp));
+		}
+	}
+
+	void SimulationWindow::addElementNormalNoise(char* id, bool addRequested) const
+	{
+		static int    x_max     = 100;
+		static double d_x       = 1.0;
+		static double amplitude = 0.2;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nn_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##nn_size", &x_max);
+			paramRowDouble("Step", "##nn_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##nn_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##nn_amp", &amplitude, "%.4f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::NormalNoiseParameters nnp{ amplitude };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::NormalNoise>(common, nnp));
+		}
+	}
+
+	void SimulationWindow::addElementCorrelatedNormalNoise(char* id, bool addRequested) const
+	{
+		static int    x_max     = 100;
+		static double d_x       = 1.0;
+		static double amplitude = 0.05;
+		static double width     = 2.0;
+		static bool   circular  = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##cnn_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##cnn_size", &x_max);
+			paramRowDouble("Step", "##cnn_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##cnn_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##cnn_amp", &amplitude, "%.4f");
+			paramRowDouble("Width",     "##cnn_w",   &width,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##cnn_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular", "##cnn_circ", &circular);
+			endParamTable();
+		}
+
+		if (addRequested)
 		{
 			const element::CorrelatedNormalNoiseParameters cnnp{ amplitude, width, circular };
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			simulation->addElement(std::make_shared<element::CorrelatedNormalNoise>(element::ElementCommonParameters{ id, dimensions }, cnnp));
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::CorrelatedNormalNoise>(common, cnnp));
 		}
-		ImGui::PopID();
 	}
 
-	void SimulationWindow::addElementFieldCoupling() const
+	void SimulationWindow::addElementFieldCoupling(char* id, bool addRequested) const
 	{
-		ImGui::PushID("field coupling");
-		static char id[CHAR_SIZE] = "field coupling u -> v";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("output x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("output d_x", &d_x, 0.1, 0.5, "%.2f");
-		static int in_x_max = 100;
-		ImGui::InputInt("input x_max", &in_x_max, 1.0, 10.0);
-		static double in_d_x = 1.0;
-		ImGui::InputDouble("input d_x", &in_d_x, 0.1, 0.5, "%.2f");
-		static LearningRule learningRule = LearningRule::HEBB;
-		if (ImGui::BeginCombo("learning rule", LearningRuleToString.at(learningRule).c_str()))
-		{
-			for (size_t i = 0; i < LearningRuleToString.size(); ++i)
+		static int         x_max_out    = 100;
+		static double      d_x_out      = 1.0;
+		static int         x_max_in     = 100;
+		static double      d_x_in       = 1.0;
+		static auto rule        = LearningRule::HEBB;
+		static double      scalar       = 1.0;
+		static double      learningRate = 0.01;
+
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##fc_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##fc_osize", &x_max_out);
+			paramRowDouble("Step", "##fc_ostep", &d_x_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##fc_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##fc_isize", &x_max_in);
+			paramRowDouble("Step", "##fc_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Learning");
+		if (beginParamTable("##fc_learn")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Rule");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##fc_rule", LearningRuleToString.at(rule).c_str()))
 			{
-				const char* name = LearningRuleToString.at(static_cast<LearningRule>(i)).c_str();
-				if (ImGui::Selectable(name, learningRule == static_cast<LearningRule>(i)))
+				for (const auto& [lr, name] : LearningRuleToString)
 				{
-					learningRule = static_cast<LearningRule>(i);
+					const bool sel = (rule == lr);
+					if (ImGui::Selectable(name.c_str(), sel)) rule = lr;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			paramRowDouble("Scalar",        "##fc_scal", &scalar,       "%.2f");
+			paramRowDouble("Learning rate", "##fc_lr",   &learningRate, "%.4f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementDimensions inDims{ x_max_in, d_x_in };
+			const element::FieldCouplingParameters fcp{ inDims, rule, scalar, learningRate };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
+			simulation->addElement(std::make_shared<element::FieldCoupling>(common, fcp));
+		}
+	}
+
+	void SimulationWindow::addElementGaussFieldCoupling(char* id, bool addRequested) const
+	{
+		static int    x_max_out  = 100;
+		static double d_x_out    = 1.0;
+		static int    x_max_in   = 100;
+		static double d_x_in     = 1.0;
+		static bool   normalized = false;
+		static bool   circular   = true;
+
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##gfc_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gfc_osize", &x_max_out);
+			paramRowDouble("Step", "##gfc_ostep", &d_x_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##gfc_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##gfc_isize", &x_max_in);
+			paramRowDouble("Step", "##gfc_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gfc_opt")) {
+			paramTableSetup();
+			paramRowBool("Normalized", "##gfc_norm", &normalized);
+			paramRowBool("Circular",   "##gfc_circ", &circular);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::GaussFieldCouplingParameters gfcp{ element::ElementDimensions{ x_max_in, d_x_in }, normalized, circular };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
+			simulation->addElement(std::make_shared<element::GaussFieldCoupling>(common, gfcp));
+		}
+	}
+
+	void SimulationWindow::addElementBoostStimulus(char* id, bool addRequested) const
+	{
+		static int    x_max     = 100;
+		static double d_x       = 1.0;
+		static double amplitude = 5.0;
+		static bool   isActive  = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##bs_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##bs_size", &x_max);
+			paramRowDouble("Step", "##bs_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Stimulus");
+		if (beginParamTable("##bs_stim")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##bs_amp", &amplitude, "%.2f");
+			paramRowBool  ("Active",    "##bs_act", &isActive);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::BoostStimulusParameters bsp{ amplitude, isActive };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::BoostStimulus>(common, bsp));
+		}
+	}
+
+	void SimulationWindow::addElementMemoryTrace(char* id, bool addRequested) const
+	{
+		static int    x_max     = 100;
+		static double d_x       = 1.0;
+		static double tauBuild  = 100.0;
+		static double tauDecay  = 1000.0;
+		static double threshold = 0.5;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mt_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##mt_size", &x_max);
+			paramRowDouble("Step", "##mt_step", &d_x, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##mt_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Time scale build",  "##mt_tauB", &tauBuild,  "%.2f");
+			paramRowDouble("Time scale decay",  "##mt_tauD", &tauDecay,  "%.2f");
+			paramRowDouble("Threshold",  "##mt_thr",  &threshold, "%.2f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::MemoryTraceParameters mtp{ tauBuild, tauDecay, threshold };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::MemoryTrace>(common, mtp));
+		}
+	}
+
+	void SimulationWindow::addElementNeuralField2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double tau = 25.0, restingLevel = -5.0;
+		static int    actFnType = element::SIGMOID;
+		static double xShift    = 0.0;
+		static double steepness = 5.0;
+		static double absBeta   = 100.0;
+		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nf2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##nf2_xmax", &x_max);
+			paramRowInt   ("y size", "##nf2_ymax", &y_max);
+			paramRowDouble("x step", "##nf2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##nf2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##nf2_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Time scale",    "##nf2_tau",  &tau,          "%.2f");
+			paramRowDouble("Resting level", "##nf2_rest", &restingLevel, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Activation function");
+		if (beginParamTable("##nf2_act")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf2_fn", &actFnType, actFnNames, 3);
+			paramRowDouble("Shift", "##nf2_xsh", &xShift, "%.2f");
+			if (actFnType == element::SIGMOID)
+				paramRowDouble("Steepness", "##nf2_steep", &steepness, "%.2f");
+			else if (actFnType == element::ABSSIGMOID)
+				paramRowDouble("Beta", "##nf2_beta", &absBeta, "%.2f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			std::unique_ptr<element::ActivationFunction> af;
+			if (actFnType == element::SIGMOID)
+				af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
+			else if (actFnType == element::HEAVISIDE)
+				af = std::make_unique<element::HeavisideFunction>(xShift);
+			else
+				af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+			const element::NeuralField2DParameters nfp{ tau, restingLevel, *af };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::NeuralField2D>(common, nfp));
+		}
+	}
+
+	void SimulationWindow::addElementGaussStimulus2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double width = 5.0, amplitude = 15.0;
+		static double pos_x = 25.0, pos_y = 25.0;
+		static bool   circular = true, normalized = false;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gs2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##gs2_xmax", &x_max);
+			paramRowInt   ("y size", "##gs2_ymax", &y_max);
+			paramRowDouble("x step", "##gs2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##gs2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Shape");
+		if (beginParamTable("##gs2_shp")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##gs2_w",    &width,     "%.2f");
+			paramRowDouble("Amplitude",  "##gs2_amp",  &amplitude, "%.2f");
+			paramRowDouble("Position x", "##gs2_posx", &pos_x,     "%.2f");
+			paramRowDouble("Position y", "##gs2_posy", &pos_y,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gs2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gs2_circ", &circular);
+			paramRowBool("Normalized", "##gs2_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::GaussStimulus2DParameters gsp( width, amplitude, pos_x, pos_y, circular, normalized );
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::GaussStimulus2D>(common, gsp));
+		}
+	}
+
+	void SimulationWindow::addElementGaussKernel2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double width = 3.0, amplitude = 3.0, amplitudeGlobal = -0.01;
+		static bool   circular = true, normalized = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##gk2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##gk2_xmax", &x_max);
+			paramRowInt   ("y size", "##gk2_ymax", &y_max);
+			paramRowDouble("x step", "##gk2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##gk2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##gk2_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",      "##gk2_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",  "##gk2_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp", "##gk2_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##gk2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##gk2_circ", &circular);
+			paramRowBool("Normalized", "##gk2_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::GaussKernel2DParameters gkp( width, amplitude, amplitudeGlobal, circular, normalized );
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::GaussKernel2D>(common, gkp));
+		}
+	}
+
+	void SimulationWindow::addElementMexicanHatKernel2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double widthExc = 2.5, amplitudeExc = 11.0;
+		static double widthInh = 5.0, amplitudeInh = 15.0;
+		static double amplitudeGlobal = -0.1;
+		static bool   circular = true, normalized = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mhk2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##mhk2_xmax", &x_max);
+			paramRowInt   ("y size", "##mhk2_ymax", &y_max);
+			paramRowDouble("x step", "##mhk2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##mhk2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Excitatory");
+		if (beginParamTable("##mhk2_exc")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk2_we",   &widthExc,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk2_ampe", &amplitudeExc, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Inhibitory");
+		if (beginParamTable("##mhk2_inh")) {
+			paramTableSetup();
+			paramRowDouble("Width",     "##mhk2_wi",   &widthInh,     "%.2f");
+			paramRowDouble("Amplitude", "##mhk2_ampi", &amplitudeInh, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Global");
+		if (beginParamTable("##mhk2_glo")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##mhk2_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##mhk2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##mhk2_circ", &circular);
+			paramRowBool("Normalized", "##mhk2_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::MexicanHatKernel2DParameters mhkp( widthExc, amplitudeExc, widthInh, amplitudeInh, amplitudeGlobal, circular, normalized );
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::MexicanHatKernel2D>(common, mhkp));
+		}
+	}
+
+	void SimulationWindow::addElementNormalNoise2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double amplitude = 0.2;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##nn2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##nn2_xmax", &x_max);
+			paramRowInt   ("y size", "##nn2_ymax", &y_max);
+			paramRowDouble("x step", "##nn2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##nn2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##nn2_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##nn2_amp", &amplitude, "%.4f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::NormalNoise2DParameters nnp( amplitude );
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::NormalNoise2D>(common, nnp));
+		}
+	}
+
+	void SimulationWindow::addElementOscillatoryKernel2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double amplitude       = 1.0;
+		static double decay           = 0.08;
+		static double zeroCrossings   = 0.3;
+		static double amplitudeGlobal = -0.01;
+		static bool   circular        = true;
+		static bool   normalized      = false;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##ok2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##ok2_xmax", &x_max);
+			paramRowInt   ("y size", "##ok2_ymax", &y_max);
+			paramRowDouble("x step", "##ok2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##ok2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##ok2_ker")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude",      "##ok2_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Decay",          "##ok2_dec",  &decay,           "%.4f");
+			paramRowDouble("Zero crossings", "##ok2_zc",   &zeroCrossings,   "%.2f");
+			paramRowDouble("Global amp",     "##ok2_ampg", &amplitudeGlobal, "%.4f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##ok2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##ok2_circ", &circular);
+			paramRowBool("Normalized", "##ok2_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::OscillatoryKernel2DParameters okp{ amplitude, decay, zeroCrossings, amplitudeGlobal, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::OscillatoryKernel2D>(common, okp));
+		}
+	}
+
+	void SimulationWindow::addElementAsymmetricGaussKernel2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double width           = 3.0;
+		static double amplitude       = 3.0;
+		static double amplitudeGlobal = 0.0;
+		static double timeShift_x     = 0.0;
+		static double timeShift_y     = 0.0;
+		static bool   circular        = true;
+		static bool   normalized      = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##agk2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##agk2_xmax", &x_max);
+			paramRowInt   ("y size", "##agk2_ymax", &y_max);
+			paramRowDouble("x step", "##agk2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##agk2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Kernel");
+		if (beginParamTable("##agk2_ker")) {
+			paramTableSetup();
+			paramRowDouble("Width",        "##agk2_w",    &width,           "%.2f");
+			paramRowDouble("Amplitude",    "##agk2_amp",  &amplitude,       "%.2f");
+			paramRowDouble("Global amp",   "##agk2_ampg", &amplitudeGlobal, "%.4f");
+			paramRowDouble("Time shift x", "##agk2_tsx",  &timeShift_x,     "%.2f");
+			paramRowDouble("Time shift y", "##agk2_tsy",  &timeShift_y,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##agk2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular",   "##agk2_circ", &circular);
+			paramRowBool("Normalized", "##agk2_norm", &normalized);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::AsymmetricGaussKernel2DParameters agkp{ width, amplitude, amplitudeGlobal,
+				timeShift_x, timeShift_y, circular, normalized };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::AsymmetricGaussKernel2D>(common, agkp));
+		}
+	}
+
+	void SimulationWindow::addElementBoostStimulus2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double amplitude = 5.0;
+		static bool   isActive  = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##bs2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##bs2_xmax", &x_max);
+			paramRowInt   ("y size", "##bs2_ymax", &y_max);
+			paramRowDouble("x step", "##bs2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##bs2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Stimulus");
+		if (beginParamTable("##bs2_stim")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##bs2_amp", &amplitude, "%.2f");
+			paramRowBool  ("Active",    "##bs2_act", &isActive);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::BoostStimulus2DParameters bsp{ amplitude, isActive };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::BoostStimulus2D>(common, bsp));
+		}
+	}
+
+	void SimulationWindow::addElementCorrelatedNormalNoise2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double amplitude = 0.05;
+		static double width     = 1.0;
+		static bool   circular  = true;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##cnn2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##cnn2_xmax", &x_max);
+			paramRowInt   ("y size", "##cnn2_ymax", &y_max);
+			paramRowDouble("x step", "##cnn2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##cnn2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Noise");
+		if (beginParamTable("##cnn2_noi")) {
+			paramTableSetup();
+			paramRowDouble("Amplitude", "##cnn2_amp", &amplitude, "%.4f");
+			paramRowDouble("Width",     "##cnn2_w",   &width,     "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Options");
+		if (beginParamTable("##cnn2_opt")) {
+			paramTableSetup();
+			paramRowBool("Circular", "##cnn2_circ", &circular);
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::CorrelatedNormalNoise2DParameters cnnp{ amplitude, width, circular };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::CorrelatedNormalNoise2D>(common, cnnp));
+		}
+	}
+
+	void SimulationWindow::addElementMemoryTrace2D(char* id, bool addRequested) const
+	{
+		static int    x_max = 50, y_max = 50;
+		static double d_x = 1.0, d_y = 1.0;
+		static double tauBuild  = 100.0;
+		static double tauDecay  = 1000.0;
+		static double threshold = 0.5;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##mt2_dim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##mt2_xmax", &x_max);
+			paramRowInt   ("y size", "##mt2_ymax", &y_max);
+			paramRowDouble("x step", "##mt2_dx",   &d_x, "%.2f");
+			paramRowDouble("y step", "##mt2_dy",   &d_y, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Dynamics");
+		if (beginParamTable("##mt2_dyn")) {
+			paramTableSetup();
+			paramRowDouble("Time scale build",  "##mt2_tauB", &tauBuild,  "%.2f");
+			paramRowDouble("Time scale decay",  "##mt2_tauD", &tauDecay,  "%.2f");
+			paramRowDouble("Threshold",  "##mt2_thr",  &threshold, "%.2f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::MemoryTrace2DParameters mtp{ tauBuild, tauDecay, threshold };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
+			simulation->addElement(std::make_shared<element::MemoryTrace2D>(common, mtp));
+		}
+	}
+
+
+	void SimulationWindow::renderRemoveElementCard() const
+	{
+		struct ElemCategory { const char* label; ImU32 color; };
+		static auto getCategory = [](const element::ElementLabel lbl) -> ElemCategory {
+			using L = element::ElementLabel;
+			switch (lbl) {
+				case L::NEURAL_FIELD:    case L::NEURAL_FIELD_2D:
+					return {"Field",    IM_COL32(74,  144, 217, 255)};
+				case L::GAUSS_STIMULUS:  case L::TIMED_GAUSS_STIMULUS:
+				case L::GAUSS_STIMULUS_2D: case L::TIMED_GAUSS_STIMULUS_2D:
+				case L::BOOST_STIMULUS:  case L::BOOST_STIMULUS_2D:
+					return {"Stimulus", IM_COL32(31,  158, 126, 255)};
+				case L::GAUSS_KERNEL:    case L::MEXICAN_HAT_KERNEL:
+				case L::OSCILLATORY_KERNEL: case L::ASYMMETRIC_GAUSS_KERNEL:
+				case L::GAUSS_KERNEL_2D: case L::MEXICAN_HAT_KERNEL_2D:
+				case L::OSCILLATORY_KERNEL_2D: case L::ASYMMETRIC_GAUSS_KERNEL_2D:
+					return {"Kernel",   IM_COL32(192, 57,  43,  255)};
+				case L::NORMAL_NOISE:    case L::CORRELATED_NORMAL_NOISE:
+				case L::NORMAL_NOISE_2D: case L::CORRELATED_NORMAL_NOISE_2D:
+					return {"Noise",    IM_COL32(230, 126, 34,  255)};
+				case L::FIELD_COUPLING:  case L::GAUSS_FIELD_COUPLING:
+					return {"Coupling", IM_COL32(142, 68,  173, 255)};
+				case L::MEMORY_TRACE:    case L::MEMORY_TRACE_2D:
+					return {"Memory",   IM_COL32(127, 140, 141, 255)};
+				default:
+					return {"Unknown",  IM_COL32(150, 150, 150, 255)};
+			}
+		};
+
+		static char searchBuf[128] = {};
+		static std::string pendingRemove;
+
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##re_search", "Search...", searchBuf, sizeof(searchBuf));
+		ImGui::Spacing();
+
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Pick element to remove");
+		ImGui::PopStyleColor();
+		ImGui::Spacing();
+
+		std::string filterLower(searchBuf);
+		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
+
+		const float rowH   = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
+		const float dotR   = 5.0F;
+		const float trashW = ImGui::GetFrameHeight() + 10.0F;
+		const float typeW  = 65.0F * ImGui::GetIO().FontGlobalScale;
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		if (ImGui::BeginChild("##re_list", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
+		{
+			for (const auto& e : simulation->getElements())
+			{
+				const std::string& name = e->getUniqueName();
+				const auto cat = getCategory(e->getLabel());
+
+				if (!filterLower.empty())
+				{
+					std::string nameLower(name);
+					std::ranges::transform(nameLower, nameLower.begin(), ::tolower);
+					std::string catLower(cat.label);
+					std::transform(catLower.begin(), catLower.end(), catLower.begin(), ::tolower);
+					if (nameLower.find(filterLower) == std::string::npos &&
+						catLower.find(filterLower)  == std::string::npos)
+						continue;
+				}
+
+				ImGui::PushID(name.c_str());
+
+				const ImVec2 rowMin = ImGui::GetCursorScreenPos();
+				const float  avail  = ImGui::GetContentRegionAvail().x;
+				const float  selH   = rowH - ImGui::GetStyle().ItemSpacing.y;
+
+				ImGui::Selectable("##row", false, ImGuiSelectableFlags_AllowOverlap, {avail, selH});
+
+				ImDrawList* dl = ImGui::GetWindowDrawList();
+				const float cy    = rowMin.y + selH * 0.5f;
+				const float cx    = rowMin.x + 12.0F;
+				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+
+				dl->AddCircleFilled({cx, cy}, dotR, cat.color);
+				dl->AddText({cx + dotR + 8.0F, textY}, ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
+				dl->AddText({rowMin.x + avail - trashW - typeW - 4.0F, textY},
+					ImGui::GetColorU32(ImGuiCol_TextDisabled), cat.label);
+
+				ImGui::SetCursorScreenPos({rowMin.x + avail - trashW, rowMin.y});
+				ImGui::PushFont(g_MediumIconsFont);
+				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+				if (ImGui::Button(ICON_FA_TRASH, {trashW, selH}))
+					pendingRemove = name;
+				ImGui::PopStyleColor(3);
+				ImGui::PopFont();
+
+				ImGui::PopID();
+			}
+		}
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+
+		if (!pendingRemove.empty())
+		{
+			simulation->removeElement(pendingRemove);
+			simulation->init();
+			pendingRemove.clear();
+		}
+	}
+
+	void SimulationWindow::renderSetInteractionCard() const
+	{
+		static std::string selectedTarget;
+		static std::string selectedSource;
+		static std::string pendingRemoveTarget;
+		static std::string pendingRemoveSource;
+		static char connSearch[128] = {};
+
+		auto elementCombo = [&](const char* wid, const char* hint, std::string& value)
+		{
+			const char* preview = value.empty() ? hint : value.c_str();
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(wid, preview))
+			{
+				for (const auto& e : simulation->getElements())
+				{
+					const std::string& name = e->getUniqueName();
+					const bool sel = (value == name);
+					if (ImGui::Selectable(name.c_str(), sel)) value = name;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+		};
+
+		ImGui::TextUnformatted("Target element");
+		elementCombo("##si_target", "Target element", selectedTarget);
+		ImGui::Spacing();
+		ImGui::TextUnformatted("Source element");
+		elementCombo("##si_source", "Source element", selectedSource);
+		ImGui::Spacing();
+
+		// Connect button — right after the source combo
+		{
+			const bool canConn = !selectedTarget.empty() && !selectedSource.empty();
+			const float btnH   = ImGui::GetFrameHeight() * 1.5f;
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
+			ImGui::BeginDisabled(!canConn);
+			const bool pressed = ImGui::Button("     Connect", {-FLT_MIN, btnH});
+			ImGui::EndDisabled();
+			ImGui::PopStyleColor(4);
+
+			{
+				const ImVec2 bMin = ImGui::GetItemRectMin();
+				const ImVec2 bMax = ImGui::GetItemRectMax();
+				ImGui::PushFont(g_MediumIconsFont);
+				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_LINK);
+				const float  labelW = ImGui::CalcTextSize("     Connect").x;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const ImU32  col    = canConn ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+					{iconX, iconY}, col, ICON_FA_LINK);
+				ImGui::PopFont();
+			}
+
+			if (pressed)
+			{
+				const auto target = simulation->getElement(selectedTarget);
+				const auto input  = simulation->getElement(selectedSource);
+				if (target && input && target->getUniqueIdentifier() != input->getUniqueIdentifier())
+				{
+					target->addInput(input);
+					simulation->init();
+				}
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Existing connections");
+		ImGui::PopStyleColor();
+		ImGui::Spacing();
+
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##si_conn_search", "Search...", connSearch, sizeof(connSearch));
+		ImGui::Spacing();
+
+		std::string filterLower(connSearch);
+		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
+
+		const float unlinkW = ImGui::GetFrameHeight() + 6.0F;
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		if (ImGui::BeginChild("##si_connections", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
+		{
+			bool any = false;
+			for (const auto& tgt : simulation->getElements())
+			{
+				for (const auto& [src, comp] : tgt->getInputsAndComponents())
+				{
+					std::string label = src->getUniqueName() + " \xe2\x86\x92 " + tgt->getUniqueName();
+					if (comp != "output") label += " (" + comp + ")";
+
+					if (!filterLower.empty())
+					{
+						std::string labelLower = label;
+						std::transform(labelLower.begin(), labelLower.end(), labelLower.begin(), ::tolower);
+						if (labelLower.find(filterLower) == std::string::npos) continue;
+					}
+
+					any = true;
+					ImGui::PushID(label.c_str());
+
+					const ImVec2 rowMin = ImGui::GetCursorScreenPos();
+					const float  avail  = ImGui::GetContentRegionAvail().x;
+					const float  selH   = ImGui::GetFrameHeight();
+
+					ImGui::Selectable("##conn_row", false, ImGuiSelectableFlags_AllowOverlap,
+						{avail, selH});
+					const bool hov = ImGui::IsItemHovered();
+
+					ImDrawList* dl = ImGui::GetWindowDrawList();
+					const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+					dl->AddText({rowMin.x + 6.0F, textY}, ImGui::GetColorU32(ImGuiCol_Text),
+						label.c_str());
+
+					if (hov)
+					{
+						ImGui::SetCursorScreenPos({rowMin.x + avail - unlinkW, rowMin.y});
+						ImGui::PushFont(g_MediumIconsFont);
+						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0F, 0.0F, 0.0F, 0.12f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0F, 0.0F, 0.0F, 0.22f));
+						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85f, 0.15f, 0.15f, 1.0F));
+						if (ImGui::Button(ICON_FA_LINK_SLASH, {unlinkW, selH}))
+						{
+							pendingRemoveTarget = tgt->getUniqueName();
+							pendingRemoveSource = src->getUniqueName();
+						}
+						ImGui::PopStyleColor(4);
+						ImGui::PopFont();
+					}
+
+					ImGui::PopID();
+				}
+			}
+			if (!any)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+				ImGui::TextUnformatted("No connections.");
+				ImGui::PopStyleColor();
+			}
+		}
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+
+		if (!pendingRemoveTarget.empty())
+		{
+			if (const auto tgt = simulation->getElement(pendingRemoveTarget))
+			{
+				tgt->removeInput(pendingRemoveSource);
+				simulation->init();
+			}
+			pendingRemoveTarget.clear();
+			pendingRemoveSource.clear();
+		}
+	}
+
+	void SimulationWindow::renderExportElementComponentCard() const
+	{
+		ImGui::PushID("export_inline");
+
+		static std::string selectedElementId;
+		static std::string selectedComponent;
+
+		// ── Element ───────────────────────────────────────────────────────────
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Element");
+		ImGui::PopStyleColor();
+		const char* elemPreview = selectedElementId.empty() ? "Select an element..." : selectedElementId.c_str();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		if (ImGui::BeginCombo("##export_elem_combo", elemPreview))
+		{
+			for (const auto& e : simulation->getElements())
+			{
+				const std::string& name = e->getUniqueName();
+				const bool is_sel = (selectedElementId == name);
+				if (ImGui::Selectable(name.c_str(), is_sel))
+				{
+					selectedElementId = name;
+					selectedComponent.clear();
+				}
+				if (is_sel) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::Spacing();
+
+		// ── Component ─────────────────────────────────────────────────────────
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Component");
+		ImGui::PopStyleColor();
+		const char* compPreview = selectedComponent.empty() ? "Select a component..." : selectedComponent.c_str();
+		ImGui::BeginDisabled(selectedElementId.empty());
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		if (ImGui::BeginCombo("##export_comp_combo", compPreview))
+		{
+			if (const auto elem = simulation->getElement(selectedElementId))
+			{
+				for (const auto& comp : elem->getComponentList())
+				{
+					const bool is_sel = (selectedComponent == comp);
+					if (ImGui::Selectable(comp.c_str(), is_sel))
+						selectedComponent = comp;
+					if (is_sel) ImGui::SetItemDefaultFocus();
 				}
 			}
 			ImGui::EndCombo();
 		}
-		static double scalar = 1.0;
-		ImGui::InputDouble("scalar", &scalar, 0.1f, 1.0f, "%.2f");
-		static double learningRate = 0.01;
-		ImGui::InputDouble("learning rate", &learningRate, 0.01f, 0.1f, "%.2f");
+		ImGui::EndDisabled();
+		ImGui::Spacing();
 
-		if(ImGui::Button("Add", { 100.0f, 30.0f }))
+		// ── Export button ─────────────────────────────────────────────────────
 		{
-			const element::FieldCouplingParameters fcp( element::ElementDimensions{in_x_max, in_d_x}, learningRule, scalar, learningRate );
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			const std::shared_ptr<element::FieldCoupling> fieldCoupling(new element::FieldCoupling({ id, dimensions }, fcp));
-			simulation->addElement(fieldCoupling);
+			const bool canExport = !selectedElementId.empty() && !selectedComponent.empty();
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			const float  btnH   = ImGui::GetFrameHeight() * 1.5f;
+			ImGui::PushStyleColor(ImGuiCol_Button,
+				ImVec4(accent.x, accent.y, accent.z, canExport ? 1.0F : accent.w));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+			ImGui::BeginDisabled(!canExport);
+			const bool pressed = ImGui::Button("     Export", {-FLT_MIN, btnH});
+			ImGui::EndDisabled();
+			ImGui::PopStyleColor(4);
+
+			{
+				const ImVec2 bMin = ImGui::GetItemRectMin();
+				const ImVec2 bMax = ImGui::GetItemRectMax();
+				ImGui::PushFont(g_MediumIconsFont);
+				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_DOWNLOAD);
+				const float  labelW = ImGui::CalcTextSize("     Export").x;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const ImU32  col    = canExport ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+					{iconX, iconY}, col, ICON_FA_DOWNLOAD);
+				ImGui::PopFont();
+			}
+
+			if (pressed)
+				simulation->exportComponentToFile(selectedElementId, selectedComponent);
 		}
+
 		ImGui::PopID();
 	}
 
-	void SimulationWindow::addElementGaussFieldCoupling() const
+	// Clang-Tidy: Function 'renderLogElementParametersCard' has cognitive complexity of 27 (threshold 25)
+	void SimulationWindow::renderLogElementParametersCard() const
 	{
-		ImGui::PushID("gauss field coupling");
-		static char id[CHAR_SIZE] = "gauss field coupling u -> v";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("output x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("output d_x", &d_x, 0.1, 0.5, "%.2f");
-		static int in_x_max = 100;
-		ImGui::InputInt("input x_max", &in_x_max, 1.0, 10.0);
-		static double in_d_x = 1.0;
-		ImGui::InputDouble("input d_x", &in_d_x, 0.1, 0.5, "%.2f");
-		static double x_i = 1;
-		ImGui::InputDouble("x_i", &x_i, 1.0f, 10.0f, "%.2f");
-		static double x_j = 1;
-		ImGui::InputDouble("x_j", &x_j, 1.0f, 10.0f, "%.2f");
-		static double amplitude = 5;
-		ImGui::InputDouble("amplitude", &amplitude, 1.0f, 10.0f, "%.2f");
-		static double width = 5;
-		ImGui::InputDouble("width", &width, 1.0f, 10.0f, "%.2f");
-		static bool normalized = true;
-		ImGui::Checkbox("normalized", &normalized);
-		static bool circular = false;
-		ImGui::Checkbox("circular", &circular);
+		struct ElemCategory { const char* label; ImU32 color; };
+		static auto getCat = [](const element::ElementLabel lbl) -> ElemCategory {
+			using L = element::ElementLabel;
+			switch (lbl) {
+				case L::NEURAL_FIELD:    case L::NEURAL_FIELD_2D:
+					return {"Field",    IM_COL32(74,  144, 217, 255)};
+				case L::GAUSS_STIMULUS:  case L::TIMED_GAUSS_STIMULUS:
+				case L::GAUSS_STIMULUS_2D: case L::TIMED_GAUSS_STIMULUS_2D:
+				case L::BOOST_STIMULUS:  case L::BOOST_STIMULUS_2D:
+					return {"Stimulus", IM_COL32(31,  158, 126, 255)};
+				case L::GAUSS_KERNEL:    case L::MEXICAN_HAT_KERNEL:
+				case L::OSCILLATORY_KERNEL: case L::ASYMMETRIC_GAUSS_KERNEL:
+				case L::GAUSS_KERNEL_2D: case L::MEXICAN_HAT_KERNEL_2D:
+				case L::OSCILLATORY_KERNEL_2D: case L::ASYMMETRIC_GAUSS_KERNEL_2D:
+					return {"Kernel",   IM_COL32(192, 57,  43,  255)};
+				case L::NORMAL_NOISE:    case L::CORRELATED_NORMAL_NOISE:
+				case L::NORMAL_NOISE_2D: case L::CORRELATED_NORMAL_NOISE_2D:
+					return {"Noise",    IM_COL32(230, 126, 34,  255)};
+				case L::FIELD_COUPLING:  case L::GAUSS_FIELD_COUPLING:
+					return {"Coupling", IM_COL32(142, 68,  173, 255)};
+				case L::MEMORY_TRACE:    case L::MEMORY_TRACE_2D:
+					return {"Memory",   IM_COL32(127, 140, 141, 255)};
+				default:
+					return {"Unknown",  IM_COL32(150, 150, 150, 255)};
+			}
+		};
 
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
+		static std::string selectedId;
+		static char        searchBuf[128] = {};
+
+		// ── Search bar ───────────────────────────────────────────────────────
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##lp_search", "Search...", searchBuf, sizeof(searchBuf));
+		ImGui::Spacing();
+
+		// ── Element list (fills all space above the button) ───────────────────
+		std::string filterLower(searchBuf);
+		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
+
+		const float rowH  = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
+		const float dotR  = 5.0F;
+		const float typeW = 65.0F * ImGui::GetIO().FontGlobalScale;
+		const float btnH  = ImGui::GetFrameHeight() * 1.5f;
+
+		int matchCount = 0;
+		for (const auto& e : simulation->getElements())
 		{
-			const element::GaussFieldCouplingParameters gfcp( element::ElementDimensions{in_x_max, in_d_x}, normalized, circular, {{x_i, x_j, amplitude, width}} );
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			const std::shared_ptr<element::GaussFieldCoupling> gaussCoupling(new element::GaussFieldCoupling({ id, dimensions }, gfcp));
-			simulation->addElement(gaussCoupling);
+			if (filterLower.empty()) { ++matchCount; continue; }
+			std::string nl(e->getUniqueName());
+			std::ranges::transform(nl, nl.begin(), ::tolower);
+			std::string cl(getCat(e->getLabel()).label);
+			std::ranges::transform(cl, cl.begin(), ::tolower);
+			if (nl.find(filterLower) != std::string::npos || cl.find(filterLower) != std::string::npos) {
+				++matchCount;
+			}
 		}
-		ImGui::PopID();
+
+		const float availH   = ImGui::GetContentRegionAvail().y;
+		const float maxListH = std::max(availH - btnH - ImGui::GetStyle().ItemSpacing.y, rowH);
+		const float listH    = std::min(static_cast<float>(std::max(matchCount, 1)) * rowH, maxListH);
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		if (ImGui::BeginChild("##lp_list", {0, listH}, 0, ImGuiWindowFlags_NoSavedSettings))
+		{
+			const auto& style = ImGui::GetStyle();
+
+			for (const auto& e : simulation->getElements())
+			{
+				const std::string& name = e->getUniqueName();
+				const auto [label, color] = getCat(e->getLabel());
+
+				if (!filterLower.empty())
+				{
+					std::string nl(name);
+					std::ranges::transform(nl, nl.begin(), ::tolower);
+					std::string cl(label);
+					std::ranges::transform(cl, cl.begin(), ::tolower);
+					if (nl.find(filterLower) == std::string::npos && cl.find(filterLower) == std::string::npos)
+						continue;
+				}
+
+				ImGui::PushID(name.c_str());
+
+				const ImVec2 rowMin  = ImGui::GetCursorScreenPos();
+				const float  avail   = ImGui::GetContentRegionAvail().x;
+				const float  selH    = rowH - style.ItemSpacing.y;
+				const bool   selected = (selectedId == name);
+
+				if (ImGui::Selectable("##lp_row", selected, 0, {avail, selH}))
+					selectedId = name;
+
+				ImDrawList* dl    = ImGui::GetWindowDrawList();
+				const float cy    = rowMin.y + selH * 0.5f;
+				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+
+				dl->AddCircleFilled({rowMin.x + 12.0F, cy}, dotR, color);
+				dl->AddText({rowMin.x + 12.0F + dotR + 8.0F, textY},
+					ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
+				dl->AddText({rowMin.x + avail - typeW, textY},
+					ImGui::GetColorU32(ImGuiCol_TextDisabled), label);
+
+				ImGui::PopID();
+			}
+		}
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+
+		{
+			const bool canLog = !selectedId.empty();
+			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+			ImGui::PushStyleColor(ImGuiCol_Button,
+				ImVec4(accent.x, accent.y, accent.z, canLog ? 1.0F : accent.w));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+			ImGui::BeginDisabled(!canLog);
+			const bool pressed = ImGui::Button("     Log to console", {-FLT_MIN, btnH});
+			ImGui::EndDisabled();
+			ImGui::PopStyleColor(4);
+
+			{
+				const ImVec2 bMin = ImGui::GetItemRectMin();
+				const ImVec2 bMax = ImGui::GetItemRectMax();
+				ImGui::PushFont(g_MediumIconsFont);
+				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_TERMINAL);
+				const float  labelW = ImGui::CalcTextSize("     Log to console").x;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const ImU32  col    = canLog ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+					{iconX, iconY}, col, ICON_FA_TERMINAL);
+				ImGui::PopFont();
+			}
+
+			if (pressed)
+			{
+				if (const auto elem = simulation->getElement(selectedId))
+				{
+					tools::logger::log(tools::logger::LogLevel::INFO, elem->toString());
+				}
+			}
+		}
 	}
 
-	void SimulationWindow::addElementGaussKernel() const
+	void SimulationWindow::renderMonitoringCard() const
 	{
-		ImGui::PushID("gauss kernel");
-		static char id[CHAR_SIZE] = "gauss kernel u -> u";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
-		static double sigma = 20;
-		ImGui::InputDouble("sigma", &sigma, 1.0f, 10.0f, "%.2f");
-		static double amplitude = 2;
-		ImGui::InputDouble("amplitude", &amplitude, 1.0f, 10.0f, "%.2f");
-		static double amplitudeGlobal = -0.01;
-		ImGui::InputDouble("amplitudeGlobal", &amplitudeGlobal, -0.01f, -0.1f, "%.2f");
-		static bool normalized = true;
-		ImGui::Checkbox("normalized", &normalized);
-		static bool circular = false;
-		ImGui::Checkbox("circular", &circular);
-
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
-		{
-			const element::GaussKernelParameters gkp( sigma, amplitude, amplitudeGlobal, circular, normalized);
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			const std::shared_ptr<element::GaussKernel> gaussKernel(new element::GaussKernel({ id, dimensions }, gkp));
-			simulation->addElement(gaussKernel);
-		}
-		ImGui::PopID();
-	}
-
-	void SimulationWindow::addElementMexicanHatKernel() const
-	{
-		ImGui::PushID("mexican hat kernel");
-		static char id[CHAR_SIZE] = "mexican hat kernel u -> u";
-		ImGui::InputTextWithHint("id", "enter text here", id, IM_ARRAYSIZE(id));
-		static int x_max = 100;
-		ImGui::InputInt("x_max", &x_max, 1.0, 10.0);
-		static double d_x = 1.0;
-		ImGui::InputDouble("d_x", &d_x, 0.1, 0.5, "%.2f");
-		static double sigmaExc = 5;
-		ImGui::InputDouble("sigmaExc", &sigmaExc, 1.0f, 10.0f, "%.2f");
-		static double amplitudeExc = 15;
-		ImGui::InputDouble("amplitudeExc", &amplitudeExc, 1.0f, 10.0f, "%.2f");
-		static double sigmaInh = 10;
-		ImGui::InputDouble("sigmaInh", &sigmaInh, 1.0f, 10.0f, "%.2f");
-		static double amplitudeInh = 15;
-		ImGui::InputDouble("amplitudeInh", &amplitudeInh, 1.0f, 10.0f, "%.2f");
-		static double amplitudeGlobal = -0.01;
-		ImGui::InputDouble("amplitudeGlobal", &amplitudeGlobal, -0.01f, -0.1f, "%.2f");
-		static bool normalized = true;
-		ImGui::Checkbox("normalized", &normalized);
-		static bool circular = false;
-		ImGui::Checkbox("circular", &circular);
-
-
-		if (ImGui::Button("Add", { 100.0f, 30.0f }))
-		{
-			const element::MexicanHatKernelParameters mhkp( sigmaExc, amplitudeExc, sigmaInh, amplitudeInh, amplitudeGlobal, circular, normalized);
-			const element::ElementDimensions dimensions{ x_max, d_x };
-			const std::shared_ptr<element::MexicanHatKernel> mexicanHatKernel(new element::MexicanHatKernel({ id, dimensions }, mhkp));
-			simulation->addElement(mexicanHatKernel);
-		}
+		ImGui::PushID("monitoring_section");
+		FieldMetricsWindow::renderContents(simulation);
 		ImGui::PopID();
 	}
 }

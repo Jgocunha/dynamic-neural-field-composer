@@ -33,9 +33,9 @@ namespace dnf_composer::element
 		std::unordered_map<std::shared_ptr<Element>, std::string> outputs;  ///< Downstream elements that read this element's output.
 	private:
 		struct CachedInput { const double* src; std::size_t size; };
-		std::vector<CachedInput> cachedInputs_;
-		double*     inputPtr_  = nullptr;
-		std::size_t inputSize_ = 0;
+		std::vector<CachedInput> cachedInputs;
+		double*     inputPtr  = nullptr;
+		std::size_t inputSize = 0;
 	public:
 		/// @brief Construct an element with the given common parameters.
 		/// @param parameters  Name, label, and spatial dimensions.
@@ -103,6 +103,7 @@ namespace dnf_composer::element
 		ElementCommonParameters getElementCommonParameters() const;
 		int getUniqueIdentifier() const;
 		std::string getUniqueName() const;
+		void setUniqueName(const std::string& name);
 		ElementLabel getLabel() const;
 		bool hasOutput() const;
 		bool hasInput() const;
