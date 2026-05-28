@@ -66,7 +66,7 @@ namespace dnf_composer::element
 
 		/// @brief Register @p inputElement as an upstream source for this element.
 		/// @param inputElement    The element whose output will be read.
-		/// @param inputComponent  Which component of @p the inputElement to read (default: "output").
+		/// @param inputComponent  Which component of @p inputElement to read (default: "output").
 		virtual void addInput(const std::shared_ptr<Element>& inputElement,
 		                      const std::string& inputComponent = "output");
 

@@ -341,9 +341,18 @@ namespace dnf_composer
 	{
 		if (oldName == newName) return;
 		const auto elem = getElement(oldName);
-		if (!elem) return;
-		if (getElement(newName)) return; // newName already in use
+		if (!elem)
+		{
+			log(tools::logger::LogLevel::WARNING, "Element '" + oldName + "' was not found and consequently not renamed.");
+			return;
+		}
+		if (getElement(newName))
+		{
+			log(tools::logger::LogLevel::WARNING, "Element '" + newName + "' already exists; '" + oldName + "' was not renamed.");
+			return;
+		}
 		elem->setUniqueName(newName);
+		log(tools::logger::LogLevel::INFO, "Element '" + oldName + "' renamed to '" + newName + "'.");
 	}
 
 	void Simulation::createInteraction(const std::string& stimulusElementId,

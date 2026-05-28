@@ -70,7 +70,7 @@ namespace dnf_composer
     {
         std::ifstream f(jsonPath);
         if (!f.is_open()) {
-            throw Exception(ErrorCode::APP_INIT);
+            throw Exception(ErrorCode::APP_INIT, jsonPath);
         }
 
         const auto j = nlohmann::json::parse(f);
