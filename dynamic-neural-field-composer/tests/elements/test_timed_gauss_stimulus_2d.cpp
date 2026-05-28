@@ -144,6 +144,24 @@ TEST(TimedGaussStimulus2DStep, EmptyOnTimesAlwaysOff)
 }
 
 // ---------------------------------------------------------------------------
+// Peak location matches specified position (y-major convention)
+// ---------------------------------------------------------------------------
+
+TEST(TimedGaussStimulus2DStep, PeakIndexNearSpecifiedPosition)
+{
+    // Convention: y-major storage — index = yi * size_x + xi
+    // position_x=15 -> xi=14,  position_y=20 -> yi=19
+    // index = 19 * 50 + 14 = 964
+    TimedGaussStimulus2D tgs(makeCP("s", 50, 50),
+        makeTGSP2(3.0, 15.0, 15.0, 20.0, {{0.0, 100.0}}, false, false));
+    tgs.init();
+    tgs.step(1.0, 1.0);
+    const auto out = tgs.getComponent("output");
+    const int peakIdx = static_cast<int>(std::ranges::max_element(out) - out.begin());
+    EXPECT_NEAR(peakIdx, 19 * 50 + 14, 10);
+}
+
+// ---------------------------------------------------------------------------
 // Peak value matches amplitude when active
 // ---------------------------------------------------------------------------
 

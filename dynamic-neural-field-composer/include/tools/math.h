@@ -594,7 +594,7 @@ namespace dnf_composer::tools::math
 	}
 
 	// Separable 2D convolution.
-	// field is stored row-major: field[x * size_y + y].
+	// field is stored y-major: field[y * size_x + x].
 	// Applies kernel_x along the x-axis and kernel_y along the y-axis using two 1D passes.
 	// extIndex_x / extIndex_y are the circular extension indices produced by createExtendedIndex
 	// (pass empty vectors for non-circular mode).
@@ -610,50 +610,48 @@ namespace dnf_composer::tools::math
 		const bool circular_x = !extIndex_x.empty();
 		const bool circular_y = !extIndex_y.empty();
 
-		// y-pass: convolve each row along the y-axis
+		// x-pass: convolve each row (fixed y) along the x-axis with kernel_x
 		std::vector<T> tmp(size_x * size_y, T());
-		for (int x = 0; x < size_x; ++x)
-		{
-			// extract row
-			std::vector<T> row(size_y);
-			for (int y = 0; y < size_y; ++y)
-				row[y] = field[x * size_y + y];
-
-			std::vector<T> convRow;
-			if (circular_y)
-			{
-				const auto extRow = obtainCircularVector(extIndex_y, row);
-				convRow = conv_valid(extRow, kernel_y);
-			}
-			else
-			{
-				convRow = conv_same(row, kernel_y);
-			}
-			for (int y = 0; y < size_y; ++y)
-				tmp[x * size_y + y] = convRow[y];
-		}
-
-		// x-pass: convolve each column along the x-axis
-		std::vector<T> result(size_x * size_y, T());
 		for (int y = 0; y < size_y; ++y)
 		{
-			// extract column
-			std::vector<T> col(size_x);
+			std::vector<T> row(size_x);
 			for (int x = 0; x < size_x; ++x)
-				col[x] = tmp[x * size_y + y];
+				row[x] = field[y * size_x + x];
 
-			std::vector<T> convCol;
+			std::vector<T> convRow;
 			if (circular_x)
 			{
-				const auto extCol = obtainCircularVector(extIndex_x, col);
-				convCol = conv_valid(extCol, kernel_x);
+				const auto extRow = obtainCircularVector(extIndex_x, row);
+				convRow = conv_valid(extRow, kernel_x);
 			}
 			else
 			{
-				convCol = conv_same(col, kernel_x);
+				convRow = conv_same(row, kernel_x);
 			}
 			for (int x = 0; x < size_x; ++x)
-				result[x * size_y + y] = convCol[x];
+				tmp[y * size_x + x] = convRow[x];
+		}
+
+		// y-pass: convolve each column (fixed x) along the y-axis with kernel_y
+		std::vector<T> result(size_x * size_y, T());
+		for (int x = 0; x < size_x; ++x)
+		{
+			std::vector<T> col(size_y);
+			for (int y = 0; y < size_y; ++y)
+				col[y] = tmp[y * size_x + x];
+
+			std::vector<T> convCol;
+			if (circular_y)
+			{
+				const auto extCol = obtainCircularVector(extIndex_y, col);
+				convCol = conv_valid(extCol, kernel_y);
+			}
+			else
+			{
+				convCol = conv_same(col, kernel_y);
+			}
+			for (int y = 0; y < size_y; ++y)
+				result[y * size_x + x] = convCol[y];
 		}
 
 		return result;
@@ -675,47 +673,49 @@ namespace dnf_composer::tools::math
 		const bool circular_x = !extIndex_x.empty();
 		const bool circular_y = !extIndex_y.empty();
 
-		std::vector<T> row(size_y);
-		std::vector<T> col(size_x);
-		std::vector<T> convRow(size_y);
-		std::vector<T> extRow(circular_y ? extIndex_y.size() : 0);
-		std::vector<T> convCol(size_x);
-		std::vector<T> extCol(circular_x ? extIndex_x.size() : 0);
+		std::vector<T> row(size_x);
+		std::vector<T> col(size_y);
+		std::vector<T> convRow(size_x);
+		std::vector<T> extRow(circular_x ? extIndex_x.size() : 0);
+		std::vector<T> convCol(size_y);
+		std::vector<T> extCol(circular_y ? extIndex_y.size() : 0);
 
-		for (int x = 0; x < size_x; ++x)
-		{
-			for (int y = 0; y < size_y; ++y)
-				row[y] = field[x * size_y + y];
-
-			if (circular_y)
-			{
-				obtainCircularVector_into(extRow, extIndex_y, row);
-				conv_valid_into(convRow, extRow, kernel_y);
-			}
-			else
-			{
-				conv_same_into(convRow, row, kernel_y);
-			}
-			for (int y = 0; y < size_y; ++y)
-				tmp[x * size_y + y] = convRow[y];
-		}
-
+		// x-pass: convolve each row (fixed y) with kernel_x
 		for (int y = 0; y < size_y; ++y)
 		{
 			for (int x = 0; x < size_x; ++x)
-				col[x] = tmp[x * size_y + y];
+				row[x] = field[y * size_x + x];
 
 			if (circular_x)
 			{
-				obtainCircularVector_into(extCol, extIndex_x, col);
-				conv_valid_into(convCol, extCol, kernel_x);
+				obtainCircularVector_into(extRow, extIndex_x, row);
+				conv_valid_into(convRow, extRow, kernel_x);
 			}
 			else
 			{
-				conv_same_into(convCol, col, kernel_x);
+				conv_same_into(convRow, row, kernel_x);
 			}
 			for (int x = 0; x < size_x; ++x)
-				out[x * size_y + y] = convCol[x];
+				tmp[y * size_x + x] = convRow[x];
+		}
+
+		// y-pass: convolve each column (fixed x) with kernel_y
+		for (int x = 0; x < size_x; ++x)
+		{
+			for (int y = 0; y < size_y; ++y)
+				col[y] = tmp[y * size_x + x];
+
+			if (circular_y)
+			{
+				obtainCircularVector_into(extCol, extIndex_y, col);
+				conv_valid_into(convCol, extCol, kernel_y);
+			}
+			else
+			{
+				conv_same_into(convCol, col, kernel_y);
+			}
+			for (int y = 0; y < size_y; ++y)
+				out[y * size_x + x] = convCol[y];
 		}
 	}
 }

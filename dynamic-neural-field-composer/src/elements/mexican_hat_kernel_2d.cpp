@@ -103,13 +103,13 @@ namespace dnf_composer
 
 			tools::math::conv2d_separable_into(
 				scratchExcConv_, scratchTmp_,
-				components["input"], kernelExc_y, kernelExc_x,
-				size_y, size_x, extIndexExc_y, extIndexExc_x);
+				components["input"], kernelExc_x, kernelExc_y,
+				size_x, size_y, extIndexExc_x, extIndexExc_y);
 
 			tools::math::conv2d_separable_into(
 				scratchInhConv_, scratchTmp_,
-				components["input"], kernelInh_y, kernelInh_x,
-				size_y, size_x, extIndexInh_y, extIndexInh_x);
+				components["input"], kernelInh_x, kernelInh_y,
+				size_x, size_y, extIndexInh_x, extIndexInh_y);
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)

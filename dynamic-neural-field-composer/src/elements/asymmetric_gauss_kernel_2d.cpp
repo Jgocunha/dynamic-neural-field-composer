@@ -110,8 +110,8 @@ namespace dnf_composer::element
 
 		tools::math::conv2d_separable_into(
 			scratchConvolution_, scratchTmp_,
-			components["input"], kernel_1d_y, kernel_1d_x,
-			size_y, size_x, extIndex_y, extIndex_x);
+			components["input"], kernel_1d_x, kernel_1d_y,
+			size_x, size_y, extIndex_x, extIndex_y);
 
 		const double globalOffset = parameters.amplitudeGlobal * fullSum;
 		for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
