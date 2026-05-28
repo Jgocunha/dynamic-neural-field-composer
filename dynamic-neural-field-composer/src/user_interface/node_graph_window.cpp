@@ -868,7 +868,7 @@ namespace dnf_composer::user_interface
 				{
 					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
 					ImPlot::PlotHeatmap("##data", weights.data(), rows, cols, scMin, scMax, nullptr,
-						ImPlotPoint(0, 0), ImPlotPoint(cols, rows));
+						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
 				}
 				ImGui::SameLine(0, 4.0f);

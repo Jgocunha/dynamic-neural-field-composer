@@ -1427,19 +1427,19 @@ namespace dnf_composer::user_interface
 		bool gfcAddClicked = false;
 
 		const float gfcBtnColW = g_MediumIconsFont->LegacySize
-			+ ImGui::GetStyle().FramePadding.x * 2.0f
-			+ ImGui::GetStyle().CellPadding.x  * 2.0f;
+			+ ImGui::GetStyle().FramePadding.x * 2.0f;
 		const float gfcTableW = ImGui::GetContentRegionAvail().x - 10.0f * ui;
 		constexpr ImGuiTableFlags gfcTFlags =
 			ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV;
 
-		if (ImGui::BeginTable(("##gfc_tbl" + uid).c_str(), 5, gfcTFlags, ImVec2(gfcTableW, 0)))
+		if (ImGui::BeginTable(("##gfc_tbl" + uid).c_str(), 5, gfcTFlags | ImGuiTableFlags_BordersOuter, ImVec2(gfcTableW, 0)))
 		{
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, gfcBtnColW);
+			ImGui::TableSetupColumn("x in",   ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("x out",  ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("amp",    ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("width",  ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("",       ImGuiTableColumnFlags_WidthFixed, gfcBtnColW);
+			ImGui::TableHeadersRow();
 
 			static constexpr float gfcEps = 1e-4f;
 			for (int i = 0; i < static_cast<int>(gfcp.couplings.size()); ++i)
