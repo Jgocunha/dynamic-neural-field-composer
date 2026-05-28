@@ -91,27 +91,26 @@ $(function() {
 <div class="dynheader">
 Collaboration diagram for dnf_composer::Application:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application__coll__graph.svg" width="204" height="376"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application__coll__graph.svg" width="204" height="316"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aedaf722db0d9f7dc3a2e6822b52a8534" id="r_aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memTemplParams" colspan="2">template&lt;typename WindowType , typename... Args, std::enable_if_t&lt;!<a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt; WindowType &gt;::value &amp;&amp;!<a class="el" href="structdnf__composer_1_1has__visualization__constructor.html">has_visualization_constructor</a>&lt; WindowType &gt;::value, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#aedaf722db0d9f7dc3a2e6822b52a8534">addWindow</a> (Args &amp;&amp;... args) const</td></tr>
-<tr class="memdesc:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a window that needs no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> or <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> pointer.  <br /></td></tr>
-<tr class="separator:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedaf722db0d9f7dc3a2e6822b52a8534" id="r_aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memTemplParams" colspan="2">template&lt;typename WindowType , typename... Args, std::enable_if_t&lt; <a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt; WindowType &gt;::value, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#aedaf722db0d9f7dc3a2e6822b52a8534">addWindow</a> (Args &amp;&amp;... args) const</td></tr>
-<tr class="memdesc:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a window that takes a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> shared_ptr as first argument.  <br /></td></tr>
-<tr class="separator:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedaf722db0d9f7dc3a2e6822b52a8534" id="r_aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memTemplParams" colspan="2">template&lt;typename WindowType , typename... Args, std::enable_if_t&lt;!<a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt; WindowType &gt;::value &amp;&amp;<a class="el" href="structdnf__composer_1_1has__visualization__constructor.html">has_visualization_constructor</a>&lt; WindowType &gt;::value, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#aedaf722db0d9f7dc3a2e6822b52a8534">addWindow</a> (Args &amp;&amp;... args) const</td></tr>
-<tr class="memdesc:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a window that takes a <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> shared_ptr as first argument.  <br /></td></tr>
-<tr class="separator:aedaf722db0d9f7dc3a2e6822b52a8534"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a481da8b1fe6014d57f91fc3f575a913d" id="r_a481da8b1fe6014d57f91fc3f575a913d"><td class="memTemplParams" colspan="2">template&lt;typename WindowType , typename... Args&gt; <br />
+requires (!<a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt;WindowType&gt;::value &amp;&amp; !<a class="el" href="structdnf__composer_1_1has__visualization__constructor.html">has_visualization_constructor</a>&lt;WindowType&gt;::value)</td></tr>
+<tr class="memitem:a481da8b1fe6014d57f91fc3f575a913d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a481da8b1fe6014d57f91fc3f575a913d">addWindow</a> (Args &amp;&amp;... args) const</td></tr>
+<tr class="memdesc:a481da8b1fe6014d57f91fc3f575a913d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a window that needs no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> or <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> pointer.  <br /></td></tr>
+<tr class="separator:a481da8b1fe6014d57f91fc3f575a913d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af29a9d5cfa3b794a139fd600cbde18e2" id="r_af29a9d5cfa3b794a139fd600cbde18e2"><td class="memTemplParams" colspan="2">template&lt;typename WindowType , typename... Args&gt; <br />
+requires <a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt;WindowType&gt;</td></tr>
+<tr class="memitem:af29a9d5cfa3b794a139fd600cbde18e2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#af29a9d5cfa3b794a139fd600cbde18e2">addWindow</a> (Args &amp;&amp;... args) const</td></tr>
+<tr class="memdesc:af29a9d5cfa3b794a139fd600cbde18e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a window that takes a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> shared_ptr as the first argument.  <br /></td></tr>
+<tr class="separator:af29a9d5cfa3b794a139fd600cbde18e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9db1d7cb8f79a12f988c195258316f43" id="r_a9db1d7cb8f79a12f988c195258316f43"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a9db1d7cb8f79a12f988c195258316f43">Application</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation=nullptr, const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Visualization.html">Visualization</a> &gt; &amp;visualization=nullptr)</td></tr>
 <tr class="memdesc:a9db1d7cb8f79a12f988c195258316f43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an <a class="el" href="classdnf__composer_1_1Application.html" title="Top-level application that owns the GUI, simulation, and visualization.">Application</a>.  <br /></td></tr>
 <tr class="separator:a9db1d7cb8f79a12f988c195258316f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed697a3cf19ba9a0735b29edd67e96f1" id="r_aed697a3cf19ba9a0735b29edd67e96f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#aed697a3cf19ba9a0735b29edd67e96f1">close</a> () const</td></tr>
+<tr class="memdesc:aed697a3cf19ba9a0735b29edd67e96f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tear down the GUI and close the simulation. Call once after the main loop.  <br /></td></tr>
 <tr class="separator:aed697a3cf19ba9a0735b29edd67e96f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45edefc4959f4002d68856b1cb171178" id="r_a45edefc4959f4002d68856b1cb171178"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a45edefc4959f4002d68856b1cb171178">hasGUIBeenClosed</a> () const</td></tr>
 <tr class="memdesc:a45edefc4959f4002d68856b1cb171178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the user has closed the main window.  <br /></td></tr>
@@ -120,6 +119,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad9787ecf2d64ff85c949f2ba24784a08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the GUI and all registered windows. Call once before <code><a class="el" href="classdnf__composer_1_1Application.html#a0cafecfad7e6418c678c5196ae9e8fbd" title="Advance the simulation by one step and render all windows.">step()</a></code>.  <br /></td></tr>
 <tr class="separator:ad9787ecf2d64ff85c949f2ba24784a08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a356ad65f63f3ed132d6e55b86e164d18" id="r_a356ad65f63f3ed132d6e55b86e164d18"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a356ad65f63f3ed132d6e55b86e164d18">isGUIActive</a> () const</td></tr>
+<tr class="memdesc:a356ad65f63f3ed132d6e55b86e164d18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the GUI overlay is currently active.  <br /></td></tr>
 <tr class="separator:a356ad65f63f3ed132d6e55b86e164d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cafecfad7e6418c678c5196ae9e8fbd" id="r_a0cafecfad7e6418c678c5196ae9e8fbd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a0cafecfad7e6418c678c5196ae9e8fbd">step</a> () const</td></tr>
 <tr class="memdesc:a0cafecfad7e6418c678c5196ae9e8fbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the simulation by one step and render all windows.  <br /></td></tr>
@@ -132,15 +132,11 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a9e40cde6d898b2e3cd8de3805659f7da" id="r_a9e40cde6d898b2e3cd8de3805659f7da"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespacednf__composer.html#ac1b7e166770b0692e5b6e2ed84407c04">UIMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a9e40cde6d898b2e3cd8de3805659f7da">getUIMode</a> ()</td></tr>
-<tr class="separator:a9e40cde6d898b2e3cd8de3805659f7da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d44fa04caa6256d1abaca0398ece286" id="r_a5d44fa04caa6256d1abaca0398ece286"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a5d44fa04caa6256d1abaca0398ece286">getUiScalePct</a> ()</td></tr>
 <tr class="separator:a5d44fa04caa6256d1abaca0398ece286"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24c2fd485519f3eb60859afcca994d72" id="r_a24c2fd485519f3eb60859afcca994d72"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a24c2fd485519f3eb60859afcca994d72">registerSettingsHandler</a> ()</td></tr>
 <tr class="memdesc:a24c2fd485519f3eb60859afcca994d72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the application's ImGui settings handler (for persistence).  <br /></td></tr>
 <tr class="separator:a24c2fd485519f3eb60859afcca994d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3451e29528070821cf8a7a4807685e60" id="r_a3451e29528070821cf8a7a4807685e60"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a3451e29528070821cf8a7a4807685e60">setUIMode</a> (<a class="el" href="namespacednf__composer.html#ac1b7e166770b0692e5b6e2ed84407c04">UIMode</a> m)</td></tr>
-<tr class="separator:a3451e29528070821cf8a7a4807685e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a527c4e705f610b5efeee26a26e05a655" id="r_a527c4e705f610b5efeee26a26e05a655"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a527c4e705f610b5efeee26a26e05a655">setUiScalePct</a> (float pct)</td></tr>
 <tr class="separator:a527c4e705f610b5efeee26a26e05a655"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -150,7 +146,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="line"><span class="keywordflow">while</span> (!app.hasGUIBeenClosed())</div>
 <div class="line">    app.step();</div>
 <div class="line">app.close();</div>
-</div><!-- fragment --><p>Windows are registered via <code><a class="el" href="classdnf__composer_1_1Application.html#aedaf722db0d9f7dc3a2e6822b52a8534" title="Register a window that needs no Simulation or Visualization pointer.">addWindow&lt;T&gt;()</a></code> before <code><a class="el" href="classdnf__composer_1_1Application.html#ad9787ecf2d64ff85c949f2ba24784a08" title="Initialize the GUI and all registered windows. Call once before step().">init()</a></code>. The template specializations automatically forward a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> or <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> pointer to constructors that require one. </p>
+</div><!-- fragment --><p>Windows are registered via <code><a class="el" href="classdnf__composer_1_1Application.html#a481da8b1fe6014d57f91fc3f575a913d" title="Register a window that needs no Simulation or Visualization pointer.">addWindow&lt;T&gt;()</a></code> before <code><a class="el" href="classdnf__composer_1_1Application.html#ad9787ecf2d64ff85c949f2ba24784a08" title="Initialize the GUI and all registered windows. Call once before step().">init()</a></code>. The template specializations automatically forward a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> or <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> pointer to constructors that require one. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9db1d7cb8f79a12f988c195258316f43" name="a9db1d7cb8f79a12f988c195258316f43"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9db1d7cb8f79a12f988c195258316f43">&#9670;&#160;</a></span>Application()</h2>
@@ -223,13 +219,14 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aedaf722db0d9f7dc3a2e6822b52a8534" name="aedaf722db0d9f7dc3a2e6822b52a8534"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aedaf722db0d9f7dc3a2e6822b52a8534">&#9670;&#160;</a></span>addWindow() <span class="overload">[1/3]</span></h2>
+<a id="a481da8b1fe6014d57f91fc3f575a913d" name="a481da8b1fe6014d57f91fc3f575a913d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a481da8b1fe6014d57f91fc3f575a913d">&#9670;&#160;</a></span>addWindow() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename WindowType , typename... Args, std::enable_if_t&lt;!<a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt; WindowType &gt;::value &amp;&amp;!<a class="el" href="structdnf__composer_1_1has__visualization__constructor.html">has_visualization_constructor</a>&lt; WindowType &gt;::value, int &gt;  = 0&gt; </div>
+template&lt;typename WindowType , typename... Args&gt; <br />
+requires (!<a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt;WindowType&gt;::value &amp;&amp; !<a class="el" href="structdnf__composer_1_1has__visualization__constructor.html">has_visualization_constructor</a>&lt;WindowType&gt;::value)</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -253,18 +250,19 @@ template&lt;typename WindowType , typename... Args, std::enable_if_t&lt;!<a clas
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_aedaf722db0d9f7dc3a2e6822b52a8534_icgraph.svg" width="308" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a481da8b1fe6014d57f91fc3f575a913d_icgraph.svg" width="308" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="aedaf722db0d9f7dc3a2e6822b52a8534" name="aedaf722db0d9f7dc3a2e6822b52a8534"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aedaf722db0d9f7dc3a2e6822b52a8534">&#9670;&#160;</a></span>addWindow() <span class="overload">[2/3]</span></h2>
+<a id="af29a9d5cfa3b794a139fd600cbde18e2" name="af29a9d5cfa3b794a139fd600cbde18e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af29a9d5cfa3b794a139fd600cbde18e2">&#9670;&#160;</a></span>addWindow() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename WindowType , typename... Args, std::enable_if_t&lt; <a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt; WindowType &gt;::value, int &gt;  = 0&gt; </div>
+template&lt;typename WindowType , typename... Args&gt; <br />
+requires <a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt;WindowType&gt;</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -284,37 +282,7 @@ template&lt;typename WindowType , typename... Args, std::enable_if_t&lt; <a clas
 </table>
 </div><div class="memdoc">
 
-<p>Register a window that takes a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> shared_ptr as first argument. </p>
-
-</div>
-</div>
-<a id="aedaf722db0d9f7dc3a2e6822b52a8534" name="aedaf722db0d9f7dc3a2e6822b52a8534"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aedaf722db0d9f7dc3a2e6822b52a8534">&#9670;&#160;</a></span>addWindow() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename WindowType , typename... Args, std::enable_if_t&lt;!<a class="el" href="structdnf__composer_1_1has__simulation__constructor.html">has_simulation_constructor</a>&lt; WindowType &gt;::value &amp;&amp;<a class="el" href="structdnf__composer_1_1has__visualization__constructor.html">has_visualization_constructor</a>&lt; WindowType &gt;::value, int &gt;  = 0&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dnf_composer::Application::addWindow </td>
-          <td>(</td>
-          <td class="paramtype">Args &amp;&amp;...&#160;</td>
-          <td class="paramname"><em>args</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Register a window that takes a <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> shared_ptr as first argument. </p>
+<p>Register a window that takes a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> shared_ptr as the first argument. </p>
 
 </div>
 </div>
@@ -333,35 +301,7 @@ template&lt;typename WindowType , typename... Args, std::enable_if_t&lt;!<a clas
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a9e40cde6d898b2e3cd8de3805659f7da" name="a9e40cde6d898b2e3cd8de3805659f7da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e40cde6d898b2e3cd8de3805659f7da">&#9670;&#160;</a></span>getUIMode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="namespacednf__composer.html#ac1b7e166770b0692e5b6e2ed84407c04">UIMode</a> dnf_composer::Application::getUIMode </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a9e40cde6d898b2e3cd8de3805659f7da_icgraph.svg" width="691" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p>Tear down the GUI and close the simulation. Call once after the main loop. </p>
 
 </div>
 </div>
@@ -390,7 +330,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a5d44fa04caa6256d1abaca0398ece286_icgraph.svg" width="691" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a5d44fa04caa6256d1abaca0398ece286_icgraph.svg" width="723" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -433,7 +373,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_ad9787ecf2d64ff85c949f2ba24784a08_cgraph.svg" width="691" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_ad9787ecf2d64ff85c949f2ba24784a08_cgraph.svg" width="691" height="147"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -452,6 +392,8 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Return true if the GUI overlay is currently active. </p>
 
 </div>
 </div>
@@ -482,43 +424,12 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a24c2fd485519f3eb60859afcca994d72_cgraph.svg" width="448" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a24c2fd485519f3eb60859afcca994d72_cgraph.svg" width="448" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a24c2fd485519f3eb60859afcca994d72_icgraph.svg" width="448" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-
-</div>
-</div>
-<a id="a3451e29528070821cf8a7a4807685e60" name="a3451e29528070821cf8a7a4807685e60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3451e29528070821cf8a7a4807685e60">&#9670;&#160;</a></span>setUIMode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void dnf_composer::Application::setUIMode </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacednf__composer.html#ac1b7e166770b0692e5b6e2ed84407c04">UIMode</a>&#160;</td>
-          <td class="paramname"><em>m</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a3451e29528070821cf8a7a4807685e60_icgraph.svg" width="691" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

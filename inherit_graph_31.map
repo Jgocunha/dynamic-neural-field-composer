@@ -1,21 +1,27 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" title=" " alt="" coords="5,261,184,301"/>
-<area shape="rect" id="Node000001" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html" title=" " alt="" coords="245,5,447,45"/>
-<area shape="poly" id="edge32_Node000000_Node000001" title=" " alt="" coords="105,247,123,204,149,152,185,100,230,55,250,43,253,48,234,59,189,103,154,155,127,206,110,250"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html" title=" " alt="" coords="233,69,459,109"/>
-<area shape="poly" id="edge33_Node000000_Node000002" title=" " alt="" coords="112,248,160,183,193,148,231,119,254,107,256,112,233,124,197,152,165,186,117,252"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1user__interface_1_1LogWindow.html" title=" " alt="" coords="261,133,431,173"/>
-<area shape="poly" id="edge34_Node000000_Node000003" title=" " alt="" coords="128,250,175,215,231,183,261,171,263,176,233,188,178,220,132,255"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1user__interface_1_1MainMenuBar.html" title=" " alt="" coords="253,197,439,237"/>
-<area shape="poly" id="edge35_Node000000_Node000004" title=" " alt="" coords="186,255,266,235,268,240,188,260"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html" title=" " alt="" coords="236,261,456,301"/>
-<area shape="poly" id="edge36_Node000000_Node000005" title=" " alt="" coords="198,279,236,279,236,284,198,284"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1user__interface_1_1PlotControlWindow.html" title=" " alt="" coords="237,325,455,365"/>
-<area shape="poly" id="edge37_Node000000_Node000006" title=" " alt="" coords="188,302,268,323,266,328,186,307"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1user__interface_1_1PlotsWindow.html" title=" " alt="" coords="257,389,435,429"/>
-<area shape="poly" id="edge38_Node000000_Node000007" title=" " alt="" coords="132,308,178,343,233,375,263,387,261,392,231,380,175,347,128,312"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html" title=" " alt="" coords="237,453,455,493"/>
-<area shape="poly" id="edge39_Node000000_Node000008" title=" " alt="" coords="117,311,165,376,197,410,233,439,256,451,254,456,231,444,193,414,160,380,112,314"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html" title=" " alt="" coords="232,517,460,557"/>
-<area shape="poly" id="edge40_Node000000_Node000009" title=" " alt="" coords="110,313,127,357,154,408,189,459,234,503,253,515,250,519,230,507,185,463,149,411,123,359,105,315"/>
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,357,184,397"/>
+<area shape="rect" id="Node000001" href="$classdnf__composer_1_1user__interface_1_1ControlBarWindow.html" title=" " alt="" coords="238,5,454,45"/>
+<area shape="poly" id="edge32_Node000000_Node000001" title=" " alt="" coords="98,343,111,282,135,204,152,164,174,124,200,87,230,55,248,43,251,48,234,59,204,91,178,127,157,166,140,206,116,283,103,344"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html" title=" " alt="" coords="245,69,447,109"/>
+<area shape="poly" id="edge33_Node000000_Node000002" title=" " alt="" coords="102,343,118,294,144,233,181,172,204,144,230,119,249,107,252,112,234,123,208,147,186,175,149,236,123,296,107,345"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html" title=" " alt="" coords="233,133,459,173"/>
+<area shape="poly" id="edge34_Node000000_Node000003" title=" " alt="" coords="108,344,128,306,155,263,189,220,230,183,252,171,254,176,234,188,193,224,159,266,132,309,113,346"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1user__interface_1_1HelpWindow.html" title=" " alt="" coords="257,197,435,237"/>
+<area shape="poly" id="edge35_Node000000_Node000004" title=" " alt="" coords="119,345,167,295,198,269,231,247,256,235,259,240,233,252,201,273,171,299,123,349"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1user__interface_1_1LogWindow.html" title=" " alt="" coords="261,261,431,301"/>
+<area shape="poly" id="edge36_Node000000_Node000005" title=" " alt="" coords="146,349,231,311,267,299,269,304,233,316,148,353"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1user__interface_1_1MainMenuBar.html" title=" " alt="" coords="253,325,439,365"/>
+<area shape="poly" id="edge37_Node000000_Node000006" title=" " alt="" coords="197,362,253,354,253,360,198,367"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html" title=" " alt="" coords="236,389,456,429"/>
+<area shape="poly" id="edge38_Node000000_Node000007" title=" " alt="" coords="198,388,236,393,236,398,197,393"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1user__interface_1_1PlotControlWindow.html" title=" " alt="" coords="237,453,455,493"/>
+<area shape="poly" id="edge39_Node000000_Node000008" title=" " alt="" coords="148,401,233,439,269,451,267,456,231,444,146,406"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1user__interface_1_1PlotsWindow.html" title=" " alt="" coords="257,517,435,557"/>
+<area shape="poly" id="edge40_Node000000_Node000009" title=" " alt="" coords="123,406,171,456,201,481,233,503,259,515,256,520,231,508,198,486,167,460,119,410"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html" title=" " alt="" coords="237,581,455,621"/>
+<area shape="poly" id="edge41_Node000000_Node000010" title=" " alt="" coords="113,409,132,446,159,489,193,531,234,567,254,579,252,584,230,572,189,535,155,492,128,448,108,411"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html" title=" " alt="" coords="232,645,460,685"/>
+<area shape="poly" id="edge42_Node000000_Node000011" title=" " alt="" coords="107,410,123,459,149,519,186,580,208,607,234,631,252,643,249,647,230,635,204,611,181,583,144,521,118,461,102,411"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1user__interface_1_1StatusBarWindow.html" title=" " alt="" coords="241,709,451,749"/>
+<area shape="poly" id="edge43_Node000000_Node000012" title=" " alt="" coords="103,411,116,472,140,549,157,589,178,628,204,664,234,695,251,707,248,711,230,699,200,667,174,631,152,591,135,551,111,473,98,412"/>
 </map>

@@ -748,7 +748,7 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 <div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span> </div>
 <div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>    <span class="comment">// Separable 2D convolution.</span></div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>    <span class="comment">// field is stored row-major: field[x * size_y + y].</span></div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>    <span class="comment">// field is stored y-major: field[y * size_x + x].</span></div>
 <div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>    <span class="comment">// Applies kernel_x along the x-axis and kernel_y along the y-axis using two 1D passes.</span></div>
 <div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>    <span class="comment">// extIndex_x / extIndex_y are the circular extension indices produced by createExtendedIndex</span></div>
 <div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>    <span class="comment">// (pass empty vectors for non-circular mode).</span></div>
@@ -765,114 +765,114 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> circular_x = !extIndex_x.empty();</div>
 <div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> circular_y = !extIndex_y.empty();</div>
 <div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span> </div>
-<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        <span class="comment">// y-pass: convolve each row along the y-axis</span></div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        <span class="comment">// x-pass: convolve each row (fixed y) along the x-axis with kernel_x</span></div>
 <div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>        std::vector&lt;T&gt; tmp(size_x * size_y, T());</div>
-<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
 <div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        {</div>
-<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>            <span class="comment">// extract row</span></div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>            std::vector&lt;T&gt; row(size_y);</div>
-<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
-<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>                row[y] = field[x * size_y + y];</div>
-<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span> </div>
-<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>            std::vector&lt;T&gt; convRow;</div>
-<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>            <span class="keywordflow">if</span> (circular_y)</div>
-<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>            {</div>
-<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>                <span class="keyword">const</span> <span class="keyword">auto</span> extRow = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a82c852ff9a51203bb51445e709dd22e1">obtainCircularVector</a>(extIndex_y, row);</div>
-<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>                convRow = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ab20d3ab488a94e0088c4bd53d8deac9c">conv_valid</a>(extRow, kernel_y);</div>
-<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>            }</div>
-<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>            {</div>
-<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>                convRow = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a384e37867853468a2ab2f1ec45bf2e43">conv_same</a>(row, kernel_y);</div>
-<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>            }</div>
-<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
-<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>                tmp[x * size_y + y] = convRow[y];</div>
-<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>        }</div>
-<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span> </div>
-<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>        <span class="comment">// x-pass: convolve each column along the x-axis</span></div>
-<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>        std::vector&lt;T&gt; result(size_x * size_y, T());</div>
-<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
-<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>        {</div>
-<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>            <span class="comment">// extract column</span></div>
-<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>            std::vector&lt;T&gt; col(size_x);</div>
-<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
-<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>                col[x] = tmp[x * size_y + y];</div>
-<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span> </div>
-<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>            std::vector&lt;T&gt; convCol;</div>
-<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>            <span class="keywordflow">if</span> (circular_x)</div>
-<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>            {</div>
-<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>                <span class="keyword">const</span> <span class="keyword">auto</span> extCol = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a82c852ff9a51203bb51445e709dd22e1">obtainCircularVector</a>(extIndex_x, col);</div>
-<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>                convCol = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ab20d3ab488a94e0088c4bd53d8deac9c">conv_valid</a>(extCol, kernel_x);</div>
-<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>            }</div>
-<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>            {</div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>                convCol = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a384e37867853468a2ab2f1ec45bf2e43">conv_same</a>(col, kernel_x);</div>
-<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>            }</div>
-<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
-<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>                result[x * size_y + y] = convCol[x];</div>
-<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>        }</div>
-<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span> </div>
-<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>    }</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>            std::vector&lt;T&gt; row(size_x);</div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>                row[x] = field[y * size_x + x];</div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span> </div>
+<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>            std::vector&lt;T&gt; convRow;</div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>            <span class="keywordflow">if</span> (circular_x)</div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>            {</div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>                <span class="keyword">const</span> <span class="keyword">auto</span> extRow = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a82c852ff9a51203bb51445e709dd22e1">obtainCircularVector</a>(extIndex_x, row);</div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>                convRow = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ab20d3ab488a94e0088c4bd53d8deac9c">conv_valid</a>(extRow, kernel_x);</div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>            }</div>
+<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>            {</div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>                convRow = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a384e37867853468a2ab2f1ec45bf2e43">conv_same</a>(row, kernel_x);</div>
+<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>            }</div>
+<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
+<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>                tmp[y * size_x + x] = convRow[x];</div>
+<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>        }</div>
+<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span> </div>
+<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>        <span class="comment">// y-pass: convolve each column (fixed x) along the y-axis with kernel_y</span></div>
+<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>        std::vector&lt;T&gt; result(size_x * size_y, T());</div>
+<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
+<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>        {</div>
+<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>            std::vector&lt;T&gt; col(size_y);</div>
+<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
+<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>                col[y] = tmp[y * size_x + x];</div>
+<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span> </div>
+<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>            std::vector&lt;T&gt; convCol;</div>
+<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>            <span class="keywordflow">if</span> (circular_y)</div>
+<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>            {</div>
+<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>                <span class="keyword">const</span> <span class="keyword">auto</span> extCol = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a82c852ff9a51203bb51445e709dd22e1">obtainCircularVector</a>(extIndex_y, col);</div>
+<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>                convCol = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ab20d3ab488a94e0088c4bd53d8deac9c">conv_valid</a>(extCol, kernel_y);</div>
+<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>            }</div>
+<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>            {</div>
+<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>                convCol = <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a384e37867853468a2ab2f1ec45bf2e43">conv_same</a>(col, kernel_y);</div>
+<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>            }</div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
+<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>                result[y * size_x + x] = convCol[y];</div>
+<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>        }</div>
+<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span> </div>
+<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>    }</div>
 </div>
-<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span> </div>
-<div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span>    <span class="comment">// In-place 2D separable convolution — writes into caller-supplied buffers.</span></div>
-<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>    <span class="comment">// `out` and `tmp` must be pre-sized to size_x * size_y before calling.</span></div>
-<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00665" data-start="{" data-end="}">
-<div class="line"><a id="l00665" name="l00665"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2">  665</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2">conv2d_separable_into</a>(</div>
-<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>        std::vector&lt;T&gt;&amp; out,</div>
-<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>        std::vector&lt;T&gt;&amp; tmp,</div>
-<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>        <span class="keyword">const</span> std::vector&lt;T&gt;&amp; field,</div>
-<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>        <span class="keyword">const</span> std::vector&lt;T&gt;&amp; kernel_x,</div>
-<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>        <span class="keyword">const</span> std::vector&lt;T&gt;&amp; kernel_y,</div>
-<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>        <span class="keywordtype">int</span> size_x, <span class="keywordtype">int</span> size_y,</div>
-<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>        <span class="keyword">const</span> std::vector&lt;int&gt;&amp; extIndex_x,</div>
-<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>        <span class="keyword">const</span> std::vector&lt;int&gt;&amp; extIndex_y)</div>
-<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>    {</div>
-<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> circular_x = !extIndex_x.empty();</div>
-<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> circular_y = !extIndex_y.empty();</div>
-<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span> </div>
-<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>        std::vector&lt;T&gt; row(size_y);</div>
-<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>        std::vector&lt;T&gt; col(size_x);</div>
-<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>        std::vector&lt;T&gt; convRow(size_y);</div>
-<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span>        std::vector&lt;T&gt; extRow(circular_y ? extIndex_y.size() : 0);</div>
-<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span>        std::vector&lt;T&gt; convCol(size_x);</div>
-<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>        std::vector&lt;T&gt; extCol(circular_x ? extIndex_x.size() : 0);</div>
-<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span> </div>
-<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
-<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>        {</div>
-<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
-<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>                row[y] = field[x * size_y + y];</div>
-<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span> </div>
-<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>            <span class="keywordflow">if</span> (circular_y)</div>
-<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>            {</div>
-<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad">obtainCircularVector_into</a>(extRow, extIndex_y, row);</div>
-<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d">conv_valid_into</a>(convRow, extRow, kernel_y);</div>
-<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>            }</div>
-<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span>            {</div>
-<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e">conv_same_into</a>(convRow, row, kernel_y);</div>
-<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>            }</div>
-<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
-<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>                tmp[x * size_y + y] = convRow[y];</div>
-<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>        }</div>
-<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span> </div>
-<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
+<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span> </div>
+<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>    <span class="comment">// In-place 2D separable convolution — writes into caller-supplied buffers.</span></div>
+<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>    <span class="comment">// `out` and `tmp` must be pre-sized to size_x * size_y before calling.</span></div>
+<div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00663" data-start="{" data-end="}">
+<div class="line"><a id="l00663" name="l00663"></a><span class="lineno"><a class="line" href="namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2">  663</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2">conv2d_separable_into</a>(</div>
+<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>        std::vector&lt;T&gt;&amp; out,</div>
+<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>        std::vector&lt;T&gt;&amp; tmp,</div>
+<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>        <span class="keyword">const</span> std::vector&lt;T&gt;&amp; field,</div>
+<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>        <span class="keyword">const</span> std::vector&lt;T&gt;&amp; kernel_x,</div>
+<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>        <span class="keyword">const</span> std::vector&lt;T&gt;&amp; kernel_y,</div>
+<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>        <span class="keywordtype">int</span> size_x, <span class="keywordtype">int</span> size_y,</div>
+<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>        <span class="keyword">const</span> std::vector&lt;int&gt;&amp; extIndex_x,</div>
+<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>        <span class="keyword">const</span> std::vector&lt;int&gt;&amp; extIndex_y)</div>
+<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>    {</div>
+<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> circular_x = !extIndex_x.empty();</div>
+<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> circular_y = !extIndex_y.empty();</div>
+<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span> </div>
+<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>        std::vector&lt;T&gt; row(size_x);</div>
+<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>        std::vector&lt;T&gt; col(size_y);</div>
+<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>        std::vector&lt;T&gt; convRow(size_x);</div>
+<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>        std::vector&lt;T&gt; extRow(circular_x ? extIndex_x.size() : 0);</div>
+<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>        std::vector&lt;T&gt; convCol(size_y);</div>
+<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span>        std::vector&lt;T&gt; extCol(circular_y ? extIndex_y.size() : 0);</div>
+<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span> </div>
+<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>        <span class="comment">// x-pass: convolve each row (fixed y) with kernel_x</span></div>
+<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
+<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>        {</div>
+<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
+<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span>                row[x] = field[y * size_x + x];</div>
+<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span> </div>
+<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span>            <span class="keywordflow">if</span> (circular_x)</div>
+<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>            {</div>
+<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad">obtainCircularVector_into</a>(extRow, extIndex_x, row);</div>
+<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d">conv_valid_into</a>(convRow, extRow, kernel_x);</div>
+<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>            }</div>
+<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>            {</div>
+<div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e">conv_same_into</a>(convRow, row, kernel_x);</div>
+<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>            }</div>
+<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
+<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>                tmp[y * size_x + x] = convRow[x];</div>
+<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>        }</div>
+<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span> </div>
+<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>        <span class="comment">// y-pass: convolve each column (fixed x) with kernel_y</span></div>
+<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
 <div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>        {</div>
-<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
-<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>                col[x] = tmp[x * size_y + y];</div>
+<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
+<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>                col[y] = tmp[y * size_x + x];</div>
 <div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span> </div>
-<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>            <span class="keywordflow">if</span> (circular_x)</div>
+<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>            <span class="keywordflow">if</span> (circular_y)</div>
 <div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>            {</div>
-<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad">obtainCircularVector_into</a>(extCol, extIndex_x, col);</div>
-<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d">conv_valid_into</a>(convCol, extCol, kernel_x);</div>
+<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad">obtainCircularVector_into</a>(extCol, extIndex_y, col);</div>
+<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d">conv_valid_into</a>(convCol, extCol, kernel_y);</div>
 <div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>            }</div>
 <div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>            <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>            {</div>
-<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e">conv_same_into</a>(convCol, col, kernel_x);</div>
+<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>                <a class="code hl_function" href="namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e">conv_same_into</a>(convCol, col, kernel_y);</div>
 <div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span>            }</div>
-<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; size_x; ++x)</div>
-<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>                out[x * size_y + y] = convCol[x];</div>
+<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; size_y; ++y)</div>
+<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>                out[y * size_x + x] = convCol[y];</div>
 <div class="line"><a id="l00719" name="l00719"></a><span class="lineno">  719</span>        }</div>
 <div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span>    }</div>
 </div>
@@ -882,7 +882,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a04eaa5c52dfa8bf546d7c290c9e91978"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a04eaa5c52dfa8bf546d7c290c9e91978">dnf_composer::tools::math::circularGauss</a></div><div class="ttdeci">std::vector&lt; T &gt; circularGauss(uint32_t size, const T &amp;sigma, const T &amp;position)</div><div class="ttdef"><b>Definition</b> math.h:196</div></div>
 <div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a0b09f3d9ce824878f275ae7697c851d6"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a0b09f3d9ce824878f275ae7697c851d6">dnf_composer::tools::math::hebbLearningRule</a></div><div class="ttdeci">std::vector&lt; T &gt; hebbLearningRule(std::vector&lt; T &gt; &amp;weights, const std::vector&lt; T &gt; &amp;input, const std::vector&lt; T &gt; &amp;output, double learningRate)</div><div class="ttdef"><b>Definition</b> math.h:335</div></div>
 <div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a168368e3954cd337627b693b03f69688"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a168368e3954cd337627b693b03f69688">dnf_composer::tools::math::resampleNearestInto</a></div><div class="ttdeci">void resampleNearestInto(const std::vector&lt; T &gt; &amp;input, std::vector&lt; T &gt; &amp;output)</div><div class="ttdef"><b>Definition</b> math.h:557</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a2008b0db9b837585d0f7f90e269f7ad2"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2">dnf_composer::tools::math::conv2d_separable_into</a></div><div class="ttdeci">void conv2d_separable_into(std::vector&lt; T &gt; &amp;out, std::vector&lt; T &gt; &amp;tmp, const std::vector&lt; T &gt; &amp;field, const std::vector&lt; T &gt; &amp;kernel_x, const std::vector&lt; T &gt; &amp;kernel_y, int size_x, int size_y, const std::vector&lt; int &gt; &amp;extIndex_x, const std::vector&lt; int &gt; &amp;extIndex_y)</div><div class="ttdef"><b>Definition</b> math.h:665</div></div>
+<div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a2008b0db9b837585d0f7f90e269f7ad2"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2">dnf_composer::tools::math::conv2d_separable_into</a></div><div class="ttdeci">void conv2d_separable_into(std::vector&lt; T &gt; &amp;out, std::vector&lt; T &gt; &amp;tmp, const std::vector&lt; T &gt; &amp;field, const std::vector&lt; T &gt; &amp;kernel_x, const std::vector&lt; T &gt; &amp;kernel_y, int size_x, int size_y, const std::vector&lt; int &gt; &amp;extIndex_x, const std::vector&lt; int &gt; &amp;extIndex_y)</div><div class="ttdef"><b>Definition</b> math.h:663</div></div>
 <div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a219b3be549aba116279eae1135f00dfc"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a219b3be549aba116279eae1135f00dfc">dnf_composer::tools::math::deltaLearningRuleKroghHertz</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; T &gt; &gt; deltaLearningRuleKroghHertz(std::vector&lt; std::vector&lt; T &gt; &gt; &amp;weights, const std::vector&lt; T &gt; &amp;input, const std::vector&lt; T &gt; &amp;targetOutput, const std::vector&lt; T &gt; &amp;actualOutput, double learningRate)</div><div class="ttdef"><b>Definition</b> math.h:399</div></div>
 <div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a25382704956357df290cec3ddfc33c7c"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a25382704956357df290cec3ddfc33c7c">dnf_composer::tools::math::sigmoid</a></div><div class="ttdeci">std::vector&lt; T &gt; sigmoid(const std::vector&lt; T &gt; &amp;x, T beta, T x0)</div><div class="ttdef"><b>Definition</b> math.h:263</div></div>
 <div class="ttc" id="anamespacednf__composer_1_1tools_1_1math_html_a2d30fb692257cd6e7006091e88f74d74"><div class="ttname"><a href="namespacednf__composer_1_1tools_1_1math.html#a2d30fb692257cd6e7006091e88f74d74">dnf_composer::tools::math::calculateVectorNorm</a></div><div class="ttdeci">T calculateVectorNorm(const std::vector&lt; T &gt; &amp;vec)</div><div class="ttdef"><b>Definition</b> math.h:469</div></div>

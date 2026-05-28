@@ -181,6 +181,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a909fa3e74b33909adaa02b2cf1d91d73" id="r_a909fa3e74b33909adaa02b2cf1d91d73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a909fa3e74b33909adaa02b2cf1d91d73">removeElement</a> (const std::string &amp;elementId)</td></tr>
 <tr class="memdesc:a909fa3e74b33909adaa02b2cf1d91d73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove and destroy the element with the given unique name.  <br /></td></tr>
 <tr class="separator:a909fa3e74b33909adaa02b2cf1d91d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a326227cbc48ec354da67169f8c3bb2e4" id="r_a326227cbc48ec354da67169f8c3bb2e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a326227cbc48ec354da67169f8c3bb2e4">renameElement</a> (const std::string &amp;oldName, const std::string &amp;newName)</td></tr>
+<tr class="memdesc:a326227cbc48ec354da67169f8c3bb2e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rename an element. No-op if oldName does not exist or newName is already in use.  <br /></td></tr>
+<tr class="separator:a326227cbc48ec354da67169f8c3bb2e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b818d8a60277b85be255312902bbbd1" id="r_a2b818d8a60277b85be255312902bbbd1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a2b818d8a60277b85be255312902bbbd1">resetElement</a> (const std::string &amp;idOfElementToReset, const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt; &amp;newElement)</td></tr>
 <tr class="memdesc:a2b818d8a60277b85be255312902bbbd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace an existing element with a new one, preserving connections.  <br /></td></tr>
 <tr class="separator:a2b818d8a60277b85be255312902bbbd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -257,6 +260,9 @@ Protected Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">dnf_composer::Simulation::Simulation </td>
@@ -288,6 +294,11 @@ Protected Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Construct a simulation. </p>
@@ -717,7 +728,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a860f418ff5193deb9ae8f4a791a5f391_icgraph.svg" width="443" height="371"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a860f418ff5193deb9ae8f4a791a5f391_icgraph.svg" width="443" height="435"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1158,6 +1169,41 @@ Here is the call graph for this function:</div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a326227cbc48ec354da67169f8c3bb2e4" name="a326227cbc48ec354da67169f8c3bb2e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a326227cbc48ec354da67169f8c3bb2e4">&#9670;&#160;</a></span>renameElement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::Simulation::renameElement </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>oldName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>newName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rename an element. No-op if oldName does not exist or newName is already in use. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a326227cbc48ec354da67169f8c3bb2e4_cgraph.svg" width="443" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>

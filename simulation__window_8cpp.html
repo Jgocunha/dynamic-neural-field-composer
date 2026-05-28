@@ -77,15 +77,23 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">simulation_window.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="simulation__window_8h_source.html">user_interface/simulation_window.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="field__metrics__window_8h_source.html">user_interface/field_metrics_window.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="log__window_8h_source.html">user_interface/log_window.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="help__window_8h_source.html">user_interface/help_window.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="neural__field_8h_source.html">elements/neural_field.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="neural__field__2d_8h_source.html">elements/neural_field_2d.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="IconsFontAwesome6_8h_source.html">user_interface/fonts/IconsFontAwesome6.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for simulation_window.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="simulation__window_8cpp__incl.svg" width="5350" height="726"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="simulation__window_8cpp__incl.svg" width="3907" height="711"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -94,7 +102,74 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacednf__composer_1_1user__interface" id="r_namespacednf__composer_1_1user__interface"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html">dnf_composer::user_interface</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a47895935f5cf2f900c46e67c0dc33162" id="r_a47895935f5cf2f900c46e67c0dc33162"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a47895935f5cf2f900c46e67c0dc33162">dnf_composer::user_interface::beginParamTable</a> (const char *id)</td></tr>
+<tr class="separator:a47895935f5cf2f900c46e67c0dc33162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a349d611944459f237b8e4f65697714f8" id="r_a349d611944459f237b8e4f65697714f8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a349d611944459f237b8e4f65697714f8">dnf_composer::user_interface::endParamTable</a> ()</td></tr>
+<tr class="separator:a349d611944459f237b8e4f65697714f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe75962d64deea93c9a097002c017d15" id="r_abe75962d64deea93c9a097002c017d15"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#abe75962d64deea93c9a097002c017d15">dnf_composer::user_interface::paramRowBool</a> (const char *label, const char *wid, bool *v)</td></tr>
+<tr class="separator:abe75962d64deea93c9a097002c017d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cc14d23b1b1051c1457f6b514e9aa60" id="r_a5cc14d23b1b1051c1457f6b514e9aa60"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a5cc14d23b1b1051c1457f6b514e9aa60">dnf_composer::user_interface::paramRowDouble</a> (const char *label, const char *wid, double *v, const char *fmt)</td></tr>
+<tr class="separator:a5cc14d23b1b1051c1457f6b514e9aa60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b683f258ee7a3d3a6f142b08013fa92" id="r_a0b683f258ee7a3d3a6f142b08013fa92"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a0b683f258ee7a3d3a6f142b08013fa92">dnf_composer::user_interface::paramRowInt</a> (const char *label, const char *wid, int *v)</td></tr>
+<tr class="separator:a0b683f258ee7a3d3a6f142b08013fa92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af661a7756f2c08f85bb29e497f5639fd" id="r_af661a7756f2c08f85bb29e497f5639fd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#af661a7756f2c08f85bb29e497f5639fd">dnf_composer::user_interface::paramTableSetup</a> ()</td></tr>
+<tr class="separator:af661a7756f2c08f85bb29e497f5639fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ab076d2fdccb244572e143c12bf5194db" id="r_ab076d2fdccb244572e143c12bf5194db"><td class="memItemLeft" align="right" valign="top">ImFont *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simulation__window_8cpp.html#ab076d2fdccb244572e143c12bf5194db">g_MediumMediumFont</a></td></tr>
+<tr class="separator:ab076d2fdccb244572e143c12bf5194db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4e8c7d5b0ddb0b5b625a6ed1f681d5" id="r_a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"><td class="memItemLeft" align="right" valign="top">ImFont *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simulation__window_8cpp.html#a3f4e8c7d5b0ddb0b5b625a6ed1f681d5">g_MonoMediumFont</a></td></tr>
+<tr class="separator:a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ab076d2fdccb244572e143c12bf5194db" name="ab076d2fdccb244572e143c12bf5194db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab076d2fdccb244572e143c12bf5194db">&#9670;&#160;</a></span>g_MediumMediumFont</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImFont* g_MediumMediumFont</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f4e8c7d5b0ddb0b5b625a6ed1f681d5" name="a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4e8c7d5b0ddb0b5b625a6ed1f681d5">&#9670;&#160;</a></span>g_MonoMediumFont</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImFont* g_MonoMediumFont</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

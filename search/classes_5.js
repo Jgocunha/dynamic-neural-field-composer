@@ -9,6 +9,6 @@ var searchData=
   ['gausskernelparameters_6',['GaussKernelParameters',['../structdnf__composer_1_1element_1_1GaussKernelParameters.html',1,'dnf_composer::element']]],
   ['gaussstimulus_7',['GaussStimulus',['../classdnf__composer_1_1element_1_1GaussStimulus.html',1,'dnf_composer::element']]],
   ['gaussstimulus2d_8',['GaussStimulus2D',['../classdnf__composer_1_1element_1_1GaussStimulus2D.html',1,'dnf_composer::element']]],
-  ['gaussstimulusparameters_9',['GaussStimulusParameters',['../structdnf__composer_1_1element_1_1GaussStimulusParameters.html',1,'dnf_composer::element']]],
-  ['gaussstimulusparameters2d_10',['GaussStimulusParameters2D',['../structdnf__composer_1_1element_1_1GaussStimulusParameters2D.html',1,'dnf_composer::element']]]
+  ['gaussstimulus2dparameters_9',['GaussStimulus2DParameters',['../structdnf__composer_1_1element_1_1GaussStimulus2DParameters.html',1,'dnf_composer::element']]],
+  ['gaussstimulusparameters_10',['GaussStimulusParameters',['../structdnf__composer_1_1element_1_1GaussStimulusParameters.html',1,'dnf_composer::element']]]
 ];

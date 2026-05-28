@@ -211,10 +211,10 @@
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html" target="_top" xlink:title="Parameters for a Gaussian&#45;shaped external stimulus.">
-<polygon fill="white" stroke="#666666" points="373.5,-654 222.5,-654 222.5,-624 373.5,-624 373.5,-654"/>
-<text text-anchor="start" x="230.5" y="-642" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="middle" x="298" y="-631" font-family="Helvetica,sans-Serif" font-size="10.00">::GaussStimulusParameters</text>
+<g id="a_Node000011"><a xlink:href="structdnf__composer_1_1element_1_1GaussStimulus2DParameters.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="380,-654 216,-654 216,-624 380,-624 380,-654"/>
+<text text-anchor="start" x="224" y="-642" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="middle" x="298" y="-631" font-family="Helvetica,sans-Serif" font-size="10.00">::GaussStimulus2DParameters</text>
 </a>
 </g>
 </g>
@@ -230,10 +230,10 @@
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="structdnf__composer_1_1element_1_1GaussStimulusParameters2D.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="380,-606 216,-606 216,-576 380,-576 380,-606"/>
-<text text-anchor="start" x="224" y="-594" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="middle" x="298" y="-583" font-family="Helvetica,sans-Serif" font-size="10.00">::GaussStimulusParameters2D</text>
+<g id="a_Node000012"><a xlink:href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html" target="_top" xlink:title="Parameters for a Gaussian&#45;shaped external stimulus.">
+<polygon fill="white" stroke="#666666" points="373.5,-606 222.5,-606 222.5,-576 373.5,-576 373.5,-606"/>
+<text text-anchor="start" x="230.5" y="-594" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="middle" x="298" y="-583" font-family="Helvetica,sans-Serif" font-size="10.00">::GaussStimulusParameters</text>
 </a>
 </g>
 </g>
@@ -241,7 +241,7 @@
 <g id="edge15_Node000000_Node000012" class="edge">
 <title>Node0&#45;&gt;Node12</title>
 <g id="a_edge15_Node000000_Node000012"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M166.26,-576.61C182.64,-578.41 199.7,-580.29 215.88,-582.07"/>
+<path fill="none" stroke="#63b8ff" d="M166.33,-576.61C184.81,-578.65 204.16,-580.78 222.14,-582.76"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="166.49,-573.11 156.17,-575.5 165.72,-580.07 166.49,-573.11"/>
 </a>
 </g>

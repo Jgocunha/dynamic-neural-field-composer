@@ -1,25 +1,26 @@
 <map id="include/user_interface/node_utilities/drawing.h" name="include/user_interface/node_utilities/drawing.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="447,5,629,45"/>
-<area shape="rect" id="Node000002" href="$node__widgets_8h.html" title=" " alt="" coords="312,93,532,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="503,56,449,95,446,91,500,52"/>
-<area shape="rect" id="Node000012" href="$drawing_8cpp.html" title=" " alt="" coords="557,93,754,133"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="577,52,631,91,628,95,574,56"/>
-<area shape="rect" id="Node000003" href="$node__graph__window_8h.html" title=" " alt="" coords="245,189,415,229"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="396,145,350,190,347,187,392,141"/>
-<area shape="rect" id="Node000011" href="$node__widgets_8cpp.html" title=" " alt="" coords="440,181,591,236"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="452,141,491,179,487,183,449,145"/>
-<area shape="rect" id="Node000004" href="$dynamic-neural-field-composer-dynamic_8h.html" title=" " alt="" coords="17,284,214,324"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="275,237,160,286,158,281,273,232"/>
-<area shape="rect" id="Node000006" href="$static__layout__window_8h.html" title=" " alt="" coords="241,284,419,324"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="333,242,333,284,327,284,327,242"/>
-<area shape="rect" id="Node000010" href="$node__graph__window_8cpp.html" title=" " alt="" coords="444,284,629,324"/>
-<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="385,232,496,282,494,286,383,237"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="443,5,625,45"/>
+<area shape="rect" id="Node000002" href="$node__widgets_8h.html" title=" " alt="" coords="308,93,528,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="499,56,445,95,442,91,496,52"/>
+<area shape="rect" id="Node000012" href="$drawing_8cpp.html" title=" " alt="" coords="553,93,750,133"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="573,52,627,91,624,95,570,56"/>
+<area shape="rect" id="Node000003" href="$node__graph__window_8h.html" title=" " alt="" coords="241,189,411,229"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="392,145,346,190,343,187,388,141"/>
+<area shape="rect" id="Node000011" href="$node__widgets_8cpp.html" title=" " alt="" coords="436,181,587,236"/>
+<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="448,141,487,179,483,183,445,145"/>
+<area shape="rect" id="Node000004" href="$dynamic-neural-field-composer-dynamic_8h.html" title=" " alt="" coords="18,284,215,324"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="272,237,160,286,158,282,270,232"/>
+<area shape="rect" id="Node000006" href="$static__layout_8h.html" title=" " alt="" coords="243,284,409,324"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="329,242,329,284,323,284,323,242"/>
+<area shape="rect" id="Node000010" href="$node__graph__window_8cpp.html" title=" " alt="" coords="433,284,619,324"/>
+<area shape="poly" id="edge10_Node000003_Node000010" title=" " alt="" coords="380,232,487,282,484,286,378,237"/>
 <area shape="rect" id="Node000005" href="$dynamic-neural-field-composer-dynamic_8cpp.html" title=" " alt="" coords="5,372,217,412"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="116,338,115,372,110,372,111,338"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="117,338,115,372,110,372,112,338"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="267,332,159,374,157,370,265,327"/>
 <area shape="rect" id="Node000007" href="$dynamic-neural-field-composer-static_8h.html" title=" " alt="" coords="241,372,419,412"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="333,338,333,372,327,372,327,338"/>
-<area shape="rect" id="Node000009" href="$static__layout__window_8cpp.html" title=" " alt="" coords="443,372,636,412"/>
-<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="390,327,495,370,492,374,388,332"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="330,338,332,372,326,372,325,338"/>
+<area shape="rect" id="Node000009" href="$static__layout_8cpp.html" title=" " alt="" coords="443,372,582,412"/>
+<area shape="poly" id="edge9_Node000006_Node000009" title=" " alt="" coords="380,327,473,370,471,374,378,332"/>
 <area shape="rect" id="Node000008" href="$dynamic-neural-field-composer-static_8cpp.html" title=" " alt="" coords="234,460,426,500"/>
 <area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="333,426,333,460,327,460,327,426"/>
 </map>

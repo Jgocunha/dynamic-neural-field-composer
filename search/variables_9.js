@@ -1,20 +1,19 @@
 var searchData=
 [
-  ['kbumplinesh_0',['kBumpLinesH',['../namespacednf__composer_1_1user__interface.html#a44063d280d2b3de7abf7dc4442ed3fda',1,'dnf_composer::user_interface']]],
+  ['kbarh_0',['kBarH',['../namespacednf__composer_1_1user__interface.html#aef9a079e69686ae89eeb09831a54dc43',1,'dnf_composer::user_interface']]],
   ['kcardbg_1',['kCardBg',['../namespacednf__composer_1_1user__interface.html#abba5c52e4c225a500dd50968329edba8',1,'dnf_composer::user_interface']]],
   ['kcardborder_2',['kCardBorder',['../namespacednf__composer_1_1user__interface.html#ae1ee46fcbcd48226e6c0aa10ec2741c8',1,'dnf_composer::user_interface']]],
   ['kcardbordsz_3',['kCardBordSz',['../namespacednf__composer_1_1user__interface.html#abd6ad9e6b7c7b730f65e1acdfa0819b4',1,'dnf_composer::user_interface']]],
-  ['kcardgap_4',['kCardGap',['../namespacednf__composer_1_1user__interface.html#a909f7c008001860b45cc7b5716afd128',1,'dnf_composer::user_interface']]],
-  ['kcardminw_5',['kCardMinW',['../namespacednf__composer_1_1user__interface.html#a9737c5c58c997d13a5ae0434b77ce561',1,'dnf_composer::user_interface']]],
-  ['kcardround_6',['kCardRound',['../namespacednf__composer_1_1user__interface.html#a59e1ccc40ebb7ccd87a9cb530d20383b',1,'dnf_composer::user_interface']]],
-  ['kcolabase_7',['kColABase',['../namespacednf__composer_1_1user__interface.html#a27ba5eaee61a692beadec1097b318aeb',1,'dnf_composer::user_interface']]],
-  ['kcolbbase_8',['kColBBase',['../namespacednf__composer_1_1user__interface.html#a0d02a52b2abd82f968ac4f6d941ba610',1,'dnf_composer::user_interface']]],
+  ['kcardround_4',['kCardRound',['../namespacednf__composer_1_1user__interface.html#a59e1ccc40ebb7ccd87a9cb530d20383b',1,'dnf_composer::user_interface']]],
+  ['kcolabase_5',['kColABase',['../namespacednf__composer_1_1user__interface.html#a27ba5eaee61a692beadec1097b318aeb',1,'dnf_composer::user_interface']]],
+  ['kcolbbase_6',['kColBBase',['../namespacednf__composer_1_1user__interface.html#a0d02a52b2abd82f968ac4f6d941ba610',1,'dnf_composer::user_interface']]],
+  ['kcolorindex_7',['kColorIndex',['../namespacednf__composer.html#a14c20aab8437733080f5e90fe3fb8eaf',1,'dnf_composer']]],
+  ['kdotr_8',['kDotR',['../namespacednf__composer_1_1user__interface.html#ac9d33242f7f365761ff34043091f420f',1,'dnf_composer::user_interface']]],
   ['kernelrange_9',['kernelRange',['../classdnf__composer_1_1element_1_1Kernel.html#a21bfe5104e2b8711d063b60218452955',1,'dnf_composer::element::Kernel']]],
   ['kmargin_10',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
-  ['knamelineh_11',['kNameLineH',['../namespacednf__composer_1_1user__interface.html#a1874f044a0b5d5ce08008dc42d70b8b0',1,'dnf_composer::user_interface']]],
-  ['kpadv_12',['kPadV',['../namespacednf__composer_1_1user__interface.html#a87e6dc87f52810a78ca4526c415b3836',1,'dnf_composer::user_interface']]],
+  ['kpagecount_11',['kPageCount',['../namespacednf__composer_1_1user__interface.html#ae93e92a1246e1e8b64fa164c7292621a',1,'dnf_composer::user_interface']]],
+  ['kpagetitles_12',['kPageTitles',['../namespacednf__composer_1_1user__interface.html#a5f1e948621f2df685ec9529c7eb02039',1,'dnf_composer::user_interface']]],
   ['krounding_13',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
-  ['kseph_14',['kSepH',['../namespacednf__composer_1_1user__interface.html#aea10c24138e62862e9295dbf1bca4ffc',1,'dnf_composer::user_interface']]],
-  ['kstatusbarh_15',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
-  ['ktextlineh_16',['kTextLineH',['../namespacednf__composer_1_1user__interface.html#a42bf6a4e9db699ff4a80326b404a71f8',1,'dnf_composer::user_interface']]]
+  ['kstatusbarh_14',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
+  ['ktopbarh_15',['kTopBarH',['../namespacednf__composer_1_1user__interface.html#a94b8e14815bca9944462e2c32f484f02',1,'dnf_composer::user_interface']]]
 ];

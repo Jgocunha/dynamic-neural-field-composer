@@ -1,21 +1,22 @@
 <map id="include/user_interface/node_utilities/node_widgets.h" name="include/user_interface/node_utilities/node_widgets.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="312,5,532,45"/>
-<area shape="rect" id="Node000002" href="$node__graph__window_8h.html" title=" " alt="" coords="245,101,415,141"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="396,57,350,102,347,99,392,53"/>
-<area shape="rect" id="Node000010" href="$node__widgets_8cpp.html" title=" " alt="" coords="440,93,591,148"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="452,53,491,91,487,95,449,57"/>
-<area shape="rect" id="Node000003" href="$dynamic-neural-field-composer-dynamic_8h.html" title=" " alt="" coords="17,196,214,236"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="275,149,160,198,158,193,273,144"/>
-<area shape="rect" id="Node000005" href="$static__layout__window_8h.html" title=" " alt="" coords="241,196,419,236"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="333,154,333,196,327,196,327,154"/>
-<area shape="rect" id="Node000009" href="$node__graph__window_8cpp.html" title=" " alt="" coords="444,196,629,236"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="385,144,496,194,494,198,383,149"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="308,5,528,45"/>
+<area shape="rect" id="Node000002" href="$node__graph__window_8h.html" title=" " alt="" coords="241,101,411,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="392,57,346,102,343,99,388,53"/>
+<area shape="rect" id="Node000010" href="$node__widgets_8cpp.html" title=" " alt="" coords="436,93,587,148"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="448,53,487,91,483,95,445,57"/>
+<area shape="rect" id="Node000003" href="$dynamic-neural-field-composer-dynamic_8h.html" title=" " alt="" coords="18,196,215,236"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="272,149,160,198,158,194,270,144"/>
+<area shape="rect" id="Node000005" href="$static__layout_8h.html" title=" " alt="" coords="243,196,409,236"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="329,154,329,196,323,196,323,154"/>
+<area shape="rect" id="Node000009" href="$node__graph__window_8cpp.html" title=" " alt="" coords="433,196,619,236"/>
+<area shape="poly" id="edge9_Node000002_Node000009" title=" " alt="" coords="380,144,487,194,484,198,378,149"/>
 <area shape="rect" id="Node000004" href="$dynamic-neural-field-composer-dynamic_8cpp.html" title=" " alt="" coords="5,284,217,324"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="116,250,115,284,110,284,111,250"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="117,250,115,284,110,284,112,250"/>
+<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="267,244,159,286,157,282,265,239"/>
 <area shape="rect" id="Node000006" href="$dynamic-neural-field-composer-static_8h.html" title=" " alt="" coords="241,284,419,324"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="333,250,333,284,327,284,327,250"/>
-<area shape="rect" id="Node000008" href="$static__layout__window_8cpp.html" title=" " alt="" coords="443,284,636,324"/>
-<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="390,239,495,282,492,286,388,244"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="330,250,332,284,326,284,325,250"/>
+<area shape="rect" id="Node000008" href="$static__layout_8cpp.html" title=" " alt="" coords="443,284,582,324"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="380,239,473,282,471,286,378,244"/>
 <area shape="rect" id="Node000007" href="$dynamic-neural-field-composer-static_8cpp.html" title=" " alt="" coords="234,372,426,412"/>
 <area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="333,338,333,372,327,372,327,338"/>
 </map>

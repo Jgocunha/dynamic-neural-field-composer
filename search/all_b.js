@@ -7,7 +7,7 @@ var searchData=
   ['learningruletostring_4',['LearningRuleToString',['../namespacednf__composer.html#a36f0616559e4668e4d29626f08509c92',1,'dnf_composer']]],
   ['library_5',['Library',['../structImGui__ImplFreeType__Data.html#a29a742812f010781e3217ad640944d70',1,'ImGui_ImplFreeType_Data']]],
   ['line_5fplot_6',['LINE_PLOT',['../namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66abdd402e16007eedd39f69adf0f10f88b',1,'dnf_composer']]],
-  ['lineplot_7',['lineplot',['../classdnf__composer_1_1LinePlot.html',1,'dnf_composer::LinePlot'],['../classdnf__composer_1_1LinePlot.html#ac859dbfe495c84771d6bdb037ba776d9',1,'dnf_composer::LinePlot::LinePlot()']]],
+  ['lineplot_7',['lineplot',['../classdnf__composer_1_1LinePlot.html',1,'dnf_composer::LinePlot'],['../classdnf__composer_1_1LinePlot.html#a1a9e27854403bbd84ee9ea510235b545',1,'dnf_composer::LinePlot::LinePlot()']]],
   ['lineplot_2ecpp_8',['lineplot.cpp',['../lineplot_8cpp.html',1,'']]],
   ['lineplot_2eh_9',['lineplot.h',['../lineplot_8h.html',1,'']]],
   ['lineplotparameters_10',['lineplotparameters',['../structdnf__composer_1_1LinePlotParameters.html',1,'dnf_composer::LinePlotParameters'],['../structdnf__composer_1_1LinePlotParameters.html#adf899bb15d905f0a8c97001b38f894a9',1,'dnf_composer::LinePlotParameters::LinePlotParameters(double lineThickness, bool autoFit)'],['../structdnf__composer_1_1LinePlotParameters.html#acc92f06f709b829e90b78a5b9b3f0876',1,'dnf_composer::LinePlotParameters::LinePlotParameters()']]],
