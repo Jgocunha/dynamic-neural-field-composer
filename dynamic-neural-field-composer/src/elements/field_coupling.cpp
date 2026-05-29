@@ -1,5 +1,6 @@
 ﻿#include "elements/field_coupling.h"
 #include "tools/utils.h"
+#include <filesystem>
 
 namespace dnf_composer
 {
@@ -16,8 +17,7 @@ namespace dnf_composer
 			components["weights"] = std::vector<double>(components.at("input").size()
 				* components.at("output").size());
 			std::ranges::fill(components["weights"], 0);
-			weightsDirectory = tools::utils::getResourceRoot() + "/data/inter-field-synaptic-connections";
-			readWeights();
+			weightsDirectory = tools::utils::getResourceRoot() + "/data";
 		}
 
 		void FieldCoupling::init()
@@ -231,6 +231,21 @@ namespace dnf_composer
 				const std::string message = "Failed to read weights '" + this->getUniqueName() + "' from: " +
 					filename + ".";
 				log(tools::logger::LogLevel::ERROR, message);
+			}
+		}
+
+		void FieldCoupling::tryReadWeights()
+		{
+			const std::string filename = weightsDirectory + "/" + commonParameters.identifiers.uniqueName + "_weights.txt";
+			if (std::filesystem::exists(filename))
+			{
+				readWeights();
+			}
+			else
+			{
+				log(tools::logger::LogLevel::INFO,
+					"No weights file found for '" + commonParameters.identifiers.uniqueName
+					+ "' at: " + filename + ". Starting with zero weights.");
 			}
 		}
 

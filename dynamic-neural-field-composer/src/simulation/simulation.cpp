@@ -137,6 +137,20 @@ namespace dnf_composer
 			element->buildInputCache();
 		}
 
+		const std::string defaultDir = tools::utils::getResourceRoot() + "/data";
+		const std::string simDir = (std::filesystem::path(tools::utils::getResourceRoot()) / "data" / uniqueIdentifier).string();
+		for (const auto& element : elements)
+		{
+			if (const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element))
+			{
+				if (fc->getWeightsDirectory() == defaultDir)
+				{
+					fc->setWeightsDirectory(simDir);
+					fc->tryReadWeights();
+				}
+			}
+		}
+
 		initialized = true;
 		tools::logger::log(tools::logger::LogLevel::INFO, "Simulation initialized.");
 	}

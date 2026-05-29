@@ -139,9 +139,11 @@ TEST(SimulationRecorderFile, CsvHasCorrectHeader)
         if (entry.path().extension() == ".csv") { csvPath = entry.path().string(); break; }
 
     ASSERT_FALSE(csvPath.empty());
-    std::ifstream f(csvPath);
     std::string header;
-    std::getline(f, header);
+    {
+        std::ifstream f(csvPath);
+        std::getline(f, header);
+    }
     // Header must start with "ticks,ms,"
     EXPECT_EQ(header.substr(0, 8), "ticks,ms");
     cleanSimDir(simId);
@@ -168,10 +170,12 @@ TEST(SimulationRecorderSampling, TickIntervalProducesCorrectRowCount)
         if (entry.path().extension() == ".csv") { csvPath = entry.path().string(); break; }
 
     ASSERT_FALSE(csvPath.empty());
-    std::ifstream f(csvPath);
     int lineCount = 0;
-    std::string line;
-    while (std::getline(f, line)) ++lineCount;
+    {
+        std::ifstream f(csvPath);
+        std::string line;
+        while (std::getline(f, line)) ++lineCount;
+    }
     // 1 header + data rows. With interval 2 over 10 steps: rows at t=1,3,5,7,9 (nextSampleAt starts at 0).
     EXPECT_GE(lineCount, 2); // at least header + 1 data row
     cleanSimDir(simId);
@@ -245,9 +249,12 @@ TEST(SimulationRecorderSnapshot, SnapshotCsvHasTwoLines)
         if (entry.path().extension() == ".csv") { csvPath = entry.path().string(); break; }
 
     ASSERT_FALSE(csvPath.empty());
-    std::ifstream f(csvPath);
-    int lineCount = 0; std::string line;
-    while (std::getline(f, line)) ++lineCount;
+    int lineCount = 0;
+    {
+        std::ifstream f(csvPath);
+        std::string line;
+        while (std::getline(f, line)) ++lineCount;
+    }
     EXPECT_EQ(lineCount, 2); // header + 1 data row
     cleanSimDir(simId);
 }
@@ -273,10 +280,13 @@ TEST(SimulationRecorderTicks, TicksMatchStepCount)
         if (entry.path().extension() == ".csv") { csvPath = entry.path().string(); break; }
     ASSERT_FALSE(csvPath.empty());
 
-    std::ifstream f(csvPath);
-    std::string header, lastLine, line;
-    std::getline(f, header); // skip header
-    while (std::getline(f, line)) lastLine = line;
+    std::string lastLine;
+    {
+        std::ifstream f(csvPath);
+        std::string header, line;
+        std::getline(f, header); // skip header
+        while (std::getline(f, line)) lastLine = line;
+    }
 
     // First column of last row is the tick count at that step.
     const int lastTick = std::stoi(lastLine.substr(0, lastLine.find(',')));

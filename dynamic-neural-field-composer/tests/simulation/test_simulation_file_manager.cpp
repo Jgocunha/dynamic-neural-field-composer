@@ -126,7 +126,7 @@ TEST_F(SimulationFileManagerTest, SaveCreatesJsonFile)
     const SimulationFileManager sfm{ sim, tempDir };
     sfm.saveElementsToJson();
 
-    const std::string expectedFile = tempDir + "save-creates-file.json";
+    const std::string expectedFile = tempDir + "save-creates-file/save-creates-file.dnf";
     EXPECT_TRUE(fs::exists(expectedFile));
 }
 
@@ -139,7 +139,7 @@ TEST_F(SimulationFileManagerTest, SavedFileIsValidJson)
     const SimulationFileManager sfm{ sim, tempDir };
     sfm.saveElementsToJson();
 
-    std::ifstream file(tempDir + "save-valid-json.json");
+    std::ifstream file(tempDir + "save-valid-json/save-valid-json.dnf");
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
@@ -156,7 +156,7 @@ TEST_F(SimulationFileManagerTest, SavedFileContainsMetadataFields)
     const SimulationFileManager sfm{ sim, tempDir };
     sfm.saveElementsToJson();
 
-    std::ifstream file(tempDir + "my-sim-id.json");
+    std::ifstream file(tempDir + "my-sim-id/my-sim-id.dnf");
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
@@ -177,7 +177,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesSimulationIdentifier)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("placeholder", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-identifier.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-identifier/rt-identifier.dnf" };
     sfmLoad.loadElementsFromJson();
 
     EXPECT_EQ(simB->getUniqueIdentifier(), "rt-identifier");
@@ -192,7 +192,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesDeltaT)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("placeholder", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-deltat.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-deltat/rt-deltat.dnf" };
     sfmLoad.loadElementsFromJson();
 
     EXPECT_DOUBLE_EQ(simB->getDeltaT(), 3.7);
@@ -209,7 +209,7 @@ TEST_F(SimulationFileManagerTest, SavedFileContainsAllElements)
     const SimulationFileManager sfm{ sim, tempDir };
     sfm.saveElementsToJson();
 
-    std::ifstream file(tempDir + "save-all-elements.json");
+    std::ifstream file(tempDir + "save-all-elements/save-all-elements.dnf");
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
@@ -229,7 +229,7 @@ TEST_F(SimulationFileManagerTest, SavePreservesElementUniqueNames)
     const SimulationFileManager sfm{ sim, tempDir };
     sfm.saveElementsToJson();
 
-    std::ifstream file(tempDir + "save-names.json");
+    std::ifstream file(tempDir + "save-names/save-names.dnf");
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
@@ -257,7 +257,7 @@ TEST_F(SimulationFileManagerTest, SavePreservesInteractions)
     const SimulationFileManager sfm{ sim, tempDir };
     sfm.saveElementsToJson();
 
-    std::ifstream file(tempDir + "save-interactions.json");
+    std::ifstream file(tempDir + "save-interactions/save-interactions.dnf");
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
@@ -287,7 +287,7 @@ TEST_F(SimulationFileManagerTest, SaveEmptySimulationCreatesEmptyArray)
     const SimulationFileManager sfm{ sim, tempDir };
     sfm.saveElementsToJson();
 
-    std::ifstream file(tempDir + "save-empty.json");
+    std::ifstream file(tempDir + "save-empty/save-empty.dnf");
     ASSERT_TRUE(file.is_open());
     nlohmann::json parsed;
     ASSERT_NO_THROW(file >> parsed);
@@ -305,14 +305,14 @@ TEST_F(SimulationFileManagerTest, SaveEmptySimulationCreatesEmptyArray)
 TEST_F(SimulationFileManagerTest, LoadFromNonExistentFileDoesNotThrow)
 {
     const auto sim = createSimulation("load-missing", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfm{ sim, tempDir + "does-not-exist.json" };
+    const SimulationFileManager sfm{ sim, tempDir + "does-not-exist/does-not-exist.dnf" };
     EXPECT_NO_THROW(sfm.loadElementsFromJson());
 }
 
 TEST_F(SimulationFileManagerTest, LoadFromNonExistentFileLeavesSimulationEmpty)
 {
     const auto sim = createSimulation("load-missing-empty", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfm{ sim, tempDir + "does-not-exist.json" };
+    const SimulationFileManager sfm{ sim, tempDir + "does-not-exist/does-not-exist.dnf" };
     sfm.loadElementsFromJson();
     EXPECT_EQ(sim->getNumberOfElements(), 0);
 }
@@ -320,7 +320,7 @@ TEST_F(SimulationFileManagerTest, LoadFromNonExistentFileLeavesSimulationEmpty)
 TEST_F(SimulationFileManagerTest, LoadFromTestJsonCreatesCorrectElementCount)
 {
     // test.json contains 13 elements
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/test/test.dnf";
     const auto sim = createSimulation("load-test", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -330,7 +330,7 @@ TEST_F(SimulationFileManagerTest, LoadFromTestJsonCreatesCorrectElementCount)
 TEST_F(SimulationFileManagerTest, LoadFromAndTestJsonCreatesCorrectElementCount)
 {
     // and-test.json contains 10 elements
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     const auto sim = createSimulation("load-and-test", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -339,7 +339,7 @@ TEST_F(SimulationFileManagerTest, LoadFromAndTestJsonCreatesCorrectElementCount)
 
 TEST_F(SimulationFileManagerTest, LoadCreatesElementsWithCorrectNames)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     const auto sim = createSimulation("load-names", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -353,7 +353,7 @@ TEST_F(SimulationFileManagerTest, LoadCreatesElementsWithCorrectNames)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresNeuralFieldParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     const auto sim = createSimulation("load-nf-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -367,7 +367,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresNeuralFieldParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresGaussKernelParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     const auto sim = createSimulation("load-gk-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -384,7 +384,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresGaussKernelParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresMexicanHatKernelParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/test/test.dnf";
     const auto sim = createSimulation("load-mhk-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -403,7 +403,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresMexicanHatKernelParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresNormalNoiseParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     const auto sim = createSimulation("load-nn-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -415,7 +415,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresNormalNoiseParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresInteractions)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     const auto sim = createSimulation("load-interactions", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -434,7 +434,7 @@ TEST_F(SimulationFileManagerTest, SimulationSaveCreatesFile)
     const auto sim = createSimulation("sim-save", 1.0, 0.0, 0.0);
     sim->addElement(makeField("nf 1"));
     sim->save(tempDir);
-    EXPECT_TRUE(fs::exists(tempDir + "sim-save.json"));
+    EXPECT_TRUE(fs::exists(tempDir + "sim-save/sim-save.dnf"));
 }
 
 TEST_F(SimulationFileManagerTest, SimulationSaveWithDefaultPathCreatesFile)
@@ -442,7 +442,7 @@ TEST_F(SimulationFileManagerTest, SimulationSaveWithDefaultPathCreatesFile)
     const auto sim = createSimulation("sim-save-default", 1.0, 0.0, 0.0);
     sim->addElement(makeField("nf 1"));
     EXPECT_NO_THROW(sim->save());
-    const std::string defaultFile = std::string(OUTPUT_DIRECTORY) + "/sim-save-default/sim-save-default.json";
+    const std::string defaultFile = std::string(OUTPUT_DIRECTORY) + "/sim-save-default/sim-save-default.dnf";
     EXPECT_TRUE(fs::exists(defaultFile));
     fs::remove_all(std::string(OUTPUT_DIRECTORY) + "/sim-save-default");
 }
@@ -454,7 +454,7 @@ TEST_F(SimulationFileManagerTest, SimulationSaveWithDefaultPathCreatesFile)
 TEST_F(SimulationFileManagerTest, SimulationReadFromTestJsonLoadsElements)
 {
     const auto sim = createSimulation("sim-read", 1.0, 0.0, 0.0);
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/test.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/test/test.dnf";
     sim->read(testFile);
     EXPECT_EQ(sim->getNumberOfElements(), 13);
 }
@@ -465,7 +465,7 @@ TEST_F(SimulationFileManagerTest, SimulationReadClearsExistingElementsBeforeLoad
     sim->addElement(makeField("pre-existing"));
     sim->addElement(makeStimulus("pre-existing-gs"));
 
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     sim->read(testFile);
 
     EXPECT_EQ(sim->getNumberOfElements(), 13);
@@ -475,7 +475,7 @@ TEST_F(SimulationFileManagerTest, SimulationReadClearsExistingElementsBeforeLoad
 TEST_F(SimulationFileManagerTest, SimulationReadInitializesSimulation)
 {
     const auto sim = createSimulation("sim-read-init", 1.0, 0.0, 0.0);
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/simulations/and.json";
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
     sim->read(testFile);
     EXPECT_TRUE(sim->isInitialized());
 }
@@ -483,7 +483,7 @@ TEST_F(SimulationFileManagerTest, SimulationReadInitializesSimulation)
 TEST_F(SimulationFileManagerTest, SimulationReadFromNonExistentFileDoesNotThrow)
 {
     const auto sim = createSimulation("sim-read-missing", 1.0, 0.0, 0.0);
-    EXPECT_NO_THROW(sim->read(tempDir + "no-such-file.json"));
+    EXPECT_NO_THROW(sim->read(tempDir + "no-such-file/no-such-file.dnf"));
 }
 
 // ---------------------------------------------------------------------------
@@ -502,7 +502,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesElementCount)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager sfmLoad{ simB, tempDir + "rt-sim.json" };
+    SimulationFileManager sfmLoad{ simB, tempDir + "rt-sim/rt-sim.dnf" };
     sfmLoad.loadElementsFromJson();
 
     EXPECT_EQ(simB->getNumberOfElements(), 4);
@@ -518,7 +518,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesElementNames)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-loaded-names", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-names.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-names/rt-names.dnf" };
     sfmLoad.loadElementsFromJson();
 
     EXPECT_NO_THROW(simB->getElement("nf 1"));
@@ -539,7 +539,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesNeuralFieldParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-nf-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager sfmLoad{ simB, tempDir + "rt-nf-params.json" };
+    SimulationFileManager sfmLoad{ simB, tempDir + "rt-nf-params/rt-nf-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loadedField = std::dynamic_pointer_cast<NeuralField>(simB->getElement("nf rt"));
@@ -562,7 +562,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussKernelParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-gk-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gk-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gk-params/rt-gk-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loadedKernel = std::dynamic_pointer_cast<GaussKernel>(simB->getElement("gk rt"));
@@ -583,7 +583,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesMexicanHatKernelParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-mhk-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-mhk-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-mhk-params/rt-mhk-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loadedKernel = std::dynamic_pointer_cast<MexicanHatKernel>(simB->getElement("mhk rt"));
@@ -604,7 +604,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussStimulusParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-gs-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager sfmLoad{ simB, tempDir + "rt-gs-params.json" };
+    SimulationFileManager sfmLoad{ simB, tempDir + "rt-gs-params/rt-gs-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loadedStimulus = std::dynamic_pointer_cast<GaussStimulus>(simB->getElement("gs rt"));
@@ -630,7 +630,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesNormalNoiseParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-nn-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-nn-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-nn-params/rt-nn-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loadedNoise = std::dynamic_pointer_cast<NormalNoise>(simB->getElement("nn rt"));
@@ -651,7 +651,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesInteractions)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-inter-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-interactions.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-interactions/rt-interactions.dnf" };
     sfmLoad.loadElementsFromJson();
 
     // gk 1 should still have nf 1 as an input
@@ -670,7 +670,7 @@ TEST_F(SimulationFileManagerTest, SimulationSaveReadRoundTripViaSimulationMethod
     simA->save(tempDir);
 
     const auto simB = createSimulation("sim-rt-b", 1.0, 0.0, 0.0);
-    simB->read(tempDir + "sim-rt.json");
+    simB->read(tempDir + "sim-rt/sim-rt.dnf");
 
     EXPECT_EQ(simB->getNumberOfElements(), 3);
     EXPECT_NO_THROW(simB->getElement("nf 1"));
@@ -696,7 +696,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesBoostStimulusParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-bs-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-bs-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-bs-params/rt-bs-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<BoostStimulus>(simB->getElement("bs rt"));
@@ -717,7 +717,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesOscillatoryKernelParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-ok-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-ok-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-ok-params/rt-ok-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<OscillatoryKernel>(simB->getElement("ok rt"));
@@ -738,7 +738,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesAsymmetricGaussKernelParamet
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-agk-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-agk-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-agk-params/rt-agk-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<AsymmetricGaussKernel>(simB->getElement("agk rt"));
@@ -759,7 +759,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesFieldCouplingParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-fc-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-fc-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-fc-params/rt-fc-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<FieldCoupling>(simB->getElement("fc rt"));
@@ -780,7 +780,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussFieldCouplingWithNoCoup
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-gfc-empty-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gfc-empty.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gfc-empty/rt-gfc-empty.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<GaussFieldCoupling>(simB->getElement("gfc rt"));
@@ -810,7 +810,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussFieldCouplingWithCoupli
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-gfc-couplings-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gfc-couplings.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-gfc-couplings/rt-gfc-couplings.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<GaussFieldCoupling>(simB->getElement("gfc rt2"));
@@ -836,7 +836,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesMemoryTraceParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-mt-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-mt-params.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-mt-params/rt-mt-params.dnf" };
     sfmLoad.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<MemoryTrace>(simB->getElement("mt rt"));
@@ -881,7 +881,7 @@ TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-all-loaded", 1.0, 0.0, 0.0);
-    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-all-elements.json" };
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-all-elements/rt-all-elements.dnf" };
     sfmLoad.loadElementsFromJson();
 
     EXPECT_EQ(simB->getNumberOfElements(), elementCount);
@@ -915,7 +915,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesNeuralField2DParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-nf2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-nf2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-nf2d/rt-nf2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<NeuralField2D>(simB->getElement("nf2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -935,7 +935,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussKernel2DParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-gk2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-gk2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-gk2d/rt-gk2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<GaussKernel2D>(simB->getElement("gk2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -954,7 +954,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesMexicanHatKernel2DParameters
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-mhk2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-mhk2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-mhk2d/rt-mhk2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<MexicanHatKernel2D>(simB->getElement("mhk2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -973,7 +973,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesOscillatoryKernel2DParameter
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-ok2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-ok2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-ok2d/rt-ok2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<OscillatoryKernel2D>(simB->getElement("ok2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -992,7 +992,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesAsymmetricGaussKernel2DParam
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-agk2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-agk2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-agk2d/rt-agk2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<AsymmetricGaussKernel2D>(simB->getElement("agk2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -1011,7 +1011,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesMemoryTrace2DParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-mt2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-mt2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-mt2d/rt-mt2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<MemoryTrace2D>(simB->getElement("mt2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -1030,7 +1030,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesTimedGaussStimulusParameters
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-tgs-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-tgs.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-tgs/rt-tgs.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<TimedGaussStimulus>(simB->getElement("tgs rt"));
     ASSERT_NE(loaded, nullptr);
@@ -1049,7 +1049,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesTimedGaussStimulus2DParamete
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-tgs2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-tgs2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-tgs2d/rt-tgs2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<TimedGaussStimulus2D>(simB->getElement("tgs2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -1068,7 +1068,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesBoostStimulus2DParameters)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-bs2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-bs2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-bs2d/rt-bs2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<BoostStimulus2D>(simB->getElement("bs2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -1087,7 +1087,7 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesCorrelatedNormalNoise2DParam
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-cnn2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-cnn2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-cnn2d/rt-cnn2d.dnf" }.loadElementsFromJson();
 
     const auto loaded = std::dynamic_pointer_cast<CorrelatedNormalNoise2D>(simB->getElement("cnn2d rt"));
     ASSERT_NE(loaded, nullptr);
@@ -1155,7 +1155,7 @@ TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes2D)
     sfmSave.saveElementsToJson();
 
     const auto simB = createSimulation("rt-all-2d-loaded", 1.0, 0.0, 0.0);
-    SimulationFileManager{ simB, tempDir + "rt-all-2d.json" }.loadElementsFromJson();
+    SimulationFileManager{ simB, tempDir + "rt-all-2d/rt-all-2d.dnf" }.loadElementsFromJson();
 
     EXPECT_EQ(simB->getNumberOfElements(), elementCount);
     EXPECT_NE(simB->getElement("nf2d 1"),   nullptr);

@@ -36,7 +36,7 @@ namespace dnf_composer
         root["deltaT"]     = simulation->getDeltaT();
         root["elements"]   = elementsJson;
 
-        const std::string path = (simDir / (simulation->getUniqueIdentifier() + ".json")).string();
+        const std::string path = (simDir / (simulation->getUniqueIdentifier() + ".dnf")).string();
         std::ofstream file(path);
         if (file.is_open()) {
             file << root.dump(4);
