@@ -2,73 +2,45 @@
 
 ## Prerequisites
 
-| Requirement | Minimum version | Notes |
-|---|---|---|
-| C++ compiler | C++20 | MSVC 2022, GCC 11+, Clang 13+, Apple Clang 13+ (Xcode 13+) |
-| CMake | 3.20 | |
-| Git | Any recent | Required by the setup scripts |
+### What you must install manually
 
-**Linux only:** GCC 13 or later is recommended. If your system default is older:
+The setup scripts handle most dependencies automatically, but the following must be present on your machine before running them.
+
+#### Windows
+
+| Requirement | Notes | How to get it |
+|---|---|---|
+| Visual Studio 2022 | Enable the **"Desktop development with C++"** workload. This provides MSVC, CMake, and MSBuild. | [visualstudio.microsoft.com](https://visualstudio.microsoft.com/) |
+| Git | Can be installed via the VS installer (optional components) or standalone. | [git-scm.com](https://git-scm.com/) |
+
+#### Linux
+
+| Requirement | Notes | How to get it |
+|---|---|---|
+| GCC 13+ | GCC 13 or later is required. | `sudo apt-get install gcc-13 g++-13` |
+| CMake 3.20+ | | `sudo apt-get install cmake` |
+| Git | | `sudo apt-get install git` |
+| OpenGL + X11 dev libraries | Required by the GUI. | `sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev libglfw3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev` |
+
+If GCC 13 is not yet your system default, set it:
 
 ```bash
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt update && sudo apt install gcc-13 g++-13
-# Optionally set as default:
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 ```
 
-**macOS only:** Xcode Command Line Tools are required:
+#### macOS
 
-```bash
-xcode-select --install
-```
-
----
-
-## Quick setup (recommended)
-
-A one-time setup script installs all dependencies — vcpkg, all vcpkg packages, and `imgui-platform-kit` — automatically. Run it once on a fresh machine, then use the build script whenever you want to compile.
-
-### Windows
-
-```bat
-setup.bat
-build.bat
-```
-
-`setup.bat` will:
-1. Install vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set, and persist it via `setx`
-2. Install all vcpkg packages for `x64-windows`
-3. Clone and build `imgui-platform-kit` into `deps/ipk-install/`
-
-After `setup.bat` completes, `build.bat` configures and builds both Release and Debug. Binaries land in `build/x64-release/Release/` and `build/x64-debug/Debug/`.
-
-### Linux
-
-```bash
-chmod +x setup.sh build.sh
-./setup.sh
-./build.sh
-```
-
-`setup.sh` installs vcpkg to `$HOME/vcpkg` if not already present, installs all vcpkg packages for `x64-linux`, and builds `imgui-platform-kit`. After setup, `build.sh` configures and builds into `build/linux-release/`.
-
-### macOS
-
-```bash
-chmod +x setup.sh build_macos.sh
-./setup.sh
-./build_macos.sh
-```
-
-`setup.sh` auto-detects your architecture (`arm64-osx` or `x64-osx`) and handles everything. `build_macos.sh` builds into `build/macos-release/`.
-
-> **Note:** `setup.sh` exports `VCPKG_ROOT` for the current session only. It will print a one-liner to add to your `~/.bashrc` or `~/.zshrc` so that subsequent terminal sessions pick it up automatically.
+| Requirement | Notes | How to get it |
+|---|---|---|
+| Xcode Command Line Tools | Provides the Clang compiler and Git. | `xcode-select --install` |
+| CMake 3.20+ | Not included with Xcode CLT — must be installed separately. | `brew install cmake` or [cmake.org](https://cmake.org/download/) |
 
 ---
 
-### Dependencies installed by the setup scripts
+### What the setup scripts install automatically
+
+You do **not** need to install any of the following — the setup scripts handle them:
 
 | Package | Source | Purpose |
 |---|---|---|
@@ -80,6 +52,47 @@ chmod +x setup.sh build_macos.sh
 | `gtest` | vcpkg | Unit testing framework |
 | `catch2` | vcpkg | Unit testing framework |
 | `imgui-platform-kit` | Built from source (cloned to `deps/`) | Platform/window abstraction |
+
+---
+
+## Quick setup (recommended)
+
+All scripts live in the [`scripts/`](scripts/) folder. See [`scripts/README.md`](scripts/README.md) for a full description of each script.
+
+Run the setup script once on a fresh machine, then use the build script whenever you want to compile.
+
+### Windows
+
+```bat
+scripts\setup.bat
+scripts\build.bat
+```
+
+`setup.bat` installs vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set and persists it via `setx`, installs all vcpkg packages, and builds `imgui-platform-kit` into `deps\ipk-install\`.
+
+`build.bat` configures and builds both Release and Debug. Binaries land in `build\x64-release\Release\` and `build\x64-debug\Debug\`.
+
+### Linux
+
+```bash
+chmod +x scripts/setup.sh scripts/build.sh
+./scripts/setup.sh
+./scripts/build.sh
+```
+
+`setup.sh` installs vcpkg to `$HOME/vcpkg` if not already present, installs all vcpkg packages for `x64-linux`, and builds `imgui-platform-kit`. After setup, `build.sh` configures and builds into `build/linux-release/`.
+
+> **Note:** `setup.sh` exports `VCPKG_ROOT` for the current session only. It prints a one-liner to add to your `~/.bashrc` or `~/.zshrc` so that subsequent terminals pick it up automatically.
+
+### macOS
+
+```bash
+chmod +x scripts/setup.sh scripts/build_macos.sh
+./scripts/setup.sh
+./scripts/build_macos.sh
+```
+
+`setup.sh` auto-detects your architecture (`arm64-osx` or `x64-osx`) and handles everything. `build_macos.sh` builds into `build/macos-release/`.
 
 ---
 
@@ -193,10 +206,10 @@ To install headers, the compiled library, and CMake config files into a local pr
 
 ```bash
 # Windows
-install.bat
+scripts\install.bat
 
 # Linux / macOS
-./install.sh
+./scripts/install.sh
 ```
 
 This installs:

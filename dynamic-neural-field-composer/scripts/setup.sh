@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
-PROJECT_ROOT=$(pwd)
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ── vcpkg ─────────────────────────────────────────────────────────────────────
 if [ -z "$VCPKG_ROOT" ]; then
@@ -60,4 +62,4 @@ else
 fi
 
 echo ""
-echo "Setup complete. Run ./build.sh or ./build_macos.sh to build the project."
+echo "Setup complete. Run ./scripts/build.sh or ./scripts/build_macos.sh to build the project."

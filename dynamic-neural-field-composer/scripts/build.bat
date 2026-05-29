@@ -1,25 +1,15 @@
 @echo off
 
-set VCPKG_ROOT=%VCPKG_ROOT%
-set PROJECT_ROOT=%CD%
+set SCRIPT_DIR=%~dp0
+set PROJECT_ROOT=%SCRIPT_DIR%..
 set IPK_INSTALL=%PROJECT_ROOT%\deps\ipk-install
 
 :: Check if the environment variable is set
 IF NOT DEFINED VCPKG_ROOT (
     echo ERROR: The environment variable VCPKG_ROOT is not set.
-    echo Run setup.bat first to install all dependencies automatically.
-    pause
+    echo Run scripts\setup.bat first to install all dependencies automatically.
     exit /b 1
 )
-
-:: Install vcpkg packages
-"%VCPKG_ROOT%\vcpkg.exe" install ^
-    "imgui[docking-experimental,core,opengl3-binding,glfw-binding,dx12-binding,win32-binding]:x64-windows" ^
-    "implot:x64-windows" ^
-    "imgui-node-editor:x64-windows" ^
-    "nlohmann-json:x64-windows" ^
-    "gtest:x64-windows" ^
-    "catch2:x64-windows"
 
 :: Create build folders
 mkdir %PROJECT_ROOT%\build\x64-release
@@ -42,7 +32,3 @@ cmake -G "Visual Studio 17 2022" -A x64 -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\b
 
 :: Build Debug
 cmake --build "%PROJECT_ROOT%\build\x64-debug" --config Debug
-
-pause
-
-
