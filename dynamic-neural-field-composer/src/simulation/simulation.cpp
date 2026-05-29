@@ -162,16 +162,18 @@ namespace dnf_composer
 			for (const auto& element : elements)
 				element->step(t, deltaT);
 		}
+		recorder.update(*this);
 	}
 
 	void Simulation::close()
 	{
 		pause();
+		recorder.stopAll();
 		for (const auto& element : elements)
 		{
 			element->close();
 		}
-		
+
 		initialized = false;
 		log(tools::logger::LogLevel::INFO, "Simulation closed.");
 	}
@@ -193,6 +195,7 @@ namespace dnf_composer
 
 	void Simulation::clean()
 	{
+		recorder.stopAll();
 		elements.clear();
 		initialized = false;
 		paused = false;
@@ -536,34 +539,6 @@ namespace dnf_composer
 		std::ostringstream oss;
 		oss << std::put_time(std::localtime(&time_t), "default sim [%Y-%m-%d] [%H-%M-%S]");
 		uniqueIdentifier = oss.str();
-	}
-
-	void Simulation::exportComponentToFile(const std::string& id, const std::string& componentName) const
-	{
-		const std::shared_ptr<element::Element> foundElement = getElement(id);
-		const std::vector<double> component = foundElement->getComponent(componentName);
-
-		const auto now = std::chrono::system_clock::now();
-		const auto time_t = std::chrono::system_clock::to_time_t(now);
-		std::ostringstream timeOss;
-		timeOss << std::put_time(std::localtime(&time_t), "%Y-%m-%d_%H-%M-%S");
-		const std::string timeSignature = timeOss.str();
-
-		// Add the time signature to the filename
-		const std::string filename = tools::utils::getResourceRoot() + "/data/exports/" + id + "_" + componentName + "_" + timeSignature + ".txt";
-
-		const bool success = tools::utils::saveVectorToFile(component, filename);
-		if (success)
-		{
-			const std::string logMessage = "Component '" + componentName + "' of element '" + id + "' was exported to file '" + filename + "'.";
-			log(tools::logger::LogLevel::INFO, logMessage);
-		}
-		else
-		{
-			const std::string logMessage = "Component '" + componentName + "' of element '" + id + "' was not exported to file '" + filename + "'.";
-			log(tools::logger::LogLevel::ERROR, logMessage);
-		}
-
 	}
 
 	std::vector<std::shared_ptr<element::Element>> Simulation::getElements() const

@@ -442,9 +442,9 @@ TEST_F(SimulationFileManagerTest, SimulationSaveWithDefaultPathCreatesFile)
     const auto sim = createSimulation("sim-save-default", 1.0, 0.0, 0.0);
     sim->addElement(makeField("nf 1"));
     EXPECT_NO_THROW(sim->save());
-    const std::string defaultFile = std::string(OUTPUT_DIRECTORY) + "/simulations/sim-save-default.json";
+    const std::string defaultFile = std::string(OUTPUT_DIRECTORY) + "/sim-save-default/sim-save-default.json";
     EXPECT_TRUE(fs::exists(defaultFile));
-    fs::remove(defaultFile);
+    fs::remove_all(std::string(OUTPUT_DIRECTORY) + "/sim-save-default");
 }
 
 // ---------------------------------------------------------------------------

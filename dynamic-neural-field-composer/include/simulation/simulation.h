@@ -9,6 +9,7 @@
 #include "elements/element.h"
 #include "exceptions/exception.h"
 #include "tools/utils.h"
+#include "simulation/simulation_recorder.h"
 
 /// @defgroup simulation Simulation
 /// @brief Core simulation loop and element registry.
@@ -157,9 +158,6 @@ namespace dnf_composer
 
 		bool componentExists(const std::string& id, const std::string& componentName) const;
 
-		/// @brief Write the named component to a CSV file in the output directory.
-		void exportComponentToFile(const std::string& id, const std::string& componentName) const;
-
 		/// @brief Return true if @c init() has been called and the simulation is ready.
 		bool isInitialized() const;
 
@@ -175,8 +173,15 @@ namespace dnf_composer
 		/// Disable for headless/benchmark runs to avoid two steady_clock::now() calls per step.
 		void setMeasureStepDuration(bool enable) { measureStepDuration = enable; }
 		bool getMeasureStepDuration() const { return measureStepDuration; }
+
+		/// @brief Access the recorder to start/stop time-series recordings or take snapshots.
+		/// @return Non-const reference to the internal @c SimulationRecorder.
+		/// @see SimulationRecorder
+		SimulationRecorder& getRecorder() { return recorder; }
+
 	private:
 		bool measureStepDuration = true;
+		SimulationRecorder recorder;
 		void generateUniqueIdentifier();
 	};
 }

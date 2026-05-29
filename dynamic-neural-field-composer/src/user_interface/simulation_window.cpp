@@ -107,7 +107,7 @@ namespace dnf_composer::user_interface
 				case 1: renderRemoveElementCard();          break;
 				case 2: renderSetInteractionCard();         break;
 				case 3: renderLogElementParametersCard();   break;
-				case 4: renderExportElementComponentCard(); break;
+				case 4: renderDataCard(); break;
 				case 5: renderMonitoringCard();             break;
 				default: break;
 			}
@@ -1703,12 +1703,20 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	void SimulationWindow::renderExportElementComponentCard() const
+	void SimulationWindow::renderDataCard() const
 	{
-		ImGui::PushID("export_inline");
+		ImGui::PushID("data_card");
 
 		static std::string selectedElementId;
 		static std::string selectedComponent;
+		static int  recordInterval = 10;
+		static int  unitIdx        = 1; // 0 = ms, 1 = ticks
+
+		static const char* kUnits[] = { "ms", "ticks" };
+
+		const bool hasSelection = !selectedElementId.empty() && !selectedComponent.empty();
+		const bool currentlyRecording = hasSelection &&
+			simulation->getRecorder().isRecording(selectedElementId, selectedComponent);
 
 		// ── Element ───────────────────────────────────────────────────────────
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
@@ -1716,7 +1724,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 		const char* elemPreview = selectedElementId.empty() ? "Select an element..." : selectedElementId.c_str();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		if (ImGui::BeginCombo("##export_elem_combo", elemPreview))
+		if (ImGui::BeginCombo("##data_elem_combo", elemPreview))
 		{
 			for (const auto& e : simulation->getElements())
 			{
@@ -1740,7 +1748,7 @@ namespace dnf_composer::user_interface
 		const char* compPreview = selectedComponent.empty() ? "Select a component..." : selectedComponent.c_str();
 		ImGui::BeginDisabled(selectedElementId.empty());
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		if (ImGui::BeginCombo("##export_comp_combo", compPreview))
+		if (ImGui::BeginCombo("##data_comp_combo", compPreview))
 		{
 			if (const auto elem = simulation->getElement(selectedElementId))
 			{
@@ -1757,20 +1765,129 @@ namespace dnf_composer::user_interface
 		ImGui::EndDisabled();
 		ImGui::Spacing();
 
-		// ── Export button ─────────────────────────────────────────────────────
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// ── Continuous recording ───────────────────────────────────────────────
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Continuous Recording");
+		ImGui::PopStyleColor();
+		ImGui::Spacing();
+
+		// Interval row: label | input | unit combo
+		ImGui::TextUnformatted("Interval");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.45f);
+		ImGui::BeginDisabled(currentlyRecording);
+		ImGui::PushFont(g_MonoMediumFont);
+		ImGui::InputInt("##rec_interval", &recordInterval, 0, 0);
+		ImGui::PopFont();
+		if (recordInterval < 1) recordInterval = 1;
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::Combo("##rec_unit", &unitIdx, kUnits, 2);
+		ImGui::EndDisabled();
+		ImGui::Spacing();
+
+		// Start / Stop buttons side by side
 		{
-			const bool canExport = !selectedElementId.empty() && !selectedComponent.empty();
+			const float halfW = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+			const float btnH  = ImGui::GetFrameHeight() * 1.5f;
+
+			// Start button (red circle icon)
+			{
+				const bool canStart = hasSelection && !currentlyRecording;
+				const ImVec4 col = ImVec4(0.72f, 0.13f, 0.13f, canStart ? 1.0f : 0.4f);
+				ImGui::PushStyleColor(ImGuiCol_Button,        col);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(col.x * 0.85f, col.y * 0.85f, col.z * 0.85f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(col.x * 0.70f, col.y * 0.70f, col.z * 0.70f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+				ImGui::BeginDisabled(!canStart);
+				const bool startPressed = ImGui::Button("    Record", { halfW, btnH });
+				ImGui::EndDisabled();
+				ImGui::PopStyleColor(4);
+
+				{
+					const ImVec2 bMin = ImGui::GetItemRectMin();
+					const ImVec2 bMax = ImGui::GetItemRectMax();
+					ImGui::PushFont(g_MediumIconsFont);
+					const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_CIRCLE);
+					const float  labelW = ImGui::CalcTextSize("    Record").x;
+					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+					const ImU32  icol   = canStart ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+					ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+						{iconX, iconY}, icol, ICON_FA_CIRCLE);
+					ImGui::PopFont();
+				}
+
+				if (startPressed)
+					simulation->getRecorder().startRecording(
+						simulation->getUniqueIdentifier(),
+						selectedElementId, selectedComponent,
+						recordInterval,
+						unitIdx == 0 ? RecordingIntervalUnit::Milliseconds : RecordingIntervalUnit::Ticks);
+			}
+
+			ImGui::SameLine();
+
+			// Stop button
+			{
+				const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+				const float  alpha  = currentlyRecording ? 1.0f : 0.4f;
+				ImGui::PushStyleColor(ImGuiCol_Button,
+					ImVec4(accent.x, accent.y, accent.z, alpha));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+					ImVec4(accent.x * 0.85f, accent.y * 0.85f, accent.z * 0.85f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+					ImVec4(accent.x * 0.70f, accent.y * 0.70f, accent.z * 0.70f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+				ImGui::BeginDisabled(!currentlyRecording);
+				const bool stopPressed = ImGui::Button("    Stop", { halfW, btnH });
+				ImGui::EndDisabled();
+				ImGui::PopStyleColor(4);
+
+				{
+					const ImVec2 bMin = ImGui::GetItemRectMin();
+					const ImVec2 bMax = ImGui::GetItemRectMax();
+					ImGui::PushFont(g_MediumIconsFont);
+					const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_STOP);
+					const float  labelW = ImGui::CalcTextSize("    Stop").x;
+					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
+					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+					const ImU32  icol   = currentlyRecording ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+					ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
+						{iconX, iconY}, icol, ICON_FA_STOP);
+					ImGui::PopFont();
+				}
+
+				if (stopPressed)
+					simulation->getRecorder().stopRecording(selectedElementId, selectedComponent);
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// ── Snapshot export ────────────────────────────────────────────────────
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::TextUnformatted("Snapshot Export");
+		ImGui::PopStyleColor();
+		ImGui::Spacing();
+
+		{
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			const float  btnH   = ImGui::GetFrameHeight() * 1.5f;
 			ImGui::PushStyleColor(ImGuiCol_Button,
-				ImVec4(accent.x, accent.y, accent.z, canExport ? 1.0F : accent.w));
+				ImVec4(accent.x, accent.y, accent.z, hasSelection ? 1.0f : accent.w));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
-			ImGui::BeginDisabled(!canExport);
-			const bool pressed = ImGui::Button("     Export", {-FLT_MIN, btnH});
+			ImGui::BeginDisabled(!hasSelection);
+			const bool snapped = ImGui::Button("     Export", {-FLT_MIN, btnH});
 			ImGui::EndDisabled();
 			ImGui::PopStyleColor(4);
 
@@ -1778,18 +1895,20 @@ namespace dnf_composer::user_interface
 				const ImVec2 bMin = ImGui::GetItemRectMin();
 				const ImVec2 bMax = ImGui::GetItemRectMax();
 				ImGui::PushFont(g_MediumIconsFont);
-				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_DOWNLOAD);
+				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_CAMERA);
 				const float  labelW = ImGui::CalcTextSize("     Export").x;
 				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
 				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
-				const ImU32  col    = canExport ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				const ImU32  col    = hasSelection ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
 				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
-					{iconX, iconY}, col, ICON_FA_DOWNLOAD);
+					{iconX, iconY}, col, ICON_FA_CAMERA);
 				ImGui::PopFont();
 			}
 
-			if (pressed)
-				simulation->exportComponentToFile(selectedElementId, selectedComponent);
+			if (snapped)
+				simulation->getRecorder().takeSnapshot(
+					simulation->getUniqueIdentifier(),
+					selectedElementId, selectedComponent, *simulation);
 		}
 
 		ImGui::PopID();

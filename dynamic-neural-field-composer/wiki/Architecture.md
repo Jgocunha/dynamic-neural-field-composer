@@ -90,4 +90,16 @@ Every element exposes its internal state as named `std::vector<double>` buffers 
 All element construction goes through `ElementFactory::createElement()`, which takes an `ElementLabel` enum and typed parameter structs. This decouples callers from concrete constructors and is the construction path used by the GUI and JSON loader.
 
 ### JSON persistence
-`SimulationFileManager` serializes and deserializes the full element graph to/from JSON. It is invoked via `Simulation::save()` and `Simulation::read()`.
+`SimulationFileManager` serializes and deserializes the full element graph to/from JSON. It is invoked via `Simulation::save()` and `Simulation::read()`. Each simulation's files are co-located under `data/<simulation_name>/`:
+
+```
+data/
+└── <simulation_name>/
+    ├── <simulation_name>.json          # element graph + parameters
+    ├── <coupling_name>_weights.txt     # FieldCoupling weight matrix (one file per coupling element)
+    ├── exports/                        # snapshot CSV files (one per takeSnapshot() call)
+    └── recordings/                     # time-series CSV files (one per startRecording() session)
+```
+
+### Recording and snapshot export
+`SimulationRecorder` (owned by `Simulation`, accessible via `getRecorder()`) manages ongoing time-series recordings and one-shot snapshot exports. It is called automatically from `Simulation::step()` and closed in `close()` / `clean()`.

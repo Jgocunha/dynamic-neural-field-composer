@@ -40,7 +40,7 @@ namespace dnf_composer::user_interface
 		void renderAddElementCard() const;
 		void renderRemoveElementCard() const;
 		void renderSetInteractionCard() const;
-		void renderExportElementComponentCard() const;
+		void renderDataCard() const;
 		void renderLogElementParametersCard() const;
 		void renderMonitoringCard() const;
 		~SimulationWindow() override = default;

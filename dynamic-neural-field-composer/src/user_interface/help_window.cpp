@@ -210,7 +210,7 @@ namespace dnf_composer::user_interface
 			{ ICON_FA_TRASH,      "Remove elements", "Delete an existing element and all of its connections." },
 			{ ICON_FA_LINK,       "Set interactions","Connect and disconnect elements." },
 			{ ICON_FA_FILE_LINES, "Log parameters",  "Print the current parameter values of any element to the console." },
-			{ ICON_FA_DOWNLOAD,   "Export data",     "Write an element's component data (activation, output, weights) to a .txt file." },
+			{ ICON_FA_DOWNLOAD,   "Export data",     "Record time-series or take a snapshot of any element component to a CSV file in data/<sim_name>/." },
 			{ ICON_FA_HEART_PULSE,"Monitoring",      "Open the field-metrics panel to track peak detection and activity statistics." },
 		};
 
