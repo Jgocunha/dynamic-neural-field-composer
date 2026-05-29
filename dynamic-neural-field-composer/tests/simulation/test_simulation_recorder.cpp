@@ -7,6 +7,7 @@
 #include "simulation/simulation_recorder.h"
 #include "elements/gauss_stimulus.h"
 #include "elements/neural_field.h"
+#include "elements/neural_field_2d.h"
 #include "elements/activation_function.h"
 #include "tools/utils.h"
 
@@ -256,6 +257,69 @@ TEST(SimulationRecorderSnapshot, SnapshotCsvHasTwoLines)
         while (std::getline(f, line)) ++lineCount;
     }
     EXPECT_EQ(lineCount, 2); // header + 1 data row
+    cleanSimDir(simId);
+}
+
+// ---------------------------------------------------------------------------
+// 2D element — dimension metadata in CSV header
+// ---------------------------------------------------------------------------
+
+TEST(SimulationRecorderFile, CsvHasDimensionCommentFor2D)
+{
+    const std::string simId = "rec-2d-header";
+    cleanSimDir(simId);
+
+    const element::ElementDimensions dims2d{ 4, 5, 1.0, 1.0 };
+    element::NeuralField2DParameters nfp;
+    auto nf2d = std::make_shared<element::NeuralField2D>(
+        element::ElementCommonParameters{ "nf2d", dims2d }, nfp);
+
+    auto sim = createSimulation(simId, 1.0, 0.0, 0.0);
+    sim->addElement(nf2d);
+    sim->init();
+
+    sim->getRecorder().startRecording(simId, "nf2d", "activation", 1, RecordingIntervalUnit::Ticks);
+    sim->step();
+    sim->getRecorder().stopAll();
+
+    std::string csvPath;
+    for (const auto& entry : fs::directory_iterator(recDir(simId)))
+        if (entry.path().extension() == ".csv") { csvPath = entry.path().string(); break; }
+
+    ASSERT_FALSE(csvPath.empty());
+    std::string firstLine, secondLine;
+    {
+        std::ifstream f(csvPath);
+        std::getline(f, firstLine);
+        std::getline(f, secondLine);
+    }
+    EXPECT_EQ(firstLine, "# size_x=4,size_y=5");
+    EXPECT_EQ(secondLine.substr(0, 8), "ticks,ms");
+    cleanSimDir(simId);
+}
+
+TEST(SimulationRecorderFile, NoDimensionCommentFor1D)
+{
+    const std::string simId = "rec-1d-no-comment";
+    cleanSimDir(simId);
+    auto sim = makeRunningSimulation(simId);
+
+    sim->getRecorder().startRecording(simId, "stim", "output", 1, RecordingIntervalUnit::Ticks);
+    sim->step();
+    sim->getRecorder().stopAll();
+
+    std::string csvPath;
+    for (const auto& entry : fs::directory_iterator(recDir(simId)))
+        if (entry.path().extension() == ".csv") { csvPath = entry.path().string(); break; }
+
+    ASSERT_FALSE(csvPath.empty());
+    std::string firstLine;
+    {
+        std::ifstream f(csvPath);
+        std::getline(f, firstLine);
+    }
+    // 1D elements must NOT have a comment line
+    EXPECT_EQ(firstLine.substr(0, 8), "ticks,ms");
     cleanSimDir(simId);
 }
 

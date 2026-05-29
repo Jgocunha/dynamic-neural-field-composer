@@ -185,6 +185,16 @@ ticks,ms,0,1,2,...,N-1
 - `ms` = `sim.t` (current simulation time in ms)
 - Columns `0`…`N-1` = the component vector values
 
+**2D elements** additionally emit a metadata comment line as the first line of the file, before the column header:
+
+```
+# size_x=10,size_y=10
+ticks,ms,0,1,...,99
+42,42.000000,...
+```
+
+The comment encodes the grid dimensions so downstream tools can reshape the flat column sequence back into a 2D array. The data is stored in row-major order: index `i` maps to grid position `x = i % size_x`, `y = i / size_x`.
+
 ---
 
 ## Status flags

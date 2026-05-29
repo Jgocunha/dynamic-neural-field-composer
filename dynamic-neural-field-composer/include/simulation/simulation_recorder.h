@@ -23,7 +23,9 @@ namespace dnf_composer
 	/// the configured sample interval elapses. Snapshots write a single row to
 	/// `data/<simName>/exports/`.
 	///
-	/// CSV format — header: `ticks,ms,0,1,...,N-1`; data rows: `<ticks>,<ms>,<v0>,...`.
+	/// CSV format — for 1D elements: header `ticks,ms,0,1,...,N-1`; data rows `<ticks>,<ms>,<v0>,...`.
+	/// For 2D elements a `# size_x=W,size_y=H` comment line precedes the header so readers
+	/// can reshape the flat row-major columns back into a 2D grid.
 	///
 	/// @ingroup simulation_recorder
 	class SimulationRecorder
@@ -87,7 +89,10 @@ namespace dnf_composer
 
 		std::vector<Session> sessions;
 
-		static void writeHeader(std::ofstream& file, size_t componentSize);
+		/// @brief Write the CSV header. For 2D elements (sizeY > 1) a metadata comment
+		/// line `# size_x=W,size_y=H` is emitted first so readers can reconstruct the grid.
+		static void writeHeader(std::ofstream& file, size_t componentSize,
+		                        int sizeX = 1, int sizeY = 1);
 		static void writeRow(std::ofstream& file, int ticks, double ms,
 		                     const std::vector<double>& component);
 	};

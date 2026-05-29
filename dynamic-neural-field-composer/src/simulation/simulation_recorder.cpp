@@ -29,8 +29,11 @@ namespace dnf_composer
 		}
 	}
 
-	void SimulationRecorder::writeHeader(std::ofstream& file, const size_t componentSize)
+	void SimulationRecorder::writeHeader(std::ofstream& file, const size_t componentSize,
+	                                     const int sizeX, const int sizeY)
 	{
+		if (sizeY > 1)
+			file << "# size_x=" << sizeX << ",size_y=" << sizeY << "\n";
 		file << "ticks,ms";
 		for (size_t i = 0; i < componentSize; ++i)
 			file << "," << i;
@@ -133,7 +136,10 @@ namespace dnf_composer
 			const std::vector<double> component = sim.getComponent(s.elementId, s.componentName);
 
 			if (s.file.tellp() == 0)
-				writeHeader(s.file, component.size());
+			{
+				const auto& dims = sim.getElement(s.elementId)->getElementCommonParameters().dimensionParameters;
+				writeHeader(s.file, component.size(), dims.size_x, dims.size_y);
+			}
 
 			writeRow(s.file, ticks, ms, component);
 			s.file.flush();
@@ -166,7 +172,8 @@ namespace dnf_composer
 		const int    ticks = deriveTicks(sim);
 		const double ms    = sim.t;
 
-		writeHeader(file, component.size());
+		const auto& dims = sim.getElement(elementId)->getElementCommonParameters().dimensionParameters;
+		writeHeader(file, component.size(), dims.size_x, dims.size_y);
 		writeRow(file, ticks, ms, component);
 
 		tools::logger::log(tools::logger::LogLevel::INFO,
