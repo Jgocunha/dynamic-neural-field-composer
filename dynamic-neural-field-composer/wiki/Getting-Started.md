@@ -6,9 +6,7 @@
 |---|---|---|
 | C++ compiler | C++20 | MSVC 2022, GCC 11+, Clang 13+, Apple Clang 13+ (Xcode 13+) |
 | CMake | 3.20 | |
-| vcpkg | Any recent | Set `VCPKG_ROOT` environment variable |
-
-The `VCPKG_ROOT` environment variable must point to your vcpkg installation. The build script will fail with an explicit error message if it is not set.
+| Git | Any recent | Required by the setup scripts |
 
 **Linux only:** GCC 13 or later is recommended. If your system default is older:
 
@@ -20,72 +18,81 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 ```
 
-**macOS only:** Xcode Command Line Tools are required. Install them with:
+**macOS only:** Xcode Command Line Tools are required:
 
 ```bash
 xcode-select --install
 ```
 
-### vcpkg dependencies
-
-These are installed automatically by the build scripts:
-
-| Package | Purpose |
-|---|---|
-| `gtest` | Unit testing framework |
-| `imgui` | Immediate-mode GUI |
-| `implot` | Real-time plotting |
-| `unofficial-imgui-node-editor` | Visual node-graph editor |
-| `nlohmann-json` | Simulation serialization |
-| `imgui-platform-kit` | Platform/window abstraction |
-
 ---
 
-## Building
+## Quick setup (recommended)
 
-### Windows — using the provided script
+A one-time setup script installs all dependencies — vcpkg, all vcpkg packages, and `imgui-platform-kit` — automatically. Run it once on a fresh machine, then use the build script whenever you want to compile.
+
+### Windows
 
 ```bat
+setup.bat
 build.bat
 ```
 
-This script:
-1. Installs all vcpkg dependencies for `x64-windows`
-2. Creates `build/x64-release/` and `build/x64-debug/`
-3. Configures both with CMake (Visual Studio 17 2022 generator)
-4. Builds both Release and Debug configurations
+`setup.bat` will:
+1. Install vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set, and persist it via `setx`
+2. Install all vcpkg packages for `x64-windows`
+3. Clone and build `imgui-platform-kit` into `deps/ipk-install/`
 
-Binaries land in:
-- `build/x64-release/Release/`
-- `build/x64-debug/Debug/`
+After `setup.bat` completes, `build.bat` configures and builds both Release and Debug. Binaries land in `build/x64-release/Release/` and `build/x64-debug/Debug/`.
 
-### Linux — using the provided script
+### Linux
 
 ```bash
-chmod +x build.sh
+chmod +x setup.sh build.sh
+./setup.sh
 ./build.sh
 ```
 
-The script installs vcpkg packages for Linux (OpenGL + GLFW bindings), then configures and builds with `make`.
+`setup.sh` installs vcpkg to `$HOME/vcpkg` if not already present, installs all vcpkg packages for `x64-linux`, and builds `imgui-platform-kit`. After setup, `build.sh` configures and builds into `build/linux-release/`.
 
-### macOS — using the provided script
+### macOS
 
 ```bash
-chmod +x build_macos.sh
+chmod +x setup.sh build_macos.sh
+./setup.sh
 ./build_macos.sh
 ```
 
-The script auto-detects your architecture (`arm64-osx` for Apple Silicon, `x64-osx` for Intel), installs the correct vcpkg packages (OpenGL + GLFW bindings), clones and installs imgui-platform-kit from source, and builds into `build/macos-release/`.
+`setup.sh` auto-detects your architecture (`arm64-osx` or `x64-osx`) and handles everything. `build_macos.sh` builds into `build/macos-release/`.
 
-### Manual CMake build
+> **Note:** `setup.sh` exports `VCPKG_ROOT` for the current session only. It will print a one-liner to add to your `~/.bashrc` or `~/.zshrc` so that subsequent terminal sessions pick it up automatically.
 
-If you prefer to drive CMake directly:
+---
+
+### Dependencies installed by the setup scripts
+
+| Package | Source | Purpose |
+|---|---|---|
+| `vcpkg` | Cloned from GitHub | C++ package manager |
+| `imgui` | vcpkg | Immediate-mode GUI |
+| `implot` | vcpkg | Real-time plotting |
+| `unofficial-imgui-node-editor` | vcpkg | Visual node-graph editor |
+| `nlohmann-json` | vcpkg | Simulation serialization |
+| `gtest` | vcpkg | Unit testing framework |
+| `catch2` | vcpkg | Unit testing framework |
+| `imgui-platform-kit` | Built from source (cloned to `deps/`) | Platform/window abstraction |
+
+---
+
+## Manual CMake build
+
+If you already have all dependencies installed and want to drive CMake directly, pass `VCPKG_ROOT` as the toolchain and point `CMAKE_PREFIX_PATH` at your `imgui-platform-kit` install:
 
 ```bash
 # Configure (Release)
 cmake -B build/release \
       -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+      -DCMAKE_PREFIX_PATH="deps/ipk-install"
 
 # Build
 cmake --build build/release --config Release
@@ -93,7 +100,8 @@ cmake --build build/release --config Release
 # Debug
 cmake -B build/debug \
       -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+      -DCMAKE_PREFIX_PATH="deps/ipk-install"
 cmake --build build/debug --config Debug
 ```
 
