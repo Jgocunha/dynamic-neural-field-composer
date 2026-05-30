@@ -82,7 +82,7 @@ These scripts install the compiled library, headers, and CMake config files to a
 ./scripts/install.sh
 ```
 
-Runs `cmake --install` on `build/linux-release/`. Will prompt for sudo if not already running as root.
+Detects the OS and runs `cmake --install` on `build/linux-release/` (Linux) or `build/macos-release/` (macOS). Will prompt for sudo if not already running as root.
 
 ### `install.bat` — Windows
 

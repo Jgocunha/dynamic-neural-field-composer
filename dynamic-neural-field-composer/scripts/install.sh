@@ -10,4 +10,9 @@ if [ "$(id -u)" != "0" ]; then
     exit $?
 fi
 
-cmake --install "$PROJECT_ROOT/build/linux-release"
+case "$(uname -s)" in
+    Darwin) BUILD_DIR="$PROJECT_ROOT/build/macos-release" ;;
+    *)      BUILD_DIR="$PROJECT_ROOT/build/linux-release" ;;
+esac
+
+cmake --install "$BUILD_DIR"
