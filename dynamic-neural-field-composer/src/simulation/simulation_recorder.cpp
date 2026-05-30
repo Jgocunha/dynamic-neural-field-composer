@@ -16,10 +16,13 @@ namespace dnf_composer
 	{
 		std::string makeTimestamp()
 		{
-			const auto now = std::chrono::system_clock::now();
-			const auto t   = std::chrono::system_clock::to_time_t(now);
+			const auto now  = std::chrono::system_clock::now();
+			const auto t    = std::chrono::system_clock::to_time_t(now);
+			const auto ms   = std::chrono::duration_cast<std::chrono::milliseconds>(
+			                      now.time_since_epoch()) % 1000;
 			std::ostringstream oss;
-			oss << std::put_time(std::localtime(&t), "%Y-%m-%d_%H-%M-%S");
+			oss << std::put_time(std::localtime(&t), "%Y-%m-%d_%H-%M-%S")
+			    << "_" << std::setfill('0') << std::setw(3) << ms.count();
 			return oss.str();
 		}
 
@@ -125,26 +128,53 @@ namespace dnf_composer
 		const int    ticks = deriveTicks(sim);
 		const double ms    = sim.t;
 
-		for (auto& s : sessions)
+		std::vector<size_t> toStop;
+
+		for (size_t i = 0; i < sessions.size(); ++i)
 		{
+			auto& s = sessions[i];
+
+			const auto element = sim.getElement(s.elementId);
+			if (!element)
+			{
+				tools::logger::log(tools::logger::LogLevel::WARNING,
+					"Stopping recording for '" + s.elementId + "': element no longer exists.");
+				toStop.push_back(i);
+				continue;
+			}
+
+			const std::vector<double>* component = element->getComponentPtr(s.componentName);
+			if (!component)
+			{
+				tools::logger::log(tools::logger::LogLevel::WARNING,
+					"Stopping recording for '" + s.elementId + "' / '" + s.componentName + "': component unavailable.");
+				toStop.push_back(i);
+				continue;
+			}
+
 			const double current = (s.unit == RecordingIntervalUnit::Ticks)
 				? static_cast<double>(ticks) : ms;
 
 			if (current < s.nextSampleAt)
 				continue;
 
-			const std::vector<double> component = sim.getComponent(s.elementId, s.componentName);
-
 			if (s.file.tellp() == 0)
 			{
-				const auto& dims = sim.getElement(s.elementId)->getElementCommonParameters().dimensionParameters;
-				writeHeader(s.file, component.size(), dims.size_x, dims.size_y);
+				const auto& dims = element->getElementCommonParameters().dimensionParameters;
+				writeHeader(s.file, component->size(), dims.size_x, dims.size_y);
 			}
 
-			writeRow(s.file, ticks, ms, component);
+			writeRow(s.file, ticks, ms, *component);
 			s.file.flush();
 
 			s.nextSampleAt = current + static_cast<double>(s.sampleInterval);
+		}
+
+		for (auto it = toStop.rbegin(); it != toStop.rend(); ++it)
+		{
+			if (sessions[*it].file.is_open())
+				sessions[*it].file.close();
+			sessions.erase(sessions.begin() + static_cast<std::ptrdiff_t>(*it));
 		}
 	}
 
@@ -153,7 +183,21 @@ namespace dnf_composer
 	                                      const std::string& componentName,
 	                                      const Simulation& sim)
 	{
-		const std::vector<double> component = sim.getComponent(elementId, componentName);
+		const auto element = sim.getElement(elementId);
+		if (!element)
+		{
+			tools::logger::log(tools::logger::LogLevel::ERROR,
+				"Snapshot failed: element '" + elementId + "' not found.");
+			return;
+		}
+
+		const std::vector<double>* component = element->getComponentPtr(componentName);
+		if (!component)
+		{
+			tools::logger::log(tools::logger::LogLevel::ERROR,
+				"Snapshot failed: component '" + componentName + "' not found on '" + elementId + "'.");
+			return;
+		}
 
 		const std::filesystem::path dir = std::filesystem::path(tools::utils::getResourceRoot())
 			/ "data" / simName / "exports";
@@ -172,9 +216,9 @@ namespace dnf_composer
 		const int    ticks = deriveTicks(sim);
 		const double ms    = sim.t;
 
-		const auto& dims = sim.getElement(elementId)->getElementCommonParameters().dimensionParameters;
-		writeHeader(file, component.size(), dims.size_x, dims.size_y);
-		writeRow(file, ticks, ms, component);
+		const auto& dims = element->getElementCommonParameters().dimensionParameters;
+		writeHeader(file, component->size(), dims.size_x, dims.size_y);
+		writeRow(file, ticks, ms, *component);
 
 		tools::logger::log(tools::logger::LogLevel::INFO,
 			"Snapshot exported to: " + filename);

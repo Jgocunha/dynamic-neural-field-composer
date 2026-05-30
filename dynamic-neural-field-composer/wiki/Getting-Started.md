@@ -163,7 +163,7 @@ build\x64-release\Release\dnf-composer-dynamic.exe
 
 ### First steps in the GUI
 
-1. Open a pre-built simulation: **File → Open** and navigate to `data/` (simulation JSON files are organized as `data/<sim_name>/<sim_name>.json`)
+1. Open a pre-built simulation: **File → Open** and navigate to `data/` (simulation files are organized as `data/<sim_name>/<sim_name>.dnf`)
 2. Use the **Node Graph** window to inspect the element topology
 3. Use **Simulation Controls** to start, pause, single-step, or reset
 4. Live plots appear in the **Plots** window

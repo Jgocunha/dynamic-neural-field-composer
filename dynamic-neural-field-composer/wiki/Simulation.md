@@ -112,25 +112,25 @@ double currentTime = sim.getT();
 
 ## Persistence (save / load)
 
-Simulations can be saved and loaded as JSON files via `SimulationFileManager`, which is invoked through these convenience methods:
+Simulations can be saved and loaded as `.dnf` files via `SimulationFileManager`, which is invoked through these convenience methods:
 
 ```cpp
 // Save to a file path (opens a file dialog if path is empty)
-sim.save("path/to/file.json");
+sim.save("path/to/file.dnf");
 sim.save();   // opens file dialog
 
 // Load from a file path (opens a file dialog if path is empty)
-sim.read("path/to/file.json");
+sim.read("path/to/file.dnf");
 sim.read();   // opens file dialog
 ```
 
-The JSON file captures all element types, their parameters, their spatial dimensions, and the interaction graph. Field coupling weights are written alongside the JSON file in the same simulation sub-folder.
+The `.dnf` file captures all element types, their parameters, their spatial dimensions, and the interaction graph. Field coupling weights are written alongside the `.dnf` file in the same simulation sub-folder.
 
 **Default output layout** (`data/<simulation_name>/`):
 
 | File | Description |
 |---|---|
-| `<name>.json` | Simulation element graph |
+| `<name>.dnf` | Simulation element graph |
 | `<coupling_name>_weights.txt` | FieldCoupling weight matrix |
 | `exports/<id>_<component>_<ts>.csv` | Single-frame snapshots |
 | `recordings/<id>_<component>_<ts>.csv` | Time-series recordings |

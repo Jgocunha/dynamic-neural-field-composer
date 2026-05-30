@@ -177,8 +177,8 @@ TEST(SimulationRecorderSampling, TickIntervalProducesCorrectRowCount)
         std::string line;
         while (std::getline(f, line)) ++lineCount;
     }
-    // 1 header + data rows. With interval 2 over 10 steps: rows at t=1,3,5,7,9 (nextSampleAt starts at 0).
-    EXPECT_GE(lineCount, 2); // at least header + 1 data row
+    // nextSampleAt=0; fires at ticks 1,2,4,6,8,10 (6 rows) + 1 header line = 7.
+    EXPECT_EQ(lineCount, 7);
     cleanSimDir(simId);
 }
 

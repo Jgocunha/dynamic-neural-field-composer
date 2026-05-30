@@ -113,7 +113,7 @@ namespace dnf_composer
             if (const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(el))
             {
                 fc->setWeightsDirectory(simDir);
-                fc->readWeights();
+                fc->tryReadWeights();
             }
         }
     }

@@ -50,34 +50,34 @@ namespace dnf_composer
 	/// **Default output layout** when @p filePath is empty:
 	/// ```
 	/// data/<identifier>/
-	///   <identifier>.json           ← element graph
+	///   <identifier>.dnf            ← element graph
 	///   <coupling_name>_weights.txt ← one file per FieldCoupling element
 	/// ```
 	///
 	/// When loading, FieldCoupling weight files are resolved relative to the
-	/// directory that contains the JSON file (i.e. `parent_path(filePath)`).
+	/// directory that contains the `.dnf` file (i.e. `parent_path(filePath)`).
 	///
 	/// The optional path supplied to this manager has different behavior depending
 	/// on the operation:
-	/// - if non-empty, it is treated as the JSON file path to save to or load from;
+	/// - if non-empty, it is treated as the `.dnf` file path to save to or load from;
 	/// - if empty, saving uses the default output location (`data/`) and a
-	///   generated `<identifier>/<identifier>.json` file path.
+	///   generated `<identifier>/<identifier>.dnf` file path.
 	///
 	/// @ingroup simulation_io
 	class SimulationFileManager
 	{
 	private:
 		std::shared_ptr<Simulation> simulation; ///< The simulation to serialize/deserialize.
-		std::string filePath;                   ///< Optional JSON file path override; if empty, save uses the default output location and generated file name.
+		std::string filePath;                   ///< Optional .dnf file path override; if empty, save uses the default output location and generated file name.
 	public:
 		/// @brief Construct a SimulationFileManager.
 		/// @param simulation  The simulation instance to read into or write from.
-		/// @param filePath    Optional JSON file path. When non-empty, it is the file
+		/// @param filePath    Optional `.dnf` file path. When non-empty, it is the file
 		///                    used for both save and load operations. When empty,
 		///                    saveElementsToJson() writes to the default output
-		///                    location using a generated `<identifier>.json` file
+		///                    location using a generated `<identifier>.dnf` file
 		///                    name, while loadElementsFromJson() expects a concrete
-		///                    JSON file path to be available at the resolved path.
+		///                    `.dnf` file path to be available at the resolved path.
 		SimulationFileManager(const std::shared_ptr<Simulation>& simulation, const std::string& filePath = {});
 
 		/// @brief Serialize all elements and their connections to a JSON file.
