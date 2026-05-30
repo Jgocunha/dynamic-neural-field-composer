@@ -41,21 +41,31 @@ if not exist "%IPK_SRC%" (
 )
 
 if not exist "%IPK_INSTALL%\release" (
-    echo Building imgui-platform-kit...
-    cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build" ^
+    echo Building imgui-platform-kit Release...
+    cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build-release" ^
         -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
-        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%"
-    if errorlevel 1 ( echo ERROR: imgui-platform-kit cmake configure failed. & exit /b 1 )
-    cmake --build "%IPK_SRC%\build" --config Release --parallel
+        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\release"
+    if errorlevel 1 ( echo ERROR: imgui-platform-kit Release configure failed. & exit /b 1 )
+    cmake --build "%IPK_SRC%\build-release" --config Release --parallel
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Release build failed. & exit /b 1 )
-    cmake --install "%IPK_SRC%\build" --config Release --prefix "%IPK_INSTALL%\release"
+    cmake --install "%IPK_SRC%\build-release" --config Release
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Release install failed. & exit /b 1 )
-    cmake --build "%IPK_SRC%\build" --config Debug --parallel
+) else (
+    echo imgui-platform-kit Release already installed, skipping.
+)
+
+if not exist "%IPK_INSTALL%\debug" (
+    echo Building imgui-platform-kit Debug...
+    cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build-debug" ^
+        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\debug"
+    if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug configure failed. & exit /b 1 )
+    cmake --build "%IPK_SRC%\build-debug" --config Debug --parallel
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug build failed. & exit /b 1 )
-    cmake --install "%IPK_SRC%\build" --config Debug --prefix "%IPK_INSTALL%\debug"
+    cmake --install "%IPK_SRC%\build-debug" --config Debug
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug install failed. & exit /b 1 )
 ) else (
-    echo imgui-platform-kit already installed, skipping.
+    echo imgui-platform-kit Debug already installed, skipping.
 )
 
 echo.
