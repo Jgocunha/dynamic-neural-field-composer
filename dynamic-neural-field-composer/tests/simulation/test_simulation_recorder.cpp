@@ -177,8 +177,9 @@ TEST(SimulationRecorderSampling, TickIntervalProducesCorrectRowCount)
         std::string line;
         while (std::getline(f, line)) ++lineCount;
     }
-    // nextSampleAt=0; fires at ticks 1,2,4,6,8,10 (6 rows) + 1 header line = 7.
-    EXPECT_EQ(lineCount, 7);
+    // nextSampleAt=0; t increments before recorder.update(), so first fire is tick 1.
+    // Fires at ticks 1,3,5,7,9 (5 rows) + 1 header line = 6.
+    EXPECT_EQ(lineCount, 6);
     cleanSimDir(simId);
 }
 
