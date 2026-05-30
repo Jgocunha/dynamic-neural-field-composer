@@ -55,5 +55,5 @@ if(DNF_COMPOSER_BUILD_TESTS)
     )
 
     include(GoogleTest)
-    gtest_discover_tests(dnf_composer_tests)
+    gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)
 endif()
