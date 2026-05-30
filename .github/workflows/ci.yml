@@ -176,9 +176,8 @@ jobs:
         working-directory: ./dynamic-neural-field-composer/build/x64-release
         shell: cmd
         run: |
-          set "PATH=%VCPKG_ROOT%/installed/x64-windows/bin;%PATH%"
-          for /f "delims=" %%i in ('where cmake') do set "CMAKE_BIN=%%~dpi"
-          "%CMAKE_BIN%ctest.exe" -C Release --output-on-failure --parallel
+          set "PATH=C:\Program Files\CMake\bin;%VCPKG_ROOT%/installed/x64-windows/bin;%PATH%"
+          ctest -C Release --output-on-failure --parallel
 
   build-and-test-macos:
     runs-on: macos-latest
