@@ -174,10 +174,12 @@ jobs:
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests
         working-directory: ./dynamic-neural-field-composer/build/x64-release
-        shell: cmd
+        shell: pwsh
         env:
           PATH: "${{ env.VCPKG_ROOT }}/installed/x64-windows/bin;${{ env.PATH }}"
-        run: ctest -C Release --output-on-failure --parallel
+        run: |
+          $ctest = Join-Path (Split-Path (Get-Command cmake).Source -Parent) "ctest.exe"
+          & $ctest -C Release --output-on-failure --parallel
 
   build-and-test-macos:
     runs-on: macos-latest

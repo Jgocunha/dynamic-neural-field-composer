@@ -40,7 +40,7 @@ if not exist "%IPK_SRC%" (
     if errorlevel 1 ( echo ERROR: Failed to clone imgui-platform-kit. & exit /b 1 )
 )
 
-if not exist "%IPK_INSTALL%" (
+if not exist "%IPK_INSTALL%\release" (
     echo Building imgui-platform-kit...
     cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build" ^
         -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
@@ -48,11 +48,11 @@ if not exist "%IPK_INSTALL%" (
     if errorlevel 1 ( echo ERROR: imgui-platform-kit cmake configure failed. & exit /b 1 )
     cmake --build "%IPK_SRC%\build" --config Release --parallel
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Release build failed. & exit /b 1 )
-    cmake --install "%IPK_SRC%\build" --config Release
+    cmake --install "%IPK_SRC%\build" --config Release --prefix "%IPK_INSTALL%\release"
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Release install failed. & exit /b 1 )
     cmake --build "%IPK_SRC%\build" --config Debug --parallel
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug build failed. & exit /b 1 )
-    cmake --install "%IPK_SRC%\build" --config Debug
+    cmake --install "%IPK_SRC%\build" --config Debug --prefix "%IPK_INSTALL%\debug"
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug install failed. & exit /b 1 )
 ) else (
     echo imgui-platform-kit already installed, skipping.
