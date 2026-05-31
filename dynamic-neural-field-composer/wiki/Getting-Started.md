@@ -2,90 +2,110 @@
 
 ## Prerequisites
 
-| Requirement | Minimum version | Notes |
+### What you must install manually
+
+The setup scripts handle most dependencies automatically, but the following must be present on your machine before running them.
+
+#### Windows
+
+| Requirement | Notes | How to get it |
 |---|---|---|
-| C++ compiler | C++20 | MSVC 2022, GCC 11+, Clang 13+, Apple Clang 13+ (Xcode 13+) |
-| CMake | 3.20 | |
-| vcpkg | Any recent | Set `VCPKG_ROOT` environment variable |
+| Visual Studio 2022 | Enable the **"Desktop development with C++"** workload. This provides MSVC, CMake, and MSBuild. | [visualstudio.microsoft.com](https://visualstudio.microsoft.com/) |
+| Git | Can be installed via the VS installer (optional components) or standalone. | [git-scm.com](https://git-scm.com/) |
 
-The `VCPKG_ROOT` environment variable must point to your vcpkg installation. The build script will fail with an explicit error message if it is not set.
+#### Linux
 
-**Linux only:** GCC 13 or later is recommended. If your system default is older:
+| Requirement | Notes | How to get it |
+|---|---|---|
+| GCC 13+ | GCC 13 or later is required. | `sudo apt-get install gcc-13 g++-13` |
+| CMake 3.20+ | | `sudo apt-get install cmake` |
+| Git | | `sudo apt-get install git` |
+| OpenGL + X11 dev libraries | Required by the GUI. | `sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev libglfw3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev` |
+
+If GCC 13 is not yet your system default, set it:
 
 ```bash
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt update && sudo apt install gcc-13 g++-13
-# Optionally set as default:
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 ```
 
-**macOS only:** Xcode Command Line Tools are required. Install them with:
+#### macOS
 
-```bash
-xcode-select --install
-```
-
-### vcpkg dependencies
-
-These are installed automatically by the build scripts:
-
-| Package | Purpose |
-|---|---|
-| `gtest` | Unit testing framework |
-| `imgui` | Immediate-mode GUI |
-| `implot` | Real-time plotting |
-| `unofficial-imgui-node-editor` | Visual node-graph editor |
-| `nlohmann-json` | Simulation serialization |
-| `imgui-platform-kit` | Platform/window abstraction |
+| Requirement | Notes | How to get it |
+|---|---|---|
+| Xcode Command Line Tools | Provides the Clang compiler and Git. | `xcode-select --install` |
+| CMake 3.20+ | Not included with Xcode CLT — must be installed separately. | `brew install cmake` or [cmake.org](https://cmake.org/download/) |
 
 ---
 
-## Building
+### What the setup scripts install automatically
 
-### Windows — using the provided script
+You do **not** need to install any of the following — the setup scripts handle them:
+
+| Package | Source | Purpose |
+|---|---|---|
+| `vcpkg` | Cloned from GitHub | C++ package manager |
+| `imgui` | vcpkg | Immediate-mode GUI |
+| `implot` | vcpkg | Real-time plotting |
+| `unofficial-imgui-node-editor` | vcpkg | Visual node-graph editor |
+| `nlohmann-json` | vcpkg | Simulation serialization |
+| `gtest` | vcpkg | Unit testing framework |
+| `catch2` | vcpkg | Unit testing framework |
+| `imgui-platform-kit` | Built from source (cloned to `deps/`) | Platform/window abstraction |
+
+---
+
+## Quick setup (recommended)
+
+All scripts live in the [`scripts/`](scripts/) folder. See [`scripts/README.md`](scripts/README.md) for a full description of each script.
+
+Run the setup script once on a fresh machine, then use the build script whenever you want to compile.
+
+### Windows
 
 ```bat
-build.bat
+scripts\setup.bat
+scripts\build.bat
 ```
 
-This script:
-1. Installs all vcpkg dependencies for `x64-windows`
-2. Creates `build/x64-release/` and `build/x64-debug/`
-3. Configures both with CMake (Visual Studio 17 2022 generator)
-4. Builds both Release and Debug configurations
+`setup.bat` installs vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set and persists it via `setx`, installs all vcpkg packages, and builds `imgui-platform-kit` into `deps\ipk-install\`.
 
-Binaries land in:
-- `build/x64-release/Release/`
-- `build/x64-debug/Debug/`
+`build.bat` configures and builds both Release and Debug. Binaries land in `build\x64-release\Release\` and `build\x64-debug\Debug\`.
 
-### Linux — using the provided script
+### Linux
 
 ```bash
-chmod +x build.sh
-./build.sh
+chmod +x scripts/setup.sh scripts/build.sh
+./scripts/setup.sh
+./scripts/build.sh
 ```
 
-The script installs vcpkg packages for Linux (OpenGL + GLFW bindings), then configures and builds with `make`.
+`setup.sh` installs vcpkg to `$HOME/vcpkg` if not already present, installs all vcpkg packages for `x64-linux`, and builds `imgui-platform-kit`. After setup, `build.sh` configures and builds into `build/linux-release/`.
 
-### macOS — using the provided script
+> **Note:** `setup.sh` exports `VCPKG_ROOT` for the current session only. It prints a one-liner to add to your `~/.bashrc` or `~/.zshrc` so that subsequent terminals pick it up automatically.
+
+### macOS
 
 ```bash
-chmod +x build_macos.sh
-./build_macos.sh
+chmod +x scripts/setup.sh scripts/build_macos.sh
+./scripts/setup.sh
+./scripts/build_macos.sh
 ```
 
-The script auto-detects your architecture (`arm64-osx` for Apple Silicon, `x64-osx` for Intel), installs the correct vcpkg packages (OpenGL + GLFW bindings), clones and installs imgui-platform-kit from source, and builds into `build/macos-release/`.
+`setup.sh` auto-detects your architecture (`arm64-osx` or `x64-osx`) and handles everything. `build_macos.sh` builds into `build/macos-release/`.
 
-### Manual CMake build
+---
 
-If you prefer to drive CMake directly:
+## Manual CMake build
+
+If you already have all dependencies installed and want to drive CMake directly, pass `VCPKG_ROOT` as the toolchain and point `CMAKE_PREFIX_PATH` at your `imgui-platform-kit` install:
 
 ```bash
 # Configure (Release)
 cmake -B build/release \
       -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+      -DCMAKE_PREFIX_PATH="deps/ipk-install"
 
 # Build
 cmake --build build/release --config Release
@@ -93,7 +113,8 @@ cmake --build build/release --config Release
 # Debug
 cmake -B build/debug \
       -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+      -DCMAKE_PREFIX_PATH="deps/ipk-install"
 cmake --build build/debug --config Debug
 ```
 
@@ -142,7 +163,7 @@ build\x64-release\Release\dnf-composer-dynamic.exe
 
 ### First steps in the GUI
 
-1. Open a pre-built simulation: **File → Open** and navigate to `data/simulations/`
+1. Open a pre-built simulation: **File → Open** and navigate to `data/` (simulation files are organized as `data/<sim_name>/<sim_name>.dnf`)
 2. Use the **Node Graph** window to inspect the element topology
 3. Use **Simulation Controls** to start, pause, single-step, or reset
 4. Live plots appear in the **Plots** window
@@ -185,10 +206,10 @@ To install headers, the compiled library, and CMake config files into a local pr
 
 ```bash
 # Windows
-install.bat
+scripts\install.bat
 
 # Linux / macOS
-./install.sh
+./scripts/install.sh
 ```
 
 This installs:

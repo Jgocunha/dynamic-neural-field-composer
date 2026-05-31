@@ -30,6 +30,9 @@
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
+#include "tools/utils.h"
+
+#include <filesystem>
 
 extern ImFont* g_MonoMediumFont;
 extern ImFont* g_BlackSmallFont;
@@ -339,7 +342,7 @@ namespace dnf_composer::user_interface
 					ewSectionLabel("Dimensions");
 					renderDimensionControls2D(e);
 				}
-				switchElementToModify(e);
+				switchElementToModify(e, simulation->getUniqueIdentifier());
 
 				ImGui::EndGroup();
 
@@ -432,7 +435,7 @@ namespace dnf_composer::user_interface
 			{
 				for (const auto& element : elements)
 				{
-					switchElementToModify(element);
+					switchElementToModify(element, simulation->getUniqueIdentifier());
 					ImGui::Separator();
 				}
 			}
@@ -697,7 +700,8 @@ namespace dnf_composer::user_interface
 		ImGui::PopID();
 	}
 
-	void ElementWindow::switchElementToModify(const std::shared_ptr<element::Element>& element)
+	void ElementWindow::switchElementToModify(const std::shared_ptr<element::Element>& element,
+	                                          const std::string& simId)
 	{
 		const std::string elementId = element->getUniqueName();
 		static bool missingElementAcknowledged = false;
@@ -711,7 +715,7 @@ namespace dnf_composer::user_interface
 			modifyElementGaussStimulus(element);
 			break;
 		case element::ElementLabel::FIELD_COUPLING:
-			modifyElementFieldCoupling(element);
+			modifyElementFieldCoupling(element, simId);
 			break;
 		case element::ElementLabel::GAUSS_KERNEL:
 			modifyElementGaussKernel(element);
@@ -1201,7 +1205,8 @@ namespace dnf_composer::user_interface
 		}
 	}
 
-	void ElementWindow::modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element)
+	void ElementWindow::modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element,
+	                                               const std::string& simId)
 	{
 		const auto fieldCoupling = std::dynamic_pointer_cast<element::FieldCoupling>(element);
 		element::FieldCouplingParameters fcp = fieldCoupling->getParameters();
@@ -1248,9 +1253,20 @@ namespace dnf_composer::user_interface
 			{ fcp.learningRate = learningRate; fieldCoupling->setParameters(fcp); }
 
 		ImGui::PushID(uid.c_str());
-		if (ImGui::Button("Load"))  fieldCoupling->readWeights();
+		if (ImGui::Button("Load"))
+		{
+			const std::string dir = (std::filesystem::path(tools::utils::getResourceRoot()) / "data" / simId).string();
+			fieldCoupling->setWeightsDirectory(dir);
+			fieldCoupling->readWeights();
+		}
 		ImGui::SameLine();
-		if (ImGui::Button("Save"))  fieldCoupling->writeWeights();
+		if (ImGui::Button("Save"))
+		{
+			const std::string dir = (std::filesystem::path(tools::utils::getResourceRoot()) / "data" / simId).string();
+			std::filesystem::create_directories(dir);
+			fieldCoupling->setWeightsDirectory(dir);
+			fieldCoupling->writeWeights();
+		}
 		ImGui::SameLine();
 		if (ImGui::Button("Clear")) fieldCoupling->clearWeights();
 		ImGui::PopID();

@@ -21,7 +21,6 @@ jobs:
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-linux
-      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
 
     steps:
       - name: Checkout repository
@@ -56,62 +55,50 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
-      - name: Install vcpkg packages
+      # ── Dependencies + build ───────────────────────────────────────────────
+      - name: Setup dependencies
+        working-directory: ./dynamic-neural-field-composer
         run: |
-          $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
-            implot \
-            imgui-node-editor \
-            nlohmann-json \
-            gtest \
-            catch2
-
-      # ── imgui-platform-kit (from source) ───────────────────────────────────
-      - name: Clone imgui-platform-kit
-        run: |
-          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
-            ${{ github.workspace }}/imgui-platform-kit-src
-
-      - name: Configure imgui-platform-kit
-        run: |
-          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
-                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
-                -DCMAKE_CXX_COMPILER=g++-13 \
-                -DCMAKE_C_COMPILER=gcc-13
-
-      - name: Build imgui-platform-kit
-        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(nproc)
-
-      - name: Install imgui-platform-kit
-        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
-
-      # ── Main project ───────────────────────────────────────────────────────
-      - name: Configure CMake
-        run: |
-          COVERAGE_FLAGS=""
-          if [ "${{ matrix.coverage }}" = "true" ]; then
-            COVERAGE_FLAGS="-DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage"
-          fi
-          cmake -S ./dynamic-neural-field-composer -B build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
-                -DCMAKE_CXX_COMPILER=g++-13 \
-                -DCMAKE_C_COMPILER=gcc-13 \
-                $COVERAGE_FLAGS
+          chmod +x scripts/setup.sh
+          ./scripts/setup.sh
 
       - name: Build
-        run: cmake --build build --parallel $(nproc)
+        if: ${{ !matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer
+        run: |
+          chmod +x scripts/build.sh
+          ./scripts/build.sh
+
+      - name: Configure CMake (coverage)
+        if: ${{ matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer
+        run: |
+          cmake -S . -B build/linux-debug \
+                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dynamic-neural-field-composer/deps/ipk-install \
+                -DCMAKE_CXX_COMPILER=g++-13 \
+                -DCMAKE_C_COMPILER=gcc-13 \
+                -DCMAKE_CXX_FLAGS=--coverage \
+                -DCMAKE_EXE_LINKER_FLAGS=--coverage
+
+      - name: Build (coverage)
+        if: ${{ matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer
+        run: cmake --build build/linux-debug --parallel $(nproc)
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests
-        working-directory: build
+        if: ${{ !matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer/build/linux-release
+        run: ctest --output-on-failure --parallel $(nproc)
+
+      - name: Run tests (coverage)
+        if: ${{ matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer/build/linux-debug
         run: ctest --output-on-failure --parallel $(nproc)
 
       # ── Coverage report (Debug matrix entry only) ──────────────────────────
@@ -120,7 +107,7 @@ jobs:
         run: |
           gcovr \
             --root ${{ github.workspace }}/dynamic-neural-field-composer \
-            --object-directory ${{ github.workspace }}/build \
+            --object-directory ${{ github.workspace }}/dynamic-neural-field-composer/build/linux-debug \
             --gcov-executable gcov-13 \
             --exclude '.*vcpkg.*' \
             --exclude '.*/tests/.*' \
@@ -145,8 +132,6 @@ jobs:
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-windows
-      IPK_SRC: ${{ github.workspace }}/imgui-platform-kit-src
-      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
 
     defaults:
       run:
@@ -160,8 +145,6 @@ jobs:
       - name: Normalize paths
         run: |
           echo "VCPKG_ROOT=$(echo "$VCPKG_ROOT" | tr '\\' '/')" >> "$GITHUB_ENV"
-          echo "IPK_SRC=$(echo "$IPK_SRC" | tr '\\' '/')" >> "$GITHUB_ENV"
-          echo "IPK_INSTALL_PREFIX=$(echo "$IPK_INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
@@ -174,59 +157,33 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.bat') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
-      - name: Install vcpkg packages
-        run: |
-          $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding,win32-binding,dx12-binding]" \
-            implot \
-            imgui-node-editor \
-            nlohmann-json \
-            gtest \
-            catch2
-
-      # ── imgui-platform-kit (from source) ───────────────────────────────────
-      - name: Clone imgui-platform-kit
-        run: git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
-
-      - name: Configure imgui-platform-kit
-        run: |
-          cmake -S $IPK_SRC/imgui-platform-kit \
-                -B $IPK_SRC/build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
-
-      - name: Build imgui-platform-kit
-        run: cmake --build $IPK_SRC/build --config Release --parallel
-
-      - name: Install imgui-platform-kit
-        run: cmake --install $IPK_SRC/build --config Release
-
-      # ── Main project ───────────────────────────────────────────────────────
-      - name: Configure CMake
-        run: |
-          cmake -S ./dynamic-neural-field-composer -B build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX
+      # ── Dependencies + build ───────────────────────────────────────────────
+      - name: Setup dependencies
+        working-directory: ./dynamic-neural-field-composer
+        shell: cmd
+        run: scripts\setup.bat
 
       - name: Build
-        run: cmake --build build --config Release --parallel
+        working-directory: ./dynamic-neural-field-composer
+        shell: cmd
+        run: scripts\build.bat
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests
-        working-directory: build
-        run: ctest -C Release --output-on-failure --parallel
+        working-directory: ./dynamic-neural-field-composer/build/x64-release
+        shell: cmd
+        run: |
+          set "PATH=C:\Program Files\CMake\bin;%VCPKG_ROOT%/installed/x64-windows/bin;%PATH%"
+          ctest -C Release --output-on-failure --parallel
 
   build-and-test-macos:
     runs-on: macos-latest
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
 
     steps:
       - name: Checkout repository
@@ -256,51 +213,23 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-${{ hashFiles('dynamic-neural-field-composer/build_macos.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
           restore-keys: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-
 
-      - name: Install vcpkg packages
+      # ── Dependencies + build ───────────────────────────────────────────────
+      - name: Setup dependencies
+        working-directory: ./dynamic-neural-field-composer
         run: |
-          $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
-            implot \
-            imgui-node-editor \
-            nlohmann-json \
-            gtest \
-            catch2
-
-      # ── imgui-platform-kit (from source) ───────────────────────────────────
-      - name: Clone imgui-platform-kit
-        run: |
-          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
-            ${{ github.workspace }}/imgui-platform-kit-src
-
-      - name: Configure imgui-platform-kit
-        run: |
-          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
-                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
-
-      - name: Build imgui-platform-kit
-        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(sysctl -n hw.logicalcpu)
-
-      - name: Install imgui-platform-kit
-        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
-
-      # ── Main project ───────────────────────────────────────────────────────
-      - name: Configure CMake
-        run: |
-          cmake -S ./dynamic-neural-field-composer -B build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX
+          chmod +x scripts/setup.sh
+          ./scripts/setup.sh
 
       - name: Build
-        run: cmake --build build --parallel $(sysctl -n hw.logicalcpu)
+        working-directory: ./dynamic-neural-field-composer
+        run: |
+          chmod +x scripts/build_macos.sh
+          ./scripts/build_macos.sh
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests
-        working-directory: build
+        working-directory: ./dynamic-neural-field-composer/build/macos-release
         run: ctest --output-on-failure --parallel $(sysctl -n hw.logicalcpu)

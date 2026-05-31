@@ -35,6 +35,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "simulation/test_simulation.cpp"
             "simulation/test_simulation_extended.cpp"
             "simulation/test_simulation_file_manager.cpp"
+            "simulation/test_simulation_recorder.cpp"
             # tools
             "tools/test_logger.cpp"
             "tools/test_math.cpp"
@@ -54,5 +55,5 @@ if(DNF_COMPOSER_BUILD_TESTS)
     )
 
     include(GoogleTest)
-    gtest_discover_tests(dnf_composer_tests)
+    gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)
 endif()

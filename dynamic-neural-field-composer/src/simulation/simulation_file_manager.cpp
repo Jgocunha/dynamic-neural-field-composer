@@ -9,11 +9,24 @@ namespace dnf_composer
 		: simulation(simulation), filePath(filePath)
 	{
         if (filePath.empty())
-            this->filePath = tools::utils::getResourceRoot() + "/data/simulations/";
+            this->filePath = tools::utils::getResourceRoot() + "/data/";
 	}
 
 	void SimulationFileManager::saveElementsToJson() const
 	{
+        const std::filesystem::path simDir = std::filesystem::path(filePath) / simulation->getUniqueIdentifier();
+        std::filesystem::create_directories(simDir);
+
+        // Write FieldCoupling weights into the sim-specific directory before saving JSON.
+        for (const auto& el : simulation->getElements())
+        {
+            if (const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(el))
+            {
+                fc->setWeightsDirectory(simDir.string());
+                fc->writeWeights();
+            }
+        }
+
         json elementsJson = json::array();
 		for (const auto& element : simulation->getElements())
             elementsJson.emplace_back(elementToJson(element));
@@ -23,7 +36,7 @@ namespace dnf_composer
         root["deltaT"]     = simulation->getDeltaT();
         root["elements"]   = elementsJson;
 
-        const std::string path = (std::filesystem::path(filePath) / (simulation->getUniqueIdentifier() + ".json")).string();
+        const std::string path = (simDir / (simulation->getUniqueIdentifier() + ".dnf")).string();
         std::ofstream file(path);
         if (file.is_open()) {
             file << root.dump(4);
@@ -92,6 +105,17 @@ namespace dnf_composer
 
         log(tools::logger::INFO, "Simulation loaded from: " + filePath);
         jsonToElements(elementsJson);
+
+        // Point FieldCoupling elements to their weights in the same directory as the JSON file.
+        const std::string simDir = std::filesystem::path(filePath).parent_path().string();
+        for (const auto& el : simulation->getElements())
+        {
+            if (const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(el))
+            {
+                fc->setWeightsDirectory(simDir);
+                fc->tryReadWeights();
+            }
+        }
     }
 
     static element::ElementLabel elementLabelFromString(const std::string& s)

@@ -105,6 +105,23 @@ Internally it hosts: `SimulationWindow`, `ElementWindow`, `NodeGraphWindow`, `Fi
 
 Controls for starting, pausing, stepping, and resetting the simulation. Each functional area (simulation parameters, run controls, element management, interaction editor) is rendered as a collapsible **Card**.
 
+#### Export Data panel (tab 5 — download icon)
+
+The **Export Data** pane unifies recording and snapshot export. Select an element and component, then:
+
+| Section | Controls | Action |
+|---|---|---|
+| **Continuous Recording** | Interval input + ms/ticks unit | **● Record** starts writing a time-series CSV; **■ Stop** closes it |
+| **Snapshot Export** | — | **📷 Export** writes a single-row CSV of the current state |
+
+Files land in:
+- Recordings: `data/<sim_name>/recordings/<id>_<component>_<timestamp>.csv`
+- Snapshots: `data/<sim_name>/exports/<id>_<component>_<timestamp>.csv`
+
+For **2D elements**, a `# size_x=W,size_y=H` comment line is written as the first line of the CSV so that downstream tools can reconstruct the spatial grid from the flat column sequence.
+
+The **Record** button is red and disabled while already recording. The **Stop** button is disabled when no recording is active for the selected pair. The **Export** button is always available once an element and component are selected.
+
 ```cpp
 app.addWindow<user_interface::SimulationWindow>();
 ```

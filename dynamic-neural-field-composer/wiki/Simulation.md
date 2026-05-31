@@ -112,28 +112,88 @@ double currentTime = sim.getT();
 
 ## Persistence (save / load)
 
-Simulations can be saved and loaded as JSON files via `SimulationFileManager`, which is invoked through these convenience methods:
+Simulations can be saved and loaded as `.dnf` files via `SimulationFileManager`, which is invoked through these convenience methods:
 
 ```cpp
 // Save to a file path (opens a file dialog if path is empty)
-sim.save("path/to/file.json");
+sim.save("path/to/file.dnf");
 sim.save();   // opens file dialog
 
 // Load from a file path (opens a file dialog if path is empty)
-sim.read("path/to/file.json");
+sim.read("path/to/file.dnf");
 sim.read();   // opens file dialog
 ```
 
-The JSON file captures all element types, their parameters, their spatial dimensions, and the interaction graph. Field coupling weights are stored separately via `FieldCoupling::writeWeights()` / `readWeights()`.
+The `.dnf` file captures all element types, their parameters, their spatial dimensions, and the interaction graph. Field coupling weights are written alongside the `.dnf` file in the same simulation sub-folder.
+
+**Default output layout** (`data/<simulation_name>/`):
+
+| File | Description |
+|---|---|
+| `<name>.dnf` | Simulation element graph |
+| `<coupling_name>_weights.txt` | FieldCoupling weight matrix |
+| `exports/<id>_<component>_<ts>.csv` | Single-frame snapshots |
+| `recordings/<id>_<component>_<ts>.csv` | Time-series recordings |
 
 ---
 
-## Export component data
+## Recording and exporting component data
+
+The `SimulationRecorder` (accessed via `sim.getRecorder()`) supports two modes:
+
+### Continuous recording
+
+Records a time-series to a CSV file at a configurable sample interval. The file is written incrementally as the simulation steps.
 
 ```cpp
-// Write a component's time-series to a CSV file in the data/ directory
-sim.exportComponentToFile("field name", "activation");
+// Start recording "activation" of "nf 1" every 5 ticks
+sim.getRecorder().startRecording(
+    sim.getUniqueIdentifier(),   // simulation name (used as sub-folder)
+    "nf 1",                      // element id
+    "activation",                // component name
+    5,                           // sample interval
+    RecordingIntervalUnit::Ticks // or RecordingIntervalUnit::Milliseconds
+);
+
+// ... run the simulation ...
+
+// Stop when done
+sim.getRecorder().stopRecording("nf 1", "activation");
+// or stop all active recordings:
+sim.getRecorder().stopAll();
 ```
+
+### Snapshot export
+
+Writes a single row (current state) to a CSV file immediately:
+
+```cpp
+sim.getRecorder().takeSnapshot(
+    sim.getUniqueIdentifier(), "nf 1", "activation", sim);
+```
+
+### CSV format
+
+Both modes produce the same format:
+
+```
+ticks,ms,0,1,2,...,N-1
+42,42.000000,0.123456,-0.012345,...
+```
+
+- `ticks` = derived as `round((t - tZero) / deltaT)`
+- `ms` = `sim.t` (current simulation time in ms)
+- Columns `0`…`N-1` = the component vector values
+
+**2D elements** additionally emit a metadata comment line as the first line of the file, before the column header:
+
+```
+# size_x=10,size_y=10
+ticks,ms,0,1,...,99
+42,42.000000,...
+```
+
+The comment encodes the grid dimensions so downstream tools can reshape the flat column sequence back into a 2D array. The data is stored in row-major order: index `i` maps to grid position `x = i % size_x`, `y = i / size_x`.
 
 ---
 

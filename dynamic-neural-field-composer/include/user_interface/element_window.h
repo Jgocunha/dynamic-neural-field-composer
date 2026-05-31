@@ -34,7 +34,7 @@ namespace dnf_composer::user_interface
 		void render() override;
 		void renderElementControlCard();
 		void renderModifyElementParameters();
-		static void switchElementToModify(const std::shared_ptr<element::Element>& element);
+		static void switchElementToModify(const std::shared_ptr<element::Element>& element, const std::string& simId = {});
 		static void setFocusedElement(const std::shared_ptr<element::Element>& element);
 		~ElementWindow() override = default;
 	private:
@@ -43,7 +43,7 @@ namespace dnf_composer::user_interface
 		void renderDimensionControls2D(const std::shared_ptr<element::Element>& element) const;
 		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
-		static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element);
+		static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element, const std::string& simId = {});
 		static void modifyElementGaussKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementMexicanHatKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementNormalNoise(const std::shared_ptr<element::Element>& element);

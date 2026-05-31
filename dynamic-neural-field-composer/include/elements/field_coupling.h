@@ -135,6 +135,11 @@ namespace dnf_composer
 			/// @brief Load the weight matrix from a binary file in @c weightsDirectory.
 			void readWeights();
 
+			/// @brief Load weights if the file exists; log INFO in either case.
+			/// Unlike @c readWeights(), this never logs an error — use it when weights
+			/// may legitimately be absent (e.g. first run of a programmatic simulation).
+			void tryReadWeights();
+
 			/// @brief Save the current weight matrix to a binary file in @c weightsDirectory.
 			void writeWeights() const;
 

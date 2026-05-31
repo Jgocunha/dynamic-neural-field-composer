@@ -25,10 +25,8 @@ if '%errorlevel%' NEQ '0' (
     exit /B
 
 :gotAdmin
-    pushd "%CD%"
-    CD /D "%~dp0"
-:--------------------------------------  
-set PROJECT_ROOT=%CD%
+    set SCRIPT_DIR=%~dp0
+    set PROJECT_ROOT=%SCRIPT_DIR%..
 
 :: Install x64-release configuration
 cmake --build "%PROJECT_ROOT%\build\x64-release" --config Release --target install
@@ -36,5 +34,4 @@ cmake --build "%PROJECT_ROOT%\build\x64-release" --config Release --target insta
 :: Install x64-debug configuration
 cmake --build "%PROJECT_ROOT%\build\x64-debug" --config Debug --target install
 
-pause
 exit /b 0

@@ -54,6 +54,7 @@ add_compile_definitions(OUTPUT_DIRECTORY="${OUTPUT_DIRECTORY}")
 set(simulation_headers
         "include/simulation/simulation.h"
         "include/simulation/simulation_file_manager.h"
+        "include/simulation/simulation_recorder.h"
 )
 set(visualization_headers
         "include/visualization/visualization.h"
@@ -153,6 +154,7 @@ set(src
 
         "src/simulation/simulation.cpp"
         "src/simulation/simulation_file_manager.cpp"
+        "src/simulation/simulation_recorder.cpp"
 
         "src/visualization/visualization.cpp"
         "src/visualization/plot.cpp"
