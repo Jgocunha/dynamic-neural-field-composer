@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.7.0] - 2026-05-31
+
+### Added
+- **`SimulationRecorder`** — records element output components to timestamped CSV files with
+  configurable sampling interval (ticks or milliseconds); supports `startRecording()`,
+  `stopRecording()`, `stopAll()`, and `takeSnapshot()` for single-frame exports
+- **Simulation recording UI** — `SimulationWindow` exposes recording controls: element/component
+  selector, interval configuration, and start/stop buttons
+- 2D CSV metadata: a `# size_x=N,size_y=M` comment line is prepended to CSV files produced for
+  2D elements so downstream readers can reconstruct the grid layout
+- New simulation configuration: weighted field couplings example (`.dnf` format)
+- `scripts/setup.bat` and `scripts/setup.sh` automate vcpkg bootstrapping, package installation,
+  and imgui-platform-kit build+install on a fresh machine
+- `scripts/README.md` documenting all setup, build, and install scripts with platform notes
+
+### Changed
+- **Simulation file format** renamed from `.json` to `.dnf`; directory structure changed to
+  `data/simulations/<name>/<name>.dnf` (one folder per simulation)
+- All build and install scripts moved from the project root into `scripts/`
+- imgui-platform-kit now built twice — separate `build-release` / `build-debug` directories each
+  with their own `CMAKE_INSTALL_PREFIX` — to prevent CRT mismatch between Release and Debug
+  configurations on Windows
+
+### Build
+- Windows CI: `gtest_discover_tests` uses `DISCOVERY_MODE PRE_TEST` (CMake 3.18+) to defer test
+  binary execution to CTest run time, avoiding the `_NOT_BUILT` sentinel when vcpkg DLLs are absent
+  from PATH at build time
+- Windows CI test step prepends `C:\Program Files\CMake\bin` to PATH so cmake 3.31 is used for
+  GTest discovery (Strawberry Perl ships cmake 3.29, which cannot run the generated discovery
+  scripts that require CMake 3.30+)
+
+### Tests
+- `SimulationRecorderState`, `SimulationRecorderFile`, `SimulationRecorderSampling`,
+  `SimulationRecorderSnapshot`, and `SimulationRecorderTicks` suites covering recording
+  lifecycle, CSV structure, tick-interval sampling, stop semantics, and snapshot export
+- `test_simulation_file_manager.cpp` updated for the `.dnf` folder-based file structure
+
 ## [2.6.0] - 2026-05-28
 
 ### Added
