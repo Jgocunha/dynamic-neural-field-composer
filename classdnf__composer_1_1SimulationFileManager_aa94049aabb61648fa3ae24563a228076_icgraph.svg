@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Deserialize elements and connections from a JSON file into the simulation. filePath should resolve to...">
+<g id="a_Node000001"><a xlink:title="Deserialize elements and connections from a JSON file into the simulation. After loading,...">
 <polygon fill="#999999" stroke="#666666" points="374,-30 180,-30 180,0 374,0 374,-30"/>
 <text text-anchor="start" x="188" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="277" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">FileManager::loadElementsFromJson</text>

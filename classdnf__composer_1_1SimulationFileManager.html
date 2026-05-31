@@ -96,10 +96,10 @@ Collaboration diagram for dnf_composer::SimulationFileManager:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa94049aabb61648fa3ae24563a228076" id="r_aa94049aabb61648fa3ae24563a228076"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076">loadElementsFromJson</a> () const</td></tr>
-<tr class="memdesc:aa94049aabb61648fa3ae24563a228076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize elements and connections from a JSON file into the simulation. <code>filePath</code> should resolve to a concrete JSON file to open.  <br /></td></tr>
+<tr class="memdesc:aa94049aabb61648fa3ae24563a228076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize elements and connections from a JSON file into the simulation. After loading, <code>FieldCoupling</code> elements have their weight directory set to the parent directory of the JSON file and their weights are re-read from there.  <br /></td></tr>
 <tr class="separator:aa94049aabb61648fa3ae24563a228076"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa72b2730b34bfd79efbf4cac5c2756bb" id="r_aa72b2730b34bfd79efbf4cac5c2756bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationFileManager.html#aa72b2730b34bfd79efbf4cac5c2756bb">saveElementsToJson</a> () const</td></tr>
-<tr class="memdesc:aa72b2730b34bfd79efbf4cac5c2756bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize all elements and their connections to a JSON file. If <code>filePath</code> is empty, the output file is created in the default location using a generated <code>&lt;identifier&gt;.json</code> name.  <br /></td></tr>
+<tr class="memdesc:aa72b2730b34bfd79efbf4cac5c2756bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize all elements and their connections to a JSON file. When <code>filePath</code> is empty the output directory is <code>data/&lt;identifier&gt;/</code> and <code>FieldCoupling</code> weight matrices are written into the same directory before the JSON is saved.  <br /></td></tr>
 <tr class="separator:aa72b2730b34bfd79efbf4cac5c2756bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3c402cf84127446d2b2aba586bae542" id="r_ac3c402cf84127446d2b2aba586bae542"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationFileManager.html#ac3c402cf84127446d2b2aba586bae542">SimulationFileManager</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation, const std::string &amp;filePath={})</td></tr>
 <tr class="memdesc:ac3c402cf84127446d2b2aba586bae542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classdnf__composer_1_1SimulationFileManager.html" title="Serializes and deserializes a Simulation to / from a JSON file.">SimulationFileManager</a>.  <br /></td></tr>
@@ -108,9 +108,13 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Serializes and deserializes a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> to / from a JSON file. </p>
 <p><a class="el" href="classdnf__composer_1_1SimulationFileManager.html" title="Serializes and deserializes a Simulation to / from a JSON file.">SimulationFileManager</a> reads and writes every element in the simulation (including parameters and inter-element connections) as a JSON document. This allows pre-designed or evolved architectures to be saved and replayed without re-implementing them in code.</p>
+<p><b>Default output layout</b> when <code>filePath</code> is empty: </p><div class="fragment"><div class="line">data/&lt;identifier&gt;/</div>
+<div class="line">  &lt;identifier&gt;.dnf            ← element graph</div>
+<div class="line">  &lt;coupling_name&gt;_weights.txt ← one file per FieldCoupling element</div>
+</div><!-- fragment --><p>When loading, FieldCoupling weight files are resolved relative to the directory that contains the <code>.dnf</code> file (i.e. <code>parent_path(filePath)</code>).</p>
 <p>The optional path supplied to this manager has different behavior depending on the operation:</p><ul>
-<li>if non-empty, it is treated as the JSON file path to save to or load from;</li>
-<li>if empty, saving uses the default output location and generated file name, while loading expects a concrete JSON file path to be resolvable. </li>
+<li>if non-empty, it is treated as the <code>.dnf</code> file path to save to or load from;</li>
+<li>if empty, saving uses the default output location (<code>data/</code>) and a generated <code>&lt;identifier&gt;/&lt;identifier&gt;.dnf</code> file path. </li>
 </ul>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac3c402cf84127446d2b2aba586bae542" name="ac3c402cf84127446d2b2aba586bae542"></a>
@@ -143,7 +147,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">simulation</td><td>The simulation instance to read into or write from. </td></tr>
-    <tr><td class="paramname">filePath</td><td>Optional JSON file path. When non-empty, it is the file used for both save and load operations. When empty, <a class="el" href="classdnf__composer_1_1SimulationFileManager.html#aa72b2730b34bfd79efbf4cac5c2756bb" title="Serialize all elements and their connections to a JSON file. If filePath is empty,...">saveElementsToJson()</a> writes to the default output location using a generated <code>&lt;identifier&gt;.json</code> file name, while <a class="el" href="classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076" title="Deserialize elements and connections from a JSON file into the simulation. filePath should resolve to...">loadElementsFromJson()</a> expects a concrete JSON file path to be available at the resolved path. </td></tr>
+    <tr><td class="paramname">filePath</td><td>Optional <code>.dnf</code> file path. When non-empty, it is the file used for both save and load operations. When empty, <a class="el" href="classdnf__composer_1_1SimulationFileManager.html#aa72b2730b34bfd79efbf4cac5c2756bb" title="Serialize all elements and their connections to a JSON file. When filePath is empty the output direct...">saveElementsToJson()</a> writes to the default output location using a generated <code>&lt;identifier&gt;.dnf</code> file name, while <a class="el" href="classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076" title="Deserialize elements and connections from a JSON file into the simulation. After loading,...">loadElementsFromJson()</a> expects a concrete <code>.dnf</code> file path to be available at the resolved path. </td></tr>
   </table>
   </dd>
 </dl>
@@ -171,7 +175,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Deserialize elements and connections from a JSON file into the simulation. <code>filePath</code> should resolve to a concrete JSON file to open. </p>
+<p>Deserialize elements and connections from a JSON file into the simulation. After loading, <code>FieldCoupling</code> elements have their weight directory set to the parent directory of the JSON file and their weights are re-read from there. </p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -195,7 +199,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Serialize all elements and their connections to a JSON file. If <code>filePath</code> is empty, the output file is created in the default location using a generated <code>&lt;identifier&gt;.json</code> name. </p>
+<p>Serialize all elements and their connections to a JSON file. When <code>filePath</code> is empty the output directory is <code>data/&lt;identifier&gt;/</code> and <code>FieldCoupling</code> weight matrices are written into the same directory before the JSON is saved. </p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

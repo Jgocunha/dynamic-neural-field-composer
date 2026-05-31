@@ -327,10 +327,10 @@
 <!-- Node13 -->
 <g id="Node000013" class="node">
 <title>Node13</title>
-<g id="a_Node000013"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#a7af578f4c654acfce33920528d239c7d" target="_top" xlink:title="Construct a FieldCoupling.">
-<polygon fill="white" stroke="#666666" points="173,-253 12,-253 12,-223 173,-223 173,-253"/>
-<text text-anchor="start" x="20" y="-241" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="middle" x="92.5" y="-230" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCoupling::FieldCoupling</text>
+<g id="a_Node000013"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#a0bb6c82b8d890d0a37c25821f1777a4c" target="_top" xlink:title="Load weights if the file exists; log INFO in either case. Unlike readWeights(), this never logs an er...">
+<polygon fill="white" stroke="#666666" points="178.5,-253 6.5,-253 6.5,-223 178.5,-223 178.5,-253"/>
+<text text-anchor="start" x="14.5" y="-241" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="middle" x="92.5" y="-230" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCoupling::tryReadWeights</text>
 </a>
 </g>
 </g>
@@ -338,7 +338,7 @@
 <g id="edge12_Node000012_Node000013" class="edge">
 <title>Node12&#45;&gt;Node13</title>
 <g id="a_edge12_Node000012_Node000013"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M213.58,-247.86C200.22,-246.76 186.48,-245.64 173.28,-244.55"/>
+<path fill="none" stroke="#63b8ff" d="M213.6,-247.86C201.99,-246.91 190.09,-245.93 178.52,-244.98"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="213.46,-251.36 223.72,-248.69 214.04,-244.39 213.46,-251.36"/>
 </a>
 </g>

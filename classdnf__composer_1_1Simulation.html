@@ -118,9 +118,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acb26d62a62480a829e32e693cd89b99c" id="r_acb26d62a62480a829e32e693cd89b99c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#acb26d62a62480a829e32e693cd89b99c">createInteraction</a> (const std::string &amp;stimulusElementId, const std::string &amp;stimulusComponent, const std::string &amp;receivingElementId) const</td></tr>
 <tr class="memdesc:acb26d62a62480a829e32e693cd89b99c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wire <code>stimulusElementId's</code> <code>stimulusComponent</code> as input to <code>receivingElementId</code>.  <br /></td></tr>
 <tr class="separator:acb26d62a62480a829e32e693cd89b99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab793cd0a18d45717e78440e4eada4dc2" id="r_ab793cd0a18d45717e78440e4eada4dc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#ab793cd0a18d45717e78440e4eada4dc2">exportComponentToFile</a> (const std::string &amp;id, const std::string &amp;componentName) const</td></tr>
-<tr class="memdesc:ab793cd0a18d45717e78440e4eada4dc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the named component to a CSV file in the output directory.  <br /></td></tr>
-<tr class="separator:ab793cd0a18d45717e78440e4eada4dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6670671e5363dcd90296fac622a94b73" id="r_a6670671e5363dcd90296fac622a94b73"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a6670671e5363dcd90296fac622a94b73">getComponent</a> (const std::string &amp;id, const std::string &amp;componentName) const</td></tr>
 <tr class="separator:a6670671e5363dcd90296fac622a94b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ab758857ee20d0aafc7b8bf25930135" id="r_a2ab758857ee20d0aafc7b8bf25930135"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a2ab758857ee20d0aafc7b8bf25930135">getComponentPtr</a> (const std::string &amp;id, const std::string &amp;componentName) const</td></tr>
@@ -150,6 +147,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a25514d904e7bdcce9a61dfd3d0f12dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a7156b5a310dace0d357e0691185483" id="r_a8a7156b5a310dace0d357e0691185483"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a8a7156b5a310dace0d357e0691185483">getNumberOfElements</a> () const</td></tr>
 <tr class="separator:a8a7156b5a310dace0d357e0691185483"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a4dc5c173ff20c6e5fffda2d03fb6a" id="r_ac0a4dc5c173ff20c6e5fffda2d03fb6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html">SimulationRecorder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#ac0a4dc5c173ff20c6e5fffda2d03fb6a">getRecorder</a> ()</td></tr>
+<tr class="memdesc:ac0a4dc5c173ff20c6e5fffda2d03fb6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the recorder to start/stop time-series recordings or take snapshots.  <br /></td></tr>
+<tr class="separator:ac0a4dc5c173ff20c6e5fffda2d03fb6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e19a7d368a5656f951923bdb525e3b3" id="r_a3e19a7d368a5656f951923bdb525e3b3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a3e19a7d368a5656f951923bdb525e3b3">getT</a> () const</td></tr>
 <tr class="separator:a3e19a7d368a5656f951923bdb525e3b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af13dd29a21d84440ca3e3317752f6d8a" id="r_af13dd29a21d84440ca3e3317752f6d8a"><td class="memItemLeft" align="right" valign="top">std::chrono::nanoseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#af13dd29a21d84440ca3e3317752f6d8a">getTotalRunDuration</a> () const</td></tr>
@@ -466,6 +466,11 @@ Here is the call graph for this function:</div>
 
 <p>Remove all elements and reset the simulation to its initial state. </p>
 <div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a77e7b52a61fe632c8a1dd4c607a433c7_cgraph.svg" width="443" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a77e7b52a61fe632c8a1dd4c607a433c7_icgraph.svg" width="443" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
@@ -492,7 +497,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a62cc626df0de91c4eef6db88e34a6080_cgraph.svg" width="443" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a62cc626df0de91c4eef6db88e34a6080_cgraph.svg" width="443" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -580,41 +585,6 @@ Here is the call graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_acb26d62a62480a829e32e693cd89b99c_cgraph.svg" width="443" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-
-</div>
-</div>
-<a id="ab793cd0a18d45717e78440e4eada4dc2" name="ab793cd0a18d45717e78440e4eada4dc2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab793cd0a18d45717e78440e4eada4dc2">&#9670;&#160;</a></span>exportComponentToFile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void dnf_composer::Simulation::exportComponentToFile </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>componentName</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Write the named component to a CSV file in the output directory. </p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_ab793cd0a18d45717e78440e4eada4dc2_cgraph.svg" width="443" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -728,7 +698,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a860f418ff5193deb9ae8f4a791a5f391_icgraph.svg" width="443" height="435"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a860f418ff5193deb9ae8f4a791a5f391_icgraph.svg" width="952" height="527"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -910,6 +880,35 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="ac0a4dc5c173ff20c6e5fffda2d03fb6a" name="ac0a4dc5c173ff20c6e5fffda2d03fb6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0a4dc5c173ff20c6e5fffda2d03fb6a">&#9670;&#160;</a></span>getRecorder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html">SimulationRecorder</a> &amp; dnf_composer::Simulation::getRecorder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Access the recorder to start/stop time-series recordings or take snapshots. </p>
+<dl class="section return"><dt>Returns</dt><dd>Non-const reference to the internal <code><a class="el" href="classdnf__composer_1_1SimulationRecorder.html" title="Manages ongoing time-series recordings and snapshot exports of element component data for a simulatio...">SimulationRecorder</a></code>. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdnf__composer_1_1SimulationRecorder.html" title="Manages ongoing time-series recordings and snapshot exports of element component data for a simulatio...">SimulationRecorder</a> </dd></dl>
+
+</div>
+</div>
 <a id="a3e19a7d368a5656f951923bdb525e3b3" name="a3e19a7d368a5656f951923bdb525e3b3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3e19a7d368a5656f951923bdb525e3b3">&#9670;&#160;</a></span>getT()</h2>
 
@@ -999,7 +998,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_aa3419352b0706f0ba4c85781b8aa32ae_cgraph.svg" width="406" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_aa3419352b0706f0ba4c85781b8aa32ae_cgraph.svg" width="428" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -1141,7 +1140,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a487ef819fe0e501707580714b92b80ca_cgraph.svg" width="712" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a487ef819fe0e501707580714b92b80ca_cgraph.svg" width="750" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1287,7 +1286,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_adc98d900b0ed2e9f901ee9bf0170d93b_cgraph.svg" width="712" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_adc98d900b0ed2e9f901ee9bf0170d93b_cgraph.svg" width="952" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1318,7 +1317,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a02cc12769e196f46a1ca4eb4f360fc3c_cgraph.svg" width="683" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a02cc12769e196f46a1ca4eb4f360fc3c_cgraph.svg" width="923" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1434,6 +1433,11 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Advance all elements by one <code>deltaT</code>. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_aeed960786dc5ee998232e105af74ae0c_cgraph.svg" width="683" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

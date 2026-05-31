@@ -6,11 +6,12 @@ var searchData=
   ['uniqueidentifiercounter_3',['uniqueidentifiercounter',['../structdnf__composer_1_1element_1_1ElementIdentifiers.html#aab15f6ecd9c2cae59848fb37d4069bde',1,'dnf_composer::element::ElementIdentifiers::uniqueIdentifierCounter'],['../classdnf__composer_1_1Plot.html#af9eed969dbb101e1b2e490fb5d645358',1,'dnf_composer::Plot::uniqueIdentifierCounter']]],
   ['uniquename_4',['uniqueName',['../structdnf__composer_1_1element_1_1ElementIdentifiers.html#a1310fee0e1fddcca790c527e7ca71603',1,'dnf_composer::element::ElementIdentifiers']]],
   ['up_5',['Up',['../namespaceFileDialog.html#a9c9550aab62a9265d5038c05b1e2ac7ba258f49887ef8d14ac268c92b02503aaa',1,'FileDialog']]],
-  ['updatebumps_6',['updateBumps',['../classdnf__composer_1_1element_1_1NeuralField.html#acd9d648c62f1ae7e454f578ef434c713',1,'dnf_composer::element::NeuralField']]],
-  ['updateheatmapdimensionhint_7',['updateHeatmapDimensionHint',['../namespacednf__composer.html#a4c2031cd1248fcbb3a6ac4e79c90bfae',1,'dnf_composer']]],
-  ['updateinput_8',['updateInput',['../classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a',1,'dnf_composer::element::Element']]],
-  ['updatestate_9',['updateState',['../classdnf__composer_1_1element_1_1NeuralField.html#a6656f6846ca05bcf2a66394833e0170e',1,'dnf_composer::element::NeuralField']]],
-  ['userflags_10',['UserFlags',['../structImGui__ImplFreeType__FontSrcData.html#aadcf822a4661e71e111d94969b02da77',1,'ImGui_ImplFreeType_FontSrcData']]],
-  ['utils_2ecpp_11',['utils.cpp',['../utils_8cpp.html',1,'']]],
-  ['utils_2eh_12',['utils.h',['../utils_8h.html',1,'']]]
+  ['update_6',['update',['../classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4',1,'dnf_composer::SimulationRecorder']]],
+  ['updatebumps_7',['updateBumps',['../classdnf__composer_1_1element_1_1NeuralField.html#acd9d648c62f1ae7e454f578ef434c713',1,'dnf_composer::element::NeuralField']]],
+  ['updateheatmapdimensionhint_8',['updateHeatmapDimensionHint',['../namespacednf__composer.html#a4c2031cd1248fcbb3a6ac4e79c90bfae',1,'dnf_composer']]],
+  ['updateinput_9',['updateInput',['../classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a',1,'dnf_composer::element::Element']]],
+  ['updatestate_10',['updateState',['../classdnf__composer_1_1element_1_1NeuralField.html#a6656f6846ca05bcf2a66394833e0170e',1,'dnf_composer::element::NeuralField']]],
+  ['userflags_11',['UserFlags',['../structImGui__ImplFreeType__FontSrcData.html#aadcf822a4661e71e111d94969b02da77',1,'ImGui_ImplFreeType_FontSrcData']]],
+  ['utils_2ecpp_12',['utils.cpp',['../utils_8cpp.html',1,'']]],
+  ['utils_2eh_13',['utils.h',['../utils_8h.html',1,'']]]
 ];

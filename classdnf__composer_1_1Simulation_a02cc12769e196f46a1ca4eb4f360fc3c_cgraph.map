@@ -1,13 +1,22 @@
 <map id="dnf_composer::Simulation::runForRealTime" name="dnf_composer::Simulation::runForRealTime">
-<area shape="rect" id="Node000001" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="5,69,197,109"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a62cc626df0de91c4eef6db88e34a6080" title="Release resources of all elements and reset timing state." alt="" coords="245,5,437,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,67,252,46,253,51,178,72"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="245,69,437,109"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="197,87,232,87,232,92,197,92"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="245,133,437,173"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="178,107,253,127,252,132,176,112"/>
+<area shape="rect" id="Node000001" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="5,145,197,185"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a62cc626df0de91c4eef6db88e34a6080" title="Release resources of all elements and reset timing state." alt="" coords="245,69,437,109"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,143,263,111,265,116,166,148"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="245,145,437,185"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="197,163,232,163,232,168,197,168"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="245,235,437,275"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="157,183,275,227,273,232,155,188"/>
 <area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#a19103585fab0d6a554634db1cd33b1bb" title="Pause the simulation (subsequent step() calls are no&#45;ops)." alt="" coords="485,5,677,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="437,23,472,23,472,28,437,28"/>
-<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="504,69,659,109"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="437,87,490,87,490,92,437,92"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="416,67,492,46,493,51,418,72"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1SimulationRecorder.html#a691afc08bae84b7b8d21a30801acd96b" title="Stop all active recordings and close all open files." alt="" coords="485,69,677,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="437,87,472,87,472,92,437,92"/>
+<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title=" " alt="" coords="493,133,670,173"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="437,158,479,156,479,161,438,163"/>
+<area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="744,191,899,231"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="438,177,486,183,730,203,730,208,485,188,437,182"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" title="Called each simulation step to append rows to active recordings. Ticks are derived from sim...." alt="" coords="485,248,677,288"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="438,257,472,259,472,265,437,263"/>
+<area shape="poly" id="edge10_Node000009_Node000007" title=" " alt="" coords="665,245,730,230,731,235,666,251"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="725,255,917,295"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="678,268,712,269,712,274,677,273"/>
 </map>

@@ -1,5 +1,7 @@
 <map id="dnf_composer::Simulation::close" name="dnf_composer::Simulation::close">
-<area shape="rect" id="Node000001" title="Release resources of all elements and reset timing state." alt="" coords="5,5,197,45"/>
+<area shape="rect" id="Node000001" title="Release resources of all elements and reset timing state." alt="" coords="5,37,197,77"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a19103585fab0d6a554634db1cd33b1bb" title="Pause the simulation (subsequent step() calls are no&#45;ops)." alt="" coords="245,5,437,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,23,232,23,232,28,197,28"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,42,232,37,232,43,198,47"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1SimulationRecorder.html#a691afc08bae84b7b8d21a30801acd96b" title="Stop all active recordings and close all open files." alt="" coords="245,69,437,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="198,67,232,72,232,77,197,73"/>
 </map>

@@ -2,10 +2,14 @@
 <area shape="rect" id="Node000001" title="Deserialize the simulation state from a JSON file." alt="" coords="5,69,197,109"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a77e7b52a61fe632c8a1dd4c607a433c7" title="Remove all elements and reset the simulation to its initial state." alt="" coords="279,5,471,45"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,67,275,46,276,51,188,72"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="279,69,471,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="198,87,265,87,265,92,198,92"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076" title="Deserialize elements and connections from a JSON file into the simulation. filePath should resolve to..." alt="" coords="245,133,504,173"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="188,107,276,128,275,133,187,112"/>
-<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="552,69,707,109"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="471,87,538,87,538,92,471,92"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="279,69,471,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="198,87,265,87,265,92,198,92"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1SimulationFileManager.html#aa94049aabb61648fa3ae24563a228076" title="Deserialize elements and connections from a JSON file into the simulation. After loading,..." alt="" coords="245,133,504,173"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="188,107,276,128,275,133,187,112"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1SimulationRecorder.html#a691afc08bae84b7b8d21a30801acd96b" title="Stop all active recordings and close all open files." alt="" coords="552,5,744,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="471,23,538,23,538,28,471,28"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title=" " alt="" coords="559,69,737,109"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="471,87,546,87,546,92,471,92"/>
+<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="571,133,725,173"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="462,107,558,130,557,135,460,112"/>
 </map>

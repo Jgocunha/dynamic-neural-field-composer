@@ -143,6 +143,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae0215c3f9b5ebe1030429c427cf6d8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ec7d17d851fa9007175794248bb9590" id="r_a0ec7d17d851fa9007175794248bb9590"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a0ec7d17d851fa9007175794248bb9590">toString</a> () const override</td></tr>
 <tr class="separator:a0ec7d17d851fa9007175794248bb9590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bb6c82b8d890d0a37c25821f1777a4c" id="r_a0bb6c82b8d890d0a37c25821f1777a4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a0bb6c82b8d890d0a37c25821f1777a4c">tryReadWeights</a> ()</td></tr>
+<tr class="memdesc:a0bb6c82b8d890d0a37c25821f1777a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load weights if the file exists; log INFO in either case. Unlike <code><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#aed8043b5951aea5276d37e06b26f04a7" title="Load the weight matrix from a binary file in weightsDirectory.">readWeights()</a></code>, this never logs an error — use it when weights may legitimately be absent (e.g. first run of a programmatic simulation).  <br /></td></tr>
+<tr class="separator:a0bb6c82b8d890d0a37c25821f1777a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab74a05063b97a31c7f74ed6fd38b3954" id="r_ab74a05063b97a31c7f74ed6fd38b3954"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#ab74a05063b97a31c7f74ed6fd38b3954">writeWeights</a> () const</td></tr>
 <tr class="memdesc:ab74a05063b97a31c7f74ed6fd38b3954"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save the current weight matrix to a binary file in <code>weightsDirectory</code>.  <br /></td></tr>
 <tr class="separator:ab74a05063b97a31c7f74ed6fd38b3954"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -291,7 +294,7 @@ Protected Attributes</h2></td></tr>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_a7af578f4c654acfce33920528d239c7d_cgraph.svg" width="727" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_a7af578f4c654acfce33920528d239c7d_cgraph.svg" width="451" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -547,7 +550,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_aed8043b5951aea5276d37e06b26f04a7_icgraph.svg" width="480" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_aed8043b5951aea5276d37e06b26f04a7_icgraph.svg" width="495" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -714,6 +717,30 @@ Here is the call graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_a0ec7d17d851fa9007175794248bb9590_cgraph.svg" width="678" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a0bb6c82b8d890d0a37c25821f1777a4c" name="a0bb6c82b8d890d0a37c25821f1777a4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bb6c82b8d890d0a37c25821f1777a4c">&#9670;&#160;</a></span>tryReadWeights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::FieldCoupling::tryReadWeights </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load weights if the file exists; log INFO in either case. Unlike <code><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#aed8043b5951aea5276d37e06b26f04a7" title="Load the weight matrix from a binary file in weightsDirectory.">readWeights()</a></code>, this never logs an error — use it when weights may legitimately be absent (e.g. first run of a programmatic simulation). </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_a0bb6c82b8d890d0a37c25821f1777a4c_cgraph.svg" width="742" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

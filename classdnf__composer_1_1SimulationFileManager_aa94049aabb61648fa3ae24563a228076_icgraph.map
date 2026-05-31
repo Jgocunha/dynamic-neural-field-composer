@@ -1,5 +1,5 @@
 <map id="dnf_composer::SimulationFileManager::loadElementsFromJson" name="dnf_composer::SimulationFileManager::loadElementsFromJson">
-<area shape="rect" id="Node000001" title="Deserialize elements and connections from a JSON file into the simulation. filePath should resolve to..." alt="" coords="245,5,504,45"/>
+<area shape="rect" id="Node000001" title="Deserialize elements and connections from a JSON file into the simulation. After loading,..." alt="" coords="245,5,504,45"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="5,5,197,45"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="232,28,198,28,198,23,232,23"/>
 </map>

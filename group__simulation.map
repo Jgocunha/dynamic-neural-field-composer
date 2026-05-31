@@ -1,4 +1,5 @@
 <map id="Simulation" name="Simulation">
-<area shape="rect" id="Node000001" title="Core simulation loop and element registry." alt="" coords="5,5,97,31"/>
-<area shape="rect" id="Node000002" href="$group__simulation__io.html" title="JSON serialization and deserialization of simulation architectures." alt="" coords="145,5,260,31"/>
+<area shape="rect" id="Node000001" title="Core simulation loop and element registry." alt="" coords="5,31,97,56"/>
+<area shape="rect" id="Node000002" href="$group__simulation__io.html" title="JSON serialization and deserialization of simulation architectures." alt="" coords="165,5,280,31"/>
+<area shape="rect" id="Node000003" href="$group__simulation__recorder.html" title="Time&#45;series recording and snapshot export of element component data." alt="" coords="145,55,300,80"/>
 </map>

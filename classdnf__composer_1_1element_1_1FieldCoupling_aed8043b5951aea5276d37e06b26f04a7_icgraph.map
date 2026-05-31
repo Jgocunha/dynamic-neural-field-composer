@@ -1,5 +1,5 @@
 <map id="dnf_composer::element::FieldCoupling::readWeights" name="dnf_composer::element::FieldCoupling::readWeights">
-<area shape="rect" id="Node000001" title="Load the weight matrix from a binary file in weightsDirectory." alt="" coords="268,5,475,45"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a7af578f4c654acfce33920528d239c7d" title="Construct a FieldCoupling." alt="" coords="5,5,220,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="254,28,220,28,220,23,254,23"/>
+<area shape="rect" id="Node000001" title="Load the weight matrix from a binary file in weightsDirectory." alt="" coords="283,5,489,45"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a0bb6c82b8d890d0a37c25821f1777a4c" title="Load weights if the file exists; log INFO in either case. Unlike readWeights(), this never logs an er..." alt="" coords="5,5,235,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="269,28,235,28,235,23,269,23"/>
 </map>

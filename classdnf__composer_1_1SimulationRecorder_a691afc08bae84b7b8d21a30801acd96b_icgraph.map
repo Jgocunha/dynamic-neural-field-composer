@@ -1,0 +1,13 @@
+<map id="dnf_composer::SimulationRecorder::stopAll" name="dnf_composer::SimulationRecorder::stopAll">
+<area shape="rect" id="Node000001" title="Stop all active recordings and close all open files." alt="" coords="515,37,707,77"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a77e7b52a61fe632c8a1dd4c607a433c7" title="Remove all elements and reset the simulation to its initial state." alt="" coords="275,5,467,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="501,45,466,41,467,35,501,40"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#a62cc626df0de91c4eef6db88e34a6080" title="Release resources of all elements and reset timing state." alt="" coords="275,69,467,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="501,75,467,79,466,74,501,69"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="20,5,212,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="261,28,212,28,212,23,261,23"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="5,73,227,98"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="261,90,227,90,227,84,261,85"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="20,123,212,163"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="262,115,213,125,211,120,261,110"/>
+</map>

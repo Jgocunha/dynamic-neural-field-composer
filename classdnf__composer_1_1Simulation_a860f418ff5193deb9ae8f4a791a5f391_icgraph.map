@@ -1,17 +1,25 @@
 <map id="dnf_composer::Simulation::getElement" name="dnf_composer::Simulation::getElement">
-<area shape="rect" id="Node000001" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="245,197,437,237"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0" title="Disconnect all connections from elementId and resize it to newDimensions." alt="" coords="5,5,197,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="317,187,267,123,233,89,196,60,174,48,177,43,199,55,237,85,271,119,322,184"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#af2cbdd9d53809ca631ccb66c2fe615f0" title=" " alt="" coords="5,69,197,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="302,191,253,157,196,124,168,112,170,107,199,119,256,152,305,187"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#acb26d62a62480a829e32e693cd89b99c" title="Wire stimulusElementId&#39;s stimulusComponent as input to receivingElementId." alt="" coords="5,133,197,173"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="252,196,176,176,178,171,253,191"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#ab793cd0a18d45717e78440e4eada4dc2" title="Write the named component to a CSV file in the output directory." alt="" coords="5,197,197,237"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="232,220,197,220,197,215,232,215"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#a6670671e5363dcd90296fac622a94b73" title=" " alt="" coords="5,261,197,301"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="253,244,178,264,176,259,252,238"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1Simulation.html#a2ab758857ee20d0aafc7b8bf25930135" title=" " alt="" coords="5,325,197,365"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="305,248,256,282,199,316,170,328,168,323,196,311,253,278,302,244"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1Simulation.html#a326227cbc48ec354da67169f8c3bb2e4" title="Rename an element. No&#45;op if oldName does not exist or newName is already in use." alt="" coords="5,389,197,429"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="322,250,271,315,237,350,199,380,177,392,174,387,196,375,233,346,267,312,317,247"/>
+<area shape="rect" id="Node000001" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="755,229,947,269"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0" title="Disconnect all connections from elementId and resize it to newDimensions." alt="" coords="515,5,707,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="831,218,810,181,781,139,746,96,705,59,685,48,687,43,708,55,750,92,786,135,814,178,835,215"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#af2cbdd9d53809ca631ccb66c2fe615f0" title=" " alt="" coords="515,69,707,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="821,221,770,172,739,146,705,124,681,112,683,107,708,119,742,142,774,168,825,217"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#acb26d62a62480a829e32e693cd89b99c" title="Wire stimulusElementId&#39;s stimulusComponent as input to receivingElementId." alt="" coords="515,133,707,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="794,226,706,188,674,176,675,171,708,183,796,221"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#a6670671e5363dcd90296fac622a94b73" title=" " alt="" coords="515,197,707,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="741,237,706,233,707,227,741,232"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#a2ab758857ee20d0aafc7b8bf25930135" title=" " alt="" coords="515,261,707,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="741,267,707,271,706,266,741,261"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1Simulation.html#a326227cbc48ec354da67169f8c3bb2e4" title="Rename an element. No&#45;op if oldName does not exist or newName is already in use." alt="" coords="515,325,707,365"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="796,278,708,316,675,328,674,323,706,311,794,273"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/..." alt="" coords="515,389,707,429"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="825,281,774,331,742,357,708,380,683,392,681,387,705,375,739,353,770,327,821,277"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" title="Called each simulation step to append rows to active recordings. Ticks are derived from sim...." alt="" coords="515,453,707,493"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="835,283,814,320,786,363,750,406,708,443,687,456,685,451,705,439,746,403,781,360,810,317,831,281"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="275,453,467,493"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="501,476,467,476,467,471,501,471"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="5,431,227,457"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="261,463,226,459,227,454,261,458"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="20,481,212,521"/>
+<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="261,488,212,493,212,488,261,483"/>
 </map>

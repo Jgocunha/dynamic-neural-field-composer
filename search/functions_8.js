@@ -24,5 +24,6 @@ var searchData=
   ['isinitialized_21',['isInitialized',['../classdnf__composer_1_1Simulation.html#aef41788a81a53039c90b541e8d756d29',1,'dnf_composer::Simulation']]],
   ['islegal_22',['isLegal',['../structdnf__composer_1_1PlotDimensions.html#a8256b0ab7cae40976dbcd91489ba2aeb',1,'dnf_composer::PlotDimensions']]],
   ['ispaused_23',['isPaused',['../classdnf__composer_1_1Simulation.html#ac79c31c5745a2e54cbd681bbc6575823',1,'dnf_composer::Simulation']]],
-  ['isstable_24',['isstable',['../classdnf__composer_1_1element_1_1NeuralField2D.html#a27a33ce47f4068fcb8ba980132a1f955',1,'dnf_composer::element::NeuralField2D::isStable()'],['../classdnf__composer_1_1element_1_1NeuralField.html#af5aecf58531e326a4e4a8602c053b31f',1,'dnf_composer::element::NeuralField::isStable()']]]
+  ['isrecording_24',['isRecording',['../classdnf__composer_1_1SimulationRecorder.html#acea7256b89a989279f0fe26bdcd6ce6d',1,'dnf_composer::SimulationRecorder']]],
+  ['isstable_25',['isstable',['../classdnf__composer_1_1element_1_1NeuralField2D.html#a27a33ce47f4068fcb8ba980132a1f955',1,'dnf_composer::element::NeuralField2D::isStable()'],['../classdnf__composer_1_1element_1_1NeuralField.html#af5aecf58531e326a4e4a8602c053b31f',1,'dnf_composer::element::NeuralField::isStable()']]]
 ];
