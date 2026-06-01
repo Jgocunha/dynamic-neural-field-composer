@@ -59,10 +59,10 @@ int main()
 Open `examples/CMakeLists.txt` and add your executable using the `add_example_executable` helper:
 
 ```cmake
-add_example_executable(my_example my_example.cpp)
+add_example_executable(example_my_example my_example.cpp)
 ```
 
-Replace `my_example` with your desired executable name and update the filename to match.
+Replace `example_my_example` with your desired executable name and `my_example.cpp` with your source filename. By convention all example targets are prefixed with `example_` so they group together with the built-in examples.
 
 ---
 
@@ -89,13 +89,13 @@ Your executable will appear alongside the other example binaries in the build ou
 
 ```bash
 # Windows (Release)
-build\x64-release\Release\my_example.exe
+build\x64-release\Release\example_my_example.exe
 
 # Linux
-./build/linux-release/my_example
+./build/linux-release/example_my_example
 
 # macOS
-./build/macos-release/my_example
+./build/macos-release/example_my_example
 ```
 
 ---

@@ -1,5 +1,7 @@
 #include "user_interface/help_window.h"
 
+#include <cstdarg>
+
 #include "application/application.h"
 
 namespace dnf_composer::user_interface
@@ -199,7 +201,7 @@ namespace dnf_composer::user_interface
 			"Resume — continue a paused simulation from where it left off.  "
 			"Step — advance the simulation by a single tick.  "
 			"Stop — end the current simulation.  "
-			"The time display shows the current simulation time (ms); the delta-T field sets the time step.");
+			"The Ticks display shows the number of steps taken; the \xce\x94t field sets the time step.");
 
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -296,23 +298,23 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 		ImGui::Spacing();
 
-		auto renderTip = [](const char* text) {
+		auto renderTip = [](const char* fmt, ...) IM_FMTARGS(1) {
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_LIGHTBULB);
 			ImGui::PopFont();
 			ImGui::SameLine(0, 6.0F);
-			ImGui::TextWrapped("%s", text);
+			va_list args;
+			va_start(args, fmt);
+			ImGui::TextWrappedV(fmt, args);
+			va_end(args);
 			ImGui::Spacing();
 		};
 
-		char buf[256];
-		snprintf(buf, sizeof(buf), "Adjust the UI scale (70-150%%) via View > UI Scale, or use %s + / %s - keyboard shortcuts.", kCtrl, kCtrl);
-		renderTip(buf);
-		snprintf(buf, sizeof(buf), "Save via File > Save (%s+S) or Save As (%s+Shift+S). Open a simulation via File > Open (%s+O).", kCtrl, kCtrl, kCtrl);
-		renderTip(buf);
+		renderTip("Adjust the UI scale (70-150%%) via View > UI Scale, or use %s + / %s - keyboard shortcuts.", kCtrl, kCtrl);
+		renderTip("Save via File > Save (%s+S) or Save As (%s+Shift+S). Open a simulation via File > Open (%s+O).", kCtrl, kCtrl, kCtrl);
 
 		for (const auto* tip : kTips)
-			renderTip(tip);
+			renderTip("%s", tip);
 
 		ImGui::PopTextWrapPos();
 	}
