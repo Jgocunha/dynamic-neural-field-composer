@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.7.1] - 2026-06-01
+
+### Documentation
+- README overhaul: pre-compiled binary download instructions, a section listing projects and
+  publications that use dnf-composer, and refreshed headline images
+- Wiki accuracy pass: removed the non-existent `UIMode` description from the architecture page,
+  corrected the claim that `Simulation::save()`/`read()` open a file dialog (they do not — an empty
+  path falls back to the `data/` directory; the picker is provided by the GUI menu bar), and
+  reframed `ElementFactory` as one of two construction paths alongside direct `std::make_shared`
+- Documented `imgui.ini` (dynamic-layout persistence and how to reset it), the
+  `style_light_green_accent.json` theme file and how to personalize it, and that `.dnf` files are
+  plain, hand-editable JSON
+- Example guide now follows the `example_<name>` target naming convention used by the built-in
+  examples
+- Added low-dependency / easy-build-from-source emphasis to the home and getting-started pages
+
+### Changed
+- `HelpWindow` content and navigation layout refreshed; tip rendering simplified to a single
+  variadic helper
+
+### Fixed
+- Resolved `-Wformat-security` warnings on GCC/Clang by passing runtime strings as `"%s"` arguments
+  in `Logger::log_ui`, `LogWindow::addLog` call sites, and `FileDialog` error text
+- Corrected format specifiers in logging and error messages
+
+### Build
+- Compressed bundled image assets (headline and background images, logo) and removed unused style
+  and image resources, significantly reducing repository size
+
 ## [2.7.0] - 2026-05-31
 
 ### Added
