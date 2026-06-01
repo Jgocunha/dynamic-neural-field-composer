@@ -37,6 +37,8 @@ This produces characteristic behaviors that are useful for building cognitive an
 
 The library is useful both as a simulation tool (run and inspect neural field dynamics interactively) and as a C++ framework (link it into your own application and drive fields programmatically).
 
+It is also designed to be **easy to build from source** — a deliberate goal, since academic projects are often hard to compile. External dependencies are few and resolved automatically through [vcpkg](https://vcpkg.io/), so setup is a single script away.
+
 ---
 
 ## Navigation

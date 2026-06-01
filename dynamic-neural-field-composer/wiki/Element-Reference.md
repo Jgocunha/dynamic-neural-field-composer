@@ -1,6 +1,6 @@
 # Element Reference
 
-All elements are created through `ElementFactory::createElement(label, commonParams, specificParams)`. See the [Elements](Elements) page for the factory and common parameter details.
+Elements can be created either directly via `std::make_shared<ConcreteType>(commonParams, specificParams)` or through `ElementFactory::createElement(label, commonParams, specificParams)`. The parameter tables below apply to both paths. See the [Elements](Elements) page for construction and common parameter details.
 
 ---
 

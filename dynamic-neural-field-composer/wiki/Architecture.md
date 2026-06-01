@@ -71,15 +71,6 @@ app.step()  [called every frame]
 
 ## Key design decisions
 
-### UIMode and layout strategy
-
-`Application` supports two layout modes controlled by `UIMode`:
-
-- `UIMode::Dynamic` — each window is a free-floating, dockable ImGui panel
-- `UIMode::Static` — all panels are hosted inside `StaticLayoutWindow`, which arranges them in a fixed tiled layout
-
-`StaticLayoutWindow` is the preferred production layout: it owns instances of every sub-window and manages sizing/positioning in `drawPanels()`.
-
 ### Elements as nodes in a graph
 Elements form a directed graph. Each element holds references to its input elements and reads from a named component (e.g. `"output"`) during `step()`. Interactions are explicit: calling `a->addInput(b)` registers `b` as a source for `a`.
 
@@ -87,7 +78,7 @@ Elements form a directed graph. Each element holds references to its input eleme
 Every element exposes its internal state as named `std::vector<double>` buffers called **components** (e.g. `"activation"`, `"output"`, `"input"`, `"weights"`). The visualization and UI read from these buffers directly, with no coupling to the element's type.
 
 ### ElementFactory
-All element construction goes through `ElementFactory::createElement()`, which takes an `ElementLabel` enum and typed parameter structs. This decouples callers from concrete constructors and is the construction path used by the GUI and JSON loader.
+`ElementFactory::createElement()` is one way to construct elements: it takes an `ElementLabel` enum and typed parameter structs, decoupling callers from concrete constructors. This is the path used by the JSON loader and wherever the element type is chosen at runtime. Elements can equally be constructed directly with `std::make_shared<ConcreteType>(commonParams, specificParams)` — the type-safe approach used by the examples and most application code.
 
 ### JSON persistence
 `SimulationFileManager` serializes and deserializes the full element graph to/from JSON. It is invoked via `Simulation::save()` and `Simulation::read()`. Each simulation's files are co-located under `data/<simulation_name>/`:

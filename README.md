@@ -1,16 +1,29 @@
-# dynamic-neural-field-composer
-
-[![CI](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml)
-[![Static Analysis](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml)
-[![Release](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml/badge.svg)](https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml)
-[![Latest Release](https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer)](https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest)
-[![codecov](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg)](https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer)
-[![Docs](https://img.shields.io/badge/docs-doxygen-blue)](https://jgocunha.github.io/dynamic-neural-field-composer/)
-[![Wiki](https://img.shields.io/badge/wiki-github-blue)](https://github.com/Jgocunha/dynamic-neural-field-composer/wiki)
 
 ![logo](./dynamic-neural-field-composer/resources/images/logo.png)
 
-A C++20 library and interactive application for building and simulating **Dynamic Neural Field (DNF)** architectures.
+<h1 align="center">dynamic-neural-field-composer</h1>
+
+<p align="center">
+  <strong>A C++ library and interactive application for building and simulating Dynamic Neural Field architectures.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg" alt="Static Analysis" /></a>
+  <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" /></a>
+  <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="Coverage" /></a>
+  <a href="https://jgocunha.github.io/dynamic-neural-field-composer/"><img src="https://img.shields.io/badge/docs-doxygen-blue" alt="Docs" /></a>
+  <img src="https://img.shields.io/badge/C%2B%2B-20-blue" alt="C++20" />
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Platform" />
+</p>
+
+<p align="center">
+  <a href="https://jgocunha.github.io/dynamic-neural-field-composer/">Docs</a> ·
+  <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki">Wiki</a> ·
+  <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases">Releases</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
 
 ---
 
@@ -18,61 +31,170 @@ A C++20 library and interactive application for building and simulating **Dynami
 
 Dynamic Neural Fields model how neuron populations represent and transform information over continuous dimensions (position, direction, color). They produce emergent behaviours — working memory, winner-take-all selection, sequence generation — from local excitation and surround inhibition.
 
-This library lets you design, connect, simulate, and visualize DNF architectures at runtime, either programmatically or through a visual node-graph editor. Simulations can be saved and reloaded as JSON.
+This library lets you design, connect, simulate, and visualize DNF architectures at runtime, either programmatically or through a visual node-graph editor. Simulations can be saved and reloaded as JSON. The application is built with real-time performance in mind, and straightforward to embed in any C++ application.
 
-It is built with real-time performance in mind, and straightforward to embed in any C++ application. The GUI is powered by [Dear ImGui](https://github.com/ocornut/imgui), keeping it fast and lightweight.
+- **Compose architectures in C++** — wire up fields, kernels, stimuli, and couplings in a few lines
+- **Visual node-graph editor** — connect and reconfigure elements at runtime through an ImGui-based interface
+- **Real-time plots** — inspect field activation, output, and input live as the simulation runs
+- **Save and reload** — serialize any architecture to JSON and resume it later
+- **Embeddable** — link against the library and integrate DNF simulation into any C++ application
+
+![Compose DNF architectures — add elements, define connections, simulate in real-time](./dynamic-neural-field-composer/resources/images/headline-summary.jpg)
+
+---
+
+## Download
+
+Pre-compiled binaries are available on the [Releases](https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest) page. Download and run — no build tools or dependencies required. This is the quickest way to start composing and simulating DNF architectures without writing any code.
+
+If you want to build from source, embed the library in your own project, or write custom examples, follow the steps below.
 
 ---
 
 ## Requirements
 
-- CMake 3.20+
-- C++20 compiler (MSVC, GCC 11+, Clang 13+, or Apple Clang 13+)
-- [vcpkg](https://github.com/microsoft/vcpkg) with `VCPKG_ROOT` set
+You must install the following manually:
 
-Dependencies are installed automatically via vcpkg: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `imgui-platform-kit`.
+| Platform | Requirements |
+|---|---|
+| **Windows** | Visual Studio 2022 with "Desktop development with C++" workload, Git |
+| **Linux** | GCC 13+, CMake 3.20+, Git, OpenGL/X11 dev libraries |
+| **macOS** | Xcode Command Line Tools, CMake 3.20+ |
 
----
+Everything else — vcpkg, all library dependencies (`imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `imgui-platform-kit`) — is installed automatically by the setup scripts.
 
 ## Building
 
+Run setup once on a fresh machine, then build whenever you want to compile.
+
 ```bash
 # Windows
-build.bat
+scripts\setup.bat
+scripts\build.bat
 
 # Linux
-./build.sh
+chmod +x scripts/setup.sh scripts/build.sh
+./scripts/setup.sh
+./scripts/build.sh
 
-# macOS (auto-detects Apple Silicon vs Intel)
-./build_macos.sh
+# macOS
+chmod +x scripts/setup.sh scripts/build_macos.sh
+./scripts/setup.sh
+./scripts/build_macos.sh
 ```
 
-To install the library for use in another project:
+To install the library for use in another CMake project:
 
 ```bash
 # Windows
-install.bat
+scripts\install.bat
 
 # Linux / macOS
-./install.sh
+./scripts/install.sh
 ```
 
 ---
 
-## Getting Started
+## Quick start
 
-Clone the repo and run the build script. Two pre-built executables are produced:
+Define a field architecture in a few lines of C++ and watch it run:
 
-- **`dnf-composer-static`** — a single self-contained window with all panels docked in a fixed layout. Best for quickly building and running a simulation without any configuration.
-- **`dnf-composer-dynamic`** — a fully dockable ImGui application. Windows can be rearranged, detached, and dragged to secondary monitors, giving you complete control over the layout at runtime.
+```cpp
+#include "application/application.h"
+#include "user_interface/static_layout.h"
 
-You can also write your own executable, link against the library, and choose exactly which windows to render and which architecture to load or define in code. Creating a custom launcher is straightforward — see the **[Wiki](https://github.com/Jgocunha/dynamic-neural-field-composer/wiki/How-to-Create-and-Run-Your-Own-Example-Executable)** for a step-by-step guide.
+int main()
+{
+    using namespace dnf_composer;
 
-Explore the `examples/` folder for ready-to-run architectures.
+    const auto simulation = std::make_shared<Simulation>("Boost detection", 10.0, 0.0, 0.0);
+    const auto visualization = std::make_shared<Visualization>(simulation);
+    const Application app{ simulation, visualization };
 
+    app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
+
+    // Neural field with Mexican hat kernel — local excitation, surround inhibition
+    const auto nf = std::make_shared<element::NeuralField>(
+        element::ElementCommonParameters{ "Neural field" },
+        element::NeuralFieldParameters{});
+    const auto k = std::make_shared<element::MexicanHatKernel>(
+        element::ElementCommonParameters{ "Mexican hat kernel" },
+        element::MexicanHatKernelParameters{});
+    const auto gs = std::make_shared<element::GaussStimulus>(
+        element::ElementCommonParameters{ "Gauss stimulus" },
+        element::GaussStimulusParameters{ 5.0, 4.0, 50.0 });
+
+    simulation->addElement(nf);
+    simulation->addElement(k);
+    simulation->addElement(gs);
+
+    nf->addInput(gs);
+    nf->addInput(k);
+    k->addInput(nf);
+
+    visualization->plot({ {nf->getUniqueName(), "activation"} });
+
+    app.init();
+    while (!app.hasGUIBeenClosed())
+        app.step();
+    app.close();
+}
+```
+
+More ready-to-run examples are in the [`examples/`](dynamic-neural-field-composer/examples/) folder, covering working memory, selection, sequence generation, 2D fields, Hebbian learning, and more.
+
+![Monitoring and visualization — plot field components, monitor state, inspect parameters](./dynamic-neural-field-composer/resources/images/headline-plotting.jpg)
+
+
+---
+
+## Elements
+
+| Category | Elements |
+|---|---|
+| Fields | `NeuralField`, `NeuralField2d` |
+| Kernels | `GaussKernel`, `MexicanHatKernel`, `AsymmetricGaussKernel`, `OscillatoryKernel` (+ 2D variants) |
+| Stimuli | `GaussStimulus`, `TimedGaussStimulus`, `BoostStimulus`, `BoostStimulus2d` (+ 2D variants) |
+| Noise | `NormalNoise`, `CorrelatedNormalNoise` (+ 2D variants) |
+| Couplings | `FieldCoupling`, `GaussFieldCoupling` |
+| Memory | `MemoryTrace`, `MemoryTrace2d` |
+
+
+![Element suite — neural fields, kernels, stimuli, couplings in 1D and 2D](./dynamic-neural-field-composer/resources/images/headline-elements.jpg)
+
+---
+
+## Two launchers, one library
+
+Building the project produces two executables:
+
+- **`dnf-composer-static`** — a single self-contained window with all panels in a fixed layout. Best for quickly running a simulation without any setup.
+- **`dnf-composer-dynamic`** — a fully dockable ImGui application. Windows can be rearranged, detached, and dragged to secondary monitors.
+
+
+ The GUI is powered by [Dear ImGui](https://github.com/ocornut/imgui), keeping it fast and lightweight.
+
+![Flexible UI — dock, detach, and arrange windows however you need](./dynamic-neural-field-composer/resources/images/headline-gui.jpg)
+
+You can also write your own launcher, link against the library, and choose exactly which windows and architectures to load. See the [Wiki](https://github.com/Jgocunha/dynamic-neural-field-composer/wiki/How-to-Create-and-Run-Your-Own-Example-Executable) for a step-by-step guide.
+
+---
+
+## Projects using dynamic-neural-field-composer
+
+| Project | Publication |
+|---|---|
+| [NEAT-DNFs](https://github.com/Jgocunha/neat-dnfs) | *NEAT-DNFs: A NeuroEvolutionary Framework for Evolving Dynamic Neural Field Architectures* · GECCO 2026 · [10.1145/3795095.3805169](https://doi.org/10.1145/3795095.3805169) |
+| [dynamic-neural-field-degeneration](https://github.com/Jgocunha/dynamic-neural-field-degeneration) | *Robustness and Adaptability in a Dynamic Neural Field Architecture Subject to Degeneration* · ROBOT 2025 · Springer LNNS |
+| [vr-hr-joint-task](https://github.com/Jgocunha/vr-hr-joint-task) | *Dynamic Neural Field Based Anticipatory Action Selection for Human Robot Collaboration: A Virtual Reality Experiment* · ICSR + ART 2026 |
+| [How We Can Use Dynamic Neural Fields in Human-Robot Joint Action](https://research.tue.nl/en/studentTheses/how-we-can-use-dynamic-neural-fields-in-human-robot-joint-action/) | *How We Can Use Dynamic Neural Fields in Human-Robot Joint Action* · Tessa H. Janssen · MSc thesis · TU/e |
 
 ---
 
 ## Contributing
 
-Bug fixes, new features, and documentation improvements are all welcome. If you have a bug, issue, or suggestion, see [CONTRIBUTING.md](CONTRIBUTING.md) for how to report it and how to submit a pull request.
+Bug fixes, new elements, documentation improvements, and example architectures are all welcome. Open an issue before starting non-trivial work so direction can be agreed on first. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full process.
+
+## License
+
+This project is licensed under the terms in [LICENSE](LICENSE).

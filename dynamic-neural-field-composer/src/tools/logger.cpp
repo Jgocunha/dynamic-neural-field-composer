@@ -72,7 +72,7 @@ namespace dnf_composer::tools::logger
 
     void Logger::log_ui(const ImVec4 color, const std::string& message)
     {
-        user_interface::LogWindow::addLog(color, message.c_str());
+        user_interface::LogWindow::addLog(color, "%s", message.c_str());
     }
 
     void log(const LogLevel level, const std::string& message, const LogOutputMode mode)

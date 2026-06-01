@@ -1,5 +1,7 @@
 # Getting Started
 
+Building from source was a deliberate design goal of this project. Academic codebases are notorious for being painful to compile, so dnf-composer keeps its external dependencies to a minimum and resolves them automatically and independently through [vcpkg](https://vcpkg.io/) — there are no libraries to hunt down and install by hand. In practice, building reduces to running a single setup script once, then a build script.
+
 ## Prerequisites
 
 ### What you must install manually

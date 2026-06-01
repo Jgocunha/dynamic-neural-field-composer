@@ -1,5 +1,7 @@
 #include "user_interface/help_window.h"
 
+#include <cstdarg>
+
 #include "application/application.h"
 
 namespace dnf_composer::user_interface
@@ -139,16 +141,20 @@ namespace dnf_composer::user_interface
 		ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);
 
 		ImGui::PushFont(g_BoldLargeFont);
-		ImGui::TextUnformatted("Dynamic Neural Fields");
+		ImGui::TextUnformatted("dynamic-neural-field-composer");
 		ImGui::PopFont();
 		ImGui::Spacing();
 		ImGui::TextWrapped(
-			"Dynamic Neural Fields (DNFs) are a mathematical framework from computational "
-			"neuroscience that model how populations of neurons collectively represent and "
-			"transform information distributed over continuous feature dimensions — such as "
-			"spatial position, orientation, or color. A DNF is governed by a differential "
-			"equation over an activation field whose dynamics emerge from the interplay between "
-			"a resting level, lateral interaction kernels, and external inputs.");
+			"A C++ library and interactive application for building and simulating Dynamic Neural "
+			"Field (DNF) architectures. Design field architectures in code or through the visual "
+			"node-graph editor, run them in real time, and inspect activation dynamics live — "
+			"without restarting the simulation.");
+		ImGui::Spacing();
+		ImGui::TextWrapped(
+			"Dynamic Neural Fields model how neuron populations represent and transform "
+			"information over continuous feature dimensions. Their dynamics emerge from a resting "
+			"level, lateral interaction kernels, and external inputs — producing working memory, "
+			"winner-take-all selection, and sequence generation as emergent behaviours.");
 
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -193,7 +199,9 @@ namespace dnf_composer::user_interface
 			"Play — initialise and start the simulation loop.  "
 			"Pause — suspend execution while preserving the current state.  "
 			"Resume — continue a paused simulation from where it left off.  "
-			"Stop — end the current simulation.");
+			"Step — advance the simulation by a single tick.  "
+			"Stop — end the current simulation.  "
+			"The Ticks display shows the number of steps taken; the \xce\x94t field sets the time step.");
 
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -210,21 +218,31 @@ namespace dnf_composer::user_interface
 			{ ICON_FA_TRASH,      "Remove elements", "Delete an existing element and all of its connections." },
 			{ ICON_FA_LINK,       "Set interactions","Connect and disconnect elements." },
 			{ ICON_FA_FILE_LINES, "Log parameters",  "Print the current parameter values of any element to the console." },
-			{ ICON_FA_DOWNLOAD,   "Export data",     "Record time-series or take a snapshot of any element component to a CSV file in data/<sim_name>/." },
+			{ ICON_FA_DOWNLOAD,   "Export data",     "Record element components continuously to CSV, or take a one-time snapshot. Files are saved to data/<sim_name>/." },
 			{ ICON_FA_HEART_PULSE,"Monitoring",      "Open the field-metrics panel to track peak detection and activity statistics." },
 		};
 
-		for (const auto& [icon, name, desc] : kTabs)
+		const float scale = ImGui::GetIO().FontGlobalScale;
+		if (ImGui::BeginTable("##sim_ctrl_table", 2, ImGuiTableFlags_None))
 		{
-			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::TextUnformatted(icon);
-			ImGui::PopFont();
-			ImGui::SameLine(0, 6.0F);
-			ImGui::PushFont(g_BoldMediumFont);
-			ImGui::Text("%s", name);
-			ImGui::PopFont();
-			ImGui::SameLine(0, 4.0F);
-			ImGui::TextWrapped("— %s", desc);
+			ImGui::TableSetupColumn("##label", ImGuiTableColumnFlags_WidthFixed, 160.0F * scale);
+			ImGui::TableSetupColumn("##desc",  ImGuiTableColumnFlags_WidthStretch);
+
+			for (const auto& [icon, name, desc] : kTabs)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::PushFont(g_MediumIconsFont);
+				ImGui::TextUnformatted(icon);
+				ImGui::PopFont();
+				ImGui::SameLine(0, 6.0F);
+				ImGui::PushFont(g_BoldMediumFont);
+				ImGui::TextUnformatted(name);
+				ImGui::PopFont();
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped("%s", desc);
+			}
+			ImGui::EndTable();
 		}
 
 		ImGui::Spacing();
@@ -259,16 +277,20 @@ namespace dnf_composer::user_interface
 
 	void HelpWindow::renderPageQuickTips()
 	{
+#ifdef __APPLE__
+		constexpr const char* kCtrl = "Cmd";
+#else
+		constexpr const char* kCtrl = "Ctrl";
+#endif
+
 		ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);
 
 		static constexpr const char* kTips[] = {
-			"Adjust the UI scale (70–150 %) via View > UI Scale, or use Ctrl + / Ctrl - keyboard shortcuts.",
-			"Save via File > Save (Ctrl+S) or Save As (Ctrl+Shift+S). Open a simulation via File > Open (Ctrl+O).",
 			"Toggle the console log with the terminal icon at the bottom of the sidebar to see real-time messages.",
 			"Use the Element Control panel on the right to tweak parameters live — no restart needed.",
 			"Open the Field Metrics window from the Monitoring tab to watch peak position and amplitude over time.",
 			"Log Parameters (sidebar) prints element state to the console.",
-			"Export Data (sidebar) writes raw component arrays to .txt files for offline analysis.",
+			"Use the Export data tab (sidebar) to record element components continuously to CSV or take a one-time snapshot. Files are saved to data/<sim_name>/.",
 		};
 
 		ImGui::PushFont(g_BoldLargeFont);
@@ -276,15 +298,23 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 		ImGui::Spacing();
 
-		for (const auto* tip : kTips)
-		{
+		auto renderTip = [](const char* fmt, ...) {
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_LIGHTBULB);
 			ImGui::PopFont();
 			ImGui::SameLine(0, 6.0F);
-			ImGui::TextWrapped("%s", tip);
+			va_list args;
+			va_start(args, fmt);
+			ImGui::TextWrappedV(fmt, args);
+			va_end(args);
 			ImGui::Spacing();
-		}
+		};
+
+		renderTip("Adjust the UI scale (70-150%%) via View > UI Scale, or use %s + / %s - keyboard shortcuts.", kCtrl, kCtrl);
+		renderTip("Save via File > Save (%s+S) or Save As (%s+Shift+S). Open a simulation via File > Open (%s+O).", kCtrl, kCtrl, kCtrl);
+
+		for (const auto* tip : kTips)
+			renderTip("%s", tip);
 
 		ImGui::PopTextWrapPos();
 	}

@@ -115,16 +115,19 @@ double currentTime = sim.getT();
 Simulations can be saved and loaded as `.dnf` files via `SimulationFileManager`, which is invoked through these convenience methods:
 
 ```cpp
-// Save to a file path (opens a file dialog if path is empty)
-sim.save("path/to/file.dnf");
-sim.save();   // opens file dialog
+// Save under a directory; the .dnf is written to <dir>/<sim_name>/<sim_name>.dnf
+sim.save("path/to/dir");
+sim.save();   // empty path → defaults to the data/ directory
 
-// Load from a file path (opens a file dialog if path is empty)
+// Load from a .dnf file path
 sim.read("path/to/file.dnf");
-sim.read();   // opens file dialog
 ```
 
+> `save()` and `read()` do **not** open a file dialog. An empty path simply falls back to the default `data/` location. The interactive file picker (**File → Open** / **Save As**) is provided by the GUI menu bar, not by `Simulation` itself.
+
 The `.dnf` file captures all element types, their parameters, their spatial dimensions, and the interaction graph. Field coupling weights are written alongside the `.dnf` file in the same simulation sub-folder.
+
+`.dnf` files are plain JSON (pretty-printed) — you can open, inspect, and hand-edit them in any text editor.
 
 **Default output layout** (`data/<simulation_name>/`):
 

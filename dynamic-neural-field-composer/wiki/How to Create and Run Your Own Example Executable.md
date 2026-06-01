@@ -1,51 +1,108 @@
-This guide will walk you through creating and running your own custom example executable in the Dynamic Neural Field Composer project.
+# How to Create and Run Your Own Example Executable
 
-## Project Structure
-The project follows this structure:
-``` 
-dynamic-neural-field-composer/
-├── src/                          # Main source code
-├── include/                      # Header files
-├── examples/                     # Example executables
-│   ├── CMakeLists.txt            # Example build configuration
-│   ├── ex_field_couplings.cpp
-│   ├── ex_two_robot_team.cpp
-│   └── ... (other examples)
-├── CMakeLists.txt               # Main build configuration
-└── build/                       # Build directory (created during build)
+This guide walks you through adding a custom example executable to the project.
+
+---
+
+## Step 1 — Create your example file
+
+Navigate to the `examples/` directory and create a new `.cpp` file. Base it on any existing example in that folder — they all follow the same seven-step pattern (simulation → visualization → app → elements → wire → plots → loop). See the [Examples](Examples) page for a full walkthrough of each one.
+
+```cpp
+// examples/my_example.cpp
+#include "visualization/visualization.h"
+#include "application/application.h"
+#include "user_interface/static_layout.h"
+#include "user_interface/main_menu_bar.h"
+
+int main()
+{
+    try
+    {
+        using namespace dnf_composer;
+
+        const auto simulation    = std::make_shared<Simulation>("my example", 10.0, 0.0, 0.0);
+        const auto visualization = std::make_shared<Visualization>(simulation);
+        const Application app{ simulation, visualization };
+
+        app.addWindow<user_interface::MainMenuBar>();
+        app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
+
+        // --- build your architecture here ---
+
+        app.init();
+        while (!app.hasGUIBeenClosed())
+            app.step();
+        app.close();
+    }
+    catch (const dnf_composer::Exception& ex)
+    {
+        log(dnf_composer::tools::logger::LogLevel::FATAL,
+            "Exception: " + std::string(ex.what()),
+            dnf_composer::tools::logger::LogOutputMode::CONSOLE);
+        return static_cast<int>(ex.getErrorCode());
+    }
+    catch (const std::exception& ex)
+    {
+        log(dnf_composer::tools::logger::LogLevel::FATAL,
+            "Exception: " + std::string(ex.what()),
+            dnf_composer::tools::logger::LogOutputMode::CONSOLE);
+        return 1;
+    }
+}
 ```
 
-## Step 1: Create Your Example File
-1. Navigate to the examples directory;
-1. Create your new example file ```my_custom_example.cpp```; 
-1. Based on the provided examples create your DNF architecture.
+---
 
-## Step 2: Update examples/CMakeLists.txt
-1. Open `examples/CMakeLists.txt`;
-2. Add your executable using the `add_example_executable` helper:
-``` cmake
-add_example_executable(my_custom_example my_custom_example.cpp)
+## Step 2 — Register in CMakeLists.txt
+
+Open `examples/CMakeLists.txt` and add your executable using the `add_example_executable` helper:
+
+```cmake
+add_example_executable(example_my_example my_example.cpp)
 ```
-**Note:** Replace `my_custom_example` with your desired executable name, and update the filename to match your file.
 
-3. Build and run.
+Replace `example_my_example` with your desired executable name and `my_example.cpp` with your source filename. By convention all example targets are prefixed with `example_` so they group together with the built-in examples.
 
-## Tips and Best Practices
-1. **Use meaningful names** for your executables and elements
-2. **Start simple** - begin with basic elements and gradually add complexity
-3. **Check existing examples** in the directory for reference `examples/`
-4. **Use appropriate simulation parameters** - start with proven values from existing examples and use the GUI to facilitate parameter selection
+---
 
-## Troubleshooting
-**Build errors:**
-- Make sure all includes are correct
-- Verify CMakeLists.txt syntax
-- Check that all dependencies are properly linked
+## Step 3 — Build
 
-**Runtime errors:**
-- Ensure simulation is initialized with `sim->init()` before running steps
-- Verify element parameters are within valid ranges
-- Check that element connections are properly established
+If you haven't built the project yet, run setup first (see [Getting Started](Getting-Started)). Then rebuild:
 
+```bash
+# Windows
+scripts\build.bat
 
-Now you're ready to create and run your own Dynamic Neural Field examples! Start with simple configurations and gradually build up to more complex scenarios.
+# Linux
+./scripts/build.sh
+
+# macOS
+./scripts/build_macos.sh
+```
+
+Your executable will appear alongside the other example binaries in the build output folder.
+
+---
+
+## Step 4 — Run
+
+```bash
+# Windows (Release)
+build\x64-release\Release\example_my_example.exe
+
+# Linux
+./build/linux-release/example_my_example
+
+# macOS
+./build/macos-release/example_my_example
+```
+
+---
+
+## Tips
+
+- **Start simple** — one field, one kernel, one stimulus. Add complexity once the basic loop works.
+- **Check existing examples** in `examples/` for reference architectures.
+- **Use the GUI** — the Element Inspector and Node Graph let you adjust parameters live without recompiling.
+- **Use proven parameter values** — copy parameters from an existing example that behaves similarly to what you want, then tune from there.
