@@ -325,7 +325,7 @@ namespace FileDialog {
 					snprintf(new_folder_error, sizeof(new_folder_error), "%s", "");
 					ImGui::CloseCurrentPopup();
 				}
-				ImGui::TextColored(ImColor(1.0f, 0.0f, 0.2f, 1.0f), new_folder_error);
+				ImGui::TextColored(ImColor(1.0f, 0.0f, 0.2f, 1.0f), "%s", new_folder_error);
 				ImGui::EndPopup();
 			}
 
@@ -397,7 +397,7 @@ namespace FileDialog {
 			}
 
 			if (strlen(file_dialog_error) > 0) {
-				ImGui::TextColored(ImColor(1.0f, 0.0f, 0.2f, 1.0f), file_dialog_error);
+				ImGui::TextColored(ImColor(1.0f, 0.0f, 0.2f, 1.0f), "%s", file_dialog_error);
 			}
 
 			ImGui::End();

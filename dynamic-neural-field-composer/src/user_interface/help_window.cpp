@@ -298,7 +298,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 		ImGui::Spacing();
 
-		auto renderTip = [](const char* fmt, ...) IM_FMTARGS(1) {
+		auto renderTip = [](const char* fmt, ...) {
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_LIGHTBULB);
 			ImGui::PopFont();
