@@ -1,12 +1,18 @@
 var searchData=
 [
-  ['velocity_0',['velocity',['../structdnf__composer_1_1element_1_1NeuralFieldBump.html#a76fc521dfd565acaa8333e8ec74a3e35',1,'dnf_composer::element::NeuralFieldBump']]],
-  ['velocity_5fx_1',['velocity_x',['../structdnf__composer_1_1element_1_1NeuralField2DBump.html#aeec40d030123a90f4acaaac2b7dd351a',1,'dnf_composer::element::NeuralField2DBump']]],
-  ['velocity_5fy_2',['velocity_y',['../structdnf__composer_1_1element_1_1NeuralField2DBump.html#ac62817d1468dfedf25caafe0812e7557',1,'dnf_composer::element::NeuralField2DBump']]],
-  ['vis_5fdata_5fnot_5ffound_3',['VIS_DATA_NOT_FOUND',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca80dbb01bba6f1718336a4fcbffb70fe3',1,'dnf_composer']]],
-  ['vis_5finvalid_5fplotting_5findex_4',['VIS_INVALID_PLOTTING_INDEX',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca17399e756afd1dd33a7d4d934a7c1b24',1,'dnf_composer']]],
-  ['vis_5finvalid_5fsim_5',['VIS_INVALID_SIM',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca8ca8915de2c352ff98a0e27f16f5136f',1,'dnf_composer']]],
-  ['visualization_6',['visualization',['../classdnf__composer_1_1Visualization.html',1,'dnf_composer::Visualization'],['../classdnf__composer_1_1Visualization.html#ac9f7fd5746bd3febacf9a15f34a152a0',1,'dnf_composer::Visualization::Visualization()'],['../group__visualization.html',1,'Visualization']]],
-  ['visualization_2ecpp_7',['visualization.cpp',['../visualization_8cpp.html',1,'']]],
-  ['visualization_2eh_8',['visualization.h',['../visualization_8h.html',1,'']]]
+  ['ui_0',['ui',['../structdnf__composer_1_1user__interface_1_1PanelScope.html#ac5599b7eb930b943c33abcdd5a2bcc6c',1,'dnf_composer::user_interface::PanelScope']]],
+  ['uninitialized_1',['UNINITIALIZED',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438',1,'dnf_composer::element']]],
+  ['uniqueidentifier_2',['uniqueidentifier',['../structdnf__composer_1_1element_1_1ElementIdentifiers.html#a3b46a2cc1401e7eb14fb2366ef774fbb',1,'dnf_composer::element::ElementIdentifiers::uniqueIdentifier'],['../classdnf__composer_1_1Simulation.html#a0370378988354ef5c86468d36628f915',1,'dnf_composer::Simulation::uniqueIdentifier'],['../classdnf__composer_1_1Plot.html#a65431a5c267a8fc1a268906b66f90512',1,'dnf_composer::Plot::uniqueIdentifier']]],
+  ['uniqueidentifiercounter_3',['uniqueidentifiercounter',['../structdnf__composer_1_1element_1_1ElementIdentifiers.html#aab15f6ecd9c2cae59848fb37d4069bde',1,'dnf_composer::element::ElementIdentifiers::uniqueIdentifierCounter'],['../classdnf__composer_1_1Plot.html#af9eed969dbb101e1b2e490fb5d645358',1,'dnf_composer::Plot::uniqueIdentifierCounter']]],
+  ['uniquename_4',['uniqueName',['../structdnf__composer_1_1element_1_1ElementIdentifiers.html#a1310fee0e1fddcca790c527e7ca71603',1,'dnf_composer::element::ElementIdentifiers']]],
+  ['up_5',['Up',['../namespaceFileDialog.html#a9c9550aab62a9265d5038c05b1e2ac7ba258f49887ef8d14ac268c92b02503aaa',1,'FileDialog']]],
+  ['update_6',['update',['../classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4',1,'dnf_composer::SimulationRecorder']]],
+  ['updatebumps_7',['updateBumps',['../classdnf__composer_1_1element_1_1NeuralField.html#acd9d648c62f1ae7e454f578ef434c713',1,'dnf_composer::element::NeuralField']]],
+  ['updateheatmapdimensionhint_8',['updateHeatmapDimensionHint',['../namespacednf__composer.html#a4c2031cd1248fcbb3a6ac4e79c90bfae',1,'dnf_composer']]],
+  ['updateinput_9',['updateInput',['../classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a',1,'dnf_composer::element::Element']]],
+  ['updatestate_10',['updateState',['../classdnf__composer_1_1element_1_1NeuralField.html#a6656f6846ca05bcf2a66394833e0170e',1,'dnf_composer::element::NeuralField']]],
+  ['userflags_11',['UserFlags',['../structImGui__ImplFreeType__FontSrcData.html#aadcf822a4661e71e111d94969b02da77',1,'ImGui_ImplFreeType_FontSrcData']]],
+  ['using_20dynamic_20neural_20field_20composer_12',['Projects using dynamic-neural-field-composer',['../index.html#autotoc_md14',1,'']]],
+  ['utils_2ecpp_13',['utils.cpp',['../utils_8cpp.html',1,'']]],
+  ['utils_2eh_14',['utils.h',['../utils_8h.html',1,'']]]
 ];

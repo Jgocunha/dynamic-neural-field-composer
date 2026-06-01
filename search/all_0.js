@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['about_0',['About',['../index.html#autotoc_md2',1,'']]],
+  ['about_0',['About',['../index.html#autotoc_md1',1,'']]],
   ['abssigmoid_1',['abssigmoid',['../group__activation__functions.html#ggab356f7685737735093ddddf7baa05864af4e09771e5fa851c44f2adf0f7e883c7',1,'dnf_composer::element::ABSSIGMOID'],['../namespacednf__composer_1_1tools_1_1math.html#af3e5beff71ea240cadadd0a8b4a1eefd',1,'dnf_composer::tools::math::absSigmoid()']]],
   ['abssigmoidfunction_2',['abssigmoidfunction',['../structdnf__composer_1_1element_1_1AbsSigmoidFunction.html',1,'dnf_composer::element::AbsSigmoidFunction'],['../structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#a813df563eb34381d89a63050b223566c',1,'dnf_composer::element::AbsSigmoidFunction::AbsSigmoidFunction(double x_shift, double beta)'],['../structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#a9a72652a4a367815fcdcff90c4453c0e',1,'dnf_composer::element::AbsSigmoidFunction::AbsSigmoidFunction(const AbsSigmoidFunction &amp;)=default']]],
   ['acceleration_3',['acceleration',['../structdnf__composer_1_1element_1_1NeuralFieldBump.html#ac483fae8631cf4760dd1126c76286da7',1,'dnf_composer::element::NeuralFieldBump']]],

@@ -24,13 +24,14 @@ var searchData=
   ['dnf_5fcomposer_3a_3auser_5finterface_21',['user_interface',['../namespacednf__composer_1_1user__interface.html',1,'dnf_composer']]],
   ['dnf_5fcomposer_3a_3auser_5finterface_3a_3awidgets_22',['widgets',['../namespacednf__composer_1_1user__interface_1_1widgets.html',1,'dnf_composer::user_interface']]],
   ['down_23',['Down',['../namespaceFileDialog.html#a9c9550aab62a9265d5038c05b1e2ac7ba08a38277b0309070706f6652eeae9a53',1,'FileDialog']]],
-  ['drawcontents_24',['drawcontents',['../classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#ab7da52e3c03a2f225eb6459a43f61a37',1,'dnf_composer::user_interface::ControlBarWindow::drawContents()'],['../classdnf__composer_1_1user__interface_1_1StatusBarWindow.html#a94a72781b2f2e3fb6a5272028e1e5410',1,'dnf_composer::user_interface::StatusBarWindow::drawContents()']]],
-  ['drawicon_25',['DrawIcon',['../namespaceax_1_1Drawing.html#ad29f9ad924ebb0d8823a97dfd9affc8a',1,'ax::Drawing']]],
-  ['drawing_2ecpp_26',['drawing.cpp',['../drawing_8cpp.html',1,'']]],
-  ['drawing_2eh_27',['drawing.h',['../drawing_8h.html',1,'']]],
-  ['dynamic_20neural_20field_20composer_28',['dynamic-neural-field-composer',['../index.html',1,'']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2ecpp_29',['dynamic-neural-field-composer-dynamic.cpp',['../dynamic-neural-field-composer-dynamic_8cpp.html',1,'']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2eh_30',['dynamic-neural-field-composer-dynamic.h',['../dynamic-neural-field-composer-dynamic_8h.html',1,'']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2ecpp_31',['dynamic-neural-field-composer-static.cpp',['../dynamic-neural-field-composer-static_8cpp.html',1,'']]],
-  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2eh_32',['dynamic-neural-field-composer-static.h',['../dynamic-neural-field-composer-static_8h.html',1,'']]]
+  ['download_24',['Download',['../index.html#autotoc_md3',1,'']]],
+  ['drawcontents_25',['drawcontents',['../classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#ab7da52e3c03a2f225eb6459a43f61a37',1,'dnf_composer::user_interface::ControlBarWindow::drawContents()'],['../classdnf__composer_1_1user__interface_1_1StatusBarWindow.html#a94a72781b2f2e3fb6a5272028e1e5410',1,'dnf_composer::user_interface::StatusBarWindow::drawContents()']]],
+  ['drawicon_26',['DrawIcon',['../namespaceax_1_1Drawing.html#ad29f9ad924ebb0d8823a97dfd9affc8a',1,'ax::Drawing']]],
+  ['drawing_2ecpp_27',['drawing.cpp',['../drawing_8cpp.html',1,'']]],
+  ['drawing_2eh_28',['drawing.h',['../drawing_8h.html',1,'']]],
+  ['dynamic_20neural_20field_20composer_29',['dynamic neural field composer',['../index.html',1,'Dynamic Neural Field Composer'],['../index.html#autotoc_md14',1,'Projects using dynamic-neural-field-composer']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2ecpp_30',['dynamic-neural-field-composer-dynamic.cpp',['../dynamic-neural-field-composer-dynamic_8cpp.html',1,'']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2ddynamic_2eh_31',['dynamic-neural-field-composer-dynamic.h',['../dynamic-neural-field-composer-dynamic_8h.html',1,'']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2ecpp_32',['dynamic-neural-field-composer-static.cpp',['../dynamic-neural-field-composer-static_8cpp.html',1,'']]],
+  ['dynamic_2dneural_2dfield_2dcomposer_2dstatic_2eh_33',['dynamic-neural-field-composer-static.h',['../dynamic-neural-field-composer-static_8h.html',1,'']]]
 ];

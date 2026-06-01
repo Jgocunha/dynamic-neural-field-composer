@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['composer_0',['dynamic-neural-field-composer',['../index.html',1,'']]]
+  ['composer_0',['Dynamic Neural Field Composer',['../index.html',1,'']]]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Dynamic Neural Field Composer: dynamic-neural-field-composer</title>
+<title>Dynamic Neural Field Composer: Dynamic Neural Field Composer</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo-simple.png"/></td>
   <td id="projectalign">
    <div id="projectname">Dynamic Neural Field Composer<span id="projectnumber">&#160;0.0.0</span>
    </div>
@@ -72,61 +71,194 @@ $(function() {
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">dynamic-neural-field-composer </div></div>
+  <div class="headertitle"><div class="title">Dynamic Neural Field Composer </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2dynamic-neural-field-composer_2dynamic-neural-field-composer_2README"></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg" alt="Static Analysis" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/release.yml/badge.svg" alt="Release" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" class="inline"/></a> <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="codecov" style="pointer-events: none;" class="inline"/></a> <a href="https://jgocunha.github.io/dynamic-neural-field-composer/"><img src="https://img.shields.io/badge/docs-doxygen-blue" alt="Docs" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki"><img src="https://img.shields.io/badge/wiki-github-blue" alt="Wiki" class="inline"/></a></p>
-<div class="image">
-<img src="logo.png" alt=""/>
-<div class="caption">
-logo</div></div>
-    <p>A C++20 library and interactive application for building and simulating <b>Dynamic Neural Field (DNF)</b> architectures.</p>
+<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2dynamic-neural-field-composer_2dynamic-neural-field-composer_2README"></a><img src="logo.png" alt="" class="inline" title="logo"/>    </p>
+<h1 align="center">dynamic-neural-field-composer</h1>
+<p align="center"></p>
+<p><b>A C++ library and interactive application for building and simulating Dynamic Neural Field architectures.</b> </p>
+<p align="center"></p>
+<p><a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg" alt="Static Analysis" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" class="inline"/></a> <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="Coverage" style="pointer-events: none;" class="inline"/></a> <a href="https://jgocunha.github.io/dynamic-neural-field-composer/"><img src="https://img.shields.io/badge/docs-doxygen-blue" alt="Docs" class="inline"/></a> <img src="https://img.shields.io/badge/C%2B%2B-20-blue" alt="C++20" class="inline"/> <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Platform" class="inline"/> </p>
+<p align="center"></p>
+<p><a href="https://jgocunha.github.io/dynamic-neural-field-composer/">Docs</a> · <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki">Wiki</a> · <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases">Releases</a> · <a href="CONTRIBUTING.md">Contributing</a> </p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md2"></a>
-About</h1>
+<h2><a class="anchor" id="autotoc_md1"></a>
+About</h2>
 <p>Dynamic Neural Fields model how neuron populations represent and transform information over continuous dimensions (position, direction, color). They produce emergent behaviours — working memory, winner-take-all selection, sequence generation — from local excitation and surround inhibition.</p>
-<p>This library lets you design, connect, simulate, and visualize DNF architectures at runtime, either programmatically or through a visual node-graph editor. Simulations can be saved and reloaded as JSON.</p>
-<p>It is built with real-time performance in mind, and straightforward to embed in any C++ application. The GUI is powered by <a href="https://github.com/ocornut/imgui">Dear ImGui</a>, keeping it fast and lightweight.</p>
-<hr  />
-<h1><a class="anchor" id="autotoc_md4"></a>
-Requirements</h1>
+<p>This library lets you design, connect, simulate, and visualize DNF architectures at runtime, either programmatically or through a visual node-graph editor. Simulations can be saved and reloaded as JSON. The application is built with real-time performance in mind, and straightforward to embed in any C++ application.</p>
 <ul>
-<li>CMake 3.20+</li>
-<li>C++20 compiler (MSVC, GCC 11+, Clang 13+, or Apple Clang 13+)</li>
-<li><a href="https://github.com/microsoft/vcpkg">vcpkg</a> with <code>VCPKG_ROOT</code> set</li>
+<li><b>Compose architectures in C++</b> — wire up fields, kernels, stimuli, and couplings in a few lines</li>
+<li><b>Visual node-graph editor</b> — connect and reconfigure elements at runtime through an ImGui-based interface</li>
+<li><b>Real-time plots</b> — inspect field activation, output, and input live as the simulation runs</li>
+<li><b>Save and reload</b> — serialize any architecture to JSON and resume it later</li>
+<li><b>Embeddable</b> — link against the library and integrate DNF simulation into any C++ application</li>
 </ul>
-<p>Dependencies are installed automatically via vcpkg: <code>imgui</code>, <code>implot</code>, <code>imgui-node-editor</code>, <code>nlohmann-json</code>, <code>imgui-platform-kit</code>.</p>
+<div class="image">
+<img src="headline-summary.jpg" alt=""/>
+<div class="caption">
+Compose DNF architectures — add elements, define connections, simulate in real-time</div></div>
+    <hr  />
+<h2><a class="anchor" id="autotoc_md3"></a>
+Download</h2>
+<p>Pre-compiled binaries are available on the <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest">Releases</a> page. Download and run — no build tools or dependencies required. This is the quickest way to start composing and simulating DNF architectures without writing any code.</p>
+<p>If you want to build from source, embed the library in your own project, or write custom examples, follow the steps below.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md6"></a>
-Building</h1>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Requirements</h2>
+<p>You must install the following manually:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Platform   </th><th class="markdownTableHeadNone">Requirements    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><b>Windows</b>   </td><td class="markdownTableBodyNone">Visual Studio 2022 with "Desktop development with C++" workload, Git    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><b>Linux</b>   </td><td class="markdownTableBodyNone">GCC 13+, CMake 3.20+, Git, OpenGL/X11 dev libraries    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><b>macOS</b>   </td><td class="markdownTableBodyNone">Xcode Command Line Tools, CMake 3.20+   </td></tr>
+</table>
+<p>Everything else — vcpkg, all library dependencies (<code>imgui</code>, <code>implot</code>, <code>imgui-node-editor</code>, <code>nlohmann-json</code>, <code>imgui-platform-kit</code>) — is installed automatically by the setup scripts.</p>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Building</h2>
+<p>Run setup once on a fresh machine, then build whenever you want to compile.</p>
 <div class="fragment"><div class="line"># Windows</div>
-<div class="line">build.bat</div>
+<div class="line">scripts\setup.bat</div>
+<div class="line">scripts\build.bat</div>
 <div class="line"> </div>
 <div class="line"># Linux</div>
-<div class="line">./build.sh</div>
+<div class="line">chmod +x scripts/setup.sh scripts/build.sh</div>
+<div class="line">./scripts/setup.sh</div>
+<div class="line">./scripts/build.sh</div>
 <div class="line"> </div>
-<div class="line"># macOS (auto-detects Apple Silicon vs Intel)</div>
-<div class="line">./build_macos.sh</div>
-</div><!-- fragment --><p>To install the library for use in another project:</p>
+<div class="line"># macOS</div>
+<div class="line">chmod +x scripts/setup.sh scripts/build_macos.sh</div>
+<div class="line">./scripts/setup.sh</div>
+<div class="line">./scripts/build_macos.sh</div>
+</div><!-- fragment --><p>To install the library for use in another CMake project:</p>
 <div class="fragment"><div class="line"># Windows</div>
-<div class="line">install.bat</div>
+<div class="line">scripts\install.bat</div>
 <div class="line"> </div>
 <div class="line"># Linux / macOS</div>
-<div class="line">./install.sh</div>
+<div class="line">./scripts/install.sh</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md8"></a>
-Getting Started</h1>
-<p>Clone the repo and run the build script. Two pre-built executables are produced:</p>
+<h2><a class="anchor" id="autotoc_md8"></a>
+Quick start</h2>
+<p>Define a field architecture in a few lines of C++ and watch it run:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="application_8h.html">application/application.h</a>&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;<a class="code" href="static__layout_8h.html">user_interface/static_layout.h</a>&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> <a class="code hl_function" href="dynamic-neural-field-composer-dynamic_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>()</div>
+<div class="line">{</div>
+<div class="line">    <span class="keyword">using namespace </span><a class="code hl_namespace" href="namespacednf__composer.html">dnf_composer</a>;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> simulation = std::make_shared&lt;Simulation&gt;(<span class="stringliteral">&quot;Boost detection&quot;</span>, 10.0, 0.0, 0.0);</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> visualization = std::make_shared&lt;Visualization&gt;(simulation);</div>
+<div class="line">    <span class="keyword">const</span> <a class="code hl_class" href="classdnf__composer_1_1Application.html">Application</a> app{ simulation, visualization };</div>
+<div class="line"> </div>
+<div class="line">    app.<a class="code hl_function" href="classdnf__composer_1_1Application.html#a481da8b1fe6014d57f91fc3f575a913d">addWindow</a>&lt;<a class="code hl_class" href="classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html">user_interface::StaticLayoutWindow</a>&gt;(simulation, visualization);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Neural field with Mexican hat kernel — local excitation, surround inhibition</span></div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> nf = std::make_shared&lt;element::NeuralField&gt;(</div>
+<div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">element::ElementCommonParameters</a>{ <span class="stringliteral">&quot;Neural field&quot;</span> },</div>
+<div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1NeuralFieldParameters.html">element::NeuralFieldParameters</a>{});</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> k = std::make_shared&lt;element::MexicanHatKernel&gt;(</div>
+<div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">element::ElementCommonParameters</a>{ <span class="stringliteral">&quot;Mexican hat kernel&quot;</span> },</div>
+<div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html">element::MexicanHatKernelParameters</a>{});</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> gs = std::make_shared&lt;element::GaussStimulus&gt;(</div>
+<div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">element::ElementCommonParameters</a>{ <span class="stringliteral">&quot;Gauss stimulus&quot;</span> },</div>
+<div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html">element::GaussStimulusParameters</a>{ 5.0, 4.0, 50.0 });</div>
+<div class="line"> </div>
+<div class="line">    simulation-&gt;addElement(nf);</div>
+<div class="line">    simulation-&gt;addElement(k);</div>
+<div class="line">    simulation-&gt;addElement(gs);</div>
+<div class="line"> </div>
+<div class="line">    nf-&gt;addInput(gs);</div>
+<div class="line">    nf-&gt;addInput(k);</div>
+<div class="line">    k-&gt;addInput(nf);</div>
+<div class="line"> </div>
+<div class="line">    visualization-&gt;plot({ {nf-&gt;getUniqueName(), <span class="stringliteral">&quot;activation&quot;</span>} });</div>
+<div class="line"> </div>
+<div class="line">    app.init();</div>
+<div class="line">    <span class="keywordflow">while</span> (!app.hasGUIBeenClosed())</div>
+<div class="line">        app.step();</div>
+<div class="line">    app.close();</div>
+<div class="line">}</div>
+<div class="ttc" id="aapplication_8h_html"><div class="ttname"><a href="application_8h.html">application.h</a></div></div>
+<div class="ttc" id="aclassdnf__composer_1_1Application_html"><div class="ttname"><a href="classdnf__composer_1_1Application.html">dnf_composer::Application</a></div><div class="ttdoc">Top-level application that owns the GUI, simulation, and visualization.</div><div class="ttdef"><b>Definition</b> application.h:55</div></div>
+<div class="ttc" id="aclassdnf__composer_1_1Application_html_a481da8b1fe6014d57f91fc3f575a913d"><div class="ttname"><a href="classdnf__composer_1_1Application.html#a481da8b1fe6014d57f91fc3f575a913d">dnf_composer::Application::addWindow</a></div><div class="ttdeci">void addWindow(Args &amp;&amp;... args) const</div><div class="ttdoc">Register a window that needs no Simulation or Visualization pointer.</div><div class="ttdef"><b>Definition</b> application.h:87</div></div>
+<div class="ttc" id="aclassdnf__composer_1_1user__interface_1_1StaticLayoutWindow_html"><div class="ttname"><a href="classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html">dnf_composer::user_interface::StaticLayoutWindow</a></div><div class="ttdef"><b>Definition</b> static_layout.h:25</div></div>
+<div class="ttc" id="adynamic-neural-field-composer-dynamic_8cpp_html_ae66f6b31b5ad750f1fe042a706a4e3d4"><div class="ttname"><a href="dynamic-neural-field-composer-dynamic_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a></div><div class="ttdeci">int main()</div><div class="ttdef"><b>Definition</b> dynamic-neural-field-composer-dynamic.cpp:8</div></div>
+<div class="ttc" id="anamespacednf__composer_html"><div class="ttname"><a href="namespacednf__composer.html">dnf_composer</a></div><div class="ttdef"><b>Definition</b> application.h:20</div></div>
+<div class="ttc" id="astatic__layout_8h_html"><div class="ttname"><a href="static__layout_8h.html">static_layout.h</a></div></div>
+<div class="ttc" id="astructdnf__composer_1_1element_1_1ElementCommonParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">dnf_composer::element::ElementCommonParameters</a></div><div class="ttdef"><b>Definition</b> element_parameters.h:100</div></div>
+<div class="ttc" id="astructdnf__composer_1_1element_1_1GaussStimulusParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html">dnf_composer::element::GaussStimulusParameters</a></div><div class="ttdoc">Parameters for a Gaussian-shaped external stimulus.</div><div class="ttdef"><b>Definition</b> gauss_stimulus_parameters.h:10</div></div>
+<div class="ttc" id="astructdnf__composer_1_1element_1_1MexicanHatKernelParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html">dnf_composer::element::MexicanHatKernelParameters</a></div><div class="ttdoc">Parameters for a Mexican-hat lateral interaction kernel.</div><div class="ttdef"><b>Definition</b> mexican_hat_kernel_parameters.h:10</div></div>
+<div class="ttc" id="astructdnf__composer_1_1element_1_1NeuralFieldParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1NeuralFieldParameters.html">dnf_composer::element::NeuralFieldParameters</a></div><div class="ttdoc">Parameters that govern a NeuralField's dynamics.</div><div class="ttdef"><b>Definition</b> neural_field.h:13</div></div>
+</div><!-- fragment --><p>More ready-to-run examples are in the <a href="dynamic-neural-field-composer/examples/"><code>examples/</code></a> folder, covering working memory, selection, sequence generation, 2D fields, Hebbian learning, and more.</p>
+<div class="image">
+<img src="headline-plotting.jpg" alt=""/>
+<div class="caption">
+Monitoring and visualization — plot field components, monitor state, inspect parameters</div></div>
+    <hr  />
+<h2><a class="anchor" id="autotoc_md10"></a>
+Elements</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Category   </th><th class="markdownTableHeadNone">Elements    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Fields   </td><td class="markdownTableBodyNone"><code>NeuralField</code>, <code>NeuralField2d</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Kernels   </td><td class="markdownTableBodyNone"><code>GaussKernel</code>, <code>MexicanHatKernel</code>, <code>AsymmetricGaussKernel</code>, <code>OscillatoryKernel</code> (+ 2D variants)    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Stimuli   </td><td class="markdownTableBodyNone"><code>GaussStimulus</code>, <code>TimedGaussStimulus</code>, <code>BoostStimulus</code>, <code>BoostStimulus2d</code> (+ 2D variants)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Noise   </td><td class="markdownTableBodyNone"><code>NormalNoise</code>, <code>CorrelatedNormalNoise</code> (+ 2D variants)    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Couplings   </td><td class="markdownTableBodyNone"><code>FieldCoupling</code>, <code>GaussFieldCoupling</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Memory   </td><td class="markdownTableBodyNone"><code>MemoryTrace</code>, <code>MemoryTrace2d</code>   </td></tr>
+</table>
+<div class="image">
+<img src="headline-elements.jpg" alt=""/>
+<div class="caption">
+Element suite — neural fields, kernels, stimuli, couplings in 1D and 2D</div></div>
+    <hr  />
+<h2><a class="anchor" id="autotoc_md12"></a>
+Two launchers, one library</h2>
+<p>Building the project produces two executables:</p>
 <ul>
-<li>**<code>dnf-composer-static</code>** — a single self-contained window with all panels docked in a fixed layout. Best for quickly building and running a simulation without any configuration.</li>
-<li>**<code>dnf-composer-dynamic</code>** — a fully dockable ImGui application. Windows can be rearranged, detached, and dragged to secondary monitors, giving you complete control over the layout at runtime.</li>
+<li>**<code>dnf-composer-static</code>** — a single self-contained window with all panels in a fixed layout. Best for quickly running a simulation without any setup.</li>
+<li><p class="startli">**<code>dnf-composer-dynamic</code>** — a fully dockable ImGui application. Windows can be rearranged, detached, and dragged to secondary monitors.</p>
+<p class="startli">The GUI is powered by <a href="https://github.com/ocornut/imgui">Dear ImGui</a>, keeping it fast and lightweight.</p>
+</li>
 </ul>
-<p>You can also write your own executable, link against the library, and choose exactly which windows to render and which architecture to load or define in code. Creating a custom launcher is straightforward — see the <b><a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki/How-to-Create-and-Run-Your-Own-Example-Executable">Wiki</a></b> for a step-by-step guide.</p>
-<p>Explore the <code>examples/</code> folder for ready-to-run architectures.</p>
+<div class="image">
+<img src="headline-gui.jpg" alt=""/>
+<div class="caption">
+Flexible UI — dock, detach, and arrange windows however you need</div></div>
+    <p>You can also write your own launcher, link against the library, and choose exactly which windows and architectures to load. See the <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki/How-to-Create-and-Run-Your-Own-Example-Executable">Wiki</a> for a step-by-step guide.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md10"></a>
-Contributing</h1>
-<p>Bug fixes, new features, and documentation improvements are all welcome. If you have a bug, issue, or suggestion, see CONTRIBUTING.md for how to report it and how to submit a pull request. </p>
+<h2><a class="anchor" id="autotoc_md14"></a>
+Projects using dynamic-neural-field-composer</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Project   </th><th class="markdownTableHeadNone">Publication    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a href="https://github.com/Jgocunha/neat-dnfs">NEAT-DNFs</a>   </td><td class="markdownTableBodyNone"><em>NEAT-DNFs: A NeuroEvolutionary Framework for Evolving Dynamic Neural Field Architectures</em> · GECCO 2026 · <a href="https://doi.org/10.1145/3795095.3805169">10.1145/3795095.3805169</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a href="https://github.com/Jgocunha/dynamic-neural-field-degeneration">dynamic-neural-field-degeneration</a>   </td><td class="markdownTableBodyNone"><em>Robustness and Adaptability in a Dynamic Neural Field Architecture Subject to Degeneration</em> · ROBOT 2025 · Springer LNNS    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a href="https://github.com/Jgocunha/vr-hr-joint-task">vr-hr-joint-task</a>   </td><td class="markdownTableBodyNone"><em>Dynamic Neural Field Based Anticipatory Action Selection for Human Robot Collaboration: A Virtual Reality Experiment</em> · ICSR + ART 2026    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a href="https://research.tue.nl/en/studentTheses/how-we-can-use-dynamic-neural-fields-in-human-robot-joint-action/">How We Can Use Dynamic Neural Fields in Human-Robot Joint Action</a>   </td><td class="markdownTableBodyNone"><em>How We Can Use Dynamic Neural Fields in Human-Robot Joint Action</em> · Tessa H. Janssen · MSc thesis · TU/e   </td></tr>
+</table>
+<hr  />
+<h2><a class="anchor" id="autotoc_md16"></a>
+Contributing</h2>
+<p>Bug fixes, new elements, documentation improvements, and example architectures are all welcome. Open an issue before starting non-trivial work so direction can be agreed on first. See CONTRIBUTING.md for the full process.</p>
+<h2><a class="anchor" id="autotoc_md17"></a>
+License</h2>
+<p>This project is licensed under the terms in [LICENSE](LICENSE). </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
