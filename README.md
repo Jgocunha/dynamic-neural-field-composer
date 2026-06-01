@@ -43,6 +43,14 @@ This library lets you design, connect, simulate, and visualize DNF architectures
 
 ---
 
+## Download
+
+Pre-compiled binaries are available on the [Releases](https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest) page. Download and run — no build tools or dependencies required. This is the quickest way to start composing and simulating DNF architectures without writing any code.
+
+If you want to build from source, embed the library in your own project, or write custom examples, follow the steps below.
+
+---
+
 ## Requirements
 
 You must install the following manually:
