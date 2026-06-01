@@ -139,7 +139,7 @@ namespace dnf_composer
 		const IconParameters iconParams{ root + "/resources/icons/icon.png" };
 #endif
 		const BackgroundImageParameters bgParams{ root
-			+ "/resources/images/background.png", ImageFitType::ZOOM_TO_FIT };
+			+ "/resources/images/background.jpg", ImageFitType::ZOOM_TO_FIT };
 		const UserInterfaceParameters guiParameters{ winParams, fontParams, styleParams, iconParams, bgParams };
 
 		gui = std::make_shared<UserInterface>(guiParameters);

@@ -102,9 +102,24 @@ The `ElementLabel` enum identifies element types and is used by `ElementFactory`
 
 ---
 
-## ElementFactory
+## Creating elements
 
-The recommended way to create elements. Takes a label, common parameters, and type-specific parameters:
+There are two equivalent ways to create an element.
+
+### Direct construction
+
+The type-safe approach used by the examples and most application code — parameters are checked at compile time:
+
+```cpp
+auto field = std::make_shared<element::NeuralField>(
+    ElementCommonParameters{ ElementIdentifiers{"name"}, dims },
+    NeuralFieldParameters{ tau, restingLevel, SigmoidFunction(0.0, 10.0) }
+);
+```
+
+### ElementFactory
+
+Creates any registered element from its `ElementLabel` enum, returning a base `Element` pointer. Useful when the element type is selected at runtime or loaded from a file (this is the path the JSON loader uses):
 
 ```cpp
 ElementFactory factory;

@@ -32,6 +32,27 @@ float scale = Application::getUiScalePct();
 
 ---
 
+## Layout persistence (`imgui.ini`)
+
+The `dnf-composer-dynamic` (dockable) build remembers your workspace between sessions. ImGui writes window positions, sizes, collapse state, the docking arrangement, and the UI scale to `resources/imgui.ini`. The file is created automatically on first run and rewritten on exit.
+
+This is what makes the **dynamic** layout sticky: rearrange and dock windows however you like, and they reappear in the same places next time. The `dnf-composer-static` build uses a fixed tiled layout and does not rely on this file for positioning.
+
+To start from a clean slate — for example after the layout gets into an awkward state — close the application and **delete `resources/imgui.ini`**. It will be regenerated with default positions on the next launch.
+
+---
+
+## Theme / style (`style_light_green_accent.json`)
+
+The application's ImGui theme is loaded at startup from `resources/style_light_green_accent.json`. The file has two sections:
+
+- `"metrics"` — layout metrics such as padding, spacing, rounding, and border sizes
+- `"colors"` — RGBA values (one per ImGui color slot, e.g. `Text`, `WindowBg`, `Button`, `Header`)
+
+You can personalize the look by editing these values and restarting the application — adjust the colors to your taste or tweak the metrics for a tighter or roomier layout.
+
+---
+
 ## Registering windows
 
 Windows are added before `app.init()` is called. The `addWindow<T>()` template detects automatically what arguments the window type needs — you never need to pass `simulation` or `visualization` manually, except for `StaticLayoutWindow` which requires both:
