@@ -9,7 +9,5 @@ var searchData=
   ['element_5fwindow_2ecpp_6',['element_window.cpp',['../element__window_8cpp.html',1,'']]],
   ['element_5fwindow_2eh_7',['element_window.h',['../element__window_8h.html',1,'']]],
   ['exception_2ecpp_8',['exception.cpp',['../exception_8cpp.html',1,'']]],
-  ['exception_2eh_9',['exception.h',['../exception_8h.html',1,'']]],
-  ['expand_2ecpp_10',['expand.cpp',['../expand_8cpp.html',1,'']]],
-  ['expand_2eh_11',['expand.h',['../expand_8h.html',1,'']]]
+  ['exception_2eh_9',['exception.h',['../exception_8h.html',1,'']]]
 ];

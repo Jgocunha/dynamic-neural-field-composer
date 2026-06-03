@@ -1,9 +1,0 @@
-<map id="dnf_composer::element::Expand::step" name="dnf_composer::element::Expand::step">
-<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,37,181,77"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a664e422125516c1dbc86e7adda106c47" title=" " alt="" coords="229,5,448,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,43,215,39,216,44,182,49"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="251,69,427,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="182,66,238,73,237,79,181,71"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" title="Cache raw pointers to input component data. Call after all element init()s complete." alt="" coords="496,69,693,109"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="427,87,482,87,482,92,427,92"/>
-</map>

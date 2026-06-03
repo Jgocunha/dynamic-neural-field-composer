@@ -7,6 +7,5 @@ var searchData=
   ['sim_5felem_5fnot_5ffound_4',['SIM_ELEM_NOT_FOUND',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cab89f810ba404d0e61e9ec533f00543b1',1,'dnf_composer']]],
   ['sim_5finvalid_5fparameter_5',['SIM_INVALID_PARAMETER',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca8ce9f9606fd38ac008de70c7b5a94e26',1,'dnf_composer']]],
   ['sim_5fruntime_5fless_5fthan_5fzero_6',['SIM_RUNTIME_LESS_THAN_ZERO',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca30e4fa0f18b5eb12b4244b7bb6e3e1c6',1,'dnf_composer']]],
-  ['square_7',['Square',['../namespaceax_1_1Drawing.html#ab1df3a7263c0f5d36c706d066c90fe0aaceb46ca115d05c51aa5a16a8867c3304',1,'ax::Drawing']]],
-  ['sum_8',['sum',['../group__elements.html#ggac602c49997b573c18f5e15d5181ab3cca6970bdc2201030b9c03fbdcf3973858a',1,'dnf_composer::element::SUM'],['../namespacednf__composer_1_1tools_1_1math.html#a69b0da2c4990166933ae87e0f8e4a92ea6970bdc2201030b9c03fbdcf3973858a',1,'dnf_composer::tools::math::SUM']]]
+  ['square_7',['Square',['../namespaceax_1_1Drawing.html#ab1df3a7263c0f5d36c706d066c90fe0aaceb46ca115d05c51aa5a16a8867c3304',1,'ax::Drawing']]]
 ];

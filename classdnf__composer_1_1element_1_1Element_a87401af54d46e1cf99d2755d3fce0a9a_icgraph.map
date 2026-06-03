@@ -1,45 +1,41 @@
 <map id="dnf_composer::element::Element::updateInput" name="dnf_composer::element::Element::updateInput">
-<area shape="rect" id="Node000001" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="592,613,768,653"/>
+<area shape="rect" id="Node000001" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="592,549,768,589"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#a3677ed68684c7cd362e7e54f42fafb06" title="Initialize the element (called once before the simulation loop)." alt="" coords="334,5,510,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="673,600,658,480,631,317,614,235,593,161,569,100,542,59,527,47,509,38,511,34,530,43,546,56,574,98,598,159,619,234,637,316,663,479,678,599"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="672,536,655,427,627,284,609,212,589,148,566,95,542,59,527,47,509,39,512,34,530,43,546,56,571,92,594,146,614,211,632,283,660,426,677,535"/>
 <area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a942b7e1646c800e33517bf0d694eb128" title="Initialize the element (called once before the simulation loop)." alt="" coords="334,69,510,109"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="672,600,655,491,627,348,609,276,589,212,566,159,542,123,527,111,509,103,512,98,530,107,546,120,571,156,594,210,614,275,632,347,660,490,677,599"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="676,536,671,452,665,399,653,341,636,282,613,224,582,170,542,123,527,112,509,103,511,98,530,107,546,119,586,167,617,222,641,280,658,340,670,398,677,451,682,535"/>
 <area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#afa45a45ca8acb0432937de3b1563ba82" title="Advance the element by one time step." alt="" coords="309,133,535,173"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="676,600,671,516,665,463,653,405,636,346,613,288,582,234,542,187,527,176,530,171,546,183,586,231,617,286,641,344,658,404,670,462,677,515,682,599"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="674,536,666,463,645,369,628,320,605,271,577,226,542,187,526,176,529,171,546,183,581,223,610,269,633,318,650,368,671,462,680,535"/>
 <area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#ab88efe9a35d4b8489448f12e6ab15509" title="Advance the element by one time step." alt="" coords="300,197,544,237"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="674,600,666,527,645,433,628,384,605,335,577,290,542,251,526,240,529,235,546,247,581,287,610,333,633,382,650,432,671,526,680,599"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1Collapse.html#a39c72c141eecd57cd074c976be5fe32e" title="Advance the element by one time step." alt="" coords="334,261,510,301"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="672,600,660,539,636,462,619,422,598,383,573,347,542,315,509,296,512,292,546,311,577,343,602,380,624,419,641,460,665,538,677,599"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1Expand.html#aff714ff29d5f0b1f850882f143d0b9b8" title="Advance the element by one time step." alt="" coords="334,325,510,365"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="668,601,652,551,627,491,590,431,568,403,542,379,509,361,512,357,546,375,572,400,595,428,631,489,657,549,673,599"/>
-<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ae0215c3f9b5ebe1030429c427cf6d8bf" title="Advance the element by one time step." alt="" coords="334,389,510,429"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="662,602,643,565,617,522,583,479,543,444,509,427,512,422,545,439,587,476,621,519,648,562,667,599"/>
-<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a5f4bbce89a4ac5b4f014d7071847c564" title="Advance the element by one time step." alt="" coords="325,453,519,493"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="653,605,605,554,575,529,543,508,517,496,519,491,545,503,578,525,609,551,656,601"/>
-<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a5fd228b67854d1c571f272756c67389a" title="Advance the element by one time step." alt="" coords="334,517,510,557"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="628,609,543,572,506,560,508,555,545,567,630,605"/>
-<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#afe15b891a5a3bf3caba5213476d12edf" title="Advance the element by one time step." alt="" coords="334,581,510,621"/>
-<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="578,623,510,615,511,610,578,618"/>
-<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1MemoryTrace.html#ac0979d0eaf416db2d48e127c031a4642" title="Advance the element by one time step." alt="" coords="334,645,510,685"/>
-<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="578,649,511,657,510,652,578,643"/>
-<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1MemoryTrace2D.html#af50b896126dbac77330edb9d7d1c9e22" title="Advance the element by one time step." alt="" coords="334,709,510,749"/>
-<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="630,662,545,700,508,712,506,707,543,695,628,657"/>
-<area shape="rect" id="Node000016" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ac18abde56a67c7c1c127d38065d6f316" title="Advance the element by one time step." alt="" coords="329,773,515,813"/>
-<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="656,666,609,716,578,742,545,764,516,777,514,772,543,759,575,738,605,712,653,662"/>
-<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#a586a0dc4008c2456314a6254e9d9d0ee" title="Advance the element by one time step." alt="" coords="321,837,523,877"/>
-<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="667,667,648,705,621,748,587,791,546,828,524,840,521,835,542,823,583,787,617,745,643,702,662,665"/>
-<area shape="rect" id="Node000018" href="$classdnf__composer_1_1element_1_1NeuralField.html#a06d26adf22e574e2b6c8589c0d4f996e" title="Advance the element by one time step." alt="" coords="334,901,510,941"/>
-<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="673,667,657,717,631,778,595,839,572,867,546,891,512,910,509,905,542,887,568,863,590,836,627,775,652,715,668,666"/>
-<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1NeuralField2D.html#a98912e65d06df349db24a965ee89fc41" title="Advance the element by one time step." alt="" coords="334,965,510,1005"/>
-<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="677,667,665,729,641,807,624,847,602,887,577,923,546,955,512,975,509,970,542,951,573,920,598,884,619,845,636,805,660,728,672,666"/>
-<area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html#ab95458cda2baab4cbaf0e010e2cb86a8" title="Advance the element by one time step." alt="" coords="333,1029,511,1069"/>
-<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="680,667,671,740,650,835,633,885,610,934,581,979,546,1019,512,1039,510,1035,542,1015,577,976,605,931,628,883,645,833,666,739,674,667"/>
-<area shape="rect" id="Node000021" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html#a1a8e3064bedd9fd6d4a00818bc3ff271" title="Advance the element by one time step." alt="" coords="325,1093,519,1133"/>
-<area shape="poly" id="edge20_Node000001_Node000021" title=" " alt="" coords="682,667,677,751,670,805,658,863,641,923,617,981,586,1035,546,1083,521,1100,518,1096,542,1079,582,1032,613,979,636,921,653,862,665,804,671,751,676,667"/>
-<area shape="rect" id="Node000022" href="$classdnf__composer_1_1element_1_1Resize.html#a7e1f337e5edccf11af88d726540ad280" title="Advance the element by one time step." alt="" coords="334,1157,510,1197"/>
-<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="677,668,660,776,632,920,614,992,594,1057,571,1110,546,1147,530,1160,512,1169,509,1164,527,1155,542,1144,566,1108,589,1055,609,990,627,918,655,775,672,667"/>
-<area shape="rect" id="Node000023" href="$classdnf__composer_1_1element_1_1Resize2D.html#a78dcfa0ab25a60128557f23e446a0dc6" title="Advance the element by one time step." alt="" coords="334,1221,510,1261"/>
-<area shape="poly" id="edge22_Node000001_Node000023" title=" " alt="" coords="678,667,663,788,637,951,619,1033,598,1108,574,1169,546,1211,530,1224,511,1233,509,1228,527,1220,542,1208,569,1167,593,1106,614,1032,631,950,658,787,673,667"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="672,536,660,475,636,398,619,358,598,319,573,283,542,251,525,240,528,235,546,247,577,279,602,316,624,355,641,396,665,474,677,535"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ae0215c3f9b5ebe1030429c427cf6d8bf" title="Advance the element by one time step." alt="" coords="334,261,510,301"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="668,537,652,487,627,427,590,367,568,339,542,315,509,297,512,293,546,311,572,336,595,364,631,425,657,485,673,535"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a5f4bbce89a4ac5b4f014d7071847c564" title="Advance the element by one time step." alt="" coords="325,325,519,365"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="662,538,643,501,617,458,583,415,542,380,518,366,521,362,546,375,587,412,621,455,648,498,667,535"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a5fd228b67854d1c571f272756c67389a" title="Advance the element by one time step." alt="" coords="334,389,510,429"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="653,541,605,490,575,465,543,444,509,429,512,424,545,439,578,461,609,487,656,537"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#afe15b891a5a3bf3caba5213476d12edf" title="Advance the element by one time step." alt="" coords="334,453,510,493"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="628,545,543,508,506,496,508,491,545,503,630,541"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1MemoryTrace.html#ac0979d0eaf416db2d48e127c031a4642" title="Advance the element by one time step." alt="" coords="334,517,510,557"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="578,559,510,551,511,546,578,554"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1MemoryTrace2D.html#af50b896126dbac77330edb9d7d1c9e22" title="Advance the element by one time step." alt="" coords="334,581,510,621"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="578,585,511,593,510,588,578,579"/>
+<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ac18abde56a67c7c1c127d38065d6f316" title="Advance the element by one time step." alt="" coords="329,645,515,685"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="630,598,545,636,508,648,506,643,543,631,628,593"/>
+<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#a586a0dc4008c2456314a6254e9d9d0ee" title="Advance the element by one time step." alt="" coords="321,709,523,749"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="656,602,609,652,578,678,545,700,519,712,517,707,543,695,575,674,605,648,653,598"/>
+<area shape="rect" id="Node000016" href="$classdnf__composer_1_1element_1_1NeuralField.html#a06d26adf22e574e2b6c8589c0d4f996e" title="Advance the element by one time step." alt="" coords="334,773,510,813"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="667,603,648,641,621,684,587,727,545,764,512,781,509,776,543,759,583,723,617,681,643,638,662,601"/>
+<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1NeuralField2D.html#a98912e65d06df349db24a965ee89fc41" title="Advance the element by one time step." alt="" coords="334,837,510,877"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="673,603,657,653,631,714,595,775,572,803,546,827,512,846,509,841,542,823,568,799,590,772,627,711,652,651,668,602"/>
+<area shape="rect" id="Node000018" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html#ab95458cda2baab4cbaf0e010e2cb86a8" title="Advance the element by one time step." alt="" coords="333,901,511,941"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="677,603,665,665,641,743,624,783,602,823,577,859,546,891,513,911,510,906,542,887,573,856,598,820,619,781,636,741,660,664,672,602"/>
+<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html#a1a8e3064bedd9fd6d4a00818bc3ff271" title="Advance the element by one time step." alt="" coords="325,965,519,1005"/>
+<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="680,603,671,676,650,771,633,821,610,870,581,915,546,955,521,972,518,967,542,951,577,912,605,867,628,819,645,769,666,675,674,603"/>
+<area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1Resize.html#a7e1f337e5edccf11af88d726540ad280" title="Advance the element by one time step." alt="" coords="334,1029,510,1069"/>
+<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="682,603,677,687,670,741,658,799,641,859,617,917,586,971,546,1019,530,1032,511,1040,509,1036,527,1027,542,1015,582,968,613,915,636,857,653,798,665,740,671,687,676,603"/>
+<area shape="rect" id="Node000021" href="$classdnf__composer_1_1element_1_1Resize2D.html#a78dcfa0ab25a60128557f23e446a0dc6" title="Advance the element by one time step." alt="" coords="334,1093,510,1133"/>
+<area shape="poly" id="edge20_Node000001_Node000021" title=" " alt="" coords="677,604,660,712,632,856,614,928,594,993,571,1046,546,1083,530,1096,512,1105,509,1100,527,1091,542,1080,566,1044,589,991,609,926,627,854,655,711,672,603"/>
 <area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#af05b6b8c812a9db74fd719824bfdfaca" title=" " alt="" coords="14,5,243,45"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="320,28,244,28,244,23,320,23"/>
 <area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a391bd4d0d9795ae3e85e2f834210685a" title=" " alt="" coords="5,69,252,109"/>

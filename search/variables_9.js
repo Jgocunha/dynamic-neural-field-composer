@@ -9,12 +9,11 @@ var searchData=
   ['kcolbbase_6',['kColBBase',['../namespacednf__composer_1_1user__interface.html#a0d02a52b2abd82f968ac4f6d941ba610',1,'dnf_composer::user_interface']]],
   ['kcolorindex_7',['kColorIndex',['../namespacednf__composer.html#a14c20aab8437733080f5e90fe3fb8eaf',1,'dnf_composer']]],
   ['kdotr_8',['kDotR',['../namespacednf__composer_1_1user__interface.html#ac9d33242f7f365761ff34043091f420f',1,'dnf_composer::user_interface']]],
-  ['keepaxis_9',['keepAxis',['../structdnf__composer_1_1element_1_1CollapseParameters.html#ac14d935cd25d122ab077b2ddba67b3b1',1,'dnf_composer::element::CollapseParameters']]],
-  ['kernelrange_10',['kernelRange',['../classdnf__composer_1_1element_1_1Kernel.html#a21bfe5104e2b8711d063b60218452955',1,'dnf_composer::element::Kernel']]],
-  ['kmargin_11',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
-  ['kpagecount_12',['kPageCount',['../namespacednf__composer_1_1user__interface.html#ae93e92a1246e1e8b64fa164c7292621a',1,'dnf_composer::user_interface']]],
-  ['kpagetitles_13',['kPageTitles',['../namespacednf__composer_1_1user__interface.html#a5f1e948621f2df685ec9529c7eb02039',1,'dnf_composer::user_interface']]],
-  ['krounding_14',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
-  ['kstatusbarh_15',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
-  ['ktopbarh_16',['kTopBarH',['../namespacednf__composer_1_1user__interface.html#a94b8e14815bca9944462e2c32f484f02',1,'dnf_composer::user_interface']]]
+  ['kernelrange_9',['kernelRange',['../classdnf__composer_1_1element_1_1Kernel.html#a21bfe5104e2b8711d063b60218452955',1,'dnf_composer::element::Kernel']]],
+  ['kmargin_10',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
+  ['kpagecount_11',['kPageCount',['../namespacednf__composer_1_1user__interface.html#ae93e92a1246e1e8b64fa164c7292621a',1,'dnf_composer::user_interface']]],
+  ['kpagetitles_12',['kPageTitles',['../namespacednf__composer_1_1user__interface.html#a5f1e948621f2df685ec9529c7eb02039',1,'dnf_composer::user_interface']]],
+  ['krounding_13',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
+  ['kstatusbarh_14',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
+  ['ktopbarh_15',['kTopBarH',['../namespacednf__composer_1_1user__interface.html#a94b8e14815bca9944462e2c32f484f02',1,'dnf_composer::user_interface']]]
 ];
