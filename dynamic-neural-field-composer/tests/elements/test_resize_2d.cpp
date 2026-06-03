@@ -21,10 +21,12 @@ static std::shared_ptr<Resize2D> makeResize2D(const std::string& name,
     return std::make_shared<Resize2D>(cp, rp);
 }
 
+// position (0,0) keeps the Gaussian centre in range even for tiny test fields
+// (the actual profile is irrelevant — it is overwritten before stepping).
 static std::shared_ptr<GaussStimulus2D> makeSource2D(const std::string& name,
     const int sizeX, const int sizeY)
 {
-    const GaussStimulus2DParameters gp{};
+    const GaussStimulus2DParameters gp{ 1.0, 1.0, 0.0, 0.0 };
     const ElementCommonParameters cp{ name, ElementDimensions{ sizeX, sizeY, 1.0, 1.0 } };
     return std::make_shared<GaussStimulus2D>(cp, gp);
 }
@@ -156,6 +158,9 @@ TEST(Resize2DTest, CloneProducesIdenticalOutput)
 
     const auto clone = std::dynamic_pointer_cast<Resize2D>(rz->clone());
     ASSERT_NE(clone, nullptr);
+    // The clone copies the original's input connection; clear it so resampleVia
+    // wires a single fresh source (otherwise two sources would be summed).
+    clone->removeInputs();
     const auto cloneOut = resampleVia(clone, field, 2, 2);
 
     ASSERT_EQ(out.size(), cloneOut.size());

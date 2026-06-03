@@ -22,9 +22,11 @@ static std::shared_ptr<Resize> makeResize(const std::string& name,
 }
 
 // A generic source of a given size whose "output" we overwrite with a known vector.
+// position 0.0 keeps the Gaussian centre in range even for tiny test fields (the
+// actual profile is irrelevant — it is overwritten before stepping).
 static std::shared_ptr<GaussStimulus> makeSource(const std::string& name, const int size)
 {
-    const GaussStimulusParameters gp{};
+    const GaussStimulusParameters gp{ 1.0, 1.0, 0.0 };
     const ElementCommonParameters cp{ name, ElementDimensions{ size, 1.0 } };
     return std::make_shared<GaussStimulus>(cp, gp);
 }
@@ -144,17 +146,24 @@ TEST(ResizeTest, NearestNeighbourPicksClosestSample)
     EXPECT_DOUBLE_EQ(out[4], in[2]); // pos 2.0 -> idx 2
 }
 
-TEST(ResizeTest, CubicReproducesLinearDataAtSamplePoints)
+TEST(ResizeTest, CubicReproducesSampleValuesAtAlignedPositions)
 {
-    // For a linear ramp, Catmull-Rom cubic reproduces the linear values exactly.
+    // N=5 -> M=9, pos_i = i * 4/8 = 0.5 i. At even output indices the position is an
+    // integer, so the output must equal the original sample exactly (any interpolation
+    // passes through the sample points). Odd indices fall between samples; for the
+    // interior intervals Catmull-Rom reproduces a linear ramp, but the boundary
+    // intervals use clamped endpoints and are not exactly linear, so we don't assert
+    // those.
     const auto rz = makeResize("rz", 5, 9, InterpolationMethod::CUBIC);
     std::vector<double> in(5);
     for (int i = 0; i < 5; ++i) in[i] = static_cast<double>(i);
     const auto out = resampleVia(rz, in);
     ASSERT_EQ(out.size(), 9u);
-    // pos_i = i * 4/8 = 0.5 i ; ramp value == position
-    for (int i = 0; i < 9; ++i)
+    for (int i = 0; i < 9; i += 2)              // aligned sample points
         EXPECT_NEAR(out[i], 0.5 * i, 1e-9);
+    // interior midpoint (between in[1] and in[2]) is exact for Catmull-Rom on a ramp
+    EXPECT_NEAR(out[3], 1.5, 1e-9);
+    EXPECT_NEAR(out[5], 2.5, 1e-9);
 }
 
 // ---------------------------------------------------------------------------
@@ -188,6 +197,10 @@ TEST(ResizeTest, CloneProducesIdenticalOutput)
 
     const auto clone = std::dynamic_pointer_cast<Resize>(rz->clone());
     ASSERT_NE(clone, nullptr);
+    // The clone is a copy and already carries the original's input connection;
+    // clear it so resampleVia wires a single fresh source (otherwise two sources
+    // would be summed, doubling the output).
+    clone->removeInputs();
     const auto cloneOut = resampleVia(clone, in);
 
     ASSERT_EQ(out.size(), cloneOut.size());
