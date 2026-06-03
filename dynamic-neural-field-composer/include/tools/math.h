@@ -730,10 +730,19 @@ namespace dnf_composer::tools::math
 	void reduce2DAxis_into(std::vector<T>& out, const std::vector<T>& field,
 		int size_x, int size_y, bool keepX, ReduceOp op)
 	{
+		// Reject non-positive dimensions or a field smaller than size_x*size_y
+		// (malformed dimensions / JSON) before sizing or indexing: produce an
+		// empty result rather than over-allocating or reading out of bounds.
+		if (size_x <= 0 || size_y <= 0 ||
+			field.size() < static_cast<std::size_t>(size_x) * static_cast<std::size_t>(size_y))
+		{
+			out.clear();
+			return;
+		}
+
 		const int outSize = keepX ? size_x : size_y;
 		const int reduceCount = keepX ? size_y : size_x;
 		if (out.size() != static_cast<std::size_t>(outSize)) out.assign(outSize, T());
-		if (field.empty() || reduceCount <= 0) { std::fill(out.begin(), out.end(), T()); return; }
 
 		for (int o = 0; o < outSize; ++o)
 		{
@@ -769,7 +778,11 @@ namespace dnf_composer::tools::math
 	void broadcast1DTo2D_into(std::vector<T>& out, const std::vector<T>& profile,
 		int size_x, int size_y, bool alongX)
 	{
-		const std::size_t total = static_cast<std::size_t>(size_x) * size_y;
+		// Reject non-positive dimensions (malformed dimensions / JSON) before sizing:
+		// a negative size would wrap to an enormous allocation.
+		if (size_x <= 0 || size_y <= 0) { out.clear(); return; }
+
+		const std::size_t total = static_cast<std::size_t>(size_x) * static_cast<std::size_t>(size_y);
 		if (out.size() != total) out.assign(total, T());
 		if (profile.empty()) { std::fill(out.begin(), out.end(), T()); return; }
 		const int profileSize = static_cast<int>(profile.size());
