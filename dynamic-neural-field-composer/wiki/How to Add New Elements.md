@@ -337,7 +337,60 @@ case element::ElementLabel::YOUR_ELEMENT_NAME:
 
 ---
 
-## Step 8 — Update CMakeLists.txt
+## Step 8 — Add JSON serialization (`SimulationFileManager`)
+
+**File:** `src/simulation/simulation_file_manager.cpp`
+**Header (include):** `include/simulation/simulation_file_manager.h`
+
+**This step is mandatory.** Without it, saving a simulation that contains your
+element writes it with **no element-specific parameters**, and loading it **skips the
+element entirely** — which silently breaks (and can crash) any architecture that uses
+it. There is no compile error to catch this; only the round-trip test (Step 10) does.
+
+**8a.** Add your element header to the include list at the top of
+`simulation_file_manager.h`.
+
+**8b.** In `elementToJson()` (the **save** switch), add a `case` before `default:`
+that writes **every** element-specific parameter:
+
+```cpp
+case element::YOUR_ELEMENT_NAME:
+{
+    const auto e = std::dynamic_pointer_cast<element::YourElement>(element);
+    const auto p = e->getParameters();
+    elementJson["param1"] = p.param1;
+    elementJson["flag1"]  = p.flag1;
+    // Store enums as their int value: static_cast<int>(p.someEnum)
+}
+break;
+```
+
+**8c.** In `jsonToElements()` (the **load** switch), add a matching `case` before
+`default:` that reconstructs the element and calls `simulation->addElement(...)`:
+
+```cpp
+case element::YOUR_ELEMENT_NAME:
+{
+    const double param1 = elementJson["param1"];
+    const bool   flag1  = elementJson["flag1"];
+    auto e = std::make_shared<element::YourElement>(
+        element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+        element::YourElementParameters(param1, flag1));
+    simulation->addElement(e);
+}
+break;
+```
+
+> **Dimension-bridging elements (input dims differ from output dims):** the common
+> `x_max/d_x/y_max/d_y` fields only describe the element's *own* (output) dimensions.
+> You **must also** save and load the element's **input** dimensions (e.g.
+> `input_x_max`, `input_d_x`, and `input_y_max`/`input_d_y` if the input is 2D) and
+> rebuild the `ElementDimensions` for the parameter struct on load. This is the part
+> most likely to be missed — see `RESIZE` / `COLLAPSE` / `EXPAND` for reference.
+
+---
+
+## Step 9 — Update CMakeLists.txt
 
 **File:** `dynamic-neural-field-composer/CMakeLists.txt`
 
@@ -349,7 +402,7 @@ src/elements/your_element.cpp
 
 ---
 
-## Step 9 — Update the public header
+## Step 10 — Update the public header
 
 **File:** `include/dynamic-neural-field-composer.h`
 
@@ -361,7 +414,7 @@ Add the include near the other element headers:
 
 ---
 
-## Step 10 — Write tests
+## Step 11 — Write tests
 
 **File:** `tests/elements/test_your_element.cpp`
 
@@ -377,6 +430,7 @@ Every element test suite must cover:
 | Parameter update | `setParameters()` followed by `step()` reflects the new values |
 | Edge cases | Zero amplitude → all-zero output; circular vs. non-circular boundary behaviour |
 | Clone | Cloned element produces identical output after the same step sequence |
+| **Serialization round-trip** | In `tests/simulation/test_simulation_file_manager.cpp`: add a `RoundTripPreserves<YourElement>Parameters` test (construct with non-default params — and **non-default input dimensions** for dimension-bridging elements — save, load into a fresh sim, assert `getParameters() == ...`), and add the element to the all-element-types aggregate test. This is the only check that catches a missing Step 8 case. |
 
 Minimal structure:
 
@@ -424,7 +478,7 @@ TEST(YourElementClone, CloneHasSameParameters)
 
 ---
 
-## Step 11 — Write an example executable
+## Step 12 — Write an example executable
 
 **File:** `examples/ex_your_element.cpp`
 
@@ -482,7 +536,7 @@ int main()
 
 ---
 
-## Step 12 — Update README.md
+## Step 13 — Update README.md
 
 Add the element to the elements table in the project README with:
 - Name
@@ -504,9 +558,11 @@ Copy this checklist into the PR description for each new element:
 - [ ] ElementWindow: include, declare method, PanelHeightFor, switchElementToModify, modifyElement method, color, display name
 - [ ] SimulationWindow: renderAddElementCard case
 - [ ] NodeGraphWindow: getColumnForElement, is2DField (if 2D), renderNodeInspectorContent
+- [ ] SimulationFileManager: elementToJson + jsonToElements cases (incl. input dimensions for dimension-bridging elements)
 - [ ] CMakeLists.txt: source file added
 - [ ] include/dynamic-neural-field-composer.h: include added
 - [ ] tests/elements/test_your_element.cpp + registered in tests/CMakeLists.txt
+- [ ] test_simulation_file_manager.cpp: round-trip test + added to all-element-types aggregate
 - [ ] examples/your_element.cpp + registered in examples/CMakeLists.txt
 - [ ] main README.md Elements section
 - [ ] wiki folder update all pages related with element suite (Element-Reference.md, Elements.md, Examples.md)

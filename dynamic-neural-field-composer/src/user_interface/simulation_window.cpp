@@ -1662,29 +1662,8 @@ namespace dnf_composer::user_interface
 	{
 		struct ElemCategory { const char* label; ImU32 color; };
 		static auto getCategory = [](const element::ElementLabel lbl) -> ElemCategory {
-			using L = element::ElementLabel;
-			switch (lbl) {
-				case L::NEURAL_FIELD:    case L::NEURAL_FIELD_2D:
-					return {"Field",    IM_COL32(74,  144, 217, 255)};
-				case L::GAUSS_STIMULUS:  case L::TIMED_GAUSS_STIMULUS:
-				case L::GAUSS_STIMULUS_2D: case L::TIMED_GAUSS_STIMULUS_2D:
-				case L::BOOST_STIMULUS:  case L::BOOST_STIMULUS_2D:
-					return {"Stimulus", IM_COL32(31,  158, 126, 255)};
-				case L::GAUSS_KERNEL:    case L::MEXICAN_HAT_KERNEL:
-				case L::OSCILLATORY_KERNEL: case L::ASYMMETRIC_GAUSS_KERNEL:
-				case L::GAUSS_KERNEL_2D: case L::MEXICAN_HAT_KERNEL_2D:
-				case L::OSCILLATORY_KERNEL_2D: case L::ASYMMETRIC_GAUSS_KERNEL_2D:
-					return {"Kernel",   IM_COL32(192, 57,  43,  255)};
-				case L::NORMAL_NOISE:    case L::CORRELATED_NORMAL_NOISE:
-				case L::NORMAL_NOISE_2D: case L::CORRELATED_NORMAL_NOISE_2D:
-					return {"Noise",    IM_COL32(230, 126, 34,  255)};
-				case L::FIELD_COUPLING:  case L::GAUSS_FIELD_COUPLING:
-					return {"Coupling", IM_COL32(142, 68,  173, 255)};
-				case L::MEMORY_TRACE:    case L::MEMORY_TRACE_2D:
-					return {"Memory",   IM_COL32(127, 140, 141, 255)};
-				default:
-					return {"Unknown",  IM_COL32(150, 150, 150, 255)};
-			}
+			const auto info = element::getElementCategoryInfo(lbl);
+			return {info.name, IM_COL32(info.r, info.g, info.b, 255)};
 		};
 
 		static char searchBuf[128] = {};
@@ -2149,29 +2128,8 @@ namespace dnf_composer::user_interface
 	{
 		struct ElemCategory { const char* label; ImU32 color; };
 		static auto getCat = [](const element::ElementLabel lbl) -> ElemCategory {
-			using L = element::ElementLabel;
-			switch (lbl) {
-				case L::NEURAL_FIELD:    case L::NEURAL_FIELD_2D:
-					return {"Field",    IM_COL32(74,  144, 217, 255)};
-				case L::GAUSS_STIMULUS:  case L::TIMED_GAUSS_STIMULUS:
-				case L::GAUSS_STIMULUS_2D: case L::TIMED_GAUSS_STIMULUS_2D:
-				case L::BOOST_STIMULUS:  case L::BOOST_STIMULUS_2D:
-					return {"Stimulus", IM_COL32(31,  158, 126, 255)};
-				case L::GAUSS_KERNEL:    case L::MEXICAN_HAT_KERNEL:
-				case L::OSCILLATORY_KERNEL: case L::ASYMMETRIC_GAUSS_KERNEL:
-				case L::GAUSS_KERNEL_2D: case L::MEXICAN_HAT_KERNEL_2D:
-				case L::OSCILLATORY_KERNEL_2D: case L::ASYMMETRIC_GAUSS_KERNEL_2D:
-					return {"Kernel",   IM_COL32(192, 57,  43,  255)};
-				case L::NORMAL_NOISE:    case L::CORRELATED_NORMAL_NOISE:
-				case L::NORMAL_NOISE_2D: case L::CORRELATED_NORMAL_NOISE_2D:
-					return {"Noise",    IM_COL32(230, 126, 34,  255)};
-				case L::FIELD_COUPLING:  case L::GAUSS_FIELD_COUPLING:
-					return {"Coupling", IM_COL32(142, 68,  173, 255)};
-				case L::MEMORY_TRACE:    case L::MEMORY_TRACE_2D:
-					return {"Memory",   IM_COL32(127, 140, 141, 255)};
-				default:
-					return {"Unknown",  IM_COL32(150, 150, 150, 255)};
-			}
+			const auto info = element::getElementCategoryInfo(lbl);
+			return {info.name, IM_COL32(info.r, info.g, info.b, 255)};
 		};
 
 		static std::string selectedId;

@@ -477,6 +477,47 @@ namespace dnf_composer
             elementJson["threshold"] = p.threshold;
         }
         break;
+        case element::RESIZE:
+        {
+            const auto rz = std::dynamic_pointer_cast<element::Resize>(element);
+            const auto p  = rz->getParameters();
+            elementJson["method"]      = static_cast<int>(p.method);
+            elementJson["input_x_max"] = p.inputDimensions.x_max;
+            elementJson["input_d_x"]   = p.inputDimensions.d_x;
+        }
+        break;
+        case element::RESIZE_2D:
+        {
+            const auto rz = std::dynamic_pointer_cast<element::Resize2D>(element);
+            const auto p  = rz->getParameters();
+            elementJson["method"]      = static_cast<int>(p.method);
+            elementJson["input_x_max"] = p.inputDimensions.x_max;
+            elementJson["input_d_x"]   = p.inputDimensions.d_x;
+            elementJson["input_y_max"] = p.inputDimensions.y_max;
+            elementJson["input_d_y"]   = p.inputDimensions.d_y;
+        }
+        break;
+        case element::COLLAPSE:
+        {
+            const auto cl = std::dynamic_pointer_cast<element::Collapse>(element);
+            const auto p  = cl->getParameters();
+            elementJson["compression"] = static_cast<int>(p.compression);
+            elementJson["keepAxis"]    = static_cast<int>(p.keepAxis);
+            elementJson["input_x_max"] = p.inputDimensions.x_max;
+            elementJson["input_d_x"]   = p.inputDimensions.d_x;
+            elementJson["input_y_max"] = p.inputDimensions.y_max;
+            elementJson["input_d_y"]   = p.inputDimensions.d_y;
+        }
+        break;
+        case element::EXPAND:
+        {
+            const auto ex = std::dynamic_pointer_cast<element::Expand>(element);
+            const auto p  = ex->getParameters();
+            elementJson["broadcastProfileAxis"] = static_cast<int>(p.broadcastProfileAxis);
+            elementJson["input_x_max"]          = p.inputDimensions.x_max;
+            elementJson["input_d_x"]            = p.inputDimensions.d_x;
+        }
+        break;
         default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -901,6 +942,68 @@ namespace dnf_composer
             simulation->addElement(mt);
         }
         break;
+        case element::RESIZE:
+        {
+            const auto method = static_cast<element::InterpolationMethod>(
+                elementJson.contains("method") ? elementJson["method"].get<int>() : 0);
+            const int input_x_max  = elementJson["input_x_max"];
+            const double input_d_x = elementJson["input_d_x"];
+
+            auto rz = std::make_shared<element::Resize>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::ResizeParameters(method, element::ElementDimensions(input_x_max, input_d_x))
+            );
+            simulation->addElement(rz);
+        }
+        break;
+        case element::RESIZE_2D:
+        {
+            const auto method = static_cast<element::InterpolationMethod>(
+                elementJson.contains("method") ? elementJson["method"].get<int>() : 0);
+            const int input_x_max  = elementJson["input_x_max"];
+            const double input_d_x = elementJson["input_d_x"];
+            const int input_y_max  = elementJson["input_y_max"];
+            const double input_d_y = elementJson["input_d_y"];
+
+            auto rz = std::make_shared<element::Resize2D>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::Resize2DParameters(method, element::ElementDimensions(input_x_max, input_y_max, input_d_x, input_d_y))
+            );
+            simulation->addElement(rz);
+        }
+        break;
+        case element::COLLAPSE:
+        {
+            const auto compression = static_cast<element::CompressionType>(
+                elementJson.contains("compression") ? elementJson["compression"].get<int>() : 0);
+            const auto keepAxis = static_cast<element::ProjectionAxis>(
+                elementJson.contains("keepAxis") ? elementJson["keepAxis"].get<int>() : 0);
+            const int input_x_max  = elementJson["input_x_max"];
+            const double input_d_x = elementJson["input_d_x"];
+            const int input_y_max  = elementJson["input_y_max"];
+            const double input_d_y = elementJson["input_d_y"];
+
+            auto cl = std::make_shared<element::Collapse>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::CollapseParameters(compression, keepAxis, element::ElementDimensions(input_x_max, input_y_max, input_d_x, input_d_y))
+            );
+            simulation->addElement(cl);
+        }
+        break;
+        case element::EXPAND:
+        {
+            const auto broadcastProfileAxis = static_cast<element::ProjectionAxis>(
+                elementJson.contains("broadcastProfileAxis") ? elementJson["broadcastProfileAxis"].get<int>() : 0);
+            const int input_x_max  = elementJson["input_x_max"];
+            const double input_d_x = elementJson["input_d_x"];
+
+            auto ex = std::make_shared<element::Expand>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
+                element::ExpandParameters(broadcastProfileAxis, element::ElementDimensions(input_x_max, input_d_x))
+            );
+            simulation->addElement(ex);
+        }
+        break;
 	    default:
 	    case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -922,6 +1025,16 @@ namespace dnf_composer
                     // Extract component and keyUniqueName
                     const std::string& keyUniqueName = input[0];
                     const std::string& component = input[1];
+
+                    // Skip interactions whose endpoints were not created (e.g. an
+                    // element with an unrecognized/unsupported label was dropped above).
+                    // Wiring to a missing element would corrupt the loaded graph.
+                    if (!simulation->getElement(keyUniqueName) || !simulation->getElement(uniqueName))
+                    {
+                        log(tools::logger::WARNING, "Skipping interaction '" + keyUniqueName
+                            + "' -> '" + uniqueName + "': one or both elements were not loaded.");
+                        continue;
+                    }
 
                     simulation->createInteraction(keyUniqueName, component, uniqueName);
                 }
