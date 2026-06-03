@@ -71,5 +71,7 @@ namespace dnf_composer::user_interface
 		void addElementBoostStimulus2D(char* id, bool addRequested) const;
 		void addElementCorrelatedNormalNoise2D(char* id, bool addRequested) const;
 		void addElementMemoryTrace2D(char* id, bool addRequested) const;
+		void addElementResize(char* id, bool addRequested) const;
+		void addElementResize2D(char* id, bool addRequested) const;
 	};
 }

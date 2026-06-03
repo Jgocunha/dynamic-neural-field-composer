@@ -238,13 +238,15 @@ namespace dnf_composer::user_interface
 				L::NEURAL_FIELD, L::GAUSS_STIMULUS, L::TIMED_GAUSS_STIMULUS,
 				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
 				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
-				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE
+				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE,
+				L::RESIZE
 			};
 			static constexpr L k2D[] = {
 				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
 				L::GAUSS_KERNEL_2D, L::MEXICAN_HAT_KERNEL_2D, L::OSCILLATORY_KERNEL_2D,
 				L::ASYMMETRIC_GAUSS_KERNEL_2D, L::NORMAL_NOISE_2D, L::CORRELATED_NORMAL_NOISE_2D,
-				L::BOOST_STIMULUS_2D, L::MEMORY_TRACE_2D
+				L::BOOST_STIMULUS_2D, L::MEMORY_TRACE_2D,
+				L::RESIZE_2D
 			};
 			const L* pLabels = (dimensionality == 1) ? k1D : k2D;
 			const int nLabels = (dimensionality == 1) ? static_cast<int>(std::size(k1D))
@@ -316,6 +318,8 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id, addRequested);        break;
 			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id, addRequested); break;
 			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id, addRequested);          break;
+			case element::ElementLabel::RESIZE:                     addElementResize(id, addRequested);                  break;
+			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id, addRequested);                break;
 			default: break;
 		}
 
@@ -1424,6 +1428,112 @@ namespace dnf_composer::user_interface
 			const element::MemoryTrace2DParameters mtp{ tauBuild, tauDecay, threshold };
 			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
 			simulation->addElement(std::make_shared<element::MemoryTrace2D>(common, mtp));
+		}
+	}
+
+	void SimulationWindow::addElementResize(char* id, bool addRequested) const
+	{
+		static int    x_max_out = 100;
+		static double d_x_out   = 1.0;
+		static int    x_max_in  = 100;
+		static double d_x_in    = 1.0;
+		static auto   method    = element::InterpolationMethod::LINEAR;
+
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##rz_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##rz_osize", &x_max_out);
+			paramRowDouble("Step", "##rz_ostep", &d_x_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##rz_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##rz_isize", &x_max_in);
+			paramRowDouble("Step", "##rz_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Interpolation");
+		if (beginParamTable("##rz_interp")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Method");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##rz_method", element::InterpolationMethodToString.at(method).c_str()))
+			{
+				for (const auto& [m, name] : element::InterpolationMethodToString)
+				{
+					const bool sel = (method == m);
+					if (ImGui::Selectable(name.c_str(), sel)) method = m;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementDimensions inDims{ x_max_in, d_x_in };
+			const element::ResizeParameters rp{ method, inDims };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
+			simulation->addElement(std::make_shared<element::Resize>(common, rp));
+		}
+	}
+
+	void SimulationWindow::addElementResize2D(char* id, bool addRequested) const
+	{
+		static int    x_max_out = 50, y_max_out = 50;
+		static double d_x_out = 1.0, d_y_out = 1.0;
+		static int    x_max_in = 50, y_max_in = 50;
+		static double d_x_in = 1.0, d_y_in = 1.0;
+		static auto   method = element::InterpolationMethod::LINEAR;
+
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##rz2_odim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##rz2_oxmax", &x_max_out);
+			paramRowInt   ("y size", "##rz2_oymax", &y_max_out);
+			paramRowDouble("x step", "##rz2_odx",   &d_x_out, "%.2f");
+			paramRowDouble("y step", "##rz2_ody",   &d_y_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##rz2_idim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##rz2_ixmax", &x_max_in);
+			paramRowInt   ("y size", "##rz2_iymax", &y_max_in);
+			paramRowDouble("x step", "##rz2_idx",   &d_x_in, "%.2f");
+			paramRowDouble("y step", "##rz2_idy",   &d_y_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Interpolation");
+		if (beginParamTable("##rz2_interp")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Method");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##rz2_method", element::InterpolationMethodToString.at(method).c_str()))
+			{
+				for (const auto& [m, name] : element::InterpolationMethodToString)
+				{
+					const bool sel = (method == m);
+					if (ImGui::Selectable(name.c_str(), sel)) method = m;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementDimensions inDims{ x_max_in, y_max_in, d_x_in, d_y_in };
+			const element::Resize2DParameters rp{ method, inDims };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, y_max_out, d_x_out, d_y_out } };
+			simulation->addElement(std::make_shared<element::Resize2D>(common, rp));
 		}
 	}
 

@@ -158,6 +158,7 @@ More ready-to-run examples are in the [`examples/`](dynamic-neural-field-compose
 | Noise | `NormalNoise`, `CorrelatedNormalNoise` (+ 2D variants) |
 | Couplings | `FieldCoupling`, `GaussFieldCoupling` |
 | Memory | `MemoryTrace`, `MemoryTrace2d` |
+| Resampling | `Resize`, `Resize2d` — interpolate an input field to a different spatial size (linear / nearest / cubic) |
 
 
 ![Element suite — neural fields, kernels, stimuli, couplings in 1D and 2D](./dynamic-neural-field-composer/resources/images/headline-elements.jpg)

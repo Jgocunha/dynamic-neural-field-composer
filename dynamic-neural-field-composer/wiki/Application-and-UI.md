@@ -149,7 +149,7 @@ app.addWindow<user_interface::SimulationWindow>();
 
 ### ElementWindow
 
-A panel listing all elements in the simulation. Selecting an element shows and allows live editing of its parameters (tau, resting level, kernel widths, etc.) and its spatial dimensions. For kernel elements, **Output Size** and **Output Step** controls are also available to configure cross-dimension output (see [Cross-dimension kernels](Element-Reference#cross-dimension-kernels)). Changing dimensions severs existing connections; reconnect through the NodeGraphWindow or in code.
+A panel listing all elements in the simulation. Selecting an element shows and allows live editing of its parameters (tau, resting level, kernel widths, etc.) and its spatial dimensions. For `Resize` / `Resize2D` elements, separate **Output dimensions** and **Input dimensions** controls are available. Changing dimensions severs existing connections; reconnect through the NodeGraphWindow or in code.
 
 ```cpp
 app.addWindow<user_interface::ElementWindow>();

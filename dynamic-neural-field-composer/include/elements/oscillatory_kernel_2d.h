@@ -22,8 +22,7 @@ namespace dnf_composer::element
 	/**
 	 * @brief Parameters for OscillatoryKernel2D.
 	 *
-	 * Mirrors OscillatoryKernelParameters but without outputFieldDimensions,
-	 * since this kernel always operates on a 2D field.
+	 * Mirrors OscillatoryKernelParameters.
 	 * zeroCrossings are clamped to [0, 1]; decay must be positive.
 	 */
 	struct OscillatoryKernel2DParameters final : ElementSpecificParameters

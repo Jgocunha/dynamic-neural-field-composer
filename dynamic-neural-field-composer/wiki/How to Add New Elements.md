@@ -507,6 +507,7 @@ Copy this checklist into the PR description for each new element:
 - [ ] CMakeLists.txt: source file added
 - [ ] include/dynamic-neural-field-composer.h: include added
 - [ ] tests/elements/test_your_element.cpp + registered in tests/CMakeLists.txt
-- [ ] examples/ex_your_element.cpp + registered in examples/CMakeLists.txt
-- [ ] README.md elements table updated
+- [ ] examples/your_element.cpp + registered in examples/CMakeLists.txt
+- [ ] main README.md Elements section
+- [ ] wiki folder update all pages related with element suite (Element-Reference.md, Elements.md, Examples.md)
 ```

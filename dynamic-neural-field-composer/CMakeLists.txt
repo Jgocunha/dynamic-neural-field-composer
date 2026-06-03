@@ -190,6 +190,8 @@ set(src
         "src/elements/correlated_normal_noise_2d.cpp"
         "src/elements/asymmetric_gauss_kernel_2d.cpp"
         "src/elements/memory_trace_2d.cpp"
+        "src/elements/resize.cpp"
+        "src/elements/resize_2d.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 

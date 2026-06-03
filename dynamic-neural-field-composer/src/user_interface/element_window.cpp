@@ -29,6 +29,8 @@
 #include "elements/correlated_normal_noise_2d.h"
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
+#include "elements/resize.h"
+#include "elements/resize_2d.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 #include "tools/utils.h"
 
@@ -241,6 +243,8 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:  return "Noise2D";
 				case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:  return "Kernel2D";
 				case element::ElementLabel::MEMORY_TRACE_2D:             return "Memory2D";
+				case element::ElementLabel::RESIZE:                      return "Resize";
+				case element::ElementLabel::RESIZE_2D:                   return "Resize2D";
 				default:                                                 return "Element";
 			}
 		};
@@ -505,6 +509,8 @@ namespace dnf_composer::user_interface
 	void ElementWindow::renderDimensionControls2D(const std::shared_ptr<element::Element>& element) const
 	{
 		const std::string elemId = element->getUniqueName();
+		const element::ElementLabel label = element->getLabel();
+		const bool hasInputDims = label == element::ElementLabel::RESIZE_2D;
 
 		struct Staged2D { float xMax = 0, yMax = 0, dx = 0, dy = 0; };
 		static std::unordered_map<int, Staged2D> staged;
@@ -540,30 +546,90 @@ namespace dnf_composer::user_interface
 			};
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("x size");
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(hasInputDims ? "Out x size" : "x size");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##xmax", &s.xMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
 			commitIf();
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("x step");
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(hasInputDims ? "Out x step" : "x step");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##dx", &s.dx, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
 			commitIf();
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("y size");
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(hasInputDims ? "Out y size" : "y size");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##ymax", &s.yMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
 			commitIf();
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("y step");
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(hasInputDims ? "Out y step" : "y step");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##dy", &s.dy, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
 			commitIf();
 
 			ewEndTable();
+		}
+
+		if (hasInputDims)
+		{
+			static std::unordered_map<int, Staged2D> stagedIn;
+			auto& si = stagedIn[id];
+
+			const auto rz = std::dynamic_pointer_cast<element::Resize2D>(element);
+			const auto& inDim = rz->getParameters().inputDimensions;
+			if (si.xMax == 0.0f)
+			{
+				si.xMax = static_cast<float>(inDim.x_max);
+				si.yMax = static_cast<float>(inDim.y_max);
+				si.dx   = static_cast<float>(inDim.d_x);
+				si.dy   = static_cast<float>(inDim.d_y);
+			}
+
+			auto applyInputDim = [&]() {
+				if (!ImGui::IsItemDeactivatedAfterEdit()) return;
+				if (si.xMax <= 0 || si.yMax <= 0 || si.dx <= 0 || si.dy <= 0) return;
+				const element::ElementDimensions newInDim(
+					static_cast<int>(si.xMax), static_cast<int>(si.yMax),
+					static_cast<double>(si.dx), static_cast<double>(si.dy));
+				element->removeInputs();
+				element->removeOutputs();
+				rz->changeInputDimensions(newInDim);
+				si = { static_cast<float>(newInDim.x_max), static_cast<float>(newInDim.y_max),
+				       static_cast<float>(newInDim.d_x),   static_cast<float>(newInDim.d_y) };
+			};
+
+			if (ewBeginTable("##in_dim2d_tbl"))
+			{
+				ewTableSetup();
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("In x size");
+				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_xmax", &si.xMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
+				applyInputDim();
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("In x step");
+				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_dx", &si.dx, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
+				applyInputDim();
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("In y size");
+				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_ymax", &si.yMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
+				applyInputDim();
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("In y step");
+				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_dy", &si.dy, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
+				applyInputDim();
+
+				ewEndTable();
+			}
 		}
 
 		ImGui::PopID();
@@ -576,7 +642,8 @@ namespace dnf_composer::user_interface
 		const std::string elemId = element->getUniqueName();
 		const element::ElementLabel label = element->getLabel();
 		const bool isCoupling = label == element::ElementLabel::FIELD_COUPLING ||
-		                        label == element::ElementLabel::GAUSS_FIELD_COUPLING;
+		                        label == element::ElementLabel::GAUSS_FIELD_COUPLING ||
+		                        label == element::ElementLabel::RESIZE;
 
 		static std::unordered_map<int, std::pair<float, float>> staged;
 		static std::unordered_map<int, std::pair<float, float>> stagedIn;
@@ -649,6 +716,11 @@ namespace dnf_composer::user_interface
 				const auto fc = std::dynamic_pointer_cast<element::FieldCoupling>(element);
 				currentInputDim = fc->getParameters().inputFieldDimensions;
 			}
+			else if (label == element::ElementLabel::RESIZE)
+			{
+				const auto rz = std::dynamic_pointer_cast<element::Resize>(element);
+				currentInputDim = rz->getParameters().inputDimensions;
+			}
 			else
 			{
 				const auto gfc = std::dynamic_pointer_cast<element::GaussFieldCoupling>(element);
@@ -668,6 +740,8 @@ namespace dnf_composer::user_interface
 				element->removeOutputs();
 				if (label == element::ElementLabel::FIELD_COUPLING)
 					std::dynamic_pointer_cast<element::FieldCoupling>(element)->changeInputDimensions(newInDim);
+				else if (label == element::ElementLabel::RESIZE)
+					std::dynamic_pointer_cast<element::Resize>(element)->changeInputDimensions(newInDim);
 				else
 					std::dynamic_pointer_cast<element::GaussFieldCoupling>(element)->changeInputDimensions(newInDim);
 				stagedInXmax = static_cast<float>(newInDim.x_max);
@@ -779,6 +853,12 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::MEMORY_TRACE_2D:
 			modifyElementMemoryTrace2D(element);
+			break;
+		case element::ElementLabel::RESIZE:
+			modifyElementResize(element);
+			break;
+		case element::ElementLabel::RESIZE_2D:
+			modifyElementResize2D(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -1781,6 +1861,72 @@ namespace dnf_composer::user_interface
 			{ p.tauBuild = tauBuild; p.tauDecay = tauDecay; p.threshold = threshold; mt->setParameters(p); }
 	}
 
+	void ElementWindow::modifyElementResize(const std::shared_ptr<element::Element>& element)
+	{
+		const auto resize = std::dynamic_pointer_cast<element::Resize>(element);
+		element::ResizeParameters p = resize->getParameters();
+		const std::string uid = element->getUniqueName();
+
+		ewSectionLabel("Parameters");
+		if (ewBeginTable(("##rz_tbl" + uid).c_str())) {
+			ewTableSetup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Interpolation");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(("##rz_im" + uid).c_str(),
+				element::InterpolationMethodToString.at(p.method).c_str()))
+			{
+				for (size_t i = 0; i < element::InterpolationMethodToString.size(); ++i)
+				{
+					const auto method = static_cast<element::InterpolationMethod>(i);
+					const char* name = element::InterpolationMethodToString.at(method).c_str();
+					if (ImGui::Selectable(name, p.method == method))
+					{
+						p.method = method;
+						resize->setParameters(p);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ewEndTable();
+		}
+	}
+
+	void ElementWindow::modifyElementResize2D(const std::shared_ptr<element::Element>& element)
+	{
+		const auto resize = std::dynamic_pointer_cast<element::Resize2D>(element);
+		element::Resize2DParameters p = resize->getParameters();
+		const std::string uid = element->getUniqueName();
+
+		ewSectionLabel("Parameters");
+		if (ewBeginTable(("##rz2_tbl" + uid).c_str())) {
+			ewTableSetup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Interpolation");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(("##rz2_im" + uid).c_str(),
+				element::InterpolationMethodToString.at(p.method).c_str()))
+			{
+				for (size_t i = 0; i < element::InterpolationMethodToString.size(); ++i)
+				{
+					const auto method = static_cast<element::InterpolationMethod>(i);
+					const char* name = element::InterpolationMethodToString.at(method).c_str();
+					if (ImGui::Selectable(name, p.method == method))
+					{
+						p.method = method;
+						resize->setParameters(p);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ewEndTable();
+		}
+	}
+
 	void ElementWindow::modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element)
 	{
 		const auto memoryTrace = std::dynamic_pointer_cast<element::MemoryTrace>(element);
@@ -2141,6 +2287,10 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.506f, 0.608f, 0.622f, 1.0f);  // Deeper Soft Teal
 		case element::ElementLabel::MEMORY_TRACE_2D:
 			return ImVec4(0.376f, 0.545f, 0.478f, 1.0f);  // Deeper Sage Green
+		case element::ElementLabel::RESIZE:
+			return ImVec4(0.500f, 0.600f, 0.700f, 1.0f);  // Steel Blue
+		case element::ElementLabel::RESIZE_2D:
+			return ImVec4(0.420f, 0.510f, 0.600f, 1.0f);  // Deeper Steel Blue
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -2174,6 +2324,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: return "Correlated Normal Noise 2D";
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: return "Asymmetric Gauss Kernels 2D";
 		case element::ElementLabel::MEMORY_TRACE_2D:         return "Memory Traces 2D";
+		case element::ElementLabel::RESIZE:                  return "Resize";
+		case element::ElementLabel::RESIZE_2D:               return "Resize 2D";
 		default: return "Unknown Elements";
 		}
 	}

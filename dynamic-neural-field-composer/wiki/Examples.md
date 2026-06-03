@@ -294,6 +294,33 @@ Demonstrates `GaussFieldCoupling` — a fixed (non-learnable) coupling using a G
 
 ---
 
+## Resampling examples
+
+### resize
+
+**Source:** `examples/resize.cpp`
+**Executable:** `example_resize`
+
+Demonstrates the `Resize` and `Resize2D` elements, which resample a field to a different spatial size and discretization. The example builds two parallel architectures (1D and 2D) in the same simulation, each of the form *stimulus → field u → kernel u-u → resize u-v → field v*, where field **v** has a different spatial size (and, in 1D, a different step) than field **u**.
+
+**Architecture (1D):**
+- One `GaussStimulus` (size 100, step 1.0) driving field **u**
+- `NeuralField` **u** (size 100, step 1.0) with a self-coupling `GaussKernel`
+- `Resize` **u-v** resampling u's output (100) to v's size (50, step 2.0) via linear interpolation
+- `NeuralField` **v** (size 50, step 2.0) — different size *and* discretization than u
+- Line plots of u's and v's `activation` (separate plots)
+
+**Architecture (2D):**
+- One `GaussStimulus2D` (50×50) driving field **u**
+- `NeuralField2D` **u** (50×50) with a self-coupling `GaussKernel2D`
+- `Resize2D` **u-v** resampling u's output (50×50) to v's size (80×80)
+- `NeuralField2D` **v** (80×80) — different spatial size than u
+- Heatmaps of u's and v's `activation` (separate plots)
+
+**Key concepts:** spatial resampling, `Resize` / `Resize2D`, heterogeneous field sizes and discretizations, interpolation methods (linear / nearest / cubic), bridging fields of different resolutions
+
+---
+
 ## Common pattern
 
 Every example follows the same seven-step skeleton. Two construction styles are available for step 3.
