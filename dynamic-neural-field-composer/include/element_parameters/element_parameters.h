@@ -39,6 +39,9 @@ namespace dnf_composer::element
 
 		RESIZE,
 		RESIZE_2D,
+
+		COLLAPSE,
+		EXPAND,
 	};
 
 	inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -71,7 +74,86 @@ namespace dnf_composer::element
 
 		{RESIZE, "resize" },
 		{RESIZE_2D, "resize 2d" },
+
+		{COLLAPSE, "collapse" },
+		{EXPAND, "expand" },
 	};
+
+	/// @brief Coarse functional grouping of an element, independent of dimensionality.
+	/// Single source of truth for the "type" shown across UI panels.
+	enum class ElementCategory : int
+	{
+		FIELD,
+		STIMULUS,
+		KERNEL,
+		NOISE,
+		COUPLING,
+		MEMORY,
+		RESHAPE, ///< Dimension/size-bridging elements: resize, collapse, expand.
+		UNKNOWN
+	};
+
+	/// @brief Category + RGBA colour (0..255) used to render an element's type chip.
+	struct ElementCategoryInfo
+	{
+		ElementCategory category;
+		const char* name;
+		unsigned char r, g, b;
+	};
+
+	/// @brief Maps every ElementLabel to its category info. The one place UI panels
+	/// resolve an element's type/category from — keep this table the single source
+	/// of truth (no per-window label switches).
+	inline const std::map<ElementLabel, ElementCategoryInfo>& elementCategoryTable()
+	{
+		static const std::map<ElementLabel, ElementCategoryInfo> table = {
+			{NEURAL_FIELD,               {ElementCategory::FIELD,    "Field",    74,  144, 217}},
+			{NEURAL_FIELD_2D,            {ElementCategory::FIELD,    "Field",    74,  144, 217}},
+
+			{GAUSS_STIMULUS,             {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
+			{TIMED_GAUSS_STIMULUS,       {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
+			{GAUSS_STIMULUS_2D,          {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
+			{TIMED_GAUSS_STIMULUS_2D,    {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
+			{BOOST_STIMULUS,             {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
+			{BOOST_STIMULUS_2D,          {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
+
+			{GAUSS_KERNEL,               {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+			{MEXICAN_HAT_KERNEL,         {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+			{OSCILLATORY_KERNEL,         {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+			{ASYMMETRIC_GAUSS_KERNEL,    {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+			{GAUSS_KERNEL_2D,            {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+			{MEXICAN_HAT_KERNEL_2D,      {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+			{OSCILLATORY_KERNEL_2D,      {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+			{ASYMMETRIC_GAUSS_KERNEL_2D, {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
+
+			{NORMAL_NOISE,               {ElementCategory::NOISE,    "Noise",    230, 126, 34}},
+			{CORRELATED_NORMAL_NOISE,    {ElementCategory::NOISE,    "Noise",    230, 126, 34}},
+			{NORMAL_NOISE_2D,            {ElementCategory::NOISE,    "Noise",    230, 126, 34}},
+			{CORRELATED_NORMAL_NOISE_2D, {ElementCategory::NOISE,    "Noise",    230, 126, 34}},
+
+			{FIELD_COUPLING,             {ElementCategory::COUPLING, "Coupling", 142, 68,  173}},
+			{GAUSS_FIELD_COUPLING,       {ElementCategory::COUPLING, "Coupling", 142, 68,  173}},
+
+			{MEMORY_TRACE,               {ElementCategory::MEMORY,   "Memory",   127, 140, 141}},
+			{MEMORY_TRACE_2D,            {ElementCategory::MEMORY,   "Memory",   127, 140, 141}},
+
+			{RESIZE,                     {ElementCategory::RESHAPE,  "Reshape",  128, 153, 179}},
+			{RESIZE_2D,                  {ElementCategory::RESHAPE,  "Reshape",  128, 153, 179}},
+			{COLLAPSE,                   {ElementCategory::RESHAPE,  "Reshape",  128, 153, 179}},
+			{EXPAND,                     {ElementCategory::RESHAPE,  "Reshape",  128, 153, 179}},
+		};
+		return table;
+	}
+
+	/// @brief Category info for a label, or an UNKNOWN/grey fallback.
+	inline ElementCategoryInfo getElementCategoryInfo(const ElementLabel label)
+	{
+		const auto& table = elementCategoryTable();
+		const auto it = table.find(label);
+		if (it != table.end())
+			return it->second;
+		return {ElementCategory::UNKNOWN, "Unknown", 150, 150, 150};
+	}
 
 	struct ElementDimensions
 	{

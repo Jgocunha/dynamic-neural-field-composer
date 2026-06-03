@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **`Collapse` element** — reduces a 2D input field to a 1D output by aggregating
+  along one axis (`sum` / `average` / `maximum` / `minimum`); the kept axis (X or Y)
+  is selectable. Lets a 2D field's marginal drive a 1D field.
+- **`Expand` element** — broadcasts a 1D input field into a 2D output, repeating the
+  profile along the chosen axis (a "ridge"). Lets a 1D feature field drive a 2D map.
+- Both elements are single-input (additional inputs are rejected) and integrate
+  across the suite: factory registration (`COLLAPSE`, `EXPAND` labels),
+  `SimulationWindow` add-element cards, `ElementWindow` parameter editing, and
+  `NodeGraphWindow` inspector entries, and editable **Input dimensions** /
+  **Output dimensions** sections in the element control window. Added
+  `example_dimensionality_collapse_expand` (four mixed-dimensionality models,
+  some chained with `Resize`/`Resize2D`) plus `test_collapse` / `test_expand`
+  unit tests.
+- Element "type" badges/categories across the Element, Remove, and Log-parameters
+  panels now resolve through a single shared `ElementCategory` table
+  (`element_parameters.h`); `Resize`/`Resize2D`/`Collapse`/`Expand` no longer show
+  as "Unknown".
+
 ## [2.8.0] - 2026-06-03
 
 ### Added

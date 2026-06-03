@@ -159,6 +159,7 @@ More ready-to-run examples are in the [`examples/`](dynamic-neural-field-compose
 | Couplings | `FieldCoupling`, `GaussFieldCoupling` |
 | Memory | `MemoryTrace`, `MemoryTrace2d` |
 | Resampling | `Resize`, `Resize2d` — interpolate an input field to a different spatial size (linear / nearest / cubic) |
+| Dimensionality | `Collapse` — reduce a 2D field to 1D along an axis (sum / average / maximum / minimum); `Expand` — broadcast a 1D field into a 2D ridge |
 
 
 ![Element suite — neural fields, kernels, stimuli, couplings in 1D and 2D](./dynamic-neural-field-composer/resources/images/headline-elements.jpg)

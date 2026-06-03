@@ -41,6 +41,14 @@ namespace dnf_composer::user_interface
 		void renderIdentifiersSection(const std::shared_ptr<element::Element>& element) const;
 		void renderDimensionControls(const std::shared_ptr<element::Element>& element) const;
 		void renderDimensionControls2D(const std::shared_ptr<element::Element>& element) const;
+		// Editable "Input dimensions" blocks. Read current input dims via the getter and
+		// apply edits via the setter (which should sever connections + resize buffers).
+		void renderInputDimensionControls1D(const std::shared_ptr<element::Element>& element,
+			const element::ElementDimensions& current,
+			const std::function<void(const element::ElementDimensions&)>& apply) const;
+		void renderInputDimensionControls2D(const std::shared_ptr<element::Element>& element,
+			const element::ElementDimensions& current,
+			const std::function<void(const element::ElementDimensions&)>& apply) const;
 		static void modifyElementNeuralField(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementFieldCoupling(const std::shared_ptr<element::Element>& element, const std::string& simId = {});
@@ -67,6 +75,8 @@ namespace dnf_composer::user_interface
 		static void modifyElementMemoryTrace2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementResize(const std::shared_ptr<element::Element>& element);
 		static void modifyElementResize2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementCollapse(const std::shared_ptr<element::Element>& element);
+		static void modifyElementExpand(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
 		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);

@@ -665,3 +665,98 @@ Resize2DParameters{
 ### Changing input size at runtime
 
 Like `Resize`, the **Element Control** panel exposes editable **Output dimensions** (Out x/y size & step) and **Input dimensions** (In x/y size & step) sections; committing a value calls `changeInputDimensions()` and severs existing connections.
+
+---
+
+## Collapse
+
+Reduces a 2D input field (`size_x × size_y`, y-major) to a 1D output by aggregating
+along one axis. Lets a 2D field's marginal distribution drive a 1D field.
+
+**Label:** `COLLAPSE`
+
+### Parameters
+
+```cpp
+CollapseParameters{
+    CompressionType   compression     = CompressionType::SUM,
+    ProjectionAxis    keepAxis        = ProjectionAxis::X,
+    ElementDimensions inputDimensions = ElementDimensions{ 100, 100, 1.0, 1.0 }
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `compression` | `SUM` | Reduction applied along the collapsed axis: `SUM`, `AVERAGE`, `MAXIMUM`, `MINIMUM` |
+| `keepAxis` | `X` | Axis kept in the 1D output; the other axis is collapsed. `X` → output size = `size_x` (reduce over y); `Y` → output size = `size_y` (reduce over x) |
+| `inputDimensions` | `{100,100,1,1}` | Dimensions of the 2D source field; auto-updated when an input is connected |
+
+The element's own dimensions are 1D and define the output size, which must match the
+kept axis of the input.
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"input"` | Flat `size_x * size_y` (y-major) input from the connected 2D source |
+| `"output"` | 1D reduction along the collapsed axis |
+
+### Connecting
+
+`addInput()` is single-input and sizes the `"input"` buffer to the 2D source's size:
+
+```cpp
+// 2D field (50×50) → Collapse (keep X, sum) → 1D field (50)
+auto collapse = std::make_shared<element::Collapse>(
+    element::ElementCommonParameters{ "collapse", element::ElementDimensions{ 50, 1.0 } },
+    element::CollapseParameters{ element::CompressionType::SUM, element::ProjectionAxis::X,
+                                 element::ElementDimensions{ 50, 50, 1.0, 1.0 } });
+
+collapse->addInput(field2D);   // 2D output (2500) → collapse input (2500)
+field1D->addInput(collapse);   // collapse output (50) → 1D field input (50)
+```
+
+---
+
+## Expand
+
+Broadcasts a 1D input field into a 2D output by repeating the 1D profile along one
+axis (a "ridge"). Lets a 1D feature field drive a 2D map.
+
+**Label:** `EXPAND`
+
+### Parameters
+
+```cpp
+ExpandParameters{
+    ProjectionAxis    broadcastProfileAxis = ProjectionAxis::X,
+    ElementDimensions inputDimensions      = ElementDimensions{ 100, 1.0 }
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `broadcastProfileAxis` | `X` | Axis the 1D profile lies along; it is repeated along the other. `X` → profile indexes x (its size must equal `size_x`), repeated for every y; `Y` → profile indexes y, repeated for every x |
+| `inputDimensions` | `{100,1}` | Dimensions of the 1D source field; auto-updated when an input is connected |
+
+The element's own dimensions are 2D and define the output size; the profile-axis size
+must equal the input size N.
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"input"` | 1D input from the connected source (size N) |
+| `"output"` | Flat `size_x * size_y` (y-major) output with the profile repeated along the non-profile axis |
+
+### Connecting
+
+```cpp
+// 1D field (50) → Expand (profile along X) → 2D field (50×50)
+auto expand = std::make_shared<element::Expand>(
+    element::ElementCommonParameters{ "expand", element::ElementDimensions{ 50, 50, 1.0, 1.0 } },
+    element::ExpandParameters{ element::ProjectionAxis::X, element::ElementDimensions{ 50, 1.0 } });
+
+expand->addInput(field1D);   // 1D output (50) → expand input (50)
+field2D->addInput(expand);   // expand output (2500) → 2D field input (2500)
+```
