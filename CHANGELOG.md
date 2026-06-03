@@ -2,14 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.8.0] - 2026-06-03
+
+### Added
+- **`Resize` / `Resize2D` elements** — resample an input field of spatial size N to a
+  user-specified size M via `linear`, `nearest`, or `cubic` interpolation, bridging
+  neural fields that operate at different spatial resolutions. Single-input by design
+  (additional inputs are rejected to keep the input buffer consistent)
+- Resize integration across the suite: factory registration (`RESIZE`, `RESIZE_2D`
+  labels), `SimulationWindow` add-element cards, `ElementWindow` editable **Input
+  dimensions** / **Output dimensions** sections, and `NodeGraphWindow` inspector entries
+- `example_resize` example demonstrating both 1D and 2D resampling architectures
+  (stimulus → field u → kernel u-u → resize u-v → field v, with v at a different size),
+  plus `test_resize` and `test_resize_2d` unit tests
 
 ### Removed
 - Deprecated cross-dimension kernel capability: the optional `outputFieldDimensions`
   parameter on `GaussKernel`, `MexicanHatKernel`, `OscillatoryKernel`, and
   `AsymmetricGaussKernel` (and the associated **Output Size** / **Output Step** UI
   controls) has been removed. Use the standalone `Resize` / `Resize2D` elements to
-  resample between neural fields of different spatial sizes.
+  resample between neural fields of different spatial sizes
+
+### Documentation
+- Wiki element-suite pages updated for the new elements: documented `Resize` / `Resize2D`
+  in `Element-Reference`, `Elements`, and `Examples`; updated `Application-and-UI` to
+  describe the Resize input/output dimension controls; removed the `outputFieldDimensions`
+  **Cross-dimension kernels** section
 
 ## [2.7.1] - 2026-06-01
 
