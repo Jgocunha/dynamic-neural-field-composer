@@ -239,14 +239,14 @@ namespace dnf_composer::user_interface
 				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
 				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
 				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE,
-				L::RESIZE
+				L::RESIZE, L::COLLAPSE
 			};
 			static constexpr L k2D[] = {
 				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
 				L::GAUSS_KERNEL_2D, L::MEXICAN_HAT_KERNEL_2D, L::OSCILLATORY_KERNEL_2D,
 				L::ASYMMETRIC_GAUSS_KERNEL_2D, L::NORMAL_NOISE_2D, L::CORRELATED_NORMAL_NOISE_2D,
 				L::BOOST_STIMULUS_2D, L::MEMORY_TRACE_2D,
-				L::RESIZE_2D
+				L::RESIZE_2D, L::EXPAND
 			};
 			const L* pLabels = (dimensionality == 1) ? k1D : k2D;
 			const int nLabels = (dimensionality == 1) ? static_cast<int>(std::size(k1D))
@@ -320,6 +320,8 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id, addRequested);          break;
 			case element::ElementLabel::RESIZE:                     addElementResize(id, addRequested);                  break;
 			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id, addRequested);                break;
+			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id, addRequested);                break;
+			case element::ElementLabel::EXPAND:                     addElementExpand(id, addRequested);                  break;
 			default: break;
 		}
 
@@ -1534,6 +1536,124 @@ namespace dnf_composer::user_interface
 			const element::Resize2DParameters rp{ method, inDims };
 			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, y_max_out, d_x_out, d_y_out } };
 			simulation->addElement(std::make_shared<element::Resize2D>(common, rp));
+		}
+	}
+
+	void SimulationWindow::addElementCollapse(char* id, bool addRequested) const
+	{
+		static int    x_max_out = 100;
+		static double d_x_out   = 1.0;
+		static int    x_max_in = 50, y_max_in = 50;
+		static double d_x_in = 1.0, d_y_in = 1.0;
+		static auto   compression = element::CompressionType::SUM;
+		static auto   keepAxis    = element::ProjectionAxis::X;
+
+		ImGui::SeparatorText("Output dimensions (1D)");
+		if (beginParamTable("##cl_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##cl_osize", &x_max_out);
+			paramRowDouble("Step", "##cl_ostep", &d_x_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions (2D)");
+		if (beginParamTable("##cl_idim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##cl_ixmax", &x_max_in);
+			paramRowInt   ("y size", "##cl_iymax", &y_max_in);
+			paramRowDouble("x step", "##cl_idx",   &d_x_in, "%.2f");
+			paramRowDouble("y step", "##cl_idy",   &d_y_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Projection");
+		if (beginParamTable("##cl_proj")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Compression");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##cl_ct", element::CompressionTypeToString.at(compression).c_str()))
+			{
+				for (const auto& [t, name] : element::CompressionTypeToString)
+				{
+					const bool sel = (compression == t);
+					if (ImGui::Selectable(name.c_str(), sel)) compression = t;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Keep axis");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##cl_ax", element::ProjectionAxisToString.at(keepAxis).c_str()))
+			{
+				for (const auto& [a, name] : element::ProjectionAxisToString)
+				{
+					const bool sel = (keepAxis == a);
+					if (ImGui::Selectable(name.c_str(), sel)) keepAxis = a;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementDimensions inDims{ x_max_in, y_max_in, d_x_in, d_y_in };
+			const element::CollapseParameters cp{ compression, keepAxis, inDims };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
+			simulation->addElement(std::make_shared<element::Collapse>(common, cp));
+		}
+	}
+
+	void SimulationWindow::addElementExpand(char* id, bool addRequested) const
+	{
+		static int    x_max_out = 50, y_max_out = 50;
+		static double d_x_out = 1.0, d_y_out = 1.0;
+		static int    x_max_in = 50;
+		static double d_x_in   = 1.0;
+		static auto   profileAxis = element::ProjectionAxis::X;
+
+		ImGui::SeparatorText("Output dimensions (2D)");
+		if (beginParamTable("##ex_odim")) {
+			paramTableSetup();
+			paramRowInt   ("x size", "##ex_oxmax", &x_max_out);
+			paramRowInt   ("y size", "##ex_oymax", &y_max_out);
+			paramRowDouble("x step", "##ex_odx",   &d_x_out, "%.2f");
+			paramRowDouble("y step", "##ex_ody",   &d_y_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions (1D)");
+		if (beginParamTable("##ex_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##ex_isize", &x_max_in);
+			paramRowDouble("Step", "##ex_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Projection");
+		if (beginParamTable("##ex_proj")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Profile axis");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##ex_ax", element::ProjectionAxisToString.at(profileAxis).c_str()))
+			{
+				for (const auto& [a, name] : element::ProjectionAxisToString)
+				{
+					const bool sel = (profileAxis == a);
+					if (ImGui::Selectable(name.c_str(), sel)) profileAxis = a;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementDimensions inDims{ x_max_in, d_x_in };
+			const element::ExpandParameters ep{ profileAxis, inDims };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, y_max_out, d_x_out, d_y_out } };
+			simulation->addElement(std::make_shared<element::Expand>(common, ep));
 		}
 	}
 

@@ -321,6 +321,30 @@ Demonstrates the `Resize` and `Resize2D` elements, which resample a field to a d
 
 ---
 
+### collapse_expand
+
+**Source:** `examples/collapse_expand.cpp`
+**Executable:** `example_collapse_expand`
+
+Demonstrates the `Collapse` and `Expand` elements, which bridge 1D and 2D layers.
+Two architectures run in the same simulation:
+- **Collapse:** a 2D field **u** (driven by a 2D Gaussian stimulus) is reduced to a
+  1D field **v** by summing over the y-axis.
+- **Expand:** a 1D field **a** (driven by a 1D Gaussian stimulus) is broadcast into a
+  2D field **b**, repeating the profile along the y-axis.
+
+**Architecture:**
+- `GaussStimulus2D` → `NeuralField2D` **u** (50×50) → `Collapse` (sum, keep X) →
+  `NeuralField` **v** (50)
+- `GaussStimulus` → `NeuralField` **a** (50) → `Expand` (profile along X) →
+  `NeuralField2D` **b** (50×50)
+- Heatmaps for u and b; line plots for v and a
+
+**Key concepts:** mixed 1D/2D architectures, `Collapse` (marginalization with
+sum / average / maximum / minimum), `Expand` (ridge broadcast), axis selection
+
+---
+
 ## Common pattern
 
 Every example follows the same seven-step skeleton. Two construction styles are available for step 3.

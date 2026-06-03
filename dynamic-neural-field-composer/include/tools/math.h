@@ -718,4 +718,67 @@ namespace dnf_composer::tools::math
 				out[y * size_x + x] = convCol[y];
 		}
 	}
+
+	// Reduction operation used when collapsing one axis of a 2D buffer.
+	enum class ReduceOp { SUM, AVERAGE, MAXIMUM, MINIMUM };
+
+	// Collapse a y-major 2D buffer (field[y * size_x + x]) along one axis into a 1D
+	// result, writing into a pre-sized output buffer.
+	// keepX == true:  output has size_x entries; each out[x] reduces over all y.
+	// keepX == false: output has size_y entries; each out[y] reduces over all x.
+	template<typename T>
+	void reduce2DAxis_into(std::vector<T>& out, const std::vector<T>& field,
+		int size_x, int size_y, bool keepX, ReduceOp op)
+	{
+		const int outSize = keepX ? size_x : size_y;
+		const int reduceCount = keepX ? size_y : size_x;
+		if (out.size() != static_cast<std::size_t>(outSize)) out.assign(outSize, T());
+		if (field.empty() || reduceCount <= 0) { std::fill(out.begin(), out.end(), T()); return; }
+
+		for (int o = 0; o < outSize; ++o)
+		{
+			// First sample of the reduced line.
+			auto sampleAt = [&](int k) -> T {
+				const int x = keepX ? o : k;
+				const int y = keepX ? k : o;
+				return field[static_cast<std::size_t>(y) * size_x + x];
+			};
+			T acc = sampleAt(0);
+			for (int k = 1; k < reduceCount; ++k)
+			{
+				const T v = sampleAt(k);
+				switch (op)
+				{
+				case ReduceOp::SUM:
+				case ReduceOp::AVERAGE: acc += v; break;
+				case ReduceOp::MAXIMUM: acc = std::max(acc, v); break;
+				case ReduceOp::MINIMUM: acc = std::min(acc, v); break;
+				}
+			}
+			if (op == ReduceOp::AVERAGE)
+				acc /= static_cast<T>(reduceCount);
+			out[o] = acc;
+		}
+	}
+
+	// Broadcast a 1D profile into a y-major 2D buffer (out[y * size_x + x]), writing
+	// into a pre-sized output buffer.
+	// alongX == true:  profile indexes x (size must be size_x); repeated for every y.
+	// alongX == false: profile indexes y (size must be size_y); repeated for every x.
+	template<typename T>
+	void broadcast1DTo2D_into(std::vector<T>& out, const std::vector<T>& profile,
+		int size_x, int size_y, bool alongX)
+	{
+		const std::size_t total = static_cast<std::size_t>(size_x) * size_y;
+		if (out.size() != total) out.assign(total, T());
+		if (profile.empty()) { std::fill(out.begin(), out.end(), T()); return; }
+		const int profileSize = static_cast<int>(profile.size());
+		for (int y = 0; y < size_y; ++y)
+			for (int x = 0; x < size_x; ++x)
+			{
+				// Clamp the profile index so a mismatched profile size cannot read OOB.
+				const int idx = std::min(alongX ? x : y, profileSize - 1);
+				out[static_cast<std::size_t>(y) * size_x + x] = profile[idx];
+			}
+	}
 }

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **`Collapse` element** — reduces a 2D input field to a 1D output by aggregating
+  along one axis (`sum` / `average` / `maximum` / `minimum`); the kept axis (X or Y)
+  is selectable. Lets a 2D field's marginal drive a 1D field.
+- **`Expand` element** — broadcasts a 1D input field into a 2D output, repeating the
+  profile along the chosen axis (a "ridge"). Lets a 1D feature field drive a 2D map.
+- Both elements are single-input (additional inputs are rejected) and integrate
+  across the suite: factory registration (`COLLAPSE`, `EXPAND` labels),
+  `SimulationWindow` add-element cards, `ElementWindow` parameter editing, and
+  `NodeGraphWindow` inspector entries. Added `example_collapse_expand` plus
+  `test_collapse` / `test_expand` unit tests.
+
 ## [2.8.0] - 2026-06-03
 
 ### Added

@@ -101,6 +101,8 @@ The `ElementLabel` enum identifies element types and is used by `ElementFactory`
 | `MEMORY_TRACE` | `"memory trace"` | `MemoryTrace` |
 | `RESIZE` | `"resize"` | `Resize` |
 | `RESIZE_2D` | `"resize 2d"` | `Resize2D` |
+| `COLLAPSE` | `"collapse"` | `Collapse` |
+| `EXPAND` | `"expand"` | `Expand` |
 
 Each element above also has a 2D counterpart (e.g. `NEURAL_FIELD_2D`, `GAUSS_KERNEL_2D`).
 

@@ -28,6 +28,8 @@
 #include "elements/memory_trace_2d.h"
 #include "elements/resize.h"
 #include "elements/resize_2d.h"
+#include "elements/collapse.h"
+#include "elements/expand.h"
 
 namespace dnf_composer::element
 {

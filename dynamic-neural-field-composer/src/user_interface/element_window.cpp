@@ -31,6 +31,8 @@
 #include "elements/memory_trace_2d.h"
 #include "elements/resize.h"
 #include "elements/resize_2d.h"
+#include "elements/collapse.h"
+#include "elements/expand.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 #include "tools/utils.h"
 
@@ -245,6 +247,8 @@ namespace dnf_composer::user_interface
 				case element::ElementLabel::MEMORY_TRACE_2D:             return "Memory2D";
 				case element::ElementLabel::RESIZE:                      return "Resize";
 				case element::ElementLabel::RESIZE_2D:                   return "Resize2D";
+				case element::ElementLabel::COLLAPSE:                    return "Collapse";
+				case element::ElementLabel::EXPAND:                      return "Expand";
 				default:                                                 return "Element";
 			}
 		};
@@ -859,6 +863,12 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::RESIZE_2D:
 			modifyElementResize2D(element);
+			break;
+		case element::ElementLabel::COLLAPSE:
+			modifyElementCollapse(element);
+			break;
+		case element::ElementLabel::EXPAND:
+			modifyElementExpand(element);
 			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
@@ -1927,6 +1937,95 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void ElementWindow::modifyElementCollapse(const std::shared_ptr<element::Element>& element)
+	{
+		const auto collapse = std::dynamic_pointer_cast<element::Collapse>(element);
+		element::CollapseParameters p = collapse->getParameters();
+		const std::string uid = element->getUniqueName();
+
+		ewSectionLabel("Parameters");
+		if (ewBeginTable(("##cl_tbl" + uid).c_str())) {
+			ewTableSetup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Compression");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(("##cl_ct" + uid).c_str(),
+				element::CompressionTypeToString.at(p.compression).c_str()))
+			{
+				for (const auto& [type, name] : element::CompressionTypeToString)
+				{
+					if (ImGui::Selectable(name.c_str(), p.compression == type))
+					{
+						p.compression = type;
+						collapse->setParameters(p);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Keep axis");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(("##cl_ax" + uid).c_str(),
+				element::ProjectionAxisToString.at(p.keepAxis).c_str()))
+			{
+				for (const auto& [axis, name] : element::ProjectionAxisToString)
+				{
+					if (ImGui::Selectable(name.c_str(), p.keepAxis == axis))
+					{
+						p.keepAxis = axis;
+						collapse->setParameters(p);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Input size");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%d x %d", p.inputDimensions.size_x, p.inputDimensions.size_y);
+
+			ewEndTable();
+		}
+	}
+
+	void ElementWindow::modifyElementExpand(const std::shared_ptr<element::Element>& element)
+	{
+		const auto expand = std::dynamic_pointer_cast<element::Expand>(element);
+		element::ExpandParameters p = expand->getParameters();
+		const std::string uid = element->getUniqueName();
+
+		ewSectionLabel("Parameters");
+		if (ewBeginTable(("##ex_tbl" + uid).c_str())) {
+			ewTableSetup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Profile axis");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(("##ex_ax" + uid).c_str(),
+				element::ProjectionAxisToString.at(p.broadcastProfileAxis).c_str()))
+			{
+				for (const auto& [axis, name] : element::ProjectionAxisToString)
+				{
+					if (ImGui::Selectable(name.c_str(), p.broadcastProfileAxis == axis))
+					{
+						p.broadcastProfileAxis = axis;
+						expand->setParameters(p);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Input size");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%d", p.inputDimensions.size);
+
+			ewEndTable();
+		}
+	}
+
 	void ElementWindow::modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element)
 	{
 		const auto memoryTrace = std::dynamic_pointer_cast<element::MemoryTrace>(element);
@@ -2291,6 +2390,10 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.500f, 0.600f, 0.700f, 1.0f);  // Steel Blue
 		case element::ElementLabel::RESIZE_2D:
 			return ImVec4(0.420f, 0.510f, 0.600f, 1.0f);  // Deeper Steel Blue
+		case element::ElementLabel::COLLAPSE:
+			return ImVec4(0.450f, 0.650f, 0.620f, 1.0f);  // Teal
+		case element::ElementLabel::EXPAND:
+			return ImVec4(0.380f, 0.560f, 0.530f, 1.0f);  // Deeper Teal
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -2326,6 +2429,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::MEMORY_TRACE_2D:         return "Memory Traces 2D";
 		case element::ElementLabel::RESIZE:                  return "Resize";
 		case element::ElementLabel::RESIZE_2D:               return "Resize 2D";
+		case element::ElementLabel::COLLAPSE:                return "Collapse";
+		case element::ElementLabel::EXPAND:                  return "Expand";
 		default: return "Unknown Elements";
 		}
 	}

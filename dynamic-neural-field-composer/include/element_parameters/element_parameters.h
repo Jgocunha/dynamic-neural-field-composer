@@ -39,6 +39,9 @@ namespace dnf_composer::element
 
 		RESIZE,
 		RESIZE_2D,
+
+		COLLAPSE,
+		EXPAND,
 	};
 
 	inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -71,6 +74,9 @@ namespace dnf_composer::element
 
 		{RESIZE, "resize" },
 		{RESIZE_2D, "resize 2d" },
+
+		{COLLAPSE, "collapse" },
+		{EXPAND, "expand" },
 	};
 
 	struct ElementDimensions
