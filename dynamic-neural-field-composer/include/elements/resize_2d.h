@@ -27,12 +27,8 @@ namespace dnf_composer::element
 
 		bool operator==(const Resize2DParameters& other) const
 		{
-			constexpr double epsilon = 1e-6;
 			return method == other.method &&
-				inputDimensions.size_x == other.inputDimensions.size_x &&
-				inputDimensions.size_y == other.inputDimensions.size_y &&
-				std::abs(inputDimensions.d_x - other.inputDimensions.d_x) < epsilon &&
-				std::abs(inputDimensions.d_y - other.inputDimensions.d_y) < epsilon;
+				inputDimensions == other.inputDimensions;
 		}
 
 		[[nodiscard]] std::string toString() const override
@@ -61,7 +57,11 @@ namespace dnf_composer::element
 	{
 	private:
 		Resize2DParameters parameters;
-		std::vector<double> scratch; ///< Intermediate buffer (Mx x Ny) for the separable pass.
+		std::vector<double> scratch;  ///< Intermediate buffer (Mx x Ny) for the separable pass.
+		std::vector<double> rowIn;    ///< Reusable row buffer (Nx) for the x-pass.
+		std::vector<double> rowOut;   ///< Reusable resampled row buffer (Mx) for the x-pass.
+		std::vector<double> colIn;    ///< Reusable column buffer (Ny) for the y-pass.
+		std::vector<double> colOut;   ///< Reusable resampled column buffer (My) for the y-pass.
 	public:
 		/// @brief Construct a Resize2D element.
 		/// @param elementCommonParameters  Name, label, and output dimensions (Mx x My).

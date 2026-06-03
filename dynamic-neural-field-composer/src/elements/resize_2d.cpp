@@ -38,6 +38,17 @@ namespace dnf_composer
 		{
 			components["input"].assign(parameters.inputDimensions.size, 0.0);
 			components["output"].assign(commonParameters.dimensionParameters.size, 0.0);
+
+			// Pre-size the separable-pass scratch buffers so step() does no heap allocation.
+			const int inSizeX = parameters.inputDimensions.size_x;
+			const int inSizeY = parameters.inputDimensions.size_y;
+			const int outSizeX = commonParameters.dimensionParameters.size_x;
+			const int outSizeY = commonParameters.dimensionParameters.size_y;
+			scratch.assign(static_cast<std::size_t>(outSizeX) * inSizeY, 0.0);
+			rowIn.assign(inSizeX, 0.0);
+			rowOut.assign(outSizeX, 0.0);
+			colIn.assign(inSizeY, 0.0);
+			colOut.assign(outSizeY, 0.0);
 		}
 
 		void Resize2D::step(double t, double deltaT)
@@ -53,8 +64,6 @@ namespace dnf_composer
 			const int outSizeY = commonParameters.dimensionParameters.size_y;
 
 			// Pass 1: resample each row along x (inSizeX -> outSizeX) into scratch (outSizeX x inSizeY).
-			scratch.assign(static_cast<std::size_t>(outSizeX) * inSizeY, 0.0);
-			std::vector<double> rowIn(inSizeX), rowOut(outSizeX);
 			for (int y = 0; y < inSizeY; ++y)
 			{
 				for (int x = 0; x < inSizeX; ++x)
@@ -65,7 +74,6 @@ namespace dnf_composer
 			}
 
 			// Pass 2: resample each column along y (inSizeY -> outSizeY) into out (outSizeX x outSizeY).
-			std::vector<double> colIn(inSizeY), colOut(outSizeY);
 			for (int x = 0; x < outSizeX; ++x)
 			{
 				for (int y = 0; y < inSizeY; ++y)
@@ -82,6 +90,16 @@ namespace dnf_composer
 			if (!inputElement)
 			{
 				log(tools::logger::LogLevel::ERROR, "Input is null.");
+				return;
+			}
+
+			// Resize2D accepts exactly one input: it resamples a single source field.
+			// Allowing a second (possibly larger) input would let updateInput() write
+			// past the resized "input" buffer. Reject any additional input.
+			if (!inputs.empty())
+			{
+				log(tools::logger::LogLevel::ERROR, "Resize2D '" + this->getUniqueName()
+					+ "' already has an input; only one input is allowed.");
 				return;
 			}
 

@@ -87,6 +87,30 @@ TEST(Resize2DTest, AddInputResizesInputBuffer)
     EXPECT_EQ(rz->getParameters().inputDimensions.size_y, 6);
 }
 
+// Regression: Resize2D is single-input. A second input must be rejected so that the
+// resized "input" buffer cannot be overrun by a larger second source in step().
+TEST(Resize2DTest, SecondInputIsRejected)
+{
+    const auto rz = makeResize2D("rz", 8, 6, 40, 40);
+    const auto first  = makeSource2D("first", 8, 6);
+    const auto second = makeSource2D("second", 12, 10);
+    first->init();
+    second->init();
+
+    rz->addInput(first);
+    rz->addInput(second); // must be refused
+
+    EXPECT_EQ(rz->getInputs().size(), 1u);
+    EXPECT_EQ(static_cast<int>(rz->getComponent("input").size()), 8 * 6);
+
+    rz->init();
+    auto* out = first->getComponentPtr("output");
+    std::fill(out->begin(), out->end(), 1.0);
+    EXPECT_NO_THROW(rz->step(0.0, 1.0));
+    for (const double v : rz->getComponent("output"))
+        EXPECT_DOUBLE_EQ(v, 1.0);
+}
+
 // ---------------------------------------------------------------------------
 // Numerical correctness
 // ---------------------------------------------------------------------------

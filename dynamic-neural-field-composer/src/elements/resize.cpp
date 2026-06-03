@@ -49,6 +49,16 @@ namespace dnf_composer
 				return;
 			}
 
+			// Resize accepts exactly one input: it resamples a single source field.
+			// Allowing a second (possibly larger) input would let updateInput() write
+			// past the resized "input" buffer. Reject any additional input.
+			if (!inputs.empty())
+			{
+				log(tools::logger::LogLevel::ERROR, "Resize '" + this->getUniqueName()
+					+ "' already has an input; only one input is allowed.");
+				return;
+			}
+
 			// Size the input buffer to the source's output size (N may differ from the
 			// output size M) before delegating, so the base size check passes and the
 			// input cache is invalidated correctly.

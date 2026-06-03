@@ -43,10 +43,8 @@ namespace dnf_composer::element
 
 		bool operator==(const ResizeParameters& other) const
 		{
-			constexpr double epsilon = 1e-6;
 			return method == other.method &&
-				inputDimensions.size == other.inputDimensions.size &&
-				std::abs(inputDimensions.d_x - other.inputDimensions.d_x) < epsilon;
+				inputDimensions == other.inputDimensions;
 		}
 
 		[[nodiscard]] std::string toString() const override
