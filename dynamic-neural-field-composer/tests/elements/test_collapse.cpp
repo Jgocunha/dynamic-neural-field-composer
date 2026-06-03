@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "elements/collapse.h"
+#include "elements/gauss_stimulus.h"
 #include "elements/gauss_stimulus_2d.h"
 
 using namespace dnf_composer;
@@ -73,6 +74,38 @@ TEST(CollapseTest, BufferSizesAfterInit)
     cl->init();
     EXPECT_EQ(static_cast<int>(cl->getComponent("input").size()), 8 * 6);
     EXPECT_EQ(static_cast<int>(cl->getComponent("output").size()), 8);
+}
+
+TEST(CollapseTest, InitThrowsWhenOutputSizeMismatchesKeptAxis)
+{
+    // keepX -> output must equal input size_x (8), but declared output is 10.
+    const auto cl = makeCollapse("cl", 8, 6, 10, CompressionType::SUM, ProjectionAxis::X);
+    EXPECT_THROW(cl->init(), dnf_composer::Exception);
+
+    // keepY -> output must equal input size_y (6); 6 matches, must not throw.
+    const auto ok = makeCollapse("ok", 8, 6, 6, CompressionType::SUM, ProjectionAxis::Y);
+    EXPECT_NO_THROW(ok->init());
+}
+
+TEST(CollapseTest, AddInputRejectedWhenKeptAxisMismatchesOutput)
+{
+    // Output is 8; keepX needs the source's x size to be 8, but it is 5.
+    const auto cl = makeCollapse("cl", 4, 4, 8, CompressionType::SUM, ProjectionAxis::X);
+    const auto badSource = makeSource2D("bad", 5, 6);
+    badSource->init();
+    cl->addInput(badSource);
+    EXPECT_TRUE(cl->getInputs().empty());
+}
+
+TEST(CollapseTest, OneDimensionalInputIsRejected)
+{
+    const auto cl = makeCollapse("cl", 8, 6, 8, CompressionType::SUM, ProjectionAxis::X);
+    const GaussStimulusParameters gp{ 1.0, 1.0, 0.0 };
+    const auto source1D = std::make_shared<GaussStimulus>(
+        ElementCommonParameters{ "src1d", ElementDimensions{ 8, 1.0 } }, gp);
+    source1D->init();
+    cl->addInput(source1D);
+    EXPECT_TRUE(cl->getInputs().empty());
 }
 
 // ---------------------------------------------------------------------------
@@ -160,11 +193,30 @@ TEST(CollapseTest, AddInputResizesInputBuffer)
     EXPECT_EQ(cl->getParameters().inputDimensions.size_y, 6);
 }
 
+TEST(CollapseTest, ChangeInputDimensionsWhileConnectedSeversAndIsSafe)
+{
+    // Connect a source, then change input dims while still connected. The element
+    // must sever the connection (so updateInput() cannot write past the resized
+    // buffer / use a stale cache) and remain steppable without faulting.
+    const auto cl = makeCollapse("cl", 6, 4, 6, CompressionType::SUM, ProjectionAxis::X);
+    const auto source = makeSource2D("src", 6, 4);
+    source->init();
+    cl->addInput(source);
+    ASSERT_EQ(cl->getInputs().size(), 1u);
+
+    cl->changeInputDimensions(ElementDimensions{ 6, 8, 1.0, 1.0 }); // taller field
+    EXPECT_TRUE(cl->getInputs().empty());
+    EXPECT_EQ(static_cast<int>(cl->getComponent("input").size()), 6 * 8);
+    EXPECT_NO_THROW(cl->step(0.0, 1.0)); // no OOB / dangling-cache write
+}
+
 TEST(CollapseTest, SecondInputIsRejected)
 {
+    // Both sources share the kept (x) axis size (3) so they pass the output-size
+    // check; the second is rejected purely by the single-input rule.
     const auto cl = makeCollapse("cl", 3, 2, 3, CompressionType::SUM, ProjectionAxis::X);
     const auto first  = makeSource2D("first", 3, 2);
-    const auto second = makeSource2D("second", 5, 4);
+    const auto second = makeSource2D("second", 3, 4);
     first->init();
     second->init();
     cl->addInput(first);

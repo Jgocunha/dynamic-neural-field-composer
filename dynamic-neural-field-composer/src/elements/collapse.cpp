@@ -15,6 +15,22 @@ namespace dnf_composer
 
 		void Collapse::init()
 		{
+			// The 1D output size is fully determined by the kept axis of the 2D input.
+			// A mismatch is a misconfiguration (wrong output dims for the connected
+			// source); fail loudly here rather than silently truncating/zero-padding
+			// the marginal in step().
+			const bool keepX = parameters.keepAxis == ProjectionAxis::X;
+			const int keptAxisSize = keepX ? parameters.inputDimensions.size_x
+			                                : parameters.inputDimensions.size_y;
+			if (commonParameters.dimensionParameters.size != keptAxisSize)
+			{
+				log(tools::logger::LogLevel::ERROR, "Collapse '" + this->getUniqueName()
+					+ "': output size (" + std::to_string(commonParameters.dimensionParameters.size)
+					+ ") must equal the kept " + ProjectionAxisToString.at(parameters.keepAxis)
+					+ "-axis size (" + std::to_string(keptAxisSize) + ").");
+				throw Exception(ErrorCode::ELEM_INVALID_SIZE, this->getUniqueName());
+			}
+
 			components["input"].assign(parameters.inputDimensions.size, 0.0);
 			components["output"].assign(commonParameters.dimensionParameters.size, 0.0);
 		}
@@ -28,9 +44,10 @@ namespace dnf_composer
 
 			const bool keepX = parameters.keepAxis == ProjectionAxis::X;
 			// Reduce into a scratch buffer (sized to the kept axis), then copy into the
-			// element's fixed-size "output" component without reallocating it — so the
-			// declared output size (and any downstream cache) stays stable even if it
-			// does not match the kept-axis size.
+			// element's fixed-size "output" component without reallocating it — keeping
+			// the output size (and any downstream cache) stable. init()/addInput()
+			// guarantee out.size() == kept-axis size, so this copy is exact; the bounded
+			// copy is defensive against any residual scratch-size discrepancy.
 			tools::math::reduce2DAxis_into(scratch, in,
 				parameters.inputDimensions.size_x, parameters.inputDimensions.size_y,
 				keepX, toReduceOp(parameters.compression));
@@ -59,9 +76,35 @@ namespace dnf_composer
 				return;
 			}
 
+			// Collapse reduces a 2D field; a 1D source has no axis to collapse.
+			// Reject anything that is not 2D so the semantics stay well-defined.
+			const auto& srcDims = inputElement->getElementCommonParameters().dimensionParameters;
+			if (srcDims.dimensionality != 2)
+			{
+				log(tools::logger::LogLevel::ERROR, "Collapse '" + this->getUniqueName()
+					+ "': input must be a 2D element (got dimensionality "
+					+ std::to_string(srcDims.dimensionality) + ").");
+				return;
+			}
+
+			// The source's kept-axis size must equal this element's declared 1D output
+			// size, otherwise the reduction would not fit the output. Reject the
+			// connection rather than producing a truncated/zero-padded marginal.
+			const bool keepX = parameters.keepAxis == ProjectionAxis::X;
+			const int keptAxisSize = keepX ? srcDims.size_x : srcDims.size_y;
+			if (commonParameters.dimensionParameters.size != keptAxisSize)
+			{
+				log(tools::logger::LogLevel::ERROR, "Collapse '" + this->getUniqueName()
+					+ "': cannot connect input; output size ("
+					+ std::to_string(commonParameters.dimensionParameters.size)
+					+ ") must equal the source's kept " + ProjectionAxisToString.at(parameters.keepAxis)
+					+ "-axis size (" + std::to_string(keptAxisSize) + ").");
+				return;
+			}
+
 			// Size the input buffer to the source's output size before delegating, so the
 			// base size check passes and the input cache is invalidated correctly.
-			parameters.inputDimensions = inputElement->getElementCommonParameters().dimensionParameters;
+			parameters.inputDimensions = srcDims;
 			components["input"].assign(inputElement->getComponentPtr("output")->size(), 0.0);
 
 			Element::addInput(inputElement, inputComponent);
@@ -82,6 +125,12 @@ namespace dnf_composer
 
 		void Collapse::changeInputDimensions(const ElementDimensions& newInputDimensions)
 		{
+			// Sever connections before resizing the input buffer. A still-connected
+			// source would leave updateInput() with a stale/dangling input cache and a
+			// source larger than the resized buffer (out-of-bounds write). removeInputs()
+			// also resets the cache so it is rebuilt on the next step.
+			removeInputs();
+			removeOutputs();
 			parameters.inputDimensions = newInputDimensions;
 			components["input"].assign(newInputDimensions.size, 0.0);
 			init();

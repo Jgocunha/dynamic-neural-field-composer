@@ -321,6 +321,33 @@ TEST_F(SimulationFileManagerTest, LoadFromNonExistentFileLeavesSimulationEmpty)
     EXPECT_EQ(sim->getNumberOfElements(), 0);
 }
 
+TEST_F(SimulationFileManagerTest, LoadResizeWithMissingInputDimsDoesNotThrow)
+{
+    // A hand-edited / older .dnf may lack the input_* keys for a dimension-bridging
+    // element. Loading must fall back to the element's own dims instead of throwing
+    // and aborting the whole load.
+    const std::string dir = tempDir + "legacy-resize/";
+    fs::create_directories(dir);
+    const std::string path = dir + "legacy-resize.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "legacy-resize",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "rz 1", "label": [30, "resize"],
+                  "x_max": 50, "d_x": 1.0, "y_max": 1, "d_y": 1.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("legacy-resize-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_NE(sim->getElement("rz 1"), nullptr);
+}
+
 TEST_F(SimulationFileManagerTest, LoadFromTestJsonCreatesCorrectElementCount)
 {
     // test.json contains 13 elements

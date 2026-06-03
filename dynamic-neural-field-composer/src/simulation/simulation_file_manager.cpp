@@ -946,8 +946,10 @@ namespace dnf_composer
         {
             const auto method = static_cast<element::InterpolationMethod>(
                 elementJson.contains("method") ? elementJson["method"].get<int>() : 0);
-            const int input_x_max  = elementJson["input_x_max"];
-            const double input_d_x = elementJson["input_d_x"];
+            // Tolerate older/hand-edited files missing the input-dimension keys: fall
+            // back to the element's own dims rather than throwing and aborting the load.
+            const int input_x_max  = elementJson.contains("input_x_max") ? elementJson["input_x_max"].get<int>() : x_max;
+            const double input_d_x = elementJson.contains("input_d_x") ? elementJson["input_d_x"].get<double>() : d_x;
 
             auto rz = std::make_shared<element::Resize>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -960,10 +962,10 @@ namespace dnf_composer
         {
             const auto method = static_cast<element::InterpolationMethod>(
                 elementJson.contains("method") ? elementJson["method"].get<int>() : 0);
-            const int input_x_max  = elementJson["input_x_max"];
-            const double input_d_x = elementJson["input_d_x"];
-            const int input_y_max  = elementJson["input_y_max"];
-            const double input_d_y = elementJson["input_d_y"];
+            const int input_x_max  = elementJson.contains("input_x_max") ? elementJson["input_x_max"].get<int>() : x_max;
+            const double input_d_x = elementJson.contains("input_d_x") ? elementJson["input_d_x"].get<double>() : d_x;
+            const int input_y_max  = elementJson.contains("input_y_max") ? elementJson["input_y_max"].get<int>() : y_max;
+            const double input_d_y = elementJson.contains("input_d_y") ? elementJson["input_d_y"].get<double>() : d_y;
 
             auto rz = std::make_shared<element::Resize2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -978,10 +980,11 @@ namespace dnf_composer
                 elementJson.contains("compression") ? elementJson["compression"].get<int>() : 0);
             const auto keepAxis = static_cast<element::ProjectionAxis>(
                 elementJson.contains("keepAxis") ? elementJson["keepAxis"].get<int>() : 0);
-            const int input_x_max  = elementJson["input_x_max"];
-            const double input_d_x = elementJson["input_d_x"];
-            const int input_y_max  = elementJson["input_y_max"];
-            const double input_d_y = elementJson["input_d_y"];
+            // Collapse input is 2D; fall back to the output dims if keys are missing.
+            const int input_x_max  = elementJson.contains("input_x_max") ? elementJson["input_x_max"].get<int>() : x_max;
+            const double input_d_x = elementJson.contains("input_d_x") ? elementJson["input_d_x"].get<double>() : d_x;
+            const int input_y_max  = elementJson.contains("input_y_max") ? elementJson["input_y_max"].get<int>() : y_max;
+            const double input_d_y = elementJson.contains("input_d_y") ? elementJson["input_d_y"].get<double>() : d_y;
 
             auto cl = std::make_shared<element::Collapse>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -994,8 +997,8 @@ namespace dnf_composer
         {
             const auto broadcastProfileAxis = static_cast<element::ProjectionAxis>(
                 elementJson.contains("broadcastProfileAxis") ? elementJson["broadcastProfileAxis"].get<int>() : 0);
-            const int input_x_max  = elementJson["input_x_max"];
-            const double input_d_x = elementJson["input_d_x"];
+            const int input_x_max  = elementJson.contains("input_x_max") ? elementJson["input_x_max"].get<int>() : x_max;
+            const double input_d_x = elementJson.contains("input_d_x") ? elementJson["input_d_x"].get<double>() : d_x;
 
             auto ex = std::make_shared<element::Expand>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),

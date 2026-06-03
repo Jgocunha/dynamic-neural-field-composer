@@ -17,7 +17,7 @@ int main()
 		app.addWindow<user_interface::MainMenuBar>();
 		app.addWindow<user_interface::StaticLayoutWindow>(simulation, visualization);
 
-		// Shared dimensions reused across the four models.
+		// Shared dimensions reused across the models.
 		const element::ElementDimensions dim1D(50, 0.5);             // size 50, step 0.5
 		const element::ElementDimensions dim2D(50, 50, 0.5, 0.5);    // 50x50, step 0.5
 

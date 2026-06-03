@@ -3,6 +3,7 @@
 
 #include "elements/expand.h"
 #include "elements/gauss_stimulus.h"
+#include "elements/gauss_stimulus_2d.h"
 
 using namespace dnf_composer;
 using namespace dnf_composer::element;
@@ -68,6 +69,38 @@ TEST(ExpandTest, BufferSizesAfterInit)
     EXPECT_EQ(static_cast<int>(ex->getComponent("output").size()), 8 * 6);
 }
 
+TEST(ExpandTest, InitThrowsWhenInputSizeMismatchesProfileAxis)
+{
+    // alongX -> input must equal output size_x (8), but declared input is 10.
+    const auto ex = makeExpand("ex", 10, 8, 6, ProjectionAxis::X);
+    EXPECT_THROW(ex->init(), dnf_composer::Exception);
+
+    // alongY -> input must equal output size_y (6); 6 matches, must not throw.
+    const auto ok = makeExpand("ok", 6, 8, 6, ProjectionAxis::Y);
+    EXPECT_NO_THROW(ok->init());
+}
+
+TEST(ExpandTest, TwoDimensionalInputIsRejected)
+{
+    const auto ex = makeExpand("ex", 8, 8, 6, ProjectionAxis::X);
+    const GaussStimulus2DParameters gp{ 1.0, 1.0, 0.0, 0.0 };
+    const auto source2D = std::make_shared<GaussStimulus2D>(
+        ElementCommonParameters{ "src2d", ElementDimensions{ 8, 6, 1.0, 1.0 } }, gp);
+    source2D->init();
+    ex->addInput(source2D);
+    EXPECT_TRUE(ex->getInputs().empty());
+}
+
+TEST(ExpandTest, AddInputRejectedWhenSizeMismatchesProfileAxis)
+{
+    // Output x-axis is 8; alongX needs a source of size 8, but it is 5.
+    const auto ex = makeExpand("ex", 8, 8, 6, ProjectionAxis::X);
+    const auto badSource = makeSource("bad", 5);
+    badSource->init();
+    ex->addInput(badSource);
+    EXPECT_TRUE(ex->getInputs().empty());
+}
+
 // ---------------------------------------------------------------------------
 // Numerical correctness
 // ---------------------------------------------------------------------------
@@ -110,11 +143,30 @@ TEST(ExpandTest, AddInputResizesInputBuffer)
     EXPECT_EQ(ex->getParameters().inputDimensions.size, 25);
 }
 
+TEST(ExpandTest, ChangeInputDimensionsWhileConnectedSeversAndIsSafe)
+{
+    // Connect a source, then change input dims while still connected. The element
+    // must sever the connection (so updateInput() cannot use a stale/dangling cache)
+    // and remain steppable without faulting.
+    const auto ex = makeExpand("ex", 3, 3, 2, ProjectionAxis::X);
+    const auto source = makeSource("src", 3);
+    source->init();
+    ex->addInput(source);
+    ASSERT_EQ(ex->getInputs().size(), 1u);
+
+    ex->changeInputDimensions(ElementDimensions{ 3, 1.0 }); // size kept consistent with profile axis
+    EXPECT_TRUE(ex->getInputs().empty());
+    EXPECT_EQ(static_cast<int>(ex->getComponent("input").size()), 3);
+    EXPECT_NO_THROW(ex->step(0.0, 1.0)); // no dangling-cache write
+}
+
 TEST(ExpandTest, SecondInputIsRejected)
 {
+    // Both sources match the profile (x) axis size (3) so they pass the size check;
+    // the second is rejected purely by the single-input rule.
     const auto ex = makeExpand("ex", 3, 3, 2, ProjectionAxis::X);
     const auto first  = makeSource("first", 3);
-    const auto second = makeSource("second", 7);
+    const auto second = makeSource("second", 3);
     first->init();
     second->init();
     ex->addInput(first);
