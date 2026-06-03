@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.9.0] - 2026-06-03
+
+### Added
+- **`Collapse` element** (2D→1D) — reduces a 2D field along one axis to a 1D output
+  using a selectable compression (`sum` / `average` / `maximum` / `minimum`) and a
+  selectable kept axis (X or Y). Lets a 2D field's marginal drive a 1D field
+- **`Expand` element** (1D→2D) — broadcasts a 1D profile into a 2D output (a "ridge"),
+  repeating along the chosen axis. Lets a 1D feature field drive a 2D map
+- Both elements are single-input and integrate across the suite: factory registration
+  (`COLLAPSE`, `EXPAND` labels), `SimulationWindow` add-element cards, `ElementWindow`
+  editable **Input dimensions** / **Output dimensions** sections, and `NodeGraphWindow`
+  inspector entries. Added `example_dimensionality_collapse_expand` (four mixed-dimensionality
+  models, some chained with `Resize`/`Resize2D`) plus `test_collapse` / `test_expand`
+- Element "type" badges/categories across the Element, Remove, and Log-parameters panels
+  now resolve through a single shared `ElementCategory` table (`element_parameters.h`);
+  `Resize`/`Resize2D`/`Collapse`/`Expand` no longer show as "Unknown"
+
+### Fixed
+- **Save/load crash for reshape elements** — `Resize`, `Resize2D`, `Collapse`, and
+  `Expand` were never serialized by `SimulationFileManager`: saving wrote them without
+  parameters and loading dropped them, corrupting (and crashing) any architecture that
+  used them. They now round-trip fully (including input dimensions). Loading is resilient
+  to older/hand-edited `.dnf` files missing keys, and interactions referencing an
+  uncreated element are skipped with a warning instead of producing a half-wired graph
+- `Collapse`/`Expand` now reject inputs of the wrong dimensionality (Collapse requires
+  2D, Expand 1D) and a source size that doesn't match the kept/profile axis, and throw
+  on a mismatched output/input size at configuration time — instead of silently producing
+  a truncated or stretched result. `changeInputDimensions()` severs connections before
+  resizing to avoid a stale/dangling input cache
+- Hardened the 2D reduce/broadcast math helpers against non-positive dimensions and an
+  undersized field buffer (no over-allocation or out-of-bounds access)
+
+### Documentation
+- Wiki element-suite pages updated for `Collapse` / `Expand` (`Element-Reference`,
+  `Elements`, `Examples`); added a mandatory **JSON serialization** step to
+  *How to Add New Elements* so new elements are saved/loaded (the gap behind the crash)
+
 ## [2.8.0] - 2026-06-03
 
 ### Added
