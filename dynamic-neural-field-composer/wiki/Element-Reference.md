@@ -78,12 +78,11 @@ A Gaussian lateral interaction kernel. Typically provides local excitation (posi
 
 ```cpp
 GaussKernelParameters{
-    double width                                       = 3.0,
-    double amplitude                                   = 3.0,
-    double amplitudeGlobal                             = -0.01,
-    bool   circular                                    = true,
-    bool   normalized                                  = true,
-    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
+    double width           = 3.0,
+    double amplitude       = 3.0,
+    double amplitudeGlobal = -0.01,
+    bool   circular        = true,
+    bool   normalized      = true
 }
 ```
 
@@ -94,7 +93,6 @@ GaussKernelParameters{
 | `amplitudeGlobal` | `-0.01` | Uniform global inhibition added to every position |
 | `circular` | `true` | Whether the field wraps around at the boundaries |
 | `normalized` | `true` | Whether the Gaussian is area-normalized |
-| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -115,14 +113,13 @@ A Mexican Hat (difference-of-Gaussians) kernel providing short-range excitation 
 
 ```cpp
 MexicanHatKernelParameters{
-    double widthExc                                        = 2.5,
-    double amplitudeExc                                    = 11.0,
-    double widthInh                                        = 5.0,
-    double amplitudeInh                                    = 15.0,
-    double amplitudeGlobal                                 = -0.1,
-    bool   circular                                        = true,
-    bool   normalized                                      = true,
-    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
+    double widthExc        = 2.5,
+    double amplitudeExc    = 11.0,
+    double widthInh        = 5.0,
+    double amplitudeInh    = 15.0,
+    double amplitudeGlobal = -0.1,
+    bool   circular        = true,
+    bool   normalized      = true
 }
 ```
 
@@ -135,7 +132,6 @@ MexicanHatKernelParameters{
 | `amplitudeGlobal` | `-0.1` | Uniform global inhibition |
 | `circular` | `true` | Boundary wrapping |
 | `normalized` | `true` | Area normalization |
-| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -156,13 +152,12 @@ A kernel with an oscillatory (damped cosine) lateral interaction pattern. Useful
 
 ```cpp
 OscillatoryKernelParameters{
-    double amplitude                                       = 1.0,
-    double decay                                           = 0.08,   // must be > 0
-    double zeroCrossings                                   = 0.3,    // clamped to [0, 1]
-    double amplitudeGlobal                                 = -0.01,
-    bool   circular                                        = true,
-    bool   normalized                                      = false,
-    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
+    double amplitude       = 1.0,
+    double decay           = 0.08,   // must be > 0
+    double zeroCrossings   = 0.3,    // clamped to [0, 1]
+    double amplitudeGlobal = -0.01,
+    bool   circular        = true,
+    bool   normalized      = false
 }
 ```
 
@@ -174,7 +169,6 @@ OscillatoryKernelParameters{
 | `amplitudeGlobal` | `-0.01` | Uniform global inhibition |
 | `circular` | `true` | Boundary wrapping |
 | `normalized` | `false` | Area normalization |
-| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -195,13 +189,12 @@ A Gaussian kernel with an asymmetric component, combining a standard Gaussian an
 
 ```cpp
 AsymmetricGaussKernelParameters{
-    double width                                           = 3.0,
-    double amplitude                                       = 3.0,
-    double amplitudeGlobal                                 = 0.0,
-    double timeShift                                       = 0.0,
-    bool   circular                                        = true,
-    bool   normalized                                      = true,
-    std::optional<ElementDimensions> outputFieldDimensions = std::nullopt
+    double width           = 3.0,
+    double amplitude       = 3.0,
+    double amplitudeGlobal = 0.0,
+    double timeShift       = 0.0,
+    bool   circular        = true,
+    bool   normalized      = true
 }
 ```
 
@@ -213,7 +206,6 @@ AsymmetricGaussKernelParameters{
 | `timeShift` | `0.0` | Controls the strength of the asymmetric (derivative) component — positive values bias activity toward higher positions |
 | `circular` | `true` | Boundary wrapping |
 | `normalized` | `true` | Area normalization |
-| `outputFieldDimensions` | `nullopt` | When set, the convolution output is resampled to this size — enables cross-dimension connections (see [Cross-dimension kernels](#cross-dimension-kernels)) |
 
 ### Components
 
@@ -224,40 +216,13 @@ AsymmetricGaussKernelParameters{
 
 ---
 
-## Cross-dimension kernels
+## Bridging fields of different sizes
 
-By default, a kernel's output is the same size as its input. Setting `outputFieldDimensions` in any kernel's parameters changes this: after convolution, the result is resampled to the specified size using linear interpolation. This lets a kernel act as a bridge between two neural fields that have different spatial resolutions.
-
-### When to use it
-
-- **Downsampling:** a high-resolution perceptual field (e.g., 200 positions) feeding a lower-resolution decision field (e.g., 100 positions).
-- **Upsampling:** a compact motor-command field projecting back onto a larger sensory field.
-- **Resolution mismatch:** any architecture where two fields operate at different spatial scales.
-
-### Code example
-
-```cpp
-// Field 200 → GaussKernel (in=200, out=100) → Field 100
-GaussKernelParameters gkp{ 3.0, 3.0, -0.01, true, true,
-                            ElementDimensions{ 100 } };   // output size
-
-auto fieldSrc = makeField("src", 200);
-auto kernel   = std::make_shared<GaussKernel>(ElementCommonParameters{"k", 200}, gkp);
-auto fieldDst = makeField("dst", 100);
-
-kernel->addInput(fieldSrc);    // src output (size 200) → kernel input (size 200)
-fieldDst->addInput(kernel);    // kernel output (size 100) → dst input (size 100)
-```
-
-The same `outputFieldDimensions` parameter is available on `MexicanHatKernel`, `OscillatoryKernel`, and `AsymmetricGaussKernel`.
-
-### Square mode (default)
-
-When `outputFieldDimensions` is `nullopt` (the default), the kernel output is the same size as its input — no resampling occurs. Setting `outputFieldDimensions` to a size equal to the input size is equivalent to leaving it unset.
-
-### Changing output size at runtime
-
-In the **Element Control** panel, select a kernel and edit the **Output Size** and **Output Step** fields. Committing the value (Enter or focus-loss) rebuilds the kernel and severs any existing connections, since the element graph's dimension contract changes. Reconnect the kernel to fields of the correct sizes afterwards.
+Kernels always produce an output the same size as their input. To connect two
+neural fields that operate at different spatial resolutions, insert a **`Resize`**
+(or **`Resize2D`**) element between them — it resamples a field of size N to a
+field of size M using linear, nearest, or cubic interpolation. See the
+[Resize](#resize) and [Resize2D](#resize2d) sections below.
 
 ---
 
@@ -609,3 +574,94 @@ field->addInput(memTrace);             // field receives the trace as input (sca
 ### Usage note
 
 `setParameters()` does **not** call `init()` — the accumulated trace is preserved when parameters are changed at runtime. Call `init()` explicitly if you want to reset the trace to zero.
+
+---
+
+## Resize
+
+A standalone resampling element. It takes an input field of spatial size **N** and produces an output of a user-specified size **M** via interpolation, acting as a bridge between two neural fields of different spatial resolutions. `Resize` performs **only** resampling — no kernel is applied — so it is the way to connect fields of different sizes.
+
+**Label:** `RESIZE`
+
+### Parameters
+
+```cpp
+ResizeParameters{
+    InterpolationMethod method          = InterpolationMethod::LINEAR,
+    ElementDimensions   inputDimensions = ElementDimensions{}   // dimensions of the source field
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `method` | `LINEAR` | Interpolation method used for resampling |
+| `inputDimensions` | `{100, 1.0}` | Spatial dimensions of the source field (drives the input buffer size); auto-updated when an input is connected via `addInput()` |
+
+The **output** size is the element's own `ElementCommonParameters` dimensions (size M); the **input** size is `inputDimensions` (size N).
+
+### Interpolation methods
+
+| Method | Enum | Description |
+|---|---|---|
+| Linear | `InterpolationMethod::LINEAR` | Piecewise linear interpolation |
+| Nearest | `InterpolationMethod::NEAREST` | Nearest-neighbour sampling |
+| Cubic | `InterpolationMethod::CUBIC` | Catmull-Rom cubic spline interpolation |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"input"` | Raw input from the connected source field (size N) |
+| `"output"` | Input resampled to size M |
+
+### Connecting
+
+`addInput()` is overridden to size the `"input"` buffer to the source's output size, so the input and output sizes may legitimately differ:
+
+```cpp
+// Field (size 100) → Resize (in=100, out=50) → Field (size 50)
+auto resize = std::make_shared<element::Resize>(
+    element::ElementCommonParameters{ "resize", element::ElementDimensions{ 50, 2.0 } },
+    element::ResizeParameters{ element::InterpolationMethod::LINEAR,
+                               element::ElementDimensions{ 100, 1.0 } });
+
+resize->addInput(fieldSrc);   // src output (100) → resize input (100)
+fieldDst->addInput(resize);   // resize output (50) → dst input (50)
+```
+
+### Changing input size at runtime
+
+In the **Element Control** panel a `Resize` shows separate **Output dimensions** (Out size / Out step) and **Input dimensions** (In size / In step) sections. Editing the input size calls `changeInputDimensions()`, which rebuilds the input buffer and severs existing connections (reconnect a source of the new size afterwards). The interpolation method is editable in the parameters section.
+
+---
+
+## Resize2D
+
+2D variant of `Resize`. Resamples a 2D input field of size **Nx × Ny** to an output of size **Mx × My** using separable interpolation (each row is resampled along x, then each column along y).
+
+**Label:** `RESIZE_2D`
+
+### Parameters
+
+```cpp
+Resize2DParameters{
+    InterpolationMethod method          = InterpolationMethod::LINEAR,
+    ElementDimensions   inputDimensions = ElementDimensions{ 100, 100, 1.0, 1.0 }
+}
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `method` | `LINEAR` | Interpolation method (linear / nearest / cubic), applied separably on both axes |
+| `inputDimensions` | `{100, 100, 1.0, 1.0}` | Spatial dimensions of the source field; auto-updated when an input is connected |
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"input"` | Flat `Nx * Ny` (y-major) input from the connected source field |
+| `"output"` | Input resampled to `Mx * My` |
+
+### Changing input size at runtime
+
+Like `Resize`, the **Element Control** panel exposes editable **Output dimensions** (Out x/y size & step) and **Input dimensions** (In x/y size & step) sections; committing a value calls `changeInputDimensions()` and severs existing connections.

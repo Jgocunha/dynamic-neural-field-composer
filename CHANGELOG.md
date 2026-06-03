@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Removed
+- Deprecated cross-dimension kernel capability: the optional `outputFieldDimensions`
+  parameter on `GaussKernel`, `MexicanHatKernel`, `OscillatoryKernel`, and
+  `AsymmetricGaussKernel` (and the associated **Output Size** / **Output Step** UI
+  controls) has been removed. Use the standalone `Resize` / `Resize2D` elements to
+  resample between neural fields of different spatial sizes.
+
 ## [2.7.1] - 2026-06-01
 
 ### Documentation

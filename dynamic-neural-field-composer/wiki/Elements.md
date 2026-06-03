@@ -99,6 +99,10 @@ The `ElementLabel` enum identifies element types and is used by `ElementFactory`
 | `GAUSS_FIELD_COUPLING` | `"gauss field coupling"` | `GaussFieldCoupling` |
 | `BOOST_STIMULUS` | `"boost stimulus"` | `BoostStimulus` |
 | `MEMORY_TRACE` | `"memory trace"` | `MemoryTrace` |
+| `RESIZE` | `"resize"` | `Resize` |
+| `RESIZE_2D` | `"resize 2d"` | `Resize2D` |
+
+Each element above also has a 2D counterpart (e.g. `NEURAL_FIELD_2D`, `GAUSS_KERNEL_2D`).
 
 ---
 

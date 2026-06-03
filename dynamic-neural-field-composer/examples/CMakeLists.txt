@@ -26,6 +26,7 @@ add_example_executable(example_multi_peak_2d            multi_peak_2d.cpp)
 add_example_executable(example_weighted_field_coupling  weighted_field_coupling.cpp)
 add_example_executable(example_gaussian_field_coupling  gaussian_field_coupling.cpp)
 add_example_executable(example_hebbian_learning         hebbian_learning.cpp)
+add_example_executable(example_resize                    resize.cpp)
 #add_example_executable(example_oja_learning             oja_learning.cpp)
 #add_example_executable(example_delta_rule_learning      delta_rule_learning.cpp)
 

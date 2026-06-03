@@ -65,6 +65,8 @@ namespace dnf_composer::user_interface
 		static void modifyElementCorrelatedNormalNoise2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementAsymmetricGaussKernel2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementMemoryTrace2D(const std::shared_ptr<element::Element>& element);
+		static void modifyElementResize(const std::shared_ptr<element::Element>& element);
+		static void modifyElementResize2D(const std::shared_ptr<element::Element>& element);
 		static ImVec4 getColorForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
 		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);

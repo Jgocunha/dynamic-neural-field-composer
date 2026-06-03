@@ -31,6 +31,8 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "elements/test_memory_trace_2d.cpp"
             "elements/test_mexican_hat_kernel_2d.cpp"
             "elements/test_change_dimensions.cpp"
+            "elements/test_resize.cpp"
+            "elements/test_resize_2d.cpp"
             # simulation
             "simulation/test_simulation.cpp"
             "simulation/test_simulation_extended.cpp"

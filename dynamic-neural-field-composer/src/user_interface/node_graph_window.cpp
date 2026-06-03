@@ -2,6 +2,8 @@
 #include <cstring>
 
 #include "elements/correlated_normal_noise_2d.h"
+#include "elements/resize.h"
+#include "elements/resize_2d.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 namespace dnf_composer::user_interface
@@ -1028,6 +1030,8 @@ namespace dnf_composer::user_interface
 			return 1;
 		case element::ElementLabel::FIELD_COUPLING:
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
+		case element::ElementLabel::RESIZE:
+		case element::ElementLabel::RESIZE_2D:
 			return 2;
 		case element::ElementLabel::NEURAL_FIELD:
 		case element::ElementLabel::NEURAL_FIELD_2D:
@@ -1309,6 +1313,22 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Tau build: %.2f",  p.tauBuild);
 			ImGui::Text("Tau decay: %.2f",  p.tauDecay);
 			ImGui::Text("Threshold: %.2f",  p.threshold);
+			break;
+		}
+		case element::ElementLabel::RESIZE:
+		{
+			const auto rz = std::dynamic_pointer_cast<element::Resize>(element);
+			const auto& p = rz->getParameters();
+			ImGui::Text("Interpolation: %s", element::InterpolationMethodToString.at(p.method).c_str());
+			ImGui::Text("Input size: %d",    p.inputDimensions.size);
+			break;
+		}
+		case element::ElementLabel::RESIZE_2D:
+		{
+			const auto rz = std::dynamic_pointer_cast<element::Resize2D>(element);
+			const auto& p = rz->getParameters();
+			ImGui::Text("Interpolation: %s", element::InterpolationMethodToString.at(p.method).c_str());
+			ImGui::Text("Input size: %d x %d", p.inputDimensions.size_x, p.inputDimensions.size_y);
 			break;
 		}
 		default:
