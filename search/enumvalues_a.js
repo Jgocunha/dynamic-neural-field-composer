@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['memory_5ftrace_0',['MEMORY_TRACE',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666',1,'dnf_composer::element']]],
-  ['memory_5ftrace_5f2d_1',['MEMORY_TRACE_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334',1,'dnf_composer::element']]],
-  ['mexican_5fhat_5fkernel_2',['MEXICAN_HAT_KERNEL',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809',1,'dnf_composer::element']]],
-  ['mexican_5fhat_5fkernel_5f2d_3',['MEXICAN_HAT_KERNEL_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea473ad423b99760ef250c6b8975f63965',1,'dnf_composer::element']]],
-  ['milliseconds_4',['Milliseconds',['../group__simulation__recorder.html#ggac09110e1313fae486600cd050e42b2a3a38f246763036ccaeba7db6d563c4d821',1,'dnf_composer']]]
+  ['line_5fplot_0',['LINE_PLOT',['../namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66abdd402e16007eedd39f69adf0f10f88b',1,'dnf_composer']]],
+  ['linear_1',['LINEAR',['../group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aaac544aacc3615aada24897a215f5046',1,'dnf_composer::element']]],
+  ['log_5flocal_5ftime_5ferror_2',['LOG_LOCAL_TIME_ERROR',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca265c982c0abf5027b3d43322fac846fd',1,'dnf_composer']]]
 ];

@@ -190,7 +190,7 @@ Quick start</h2>
 <div class="ttc" id="adynamic-neural-field-composer-dynamic_8cpp_html_ae66f6b31b5ad750f1fe042a706a4e3d4"><div class="ttname"><a href="dynamic-neural-field-composer-dynamic_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a></div><div class="ttdeci">int main()</div><div class="ttdef"><b>Definition</b> dynamic-neural-field-composer-dynamic.cpp:8</div></div>
 <div class="ttc" id="anamespacednf__composer_html"><div class="ttname"><a href="namespacednf__composer.html">dnf_composer</a></div><div class="ttdef"><b>Definition</b> application.h:20</div></div>
 <div class="ttc" id="astatic__layout_8h_html"><div class="ttname"><a href="static__layout_8h.html">static_layout.h</a></div></div>
-<div class="ttc" id="astructdnf__composer_1_1element_1_1ElementCommonParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">dnf_composer::element::ElementCommonParameters</a></div><div class="ttdef"><b>Definition</b> element_parameters.h:106</div></div>
+<div class="ttc" id="astructdnf__composer_1_1element_1_1ElementCommonParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">dnf_composer::element::ElementCommonParameters</a></div><div class="ttdef"><b>Definition</b> element_parameters.h:188</div></div>
 <div class="ttc" id="astructdnf__composer_1_1element_1_1GaussStimulusParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html">dnf_composer::element::GaussStimulusParameters</a></div><div class="ttdoc">Parameters for a Gaussian-shaped external stimulus.</div><div class="ttdef"><b>Definition</b> gauss_stimulus_parameters.h:10</div></div>
 <div class="ttc" id="astructdnf__composer_1_1element_1_1MexicanHatKernelParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html">dnf_composer::element::MexicanHatKernelParameters</a></div><div class="ttdoc">Parameters for a Mexican-hat lateral interaction kernel.</div><div class="ttdef"><b>Definition</b> mexican_hat_kernel_parameters.h:10</div></div>
 <div class="ttc" id="astructdnf__composer_1_1element_1_1NeuralFieldParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1NeuralFieldParameters.html">dnf_composer::element::NeuralFieldParameters</a></div><div class="ttdoc">Parameters that govern a NeuralField's dynamics.</div><div class="ttdef"><b>Definition</b> neural_field.h:13</div></div>
@@ -218,7 +218,9 @@ Elements</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Memory   </td><td class="markdownTableBodyNone"><code>MemoryTrace</code>, <code>MemoryTrace2d</code>    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Resampling   </td><td class="markdownTableBodyNone"><code>Resize</code>, <code>Resize2d</code> — interpolate an input field to a different spatial size (linear / nearest / cubic)   </td></tr>
+<td class="markdownTableBodyNone">Resampling   </td><td class="markdownTableBodyNone"><code>Resize</code>, <code>Resize2d</code> — interpolate an input field to a different spatial size (linear / nearest / cubic)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Dimensionality   </td><td class="markdownTableBodyNone"><code>Collapse</code> — reduce a 2D field to 1D along an axis (sum / average / maximum / minimum); <code>Expand</code> — broadcast a 1D field into a 2D ridge   </td></tr>
 </table>
 <div class="image">
 <img src="headline-elements.jpg" alt=""/>

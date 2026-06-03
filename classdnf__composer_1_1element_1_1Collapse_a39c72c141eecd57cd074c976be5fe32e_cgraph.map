@@ -1,0 +1,11 @@
+<map id="dnf_composer::element::Collapse::step" name="dnf_composer::element::Collapse::step">
+<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,69,181,109"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a95380809f9539267569ce75a0ec994ac" title=" " alt="" coords="229,5,424,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,67,239,46,241,52,168,72"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1element.html#a4a021a7c6fdf2bc6b14a5c6ee944395b" title="Maps a CompressionType to the corresponding math reduction op." alt="" coords="239,69,415,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="182,87,225,87,225,92,182,92"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="239,133,415,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="168,107,241,127,239,132,166,112"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" title="Cache raw pointers to input component data. Call after all element init()s complete." alt="" coords="472,133,669,173"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="415,151,458,151,458,156,415,156"/>
+</map>

@@ -1,6 +1,13 @@
 var searchData=
 [
-  ['ticks_0',['Ticks',['../group__simulation__recorder.html#ggac09110e1313fae486600cd050e42b2a3a7ad0bde3d601cd3c0eaa8eb5bf27cb1a',1,'dnf_composer']]],
-  ['timed_5fgauss_5fstimulus_1',['TIMED_GAUSS_STIMULUS',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becead341c584ee8c07ccc00e86c65e305e61',1,'dnf_composer::element']]],
-  ['timed_5fgauss_5fstimulus_5f2d_2',['TIMED_GAUSS_STIMULUS_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea7da71a205e749851ee71a25ebd16fcd1',1,'dnf_composer::element']]]
+  ['selectfolder_0',['SelectFolder',['../namespaceFileDialog.html#ae6565424d2a3a98d7f6202f2e49ea412a26b6e31efaf454855ce9f2235dc7e171',1,'FileDialog']]],
+  ['sigmoid_1',['SIGMOID',['../group__activation__functions.html#ggab356f7685737735093ddddf7baa05864af1ab73a69f70e35bfc12b029a1c86c89',1,'dnf_composer::element']]],
+  ['sim_5felem_5falready_5fexists_2',['SIM_ELEM_ALREADY_EXISTS',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca181d8ed3313aa0f5ee07ab95e369db4a',1,'dnf_composer']]],
+  ['sim_5felem_5findex_3',['SIM_ELEM_INDEX',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca22138bbb9857f99b06db469a4ee2081a',1,'dnf_composer']]],
+  ['sim_5felem_5fnot_5ffound_4',['SIM_ELEM_NOT_FOUND',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cab89f810ba404d0e61e9ec533f00543b1',1,'dnf_composer']]],
+  ['sim_5finvalid_5fparameter_5',['SIM_INVALID_PARAMETER',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca8ce9f9606fd38ac008de70c7b5a94e26',1,'dnf_composer']]],
+  ['sim_5fruntime_5fless_5fthan_5fzero_6',['SIM_RUNTIME_LESS_THAN_ZERO',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca30e4fa0f18b5eb12b4244b7bb6e3e1c6',1,'dnf_composer']]],
+  ['square_7',['Square',['../namespaceax_1_1Drawing.html#ab1df3a7263c0f5d36c706d066c90fe0aaceb46ca115d05c51aa5a16a8867c3304',1,'ax::Drawing']]],
+  ['stimulus_8',['STIMULUS',['../namespacednf__composer_1_1element.html#ac2b9908bc3f6d3bf86d9191976abdf54a4bf2c506a1390b80972c00519ef3a80d',1,'dnf_composer::element']]],
+  ['sum_9',['sum',['../group__elements.html#ggac602c49997b573c18f5e15d5181ab3cca6970bdc2201030b9c03fbdcf3973858a',1,'dnf_composer::element::SUM'],['../namespacednf__composer_1_1tools_1_1math.html#a69b0da2c4990166933ae87e0f8e4a92ea6970bdc2201030b9c03fbdcf3973858a',1,'dnf_composer::tools::math::SUM']]]
 ];

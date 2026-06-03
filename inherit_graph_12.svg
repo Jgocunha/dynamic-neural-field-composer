@@ -11,10 +11,10 @@
 <!-- Node0 -->
 <g id="Node000000" class="node">
 <title>Node0</title>
-<g id="a_Node000000"><a xlink:href="structdnf__composer_1_1element_1_1NeuralFieldState.html" target="_top" xlink:title="Snapshot of a neural field&#39;s observable state.">
+<g id="a_Node000000"><a xlink:href="structdnf__composer_1_1element_1_1NeuralFieldBump.html" target="_top" xlink:title="Describes a single activation bump (peak) in a neural field.">
 <polygon fill="white" stroke="#666666" points="132,-30 0,-30 0,0 132,0 132,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="middle" x="66" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralFieldState</text>
+<text text-anchor="middle" x="66" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralFieldBump</text>
 </a>
 </g>
 </g>

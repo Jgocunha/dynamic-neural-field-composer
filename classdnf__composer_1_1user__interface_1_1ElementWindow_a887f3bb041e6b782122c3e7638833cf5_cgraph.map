@@ -1,7 +1,11 @@
 <map id="dnf_composer::user_interface::ElementWindow::render" name="dnf_composer::user_interface::ElementWindow::render">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,207,60"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#a3a560b6dda3f430c27e918cf398d99e3" title=" " alt="" coords="255,5,457,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,30,241,30,241,35,207,35"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title=" " alt="" coords="505,5,707,60"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="458,30,491,30,491,35,458,35"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,34,207,89"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#a3a560b6dda3f430c27e918cf398d99e3" title=" " alt="" coords="255,34,457,89"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,59,241,59,241,64,207,64"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1element.html#a55b0e0fb6529de014e86fa1380005bba" title="Category info for a label, or an UNKNOWN/grey fallback." alt="" coords="511,5,701,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="457,44,497,38,498,44,458,49"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title=" " alt="" coords="505,70,707,125"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="458,73,492,78,491,84,457,79"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1element.html#add3a3ba11f87c3c31b3060e2bb378635" title="Maps every ElementLabel to its category info. The one place UI panels resolve an element&#39;s type/categ..." alt="" coords="755,5,932,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="701,23,741,23,741,28,701,28"/>
 </map>

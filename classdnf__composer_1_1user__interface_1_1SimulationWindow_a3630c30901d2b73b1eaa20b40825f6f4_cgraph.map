@@ -1,5 +1,9 @@
 <map id="dnf_composer::user_interface::SimulationWindow::renderLogElementParametersCard" name="dnf_composer::user_interface::SimulationWindow::renderLogElementParametersCard">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,259,60"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="307,13,461,53"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="259,30,293,30,293,35,259,35"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,30,259,85"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1element.html#a55b0e0fb6529de014e86fa1380005bba" title="Category info for a label, or an UNKNOWN/grey fallback." alt="" coords="307,5,496,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="259,40,293,36,293,41,259,45"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="324,69,479,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="259,70,310,76,310,81,259,75"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1element.html#add3a3ba11f87c3c31b3060e2bb378635" title="Maps every ElementLabel to its category info. The one place UI panels resolve an element&#39;s type/categ..." alt="" coords="544,5,721,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="496,23,530,23,530,28,496,28"/>
 </map>

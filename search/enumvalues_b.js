@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['nearest_0',['NEAREST',['../group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aad135772d7cf93dd0ccf9d2474b34e6a',1,'dnf_composer::element']]],
-  ['neural_5ffield_1',['NEURAL_FIELD',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c',1,'dnf_composer::element']]],
-  ['neural_5ffield_5f2d_2',['NEURAL_FIELD_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea9c3cf5f217e0e9141b68f36fd2fde487',1,'dnf_composer::element']]],
-  ['none_3',['None',['../namespaceFileDialog.html#a9c9550aab62a9265d5038c05b1e2ac7ba6adf97f83acf6453d4a6a4b1070f3754',1,'FileDialog']]],
-  ['normal_5fnoise_4',['NORMAL_NOISE',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8',1,'dnf_composer::element']]],
-  ['normal_5fnoise_5f2d_5',['NORMAL_NOISE_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea01c4fbbb9a6228545904b56cbcfe0397',1,'dnf_composer::element']]]
+  ['maximum_0',['maximum',['../group__elements.html#ggac602c49997b573c18f5e15d5181ab3cca115f17a28532bbd6f0f5ec83ed20692a',1,'dnf_composer::element::MAXIMUM'],['../namespacednf__composer_1_1tools_1_1math.html#a69b0da2c4990166933ae87e0f8e4a92ea115f17a28532bbd6f0f5ec83ed20692a',1,'dnf_composer::tools::math::MAXIMUM']]],
+  ['memory_1',['MEMORY',['../namespacednf__composer_1_1element.html#ac2b9908bc3f6d3bf86d9191976abdf54a7014705458ee3cf0192f6aa52cfddea5',1,'dnf_composer::element']]],
+  ['memory_5ftrace_2',['MEMORY_TRACE',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666',1,'dnf_composer::element']]],
+  ['memory_5ftrace_5f2d_3',['MEMORY_TRACE_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334',1,'dnf_composer::element']]],
+  ['mexican_5fhat_5fkernel_4',['MEXICAN_HAT_KERNEL',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809',1,'dnf_composer::element']]],
+  ['mexican_5fhat_5fkernel_5f2d_5',['MEXICAN_HAT_KERNEL_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea473ad423b99760ef250c6b8975f63965',1,'dnf_composer::element']]],
+  ['milliseconds_6',['Milliseconds',['../group__simulation__recorder.html#ggac09110e1313fae486600cd050e42b2a3a38f246763036ccaeba7db6d563c4d821',1,'dnf_composer']]],
+  ['minimum_7',['minimum',['../group__elements.html#ggac602c49997b573c18f5e15d5181ab3ccacf0ee111afe9889278a772d631dfa150',1,'dnf_composer::element::MINIMUM'],['../namespacednf__composer_1_1tools_1_1math.html#a69b0da2c4990166933ae87e0f8e4a92eacf0ee111afe9889278a772d631dfa150',1,'dnf_composer::tools::math::MINIMUM']]]
 ];
