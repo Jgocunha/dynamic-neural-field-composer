@@ -20,9 +20,11 @@ var searchData=
   ['booststimulus2dparameters_17',['booststimulus2dparameters',['../structdnf__composer_1_1element_1_1BoostStimulus2DParameters.html#a6d9ebdd053b0cb4a0ab537e03906720c',1,'dnf_composer::element::BoostStimulus2DParameters::BoostStimulus2DParameters()'],['../structdnf__composer_1_1element_1_1BoostStimulus2DParameters.html',1,'dnf_composer::element::BoostStimulus2DParameters']]],
   ['booststimulusparameters_18',['booststimulusparameters',['../structdnf__composer_1_1element_1_1BoostStimulusParameters.html#a895db533315b0c247751313eaefe9ef9',1,'dnf_composer::element::BoostStimulusParameters::BoostStimulusParameters()'],['../structdnf__composer_1_1element_1_1BoostStimulusParameters.html',1,'dnf_composer::element::BoostStimulusParameters']]],
   ['border_19',['border',['../structdnf__composer_1_1user__interface_1_1PanelScope.html#a4826f0008e4acc50e413bad58a43c824',1,'dnf_composer::user_interface::PanelScope']]],
-  ['builders_2ecpp_20',['builders.cpp',['../builders_8cpp.html',1,'']]],
-  ['builders_2eh_21',['builders.h',['../builders_8h.html',1,'']]],
-  ['building_22',['Building',['../index.html#autotoc_md6',1,'']]],
-  ['buildinputcache_23',['buildInputCache',['../classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e',1,'dnf_composer::element::Element']]],
-  ['bumps_24',['bumps',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a9c80026fe61974236ac4ca1cc282caa1',1,'dnf_composer::element::NeuralFieldState::bumps'],['../structdnf__composer_1_1element_1_1NeuralField2DState.html#a5f351c23a52d035e20cfcbe35039b02e',1,'dnf_composer::element::NeuralField2DState::bumps']]]
+  ['broadcast1dto2d_5finto_20',['broadcast1DTo2D_into',['../namespacednf__composer_1_1tools_1_1math.html#a664e422125516c1dbc86e7adda106c47',1,'dnf_composer::tools::math']]],
+  ['broadcastprofileaxis_21',['broadcastProfileAxis',['../structdnf__composer_1_1element_1_1ExpandParameters.html#a7cb9c27bfd542ab587e678e80bb2ba5c',1,'dnf_composer::element::ExpandParameters']]],
+  ['builders_2ecpp_22',['builders.cpp',['../builders_8cpp.html',1,'']]],
+  ['builders_2eh_23',['builders.h',['../builders_8h.html',1,'']]],
+  ['building_24',['Building',['../index.html#autotoc_md6',1,'']]],
+  ['buildinputcache_25',['buildInputCache',['../classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e',1,'dnf_composer::element::Element']]],
+  ['bumps_26',['bumps',['../structdnf__composer_1_1element_1_1NeuralFieldState.html#a9c80026fe61974236ac4ca1cc282caa1',1,'dnf_composer::element::NeuralFieldState::bumps'],['../structdnf__composer_1_1element_1_1NeuralField2DState.html#a5f351c23a52d035e20cfcbe35039b02e',1,'dnf_composer::element::NeuralField2DState::bumps']]]
 ];

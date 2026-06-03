@@ -78,6 +78,7 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">dnf_composer::element Namespace Reference</div></div>
 </div><!--header-->
@@ -114,6 +115,12 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1BoostStimulusParameters.html">BoostStimulusParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a spatially homogeneous boost stimulus.  <a href="structdnf__composer_1_1element_1_1BoostStimulusParameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Collapse.html">Collapse</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collapses a 2D input field to a 1D output by reducing along one axis.  <a href="classdnf__composer_1_1element_1_1Collapse.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1CollapseParameters.html">CollapseParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a <a class="el" href="classdnf__composer_1_1element_1_1Collapse.html" title="Collapses a 2D input field to a 1D output by reducing along one axis.">Collapse</a> (2D -&gt; 1D) element.  <a href="structdnf__composer_1_1element_1_1CollapseParameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html">CorrelatedNormalNoise</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spatially correlated Gaussian noise source — cedar-compatible.  <a href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,6 +144,12 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ElementIdentifiers.html">ElementIdentifiers</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ElementSpecificParameters.html">ElementSpecificParameters</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Expand.html">Expand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expands a 1D input field to a 2D output by broadcasting along one axis.  <a href="classdnf__composer_1_1element_1_1Expand.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ExpandParameters.html">ExpandParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for an <a class="el" href="classdnf__composer_1_1element_1_1Expand.html" title="Expands a 1D input field to a 2D output by broadcasting along one axis.">Expand</a> (1D -&gt; 2D) element.  <a href="structdnf__composer_1_1element_1_1ExpandParameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html">FieldCoupling</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full-matrix learned coupling between two neural fields.  <a href="classdnf__composer_1_1element_1_1FieldCoupling.html#details">More...</a><br /></td></tr>
@@ -277,6 +290,13 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:gab356f7685737735093ddddf7baa05864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the concrete activation function type.  <a href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">More...</a><br /></td></tr>
 <tr class="separator:gab356f7685737735093ddddf7baa05864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac602c49997b573c18f5e15d5181ab3cc" id="r_gac602c49997b573c18f5e15d5181ab3cc"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__elements.html#gac602c49997b573c18f5e15d5181ab3cc">CompressionType</a> : int { <a class="el" href="group__elements.html#ggac602c49997b573c18f5e15d5181ab3cca6970bdc2201030b9c03fbdcf3973858a">CompressionType::SUM</a>
+, <a class="el" href="group__elements.html#ggac602c49997b573c18f5e15d5181ab3cca16de38737a9f8366e9b2042b4e9b6290">CompressionType::AVERAGE</a>
+, <a class="el" href="group__elements.html#ggac602c49997b573c18f5e15d5181ab3cca115f17a28532bbd6f0f5ec83ed20692a">CompressionType::MAXIMUM</a>
+, <a class="el" href="group__elements.html#ggac602c49997b573c18f5e15d5181ab3ccacf0ee111afe9889278a772d631dfa150">CompressionType::MINIMUM</a>
+ }</td></tr>
+<tr class="memdesc:gac602c49997b573c18f5e15d5181ab3cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reduction applied when collapsing one axis of a 2D field to 1D.  <a href="group__elements.html#gac602c49997b573c18f5e15d5181ab3cc">More...</a><br /></td></tr>
+<tr class="separator:gac602c49997b573c18f5e15d5181ab3cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3d19ecdf631f5316e2c09003233bece" id="r_ac3d19ecdf631f5316e2c09003233bece"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233bece">ElementLabel</a> : int { <br />
 &#160;&#160;<a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438">UNINITIALIZED</a>
 , <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c">NEURAL_FIELD</a>
@@ -311,6 +331,9 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334">MEMORY_TRACE_2D</a>
 , <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea97d7e365d3222a3686d571f5541c82ea">RESIZE</a>
 , <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea90e519628d393944dadf5e10f97cded8">RESIZE_2D</a>
+, <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceafbd5f41c845f34f45497e188cce83a5b">COLLAPSE</a>
+, <br />
+&#160;&#160;<a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceaf310f07dde766f4b937eb2f5c2f2bb77">EXPAND</a>
 <br />
  }</td></tr>
 <tr class="separator:ac3d19ecdf631f5316e2c09003233bece"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -320,14 +343,31 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:ga89c0220b0fd31aae856f130ac5fb38c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation method used when resampling an input field to a new size.  <a href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">More...</a><br /></td></tr>
 <tr class="separator:ga89c0220b0fd31aae856f130ac5fb38c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2e0515a41d6b55d8c4f4d47e9d30cddf" id="r_ga2e0515a41d6b55d8c4f4d47e9d30cddf"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__elements.html#ga2e0515a41d6b55d8c4f4d47e9d30cddf">ProjectionAxis</a> : int { <a class="el" href="group__elements.html#gga2e0515a41d6b55d8c4f4d47e9d30cddfa02129bb861061d1a052c592e2dc6b383">ProjectionAxis::X</a>
+, <a class="el" href="group__elements.html#gga2e0515a41d6b55d8c4f4d47e9d30cddfa57cec4137b614c87cb4e24a3d003a3e0">ProjectionAxis::Y</a>
+ }</td></tr>
+<tr class="memdesc:ga2e0515a41d6b55d8c4f4d47e9d30cddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spatial axis a projection acts on.  <a href="group__elements.html#ga2e0515a41d6b55d8c4f4d47e9d30cddf">More...</a><br /></td></tr>
+<tr class="separator:ga2e0515a41d6b55d8c4f4d47e9d30cddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a4a021a7c6fdf2bc6b14a5c6ee944395b" id="r_a4a021a7c6fdf2bc6b14a5c6ee944395b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a69b0da2c4990166933ae87e0f8e4a92e">tools::math::ReduceOp</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#a4a021a7c6fdf2bc6b14a5c6ee944395b">toReduceOp</a> (const <a class="el" href="group__elements.html#gac602c49997b573c18f5e15d5181ab3cc">CompressionType</a> type)</td></tr>
+<tr class="memdesc:a4a021a7c6fdf2bc6b14a5c6ee944395b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps a CompressionType to the corresponding math reduction op.  <br /></td></tr>
+<tr class="separator:a4a021a7c6fdf2bc6b14a5c6ee944395b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
+<tr class="memitem:a67541d50c3c0de566046146d560ad867" id="r_a67541d50c3c0de566046146d560ad867"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="group__elements.html#gac602c49997b573c18f5e15d5181ab3cc">CompressionType</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#a67541d50c3c0de566046146d560ad867">CompressionTypeToString</a></td></tr>
+<tr class="memdesc:a67541d50c3c0de566046146d560ad867"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps CompressionType values to human-readable strings.  <br /></td></tr>
+<tr class="separator:a67541d50c3c0de566046146d560ad867"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d5271ba95b4dd255c5d39620d9f805d" id="r_a1d5271ba95b4dd255c5d39620d9f805d"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233bece">ElementLabel</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#a1d5271ba95b4dd255c5d39620d9f805d">ElementLabelToString</a></td></tr>
 <tr class="separator:a1d5271ba95b4dd255c5d39620d9f805d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2de93542c78ec2a9437bce2d80c090f1" id="r_a2de93542c78ec2a9437bce2d80c090f1"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">InterpolationMethod</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#a2de93542c78ec2a9437bce2d80c090f1">InterpolationMethodToString</a></td></tr>
 <tr class="memdesc:a2de93542c78ec2a9437bce2d80c090f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps InterpolationMethod values to human-readable strings.  <br /></td></tr>
 <tr class="separator:a2de93542c78ec2a9437bce2d80c090f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1dacb72febf80a3b1a58907fd9f1e7c" id="r_ab1dacb72febf80a3b1a58907fd9f1e7c"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="group__elements.html#ga2e0515a41d6b55d8c4f4d47e9d30cddf">ProjectionAxis</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#ab1dacb72febf80a3b1a58907fd9f1e7c">ProjectionAxisToString</a></td></tr>
+<tr class="memdesc:ab1dacb72febf80a3b1a58907fd9f1e7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps ProjectionAxis values to human-readable strings.  <br /></td></tr>
+<tr class="separator:ab1dacb72febf80a3b1a58907fd9f1e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ac3d19ecdf631f5316e2c09003233bece" name="ac3d19ecdf631f5316e2c09003233bece"></a>
@@ -369,11 +409,77 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334" name="ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334"></a>MEMORY_TRACE_2D&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea97d7e365d3222a3686d571f5541c82ea" name="ac3d19ecdf631f5316e2c09003233becea97d7e365d3222a3686d571f5541c82ea"></a>RESIZE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea90e519628d393944dadf5e10f97cded8" name="ac3d19ecdf631f5316e2c09003233becea90e519628d393944dadf5e10f97cded8"></a>RESIZE_2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233beceafbd5f41c845f34f45497e188cce83a5b" name="ac3d19ecdf631f5316e2c09003233beceafbd5f41c845f34f45497e188cce83a5b"></a>COLLAPSE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233beceaf310f07dde766f4b937eb2f5c2f2bb77" name="ac3d19ecdf631f5316e2c09003233beceaf310f07dde766f4b937eb2f5c2f2bb77"></a>EXPAND&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a4a021a7c6fdf2bc6b14a5c6ee944395b" name="a4a021a7c6fdf2bc6b14a5c6ee944395b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a021a7c6fdf2bc6b14a5c6ee944395b">&#9670;&#160;</a></span>toReduceOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a69b0da2c4990166933ae87e0f8e4a92e">tools::math::ReduceOp</a> dnf_composer::element::toReduceOp </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__elements.html#gac602c49997b573c18f5e15d5181ab3cc">CompressionType</a>&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maps a CompressionType to the corresponding math reduction op. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1element_a4a021a7c6fdf2bc6b14a5c6ee944395b_icgraph.svg" width="411" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="a67541d50c3c0de566046146d560ad867" name="a67541d50c3c0de566046146d560ad867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67541d50c3c0de566046146d560ad867">&#9670;&#160;</a></span>CompressionTypeToString</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::map&lt;<a class="el" href="group__elements.html#gac602c49997b573c18f5e15d5181ab3cc">CompressionType</a>, std::string&gt; dnf_composer::element::CompressionTypeToString</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        {CompressionType::SUM, <span class="stringliteral">&quot;sum&quot;</span>},</div>
+<div class="line">        {CompressionType::AVERAGE, <span class="stringliteral">&quot;average&quot;</span>},</div>
+<div class="line">        {CompressionType::MAXIMUM, <span class="stringliteral">&quot;maximum&quot;</span>},</div>
+<div class="line">        {CompressionType::MINIMUM, <span class="stringliteral">&quot;minimum&quot;</span>}</div>
+<div class="line">    }</div>
+</div><!-- fragment -->
+<p>Maps CompressionType values to human-readable strings. </p>
+
+</div>
+</div>
 <a id="a1d5271ba95b4dd255c5d39620d9f805d" name="a1d5271ba95b4dd255c5d39620d9f805d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1d5271ba95b4dd255c5d39620d9f805d">&#9670;&#160;</a></span>ElementLabelToString</h2>
 
@@ -422,6 +528,34 @@ Variables</h2></td></tr>
 <div class="line">    }</div>
 </div><!-- fragment -->
 <p>Maps InterpolationMethod values to human-readable strings. </p>
+
+</div>
+</div>
+<a id="ab1dacb72febf80a3b1a58907fd9f1e7c" name="ab1dacb72febf80a3b1a58907fd9f1e7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1dacb72febf80a3b1a58907fd9f1e7c">&#9670;&#160;</a></span>ProjectionAxisToString</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::map&lt;<a class="el" href="group__elements.html#ga2e0515a41d6b55d8c4f4d47e9d30cddf">ProjectionAxis</a>, std::string&gt; dnf_composer::element::ProjectionAxisToString</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        {ProjectionAxis::X, <span class="stringliteral">&quot;x&quot;</span>},</div>
+<div class="line">        {ProjectionAxis::Y, <span class="stringliteral">&quot;y&quot;</span>}</div>
+<div class="line">    }</div>
+</div><!-- fragment -->
+<p>Maps ProjectionAxis values to human-readable strings. </p>
 
 </div>
 </div>

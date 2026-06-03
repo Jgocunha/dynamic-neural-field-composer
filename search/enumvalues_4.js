@@ -9,5 +9,6 @@ var searchData=
   ['elem_5finvalid_5fsize_6',['ELEM_INVALID_SIZE',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cac49b813c339144955d0bd0e7bf3bbd63',1,'dnf_composer']]],
   ['elem_5frename_5fnot_5fallowed_7',['ELEM_RENAME_NOT_ALLOWED',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca49cfd39b6006295fd237fbe7631f6994',1,'dnf_composer']]],
   ['elem_5fsize_5fnot_5fallowed_8',['ELEM_SIZE_NOT_ALLOWED',['../namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7ca04f0581ac9d3c6c8a6face9f1bfe8aef',1,'dnf_composer']]],
-  ['error_9',['ERROR',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda47db74105cee16611e19f873d14a238b',1,'dnf_composer::tools::logger']]]
+  ['error_9',['ERROR',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda47db74105cee16611e19f873d14a238b',1,'dnf_composer::tools::logger']]],
+  ['expand_10',['EXPAND',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceaf310f07dde766f4b937eb2f5c2f2bb77',1,'dnf_composer::element']]]
 ];

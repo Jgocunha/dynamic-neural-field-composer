@@ -1,43 +1,49 @@
 <map id="dnf_composer::element::Element::getUniqueName" name="dnf_composer::element::Element::getUniqueName">
-<area shape="rect" id="Node000001" title=" " alt="" coords="563,390,761,430"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element." alt="" coords="319,75,495,115"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="648,377,630,326,601,263,563,198,539,168,513,141,475,118,478,113,516,137,543,165,567,195,606,261,635,324,653,376"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" title="Register inputElement as an upstream source for this element." alt="" coords="41,6,217,46"/>
-<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="655,377,644,309,619,223,601,178,577,136,548,97,513,65,479,45,443,29,404,19,365,12,287,8,217,13,217,8,287,3,365,7,405,14,445,24,482,40,516,61,552,94,582,133,606,176,625,221,649,307,660,376"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element." alt="" coords="41,134,217,174"/>
-<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="647,377,629,332,600,280,562,229,539,206,513,188,478,170,441,157,362,142,285,139,217,143,217,138,285,134,363,137,442,152,480,166,516,184,542,202,566,225,605,277,633,330,652,375"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#a3677ed68684c7cd362e7e54f42fafb06" title="Initialize the element (called once before the simulation loop)." alt="" coords="319,198,495,238"/>
-<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="638,380,586,315,551,281,513,252,490,240,493,236,516,248,555,277,590,311,642,376"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a942b7e1646c800e33517bf0d694eb128" title="Initialize the element (called once before the simulation loop)." alt="" coords="319,262,495,302"/>
-<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="623,384,572,349,514,316,484,304,486,299,516,311,575,344,626,379"/>
-<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus.html#a7cb7acb2e4c8ece790553cb21d4c33dd" title="Initialize the element (called once before the simulation loop)." alt="" coords="309,326,506,366"/>
-<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="568,389,487,368,488,363,569,384"/>
-<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#a283b859099270f4c90ae2aef6fefb30b" title="Initialize the element (called once before the simulation loop)." alt="" coords="300,390,515,430"/>
-<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="549,412,515,412,515,407,549,407"/>
-<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#aed8043b5951aea5276d37e06b26f04a7" title="Load the weight matrix from a binary file in weightsDirectory." alt="" coords="304,454,511,494"/>
-<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="569,436,488,456,487,451,568,431"/>
-<area shape="rect" id="Node000016" href="$classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title=" " alt="" coords="319,518,495,558"/>
-<area shape="poly" id="edge17_Node000001_Node000016" title=" " alt="" coords="626,440,575,475,516,508,486,520,484,515,514,503,572,471,623,436"/>
-<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72" title=" " alt="" coords="319,582,495,622"/>
-<area shape="poly" id="edge18_Node000001_Node000017" title=" " alt="" coords="642,443,590,508,555,543,516,572,493,584,490,579,513,568,551,539,586,505,638,440"/>
-<area shape="rect" id="Node000018" href="$classdnf__composer_1_1element_1_1Element.html#a5c10d5a2d969823d9ca113bf13b7e3b3" title="Deregister this element as an input of outputElementId." alt="" coords="314,646,501,686"/>
-<area shape="poly" id="edge19_Node000001_Node000018" title=" " alt="" coords="650,444,630,487,601,539,563,591,516,636,496,648,493,643,513,632,559,588,597,536,626,485,646,441"/>
-<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1Element.html#a8f63314b45ca31ced114a5f527e999c3" title="Deregister this element as an input of the element with uniqueId." alt="" coords="314,710,501,750"/>
-<area shape="poly" id="edge20_Node000001_Node000019" title=" " alt="" coords="656,444,639,499,611,568,571,639,545,671,516,700,498,712,495,707,513,696,542,668,566,636,606,566,634,498,650,442"/>
-<area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ab74a05063b97a31c7f74ed6fd38b3954" title="Save the current weight matrix to a binary file in weightsDirectory." alt="" coords="302,774,513,814"/>
-<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="659,444,646,511,620,597,602,642,578,686,550,728,516,764,500,776,497,771,513,760,546,724,574,684,597,640,615,595,641,510,654,443"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#aa514731154519f2d4767bad8e27ca17b" title="Register inputElement as an upstream source for this element." alt="" coords="37,70,220,110"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="306,96,220,94,220,89,306,91"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="312,74,209,48,210,43,314,69"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="306,119,218,138,216,133,305,114"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#af05b6b8c812a9db74fd719824bfdfaca" title=" " alt="" coords="14,198,243,238"/>
-<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="305,220,243,220,243,215,305,215"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a391bd4d0d9795ae3e85e2f834210685a" title=" " alt="" coords="5,262,252,302"/>
-<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="305,284,252,284,252,279,305,279"/>
-<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus.html#ad3728cf451116c584642eee5ee422cd3" title=" " alt="" coords="41,326,217,381"/>
-<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="295,352,217,354,217,349,295,346"/>
-<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#a9cf70a3ebe946dc04a7c1fca89875f55" title=" " alt="" coords="35,405,222,460"/>
-<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="286,422,223,428,222,422,286,417"/>
-<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a0bb6c82b8d890d0a37c25821f1777a4c" title="Load weights if the file exists; log INFO in either case. Unlike readWeights(), this never logs an er..." alt="" coords="14,484,243,524"/>
-<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="290,489,244,495,243,489,290,484"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="563,452,761,492"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element." alt="" coords="319,140,495,180"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="648,440,629,390,600,328,562,265,539,235,513,209,493,194,471,183,474,178,496,190,516,205,543,232,566,262,605,326,634,388,653,438"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" title="Register inputElement as an upstream source for this element." alt="" coords="41,5,217,45"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="656,439,647,363,625,266,606,215,582,166,551,121,513,83,480,61,444,44,405,32,366,23,288,16,217,17,217,12,288,10,367,18,407,26,446,39,483,56,516,79,555,118,587,164,611,213,630,265,653,363,662,438"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" title="Register inputElement as an upstream source for this element." alt="" coords="41,69,217,109"/>
+<area shape="poly" id="edge8_Node000001_Node000004" title=" " alt="" coords="655,439,643,371,619,286,600,242,577,200,548,162,513,130,479,110,443,94,404,83,365,77,287,73,217,77,217,72,287,67,365,71,405,78,445,89,482,105,516,126,552,158,581,197,605,240,624,284,649,370,660,438"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" title="Register inputElement as an upstream source for this element." alt="" coords="41,197,217,237"/>
+<area shape="poly" id="edge9_Node000001_Node000006" title=" " alt="" coords="645,441,624,401,596,355,558,310,513,274,478,256,441,242,362,223,285,215,217,214,217,208,286,209,363,218,442,237,480,251,516,270,562,307,600,352,629,398,649,438"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element." alt="" coords="41,261,217,301"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="640,442,618,410,589,374,554,341,513,314,477,299,439,288,361,274,284,271,217,273,217,268,284,265,361,269,441,283,479,294,516,310,557,337,593,371,623,407,645,439"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#a3677ed68684c7cd362e7e54f42fafb06" title="Initialize the element (called once before the simulation loop)." alt="" coords="319,324,495,364"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="623,446,572,411,514,378,484,367,486,362,516,374,575,407,626,441"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a942b7e1646c800e33517bf0d694eb128" title="Initialize the element (called once before the simulation loop)." alt="" coords="319,388,495,428"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="568,451,487,431,488,425,569,446"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus.html#a7cb7acb2e4c8ece790553cb21d4c33dd" title="Initialize the element (called once before the simulation loop)." alt="" coords="309,452,506,492"/>
+<area shape="poly" id="edge15_Node000001_Node000012" title=" " alt="" coords="549,475,506,475,506,469,549,469"/>
+<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#a283b859099270f4c90ae2aef6fefb30b" title="Initialize the element (called once before the simulation loop)." alt="" coords="300,516,515,556"/>
+<area shape="poly" id="edge17_Node000001_Node000014" title=" " alt="" coords="569,498,488,519,487,513,568,493"/>
+<area shape="rect" id="Node000016" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#aed8043b5951aea5276d37e06b26f04a7" title="Load the weight matrix from a binary file in weightsDirectory." alt="" coords="304,580,511,620"/>
+<area shape="poly" id="edge19_Node000001_Node000016" title=" " alt="" coords="626,503,575,537,516,570,486,582,484,577,514,566,572,533,623,498"/>
+<area shape="rect" id="Node000018" href="$classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title=" " alt="" coords="319,644,495,684"/>
+<area shape="poly" id="edge21_Node000001_Node000018" title=" " alt="" coords="642,505,590,571,555,605,516,634,493,646,490,641,513,630,551,601,586,567,638,502"/>
+<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72" title=" " alt="" coords="319,708,495,748"/>
+<area shape="poly" id="edge22_Node000001_Node000019" title=" " alt="" coords="650,506,630,549,601,601,563,653,516,698,496,710,493,706,513,694,559,650,597,598,626,547,646,504"/>
+<area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1Element.html#a5c10d5a2d969823d9ca113bf13b7e3b3" title="Deregister this element as an input of outputElementId." alt="" coords="314,772,501,812"/>
+<area shape="poly" id="edge23_Node000001_Node000020" title=" " alt="" coords="656,506,639,562,611,630,571,701,545,734,516,762,498,774,495,770,513,758,542,730,566,698,606,628,634,560,650,504"/>
+<area shape="rect" id="Node000021" href="$classdnf__composer_1_1element_1_1Element.html#a8f63314b45ca31ced114a5f527e999c3" title="Deregister this element as an input of the element with uniqueId." alt="" coords="314,836,501,876"/>
+<area shape="poly" id="edge24_Node000001_Node000021" title=" " alt="" coords="659,506,646,573,620,659,602,704,578,749,550,790,516,826,500,838,497,834,513,822,546,786,574,746,597,702,615,657,641,572,654,505"/>
+<area shape="rect" id="Node000022" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ab74a05063b97a31c7f74ed6fd38b3954" title="Save the current weight matrix to a binary file in weightsDirectory." alt="" coords="302,900,513,940"/>
+<area shape="poly" id="edge25_Node000001_Node000022" title=" " alt="" coords="661,506,652,584,629,687,610,742,586,796,555,846,516,890,500,902,497,898,513,886,550,843,581,793,605,740,624,686,647,584,656,506"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="369,134,315,95,251,60,216,47,218,42,253,55,318,91,372,129"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="314,139,208,112,209,107,315,134"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#aa514731154519f2d4767bad8e27ca17b" title="Register inputElement as an upstream source for this element." alt="" coords="37,133,220,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="305,160,220,158,220,153,306,155"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="306,183,218,202,216,197,305,178"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="367,190,314,222,253,252,218,264,216,259,251,247,311,217,364,185"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#af05b6b8c812a9db74fd719824bfdfaca" title=" " alt="" coords="14,325,243,365"/>
+<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="305,347,243,347,243,342,305,342"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#a391bd4d0d9795ae3e85e2f834210685a" title=" " alt="" coords="5,389,252,429"/>
+<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="305,411,252,411,252,406,305,406"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus.html#ad3728cf451116c584642eee5ee422cd3" title=" " alt="" coords="41,454,217,509"/>
+<area shape="poly" id="edge16_Node000012_Node000013" title=" " alt="" coords="295,478,217,481,217,476,295,473"/>
+<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#a9cf70a3ebe946dc04a7c1fca89875f55" title=" " alt="" coords="35,533,222,587"/>
+<area shape="poly" id="edge18_Node000014_Node000015" title=" " alt="" coords="286,549,223,555,222,549,286,544"/>
+<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a0bb6c82b8d890d0a37c25821f1777a4c" title="Load weights if the file exists; log INFO in either case. Unlike readWeights(), this never logs an er..." alt="" coords="14,612,243,652"/>
+<area shape="poly" id="edge20_Node000016_Node000017" title=" " alt="" coords="290,616,244,622,243,616,290,611"/>
 </map>

@@ -11,5 +11,6 @@ var searchData=
   ['booststimulus2d_8',['BoostStimulus2D',['../classdnf__composer_1_1element_1_1BoostStimulus2D.html#a465aeec6e5c258a1e98d84596422220c',1,'dnf_composer::element::BoostStimulus2D']]],
   ['booststimulus2dparameters_9',['BoostStimulus2DParameters',['../structdnf__composer_1_1element_1_1BoostStimulus2DParameters.html#a6d9ebdd053b0cb4a0ab537e03906720c',1,'dnf_composer::element::BoostStimulus2DParameters']]],
   ['booststimulusparameters_10',['BoostStimulusParameters',['../structdnf__composer_1_1element_1_1BoostStimulusParameters.html#a895db533315b0c247751313eaefe9ef9',1,'dnf_composer::element::BoostStimulusParameters']]],
-  ['buildinputcache_11',['buildInputCache',['../classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e',1,'dnf_composer::element::Element']]]
+  ['broadcast1dto2d_5finto_11',['broadcast1DTo2D_into',['../namespacednf__composer_1_1tools_1_1math.html#a664e422125516c1dbc86e7adda106c47',1,'dnf_composer::tools::math']]],
+  ['buildinputcache_12',['buildInputCache',['../classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e',1,'dnf_composer::element::Element']]]
 ];
