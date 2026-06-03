@@ -1,0 +1,28 @@
+<map id="dnf_composer::element::Resize" name="dnf_composer::element::Resize">
+<area shape="rect" id="Node000001" title="Resamples a 1D input field of size N to this element&#39;s output size M." alt="" coords="401,1291,597,1531"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="228,948,396,1228"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="402,1239,432,1289,427,1292,398,1241"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="43,1371,267,1451"/>
+<area shape="poly" id="edge13_Node000012_Node000002" title=" " alt="" coords="246,1229,183,1357,179,1355,241,1227"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="441,725,607,805"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="511,819,490,872,462,925,432,968,398,1007,394,1004,428,965,458,923,485,870,506,817"/>
+<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html" title=" " alt="" coords="191,645,417,885"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="310,885,311,931,305,932,304,885"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementIdentifiers.html" title=" " alt="" coords="388,323,569,523"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="476,524,465,574,446,623,430,646,426,643,442,620,460,572,470,523"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="439,135,518,200"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="481,200,481,306,476,306,476,200"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="12,375,156,470"/>
+<area shape="poly" id="edge9_Node000009_Node000006" title=" " alt="" coords="439,175,384,184,317,200,247,226,214,244,183,265,161,286,141,310,111,362,106,359,137,307,157,282,180,261,211,239,245,221,316,195,383,178,439,170"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="210,1593,419,1703"/>
+<area shape="poly" id="edge14_Node000011_Node000006" title=" " alt="" coords="519,179,554,196,585,222,620,270,639,314,646,361,648,421,648,1412,648,1448,644,1477,633,1504,611,1532,573,1566,529,1593,482,1613,436,1628,434,1623,480,1608,526,1588,570,1562,607,1529,628,1501,639,1476,642,1448,643,1412,643,421,641,362,634,315,615,273,581,226,551,201,517,184"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="413,5,544,85"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="481,99,481,134,476,134,476,99"/>
+<area shape="rect" id="Node000008" href="$structdnf__composer_1_1element_1_1ElementDimensions.html" title=" " alt="" coords="194,263,363,583"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="287,583,289,621,290,629,285,629,284,622,281,583"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="75,471,59,552,50,658,50,715,55,773,67,830,86,884,111,926,143,965,179,998,216,1027,212,1031,175,1002,139,968,107,930,82,886,62,832,50,774,45,715,44,657,54,551,69,470"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="5,135,163,200"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="87,200,87,359,81,359,81,200"/>
+<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="312,1593,310,1244,315,1244,317,1593"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="179,1450,212,1506,253,1568,261,1578,256,1582,248,1571,208,1509,174,1453"/>
+</map>

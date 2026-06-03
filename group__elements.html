@@ -191,9 +191,27 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html">dnf_composer::element::OscillatoryKernelParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for an oscillatory (damped-cosine) convolution kernel.  <a href="structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html">dnf_composer::element::Resize</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resamples a 1D input field of size N to this element's output size M.  <a href="classdnf__composer_1_1element_1_1Resize.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html">dnf_composer::element::Resize2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resamples a 2D input field of size (Nx x Ny) to this element's output size (Mx x My).  <a href="classdnf__composer_1_1element_1_1Resize2D.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1Resize2DParameters.html">dnf_composer::element::Resize2DParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a 2D <a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> element.  <a href="structdnf__composer_1_1element_1_1Resize2DParameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ResizeParameters.html">dnf_composer::element::ResizeParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a 1D <a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> element.  <a href="structdnf__composer_1_1element_1_1ResizeParameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:ga89c0220b0fd31aae856f130ac5fb38c9" id="r_ga89c0220b0fd31aae856f130ac5fb38c9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">dnf_composer::element::InterpolationMethod</a> : int { <a class="el" href="group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aaac544aacc3615aada24897a215f5046">dnf_composer::element::InterpolationMethod::LINEAR</a>
+, <a class="el" href="group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aad135772d7cf93dd0ccf9d2474b34e6a">dnf_composer::element::InterpolationMethod::NEAREST</a>
+, <a class="el" href="group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9accd681e34e5e40fbce74618c3ccffcff">dnf_composer::element::InterpolationMethod::CUBIC</a>
+ }</td></tr>
+<tr class="memdesc:ga89c0220b0fd31aae856f130ac5fb38c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation method used when resampling an input field to a new size.  <a href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">More...</a><br /></td></tr>
+<tr class="separator:ga89c0220b0fd31aae856f130ac5fb38c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf31721249688c9a40e39db23ebebcdec" id="r_gaf31721249688c9a40e39db23ebebcdec"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__elements.html#gaf31721249688c9a40e39db23ebebcdec">dnf_composer::LearningRule</a> : int { <a class="el" href="group__elements.html#ggaf31721249688c9a40e39db23ebebcdecac4c04eeffd6c03a18fc80c18402b5fa6">dnf_composer::LearningRule::HEBB</a>
 , <a class="el" href="group__elements.html#ggaf31721249688c9a40e39db23ebebcdeca00d1ebb88d103fe96c29e40ab45bb3fa">dnf_composer::LearningRule::OJA</a>
 , <a class="el" href="group__elements.html#ggaf31721249688c9a40e39db23ebebcdecaa789408ec4ddae81bd2f72ad5ec6bf3b">dnf_composer::LearningRule::DELTA</a>
@@ -204,6 +222,38 @@ Enumerations</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>DFT element primitives: fields, kernels, stimuli, noise, and couplings. </p>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ga89c0220b0fd31aae856f130ac5fb38c9" name="ga89c0220b0fd31aae856f130ac5fb38c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga89c0220b0fd31aae856f130ac5fb38c9">&#9670;&#160;</a></span>InterpolationMethod</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">dnf_composer::element::InterpolationMethod</a> : int</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolation method used when resampling an input field to a new size. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga89c0220b0fd31aae856f130ac5fb38c9aaac544aacc3615aada24897a215f5046" name="gga89c0220b0fd31aae856f130ac5fb38c9aaac544aacc3615aada24897a215f5046"></a>LINEAR&#160;</td><td class="fielddoc"><p>Piecewise linear interpolation. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga89c0220b0fd31aae856f130ac5fb38c9aad135772d7cf93dd0ccf9d2474b34e6a" name="gga89c0220b0fd31aae856f130ac5fb38c9aad135772d7cf93dd0ccf9d2474b34e6a"></a>NEAREST&#160;</td><td class="fielddoc"><p>Nearest-neighbour sampling. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga89c0220b0fd31aae856f130ac5fb38c9accd681e34e5e40fbce74618c3ccffcff" name="gga89c0220b0fd31aae856f130ac5fb38c9accd681e34e5e40fbce74618c3ccffcff"></a>CUBIC&#160;</td><td class="fielddoc"><p>Catmull-Rom cubic spline interpolation. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="gaf31721249688c9a40e39db23ebebcdec" name="gaf31721249688c9a40e39db23ebebcdec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaf31721249688c9a40e39db23ebebcdec">&#9670;&#160;</a></span>LearningRule</h2>
 

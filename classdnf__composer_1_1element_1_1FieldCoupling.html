@@ -104,10 +104,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa514731154519f2d4767bad8e27ca17b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element.  <br /></td></tr>
 <tr class="separator:aa514731154519f2d4767bad8e27ca17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a388fed7e504ed30765199aeb5a21650c" id="r_a388fed7e504ed30765199aeb5a21650c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a388fed7e504ed30765199aeb5a21650c">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions) override</td></tr>
-<tr class="memdesc:a388fed7e504ed30765199aeb5a21650c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
+<tr class="memdesc:a388fed7e504ed30765199aeb5a21650c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
 <tr class="separator:a388fed7e504ed30765199aeb5a21650c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a908b9209bc0dabbd9d856d9b18151be8" id="r_a908b9209bc0dabbd9d856d9b18151be8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a908b9209bc0dabbd9d856d9b18151be8">changeInputDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newInputDimensions)</td></tr>
-<tr class="memdesc:a908b9209bc0dabbd9d856d9b18151be8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
+<tr class="memdesc:a908b9209bc0dabbd9d856d9b18151be8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
 <tr class="separator:a908b9209bc0dabbd9d856d9b18151be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dc53b29ed5d5de7692640b1dbd23613" id="r_a5dc53b29ed5d5de7692640b1dbd23613"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a5dc53b29ed5d5de7692640b1dbd23613">clearWeights</a> ()</td></tr>
 <tr class="memdesc:a5dc53b29ed5d5de7692640b1dbd23613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the weight matrix to all zeros.  <br /></td></tr>
@@ -375,7 +375,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
+<p><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
 
 <p>Reimplemented from <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214">dnf_composer::element::Element</a>.</p>
 <div class="dynheader">
@@ -402,7 +402,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Resize the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
+<p><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the input field dimensions and rebuild the weight matrix. Preserves output field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

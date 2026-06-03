@@ -1,5 +1,9 @@
 <map id="dnf_composer::element::Element::addInput" name="dnf_composer::element::Element::addInput">
-<area shape="rect" id="Node000001" title="Register inputElement as an upstream source for this element." alt="" coords="236,5,412,45"/>
+<area shape="rect" id="Node000001" title="Register inputElement as an upstream source for this element." alt="" coords="236,69,412,109"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#aa514731154519f2d4767bad8e27ca17b" title="Register inputElement as an upstream source for this element." alt="" coords="5,5,188,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,28,188,28,188,23,222,23"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="238,68,167,48,169,43,239,63"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" title="Register inputElement as an upstream source for this element." alt="" coords="9,69,185,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="222,92,185,92,185,87,222,87"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element." alt="" coords="9,133,185,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="239,116,169,136,167,131,238,111"/>
 </map>

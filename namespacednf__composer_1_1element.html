@@ -243,6 +243,18 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html">OscillatoryKernelParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for an oscillatory (damped-cosine) convolution kernel.  <a href="structdnf__composer_1_1element_1_1OscillatoryKernelParameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html">Resize</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resamples a 1D input field of size N to this element's output size M.  <a href="classdnf__composer_1_1element_1_1Resize.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html">Resize2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resamples a 2D input field of size (Nx x Ny) to this element's output size (Mx x My).  <a href="classdnf__composer_1_1element_1_1Resize2D.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1Resize2DParameters.html">Resize2DParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a 2D <a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> element.  <a href="structdnf__composer_1_1element_1_1Resize2DParameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ResizeParameters.html">ResizeParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for a 1D <a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> element.  <a href="structdnf__composer_1_1element_1_1ResizeParameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1SigmoidFunction.html">SigmoidFunction</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logistic (exponential) sigmoid.  <a href="structdnf__composer_1_1element_1_1SigmoidFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -297,14 +309,25 @@ Enumerations</h2></td></tr>
 , <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea296518034c88d0aa2b316f209f0cc6b8">ASYMMETRIC_GAUSS_KERNEL_2D</a>
 , <br />
 &#160;&#160;<a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334">MEMORY_TRACE_2D</a>
+, <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea97d7e365d3222a3686d571f5541c82ea">RESIZE</a>
+, <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea90e519628d393944dadf5e10f97cded8">RESIZE_2D</a>
 <br />
  }</td></tr>
 <tr class="separator:ac3d19ecdf631f5316e2c09003233bece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga89c0220b0fd31aae856f130ac5fb38c9" id="r_ga89c0220b0fd31aae856f130ac5fb38c9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">InterpolationMethod</a> : int { <a class="el" href="group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aaac544aacc3615aada24897a215f5046">InterpolationMethod::LINEAR</a>
+, <a class="el" href="group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aad135772d7cf93dd0ccf9d2474b34e6a">InterpolationMethod::NEAREST</a>
+, <a class="el" href="group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9accd681e34e5e40fbce74618c3ccffcff">InterpolationMethod::CUBIC</a>
+ }</td></tr>
+<tr class="memdesc:ga89c0220b0fd31aae856f130ac5fb38c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation method used when resampling an input field to a new size.  <a href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">More...</a><br /></td></tr>
+<tr class="separator:ga89c0220b0fd31aae856f130ac5fb38c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a1d5271ba95b4dd255c5d39620d9f805d" id="r_a1d5271ba95b4dd255c5d39620d9f805d"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233bece">ElementLabel</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#a1d5271ba95b4dd255c5d39620d9f805d">ElementLabelToString</a></td></tr>
 <tr class="separator:a1d5271ba95b4dd255c5d39620d9f805d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2de93542c78ec2a9437bce2d80c090f1" id="r_a2de93542c78ec2a9437bce2d80c090f1"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">InterpolationMethod</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1element.html#a2de93542c78ec2a9437bce2d80c090f1">InterpolationMethodToString</a></td></tr>
+<tr class="memdesc:a2de93542c78ec2a9437bce2d80c090f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps InterpolationMethod values to human-readable strings.  <br /></td></tr>
+<tr class="separator:a2de93542c78ec2a9437bce2d80c090f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ac3d19ecdf631f5316e2c09003233bece" name="ac3d19ecdf631f5316e2c09003233bece"></a>
@@ -344,6 +367,8 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea19c2df07c6187e1b3e7bd24776ff2055" name="ac3d19ecdf631f5316e2c09003233becea19c2df07c6187e1b3e7bd24776ff2055"></a>CORRELATED_NORMAL_NOISE_2D&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea296518034c88d0aa2b316f209f0cc6b8" name="ac3d19ecdf631f5316e2c09003233becea296518034c88d0aa2b316f209f0cc6b8"></a>ASYMMETRIC_GAUSS_KERNEL_2D&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334" name="ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334"></a>MEMORY_TRACE_2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea97d7e365d3222a3686d571f5541c82ea" name="ac3d19ecdf631f5316e2c09003233becea97d7e365d3222a3686d571f5541c82ea"></a>RESIZE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac3d19ecdf631f5316e2c09003233becea90e519628d393944dadf5e10f97cded8" name="ac3d19ecdf631f5316e2c09003233becea90e519628d393944dadf5e10f97cded8"></a>RESIZE_2D&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
@@ -368,58 +393,36 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2de93542c78ec2a9437bce2d80c090f1" name="a2de93542c78ec2a9437bce2d80c090f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2de93542c78ec2a9437bce2d80c090f1">&#9670;&#160;</a></span>InterpolationMethodToString</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::map&lt;<a class="el" href="group__elements.html#ga89c0220b0fd31aae856f130ac5fb38c9">InterpolationMethod</a>, std::string&gt; dnf_composer::element::InterpolationMethodToString</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438">UNINITIALIZED</a>, <span class="stringliteral">&quot;uninitialized&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c">NEURAL_FIELD</a>, <span class="stringliteral">&quot;neural field&quot;</span> },</div>
-<div class="line">        {GAUSS_STIMULUS, <span class="stringliteral">&quot;gauss stimulus&quot;</span> },</div>
-<div class="line">        {BOOST_STIMULUS, <span class="stringliteral">&quot;boost stimulus&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea4b191cf2550cf1267899fc3d0698e393">GAUSS_KERNEL</a>, <span class="stringliteral">&quot;gauss kernel&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809">MEXICAN_HAT_KERNEL</a>, <span class="stringliteral">&quot;mexican hat kernel&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea49b51c9e834add72dde3f46050731496">OSCILLATORY_KERNEL</a>, <span class="stringliteral">&quot;oscillatory kernel&quot;</span>},</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea0e3fbf1a2a21373892cf4420e14d39f0">ASYMMETRIC_GAUSS_KERNEL</a>, <span class="stringliteral">&quot;asymmetric gauss kernel&quot;</span>},</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8">NORMAL_NOISE</a>, <span class="stringliteral">&quot;normal noise&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becead51b87992c5e9e7fe895c0600b9b0abc">CORRELATED_NORMAL_NOISE</a>, <span class="stringliteral">&quot;correlated normal noise&quot;</span>},</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772">GAUSS_FIELD_COUPLING</a>, <span class="stringliteral">&quot;gauss field coupling&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b">FIELD_COUPLING</a>, <span class="stringliteral">&quot;field coupling&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666">MEMORY_TRACE</a>, <span class="stringliteral">&quot;memory trace&quot;</span> },</div>
-<div class="line"> </div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea9c3cf5f217e0e9141b68f36fd2fde487">NEURAL_FIELD_2D</a>, <span class="stringliteral">&quot;neural field 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceae05c9342de26d439ae99158d7d5ca6fd">GAUSS_STIMULUS_2D</a>, <span class="stringliteral">&quot;gauss stimulus 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea24cacd802518a79e480bc939ee4923ae">GAUSS_KERNEL_2D</a>, <span class="stringliteral">&quot;gauss kernel 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea473ad423b99760ef250c6b8975f63965">MEXICAN_HAT_KERNEL_2D</a>, <span class="stringliteral">&quot;mexican hat kernel 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea01c4fbbb9a6228545904b56cbcfe0397">NORMAL_NOISE_2D</a>, <span class="stringliteral">&quot;normal noise 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab4ec3c5930f05b336cddccf4948f7a05">OSCILLATORY_KERNEL_2D</a>, <span class="stringliteral">&quot;oscillatory kernel 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becead341c584ee8c07ccc00e86c65e305e61">TIMED_GAUSS_STIMULUS</a>, <span class="stringliteral">&quot;timed gauss stimulus&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea7da71a205e749851ee71a25ebd16fcd1">TIMED_GAUSS_STIMULUS_2D</a>, <span class="stringliteral">&quot;timed gauss stimulus 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea0e9445adec382b086bfc5169d9394648">BOOST_STIMULUS_2D</a>, <span class="stringliteral">&quot;boost stimulus 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea19c2df07c6187e1b3e7bd24776ff2055">CORRELATED_NORMAL_NOISE_2D</a>, <span class="stringliteral">&quot;correlated normal noise 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea296518034c88d0aa2b316f209f0cc6b8">ASYMMETRIC_GAUSS_KERNEL_2D</a>, <span class="stringliteral">&quot;asymmetric gauss kernel 2d&quot;</span> },</div>
-<div class="line">        {<a class="code hl_enumvalue" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334">MEMORY_TRACE_2D</a>, <span class="stringliteral">&quot;memory trace 2d&quot;</span> },</div>
+<div class="line">        {InterpolationMethod::LINEAR, <span class="stringliteral">&quot;linear&quot;</span>},</div>
+<div class="line">        {InterpolationMethod::NEAREST, <span class="stringliteral">&quot;nearest&quot;</span>},</div>
+<div class="line">        {InterpolationMethod::CUBIC, <span class="stringliteral">&quot;cubic&quot;</span>}</div>
 <div class="line">    }</div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea01c4fbbb9a6228545904b56cbcfe0397"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea01c4fbbb9a6228545904b56cbcfe0397">dnf_composer::element::NORMAL_NOISE_2D</a></div><div class="ttdeci">@ NORMAL_NOISE_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:31</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea0e3fbf1a2a21373892cf4420e14d39f0"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea0e3fbf1a2a21373892cf4420e14d39f0">dnf_composer::element::ASYMMETRIC_GAUSS_KERNEL</a></div><div class="ttdeci">@ ASYMMETRIC_GAUSS_KERNEL</div><div class="ttdef"><b>Definition</b> element_parameters.h:20</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea0e9445adec382b086bfc5169d9394648"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea0e9445adec382b086bfc5169d9394648">dnf_composer::element::BOOST_STIMULUS_2D</a></div><div class="ttdeci">@ BOOST_STIMULUS_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:35</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea19c2df07c6187e1b3e7bd24776ff2055"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea19c2df07c6187e1b3e7bd24776ff2055">dnf_composer::element::CORRELATED_NORMAL_NOISE_2D</a></div><div class="ttdeci">@ CORRELATED_NORMAL_NOISE_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:36</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea24cacd802518a79e480bc939ee4923ae"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea24cacd802518a79e480bc939ee4923ae">dnf_composer::element::GAUSS_KERNEL_2D</a></div><div class="ttdeci">@ GAUSS_KERNEL_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:29</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea296518034c88d0aa2b316f209f0cc6b8"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea296518034c88d0aa2b316f209f0cc6b8">dnf_composer::element::ASYMMETRIC_GAUSS_KERNEL_2D</a></div><div class="ttdeci">@ ASYMMETRIC_GAUSS_KERNEL_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:37</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438">dnf_composer::element::UNINITIALIZED</a></div><div class="ttdeci">@ UNINITIALIZED</div><div class="ttdef"><b>Definition</b> element_parameters.h:13</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea473ad423b99760ef250c6b8975f63965"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea473ad423b99760ef250c6b8975f63965">dnf_composer::element::MEXICAN_HAT_KERNEL_2D</a></div><div class="ttdeci">@ MEXICAN_HAT_KERNEL_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:30</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea49b51c9e834add72dde3f46050731496"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea49b51c9e834add72dde3f46050731496">dnf_composer::element::OSCILLATORY_KERNEL</a></div><div class="ttdeci">@ OSCILLATORY_KERNEL</div><div class="ttdef"><b>Definition</b> element_parameters.h:19</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea4b191cf2550cf1267899fc3d0698e393"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea4b191cf2550cf1267899fc3d0698e393">dnf_composer::element::GAUSS_KERNEL</a></div><div class="ttdeci">@ GAUSS_KERNEL</div><div class="ttdef"><b>Definition</b> element_parameters.h:17</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea4c9950064ed7002a8263f73fa94a15a8">dnf_composer::element::NORMAL_NOISE</a></div><div class="ttdeci">@ NORMAL_NOISE</div><div class="ttdef"><b>Definition</b> element_parameters.h:21</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea734cc344651bfa0ef826907f08c09809">dnf_composer::element::MEXICAN_HAT_KERNEL</a></div><div class="ttdeci">@ MEXICAN_HAT_KERNEL</div><div class="ttdef"><b>Definition</b> element_parameters.h:18</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea7da71a205e749851ee71a25ebd16fcd1"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea7da71a205e749851ee71a25ebd16fcd1">dnf_composer::element::TIMED_GAUSS_STIMULUS_2D</a></div><div class="ttdeci">@ TIMED_GAUSS_STIMULUS_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:34</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea80c3480eb64bca459e392bc46e011334">dnf_composer::element::MEMORY_TRACE_2D</a></div><div class="ttdeci">@ MEMORY_TRACE_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:38</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea887e527783b9e2e8b238c012411e8666">dnf_composer::element::MEMORY_TRACE</a></div><div class="ttdeci">@ MEMORY_TRACE</div><div class="ttdef"><b>Definition</b> element_parameters.h:25</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becea9c3cf5f217e0e9141b68f36fd2fde487"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea9c3cf5f217e0e9141b68f36fd2fde487">dnf_composer::element::NEURAL_FIELD_2D</a></div><div class="ttdeci">@ NEURAL_FIELD_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:27</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab244a2eaf9a1d8df86ad1147b636004b">dnf_composer::element::FIELD_COUPLING</a></div><div class="ttdeci">@ FIELD_COUPLING</div><div class="ttdef"><b>Definition</b> element_parameters.h:23</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c">dnf_composer::element::NEURAL_FIELD</a></div><div class="ttdeci">@ NEURAL_FIELD</div><div class="ttdef"><b>Definition</b> element_parameters.h:14</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233beceab4ec3c5930f05b336cddccf4948f7a05"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab4ec3c5930f05b336cddccf4948f7a05">dnf_composer::element::OSCILLATORY_KERNEL_2D</a></div><div class="ttdeci">@ OSCILLATORY_KERNEL_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:32</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becead341c584ee8c07ccc00e86c65e305e61"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becead341c584ee8c07ccc00e86c65e305e61">dnf_composer::element::TIMED_GAUSS_STIMULUS</a></div><div class="ttdeci">@ TIMED_GAUSS_STIMULUS</div><div class="ttdef"><b>Definition</b> element_parameters.h:33</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233becead51b87992c5e9e7fe895c0600b9b0abc"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becead51b87992c5e9e7fe895c0600b9b0abc">dnf_composer::element::CORRELATED_NORMAL_NOISE</a></div><div class="ttdeci">@ CORRELATED_NORMAL_NOISE</div><div class="ttdef"><b>Definition</b> element_parameters.h:22</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233beceae05c9342de26d439ae99158d7d5ca6fd"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceae05c9342de26d439ae99158d7d5ca6fd">dnf_composer::element::GAUSS_STIMULUS_2D</a></div><div class="ttdeci">@ GAUSS_STIMULUS_2D</div><div class="ttdef"><b>Definition</b> element_parameters.h:28</div></div>
-<div class="ttc" id="anamespacednf__composer_1_1element_html_ac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772"><div class="ttname"><a href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceaef9178a61dc7b080d705f92f7d0b3772">dnf_composer::element::GAUSS_FIELD_COUPLING</a></div><div class="ttdeci">@ GAUSS_FIELD_COUPLING</div><div class="ttdef"><b>Definition</b> element_parameters.h:24</div></div>
 </div><!-- fragment -->
+<p>Maps InterpolationMethod values to human-readable strings. </p>
+
 </div>
 </div>
 </div><!-- contents -->
