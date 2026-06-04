@@ -40,7 +40,7 @@ var searchData=
   ['compressiontypetostring_37',['CompressionTypeToString',['../namespacednf__composer_1_1element.html#a67541d50c3c0de566046146d560ad867',1,'dnf_composer::element']]],
   ['computekernelrange_38',['computeKernelRange',['../namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c',1,'dnf_composer::tools::math']]],
   ['console_39',['CONSOLE',['../namespacednf__composer_1_1tools_1_1logger.html#a140699a0bf2e738ec68ba603bc082b6aa82cda1f15db2a5002489b3bc25ef28a0',1,'dnf_composer::tools::logger']]],
-  ['contributing_40',['Contributing',['../index.html#autotoc_md16',1,'']]],
+  ['contributing_40',['Contributing',['../index.html#autotoc_md18',1,'']]],
   ['control_5fbar_5fwindow_2ecpp_41',['control_bar_window.cpp',['../control__bar__window_8cpp.html',1,'']]],
   ['control_5fbar_5fwindow_2eh_42',['control_bar_window.h',['../control__bar__window_8h.html',1,'']]],
   ['controlbarwindow_43',['controlbarwindow',['../classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#af90769767068f64aa0e73127742d1726',1,'dnf_composer::user_interface::ControlBarWindow::ControlBarWindow(ControlBarWindow &amp;&amp;)=delete'],['../classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#a1fb2f64b8763a28803a44e9e777f1ec4',1,'dnf_composer::user_interface::ControlBarWindow::ControlBarWindow(const ControlBarWindow &amp;)=delete'],['../classdnf__composer_1_1user__interface_1_1ControlBarWindow.html',1,'dnf_composer::user_interface::ControlBarWindow'],['../classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#ac9caf3ee2a65d28e12e281e26628fbac',1,'dnf_composer::user_interface::ControlBarWindow::ControlBarWindow()']]],

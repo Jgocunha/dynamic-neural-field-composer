@@ -7,7 +7,7 @@ var searchData=
   ['learningrule_4',['learningrule',['../group__elements.html#gaf31721249688c9a40e39db23ebebcdec',1,'dnf_composer::LearningRule'],['../structdnf__composer_1_1element_1_1FieldCouplingParameters.html#a76f3c074995a6d092bdff54b36857d68',1,'dnf_composer::element::FieldCouplingParameters::learningRule']]],
   ['learningruletostring_5',['LearningRuleToString',['../namespacednf__composer.html#a36f0616559e4668e4d29626f08509c92',1,'dnf_composer']]],
   ['library_6',['library',['../structImGui__ImplFreeType__Data.html#a29a742812f010781e3217ad640944d70',1,'ImGui_ImplFreeType_Data::Library'],['../index.html#autotoc_md12',1,'Two launchers, one library']]],
-  ['license_7',['License',['../index.html#autotoc_md17',1,'']]],
+  ['license_7',['License',['../index.html#autotoc_md19',1,'']]],
   ['line_5fplot_8',['LINE_PLOT',['../namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66abdd402e16007eedd39f69adf0f10f88b',1,'dnf_composer']]],
   ['linear_9',['LINEAR',['../group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aaac544aacc3615aada24897a215f5046',1,'dnf_composer::element']]],
   ['lineplot_10',['lineplot',['../classdnf__composer_1_1LinePlot.html',1,'dnf_composer::LinePlot'],['../classdnf__composer_1_1LinePlot.html#a1a9e27854403bbd84ee9ea510235b545',1,'dnf_composer::LinePlot::LinePlot()']]],
