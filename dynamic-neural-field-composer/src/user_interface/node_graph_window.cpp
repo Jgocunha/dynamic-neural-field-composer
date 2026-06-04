@@ -4,6 +4,8 @@
 #include "elements/correlated_normal_noise_2d.h"
 #include "elements/resize.h"
 #include "elements/resize_2d.h"
+#include "elements/collapse.h"
+#include "elements/expand.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 namespace dnf_composer::user_interface
@@ -1032,6 +1034,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
 		case element::ElementLabel::RESIZE:
 		case element::ElementLabel::RESIZE_2D:
+		case element::ElementLabel::COLLAPSE:
+		case element::ElementLabel::EXPAND:
 			return 2;
 		case element::ElementLabel::NEURAL_FIELD:
 		case element::ElementLabel::NEURAL_FIELD_2D:
@@ -1329,6 +1333,23 @@ namespace dnf_composer::user_interface
 			const auto& p = rz->getParameters();
 			ImGui::Text("Interpolation: %s", element::InterpolationMethodToString.at(p.method).c_str());
 			ImGui::Text("Input size: %d x %d", p.inputDimensions.size_x, p.inputDimensions.size_y);
+			break;
+		}
+		case element::ElementLabel::COLLAPSE:
+		{
+			const auto cl = std::dynamic_pointer_cast<element::Collapse>(element);
+			const auto& p = cl->getParameters();
+			ImGui::Text("Compression: %s", element::CompressionTypeToString.at(p.compression).c_str());
+			ImGui::Text("Keep axis: %s",   element::ProjectionAxisToString.at(p.keepAxis).c_str());
+			ImGui::Text("Input size: %d x %d", p.inputDimensions.size_x, p.inputDimensions.size_y);
+			break;
+		}
+		case element::ElementLabel::EXPAND:
+		{
+			const auto ex = std::dynamic_pointer_cast<element::Expand>(element);
+			const auto& p = ex->getParameters();
+			ImGui::Text("Profile axis: %s", element::ProjectionAxisToString.at(p.broadcastProfileAxis).c_str());
+			ImGui::Text("Input size: %d",   p.inputDimensions.size);
 			break;
 		}
 		default:

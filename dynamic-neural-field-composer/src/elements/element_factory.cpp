@@ -169,6 +169,18 @@ namespace dnf_composer
 					return std::make_shared<Resize2D>(elementCommonParameters, *params);
 				};
 
+			elementCreators[ElementLabel::COLLAPSE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const CollapseParameters*>(&elementSpecificParameters);
+					return std::make_shared<Collapse>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::EXPAND] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const ExpandParameters*>(&elementSpecificParameters);
+					return std::make_shared<Expand>(elementCommonParameters, *params);
+				};
+
 			}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -242,6 +254,10 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), ResizeParameters());
 					case ElementLabel::RESIZE_2D:
 						return creator->second(ElementCommonParameters(type), Resize2DParameters());
+					case ElementLabel::COLLAPSE:
+						return creator->second(ElementCommonParameters(type), CollapseParameters());
+					case ElementLabel::EXPAND:
+						return creator->second(ElementCommonParameters(type), ExpandParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

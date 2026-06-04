@@ -30,6 +30,10 @@
 #include "elements/correlated_normal_noise_2d.h"
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
+#include "elements/resize.h"
+#include "elements/resize_2d.h"
+#include "elements/collapse.h"
+#include "elements/expand.h"
 #include "exceptions/exception.h"
 
 using namespace dnf_composer;
@@ -315,6 +319,33 @@ TEST_F(SimulationFileManagerTest, LoadFromNonExistentFileLeavesSimulationEmpty)
     const SimulationFileManager sfm{ sim, tempDir + "does-not-exist/does-not-exist.dnf" };
     sfm.loadElementsFromJson();
     EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadResizeWithMissingInputDimsDoesNotThrow)
+{
+    // A hand-edited / older .dnf may lack the input_* keys for a dimension-bridging
+    // element. Loading must fall back to the element's own dims instead of throwing
+    // and aborting the whole load.
+    const std::string dir = tempDir + "legacy-resize/";
+    fs::create_directories(dir);
+    const std::string path = dir + "legacy-resize.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "legacy-resize",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "rz 1", "label": [30, "resize"],
+                  "x_max": 50, "d_x": 1.0, "y_max": 1, "d_y": 1.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("legacy-resize-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_NE(sim->getElement("rz 1"), nullptr);
 }
 
 TEST_F(SimulationFileManagerTest, LoadFromTestJsonCreatesCorrectElementCount)
@@ -845,6 +876,125 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesMemoryTraceParameters)
 }
 
 // ---------------------------------------------------------------------------
+// Dimension-bridging elements (Resize / Resize2D / Collapse / Expand)
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesResizeParameters)
+{
+    // Non-default method + input dimensions that differ in size AND step from output.
+    const ResizeParameters rp{ InterpolationMethod::CUBIC, ElementDimensions(80, 2.5) };
+    auto rz = std::make_shared<Resize>(
+        ElementCommonParameters{ "rz rt", ElementDimensions(40, 1.0) }, rp);
+
+    const auto simA = createSimulation("rt-rz", 1.0, 0.0, 0.0);
+    simA->addElement(rz);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-rz-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-rz/rt-rz.dnf" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<Resize>(simB->getElement("rz rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), rp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesResize2DParameters)
+{
+    const Resize2DParameters rp{ InterpolationMethod::NEAREST,
+        ElementDimensions(60, 30, 1.5, 0.5) };
+    auto rz = std::make_shared<Resize2D>(
+        ElementCommonParameters{ "rz2d rt", ElementDimensions(40, 40, 1.0, 1.0) }, rp);
+
+    const auto simA = createSimulation("rt-rz2d", 1.0, 0.0, 0.0);
+    simA->addElement(rz);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-rz2d-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-rz2d/rt-rz2d.dnf" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<Resize2D>(simB->getElement("rz2d rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), rp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesCollapseParametersAndWiring)
+{
+    // 2D source field -> Collapse (2D->1D) -> 1D field. Round-trips params + both connections.
+    const SigmoidFunction sig{ 0.0, 10.0 };
+    const ElementDimensions src2D(30, 20, 1.0, 1.0);
+    const ElementDimensions out1D(30, 1.0); // kept axis = X -> size_x = 30
+
+    auto u = std::make_shared<NeuralField2D>(
+        ElementCommonParameters{ "cl src 2d", src2D }, NeuralField2DParameters{ 25.0, -5.0, sig });
+    const CollapseParameters cp{ CompressionType::AVERAGE, ProjectionAxis::X, src2D };
+    auto cl = std::make_shared<Collapse>(ElementCommonParameters{ "cl rt", out1D }, cp);
+    auto v = std::make_shared<NeuralField>(
+        ElementCommonParameters{ "cl dst 1d", out1D }, NeuralFieldParameters{ 25.0, -5.0, sig });
+
+    const auto simA = createSimulation("rt-cl", 1.0, 0.0, 0.0);
+    simA->addElement(u);
+    simA->addElement(cl);
+    simA->addElement(v);
+    simA->createInteraction("cl src 2d", "output", "cl rt");
+    simA->createInteraction("cl rt", "output", "cl dst 1d");
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-cl-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-cl/rt-cl.dnf" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<Collapse>(simB->getElement("cl rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), cp);
+
+    // Both connections restored.
+    const auto consumers = simB->getElementsThatHaveSpecifiedElementAsInput("cl rt");
+    ASSERT_FALSE(consumers.empty());
+    EXPECT_EQ(consumers.front()->getUniqueName(), "cl dst 1d");
+    EXPECT_FALSE(simB->getElementsThatHaveSpecifiedElementAsInput("cl src 2d").empty());
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesExpandParametersAndWiring)
+{
+    // 1D source field -> Expand (1D->2D) -> 2D field. Round-trips params + both connections.
+    const SigmoidFunction sig{ 0.0, 10.0 };
+    const ElementDimensions src1D(30, 1.0);
+    const ElementDimensions out2D(30, 20, 1.0, 1.0);
+
+    auto a = std::make_shared<NeuralField>(
+        ElementCommonParameters{ "ex src 1d", src1D }, NeuralFieldParameters{ 25.0, -5.0, sig });
+    const ExpandParameters ep{ ProjectionAxis::X, src1D };
+    auto ex = std::make_shared<Expand>(ElementCommonParameters{ "ex rt", out2D }, ep);
+    auto b = std::make_shared<NeuralField2D>(
+        ElementCommonParameters{ "ex dst 2d", out2D }, NeuralField2DParameters{ 25.0, -5.0, sig });
+
+    const auto simA = createSimulation("rt-ex", 1.0, 0.0, 0.0);
+    simA->addElement(a);
+    simA->addElement(ex);
+    simA->addElement(b);
+    simA->createInteraction("ex src 1d", "output", "ex rt");
+    simA->createInteraction("ex rt", "output", "ex dst 2d");
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-ex-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-ex/rt-ex.dnf" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<Expand>(simB->getElement("ex rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), ep);
+
+    const auto consumers = simB->getElementsThatHaveSpecifiedElementAsInput("ex rt");
+    ASSERT_FALSE(consumers.empty());
+    EXPECT_EQ(consumers.front()->getUniqueName(), "ex dst 2d");
+    EXPECT_FALSE(simB->getElementsThatHaveSpecifiedElementAsInput("ex src 1d").empty());
+}
+
+// ---------------------------------------------------------------------------
 // All element types in a single simulation
 // ---------------------------------------------------------------------------
 
@@ -1187,4 +1337,43 @@ TEST_F(SimulationFileManagerTest, RoundTripAllElementTypes2D)
     const auto tgs = std::dynamic_pointer_cast<TimedGaussStimulus>(simB->getElement("tgs 1"));
     ASSERT_NE(tgs, nullptr);
     EXPECT_EQ(tgs->getParameters(), (TimedGaussStimulusParameters{ 5.0, 15.0, 50.0, {{0.0, 100.0}}, true, false }));
+}
+
+// ---------------------------------------------------------------------------
+// All dimension-bridging elements in a single simulation
+// (regression guard: fails loudly if a new bridging element ships without a
+//  SimulationFileManager case — the gap that caused the save/load crash.)
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, RoundTripAllDimensionBridgingElements)
+{
+    const auto simA = createSimulation("rt-bridging", 1.0, 0.0, 0.0);
+
+    simA->addElement(std::make_shared<Resize>(
+        ElementCommonParameters{ "rz 1", ElementDimensions(50, 1.0) },
+        ResizeParameters{ InterpolationMethod::LINEAR, ElementDimensions(100, 1.0) }));
+    simA->addElement(std::make_shared<Resize2D>(
+        ElementCommonParameters{ "rz2d 1", ElementDimensions(40, 40, 1.0, 1.0) },
+        Resize2DParameters{ InterpolationMethod::CUBIC, ElementDimensions(50, 50, 1.0, 1.0) }));
+    simA->addElement(std::make_shared<Collapse>(
+        ElementCommonParameters{ "cl 1", ElementDimensions(50, 1.0) },
+        CollapseParameters{ CompressionType::SUM, ProjectionAxis::X, ElementDimensions(50, 50, 1.0, 1.0) }));
+    simA->addElement(std::make_shared<Expand>(
+        ElementCommonParameters{ "ex 1", ElementDimensions(50, 50, 1.0, 1.0) },
+        ExpandParameters{ ProjectionAxis::X, ElementDimensions(50, 1.0) }));
+
+    constexpr int elementCount = 4;
+    ASSERT_EQ(simA->getNumberOfElements(), elementCount);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-bridging-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-bridging/rt-bridging.dnf" }.loadElementsFromJson();
+
+    EXPECT_EQ(simB->getNumberOfElements(), elementCount);
+    EXPECT_NE(simB->getElement("rz 1"),   nullptr);
+    EXPECT_NE(simB->getElement("rz2d 1"), nullptr);
+    EXPECT_NE(simB->getElement("cl 1"),   nullptr);
+    EXPECT_NE(simB->getElement("ex 1"),   nullptr);
 }

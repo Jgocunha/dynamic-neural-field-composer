@@ -31,6 +31,10 @@
 #include "elements/correlated_normal_noise_2d.h"
 #include "elements/asymmetric_gauss_kernel_2d.h"
 #include "elements/memory_trace_2d.h"
+#include "elements/resize.h"
+#include "elements/resize_2d.h"
+#include "elements/collapse.h"
+#include "elements/expand.h"
 
 /// @defgroup simulation_io Simulation I/O
 /// @brief JSON serialization and deserialization of simulation architectures.

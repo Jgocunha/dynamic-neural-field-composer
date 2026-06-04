@@ -73,5 +73,7 @@ namespace dnf_composer::user_interface
 		void addElementMemoryTrace2D(char* id, bool addRequested) const;
 		void addElementResize(char* id, bool addRequested) const;
 		void addElementResize2D(char* id, bool addRequested) const;
+		void addElementCollapse(char* id, bool addRequested) const;
+		void addElementExpand(char* id, bool addRequested) const;
 	};
 }

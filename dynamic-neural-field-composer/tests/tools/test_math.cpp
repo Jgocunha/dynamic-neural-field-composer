@@ -477,3 +477,85 @@ TEST(Wrap, InRangeUnchanged)
 {
     EXPECT_DOUBLE_EQ(wrap(5.0, 10.0), 5.0);
 }
+
+// ---------------------------------------------------------------------------
+// reduce2DAxis_into
+// ---------------------------------------------------------------------------
+
+// 3x2 y-major buffer: rows y=0 -> {1,2,3}, y=1 -> {4,5,6}.
+static std::vector<double> sampleField3x2() { return { 1, 2, 3, 4, 5, 6 }; }
+
+TEST(Reduce2DAxisInto, KeepXSum)
+{
+    std::vector<double> out;
+    reduce2DAxis_into(out, sampleField3x2(), 3, 2, /*keepX=*/true, ReduceOp::SUM);
+    EXPECT_EQ(out, (std::vector<double>{ 5, 7, 9 })); // column sums
+}
+
+TEST(Reduce2DAxisInto, KeepYAverage)
+{
+    std::vector<double> out;
+    reduce2DAxis_into(out, sampleField3x2(), 3, 2, /*keepX=*/false, ReduceOp::AVERAGE);
+    EXPECT_EQ(out, (std::vector<double>{ 2, 5 })); // row means: (1+2+3)/3, (4+5+6)/3
+}
+
+TEST(Reduce2DAxisInto, NonPositiveDimensionsYieldEmpty)
+{
+    std::vector<double> out{ 9, 9, 9 };
+    reduce2DAxis_into(out, sampleField3x2(), 0, 2, true, ReduceOp::SUM);
+    EXPECT_TRUE(out.empty());
+
+    out = { 9, 9, 9 };
+    reduce2DAxis_into(out, sampleField3x2(), -3, 2, true, ReduceOp::SUM);
+    EXPECT_TRUE(out.empty());
+
+    out = { 9, 9, 9 };
+    reduce2DAxis_into(out, sampleField3x2(), 3, -2, false, ReduceOp::SUM);
+    EXPECT_TRUE(out.empty());
+}
+
+TEST(Reduce2DAxisInto, FieldSmallerThanDimsYieldsEmpty)
+{
+    // Claims 3x2 = 6 entries but only 4 are present -> must not read OOB.
+    std::vector<double> field{ 1, 2, 3, 4 };
+    std::vector<double> out{ 9, 9, 9 };
+    reduce2DAxis_into(out, field, 3, 2, true, ReduceOp::SUM);
+    EXPECT_TRUE(out.empty());
+}
+
+// ---------------------------------------------------------------------------
+// broadcast1DTo2D_into
+// ---------------------------------------------------------------------------
+
+TEST(Broadcast1DTo2DInto, AlongXRepeatsProfilePerRow)
+{
+    std::vector<double> out;
+    broadcast1DTo2D_into(out, std::vector<double>{ 10, 20, 30 }, 3, 2, /*alongX=*/true);
+    EXPECT_EQ(out, (std::vector<double>{ 10, 20, 30, 10, 20, 30 }));
+}
+
+TEST(Broadcast1DTo2DInto, AlongYRepeatsProfilePerColumn)
+{
+    std::vector<double> out;
+    broadcast1DTo2D_into(out, std::vector<double>{ 7, 8 }, 3, 2, /*alongX=*/false);
+    EXPECT_EQ(out, (std::vector<double>{ 7, 7, 7, 8, 8, 8 }));
+}
+
+TEST(Broadcast1DTo2DInto, ProfileShorterThanAxisClampsInsteadOfReadingOOB)
+{
+    // Profile has 2 entries but x-axis is 3 wide: last index must clamp to 20.
+    std::vector<double> out;
+    broadcast1DTo2D_into(out, std::vector<double>{ 10, 20 }, 3, 1, /*alongX=*/true);
+    EXPECT_EQ(out, (std::vector<double>{ 10, 20, 20 }));
+}
+
+TEST(Broadcast1DTo2DInto, NonPositiveDimensionsYieldEmpty)
+{
+    std::vector<double> out{ 9, 9 };
+    broadcast1DTo2D_into(out, std::vector<double>{ 1, 2 }, -3, 2, true);
+    EXPECT_TRUE(out.empty());
+
+    out = { 9, 9 };
+    broadcast1DTo2D_into(out, std::vector<double>{ 1, 2 }, 3, 0, true);
+    EXPECT_TRUE(out.empty());
+}
