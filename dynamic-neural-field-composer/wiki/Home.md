@@ -41,22 +41,6 @@ It is also designed to be **easy to build from source** — a deliberate goal, s
 
 ---
 
-## Navigation
-
-| | |
-|---|---|
-| [Getting Started](Getting-Started) | Prerequisites, building, running, and your first simulation |
-| [Architecture](Architecture) | Module overview and design philosophy |
-| [Simulation](Simulation) | The `Simulation` class — lifecycle, elements, persistence |
-| [Elements](Elements) | The `Element` base class, factory, and component system |
-| [Visualization](Visualization) | Plots, heatmaps, and the `Visualization` class |
-| [Application & UI](Application-and-UI) | The `Application` class and available GUI windows |
-| [Element Reference](Element-Reference) | Every element type with its parameters and components |
-| [Testing](Testing) | Google Test setup, how to build and run the test suite |
-| [Examples](Examples) | Walkthrough of all included examples |
-
----
-
 ## Namespace
 
 All library code lives in the `dnf_composer` namespace. Elements are further nested under `dnf_composer::element`.

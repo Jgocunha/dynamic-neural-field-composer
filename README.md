@@ -193,6 +193,12 @@ You can also write your own launcher, link against the library, and choose exact
 
 ---
 
+## Benchmarking & validation
+
+Benchmarking against established DFT frameworks shows dynamic-neural-field-composer achieves the highest simulation throughput — delivering ~15–41% higher throughput than Cedar, the next-fastest framework — while maintaining algebraic equivalence with established implementations (and full float64 precision). The full methodology, per-size results, and cross-platform validation are available at [Jgocunha/dynamic-field-theory-software](https://github.com/Jgocunha/dynamic-field-theory-software).
+
+---
+
 ## Contributing
 
 Bug fixes, new elements, documentation improvements, and example architectures are all welcome. Open an issue before starting non-trivial work so direction can be agreed on first. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full process.

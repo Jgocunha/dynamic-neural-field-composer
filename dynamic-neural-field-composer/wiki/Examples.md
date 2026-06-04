@@ -290,8 +290,6 @@ Demonstrates `GaussFieldCoupling` — a fixed (non-learnable) coupling using a G
 
 **Key concepts:** fixed-basis inter-field projection, `GaussFieldCoupling`, heterogeneous field sizes and spacings
 
-> **Note:** The CMakeLists entry for this example is commented out by default. Uncomment `example_gaussian_field_coupling` in `examples/CMakeLists.txt` to build it.
-
 ---
 
 ## Resampling examples
@@ -327,14 +325,10 @@ Demonstrates the `Resize` and `Resize2D` elements, which resample a field to a d
 **Executable:** `example_dimensionality_collapse_expand`
 
 Demonstrates the `Collapse` and `Expand` elements, which bridge 1D and 2D layers.
-Four architectures run in the same simulation, each a `stimulus → field (+ self-kernel)
-→ Collapse/Expand [→ Resize] → field (+ self-kernel)` chain:
+Two architectures run in the same simulation, each a `stimulus → field (+ self-kernel)
+→ Collapse/Expand → field (+ self-kernel)` chain:
 - **(a) Expansion:** 1D field **u** → `Expand` → 2D field **v** (50×50, step 0.5).
-- **(b) Expansion + resize:** 1D field **u** → `Expand` (→50×50) → `Resize2D`
-  → 2D field **v** (x:100 step 1.5, y:50 step 0.5).
-- **(c) Collapse:** 2D field **u** (50×50) → `Collapse` (sum, keep X) → 1D field **v** (50).
-- **(d) Collapse + resize:** 2D field **u** (50×50) → `Collapse` (→50) → `Resize`
-  → 1D field **v** (size 200, step 5.0).
+- **(b) Collapse:** 2D field **u** (50×50) → `Collapse` (sum, keep X) → 1D field **v** (50).
 
 **Key concepts:** mixed 1D/2D architectures, `Collapse` (marginalization with
 sum / average / maximum / minimum), `Expand` (ridge broadcast), axis selection,
