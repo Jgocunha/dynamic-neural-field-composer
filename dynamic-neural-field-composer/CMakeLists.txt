@@ -65,6 +65,7 @@ set(visualization_headers
 )
 set(application_headers
         "include/application/application.h"
+        "include/application/style.h"
 )
 set(elements_headers
         "include/elements/activation_function.h"
@@ -97,6 +98,11 @@ set(elements_headers
         "include/elements/correlated_normal_noise_2d.h"
         "include/elements/asymmetric_gauss_kernel_2d.h"
         "include/elements/memory_trace_2d.h"
+
+        "include/elements/resize.h"
+        "include/elements/resize_2d.h"
+        "include/elements/collapse.h"
+        "include/elements/expand.h"
 )
 set(element_parameters_headers
         "include/element_parameters/element_parameters.h"
@@ -133,6 +139,12 @@ set(user_interface_headers
 
         "include/user_interface/fonts/IconsFontAwesome6.h"
         "include/user_interface/fonts/fa.h"
+        "include/user_interface/fonts/imgui_freetype.h"
+)
+
+set(umbrella_headers
+        "include/dynamic-neural-field-composer-static.h"
+        "include/dynamic-neural-field-composer-dynamic.h"
 )
 
 set(header 
@@ -144,7 +156,7 @@ set(header
     ${tools_headers}
     ${exceptions_headers}
     ${user_interface_headers}
-    ${user_interface_headers}
+    ${umbrella_headers}
 )
 
 # Set source files
@@ -292,6 +304,7 @@ install(FILES ${tools_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_c
 install(FILES ${exceptions_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/exceptions)
 install(FILES ${user_interface_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/user_interface)
 install(FILES ${element_parameters_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/element_parameters)
+install(FILES ${umbrella_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer)
 
 # Install runtime resources (fonts, icons, images, layouts)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
