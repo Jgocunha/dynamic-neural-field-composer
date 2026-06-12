@@ -89,7 +89,7 @@ Your executable will appear alongside the other example binaries in the build ou
 
 ```bash
 # Windows (Release)
-build\x64-release\Release\example_my_example.exe
+build\x64-release\example_my_example.exe
 
 # Linux
 ./build/linux-release/example_my_example

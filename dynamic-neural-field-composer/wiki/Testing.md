@@ -48,10 +48,10 @@ Running the executable directly gives you full Google Test output and filter sup
 
 ```bash
 # Windows (Release)
-build\x64-release\Release\dnf_composer_tests.exe
+build\x64-release\dnf_composer_tests.exe
 
 # Windows (Debug)
-build\x64-debug\Debug\dnf_composer_tests.exe
+build\x64-debug\dnf_composer_tests.exe
 
 # Linux
 ./build/dnf_composer_tests

@@ -72,7 +72,7 @@ scripts\build.bat
 
 `setup.bat` installs vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set and persists it via `setx`, installs all vcpkg packages, and builds `imgui-platform-kit` into `deps\ipk-install\`.
 
-`build.bat` configures and builds both Release and Debug. Binaries land in `build\x64-release\Release\` and `build\x64-debug\Debug\`.
+`build.bat` configures and builds both Release and Debug with Ninja and the MSVC toolchain. Binaries land in `build\x64-release\` and `build\x64-debug\`.
 
 ### Linux
 
@@ -139,7 +139,7 @@ A single self-contained window with all panels docked in a fixed layout. Best fo
 
 ```bash
 # Windows (Release)
-build\x64-release\Release\dnf-composer-static.exe
+build\x64-release\dnf-composer-static.exe
 
 # Linux
 ./build/dnf-composer-static
@@ -154,7 +154,7 @@ A fully dockable ImGui application. Windows can be rearranged, detached, and dra
 
 ```bash
 # Windows (Release)
-build\x64-release\Release\dnf-composer-dynamic.exe
+build\x64-release\dnf-composer-dynamic.exe
 
 # Linux
 ./build/dnf-composer-dynamic
@@ -179,10 +179,10 @@ Seventeen example executables are built alongside the application:
 
 ```bash
 # Windows
-build\x64-release\Release\example_detection_instability.exe
-build\x64-release\Release\example_memory_instability.exe
-build\x64-release\Release\example_selection_instability.exe
-build\x64-release\Release\example_multi_peak.exe
+build\x64-release\example_detection_instability.exe
+build\x64-release\example_memory_instability.exe
+build\x64-release\example_selection_instability.exe
+build\x64-release\example_multi_peak.exe
 # ... etc.
 
 # Linux
@@ -237,7 +237,7 @@ See the dedicated [Testing](Testing) page for full details. The short version:
 ctest --build-config Release --output-on-failure
 
 # Or run the test executable directly
-build\x64-release\Release\dnf_composer_tests.exe   # Windows
+build\x64-release\dnf_composer_tests.exe   # Windows
 ./build/dnf_composer_tests                          # Linux
 ./build/macos-release/dnf_composer_tests            # macOS
 ```

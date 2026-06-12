@@ -68,7 +68,7 @@ Auto-detects CPU architecture (`arm64` or `x64`). Configures and builds in Relea
 scripts\build.bat
 ```
 
-Configures and builds both Release and Debug configurations using Visual Studio 2022. Output lands in `build\x64-release\Release\` and `build\x64-debug\Debug\`.
+Configures and builds both Release and Debug configurations with Ninja and the MSVC toolchain. Output lands in `build\x64-release\` and `build\x64-debug\`.
 
 ---
 

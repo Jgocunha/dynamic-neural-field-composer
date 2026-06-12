@@ -13,24 +13,34 @@ IF NOT DEFINED VCPKG_ROOT (
     exit /b 1
 )
 
+:: Load the MSVC x64 toolchain. Ninja needs cl.exe on PATH; locating Visual Studio via
+:: vswhere keeps this version-agnostic (works with whichever VS the machine/runner has).
+set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -latest -products * ^
+    -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
+    -property installationPath`) do set "VSINSTALL=%%i"
+if not defined VSINSTALL ( echo ERROR: Visual Studio with C++ tools not found. & exit /b 1 )
+call "%VSINSTALL%\VC\Auxiliary\Build\vcvars64.bat"
+if errorlevel 1 ( echo ERROR: failed to initialize MSVC environment. & exit /b 1 )
+
 :: Create build folders
 mkdir %PROJECT_ROOT%\build\x64-release
 mkdir %PROJECT_ROOT%\build\x64-debug
 
 :: Run CMake (Release)
-cmake -G "Visual Studio 17 2022" -A x64 -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-release" ^
+cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-release" ^
     -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_PREFIX_PATH="%IPK_RELEASE%"
 
 :: Build Release
-cmake --build "%PROJECT_ROOT%\build\x64-release" --config Release
+cmake --build "%PROJECT_ROOT%\build\x64-release" --parallel
 
 :: Run CMake (Debug)
-cmake -G "Visual Studio 17 2022" -A x64 -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-debug" ^
+cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-debug" ^
     -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
     -DCMAKE_BUILD_TYPE=Debug ^
     -DCMAKE_PREFIX_PATH="%IPK_DEBUG%"
 
 :: Build Debug
-cmake --build "%PROJECT_ROOT%\build\x64-debug" --config Debug
+cmake --build "%PROJECT_ROOT%\build\x64-debug" --parallel
