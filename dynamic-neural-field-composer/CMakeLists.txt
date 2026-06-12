@@ -137,6 +137,8 @@ set(user_interface_headers
         "include/user_interface/node_utilities/drawing.h"
         "include/user_interface/node_utilities/node_widgets.h"
 
+)
+set(user_interface_font_headers
         "include/user_interface/fonts/IconsFontAwesome6.h"
         "include/user_interface/fonts/fa.h"
         "include/user_interface/fonts/imgui_freetype.h"
@@ -156,6 +158,7 @@ set(header
     ${tools_headers}
     ${exceptions_headers}
     ${user_interface_headers}
+    ${user_interface_font_headers}
     ${umbrella_headers}
 )
 
@@ -303,6 +306,7 @@ install(FILES ${elements_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dn
 install(FILES ${tools_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/tools)
 install(FILES ${exceptions_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/exceptions)
 install(FILES ${user_interface_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/user_interface)
+install(FILES ${user_interface_font_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/user_interface/fonts)
 install(FILES ${element_parameters_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer/element_parameters)
 install(FILES ${umbrella_headers} DESTINATION ${DNF_COMPOSER_INC_INSTALL_DIR}/dnf_composer)
 
