@@ -13,6 +13,10 @@ IF NOT DEFINED VCPKG_ROOT (
     exit /b 1
 )
 
+:: Snapshot VCPKG_ROOT before vcvars. vcvars64.bat overwrites VCPKG_ROOT to point at
+:: Visual Studio's bundled vcpkg, which does not have our packages installed.
+set "PROJECT_VCPKG_ROOT=%VCPKG_ROOT%"
+
 :: Load the MSVC x64 toolchain. Ninja needs cl.exe on PATH; locating Visual Studio via
 :: vswhere keeps this version-agnostic (works with whichever VS the machine/runner has).
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
@@ -29,7 +33,7 @@ mkdir %PROJECT_ROOT%\build\x64-debug
 
 :: Run CMake (Release)
 cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-release" ^
-    -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
+    -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_PREFIX_PATH="%IPK_RELEASE%"
 
@@ -38,7 +42,7 @@ cmake --build "%PROJECT_ROOT%\build\x64-release" --parallel
 
 :: Run CMake (Debug)
 cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-debug" ^
-    -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
+    -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
     -DCMAKE_BUILD_TYPE=Debug ^
     -DCMAKE_PREFIX_PATH="%IPK_DEBUG%"
 
