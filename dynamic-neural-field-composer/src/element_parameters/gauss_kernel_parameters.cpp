@@ -1,4 +1,5 @@
 ﻿#include "element_parameters/gauss_kernel_parameters.h"
+#include <format>
 
 namespace dnf_composer
 {
@@ -21,12 +22,13 @@ namespace dnf_composer
 
 		std::string GaussKernelParameters::toString() const override
 		{
-			std::string result = "Gauss kernel parameters\n";
-			result += "Width: " + std::to_string(width) + "\n";
-			result += "Amplitude: " + std::to_string(amplitude) + "\n";
-			result += "Circular: " + std::to_string(circular) + "\n";
-			result += "Normalized: " + std::to_string(normalized) + "\n";
-			return result;
+			return std::format(
+        "Gauss kernel parameters\n"
+        "Width: {:.2f}\n"
+        "Amplitude: {:.2f}\n"
+        "Circular: {}\n"
+        "Normalized: {}\n",
+        width, amplitude, circular, normalized);
 		}
 	}
 }

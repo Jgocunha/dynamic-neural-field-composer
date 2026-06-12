@@ -1,4 +1,5 @@
 ﻿#include "element_parameters/mexican_hat_kernel_parameters.h"
+#include <format>
 
 namespace dnf_composer
 {
@@ -24,14 +25,15 @@ namespace dnf_composer
 
 		std::string MexicanHatKernelParameters::toString() const
 		{
-			std::string result = "Mexican-hat kernel parameters\n";
-			result += "Width exc: " + std::to_string(widthExc) + "\n";
-			result += "Amplitude exc: " + std::to_string(amplitudeExc) + "\n";
-			result += "Width inh: " + std::to_string(widthInh) + "\n";
-			result += "Amplitude inh: " + std::to_string(amplitudeInh) + "\n";
-			result += "Circular: " + std::to_string(circular) + "\n";
-			result += "Normalized: " + std::to_string(normalized) + "\n";
-			return result;
+			return std::format(
+        "Mexican-hat kernel parameters\n"
+        "Width Exc: {:.2f}\n"
+        "Amplitude Exc: {:.2f}\n"
+        "Width Inh: {:.2f}\n"
+        "Amplitude Inh: {:.2f}\n"
+        "Circular: {}\n"
+        "Normalized: {}\n",
+        widthExc, amplitudeExc, widthInh, amplitudeInh, circular, normalized);
 		}
 	}
 }

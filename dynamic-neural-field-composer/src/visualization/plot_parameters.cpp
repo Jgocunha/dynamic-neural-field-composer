@@ -1,5 +1,5 @@
 #include "visualization/plot_parameters.h"
-
+#include <format> 
 
 namespace dnf_composer
 {
@@ -57,15 +57,10 @@ namespace dnf_composer
 
 	std::string PlotDimensions::toString() const
 	{
-		std::string result;
-		result += "Plot dimensions: {";
-		result += "xMin: " + std::to_string(xMin) + ", ";
-		result += "xMax: " + std::to_string(xMax) + ", ";
-		result += "yMin: " + std::to_string(yMin) + ", ";
-		result += "yMax: " + std::to_string(yMax) + ", ";
-		result += "xStep: " + std::to_string(xStep) + ", ";
-		result += "yStep: " + std::to_string(yStep) + "}";
-		return result;
+		return std::format(
+        "Plot dimensions: {{xMin: {:.2f}, xMax: {:.2f}, "
+        "yMin: {:.2f}, yMax: {:.2f}, xStep: {:.2f}, yStep: {:.2f}}}",
+        xMin, xMax, yMin, yMax, xStep, yStep);
 	}
 
 	bool PlotDimensions::operator==(const PlotDimensions& other) const
@@ -90,12 +85,9 @@ namespace dnf_composer
 
 	std::string PlotAnnotations::toString() const
 	{
-		std::string result;
-		result += "Plot annotations: {";
-		result += "title: " + title + ", ";
-		result += "x_label: " + x_label + ", ";
-		result += "y_label: " + y_label + "}";
-		return result;
+		return std::format(
+        "Plot annotations: {{title: {}, x_label: {}, y_label: {}}}",
+        title, x_label, y_label);
 	}
 
 	bool PlotAnnotations::operator==(const PlotAnnotations& other) const
@@ -121,13 +113,11 @@ namespace dnf_composer
 
 	std::string PlotCommonParameters::toString() const
 	{
-		std::string result;
-		result += "Plot parameters: [ ";
-		result += "type: " + PlotTypeToString.at(type) + ", ";
-		result += dimensions.toString() + ", ";
-		result += annotations.toString() + " ]";
-		return result;
+		return std::format(
+			"Plot parameters: [ type: {}, {}, {} ]",
+			PlotTypeToString.at(type), dimensions.toString(), annotations.toString());
 	}
+	
 
 	bool PlotCommonParameters::operator==(const PlotCommonParameters& other) const
 	{

@@ -1,4 +1,5 @@
 ﻿#include "element_parameters/gauss_stimulus_parameters.h"
+#include <format>
 
 namespace dnf_composer
 {
@@ -25,13 +26,11 @@ namespace dnf_composer
 
 		std::string GaussStimulusParameters::toString() const override
 		{
-			std::string result = "Gaussian stimulus parameters\n";
-			result += "Width = " + std::to_string(width) + ", ";
-			result += "Amplitude = " + std::to_string(amplitude) + ", ";
-			result += "Position = " + std::to_string(position) + ", ";
-			result += "Circular = " + std::to_string(circular) + ", ";
-			result += "Normalized = " + std::to_string(normalized) + ", ";
-			return result;
+			return std::format(
+        "Gaussian stimulus parameters\n"
+        "Width = {:.2f}, Amplitude = {:.2f}, Position = {:.2f}, "
+        "Circular = {}, Normalized = {}, ",
+        width, amplitude, position, circular, normalized);
 		}
 	}
 }
