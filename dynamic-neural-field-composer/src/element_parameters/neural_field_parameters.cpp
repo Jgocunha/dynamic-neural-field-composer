@@ -1,4 +1,5 @@
 ﻿#include "element_parameters/neural_field_parameters.h"
+#include <format>
 
 namespace dnf_composer
 {
@@ -47,10 +48,12 @@ namespace dnf_composer
 
 		std::string NeuralFieldParameters::toString() const
 		{
-			std::string result = "Neural field parameters\n";
-			result += "Tau: " + std::to_string(tau) + "\n";
-			result += "Resting level: " + std::to_string(startingRestingLevel) + "\n";
-			result += "Activation function: " + activationFunction->toString() + "\n";
+			return std::format(
+        "Neural field parameters\n"
+        "Tau: {:.2f}\n"
+        "Resting level: {:.2f}\n"
+        "Activation function: {}\n",
+        tau, startingRestingLevel, activationFunction->toString());
 			return result;
 		}
 
@@ -72,12 +75,14 @@ namespace dnf_composer
 
 		std::string NeuralFieldBump::toString() const
 		{
-			std::string str = "Bump\n";
-			str += "Centroid: " + std::to_string(centroid) + "\n";
-			str += "Amplitude: " + std::to_string(amplitude) + "\n";
-			str += "Start position: " + std::to_string(startPosition) + "\n";
-			str += "End position: " + std::to_string(endPosition) + "\n";
-			str += "Width: " + std::to_string(width) + "\n";
+			return std::format(
+        "Bump\n"
+        "Centroid: {:.2f}\n"
+        "Amplitude: {:.2f}\n"
+        "Start position: {:.2f}\n"
+        "End position: {:.2f}\n"
+        "Width: {:.2f}\n",
+        centroid, amplitude, startPosition, endPosition, width);
 			return str;
 		}
 
@@ -95,14 +100,17 @@ namespace dnf_composer
 
 		std::string NeuralFieldState::toString() const
 		{
-			std::string str = "Neural field state\n";
-			str += "Stable: " + std::to_string(stable) + "\n";
-			str += "Lowest activation: " + std::to_string(lowestActivation) + "\n";
-			str += "Highest activation: " + std::to_string(highestActivation) + "\n";
-			str += "Threshold for stability: " + std::to_string(thresholdForStability) + "\n";
-			str += "Bumps:\n";
-			for (const auto& bump : bumps)
-				str += bump.toString();
+			std::string str = std::format(
+				"Neural field state\n"
+				"Stable: {}\n"
+				"Lowest activation: {:.2f}\n"
+				"Highest activation: {:.2f}\n"
+				"Threshold for stability: {:.2f}\n"
+				"Bumps:\n",
+				stable, lowestActivation, highestActivation, thresholdForStability);
+		    for (const auto& bump : bumps)
+			str += bump.toString();
+			
 			return str;
 		}
 
