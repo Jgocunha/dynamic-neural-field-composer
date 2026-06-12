@@ -96,6 +96,8 @@ The `ElementLabel` enum identifies element types and is used by `ElementFactory`
 | `ASYMMETRIC_GAUSS_KERNEL` | `"asymmetric gauss kernel"` | `AsymmetricGaussKernel` |
 | `NORMAL_NOISE` | `"normal noise"` | `NormalNoise` |
 | `FIELD_COUPLING` | `"field coupling"` | `FieldCoupling` |
+| `UNSUPERVISED_FIELD_COUPLING` | `"unsupervised field coupling"` | `UnsupervisedFieldCoupling` |
+| `SUPERVISED_FIELD_COUPLING` | `"supervised field coupling"` | `SupervisedFieldCoupling` |
 | `GAUSS_FIELD_COUPLING` | `"gauss field coupling"` | `GaussFieldCoupling` |
 | `BOOST_STIMULUS` | `"boost stimulus"` | `BoostStimulus` |
 | `MEMORY_TRACE` | `"memory trace"` | `MemoryTrace` |

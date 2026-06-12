@@ -75,5 +75,7 @@ namespace dnf_composer::user_interface
 		void addElementResize2D(char* id, bool addRequested) const;
 		void addElementCollapse(char* id, bool addRequested) const;
 		void addElementExpand(char* id, bool addRequested) const;
+		void addElementUnsupervisedFieldCoupling(char* id, bool addRequested) const;
+		void addElementSupervisedFieldCoupling(char* id, bool addRequested) const;
 	};
 }

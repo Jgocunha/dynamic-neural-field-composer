@@ -194,6 +194,8 @@ set(src
         "src/elements/resize_2d.cpp"
         "src/elements/collapse.cpp"
         "src/elements/expand.cpp"
+        "src/elements/unsupervised_field_coupling.cpp"
+        "src/elements/supervised_field_coupling.cpp"
 
         "src/element_parameters/element_parameters.cpp"
 

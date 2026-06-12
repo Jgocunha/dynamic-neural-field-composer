@@ -34,6 +34,8 @@
 #include "elements/resize_2d.h"
 #include "elements/collapse.h"
 #include "elements/expand.h"
+#include "elements/unsupervised_field_coupling.h"
+#include "elements/supervised_field_coupling.h"
 #include "exceptions/exception.h"
 
 using namespace dnf_composer;
@@ -1376,4 +1378,80 @@ TEST_F(SimulationFileManagerTest, RoundTripAllDimensionBridgingElements)
     EXPECT_NE(simB->getElement("rz2d 1"), nullptr);
     EXPECT_NE(simB->getElement("cl 1"),   nullptr);
     EXPECT_NE(simB->getElement("ex 1"),   nullptr);
+}
+
+// ---------------------------------------------------------------------------
+// UnsupervisedFieldCoupling and SupervisedFieldCoupling round-trips
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesUnsupervisedFieldCouplingParameters)
+{
+    const UnsupervisedFieldCouplingParameters fcp{
+        ElementDimensions(100, 1.0), LearningRule::OJA, 2.0, 0.05 };
+    const auto coupling = std::make_shared<UnsupervisedFieldCoupling>(
+        ElementCommonParameters{ "ufc rt", ElementDimensions(100, 1.0) }, fcp);
+
+    const auto simA = createSimulation("rt-ufc", 1.0, 0.0, 0.0);
+    simA->addElement(coupling);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-ufc-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-ufc/rt-ufc.dnf" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<UnsupervisedFieldCoupling>(simB->getElement("ufc rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), fcp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesSupervisedFieldCouplingParameters)
+{
+    const SupervisedFieldCouplingParameters fcp{
+        ElementDimensions(100, 1.0), 1.5, 0.03 };
+    const auto coupling = std::make_shared<SupervisedFieldCoupling>(
+        ElementCommonParameters{ "sfc rt", ElementDimensions(100, 1.0) }, fcp);
+
+    const auto simA = createSimulation("rt-sfc", 1.0, 0.0, 0.0);
+    simA->addElement(coupling);
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-sfc-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-sfc/rt-sfc.dnf" }.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<SupervisedFieldCoupling>(simB->getElement("sfc rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_EQ(loaded->getParameters(), fcp);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesSupervisedFieldCouplingReferenceWiring)
+{
+    const auto simA = createSimulation("rt-sfc-ref", 1.0, 0.0, 0.0);
+
+    const auto inFld  = makeField("in fld",  100);
+    const auto outFld = makeField("out fld", 100);
+    const auto refFld = makeField("ref fld", 100);
+    const SupervisedFieldCouplingParameters fcp{ ElementDimensions(100, 1.0), 1.0, 0.01 };
+    const auto sfc = std::make_shared<SupervisedFieldCoupling>(
+        ElementCommonParameters{ "sfc ref rt", ElementDimensions(100, 1.0) }, fcp);
+
+    simA->addElement(inFld);
+    simA->addElement(sfc);
+    simA->addElement(outFld);
+    simA->addElement(refFld);
+    simA->createInteraction("in fld",  "output", "sfc ref rt");
+    simA->createInteraction("sfc ref rt", "output", "out fld");
+    sfc->addInput(refFld, "reference");
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-sfc-ref-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager{ simB, tempDir + "rt-sfc-ref/rt-sfc-ref.dnf" }.loadElementsFromJson();
+
+    EXPECT_EQ(simB->getNumberOfElements(), 4);
+    const auto loadedSfc = std::dynamic_pointer_cast<SupervisedFieldCoupling>(simB->getElement("sfc ref rt"));
+    ASSERT_NE(loadedSfc, nullptr);
+    ASSERT_NE(loadedSfc->getReferenceSource(), nullptr);
+    EXPECT_EQ(loadedSfc->getReferenceSource()->getUniqueName(), "ref fld");
 }

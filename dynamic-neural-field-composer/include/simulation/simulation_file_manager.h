@@ -35,6 +35,8 @@
 #include "elements/resize_2d.h"
 #include "elements/collapse.h"
 #include "elements/expand.h"
+#include "elements/unsupervised_field_coupling.h"
+#include "elements/supervised_field_coupling.h"
 
 /// @defgroup simulation_io Simulation I/O
 /// @brief JSON serialization and deserialization of simulation architectures.

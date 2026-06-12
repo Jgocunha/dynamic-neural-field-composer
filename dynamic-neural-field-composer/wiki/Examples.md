@@ -189,6 +189,23 @@ Demonstrates online Hebbian (multiplicative) learning between two neural fields 
 
 ---
 
+### delta_rule_learning
+
+**Source:** `examples/delta_rule_learning.cpp`
+**Executable:** `example_delta_rule_learning`
+
+Demonstrates online supervised (Delta / Widrow–Hoff) learning with a `SupervisedFieldCoupling`. A source field drives the coupling, a separate reference (teacher) field provides the target pattern, and the coupling learns weights that drive its output toward the reference via the error signal `e = reference − output`.
+
+**Architecture:**
+- Source field with a stimulus at one location, output field, and a reference field with a stimulus at a different location (so the error is non-zero)
+- One `SupervisedFieldCoupling`: `addInput(sourceField)` (input), `addInput(referenceField, "reference")` (teacher), and the coupling drives the output field
+- Learning runs for a fixed number of iterations, then is disabled and the weights are written
+- Line plots of source/output/reference fields plus a heatmap of the learned weight matrix
+
+**Key concepts:** supervised learning, Delta rule, reference/teacher signal, `SupervisedFieldCoupling`, error-driven weight updates
+
+---
+
 ## Movement examples
 
 ### travelling_bump

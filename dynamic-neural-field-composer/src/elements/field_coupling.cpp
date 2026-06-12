@@ -22,7 +22,6 @@ namespace dnf_composer
 
 		void FieldCoupling::init()
 		{
-			parameters.isLearningActive = false;
 			std::ranges::fill(components["input"], 0);
 			std::ranges::fill(components["output"], 0);
 
@@ -169,11 +168,12 @@ namespace dnf_composer
 
 		void FieldCoupling::updateWeights()
 		{
-			std::vector<double> inputActivation = input->getComponents()->at("activation");
-			std::vector<double> outputActivation = output->getComponents()->at("activation");
-
-			inputActivation = tools::math::normalize(inputActivation);
-			outputActivation = tools::math::normalize(outputActivation);
+			// Learning uses the coupling's own wired-in signals: the pre-synaptic signal is
+			// components["input"] (whatever component the user wired into this coupling, e.g.
+			// the source field's "activation") and the post-synaptic signal is the coupling's
+			// own components["output"] (= scalar * W * input). Both are normalized.
+			std::vector<double> inputActivation = tools::math::normalize(components.at("input"));
+			std::vector<double> outputActivation = tools::math::normalize(components.at("output"));
 
 			switch (parameters.learningRule)
 			{

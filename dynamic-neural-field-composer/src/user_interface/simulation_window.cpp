@@ -4,6 +4,8 @@
 #include "user_interface/help_window.h"
 #include "elements/neural_field.h"
 #include "elements/neural_field_2d.h"
+#include "elements/unsupervised_field_coupling.h"
+#include "elements/supervised_field_coupling.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_MonoMediumFont;
@@ -239,7 +241,8 @@ namespace dnf_composer::user_interface
 				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
 				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
 				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE,
-				L::RESIZE, L::COLLAPSE
+				L::RESIZE, L::COLLAPSE,
+				L::UNSUPERVISED_FIELD_COUPLING, L::SUPERVISED_FIELD_COUPLING
 			};
 			static constexpr L k2D[] = {
 				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
@@ -322,6 +325,8 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id, addRequested);                break;
 			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id, addRequested);                break;
 			case element::ElementLabel::EXPAND:                     addElementExpand(id, addRequested);                  break;
+			case element::ElementLabel::UNSUPERVISED_FIELD_COUPLING: addElementUnsupervisedFieldCoupling(id, addRequested); break;
+			case element::ElementLabel::SUPERVISED_FIELD_COUPLING:   addElementSupervisedFieldCoupling(id, addRequested);   break;
 			default: break;
 		}
 
@@ -1657,6 +1662,100 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	void SimulationWindow::addElementUnsupervisedFieldCoupling(char* id, bool addRequested) const
+	{
+		static int    x_max_out    = 100;
+		static double d_x_out      = 1.0;
+		static int    x_max_in     = 100;
+		static double d_x_in       = 1.0;
+		static auto   rule         = LearningRule::HEBB;
+		static double scalar       = 1.0;
+		static double learningRate = 0.01;
+
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##ufc_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##ufc_osize", &x_max_out);
+			paramRowDouble("Step", "##ufc_ostep", &d_x_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##ufc_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##ufc_isize", &x_max_in);
+			paramRowDouble("Step", "##ufc_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Learning");
+		if (beginParamTable("##ufc_learn")) {
+			paramTableSetup();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Rule");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo("##ufc_rule", LearningRuleToString.at(rule).c_str()))
+			{
+				for (const auto& [lr, name] : LearningRuleToString)
+				{
+					if (lr == LearningRule::DELTA) continue;
+					const bool sel = (rule == lr);
+					if (ImGui::Selectable(name.c_str(), sel)) rule = lr;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			paramRowDouble("Scalar",        "##ufc_scal", &scalar,       "%.2f");
+			paramRowDouble("Learning rate", "##ufc_lr",   &learningRate, "%.4f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementDimensions inDims{ x_max_in, d_x_in };
+			const element::UnsupervisedFieldCouplingParameters fcp{ inDims, rule, scalar, learningRate };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
+			simulation->addElement(std::make_shared<element::UnsupervisedFieldCoupling>(common, fcp));
+		}
+	}
+
+	void SimulationWindow::addElementSupervisedFieldCoupling(char* id, bool addRequested) const
+	{
+		static int    x_max_out    = 100;
+		static double d_x_out      = 1.0;
+		static int    x_max_in     = 100;
+		static double d_x_in       = 1.0;
+		static double scalar       = 1.0;
+		static double learningRate = 0.01;
+
+		ImGui::SeparatorText("Output dimensions");
+		if (beginParamTable("##sfc_odim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##sfc_osize", &x_max_out);
+			paramRowDouble("Step", "##sfc_ostep", &d_x_out, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Input dimensions");
+		if (beginParamTable("##sfc_idim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##sfc_isize", &x_max_in);
+			paramRowDouble("Step", "##sfc_istep", &d_x_in, "%.2f");
+			endParamTable();
+		}
+		ImGui::SeparatorText("Learning (Delta rule)");
+		if (beginParamTable("##sfc_learn")) {
+			paramTableSetup();
+			paramRowDouble("Scalar",        "##sfc_scal", &scalar,       "%.2f");
+			paramRowDouble("Learning rate", "##sfc_lr",   &learningRate, "%.4f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementDimensions inDims{ x_max_in, d_x_in };
+			const element::SupervisedFieldCouplingParameters fcp{ inDims, scalar, learningRate };
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
+			simulation->addElement(std::make_shared<element::SupervisedFieldCoupling>(common, fcp));
+		}
+	}
 
 	void SimulationWindow::renderRemoveElementCard() const
 	{

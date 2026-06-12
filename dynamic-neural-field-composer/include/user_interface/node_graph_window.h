@@ -14,6 +14,8 @@
 #include "elements/mexican_hat_kernel.h"
 #include "elements/gauss_field_coupling.h"
 #include "elements/field_coupling.h"
+#include "elements/unsupervised_field_coupling.h"
+#include "elements/supervised_field_coupling.h"
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
@@ -57,6 +59,10 @@ namespace dnf_composer::user_interface
 			return IM_COL32(165, 102, 71, 255);   // Warm Brown
 		case element::ElementLabel::FIELD_COUPLING:
 			return IM_COL32(212, 192, 121, 255);  // Cream Gold
+		case element::ElementLabel::UNSUPERVISED_FIELD_COUPLING:
+			return IM_COL32(212, 192, 121, 255);  // Cream Gold (same as FieldCoupling)
+		case element::ElementLabel::SUPERVISED_FIELD_COUPLING:
+			return IM_COL32(165, 42,  42,  255);  // Warm Red
 		case element::ElementLabel::OSCILLATORY_KERNEL:
 			return IM_COL32(175, 133, 187, 255);  // Dusty Rose
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
@@ -124,6 +130,8 @@ namespace dnf_composer::user_interface
 		static constexpr uint16_t startingInputPinId = 1000;
 		static constexpr uint16_t startingOutputPinId = 2000;
 		static constexpr uint16_t startingLinkId = 3000;
+		static constexpr uint16_t startingReferencePinId = 4000;
+		static constexpr uint16_t startingActivationPinId = 5000;
 
 		// Initial-layout state: nodes not yet seen in this session get a grid position
 		// on the frame after their first render (when we can read their actual position).

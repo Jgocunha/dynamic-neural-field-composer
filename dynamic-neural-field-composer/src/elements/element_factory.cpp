@@ -181,6 +181,18 @@ namespace dnf_composer
 					return std::make_shared<Expand>(elementCommonParameters, *params);
 				};
 
+			elementCreators[ElementLabel::UNSUPERVISED_FIELD_COUPLING] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const UnsupervisedFieldCouplingParameters*>(&elementSpecificParameters);
+					return std::make_shared<UnsupervisedFieldCoupling>(elementCommonParameters, *params);
+				};
+
+			elementCreators[ElementLabel::SUPERVISED_FIELD_COUPLING] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto params = dynamic_cast<const SupervisedFieldCouplingParameters*>(&elementSpecificParameters);
+					return std::make_shared<SupervisedFieldCoupling>(elementCommonParameters, *params);
+				};
+
 			}
 
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type, const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
@@ -258,6 +270,10 @@ namespace dnf_composer
 						return creator->second(ElementCommonParameters(type), CollapseParameters());
 					case ElementLabel::EXPAND:
 						return creator->second(ElementCommonParameters(type), ExpandParameters());
+					case ElementLabel::UNSUPERVISED_FIELD_COUPLING:
+						return creator->second(ElementCommonParameters(type), UnsupervisedFieldCouplingParameters());
+					case ElementLabel::SUPERVISED_FIELD_COUPLING:
+						return creator->second(ElementCommonParameters(type), SupervisedFieldCouplingParameters());
 					case ElementLabel::UNINITIALIZED:
 						return nullptr;
 				}

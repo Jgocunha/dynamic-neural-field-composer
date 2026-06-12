@@ -414,6 +414,135 @@ std::string dir = coupling->getWeightsDirectory();
 | `"weights"` | Flattened 2D weight matrix (rows = output positions, cols = input positions) |
 | `"output"` | Weighted sum of the source field output |
 
+> **Note:** `FieldCoupling` is the non-final base class. For new work prefer the two concrete
+> types below: **`UnsupervisedFieldCoupling`** (Hebb / Oja) and **`SupervisedFieldCoupling`**
+> (Delta). They make the supervised-vs-unsupervised distinction explicit and add the reference
+> connection the Delta rule requires.
+
+---
+
+## How field couplings learn
+
+A field coupling learns a weight matrix `W` that maps a source field onto a target field:
+
+```
+output = scalar · W · input
+```
+
+where `input` is whatever component the user wires into the coupling (typically the source
+field's `activation`). The two coupling types differ only in *how* `W` is learned. In both,
+the **pre-synaptic** signal is the coupling's wired `input` and the **post-synaptic** signal
+is the coupling's own `output`; each is normalized before the rule is applied.
+
+- **UnsupervisedFieldCoupling (Hebb / Oja)** — no teacher. Weights change from the
+  *correlation* of pre- and post-synaptic activity:
+  Hebb `Δw_ij = η · in_i · out_j`; Oja adds a decay term `− out_j² · w_ij` for stability.
+  Use it for self-organizing associations.
+- **SupervisedFieldCoupling (Delta / Widrow–Hoff)** — needs a *reference* (target) signal.
+  The error `e_j = ref_j − out_j` drives the update `Δw_ij = η · e_j · in_i`. Because the
+  update shrinks as the output approaches the reference, learning converges and the resulting
+  weights are smoother than the purely accumulative Hebbian weights.
+
+**Why does supervised learning need a reference?** The Delta rule is error-correcting: with no
+target there is no error and therefore nothing to drive the weights. Requiring a reference is
+the defining property of supervised learning. Hebb/Oja, by contrast, are unsupervised — they
+need only the pre/post correlation.
+
+```
+ Unsupervised (Hebb/Oja)               Supervised (Delta)
+
+  input ──►[ W ]──► output              input ──►[ W ]──► output
+             ▲         │                            ▲        │
+             └─────────┘                            │        ▼
+        Δw ∝ in · out               reference ────►(−)──► error e = ref − out
+   (in = wired input, out = own output)              Δw ∝ in · e
+```
+
+---
+
+## UnsupervisedFieldCoupling
+
+A learned full weight-matrix coupling using an **unsupervised** rule (Hebbian or Oja). Behaves
+exactly like `FieldCoupling` restricted to the unsupervised rules — the Delta rule is rejected
+(use `SupervisedFieldCoupling` for that).
+
+**Label:** `UNSUPERVISED_FIELD_COUPLING`
+
+### Parameters
+
+```cpp
+UnsupervisedFieldCouplingParameters{
+    ElementDimensions inputFieldDimensions,          // dimensions of the source field
+    LearningRule      learningRule  = LearningRule::HEBB,   // HEBB or OJA (DELTA rejected)
+    double            scalar        = 1.0,
+    double            learningRate  = 0.01
+}
+```
+
+### Learning rules
+
+| Rule | Enum | Description |
+|---|---|---|
+| Hebbian | `LearningRule::HEBB` | Weights grow with pre/post correlation: `Δw = η · in · out` |
+| Oja's rule | `LearningRule::OJA` | Normalized Hebbian — adds decay to prevent unbounded growth |
+
+### Runtime control
+
+Identical to `FieldCoupling` (`setLearning`, `setLearningRate`, `setParameters`,
+`writeWeights` / `readWeights` / `clearWeights`, `setWeightsDirectory`).
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"weights"` | Flattened 2D weight matrix (rows = output positions, cols = input positions) |
+| `"output"` | Weighted sum of the wired input (`scalar · W · input`) |
+
+---
+
+## SupervisedFieldCoupling
+
+A learned full weight-matrix coupling using the **supervised** Delta (Widrow–Hoff) rule. In
+addition to the usual input and output, it requires a **reference** (target) source whose
+output is copied into the `"reference"` component each step and used to compute the error
+`e = reference − output`.
+
+**Label:** `SUPERVISED_FIELD_COUPLING`
+
+### Parameters
+
+```cpp
+SupervisedFieldCouplingParameters{
+    ElementDimensions inputFieldDimensions,          // dimensions of the source field
+    double            scalar        = 1.0,
+    double            learningRate  = 0.01
+}
+// learningRule is forced to LearningRule::DELTA.
+```
+
+### Connections
+
+```cpp
+coupling->addInput(sourceField, "activation"); // pre-synaptic input (or "output")
+coupling->addInput(referenceField, "reference"); // target / teacher signal
+outputField->addInput(coupling);                 // coupling drives the output field
+```
+
+The reference source need not be a neural field — any element exposing an `"output"` component
+works. Retrieve it with `getReferenceSource()`.
+
+### Runtime control
+
+Same as `FieldCoupling`. Learning stays disabled until a reference source is connected.
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"weights"` | Flattened 2D weight matrix (rows = output positions, cols = input positions) |
+| `"output"` | Weighted sum of the wired input (`scalar · W · input`) |
+| `"reference"` | Target signal, copied from the reference source's output each step |
+
 ---
 
 ## GaussFieldCoupling

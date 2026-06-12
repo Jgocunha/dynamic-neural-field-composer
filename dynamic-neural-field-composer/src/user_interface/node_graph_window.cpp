@@ -506,6 +506,28 @@ namespace dnf_composer::user_interface
 			lbl != element::ElementLabel::BOOST_STIMULUS &&
 			lbl != element::ElementLabel::BOOST_STIMULUS_2D;
 
+		const bool isSupervised = (lbl == element::ElementLabel::SUPERVISED_FIELD_COUPLING);
+		const bool hasActivationPin =
+			lbl == element::ElementLabel::NEURAL_FIELD ||
+			lbl == element::ElementLabel::NEURAL_FIELD_2D;
+
+		// Renders a right-aligned output-kind pin (same styling as the Output pin).
+		auto renderOutputKindPin = [&](const int pinId, const char* label)
+		{
+			ImNodeEditor::BeginPin(pinId, ImNodeEditor::PinKind::Output);
+			ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
+			{
+				const float avail  = ImGui::GetContentRegionAvail().x;
+				const float needed = ImGui::CalcTextSize(label).x + 4.0f + iconSize.x;
+				if (avail > needed)
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - needed);
+			}
+			ImGui::TextUnformatted(label);
+			ImGui::SameLine(0, 4);
+			ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
+			ImNodeEditor::EndPin();
+		};
+
 		if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
 		{
 			ImGui::TableSetupColumn("##in",  ImGuiTableColumnFlags_WidthStretch);
@@ -524,20 +546,28 @@ namespace dnf_composer::user_interface
 				ImNodeEditor::EndPin();
 			}
 
+			// Right column: "Activation" sits above "Output" for neural fields.
 			ImGui::TableSetColumnIndex(1);
-			ImNodeEditor::BeginPin(startingOutputPinId + element->getUniqueIdentifier(),
-			                       ImNodeEditor::PinKind::Output);
-			ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
+			if (hasActivationPin)
 			{
-				const float avail  = ImGui::GetContentRegionAvail().x;
-				const float needed = ImGui::CalcTextSize("Output").x + 4.0f + iconSize.x;
-				if (avail > needed)
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - needed);
+				renderOutputKindPin(startingActivationPinId + element->getUniqueIdentifier(), "Activation");
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(1);
 			}
-			ImGui::TextUnformatted("Output");
-			ImGui::SameLine(0, 4);
-			ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
-			ImNodeEditor::EndPin();
+			renderOutputKindPin(startingOutputPinId + element->getUniqueIdentifier(), "Output");
+
+			if (isSupervised)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImNodeEditor::BeginPin(startingReferencePinId + element->getUniqueIdentifier(),
+				                       ImNodeEditor::PinKind::Input);
+				ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
+				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
+				ImGui::SameLine(0, 4);
+				ImGui::TextUnformatted("Reference");
+				ImNodeEditor::EndPin();
+			}
 
 			ImGui::EndTable();
 		}
@@ -548,18 +578,51 @@ namespace dnf_composer::user_interface
 		constexpr float thickness = 2.0f;
 		constexpr auto linkCol   = ImVec4(0.08f, 0.08f, 0.08f, 0.85f); // near-black
 
-		for (const auto& input : element->getInputs())
+		for (const auto& [input, component] : element->getInputsAndComponents())
 		{
+			// Start the link at the source pin matching the wired component: the
+			// "activation" pin for activation connections, otherwise the "output" pin.
+			const bool fromActivation = (component == "activation");
+			const uint16_t srcPinBase = fromActivation ? startingActivationPinId : startingOutputPinId;
+
+			// Distinct link IDs so an output- and an activation-link to the same pair
+			// don't collide (mirrors the reference link's hashing scheme).
 			const std::string idStr =
 				std::to_string(element->getUniqueIdentifier()) +
+				(fromActivation ? "a" : "") +
 				std::to_string(input->getUniqueIdentifier());
-			const size_t linkId = std::stoull(idStr) + startingLinkId;
+			size_t linkId = startingLinkId;
+			for (char c : idStr) linkId = linkId * 31 + static_cast<size_t>(c);
 
 			ImNodeEditor::Link(
 				linkId,
-				input->getUniqueIdentifier()   + startingOutputPinId,
+				input->getUniqueIdentifier()   + srcPinBase,
 				element->getUniqueIdentifier() + startingInputPinId,
 				linkCol, thickness);
+		}
+
+		// Draw reference link for SupervisedFieldCoupling (not in inputs map)
+		if (element->getLabel() == element::ElementLabel::SUPERVISED_FIELD_COUPLING)
+		{
+			const auto sfc = std::dynamic_pointer_cast<element::SupervisedFieldCoupling>(element);
+			if (sfc)
+			{
+				const auto refSrc = sfc->getReferenceSource();
+				if (refSrc)
+				{
+					const std::string idStr =
+						std::to_string(element->getUniqueIdentifier()) + "r" +
+						std::to_string(refSrc->getUniqueIdentifier());
+					size_t linkId = startingLinkId;
+					for (char c : idStr) linkId = linkId * 31 + static_cast<size_t>(c);
+
+					ImNodeEditor::Link(
+						linkId,
+						refSrc->getUniqueIdentifier()  + startingOutputPinId,
+						element->getUniqueIdentifier() + startingReferencePinId,
+						linkCol, thickness);
+				}
+			}
 		}
 	}
 
@@ -572,16 +635,44 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::handlePinInteractions() const
 	{
-		// pendingOutputPin: set when user clicks an output pin; cleared when they click an input
-		// pin (completing the connection), click elsewhere, or start a successful drag.
+		// pendingOutputPin: set when user clicks a source (output or activation) pin; cleared
+		// when they click an input pin (completing the connection), click elsewhere, or start a
+		// successful drag. The exposed component is re-resolved from the pin id at completion.
 		static ImNodeEditor::PinId pendingOutputPin = 0;
 
 		const int maxIdx = simulation->getHighestElementIndex();
+
+		// Resolve a source pin id to its element index and exposed component.
+		// Source pins are output-kind: the "output" pin (startingOutputPinId) or the neural
+		// field "activation" pin (startingActivationPinId). Returns {-1, ""} if not a source pin.
+		auto resolveSourcePin = [&](int pinId) -> std::pair<int, std::string>
+		{
+			const int asActivation = pinId - startingActivationPinId;
+			if (asActivation >= 0 && asActivation <= maxIdx)
+				return { asActivation, "activation" };
+			const int asOutput = pinId - startingOutputPinId;
+			if (asOutput >= 0 && asOutput <= maxIdx)
+				return { asOutput, "output" };
+			return { -1, "" };
+		};
 
 		// Cancel with Escape or right-click.
 		if (pendingOutputPin &&
 			(ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
 			pendingOutputPin = 0;
+
+		// Helper: connect a reference pin (source pin -> reference pin on SupervisedFieldCoupling).
+		// The reference always reads the source's "output" component.
+		auto connectReferencePin = [&](int srcId, int dstRefId)
+		{
+			const auto dst = simulation->getElement(dstRefId);
+			const auto src = simulation->getElement(srcId);
+			if (dst && src && dst->getLabel() == element::ElementLabel::SUPERVISED_FIELD_COUPLING)
+			{
+				const auto sfc = std::dynamic_pointer_cast<element::SupervisedFieldCoupling>(dst);
+				if (sfc) sfc->addInput(src, "reference");
+			}
+		};
 
 		// Click-to-click: handle every left-click directly via GetHoveredPin().
 		// This runs before BeginCreate so it fires even when clicking a pin starts a new session.
@@ -590,23 +681,36 @@ namespace dnf_composer::user_interface
 			const ImNodeEditor::PinId hovered = ImNodeEditor::GetHoveredPin();
 			if (hovered)
 			{
-				const int asOutput = static_cast<int>(hovered.Get()) - startingOutputPinId;
-				const int asInput  = static_cast<int>(hovered.Get()) - startingInputPinId;
-				const bool isValidOutput = asOutput >= 0 && asOutput <= maxIdx;
-				const bool isValidInput  = asInput  >= 0 && asInput  <= maxIdx;
+				const int hoveredId = static_cast<int>(hovered.Get());
+				const int asInput     = hoveredId - startingInputPinId;
+				const int asReference = hoveredId - startingReferencePinId;
+				const bool isValidInput     = asInput     >= 0 && asInput     <= maxIdx;
+				const bool isValidReference = asReference >= 0 && asReference <= maxIdx;
+				const auto [srcIdx, srcComp] = resolveSourcePin(hoveredId);
+				(void)srcComp;
+				const bool isValidSource    = srcIdx >= 0;
 
-				if (pendingOutputPin && isValidInput)
+				if (pendingOutputPin && isValidReference)
 				{
-					// Second click on an input pin: complete the connection.
-					const int srcId = static_cast<int>(pendingOutputPin.Get()) - startingOutputPinId;
+					// Connect to reference pin (always reads the source's "output").
+					const auto [pendSrc, pendComp] = resolveSourcePin(static_cast<int>(pendingOutputPin.Get()));
+					(void)pendComp;
+					connectReferencePin(pendSrc, asReference);
+					pendingOutputPin = 0;
+				}
+				else if (pendingOutputPin && isValidInput)
+				{
+					// Second click on an input pin: complete the connection using the pending
+					// source pin's component ("output" or "activation").
+					const auto [pendSrc, pendComp] = resolveSourcePin(static_cast<int>(pendingOutputPin.Get()));
 					simulation->createInteraction(
-						simulation->getElement(srcId)->getUniqueName(), "output",
+						simulation->getElement(pendSrc)->getUniqueName(), pendComp,
 						simulation->getElement(asInput)->getUniqueName());
 					pendingOutputPin = 0;
 				}
-				else if (isValidOutput)
+				else if (isValidSource)
 				{
-					// First click (or change of mind): record this output pin.
+					// First click (or change of mind): record this source pin.
 					pendingOutputPin = hovered;
 				}
 				else
@@ -627,15 +731,25 @@ namespace dnf_composer::user_interface
 			ImNodeEditor::PinId startPin, endPin;
 			if (ImNodeEditor::QueryNewLink(&startPin, &endPin))
 			{
-				const int srcId = static_cast<int>(startPin.Get()) - startingOutputPinId;
-				const int dstId = static_cast<int>(endPin.Get())   - startingInputPinId;
+				const auto [srcId, srcComp] = resolveSourcePin(static_cast<int>(startPin.Get()));
+				const int dstId    = static_cast<int>(endPin.Get())   - startingInputPinId;
+				const int dstRefId = static_cast<int>(endPin.Get())   - startingReferencePinId;
 
-				if (srcId >= 0 && srcId <= maxIdx && dstId >= 0 && dstId <= maxIdx)
+				if (srcId >= 0 && dstRefId >= 0 && dstRefId <= maxIdx)
+				{
+					// Drag to reference pin (always reads the source's "output").
+					if (ImNodeEditor::AcceptNewItem())
+					{
+						connectReferencePin(srcId, dstRefId);
+						pendingOutputPin = 0;
+					}
+				}
+				else if (srcId >= 0 && dstId >= 0 && dstId <= maxIdx)
 				{
 					if (ImNodeEditor::AcceptNewItem())
 					{
 						simulation->createInteraction(
-							simulation->getElement(srcId)->getUniqueName(), "output",
+							simulation->getElement(srcId)->getUniqueName(), srcComp,
 							simulation->getElement(dstId)->getUniqueName());
 						pendingOutputPin = 0;
 					}
@@ -1036,6 +1150,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::RESIZE_2D:
 		case element::ElementLabel::COLLAPSE:
 		case element::ElementLabel::EXPAND:
+		case element::ElementLabel::UNSUPERVISED_FIELD_COUPLING:
+		case element::ElementLabel::SUPERVISED_FIELD_COUPLING:
 			return 2;
 		case element::ElementLabel::NEURAL_FIELD:
 		case element::ElementLabel::NEURAL_FIELD_2D:
@@ -1190,6 +1306,32 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Normalized: %s",     p.normalized ? "true" : "false");
 			ImGui::Text("Circular: %s",       p.circular   ? "true" : "false");
 			ImGui::Text("Couplings: %zu",     p.couplings.size());
+			break;
+		}
+		case element::ElementLabel::UNSUPERVISED_FIELD_COUPLING:
+		{
+			const auto ufc = std::dynamic_pointer_cast<element::UnsupervisedFieldCoupling>(element);
+			if (!ufc) { ImGui::TextDisabled("(type mismatch)"); break; }
+			const auto& p = ufc->getParameters();
+			ImGui::Text("In dims: %d x %.2f",  p.inputFieldDimensions.x_max, p.inputFieldDimensions.d_x);
+			ImGui::Text("Rule: %s",             LearningRuleToString.at(p.learningRule).c_str());
+			ImGui::Text("Scalar: %.2f",         p.scalar);
+			ImGui::Text("Learning rate: %.4f",  p.learningRate);
+			ImGui::Text("Learning active: %s",  p.isLearningActive ? "true" : "false");
+			break;
+		}
+		case element::ElementLabel::SUPERVISED_FIELD_COUPLING:
+		{
+			const auto sfc = std::dynamic_pointer_cast<element::SupervisedFieldCoupling>(element);
+			if (!sfc) { ImGui::TextDisabled("(type mismatch)"); break; }
+			const auto& p = sfc->getParameters();
+			const auto ref = sfc->getReferenceSource();
+			ImGui::Text("In dims: %d x %.2f",  p.inputFieldDimensions.x_max, p.inputFieldDimensions.d_x);
+			ImGui::Text("Rule: Delta");
+			ImGui::Text("Scalar: %.2f",         p.scalar);
+			ImGui::Text("Learning rate: %.4f",  p.learningRate);
+			ImGui::Text("Learning active: %s",  p.isLearningActive ? "true" : "false");
+			ImGui::Text("Reference: %s",        ref ? ref->getUniqueName().c_str() : "(none)");
 			break;
 		}
 		case element::ElementLabel::NEURAL_FIELD_2D:
@@ -1363,7 +1505,9 @@ namespace dnf_composer::user_interface
 	bool NodeGraphWindow::isWeightMapElement(const element::ElementLabel label)
 	{
 		return label == element::ElementLabel::FIELD_COUPLING ||
-		       label == element::ElementLabel::GAUSS_FIELD_COUPLING;
+		       label == element::ElementLabel::GAUSS_FIELD_COUPLING ||
+		       label == element::ElementLabel::UNSUPERVISED_FIELD_COUPLING ||
+		       label == element::ElementLabel::SUPERVISED_FIELD_COUPLING;
 	}
 
 	void NodeGraphWindow::drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect,

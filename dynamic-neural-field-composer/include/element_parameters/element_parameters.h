@@ -42,6 +42,9 @@ namespace dnf_composer::element
 
 		COLLAPSE,
 		EXPAND,
+
+		UNSUPERVISED_FIELD_COUPLING,
+		SUPERVISED_FIELD_COUPLING,
 	};
 
 	inline const std::map<ElementLabel, std::string> ElementLabelToString = {
@@ -77,6 +80,9 @@ namespace dnf_composer::element
 
 		{COLLAPSE, "collapse" },
 		{EXPAND, "expand" },
+
+		{UNSUPERVISED_FIELD_COUPLING, "unsupervised field coupling" },
+		{SUPERVISED_FIELD_COUPLING,   "supervised field coupling"   },
 	};
 
 	/// @brief Coarse functional grouping of an element, independent of dimensionality.
@@ -133,6 +139,8 @@ namespace dnf_composer::element
 
 			{FIELD_COUPLING,             {ElementCategory::COUPLING, "Coupling", 142, 68,  173}},
 			{GAUSS_FIELD_COUPLING,       {ElementCategory::COUPLING, "Coupling", 142, 68,  173}},
+			{UNSUPERVISED_FIELD_COUPLING,{ElementCategory::COUPLING, "Coupling", 142, 68,  173}},
+			{SUPERVISED_FIELD_COUPLING,  {ElementCategory::COUPLING, "Coupling", 165, 42,  42 }},
 
 			{MEMORY_TRACE,               {ElementCategory::MEMORY,   "Memory",   127, 140, 141}},
 			{MEMORY_TRACE_2D,            {ElementCategory::MEMORY,   "Memory",   127, 140, 141}},

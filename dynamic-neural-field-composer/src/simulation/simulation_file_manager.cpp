@@ -518,6 +518,29 @@ namespace dnf_composer
             elementJson["input_d_x"]            = p.inputDimensions.d_x;
         }
         break;
+        case element::UNSUPERVISED_FIELD_COUPLING:
+        {
+            const auto ufc = std::dynamic_pointer_cast<element::UnsupervisedFieldCoupling>(element);
+            const auto p   = ufc->getParameters();
+            elementJson["learningRate"]  = p.learningRate;
+            elementJson["learningRule"]  = p.learningRule;
+            elementJson["scalar"]        = p.scalar;
+            elementJson["input_x_max"]   = p.inputFieldDimensions.x_max;
+            elementJson["input_d_x"]     = p.inputFieldDimensions.d_x;
+        }
+        break;
+        case element::SUPERVISED_FIELD_COUPLING:
+        {
+            const auto sfc = std::dynamic_pointer_cast<element::SupervisedFieldCoupling>(element);
+            const auto p   = sfc->getParameters();
+            elementJson["learningRate"]  = p.learningRate;
+            elementJson["scalar"]        = p.scalar;
+            elementJson["input_x_max"]   = p.inputFieldDimensions.x_max;
+            elementJson["input_d_x"]     = p.inputFieldDimensions.d_x;
+            const auto refSrc = sfc->getReferenceSource();
+            elementJson["reference_source_name"] = refSrc ? refSrc->getUniqueName() : "";
+        }
+        break;
         default:
         case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -1007,6 +1030,33 @@ namespace dnf_composer
             simulation->addElement(ex);
         }
         break;
+        case element::UNSUPERVISED_FIELD_COUPLING:
+        {
+            const double learningRate = elementJson["learningRate"];
+            const LearningRule learningRule = elementJson["learningRule"];
+            const double scalar = elementJson["scalar"];
+            const int input_x_max = elementJson["input_x_max"];
+            const double input_d_x = elementJson["input_d_x"];
+            auto ufc = std::make_shared<element::UnsupervisedFieldCoupling>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::UnsupervisedFieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), learningRule, scalar, learningRate)
+            );
+            simulation->addElement(ufc);
+        }
+        break;
+        case element::SUPERVISED_FIELD_COUPLING:
+        {
+            const double learningRate = elementJson["learningRate"];
+            const double scalar = elementJson["scalar"];
+            const int input_x_max = elementJson["input_x_max"];
+            const double input_d_x = elementJson["input_d_x"];
+            auto sfc = std::make_shared<element::SupervisedFieldCoupling>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::SupervisedFieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), scalar, learningRate)
+            );
+            simulation->addElement(sfc);
+        }
+        break;
 	    default:
 	    case element::UNINITIALIZED:
             tools::logger::log(tools::logger::ERROR, "Element label not recognized.");
@@ -1043,6 +1093,22 @@ namespace dnf_composer
                 }
             }
 
+            // Wire reference source for SupervisedFieldCoupling
+            const auto label = elementLabelFromString(elementJson["label"][1].get<std::string>());
+            if (label == element::SUPERVISED_FIELD_COUPLING && elementJson.contains("reference_source_name"))
+            {
+                const std::string refName = elementJson["reference_source_name"];
+                if (!refName.empty())
+                {
+                    const auto sfc = std::dynamic_pointer_cast<element::SupervisedFieldCoupling>(simulation->getElement(uniqueName));
+                    const auto refSrc = simulation->getElement(refName);
+                    if (sfc && refSrc)
+                        sfc->addInput(refSrc, "reference");
+                    else
+                        log(tools::logger::WARNING, "Skipping reference source '" + refName
+                            + "' for '" + uniqueName + "': one or both elements were not loaded.");
+                }
+            }
 	    }
 
     }

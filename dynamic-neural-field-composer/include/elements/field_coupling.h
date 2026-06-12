@@ -30,7 +30,7 @@ namespace dnf_composer
 	{
 		/// @brief Parameters for a learned full-matrix field coupling.
 		/// @ingroup elements
-		struct FieldCouplingParameters final : ElementSpecificParameters
+		struct FieldCouplingParameters: ElementSpecificParameters
 		{
 			ElementDimensions inputFieldDimensions; ///< Spatial dimensions of the source (input) field.
 			LearningRule learningRule;              ///< Which weight update rule to use.
@@ -83,11 +83,19 @@ namespace dnf_composer
 		/// of the weight matrix with the input field's "output" component).
 		///
 		/// When learning is active (@c setLearning(true)), weights are updated according
-		/// to the selected @c LearningRule (HEBB, OJA, or DELTA). Weights can be
-		/// persisted to and loaded from disk via @c writeWeights() / @c readWeights().
+		/// to the selected @c LearningRule. Learning uses the coupling's own wired-in
+		/// signals: the pre-synaptic signal is @c components["input"] (whatever component the
+		/// user connects, e.g. the source field's "activation") and the post-synaptic signal
+		/// is @c components["output"]; both are normalized before the rule is applied. Weights
+		/// can be persisted to and loaded from disk via @c writeWeights() / @c readWeights().
+		///
+		/// @note @c FieldCoupling is the non-final base of @c UnsupervisedFieldCoupling
+		///       (HEBB/OJA) and @c SupervisedFieldCoupling (DELTA). The base only implements
+		///       the unsupervised rules; DELTA requires a reference and lives in the
+		///       supervised subclass.
 		///
 		/// @ingroup elements
-		class FieldCoupling final : public Element
+		class FieldCoupling : public Element
 		{
 		protected:
 			FieldCouplingParameters parameters;
@@ -145,12 +153,12 @@ namespace dnf_composer
 
 			/// @brief Reset the weight matrix to all zeros.
 			void clearWeights();
-		private:
-			void updateOutput();
-			void updateInputField();
-			void updateOutputField();
-			void updateWeights();
-			bool checkValidConnections();
+		protected:
+			virtual void updateOutput();
+			virtual void updateInputField();
+			virtual void updateOutputField();
+			virtual void updateWeights();
+			virtual bool checkValidConnections();
 		};
 	}
 }

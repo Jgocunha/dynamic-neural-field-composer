@@ -35,6 +35,8 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "elements/test_resize_2d.cpp"
             "elements/test_collapse.cpp"
             "elements/test_expand.cpp"
+            "elements/test_unsupervised_field_coupling.cpp"
+            "elements/test_supervised_field_coupling.cpp"
             # simulation
             "simulation/test_simulation.cpp"
             "simulation/test_simulation_extended.cpp"

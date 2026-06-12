@@ -30,6 +30,8 @@
 #include "elements/resize_2d.h"
 #include "elements/collapse.h"
 #include "elements/expand.h"
+#include "elements/unsupervised_field_coupling.h"
+#include "elements/supervised_field_coupling.h"
 
 namespace dnf_composer::element
 {

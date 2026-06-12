@@ -29,7 +29,7 @@ add_example_executable(example_hebbian_learning         hebbian_learning.cpp)
 add_example_executable(example_resize                    resize.cpp)
 add_example_executable(example_dimensionality_collapse_expand dimensionality_collapse_expand.cpp)
 #add_example_executable(example_oja_learning             oja_learning.cpp)
-#add_example_executable(example_delta_rule_learning      delta_rule_learning.cpp)
+add_example_executable(example_delta_rule_learning      delta_rule_learning.cpp)
 
 
 

@@ -156,7 +156,7 @@ More ready-to-run examples are in the [`examples/`](dynamic-neural-field-compose
 | Kernels | `GaussKernel`, `MexicanHatKernel`, `AsymmetricGaussKernel`, `OscillatoryKernel` (+ 2D variants) |
 | Stimuli | `GaussStimulus`, `TimedGaussStimulus`, `BoostStimulus`, `BoostStimulus2d` (+ 2D variants) |
 | Noise | `NormalNoise`, `CorrelatedNormalNoise` (+ 2D variants) |
-| Couplings | `FieldCoupling`, `GaussFieldCoupling` |
+| Couplings | `FieldCoupling`, `UnsupervisedFieldCoupling`, `SupervisedFieldCoupling`, `GaussFieldCoupling` |
 | Memory | `MemoryTrace`, `MemoryTrace2d` |
 | Resampling | `Resize`, `Resize2d` — interpolate an input field to a different spatial size (linear / nearest / cubic) |
 | Dimensionality | `Collapse` — reduce a 2D field to 1D along an axis (sum / average / maximum / minimum); `Expand` — broadcast a 1D field into a 2D ridge |

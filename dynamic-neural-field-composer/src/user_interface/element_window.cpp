@@ -34,6 +34,8 @@
 #include "elements/resize_2d.h"
 #include "elements/collapse.h"
 #include "elements/expand.h"
+#include "elements/unsupervised_field_coupling.h"
+#include "elements/supervised_field_coupling.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 #include "tools/utils.h"
 
@@ -872,6 +874,12 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::EXPAND:
 			modifyElementExpand(element);
 			break;
+		case element::ElementLabel::UNSUPERVISED_FIELD_COUPLING:
+			modifyElementUnsupervisedFieldCoupling(element, simId);
+			break;
+		case element::ElementLabel::SUPERVISED_FIELD_COUPLING:
+			modifyElementSupervisedFieldCoupling(element, simId);
+			break;
 		case element::ElementLabel::UNINITIALIZED:
 			break;
 		default:
@@ -1337,12 +1345,11 @@ namespace dnf_composer::user_interface
 		}
 
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(scalar - static_cast<float>(fcp.scalar)) > epsilon)
-			{ fcp.scalar = scalar; fieldCoupling->setParameters(fcp); }
-		if (activateLearning != fcp.isLearningActive)
-			{ fcp.isLearningActive = activateLearning; fieldCoupling->setParameters(fcp); }
-		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) > epsilon)
-			{ fcp.learningRate = learningRate; fieldCoupling->setParameters(fcp); }
+		bool changed = false;
+		if (activateLearning != fcp.isLearningActive)                                   { fcp.isLearningActive = activateLearning; changed = true; }
+		if (std::abs(scalar       - static_cast<float>(fcp.scalar))       > epsilon)    { fcp.scalar           = scalar;           changed = true; }
+		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) > epsilon)    { fcp.learningRate     = learningRate;     changed = true; }
+		if (changed) fieldCoupling->setParameters(fcp);
 
 		ImGui::PushID(uid.c_str());
 		if (ImGui::Button("Load"))
@@ -1361,6 +1368,132 @@ namespace dnf_composer::user_interface
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Clear")) fieldCoupling->clearWeights();
+		ImGui::PopID();
+	}
+
+	void ElementWindow::modifyElementUnsupervisedFieldCoupling(const std::shared_ptr<element::Element>& element,
+	                                                           const std::string& simId)
+	{
+		const auto ufc = std::dynamic_pointer_cast<element::UnsupervisedFieldCoupling>(element);
+		element::UnsupervisedFieldCouplingParameters fcp = ufc->getParameters();
+		const std::string uid = element->getUniqueName();
+
+		auto scalar       = static_cast<float>(fcp.scalar);
+		auto learningRate = static_cast<float>(fcp.learningRate);
+		bool activateLearning = fcp.isLearningActive;
+
+		ewSectionLabel("Parameters");
+		if (ewBeginTable(("##ufc_tbl" + uid).c_str())) {
+			ewTableSetup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Learning rule");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::BeginCombo(("##ufc_lr" + uid).c_str(), LearningRuleToString.at(fcp.learningRule).c_str()))
+			{
+				for (const auto& [rule, name] : LearningRuleToString)
+				{
+					if (rule == LearningRule::DELTA) continue; // DELTA not allowed for unsupervised
+					if (ImGui::Selectable(name.c_str(), fcp.learningRule == rule))
+					{
+						fcp.learningRule = rule;
+						ufc->setParameters(fcp);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ewRowDrag("Learning rate", ("##ufc_lrate" + uid).c_str(), &learningRate, 0.01f, 0.0f, 10.0f);
+			ewRowDrag("Scalar",        ("##ufc_sc"    + uid).c_str(), &scalar,       0.1f, -20.0f, 20.0f);
+			ewRowBool("Activate learning", ("##ufc_al" + uid).c_str(), &activateLearning);
+
+			ewEndTable();
+		}
+
+		static constexpr double epsilon = 1e-6;
+		bool changed = false;
+		if (activateLearning != fcp.isLearningActive)                                   { fcp.isLearningActive = activateLearning; changed = true; }
+		if (std::abs(scalar       - static_cast<float>(fcp.scalar))       > epsilon)    { fcp.scalar           = scalar;           changed = true; }
+		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) > epsilon)    { fcp.learningRate     = learningRate;     changed = true; }
+		if (changed) ufc->setParameters(fcp);
+
+		ImGui::PushID(uid.c_str());
+		if (ImGui::Button("Load"))
+		{
+			const std::string dir = (std::filesystem::path(tools::utils::getResourceRoot()) / "data" / simId).string();
+			ufc->setWeightsDirectory(dir);
+			ufc->readWeights();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Save"))
+		{
+			const std::string dir = (std::filesystem::path(tools::utils::getResourceRoot()) / "data" / simId).string();
+			std::filesystem::create_directories(dir);
+			ufc->setWeightsDirectory(dir);
+			ufc->writeWeights();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clear")) ufc->clearWeights();
+		ImGui::PopID();
+	}
+
+	void ElementWindow::modifyElementSupervisedFieldCoupling(const std::shared_ptr<element::Element>& element,
+	                                                         const std::string& simId)
+	{
+		const auto sfc = std::dynamic_pointer_cast<element::SupervisedFieldCoupling>(element);
+		element::SupervisedFieldCouplingParameters fcp = sfc->getParameters();
+		const std::string uid = element->getUniqueName();
+
+		auto scalar       = static_cast<float>(fcp.scalar);
+		auto learningRate = static_cast<float>(fcp.learningRate);
+		bool activateLearning = fcp.isLearningActive;
+
+		const auto refSrc = sfc->getReferenceSource();
+		const std::string refName = refSrc ? refSrc->getUniqueName() : "(none)";
+
+		ewSectionLabel("Parameters");
+		if (ewBeginTable(("##sfc_tbl" + uid).c_str())) {
+			ewTableSetup();
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Learning rule");
+			ImGui::TableSetColumnIndex(1); ImGui::TextUnformatted("Delta");
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Reference");
+			ImGui::TableSetColumnIndex(1); ImGui::TextUnformatted(refName.c_str());
+
+			ewRowDrag("Learning rate", ("##sfc_lrate" + uid).c_str(), &learningRate, 0.01f, 0.0f, 10.0f);
+			ewRowDrag("Scalar",        ("##sfc_sc"    + uid).c_str(), &scalar,       0.1f, -20.0f, 20.0f);
+			ewRowBool("Activate learning", ("##sfc_al" + uid).c_str(), &activateLearning);
+
+			ewEndTable();
+		}
+
+		static constexpr double epsilon = 1e-6;
+		bool changed = false;
+		if (activateLearning != fcp.isLearningActive)                                   { fcp.isLearningActive = activateLearning; changed = true; }
+		if (std::abs(scalar       - static_cast<float>(fcp.scalar))       > epsilon)    { fcp.scalar           = scalar;           changed = true; }
+		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) > epsilon)    { fcp.learningRate     = learningRate;     changed = true; }
+		if (changed) sfc->setParameters(fcp);
+
+		ImGui::PushID(uid.c_str());
+		if (ImGui::Button("Load"))
+		{
+			const std::string dir = (std::filesystem::path(tools::utils::getResourceRoot()) / "data" / simId).string();
+			sfc->setWeightsDirectory(dir);
+			sfc->readWeights();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Save"))
+		{
+			const std::string dir = (std::filesystem::path(tools::utils::getResourceRoot()) / "data" / simId).string();
+			std::filesystem::create_directories(dir);
+			sfc->setWeightsDirectory(dir);
+			sfc->writeWeights();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clear")) sfc->clearWeights();
 		ImGui::PopID();
 	}
 
@@ -2386,6 +2519,10 @@ namespace dnf_composer::user_interface
 			return ImVec4(0.450f, 0.650f, 0.620f, 1.0f);  // Teal
 		case element::ElementLabel::EXPAND:
 			return ImVec4(0.380f, 0.560f, 0.530f, 1.0f);  // Deeper Teal
+		case element::ElementLabel::UNSUPERVISED_FIELD_COUPLING:
+			return ImVec4(0.831f, 0.753f, 0.475f, 1.0f);  // Cream Gold (same as FieldCoupling)
+		case element::ElementLabel::SUPERVISED_FIELD_COUPLING:
+			return ImVec4(0.647f, 0.165f, 0.165f, 1.0f);  // Warm Red
 		default:
 			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
 		}
@@ -2423,6 +2560,8 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::RESIZE_2D:               return "Resize 2D";
 		case element::ElementLabel::COLLAPSE:                return "Collapse";
 		case element::ElementLabel::EXPAND:                  return "Expand";
+		case element::ElementLabel::UNSUPERVISED_FIELD_COUPLING: return "Unsupervised Field Couplings";
+		case element::ElementLabel::SUPERVISED_FIELD_COUPLING:   return "Supervised Field Couplings";
 		default: return "Unknown Elements";
 		}
 	}
