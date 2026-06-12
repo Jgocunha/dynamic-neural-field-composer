@@ -20,7 +20,7 @@ namespace dnf_composer
 				normalized == other.normalized;
 		}
 
-		std::string GaussKernelParameters::toString() const override
+		std::string GaussKernelParameters::toString() const
 		{
 			return std::format(
         "Gauss kernel parameters\n"

@@ -54,7 +54,6 @@ namespace dnf_composer
         "Resting level: {:.2f}\n"
         "Activation function: {}\n",
         tau, startingRestingLevel, activationFunction->toString());
-			return result;
 		}
 
 		NeuralFieldBump::NeuralFieldBump(double centroid, double startPosition, double endPosition,
@@ -83,7 +82,6 @@ namespace dnf_composer
         "End position: {:.2f}\n"
         "Width: {:.2f}\n",
         centroid, amplitude, startPosition, endPosition, width);
-			return str;
 		}
 
 		void NeuralFieldBump::print() const

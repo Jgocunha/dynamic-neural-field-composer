@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.9.1] - 2026-06-07
+
+### Changed
+- Legacy `toString()` string builders in the parameter and plot-parameter classes
+  (`GaussKernelParameters`, `GaussStimulusParameters`, `MexicanHatKernelParameters`,
+  `NeuralFieldParameters` / `NeuralFieldBump` / `NeuralFieldState`, `PlotDimensions`,
+  `PlotAnnotations`, `PlotCommonParameters`) now use C++20 `std::format` instead of
+  `+= std::to_string(...)` chains, with `{:.2f}` precision for floating-point fields (#62, #64)
+
+### Fixed
+- Removed two unreachable `return` statements left after the `std::format` refactor in
+  `NeuralFieldParameters::toString()` and `NeuralFieldBump::toString()` that referenced
+  deleted locals and broke compilation
+- Removed the illegal/redundant `override` specifier from the out-of-line
+  `GaussKernelParameters::toString()` and `GaussStimulusParameters::toString()` definitions
+  (`override` is only valid on the in-class declaration, which already has it)
+
 ## [2.9.0] - 2026-06-03
 
 ### Added

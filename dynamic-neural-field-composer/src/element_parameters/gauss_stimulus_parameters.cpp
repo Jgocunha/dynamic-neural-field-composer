@@ -24,7 +24,7 @@ namespace dnf_composer
 				normalized == other.normalized;
 		}
 
-		std::string GaussStimulusParameters::toString() const override
+		std::string GaussStimulusParameters::toString() const
 		{
 			return std::format(
         "Gaussian stimulus parameters\n"
