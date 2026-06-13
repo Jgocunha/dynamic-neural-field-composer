@@ -1377,3 +1377,57 @@ TEST_F(SimulationFileManagerTest, RoundTripAllDimensionBridgingElements)
     EXPECT_NE(simB->getElement("cl 1"),   nullptr);
     EXPECT_NE(simB->getElement("ex 1"),   nullptr);
 }
+
+// ---------------------------------------------------------------------------
+// Duplicate element names (issue #44)
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, LoadRejectsDuplicateElementNames)
+{
+    // A .dnf with two elements named "nf 1". Only the first must be kept; the
+    // duplicate (and its interactions) must be skipped, so downstream name
+    // lookups stay unambiguous. "gk 1" is wired to "nf 1"; the duplicate "nf 1"
+    // declares a bogus input that must NOT be wired onto the kept element.
+    const std::string dir = tempDir + "dup-names/";
+    fs::create_directories(dir);
+    const std::string path = dir + "dup-names.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "dup-names",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 1", "label": [0, "neural field"],
+                  "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "activationFunction": { "type": "sigmoid", "x_shift": 0.0, "steepness": 10.0 },
+                  "inputs": [] },
+                { "uniqueName": "nf 1", "label": [0, "neural field"],
+                  "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "activationFunction": { "type": "sigmoid", "x_shift": 0.0, "steepness": 10.0 },
+                  "inputs": [["gk 1", "output"]] },
+                { "uniqueName": "gk 1", "label": [3, "gauss kernel"],
+                  "x_max": 100, "d_x": 1.0, "amplitude": 10.0, "width": 5.0,
+                  "circular": true, "normalized": true, "amplitudeGlobal": 0.0,
+                  "inputs": [["nf 1", "output"]] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("dup-names-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    ASSERT_NO_THROW(sfm.loadElementsFromJson());
+
+    // Exactly two elements survive: one "nf 1" and one "gk 1" (the duplicate is dropped).
+    EXPECT_EQ(sim->getNumberOfElements(), 2);
+    EXPECT_NE(sim->getElement("nf 1"), nullptr);
+    EXPECT_NE(sim->getElement("gk 1"), nullptr);
+
+    // The kept "nf 1" is wired to feed "gk 1" (first element's interactions are honoured).
+    const auto consumersOfNf = sim->getElementsThatHaveSpecifiedElementAsInput("nf 1");
+    ASSERT_FALSE(consumersOfNf.empty());
+    EXPECT_EQ(consumersOfNf.front()->getUniqueName(), "gk 1");
+
+    // The duplicate's bogus interaction (gk 1 -> nf 1) must NOT have been wired onto
+    // the kept "nf 1": the kept field has no inputs.
+    EXPECT_TRUE(sim->getElement("nf 1")->getInputs().empty());
+}

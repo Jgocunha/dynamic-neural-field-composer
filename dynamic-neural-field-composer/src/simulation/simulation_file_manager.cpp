@@ -1,5 +1,7 @@
 #include "simulation/simulation_file_manager.h"
 
+#include <unordered_set>
+
 
 namespace dnf_composer
 {
@@ -529,11 +531,25 @@ namespace dnf_composer
 
     void SimulationFileManager::jsonToElements(const json& jsonElements) const
     {
+        // Track names already loaded so duplicate uniqueNames in the file are rejected
+        // (mirrors the guard in Simulation::addElement). Used by both passes below.
+        std::unordered_set<std::string> seenNames;
+
          //Iterate over elements in the JSON and reconstruct them
-	    for (const auto& elementJson : jsonElements) 
+	    for (const auto& elementJson : jsonElements)
         {
 	        // Parse common parameters
 	        const std::string uniqueName = elementJson["uniqueName"];
+
+	        // Reject duplicate element names: keep the first occurrence, skip the rest
+	        // (and their interactions in the second pass) with a clear error.
+	        if (!seenNames.insert(uniqueName).second)
+	        {
+	            log(tools::logger::LogLevel::ERROR, "Duplicate element name '" + uniqueName
+	                + "' in file - skipping this element.");
+	            continue;
+	        }
+
 	        const std::string labelStr = elementJson["label"][1].get<std::string>();
 	        const element::ElementLabel elementLabel = elementLabelFromString(labelStr);
 	        const int x_max = elementJson["x_max"];
@@ -1015,9 +1031,17 @@ namespace dnf_composer
     }
 
 	    // Iterate to create interactions
+	    std::unordered_set<std::string> wiredNames;
 	    for (const auto& elementJson : jsonElements)
 	    {
 	        const std::string uniqueName = elementJson["uniqueName"];
+
+	        // Skip the interactions of a duplicate entry: only the first occurrence of a
+	        // name was loaded, so wiring a later duplicate's inputs would attach them to
+	        // the wrong (first) element.
+	        if (!wiredNames.insert(uniqueName).second)
+	            continue;
+
 	        const auto& inputsJson = elementJson["inputs"];
 
             if(!inputsJson.empty())
