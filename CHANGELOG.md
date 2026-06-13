@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.9.2] - 2026-06-07
+
+### Fixed
+- Duplicate element names in a `.dnf` file are now rejected on load
+  (`SimulationFileManager::jsonToElements`): the first occurrence is kept and later
+  duplicates — along with their interactions — are skipped with a clear ERROR, instead of the
+  duplicate's input edges being silently wired onto the first element and corrupting the loaded
+  graph (#44)
+
 ## [2.9.1] - 2026-06-07
 
 ### Changed
