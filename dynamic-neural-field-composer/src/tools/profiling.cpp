@@ -27,7 +27,7 @@ namespace dnf_composer
 				outStream << "Signature: " << signature
 					<< " Duration (us): " << duration
 				    //<< " Duration (ms): " << static_cast<double>(duration.count()) * 0.001
-					<< std::endl;
+					<< '\n';
 			}
 		}
 	}
