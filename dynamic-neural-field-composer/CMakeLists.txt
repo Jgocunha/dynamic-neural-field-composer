@@ -24,9 +24,6 @@ set(DNF_COMPOSER_FRAMEWORK_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 set(DNF_COMPOSER_CMAKE_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/${CMAKE_PROJECT_NAME}")
 set(DNF_COMPOSER_ADDITIONAL_FILES_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/${CMAKE_PROJECT_NAME}")
 
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Check whether VCPKG is set up in your system
@@ -240,6 +237,7 @@ set(src
 
 # Define library target
 add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
+target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
 target_include_directories(${CMAKE_PROJECT_NAME} 
     PUBLIC $<INSTALL_INTERFACE:include> 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include 
