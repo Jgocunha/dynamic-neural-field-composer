@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.9.3] - 2026-06-14
+
+### Changed
+- The C++20 requirement is now attached to the library target via
+  `target_compile_features(dynamic-neural-field-composer PUBLIC cxx_std_20)` instead of the
+  global `CMAKE_CXX_STANDARD` variables, so it propagates to tests, examples, and downstream
+  consumers of the installed/exported target (#78)
+- Replaced `std::endl` with `'\n'` in `tools/logger.cpp` and `tools/profiling.cpp` to avoid
+  unnecessary per-line stream flushes on the hot logging/profiling paths (#73, #79)
+
 ## [2.9.2] - 2026-06-07
 
 ### Fixed
