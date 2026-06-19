@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### CI
+- Added CodeRabbit configuration (`.coderabbit.yaml`) for automatic PR code review and
+  external contributor onboarding (free for public repositories, no API key required)
+- Added `gemini-issue-triage.yml` workflow: classifies new issues, creates labels
+  idempotently, checks for duplicates, and posts a welcome comment using the Gemini API
+- Added `gemini-doc-sync.yml` workflow: audits Doxygen, wiki, README, and CHANGELOG
+  coverage on PRs that touch `include/**` and posts a checklist comment using the Gemini API
+- Added `vcpkg-maintenance.yml` workflow: monthly cron that reads vcpkg port manifests and
+  opens a GitHub issue with a package version table (no LLM — pure shell + jq)
+
 ## [2.9.3] - 2026-06-14
 
 ### Changed
