@@ -45,7 +45,7 @@ jobs:
 
       - name: Classify issue with Gemini
         id: classify
-        uses: google-github-actions/run-gemini-cli@e061df3d60a224aed843cdac838189d1f6bff576 # v0.1.9
+        uses: google-github-actions/run-gemini-cli@055c24c9f565debe282e4adf1f7ca1715040ebe2 # v0 (2026-06-19)
         with:
           gemini_cli_version: latest
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
