@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Check documentation completeness with Gemini
-        uses: google-github-actions/run-gemini-cli@f77273f4c914e4bf38440cf36a0369cb64a37489 # v0
+        uses: google-github-actions/run-gemini-cli@e061df3d60a224aed843cdac838189d1f6bff576 # v0.1.9
         with:
           gemini_cli_version: latest
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
@@ -85,5 +85,4 @@ jobs:
                Write "No issues found." under any heading with nothing to report.
                One line per item. Do not suggest replacement wording — only identify what needs attention.
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
