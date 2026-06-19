@@ -141,3 +141,8 @@ jobs:
 
           gh issue edit "$ISSUE_NUMBER" --add-label "$LABELS"
           gh issue comment "$ISSUE_NUMBER" --body "$COMMENT"
+
+          if [ -n "$DUPLICATE_OF" ]; then
+            gh issue close "$ISSUE_NUMBER" --reason "not planned" \
+              --comment "Closing as duplicate of #${DUPLICATE_OF}."
+          fi
