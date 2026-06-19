@@ -14,15 +14,17 @@ permissions:
 jobs:
   doc-sync:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Check documentation completeness with Gemini
-        uses: google-github-actions/run-gemini-cli@v0
+        uses: google-github-actions/run-gemini-cli@f77273f4c914e4bf38440cf36a0369cb64a37489 # v0
         with:
-          version: latest
+          gemini_cli_version: latest
           prompt: |
             This pull request modifies one or more public API headers under
             `dynamic-neural-field-composer/include/`. Audit the documentation impact and post a
