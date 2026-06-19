@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
   coverage on PRs that touch `include/**` and posts a checklist comment using the Gemini API
 - Added `vcpkg-maintenance.yml` workflow: monthly cron that reads vcpkg port manifests and
   opens a GitHub issue with a package version table (no LLM — pure shell + jq)
+- Fixed `gemini-issue-triage.yml`: removed unused `maintenance` label from triage creation,
+  used multiline EOF delimiter for step output to avoid shell escaping issues, close issues
+  automatically when Gemini detects a duplicate, and switched secondary label allowlist
+  validation to word-boundary matching to prevent partial-string false positives
 
 ## [2.9.3] - 2026-06-14
 
