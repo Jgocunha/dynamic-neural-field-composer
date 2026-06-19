@@ -85,4 +85,5 @@ jobs:
                Write "No issues found." under any heading with nothing to report.
                One line per item. Do not suggest replacement wording — only identify what needs attention.
         env:
+          GEMINI_CLI_TRUST_WORKSPACE: 'true'
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

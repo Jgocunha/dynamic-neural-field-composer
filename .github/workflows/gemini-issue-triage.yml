@@ -99,6 +99,8 @@ jobs:
               "duplicate_of": null,
               "comment": "..."
             }
+        env:
+          GEMINI_CLI_TRUST_WORKSPACE: 'true'
 
       - name: Apply labels and post comment
         env:
