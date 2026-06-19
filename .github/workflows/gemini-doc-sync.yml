@@ -1,0 +1,86 @@
+name: Documentation Sync Check
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+    paths:
+      - 'dynamic-neural-field-composer/include/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  doc-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check documentation completeness with Gemini
+        uses: google-github-actions/run-gemini-cli@v0
+        with:
+          version: latest
+          prompt: |
+            This pull request modifies one or more public API headers under
+            `dynamic-neural-field-composer/include/`. Audit the documentation impact and post a
+            single PR comment listing what needs updating. Do NOT commit or modify any files.
+
+            Repository: ${{ github.repository }}
+            PR number: ${{ github.event.pull_request.number }}
+
+            Project layout:
+            - Public headers: dynamic-neural-field-composer/include/**/*.h
+            - Wiki pages:     dynamic-neural-field-composer/wiki/*.md
+            - README:         README.md (top-level)
+            - Changelog:      CHANGELOG.md (top-level)
+
+            Doxygen convention (CONTRIBUTING.md): every public function, class, and struct in
+            include/ must have a Doxygen block with at minimum @brief, one @param per parameter,
+            and @return (unless void).
+
+            Steps:
+            1. Run: gh pr diff ${{ github.event.pull_request.number }}
+               to see the changed files and lines.
+
+            2. For each changed header file, check:
+
+               a) Doxygen — new public functions/methods: does each have a complete block?
+                  Existing functions with changed signatures: is the Doxygen still accurate?
+                  List each issue as: include/path/file.h — FunctionName: what is missing.
+
+               b) Wiki — read relevant pages in dynamic-neural-field-composer/wiki/ that cover
+                  the changed elements. Identify sections referencing the changed API that may
+                  now be stale. List each as: wiki/PageName.md — section "Heading": description.
+
+               c) README — scan README.md for code snippets using the changed API. List any
+                  snippets that may need updating with an approximate line reference.
+
+               d) CHANGELOG — if the API change is notable (new feature, behaviour change,
+                  parameter rename), flag that CHANGELOG.md may need an entry under [Unreleased].
+
+            3. Post the findings as a PR comment:
+               gh pr comment ${{ github.event.pull_request.number }} --body "..."
+
+               Use this structure in the comment body:
+               ## Documentation sync check
+
+               ### Doxygen
+               - [ ] include/path/file.h — FunctionName: missing @param x
+
+               ### Wiki
+               - [ ] wiki/Elements.md — section "Kernel Parameters": update for sigma rename
+
+               ### README
+               - [ ] Line ~42: snippet uses old constructor signature
+
+               ### CHANGELOG
+               - [ ] Consider adding entry under [Unreleased] for the ElementFactory API change
+
+               Write "No issues found." under any heading with nothing to report.
+               One line per item. Do not suggest replacement wording — only identify what needs attention.
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

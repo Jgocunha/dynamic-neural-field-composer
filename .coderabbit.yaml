@@ -1,0 +1,58 @@
+language: en-US
+
+reviews:
+  # Review all PRs automatically, including from first-time contributors
+  auto_review:
+    enabled: true
+    drafts: false
+
+  # Project-specific review instructions
+  instructions: |
+    This is **dynamic-neural-field-composer**, a C++20 library and GUI application implementing
+    Dynamic Neural Fields. The GUI uses Dear ImGui with the imgui-platform-kit layer.
+    vcpkg packages: imgui (docking-experimental, glfw/opengl3 bindings), implot,
+    imgui-node-editor, nlohmann-json, gtest, catch2.
+
+    Review every PR for the following, posting inline comments on the relevant lines:
+
+    **Code style (CONTRIBUTING.md / Clean Code)**
+    - Meaningful names: variables, functions, and types should read like prose.
+    - No raw owning pointers — std::shared_ptr / std::unique_ptr only.
+    - Small focused functions with a single responsibility.
+    - No comments that explain *what*; only add one if the *why* is non-obvious.
+    - C++20 idioms preferred (ranges, concepts, structured bindings, std::span, etc.).
+
+    **Test coverage**
+    - Changes to element behaviour, simulation logic, or utilities must have tests in
+      `dynamic-neural-field-composer/tests/` (Google Test target `dnf_composer_tests` or Catch2).
+    - Flag any new public functions or changed behaviour without corresponding tests.
+
+    **Doxygen documentation**
+    - All new or changed public functions/classes/structs under `include/` need Doxygen
+      blocks with at minimum `@brief`, one `@param` per parameter, and `@return` (unless void).
+    - Flag missing or stale Doxygen.
+
+    **Performance and safety**
+    - Unnecessary copies of heavy objects (field matrices, kernel vectors).
+    - Prefer std::string_view / std::span over const-ref where applicable.
+    - std::shared_ptr inside hot simulation loops (prefer value types or unique_ptr for
+      objects that do not need sharing).
+
+    **External contributors (FIRST_TIME_CONTRIBUTOR or no prior contributions):**
+    Open your review comment with a short, welcoming paragraph that thanks the author,
+    links to CONTRIBUTING.md, and notes that a maintainer will do a final review once CI
+    is green. Keep the overall tone encouraging and constructive.
+
+  # Files to exclude from review
+  path_filters:
+    - "!build/**"
+    - "!dynamic-neural-field-composer/docs/**"
+    - "!vcpkg/**"
+    - "!deps/**"
+    - "!**/compile_commands.json"
+    - "!**/*.json.in"
+    - "!CMakeCache.txt"
+    - "!**/CMakeFiles/**"
+
+chat:
+  auto_reply: true

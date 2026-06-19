@@ -1,0 +1,81 @@
+name: vcpkg Maintenance Check
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  vcpkg-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone vcpkg
+        run: git clone --depth=1 https://github.com/microsoft/vcpkg.git "$GITHUB_WORKSPACE/vcpkg"
+
+      - name: Build version report and create issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          PACKAGES="imgui implot imgui-node-editor nlohmann-json gtest catch2"
+          VCPKG_DIR="$GITHUB_WORKSPACE/vcpkg"
+          DATE=$(date +%Y-%m-%d)
+
+          # Ensure the maintenance label exists
+          gh label create maintenance \
+            --color "#ededed" \
+            --description "Routine maintenance tasks" \
+            --force 2>/dev/null || true
+
+          # Build a Markdown table of current port versions
+          TABLE="| Package | Version | Port-version | Notes |\n|---|---|---|---|\n"
+
+          for pkg in $PACKAGES; do
+            PORT_JSON="$VCPKG_DIR/ports/$pkg/vcpkg.json"
+            if [ ! -f "$PORT_JSON" ]; then
+              TABLE="${TABLE}| \`$pkg\` | not found | — | Port directory missing in cloned vcpkg |\n"
+              continue
+            fi
+
+            # Extract version (try version-semver, version-date, version in that order)
+            VERSION=$(jq -r '
+              if .["version-semver"] then .["version-semver"]
+              elif .["version-date"] then .["version-date"]
+              elif .version then .version
+              else "unknown"
+              end' "$PORT_JSON")
+
+            PORT_VERSION=$(jq -r '.["port-version"] // 0' "$PORT_JSON")
+
+            # Flag non-zero port-version (port patch without upstream version change)
+            NOTE=""
+            if [ "$PORT_VERSION" != "0" ] && [ "$PORT_VERSION" != "null" ]; then
+              NOTE="port patch applied (port-version: $PORT_VERSION)"
+            fi
+
+            TABLE="${TABLE}| \`$pkg\` | $VERSION | $PORT_VERSION | $NOTE |\n"
+          done
+
+          # Compose issue body
+          BODY=$(printf "## Monthly vcpkg dependency report — %s\n\n\
+          This is an automated monthly check of the vcpkg packages used by **dynamic-neural-field-composer**.\n\
+          The project does not pin a vcpkg baseline; CI always pulls the latest vcpkg HEAD.\n\
+          The versions below are what is currently available in the vcpkg registry.\n\n\
+          ### Package versions\n\n%s\n\
+          ### What to look for\n\n\
+          - **Non-zero port-version**: the port was patched without an upstream release — usually safe, but worth noting.\n\
+          - **Major version bumps**: may introduce breaking API changes. Consider running a manual integration test before the next release.\n\n\
+          ### Recommended action\n\n\
+          Review the table above. If any package shows a major version bump since the last report,\n\
+          clone the repo, update vcpkg, and run the CI build scripts locally to verify nothing is broken.\n\
+          Close this issue once reviewed.\n" "$DATE" "$(printf "$TABLE")")
+
+          gh issue create \
+            --title "chore: monthly vcpkg dependency report — $DATE" \
+            --label "maintenance" \
+            --body "$BODY"
