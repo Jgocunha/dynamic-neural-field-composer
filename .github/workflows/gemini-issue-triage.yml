@@ -132,7 +132,7 @@ jobs:
           ALLOWED_SECONDARY="help wanted good first issue duplicate"
           LABELS="$TYPE_LABEL,$PRIORITY"
           for lbl in $SECONDARY; do
-            if echo "$ALLOWED_SECONDARY" | grep -qF "$lbl"; then
+            if echo "$ALLOWED_SECONDARY" | grep -qw "$lbl"; then
               LABELS="$LABELS,$lbl"
             else
               echo "Skipping unexpected secondary label: '$lbl'"
