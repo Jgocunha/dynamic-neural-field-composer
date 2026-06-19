@@ -37,7 +37,11 @@ jobs:
         run: |
           gh issue list --state all --limit 100 --json number,title,state \
             > /tmp/existing_issues.json
-          echo "fetched=$(cat /tmp/existing_issues.json)" >> "$GITHUB_OUTPUT"
+          {
+            echo "fetched<<EOF"
+            cat /tmp/existing_issues.json
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Classify issue with Gemini
         id: classify
