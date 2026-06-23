@@ -13,7 +13,7 @@ var searchData=
   ['updateinput_10',['updateInput',['../classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a',1,'dnf_composer::element::Element']]],
   ['updatestate_11',['updateState',['../classdnf__composer_1_1element_1_1NeuralField.html#a6656f6846ca05bcf2a66394833e0170e',1,'dnf_composer::element::NeuralField']]],
   ['userflags_12',['UserFlags',['../structImGui__ImplFreeType__FontSrcData.html#aadcf822a4661e71e111d94969b02da77',1,'ImGui_ImplFreeType_FontSrcData']]],
-  ['using_20dynamic_20neural_20field_20composer_13',['Projects using dynamic-neural-field-composer',['../index.html#autotoc_md14',1,'']]],
+  ['using_20dynamic_20neural_20field_20composer_13',['Projects using dynamic-neural-field-composer',['../index.html#autotoc_md16',1,'']]],
   ['utils_2ecpp_14',['utils.cpp',['../utils_8cpp.html',1,'']]],
   ['utils_2eh_15',['utils.h',['../utils_8h.html',1,'']]]
 ];

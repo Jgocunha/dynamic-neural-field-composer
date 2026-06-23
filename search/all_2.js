@@ -34,7 +34,7 @@ var searchData=
   ['comparevectors_31',['compareVectors',['../namespacednf__composer_1_1tools_1_1math.html#adde1bc31a791880e80b608f880ab36bc',1,'dnf_composer::tools::math']]],
   ['componentexists_32',['componentExists',['../classdnf__composer_1_1Simulation.html#af2cbdd9d53809ca631ccb66c2fe615f0',1,'dnf_composer::Simulation']]],
   ['components_33',['components',['../classdnf__composer_1_1element_1_1Element.html#a529da70219d7497c61b328c2b9af5a9f',1,'dnf_composer::element::Element']]],
-  ['composer_34',['composer',['../index.html',1,'Dynamic Neural Field Composer'],['../index.html#autotoc_md14',1,'Projects using dynamic-neural-field-composer']]],
+  ['composer_34',['composer',['../index.html',1,'Dynamic Neural Field Composer'],['../index.html#autotoc_md16',1,'Projects using dynamic-neural-field-composer']]],
   ['compression_35',['compression',['../structdnf__composer_1_1element_1_1CollapseParameters.html#a3ce7fd9639b333c2d9c7eeeb3697aaa7',1,'dnf_composer::element::CollapseParameters']]],
   ['compressiontype_36',['CompressionType',['../group__elements.html#gac602c49997b573c18f5e15d5181ab3cc',1,'dnf_composer::element']]],
   ['compressiontypetostring_37',['CompressionTypeToString',['../namespacednf__composer_1_1element.html#a67541d50c3c0de566046146d560ad867',1,'dnf_composer::element']]],

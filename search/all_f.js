@@ -41,5 +41,5 @@ var searchData=
   ['profiling_2eh_38',['profiling.h',['../profiling_8h.html',1,'']]],
   ['projectionaxis_39',['ProjectionAxis',['../group__elements.html#ga2e0515a41d6b55d8c4f4d47e9d30cddf',1,'dnf_composer::element']]],
   ['projectionaxistostring_40',['ProjectionAxisToString',['../namespacednf__composer_1_1element.html#ab1dacb72febf80a3b1a58907fd9f1e7c',1,'dnf_composer::element']]],
-  ['projects_20using_20dynamic_20neural_20field_20composer_41',['Projects using dynamic-neural-field-composer',['../index.html#autotoc_md14',1,'']]]
+  ['projects_20using_20dynamic_20neural_20field_20composer_41',['Projects using dynamic-neural-field-composer',['../index.html#autotoc_md16',1,'']]]
 ];

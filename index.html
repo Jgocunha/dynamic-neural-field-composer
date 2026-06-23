@@ -74,12 +74,14 @@ $(function() {
   <div class="headertitle"><div class="title">Dynamic Neural Field Composer </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2dynamic-neural-field-composer_2dynamic-neural-field-composer_2README"></a><img src="logo.png" alt="" class="inline" title="logo"/>    </p>
+<div class="textblock"><p><a class="anchor" id="md__2home_2runner_2work_2dynamic-neural-field-composer_2dynamic-neural-field-composer_2README"></a> <img src="logo.png" alt="" class="inline" title="logo"/>    </p>
 <h1 align="center">dynamic-neural-field-composer</h1>
 <p align="center"></p>
 <p><b>A C++ library and interactive application for building and simulating Dynamic Neural Field architectures.</b> </p>
 <p align="center"></p>
-<p><a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg" alt="Static Analysis" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" class="inline"/></a> <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="Coverage" style="pointer-events: none;" class="inline"/></a> <a href="https://jgocunha.github.io/dynamic-neural-field-composer/"><img src="https://img.shields.io/badge/docs-doxygen-blue" alt="Docs" class="inline"/></a> <img src="https://img.shields.io/badge/C%2B%2B-20-blue" alt="C++20" class="inline"/> <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Platform" class="inline"/> </p>
+<p><b>A C++ library and interactive application for building and simulating Dynamic Neural Field architectures.</b> </p>
+<p align="center"></p>
+<p><a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg" alt="Static Analysis" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" class="inline"/></a> <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="Coverage" style="pointer-events: none;" class="inline"/></a> <a href="https://jgocunha.github.io/dynamic-neural-field-composer/"><img src="https://img.shields.io/badge/docs-doxygen-blue" alt="Docs" class="inline"/></a> <img src="https://img.shields.io/badge/C%2B%2B-20-blue" alt="C++20" class="inline"/> <img src="https://badgen.net/badge/icon/Windows?icon=windows&amp;label" alt="" class="inline"/> <img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&amp;logoColor=black" alt="" class="inline"/> <img src="https://img.shields.io/badge/macOS-000000?logo=apple" alt="" class="inline"/> </p>
 <p align="center"></p>
 <p><a href="https://jgocunha.github.io/dynamic-neural-field-composer/">Docs</a> · <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki">Wiki</a> · <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases">Releases</a> · <a href="CONTRIBUTING.md">Contributing</a> </p>
 <hr  />
@@ -243,6 +245,10 @@ Flexible UI — dock, detach, and arrange windows however you need</div></div>
     <p>You can also write your own launcher, link against the library, and choose exactly which windows and architectures to load. See the <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki/How-to-Create-and-Run-Your-Own-Example-Executable">Wiki</a> for a step-by-step guide.</p>
 <hr  />
 <h2><a class="anchor" id="autotoc_md14"></a>
+Video demo</h2>
+<p><a href="https://youtu.be/Ss_FOccIM_o"><img src="https://img.youtube.com/vi/Ss_FOccIM_o/maxresdefault.jpg" alt="Watch the video" class="inline"/></a></p>
+<hr  />
+<h2><a class="anchor" id="autotoc_md16"></a>
 Projects using dynamic-neural-field-composer</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -256,10 +262,6 @@ Projects using dynamic-neural-field-composer</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><a href="https://research.tue.nl/en/studentTheses/how-we-can-use-dynamic-neural-fields-in-human-robot-joint-action/">How We Can Use Dynamic Neural Fields in Human-Robot Joint Action</a>   </td><td class="markdownTableBodyNone"><em>How We Can Use Dynamic Neural Fields in Human-Robot Joint Action</em> · Tessa H. Janssen · MSc thesis · TU/e   </td></tr>
 </table>
-<hr  />
-<h2><a class="anchor" id="autotoc_md16"></a>
-Benchmarking &amp; validation</h2>
-<p>Benchmarking against established DFT frameworks shows dynamic-neural-field-composer achieves the highest simulation throughput — delivering ~15–41% higher throughput than Cedar, the next-fastest framework — while maintaining algebraic equivalence with established implementations (and full float64 precision). The full methodology, per-size results, and cross-platform validation are available at <a href="https://github.com/Jgocunha/dynamic-field-theory-software">Jgocunha/dynamic-field-theory-software</a>.</p>
 <hr  />
 <h2><a class="anchor" id="autotoc_md18"></a>
 Contributing</h2>

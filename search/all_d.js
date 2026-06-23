@@ -2,7 +2,7 @@ var searchData=
 [
   ['name_0',['name',['../structdnf__composer_1_1element_1_1ElementCategoryInfo.html#a988c63b7381d1f078db63f40d39e2446',1,'dnf_composer::element::ElementCategoryInfo']]],
   ['nearest_1',['NEAREST',['../group__elements.html#gga89c0220b0fd31aae856f130ac5fb38c9aad135772d7cf93dd0ccf9d2474b34e6a',1,'dnf_composer::element']]],
-  ['neural_20field_20composer_2',['neural field composer',['../index.html',1,'Dynamic Neural Field Composer'],['../index.html#autotoc_md14',1,'Projects using dynamic-neural-field-composer']]],
+  ['neural_20field_20composer_2',['neural field composer',['../index.html',1,'Dynamic Neural Field Composer'],['../index.html#autotoc_md16',1,'Projects using dynamic-neural-field-composer']]],
   ['neural_5ffield_3',['NEURAL_FIELD',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233beceab3e1c58c27ea38cbced4cc0831419d0c',1,'dnf_composer::element']]],
   ['neural_5ffield_2ecpp_4',['neural_field.cpp',['../neural__field_8cpp.html',1,'']]],
   ['neural_5ffield_2eh_5',['neural_field.h',['../neural__field_8h.html',1,'']]],
