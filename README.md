@@ -1,7 +1,10 @@
-
 ![logo](./dynamic-neural-field-composer/resources/images/logo.png)
 
 <h1 align="center">dynamic-neural-field-composer</h1>
+
+<p align="center">
+  <strong>A C++ library and interactive application for building and simulating Dynamic Neural Field architectures.</strong>
+</p>
 
 <p align="center">
   <strong>A C++ library and interactive application for building and simulating Dynamic Neural Field architectures.</strong>
@@ -14,7 +17,9 @@
   <a href="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer"><img src="https://codecov.io/gh/Jgocunha/dynamic-neural-field-composer/graph/badge.svg" alt="Coverage" /></a>
   <a href="https://jgocunha.github.io/dynamic-neural-field-composer/"><img src="https://img.shields.io/badge/docs-doxygen-blue" alt="Docs" /></a>
   <img src="https://img.shields.io/badge/C%2B%2B-20-blue" alt="C++20" />
-  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Platform" />
+  <img src="https://badgen.net/badge/icon/Windows?icon=windows&label" />
+  <img src= "https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black"/>
+  <img src= "https://img.shields.io/badge/macOS-000000?logo=apple"/>
 </p>
 
 <p align="center">
@@ -182,6 +187,12 @@ You can also write your own launcher, link against the library, and choose exact
 
 ---
 
+## Video demo
+
+[![Watch the video](https://img.youtube.com/vi/Ss_FOccIM_o/maxresdefault.jpg)](https://youtu.be/Ss_FOccIM_o)
+
+---
+
 ## Projects using dynamic-neural-field-composer
 
 | Project | Publication |
@@ -190,12 +201,6 @@ You can also write your own launcher, link against the library, and choose exact
 | [dynamic-neural-field-degeneration](https://github.com/Jgocunha/dynamic-neural-field-degeneration) | *Robustness and Adaptability in a Dynamic Neural Field Architecture Subject to Degeneration* · ROBOT 2025 · Springer LNNS |
 | [vr-hr-joint-task](https://github.com/Jgocunha/vr-hr-joint-task) | *Dynamic Neural Field Based Anticipatory Action Selection for Human Robot Collaboration: A Virtual Reality Experiment* · ICSR + ART 2026 |
 | [How We Can Use Dynamic Neural Fields in Human-Robot Joint Action](https://research.tue.nl/en/studentTheses/how-we-can-use-dynamic-neural-fields-in-human-robot-joint-action/) | *How We Can Use Dynamic Neural Fields in Human-Robot Joint Action* · Tessa H. Janssen · MSc thesis · TU/e |
-
----
-
-## Benchmarking & validation
-
-Benchmarking against established DFT frameworks shows dynamic-neural-field-composer achieves the highest simulation throughput — delivering ~15–41% higher throughput than Cedar, the next-fastest framework — while maintaining algebraic equivalence with established implementations (and full float64 precision). The full methodology, per-size results, and cross-platform validation are available at [Jgocunha/dynamic-field-theory-software](https://github.com/Jgocunha/dynamic-field-theory-software).
 
 ---
 
