@@ -7,10 +7,6 @@
 </p>
 
 <p align="center">
-  <strong>A C++ library and interactive application for building and simulating Dynamic Neural Field architectures.</strong>
-</p>
-
-<p align="center">
   <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml"><img src="https://github.com/Jgocunha/dynamic-neural-field-composer/actions/workflows/static-analysis.yml/badge.svg" alt="Static Analysis" /></a>
   <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases/latest"><img src="https://img.shields.io/github/v/release/Jgocunha/dynamic-neural-field-composer" alt="Latest Release" /></a>
