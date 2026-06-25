@@ -80,7 +80,11 @@ namespace dnf_composer
 			const std::vector<double>& input = components["input"];
 			std::vector<double>& output = components["output"];
 
-			fullSum = std::accumulate(input.begin(), input.end(), 0.0);
+			// The global offset (amplitudeGlobal * sum-of-input) is only needed when
+			// amplitudeGlobal != 0. Skip the O(N) accumulate and the per-cell add when
+			// it's disabled (bit-identical: globalOffset would be 0).
+			const bool hasGlobal = parameters.amplitudeGlobal != 0.0;
+			fullSum = hasGlobal ? std::accumulate(input.begin(), input.end(), 0.0) : 0.0;
 
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
@@ -90,10 +94,18 @@ namespace dnf_composer
 				input, kernel_1d_x, kernel_1d_y,
 				size_x, size_y, extIndex_x, extIndex_y);
 
-			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			const int n = static_cast<int>(output.size());
-			for (int i = 0; i < n; ++i)
-				output[i] = scratchConvolution_[i] + globalOffset;
+			if (hasGlobal)
+			{
+				const double globalOffset = parameters.amplitudeGlobal * fullSum;
+				for (int i = 0; i < n; ++i)
+					output[i] = scratchConvolution_[i] + globalOffset;
+			}
+			else
+			{
+				for (int i = 0; i < n; ++i)
+					output[i] = scratchConvolution_[i];
+			}
 		}
 
 		std::string GaussKernel2D::toString() const

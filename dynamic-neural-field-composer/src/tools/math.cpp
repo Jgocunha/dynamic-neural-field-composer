@@ -149,9 +149,8 @@ namespace dnf_composer
 					return negative ? -val : val;
 				}
 
-				double zigguratNormal(Xoshiro256& eng)
+				double zigguratNormal(Xoshiro256& eng, const ZigguratTables& z)
 				{
-					const ZigguratTables& z = zigTables();
 					constexpr double r = 3.6541528853610088;
 					for (;;)
 					{
@@ -175,8 +174,13 @@ namespace dnf_composer
 			void fillNormal(double* dst, std::size_t n)
 			{
 				static thread_local Xoshiro256 eng = makeSeededEngine();
+				// Fetch the ziggurat tables once for the whole batch. zigTables() is a
+				// function-local static whose thread-safe-init guard was otherwise
+				// checked on every single sample (measured as the largest cost inside
+				// zigguratNormal); hoisting it here removes that per-sample overhead.
+				const ZigguratTables& z = zigTables();
 				for (std::size_t i = 0; i < n; ++i)
-					dst[i] = zigguratNormal(eng);
+					dst[i] = zigguratNormal(eng, z);
 			}
 
 			std::vector<double> generateNormalVector(int size)

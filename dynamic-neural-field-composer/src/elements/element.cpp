@@ -157,10 +157,31 @@ namespace dnf_composer::element
 	{
 		if (!inputPtr)
 			buildInputCache();
-		std::fill_n(inputPtr, inputSize, 0.0);
-		for (const auto&[src, size] : cachedInputs)
-			for (std::size_t i = 0; i < size; ++i)
-				inputPtr[i] += src[i];
+
+		// Sum the input sources into the input buffer. Copy the first source
+		// instead of zero-filling then adding it — this elides a full zero-fill
+		// pass over the buffer every step (updateInput runs for every element).
+		// Bit-identical to fill(0) + accumulate. Sources are same-sized as the
+		// input buffer (enforced at addInput); guard defensively all the same.
+		if (cachedInputs.empty())
+		{
+			std::fill_n(inputPtr, inputSize, 0.0);
+			return;
+		}
+
+		const CachedInput& first = cachedInputs.front();
+		const std::size_t n0 = first.size < inputSize ? first.size : inputSize;
+		for (std::size_t i = 0; i < n0; ++i)
+			inputPtr[i] = first.src[i];
+		for (std::size_t i = n0; i < inputSize; ++i)
+			inputPtr[i] = 0.0;
+
+		for (std::size_t k = 1; k < cachedInputs.size(); ++k)
+		{
+			const CachedInput& in = cachedInputs[k];
+			for (std::size_t i = 0; i < in.size; ++i)
+				inputPtr[i] += in.src[i];
+		}
 	}
 
 	int Element::getMaxSpatialDimension() const

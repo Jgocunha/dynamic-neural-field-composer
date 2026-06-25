@@ -860,3 +860,312 @@ form is numerically tamer.) Non-symmetric kernels (Oscillatory) keep the bit-ide
 dnf-composer now beats Cedar at every 2D size in full FP64. Cumulative this session: conv AVX2 (across
 outputs) + map-lookup hoist + sigmoid AVX2 exp + symmetric folding took 2D from ~6x slower than Cedar to
 12-30% faster. `conv_valid_into` is still the top cost; the remaining lever is across-field threading.
+## 2026-06-25 14:58:12  (dnfc 2.9.3, 200000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.77 | 0.80 | 0.70 | 41.10 |
+| GaussKernel | 0.66 | 0.60 | 0.60 | 51.30 |
+| MexicanHatKernel | 0.91 | 0.80 | 0.80 | 165.70 |
+| OscillatoryKernel | 3.04 | 2.60 | 2.50 | 597.30 |
+| AsymmetricGaussKernel | 0.77 | 0.60 | 0.60 | 487.80 |
+| NormalNoise | 0.78 | 0.60 | 0.50 | 430.90 |
+| CorrelatedNormalNoise | 3.77 | 3.10 | 2.80 | 496.60 |
+| MemoryTrace | 0.24 | 0.20 | 0.10 | 416.50 |
+| GaussStimulus | 0.03 | 0.00 | 0.00 | 318.10 |
+| TimedGaussStimulus | 0.06 | 0.10 | 0.00 | 369.00 |
+| BoostStimulus | 0.10 | 0.10 | 0.00 | 359.70 |
+| NeuralField2D | 17.35 | 14.40 | 14.00 | 839.20 |
+| GaussKernel2D | 32.18 | 26.50 | 25.70 | 1031.20 |
+| MexicanHatKernel2D | 92.16 | 76.80 | 73.70 | 4709.90 |
+| OscillatoryKernel2D | 59.79 | 56.70 | 54.40 | 1062.30 |
+| AsymmetricGaussKernel2D | 27.93 | 26.40 | 25.20 | 718.20 |
+| NormalNoise2D | 15.85 | 14.70 | 13.80 | 20391.20 |
+| CorrelatedNormalNoise2D | 27.95 | 26.50 | 25.00 | 717.80 |
+| MemoryTrace2D | 3.21 | 3.00 | 2.90 | 472.60 |
+| GaussStimulus2D | 0.02 | 0.00 | 0.00 | 0.50 |
+| TimedGaussStimulus2D | 0.20 | 0.20 | 0.10 | 371.50 |
+| BoostStimulus2D | 0.26 | 0.20 | 0.20 | 593.50 |
+| Collapse (2D->1D) | 5.39 | 5.00 | 4.80 | 988.10 |
+| Expand (1D->2D) | 2.18 | 2.10 | 2.00 | 435.30 |
+| Resize (1D) | 0.30 | 0.30 | 0.20 | 416.90 |
+
+### Representative 1D detection sim  (total 1.76 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.03 | 1.43% |
+| neural field u | NeuralField | 1.00 | 57.02% |
+| gauss kernel | GaussKernel | 0.68 | 38.70% |
+| normal noise | NormalNoise | 0.05 | 2.85% |
+
+### Representative 2D detection sim  (total 50.44 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.03 | 0.05% |
+| neural field u | NeuralField2D | 22.20 | 44.01% |
+| gauss kernel 2d | GaussKernel2D | 27.98 | 55.47% |
+| normal noise 2d | NormalNoise2D | 0.24 | 0.47% |
+
+## 2026-06-25 15:08:11  (dnfc 2.9.3, 20000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.64 | 0.60 | 0.60 | 21.10 |
+| GaussKernel | 0.55 | 0.50 | 0.50 | 9.80 |
+| MexicanHatKernel | 0.73 | 0.70 | 0.70 | 10.10 |
+| OscillatoryKernel | 2.48 | 2.50 | 2.40 | 16.20 |
+| AsymmetricGaussKernel | 0.56 | 0.60 | 0.50 | 10.20 |
+| NormalNoise | 0.63 | 0.60 | 0.50 | 9.90 |
+| CorrelatedNormalNoise | 2.82 | 2.80 | 2.60 | 109.10 |
+| MemoryTrace | 0.10 | 0.10 | 0.00 | 0.50 |
+| GaussStimulus | 0.02 | 0.00 | 0.00 | 8.60 |
+| TimedGaussStimulus | 0.05 | 0.00 | 0.00 | 2.50 |
+| BoostStimulus | 0.09 | 0.10 | 0.00 | 0.20 |
+| NeuralField2D | 12.71 | 12.60 | 12.40 | 202.50 |
+| GaussKernel2D | 24.98 | 24.30 | 23.50 | 155.40 |
+| MexicanHatKernel2D | 75.34 | 73.70 | 71.00 | 279.00 |
+| OscillatoryKernel2D | 54.89 | 54.20 | 52.40 | 220.10 |
+| AsymmetricGaussKernel2D | 25.34 | 24.70 | 23.70 | 165.90 |
+| NormalNoise2D | 14.92 | 14.50 | 13.70 | 74.80 |
+| CorrelatedNormalNoise2D | 27.63 | 26.60 | 25.50 | 93.50 |
+| MemoryTrace2D | 1.20 | 1.20 | 1.10 | 18.00 |
+| GaussStimulus2D | 0.02 | 0.00 | 0.00 | 0.30 |
+| TimedGaussStimulus2D | 0.20 | 0.20 | 0.10 | 27.30 |
+| BoostStimulus2D | 0.21 | 0.20 | 0.20 | 3.70 |
+| Collapse (2D->1D) | 2.49 | 2.50 | 2.40 | 56.20 |
+| Expand (1D->2D) | 1.99 | 2.00 | 1.90 | 23.20 |
+| Resize (1D) | 0.18 | 0.20 | 0.10 | 0.40 |
+
+### Representative 1D detection sim  (total 1.52 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.02 | 1.56% |
+| neural field u | NeuralField | 0.88 | 57.47% |
+| gauss kernel | GaussKernel | 0.58 | 37.86% |
+| normal noise | NormalNoise | 0.05 | 3.12% |
+
+### Representative 2D detection sim  (total 46.10 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.03 | 0.05% |
+| neural field u | NeuralField2D | 21.07 | 45.72% |
+| gauss kernel 2d | GaussKernel2D | 24.77 | 53.73% |
+| normal noise 2d | NormalNoise2D | 0.23 | 0.50% |
+
+## 2026-06-25 15:09:48  (dnfc 2.9.3, 200000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.74 | 0.70 | 0.60 | 113.20 |
+| GaussKernel | 0.63 | 0.60 | 0.50 | 279.10 |
+| MexicanHatKernel | 0.88 | 0.80 | 0.70 | 703.60 |
+| OscillatoryKernel | 3.00 | 2.60 | 2.40 | 755.10 |
+| AsymmetricGaussKernel | 0.70 | 0.60 | 0.50 | 477.10 |
+| NormalNoise | 0.80 | 0.60 | 0.50 | 465.90 |
+| CorrelatedNormalNoise | 3.75 | 3.10 | 2.70 | 676.30 |
+| MemoryTrace | 0.13 | 0.10 | 0.10 | 313.50 |
+| GaussStimulus | 0.03 | 0.00 | 0.00 | 263.90 |
+| TimedGaussStimulus | 0.05 | 0.00 | 0.00 | 404.30 |
+| BoostStimulus | 0.10 | 0.10 | 0.00 | 286.70 |
+| NeuralField2D | 14.99 | 12.50 | 12.10 | 688.40 |
+| GaussKernel2D | 30.04 | 24.60 | 23.80 | 3104.00 |
+| MexicanHatKernel2D | 81.23 | 74.40 | 71.20 | 18895.30 |
+| OscillatoryKernel2D | 57.83 | 54.80 | 52.70 | 2859.50 |
+| AsymmetricGaussKernel2D | 25.83 | 24.50 | 23.40 | 988.60 |
+| NormalNoise2D | 15.92 | 15.10 | 14.00 | 596.50 |
+| CorrelatedNormalNoise2D | 28.00 | 26.50 | 25.10 | 924.90 |
+| MemoryTrace2D | 1.26 | 1.20 | 1.10 | 613.90 |
+| GaussStimulus2D | 0.02 | 0.00 | 0.00 | 0.50 |
+| TimedGaussStimulus2D | 0.20 | 0.20 | 0.10 | 397.10 |
+| BoostStimulus2D | 0.22 | 0.20 | 0.20 | 355.30 |
+| Collapse (2D->1D) | 3.26 | 3.10 | 2.90 | 486.30 |
+| Expand (1D->2D) | 2.10 | 2.00 | 1.90 | 458.40 |
+| Resize (1D) | 0.21 | 0.20 | 0.10 | 454.80 |
+
+### Representative 1D detection sim  (total 1.58 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.02 | 1.52% |
+| neural field u | NeuralField | 0.89 | 56.68% |
+| gauss kernel | GaussKernel | 0.61 | 38.55% |
+| normal noise | NormalNoise | 0.05 | 3.25% |
+
+### Representative 2D detection sim  (total 46.38 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.03 | 0.06% |
+| neural field u | NeuralField2D | 20.21 | 43.57% |
+| gauss kernel 2d | GaussKernel2D | 25.92 | 55.88% |
+| normal noise 2d | NormalNoise2D | 0.23 | 0.50% |
+
+## 2026-06-25 — AFTER updateInput zero-fill elision
+
+Element::updateInput (runs for every element every step) previously did fill(0) then accumulated each
+input source. Now it copies the first source and adds the rest — eliding a full zero-fill pass per
+element per step. Bit-identical (803 tests pass, FieldDynamics 1D/2D at 1e-4).
+
+Sampled: `Element::updateInput` dropped out of the top self-time list (was 4.4s / 6.3% of the sweep);
+total sweep self-time 69s -> 63.7s. Per-element aggregate (50x50): ~2us off EVERY element —
+NeuralField2D 14.4->12.7, GaussKernel2D 27.0->25.0, MexicanHat2D 78.0->75.3, Asymmetric 27.2->25.3.
+Representative 2D detection sim 51->46 us/step.
+
+### Remaining self-time (after this change)
+| % CPU | function | note |
+|------:|----------|------|
+| 51.8% | conv_valid_into | irreducible FMA (MexicanHat 2x-conv, Oscillatory wide/unfolded due to {24,25} clamp at 50x50) |
+| 17.6% | conv2d_separable_into | driver gather/scatter/transpose |
+| 8.7%  | zigguratNormal | scalar noise Gaussian (rejection branch; SIMD is a measure-and-maybe) |
+| 5.1%  | SigmoidFunction::apply | already AVX2 |
+| 2.2%  | NeuralField2D::updateBumps | flood-fill |
+
+Convolution is now FMA-bound; the structural wins (across-output SIMD + folding) are taken. Further
+single-thread conv gains need either math changes (rejected) or threading (deferred). Non-conv targets
+remaining: zigguratNormal (vectorize, measure-and-maybe), updateBumps (small).
+## 2026-06-25 15:15:15  (dnfc 2.9.3, 20000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.65 | 0.60 | 0.60 | 26.00 |
+| GaussKernel | 0.57 | 0.60 | 0.50 | 48.60 |
+| MexicanHatKernel | 0.74 | 0.70 | 0.70 | 29.60 |
+| OscillatoryKernel | 2.61 | 2.50 | 2.40 | 430.80 |
+| AsymmetricGaussKernel | 0.57 | 0.60 | 0.50 | 14.40 |
+| NormalNoise | 0.63 | 0.60 | 0.50 | 13.50 |
+| CorrelatedNormalNoise | 2.85 | 2.80 | 2.60 | 30.20 |
+| MemoryTrace | 0.11 | 0.10 | 0.00 | 3.00 |
+| GaussStimulus | 0.02 | 0.00 | 0.00 | 0.40 |
+| TimedGaussStimulus | 0.05 | 0.00 | 0.00 | 13.30 |
+| BoostStimulus | 0.08 | 0.10 | 0.00 | 0.50 |
+| NeuralField2D | 12.72 | 12.50 | 12.30 | 47.10 |
+| GaussKernel2D | 24.80 | 24.40 | 23.50 | 329.60 |
+| MexicanHatKernel2D | 75.89 | 74.20 | 71.80 | 803.80 |
+| OscillatoryKernel2D | 55.32 | 54.80 | 52.80 | 241.10 |
+| AsymmetricGaussKernel2D | 23.41 | 23.20 | 22.60 | 119.30 |
+| NormalNoise2D | 14.82 | 14.70 | 13.80 | 68.40 |
+| CorrelatedNormalNoise2D | 26.73 | 26.40 | 25.00 | 137.10 |
+| MemoryTrace2D | 1.20 | 1.20 | 1.10 | 10.80 |
+| GaussStimulus2D | 0.02 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.19 | 0.20 | 0.10 | 0.30 |
+| BoostStimulus2D | 0.21 | 0.20 | 0.20 | 8.90 |
+| Collapse (2D->1D) | 3.11 | 3.10 | 3.00 | 28.10 |
+| Expand (1D->2D) | 2.00 | 2.00 | 1.90 | 71.60 |
+| Resize (1D) | 0.19 | 0.20 | 0.10 | 36.90 |
+
+### Representative 1D detection sim  (total 1.49 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.02 | 1.58% |
+| neural field u | NeuralField | 0.85 | 57.19% |
+| gauss kernel | GaussKernel | 0.57 | 38.06% |
+| normal noise | NormalNoise | 0.05 | 3.17% |
+
+### Representative 2D detection sim  (total 45.80 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.05% |
+| neural field u | NeuralField2D | 22.13 | 48.32% |
+| gauss kernel 2d | GaussKernel2D | 23.43 | 51.15% |
+| normal noise 2d | NormalNoise2D | 0.22 | 0.48% |
+
+## 2026-06-25 — AFTER amplitudeGlobal==0 accumulate guard (kernels)
+
+The 4 2D kernels computed fullSum = accumulate(input) (O(N), ~0.3-0.7s/kernel in the sample, the
+dominant line of each kernel's own step body) then added amplitudeGlobal*fullSum to every cell — even
+when amplitudeGlobal==0. Guarded both behind mplitudeGlobal != 0.0: skip the accumulate and the
+per-cell offset add when the global term is disabled. Bit-identical (803 tests, FieldDynamics 1e-4).
+
+Effect (profiler default params — Oscillatory/Asymmetric default amplitudeGlobal=0; Gauss=-0.01,
+MexicanHat=-0.1 keep it):
+| element | before | after |
+|---------|-------:|------:|
+| AsymmetricGaussKernel2D | 25.3 | 23.4 |
+| OscillatoryKernel2D | 56.5 | 55.3 |
+| GaussKernel2D | 25.0 | 24.8 (default offset nonzero -> unchanged) |
+| MexicanHatKernel2D | 75.3 | 75.9 (default offset nonzero -> unchanged) |
+
+Users who set amplitudeGlobal=0 on Gauss/MexicanHat now get the same saving. Combined with the
+updateInput zero-fill elision, the canonical detection field is ~2x lighter than session start on the
+non-conv work.
+## 2026-06-25 15:18:54  (dnfc 2.9.3, 20000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.64 | 0.60 | 0.60 | 10.40 |
+| GaussKernel | 0.56 | 0.60 | 0.50 | 20.10 |
+| MexicanHatKernel | 0.77 | 0.80 | 0.70 | 30.80 |
+| OscillatoryKernel | 2.51 | 2.50 | 2.40 | 34.40 |
+| AsymmetricGaussKernel | 0.61 | 0.60 | 0.50 | 2.30 |
+| NormalNoise | 0.55 | 0.60 | 0.50 | 7.70 |
+| CorrelatedNormalNoise | 2.83 | 2.70 | 2.60 | 20.40 |
+| MemoryTrace | 0.10 | 0.10 | 0.00 | 0.20 |
+| GaussStimulus | 0.02 | 0.00 | 0.00 | 11.90 |
+| TimedGaussStimulus | 0.04 | 0.00 | 0.00 | 5.30 |
+| BoostStimulus | 0.08 | 0.10 | 0.00 | 3.60 |
+| NeuralField2D | 12.94 | 12.70 | 12.20 | 95.60 |
+| GaussKernel2D | 25.35 | 24.40 | 23.40 | 1942.70 |
+| MexicanHatKernel2D | 75.55 | 74.40 | 71.50 | 685.10 |
+| OscillatoryKernel2D | 54.71 | 54.40 | 52.50 | 124.70 |
+| AsymmetricGaussKernel2D | 23.78 | 23.40 | 22.50 | 254.20 |
+| NormalNoise2D | 12.68 | 12.50 | 11.70 | 171.90 |
+| CorrelatedNormalNoise2D | 24.55 | 24.30 | 23.20 | 168.40 |
+| MemoryTrace2D | 1.20 | 1.20 | 1.10 | 27.50 |
+| GaussStimulus2D | 0.02 | 0.00 | 0.00 | 0.30 |
+| TimedGaussStimulus2D | 0.19 | 0.20 | 0.10 | 7.80 |
+| BoostStimulus2D | 0.21 | 0.20 | 0.20 | 0.30 |
+| Collapse (2D->1D) | 3.43 | 3.10 | 2.90 | 36.20 |
+| Expand (1D->2D) | 2.01 | 2.00 | 1.90 | 17.50 |
+| Resize (1D) | 0.19 | 0.20 | 0.10 | 0.60 |
+
+### Representative 1D detection sim  (total 1.52 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.02 | 1.58% |
+| neural field u | NeuralField | 0.86 | 56.68% |
+| gauss kernel | GaussKernel | 0.58 | 38.52% |
+| normal noise | NormalNoise | 0.05 | 3.22% |
+
+### Representative 2D detection sim  (total 44.71 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.05% |
+| neural field u | NeuralField2D | 21.05 | 47.08% |
+| gauss kernel 2d | GaussKernel2D | 23.42 | 52.38% |
+| normal noise 2d | NormalNoise2D | 0.22 | 0.48% |
+
+## 2026-06-25 — AFTER ziggurat table-accessor hoist (noise RNG)
+
+Line-level sampling of zigguratNormal showed its single biggest line (2.09s of 5.56s) was
+`const ZigguratTables& z = zigTables();` — the function-local static's thread-safe-init guard,
+re-checked on EVERY sample (2500/step). Hoisted the table fetch out of the per-sample call:
+zigguratNormal now takes `const ZigguratTables&`, fetched once per fillNormal batch. Bit-identical
+(same tables, same xoshiro stream, same algorithm; noise distribution tests + 803 suite pass).
+
+| element | before | after |
+|---------|-------:|------:|
+| NormalNoise2D | 14.8 | 12.7 (-14%) |
+| CorrelatedNormalNoise2D | 27.0 | 24.6 |
+| NormalNoise (1D) | 0.63 | 0.55 |
+
+(Considered vectorizing the Gaussian via Box-Muller, but the measured hotspot was the magic-static
+guard, not the arithmetic — this hoist is the real easy win, no math/stream change. Kernel
+component-pointer caching was evaluated and skipped: no per-cell map lookups remain, ~0.1us churn only.)

@@ -102,7 +102,9 @@ namespace dnf_composer
 			const std::vector<double>& input = components["input"];
 			std::vector<double>& output = components["output"];
 
-			fullSum = std::accumulate(input.begin(), input.end(), 0.0);
+			// Skip the O(N) accumulate when the global offset is disabled.
+			const bool hasGlobal = parameters.amplitudeGlobal != 0.0;
+			fullSum = hasGlobal ? std::accumulate(input.begin(), input.end(), 0.0) : 0.0;
 
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
@@ -117,10 +119,18 @@ namespace dnf_composer
 				input, kernelInh_x, kernelInh_y,
 				size_x, size_y, extIndexInh_x, extIndexInh_y);
 
-			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			const int n = static_cast<int>(output.size());
-			for (int i = 0; i < n; ++i)
-				output[i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
+			if (hasGlobal)
+			{
+				const double globalOffset = parameters.amplitudeGlobal * fullSum;
+				for (int i = 0; i < n; ++i)
+					output[i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
+			}
+			else
+			{
+				for (int i = 0; i < n; ++i)
+					output[i] = scratchExcConv_[i] - scratchInhConv_[i];
+			}
 		}
 
 		std::string MexicanHatKernel2D::toString() const
