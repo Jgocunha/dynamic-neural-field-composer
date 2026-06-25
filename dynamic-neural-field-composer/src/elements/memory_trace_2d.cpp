@@ -24,13 +24,19 @@ namespace dnf_composer::element
 		updateInput();
 
 		const int size = commonParameters.dimensionParameters.size;
+		// Hoist the component buffers out of the per-cell loop: indexing
+		// components["..."] inside the loop is an unordered_map<string> hash lookup
+		// per cell (profiled as the dominant cost of this element).
+		const double* __restrict in  = components["input"].data();
+		double* __restrict       out = components["output"].data();
+		const double invBuild = 1.0 / parameters.tauBuild;
+		const double invDecay = 1.0 / parameters.tauDecay;
 		for (int i = 0; i < size; ++i)
 		{
-			const double in = components["input"][i];
-			if (in > parameters.threshold)
-				components["output"][i] += deltaT * (1.0 / parameters.tauBuild) * (-components["output"][i] + in);
+			if (in[i] > parameters.threshold)
+				out[i] += deltaT * invBuild * (-out[i] + in[i]);
 			else
-				components["output"][i] += deltaT * (1.0 / parameters.tauDecay) * (-components["output"][i]);
+				out[i] += deltaT * invDecay * (-out[i]);
 		}
 	}
 

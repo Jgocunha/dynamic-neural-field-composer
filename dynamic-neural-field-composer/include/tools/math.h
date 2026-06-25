@@ -19,6 +19,17 @@
 #include <random>
 #include <numbers>
 #include <fstream>
+#include <type_traits>
+
+// AVX2 intrinsics for the vectorized FP64 convolution inner loop. __AVX2__ is
+// defined by MSVC under /arch:AVX2 and by GCC/Clang under -mavx2, which the
+// CMake target sets. Guarded so non-AVX2 builds fall back to the scalar loop.
+#if defined(__AVX2__)
+	#include <immintrin.h>
+	#define DNFC_HAVE_AVX2 1
+#else
+	#define DNFC_HAVE_AVX2 0
+#endif
 
 namespace dnf_composer::tools::math
 {
@@ -103,22 +114,71 @@ namespace dnf_composer::tools::math
 		const int M = static_cast<int>(min_v.size());
 		const int n = std::max(nf, ng) - std::min(nf, ng) + 1;
 
-		// Forward-indexed equivalent of the original reversed loop:
-		//   out[i] = sum_{m=0..M-1} min_v[M-1-m] * max_v[i+m]
-		// Contiguous reads of max_v with the kernel in a __restrict pointer let the
-		// compiler vectorize under /arch:AVX2. NOTE: we deliberately do NOT fold
-		// mirror taps for symmetric kernels — that reorders the summation and, while
-		// ~halving the multiplies, perturbs sensitive abssigmoid memory attractors
-		// past the 1e-4 field-dynamics tolerance (caught by the validation suite).
-		// Preserving the exact summation order keeps results bit-stable.
-		const T* __restrict mn = min_v.data();
+		// out[i] = sum_{m=0..M-1} min_v[M-1-m] * max_v[i+m]
+		// The kernel (min_v) is read BACKWARDS, which blocks AVX2 vectorization: a
+		// reverse-stride load against the forward max_v stream. Pre-reverse min_v
+		// once into a small scratch buffer so the inner loop becomes two contiguous
+		// forward streams (a plain dot product the compiler vectorizes). The m-order
+		// of the summation is UNCHANGED (m = 0..M-1), so the result is bit-identical
+		// to the reversed-index form — verified by the golden test_math conv tests
+		// and the 1e-4 field-dynamics validation suite. (We still do NOT fold
+		// symmetric mirror taps — that reorders the summation and breaks sensitive
+		// abssigmoid attractors past 1e-4.)
+		static thread_local std::vector<T> krev;
+		if (static_cast<int>(krev.size()) != M) krev.resize(M);
+		{
+			const T* __restrict mn = min_v.data();
+			T* __restrict kr = krev.data();
+			for (int m = 0; m < M; ++m)
+				kr[m] = mn[M - 1 - m];
+		}
+		const T* __restrict kr = krev.data();
 		const T* __restrict mx = max_v.data();
+
+#if DNFC_HAVE_AVX2
+		if constexpr (std::is_same_v<T, double>)
+		{
+			// Vectorize across the OUTPUT index: compute 4 adjacent outputs at once,
+			// each its own __m256d lane accumulating over the kernel taps. For taps
+			// m, broadcast kr[m] and FMA against mx[i+m .. i+m+3]. This gives four
+			// independent accumulator chains (one per output), so the multiply-adds
+			// pipeline — and there is no per-output horizontal reduction in the inner
+			// loop (only one store of 4 results). The remainder outputs (< 4) use the
+			// scalar loop. NOTE: each output's tap sum is still accumulated in the
+			// same m-order as the scalar path, so this does NOT reorder a reduction —
+			// it parallelizes across independent outputs. Result matches the scalar
+			// path to round-off; gated by the conv golden tests + 1e-4 validation.
+			int i = 0;
+			double* __restrict o = out.data();
+			for (; i + 4 <= n; i += 4)
+			{
+				__m256d acc = _mm256_setzero_pd();
+				const double* __restrict w = mx + i;
+				for (int m = 0; m < M; ++m)
+				{
+					const __m256d kv = _mm256_set1_pd(kr[m]);
+					const __m256d wv = _mm256_loadu_pd(w + m);
+					acc = _mm256_fmadd_pd(kv, wv, acc);
+				}
+				_mm256_storeu_pd(o + i, acc);
+			}
+			for (; i < n; ++i)
+			{
+				const double* __restrict w = mx + i;
+				double acc = 0.0;
+				for (int m = 0; m < M; ++m)
+					acc += kr[m] * w[m];
+				o[i] = acc;
+			}
+			return;
+		}
+#endif
 		for (int i = 0; i < n; ++i)
 		{
 			const T* __restrict w = mx + i;
 			T acc = T();
 			for (int m = 0; m < M; ++m)
-				acc += mn[M - 1 - m] * w[m];
+				acc += kr[m] * w[m];
 			out[i] = acc;
 		}
 	}
