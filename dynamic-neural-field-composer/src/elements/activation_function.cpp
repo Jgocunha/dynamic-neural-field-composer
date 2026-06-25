@@ -3,6 +3,50 @@
 
 namespace dnf_composer::element
 {
+#if DNFC_HAVE_AVX2
+	namespace
+	{
+		// Vectorized expf over 8 floats. Cephes single-precision exp: range-reduce
+		// e = k*ln2 + r (|r| <= ln2/2), then a degree-6 minimax polynomial for
+		// exp(r), and scale by 2^k via integer exponent assembly. Max relative error
+		// ~1e-7 (well under the 1e-4 field-dynamics tolerance). Inputs are assumed
+		// pre-clamped to [-88, 88] by the caller, so 2^k stays in float range.
+		inline __m256 exp256_ps(__m256 x)
+		{
+			const __m256 LOG2EF = _mm256_set1_ps(1.44269504088896341f);
+			const __m256 C1     = _mm256_set1_ps(0.693359375f);
+			const __m256 C2     = _mm256_set1_ps(-2.12194440e-4f);
+			const __m256 half   = _mm256_set1_ps(0.5f);
+			const __m256 one    = _mm256_set1_ps(1.0f);
+
+			// k = round(x * log2(e))
+			__m256 fx = _mm256_fmadd_ps(x, LOG2EF, half);
+			fx = _mm256_floor_ps(fx);
+			// r = x - k*ln2  (ln2 split into C1+C2 for extra precision)
+			__m256 r = _mm256_fnmadd_ps(fx, C1, x);
+			r = _mm256_fnmadd_ps(fx, C2, r);
+
+			// polynomial approximation of exp(r) on the reduced range
+			__m256 p = _mm256_set1_ps(1.9875691500e-4f);
+			p = _mm256_fmadd_ps(p, r, _mm256_set1_ps(1.3981999507e-3f));
+			p = _mm256_fmadd_ps(p, r, _mm256_set1_ps(8.3334519073e-3f));
+			p = _mm256_fmadd_ps(p, r, _mm256_set1_ps(4.1665795894e-2f));
+			p = _mm256_fmadd_ps(p, r, _mm256_set1_ps(1.6666665459e-1f));
+			p = _mm256_fmadd_ps(p, r, _mm256_set1_ps(5.0000001201e-1f));
+			__m256 r2 = _mm256_mul_ps(r, r);
+			p = _mm256_fmadd_ps(p, r2, r);
+			p = _mm256_add_ps(p, one);
+
+			// scale by 2^k: build the float 2^k from the integer exponent field
+			__m256i k  = _mm256_cvttps_epi32(fx);
+			k = _mm256_add_epi32(k, _mm256_set1_epi32(0x7f));
+			k = _mm256_slli_epi32(k, 23);
+			__m256 pow2k = _mm256_castsi256_ps(k);
+			return _mm256_mul_ps(p, pow2k);
+		}
+	}
+#endif
+
 	SigmoidFunction::SigmoidFunction(const double x_shift, const double steepness)
 	: x_shift(x_shift), steepness(steepness)
 	{
@@ -19,7 +63,34 @@ namespace dnf_composer::element
 		const float s  = static_cast<float>(steepness);
 		const float xs = static_cast<float>(x_shift);
 		const std::size_t n = input.size();
-		for (std::size_t i = 0; i < n; ++i)
+		std::size_t i = 0;
+
+#if DNFC_HAVE_AVX2
+		// Vectorized path: 8 cells at a time. Same formula as the scalar fallback
+		// (clamp the exponent to [-88,88] then 1/(1+exp(e))) but exp via the SIMD
+		// Cephes approximation. This is an elementwise MAP — no reduction/summation
+		// order to preserve — so it only needs to stay within the 1e-4 field-dynamics
+		// tolerance (validated). exp256_ps is ~1e-7 accurate.
+		const __m256 sv   = _mm256_set1_ps(s);
+		const __m256 xsv  = _mm256_set1_ps(xs);
+		const __m256 lo   = _mm256_set1_ps(-88.0f);
+		const __m256 hi   = _mm256_set1_ps(88.0f);
+		const __m256 one  = _mm256_set1_ps(1.0f);
+		alignas(32) float buf[8];
+		for (; i + 8 <= n; i += 8)
+		{
+			// gather 8 doubles -> 8 floats (two 4-wide cvt + pack)
+			__m256d d0 = _mm256_loadu_pd(&input[i]);
+			__m256d d1 = _mm256_loadu_pd(&input[i + 4]);
+			__m256 x = _mm256_set_m128(_mm256_cvtpd_ps(d1), _mm256_cvtpd_ps(d0));
+			__m256 e = _mm256_mul_ps(_mm256_sub_ps(xsv, x), sv); // -s*(x-xs) = s*(xs-x)
+			e = _mm256_min_ps(_mm256_max_ps(e, lo), hi);
+			__m256 r = _mm256_div_ps(one, _mm256_add_ps(one, exp256_ps(e)));
+			_mm256_store_ps(buf, r);
+			for (int j = 0; j < 8; ++j) out[i + j] = static_cast<double>(buf[j]);
+		}
+#endif
+		for (; i < n; ++i)
 		{
 			const float x = static_cast<float>(input[i]);
 			// Clamp the exponent to the float exp() range. Beyond ~±88 the result
