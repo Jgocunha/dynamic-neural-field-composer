@@ -4,6 +4,7 @@
 #include <string>
 #include <chrono>
 #include <iomanip>
+#include <atomic>
 #include <imgui-platform-kit/log_window.h>
 
 #include "exceptions/exception.h"
@@ -38,11 +39,13 @@ namespace dnf_composer::tools::logger
 	private:
 		LogLevel logLevel;
 		LogOutputMode outputMode;
-		static LogLevel minLogLevel;
+		// Atomic so setMinLogLevel() (often called from a UI thread) and the load in
+		// log() (called from any worker thread) don't race. See logger.cpp.
+		static std::atomic<LogLevel> minLogLevel;
 	public:
 		Logger(LogLevel level, LogOutputMode mode = ALL);
 		void log(const std::string& message) const;
-		static void setMinLogLevel(LogLevel level) { minLogLevel = level; }
+		static void setMinLogLevel(LogLevel level) { minLogLevel.store(level, std::memory_order_relaxed); }
 	private:
 		static std::string getLogLevelColorCodeCmd(LogLevel level);
 		static ImVec4 getLogLevelColorCodeGui(LogLevel level);
@@ -52,8 +55,6 @@ namespace dnf_composer::tools::logger
 	};
 
 	void log(LogLevel level, const std::string& message, LogOutputMode mode = ALL);
-
-	static Logger logger(LogLevel::INFO);
 }
 
 

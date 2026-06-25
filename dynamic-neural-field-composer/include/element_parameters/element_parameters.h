@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <format>
+#include <atomic>
 
 #include "tools/logger.h"
 
@@ -172,7 +173,9 @@ namespace dnf_composer::element
 
 	struct ElementIdentifiers
 	{
-		static inline int uniqueIdentifierCounter = 0;
+		// Atomic so concurrent element construction across threads (e.g. a consumer
+		// building many Simulations in parallel) assigns unique, non-torn IDs.
+		static inline std::atomic<int> uniqueIdentifierCounter{0};
 		int uniqueIdentifier;
 		std::string uniqueName;
 		ElementLabel label;

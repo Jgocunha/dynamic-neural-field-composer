@@ -67,13 +67,13 @@ namespace dnf_composer::element
 	}
 
 	ElementIdentifiers::ElementIdentifiers(const ElementLabel label)
-		: uniqueIdentifier(uniqueIdentifierCounter++), label(label)
+		: uniqueIdentifier(uniqueIdentifierCounter.fetch_add(1, std::memory_order_relaxed)), label(label)
 	{
 		uniqueName = "Element " + ElementLabelToString.at(label) + " " + std::to_string(uniqueIdentifier);
 	}
 
 	ElementIdentifiers::ElementIdentifiers(std::string elementName)
-		: uniqueIdentifier(uniqueIdentifierCounter++), uniqueName(std::move(elementName)),
+		: uniqueIdentifier(uniqueIdentifierCounter.fetch_add(1, std::memory_order_relaxed)), uniqueName(std::move(elementName)),
 		  label(ElementLabel::UNINITIALIZED)
 	{}
 

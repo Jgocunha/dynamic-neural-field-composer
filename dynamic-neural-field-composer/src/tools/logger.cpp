@@ -1,11 +1,25 @@
 ﻿#include "tools/logger.h"
 
+#include <mutex>
+
 #include "application/application.h"
 #include "user_interface/log_window.h"
 
 namespace dnf_composer::tools::logger
 {
-    LogLevel Logger::minLogLevel = LogLevel::DEBUG;
+    std::atomic<LogLevel> Logger::minLogLevel = LogLevel::DEBUG;
+
+    namespace
+    {
+        // Serializes the actual emit (console write / GUI push_back) so concurrent
+        // log() calls from worker threads don't interleave or corrupt the sinks.
+        // Formatting happens outside the lock; only the write is guarded.
+        std::mutex& logSinkMutex()
+        {
+            static std::mutex m;
+            return m;
+        }
+    }
 
     Logger::Logger(const LogLevel level, const LogOutputMode mode)
         : logLevel(level), outputMode(mode)
@@ -14,7 +28,7 @@ namespace dnf_composer::tools::logger
 
     void Logger::log(const std::string& message) const
     {
-        if (logLevel < Logger::minLogLevel)
+        if (logLevel < Logger::minLogLevel.load(std::memory_order_relaxed))
             return;
 
         const auto now = std::chrono::system_clock::now();
@@ -36,11 +50,13 @@ namespace dnf_composer::tools::logger
                 std::ostringstream consoleOss;
                 std::string colorCode = getLogLevelColorCodeCmd(logLevel);
                 consoleOss << colorCode << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
-                log_cmd(consoleOss.str());
 
                 // GUI output (separate stringstream)
                 std::ostringstream guiOss;
                 guiOss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
+
+                std::lock_guard<std::mutex> lock(logSinkMutex());
+                log_cmd(consoleOss.str());
                 log_ui(color, guiOss.str());
             }
             break;
@@ -49,6 +65,8 @@ namespace dnf_composer::tools::logger
                 std::ostringstream oss;
                 std::string colorCode = getLogLevelColorCodeCmd(logLevel);
                 oss << colorCode << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
+
+                std::lock_guard<std::mutex> lock(logSinkMutex());
                 log_cmd(oss.str());
             }
             break;
@@ -56,6 +74,8 @@ namespace dnf_composer::tools::logger
             {
                 std::ostringstream oss;
                 oss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
+
+                std::lock_guard<std::mutex> lock(logSinkMutex());
                 log_ui(color, oss.str());
             }
             break;
@@ -82,8 +102,10 @@ namespace dnf_composer::tools::logger
             return;
 #endif
 
-        logger = Logger(level, mode);
-        logger.log(message);
+        // Use a local Logger (no shared mutable global) so concurrent log() calls
+        // from different threads don't race on a shared instance. The sinks
+        // themselves are serialized inside Logger::log().
+        Logger(level, mode).log(message);
     }
 
     std::string Logger::getLogLevelColorCodeCmd(const LogLevel level)
