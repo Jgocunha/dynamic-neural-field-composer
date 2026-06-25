@@ -778,3 +778,85 @@ sigmoid sims, b100) pass; all 801 unit tests pass.
 `conv_valid_into` (55%) is the only large lever left and is gated by the FP-reduction reorder vs 1e-4
 tradeoff (deferred). After that, across-field threading. The circular-extension gather block-copy was
 tried and reverted (no net win — memmove offset the gather savings).
+## 2026-06-25 13:45:32  (dnfc 2.9.3, 20000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.74 | 0.70 | 0.70 | 9.70 |
+| GaussKernel | 0.66 | 0.70 | 0.60 | 18.10 |
+| MexicanHatKernel | 0.83 | 0.80 | 0.80 | 17.80 |
+| OscillatoryKernel | 2.58 | 2.60 | 2.50 | 11.30 |
+| AsymmetricGaussKernel | 0.65 | 0.60 | 0.60 | 10.50 |
+| NormalNoise | 0.63 | 0.60 | 0.50 | 31.00 |
+| CorrelatedNormalNoise | 2.86 | 2.80 | 2.70 | 17.70 |
+| MemoryTrace | 0.18 | 0.20 | 0.10 | 0.30 |
+| GaussStimulus | 0.02 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus | 0.04 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.09 | 0.10 | 0.00 | 7.00 |
+| NeuralField2D | 14.39 | 14.20 | 13.90 | 263.70 |
+| GaussKernel2D | 26.97 | 26.70 | 25.70 | 169.30 |
+| MexicanHatKernel2D | 77.99 | 77.10 | 74.00 | 173.50 |
+| OscillatoryKernel2D | 57.61 | 57.50 | 54.90 | 135.00 |
+| AsymmetricGaussKernel2D | 27.22 | 27.00 | 26.20 | 56.30 |
+| NormalNoise2D | 14.82 | 14.60 | 13.50 | 56.90 |
+| CorrelatedNormalNoise2D | 26.97 | 26.90 | 25.40 | 90.40 |
+| MemoryTrace2D | 2.97 | 3.00 | 2.90 | 12.20 |
+| GaussStimulus2D | 0.02 | 0.00 | 0.00 | 0.20 |
+| TimedGaussStimulus2D | 0.20 | 0.20 | 0.10 | 0.70 |
+| BoostStimulus2D | 0.21 | 0.20 | 0.20 | 0.60 |
+| Collapse (2D->1D) | 4.55 | 4.40 | 4.20 | 50.20 |
+| Expand (1D->2D) | 2.02 | 2.00 | 2.00 | 8.90 |
+| Resize (1D) | 0.27 | 0.30 | 0.20 | 9.10 |
+
+### Representative 1D detection sim  (total 1.66 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.02 | 1.42% |
+| neural field u | NeuralField | 0.94 | 56.65% |
+| gauss kernel | GaussKernel | 0.65 | 39.31% |
+| normal noise | NormalNoise | 0.04 | 2.61% |
+
+### Representative 2D detection sim  (total 50.49 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.05% |
+| neural field u | NeuralField2D | 22.84 | 45.23% |
+| gauss kernel 2d | GaussKernel2D | 27.40 | 54.27% |
+| normal noise 2d | NormalNoise2D | 0.22 | 0.45% |
+
+## 2026-06-25 — AFTER symmetric-kernel folding in conv_valid_into
+
+Symmetric kernels now fold the convolution: out[i] = kr[c]*w[c] + sum_{j<c} kr[j]*(w[j]+w[2c-j]),
+halving the multiplies (vectorized 4 outputs/iter). This reorders the per-output summation, so it is
+gated on the 1e-4 validation — NOT bit-identical. Margin probe (tolerance tightened to 1e-9): worst-case
+deviation across all 600 FieldDynamics sims stays at ~5.0e-5, the reference-CSV truncation floor — i.e.
+folding introduces no error beyond what's already in the stored references; same ~2x margin to 1e-4 as
+the unfolded path. (This passed where the prior session's scalar fold failed; the vectorized pair-first
+form is numerically tamer.) Non-symmetric kernels (Oscillatory) keep the bit-identical path. 801 tests pass.
+
+### Per-element aggregate step() µs (50x50)
+
+| element | before fold | after fold | gain | note |
+|---------|------------:|-----------:|-----:|------|
+| GaussKernel2D | 35.2 | 27.0 | 1.30x | symmetric |
+| AsymmetricGaussKernel2D | 34.9 | 27.2 | 1.28x | symmetric axis |
+| MexicanHatKernel2D | 84.3 | 78.0 | 1.08x | two kernels |
+| CorrelatedNormalNoise2D | 29.8 | 27.0 | 1.10x | |
+| OscillatoryKernel2D | 56.9 | 57.6 | ~flat | not symmetric (bit-identical path) |
+
+### Benchmark vs Cedar (median steps/sec; Cedar = FP32, dnfc = FP64)
+
+| dim/N | Cedar | dnfc now | dnfc/Cedar |
+|-------|------:|---------:|-----------:|
+| 2D N=10  | 1545 | 2008 | 1.30x |
+| 2D N=50  | 297  | 334  | 1.12x |
+| 2D N=100 | 144  | 161  | 1.12x |
+| 1D N=100 | 297  | 5877 | 19.8x |
+
+dnf-composer now beats Cedar at every 2D size in full FP64. Cumulative this session: conv AVX2 (across
+outputs) + map-lookup hoist + sigmoid AVX2 exp + symmetric folding took 2D from ~6x slower than Cedar to
+12-30% faster. `conv_valid_into` is still the top cost; the remaining lever is across-field threading.
