@@ -52,7 +52,19 @@ namespace dnf_composer::element
 	void CorrelatedNormalNoise::step(double t, double deltaT)
 	{
 		const int fieldSize = commonParameters.dimensionParameters.size;
-		const std::vector<double> whiteNoise = tools::math::generateNormalVector(fieldSize);
+
+		// Zero amplitude => output is identically zero; skip RNG + convolution.
+		if (parameters.amplitude == 0.0)
+		{
+			std::ranges::fill(components["output"], 0.0);
+			return;
+		}
+
+		// Reuse the member buffer (no per-step allocation) for the white noise.
+		if (static_cast<int>(whiteNoise_.size()) != fieldSize)
+			whiteNoise_.assign(fieldSize, 0.0);
+		tools::math::fillNormal(whiteNoise_.data(), static_cast<std::size_t>(fieldSize));
+		const std::vector<double>& whiteNoise = whiteNoise_;
 
 		std::vector<double> smoothed;
 		if (parameters.circular && !extIndex.empty())

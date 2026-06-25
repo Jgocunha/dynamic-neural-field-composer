@@ -1,4 +1,4 @@
-﻿#include "elements/activation_function.h"
+#include "elements/activation_function.h"
 
 
 namespace dnf_composer::element
@@ -21,8 +21,14 @@ namespace dnf_composer::element
 		const std::size_t n = input.size();
 		for (std::size_t i = 0; i < n; ++i)
 		{
-			const auto x = static_cast<float>(input[i]);
-			out[i] = static_cast<double>(1.0F / (1.0F + std::exp(-s * (x - xs))));
+			const float x = static_cast<float>(input[i]);
+			// Clamp the exponent to the float exp() range. Beyond ~±88 the result
+			// has already saturated to 0/1 in float, so this is numerically a no-op,
+			// but it avoids the (much slower) overflow/inf path in std::exp — which
+			// dominates the field step when the steepness is large (e.g. 100).
+			float e = -s * (x - xs);
+			e = e < -88.0f ? -88.0f : (e > 88.0f ? 88.0f : e);
+			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(e)));
 		}
 	}
 

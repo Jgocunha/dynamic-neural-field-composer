@@ -74,6 +74,7 @@ namespace dnf_composer::element
 		CorrelatedNormalNoiseParameters parameters;
 		std::vector<double> correlationKernel; ///< Precomputed normalised Gaussian kernel.
 		std::vector<int> extIndex;             ///< Extended index for circular convolution.
+		std::vector<double> whiteNoise_;       ///< Reusable white-noise buffer (avoids per-step alloc).
 	public:
 		/// @brief Construct a CorrelatedNormalNoise element.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.
