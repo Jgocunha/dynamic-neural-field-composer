@@ -84,9 +84,10 @@ namespace dnf_composer::element
 			size_x, size_y, extIndex_x, extIndex_y);
 
 		const double scale = parameters.amplitude / std::sqrt(deltaT);
-		for (int i = 0; i < totalSize; ++i) {
-			components["output"][i] = scale * scratchConv_[i];
-}
+		// Hoist the output buffer out of the per-cell loop (unordered_map lookup).
+		double* __restrict out = components["output"].data();
+		for (int i = 0; i < totalSize; ++i)
+			out[i] = scale * scratchConv_[i];
 	}
 
 	std::string CorrelatedNormalNoise2D::toString() const

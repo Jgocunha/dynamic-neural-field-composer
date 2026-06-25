@@ -28,3 +28,12 @@ _(values = median steps/sec)_
 | 2D  | 791.7 | 142.6 | 73.2 |
 
 _(values = median steps/sec)_
+
+## 2026-06-25 11:34:21   (dnfc 2.9.3, 2000 steps x 3 runs)
+
+| dim | N=10 | N=50 | N=100 |
+|-----|-----:|-----:|------:|
+| 1D  | 33172.0 | 6489.3 | 3203.2 |
+| 2D  | 1081.8 | 204.0 | 98.8 |
+
+_(values = median steps/sec)_

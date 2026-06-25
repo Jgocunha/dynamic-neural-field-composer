@@ -23,14 +23,18 @@
 			updateInput();
 
 			const int size = commonParameters.dimensionParameters.size;
+			// Hoist component buffers out of the per-cell loop (see MemoryTrace2D):
+			// avoids an unordered_map<string> hash lookup per cell.
+			const double* __restrict in  = components["input"].data();
+			double* __restrict       out = components["output"].data();
+			const double invBuild = 1.0 / parameters.tauBuild;
+			const double invDecay = 1.0 / parameters.tauDecay;
 			for (int i = 0; i < size; ++i)
 			{
-				const double in = components["input"][i];
-				if (in > parameters.threshold) {
-					components["output"][i] += deltaT * (1.0 / parameters.tauBuild) * (-components["output"][i] + in);
-				} else {
-					components["output"][i] += deltaT * (1.0 / parameters.tauDecay) * (-components["output"][i]);
-}
+				if (in[i] > parameters.threshold)
+					out[i] += deltaT * invBuild * (-out[i] + in[i]);
+				else
+					out[i] += deltaT * invDecay * (-out[i]);
 			}
 		}
 
