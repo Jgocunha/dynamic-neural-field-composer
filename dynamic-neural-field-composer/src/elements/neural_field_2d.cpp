@@ -89,7 +89,11 @@ namespace dnf_composer::element
 		prevBumps_.swap(state.bumps);
 		state.bumps.clear();
 
-		std::vector<bool> visited(size_x * size_y, false);
+		if (visited_.size() != static_cast<std::size_t>(size_x * size_y))
+			visited_.assign(size_x * size_y, 0);
+		else
+			std::fill(visited_.begin(), visited_.end(), 0);
+		std::vector<char>& visited = visited_;
 
 		for (int xi = 0; xi < size_x; ++xi)
 		{

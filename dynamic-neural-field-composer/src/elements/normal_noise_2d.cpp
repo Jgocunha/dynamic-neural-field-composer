@@ -22,11 +22,23 @@ namespace dnf_composer
 
 		void NormalNoise2D::step(double t, double deltaT)
 		{
-			const std::vector<double> rand = tools::math::generateNormalVector(
-				commonParameters.dimensionParameters.size);
+			// Zero amplitude => output is identically zero; skip the per-step RNG
+			// draw and allocation entirely (the output was already zeroed in init()
+			// and is only ever written here).
+			if (parameters.amplitude == 0.0)
+			{
+				std::ranges::fill(components["output"], 0.0);
+				return;
+			}
+
+			// Fill the output with standard-normal samples in place (no temporary
+			// vector), then scale by amplitude/sqrt(dt) in the same pass.
+			std::vector<double>& out = components["output"];
+			const int n = commonParameters.dimensionParameters.size;
+			tools::math::fillNormal(out.data(), static_cast<std::size_t>(n));
 			const double scale = parameters.amplitude / std::sqrt(deltaT);
-			for (int i = 0; i < commonParameters.dimensionParameters.size; ++i)
-				components["output"][i] = scale * rand[i];
+			for (int i = 0; i < n; ++i)
+				out[i] *= scale;
 		}
 
 		std::string NormalNoise2D::toString() const

@@ -781,7 +781,14 @@ namespace dnf_composer
                     double steepness = activationFunctionJson["steepness"];
                     activationFunction = std::make_unique<element::SigmoidFunction>(x_shift, steepness);
                 }
+                else if (activationFunctionType == "abs_sigmoid") {
+                    const double x_shift = activationFunctionJson["x_shift"];
+                    const double beta = activationFunctionJson["beta"];
+                    activationFunction = std::make_unique<element::AbsSigmoidFunction>(x_shift, beta);
+                }
             }
+            if (!activationFunction)
+                activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0);
             auto nf = std::make_shared<element::NeuralField2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
                 element::NeuralField2DParameters(tau, restingLevel, *activationFunction)

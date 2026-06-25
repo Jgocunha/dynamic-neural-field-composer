@@ -30,6 +30,11 @@ add_example_executable(example_gaussian_field_coupling          gaussian_field_c
 add_example_executable(example_hebbian_learning                 hebbian_learning.cpp)
 add_example_executable(example_resize                           resize.cpp)
 add_example_executable(example_dimensionality_collapse_expand   dimensionality_collapse_expand.cpp)
+add_example_executable(cross_platform_validation_runner_2d       cross_platform_validation_runner_2d.cpp)
+add_example_executable(benchmark_headless_2d                     benchmark_headless_2d.cpp)
+# cpv_1d_test.cpp source is missing from the tree; registration disabled so the
+# build can regenerate. Re-enable if/when the source is restored.
+#add_example_executable(cpv_1d_test                               cpv_1d_test.cpp)
 #add_example_executable(example_oja_learning             oja_learning.cpp)
 #add_example_executable(example_delta_rule_learning      delta_rule_learning.cpp)
 

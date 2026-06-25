@@ -100,11 +100,25 @@ namespace dnf_composer::tools::math
 		const int ng = static_cast<int>(g.size());
 		const std::vector<T>& min_v = (nf < ng) ? f : g;
 		const std::vector<T>& max_v = (nf < ng) ? g : f;
+		const int M = static_cast<int>(min_v.size());
 		const int n = std::max(nf, ng) - std::min(nf, ng) + 1;
-		for (int i = 0; i < n; ++i) {
+
+		// Forward-indexed equivalent of the original reversed loop:
+		//   out[i] = sum_{m=0..M-1} min_v[M-1-m] * max_v[i+m]
+		// Contiguous reads of max_v with the kernel in a __restrict pointer let the
+		// compiler vectorize under /arch:AVX2. NOTE: we deliberately do NOT fold
+		// mirror taps for symmetric kernels — that reorders the summation and, while
+		// ~halving the multiplies, perturbs sensitive abssigmoid memory attractors
+		// past the 1e-4 field-dynamics tolerance (caught by the validation suite).
+		// Preserving the exact summation order keeps results bit-stable.
+		const T* __restrict mn = min_v.data();
+		const T* __restrict mx = max_v.data();
+		for (int i = 0; i < n; ++i)
+		{
+			const T* __restrict w = mx + i;
 			T acc = T();
-			for (int j = static_cast<int>(min_v.size()) - 1, k = i; j >= 0; --j, ++k)
-				acc += min_v[j] * max_v[k];
+			for (int m = 0; m < M; ++m)
+				acc += mn[M - 1 - m] * w[m];
 			out[i] = acc;
 		}
 	}
@@ -115,15 +129,39 @@ namespace dnf_composer::tools::math
 		const int nf = static_cast<int>(f.size());
 		const int ng = static_cast<int>(g.size());
 		const int pad = (ng - 1) / 2;
-		for (int i = 0; i < nf; ++i) {
+		const T* __restrict ff = f.data();
+		const T* __restrict gg = g.data();
+
+		// Interior cells [iLo, iHi) have their whole window in-bounds, so they need
+		// no per-tap bounds check — split them out into a branch-free loop the
+		// compiler can vectorize. Edge cells keep the guarded loop. (No symmetric
+		// mirror-folding: it reorders the summation and breaks the 1e-4 field-
+		// dynamics tolerance on sensitive attractors — see conv_valid_into note.)
+		const int iLo = pad;
+		const int iHi = nf - (ng - 1 - pad); // first i whose window exceeds nf
+
+		auto edge = [&](int i) {
 			T acc = T();
 			for (int j = 0; j < ng; ++j) {
 				const int fIndex = i + j - pad;
 				if (fIndex >= 0 && fIndex < nf)
-					acc += f[fIndex] * g[j];
+					acc += ff[fIndex] * gg[j];
 			}
 			out[i] = acc;
+		};
+
+		for (int i = 0; i < std::min(iLo, nf); ++i) edge(i);
+
+		for (int i = iLo; i < iHi; ++i)
+		{
+			const T* __restrict w = ff + (i - pad);
+			T acc = T();
+			for (int j = 0; j < ng; ++j)
+				acc += gg[j] * w[j];
+			out[i] = acc;
 		}
+
+		for (int i = std::max(iHi, iLo); i < nf; ++i) edge(i);
 	}
 
 	template<typename T>
@@ -306,6 +344,10 @@ namespace dnf_composer::tools::math
 
 	std::array<int, 2> computeKernelRange(double sigma, int cutOfFactor, int fieldSize, bool circular);
 	std::vector<int> createExtendedIndex(int fieldSize, const std::array<int, 2>& kernelRange);
+
+	// Fill dst[0..n) with standard-normal (mean 0, variance 1) samples. No
+	// allocation. Backed by a fast xoshiro256+ PRNG + ziggurat Gaussian.
+	void fillNormal(double* dst, std::size_t n);
 
 	std::vector<double> generateNormalVector(int size);
 
@@ -657,12 +699,34 @@ namespace dnf_composer::tools::math
 		return result;
 	}
 
-	// In-place 2D separable convolution — writes into caller-supplied buffers.
-	// `out` and `tmp` must be pre-sized to size_x * size_y before calling.
+	// Reusable scratch for conv2d_separable_into — lets callers avoid the six
+	// per-call heap allocations the temporaries would otherwise require. Size it
+	// once (e.g. in an element's init()) via ensure(); reuse across steps.
+	template<typename T>
+	struct Conv2dScratch
+	{
+		std::vector<T> row, col, convRow, convCol, extRow, extCol;
+
+		void ensure(int size_x, int size_y, std::size_t extX, std::size_t extY)
+		{
+			if (row.size()     != static_cast<std::size_t>(size_x)) row.assign(size_x, T());
+			if (convRow.size() != static_cast<std::size_t>(size_x)) convRow.assign(size_x, T());
+			if (col.size()     != static_cast<std::size_t>(size_y)) col.assign(size_y, T());
+			if (convCol.size() != static_cast<std::size_t>(size_y)) convCol.assign(size_y, T());
+			if (extRow.size()  != extX) extRow.assign(extX, T());
+			if (extCol.size()  != extY) extCol.assign(extY, T());
+		}
+	};
+
+	// In-place 2D separable convolution into caller-supplied buffers, reusing the
+	// six temporaries held in `scratch` (no per-call heap allocation). `out` and
+	// `tmp` must be pre-sized to size_x * size_y; `scratch` must be ensure()'d for
+	// these dimensions and extension lengths. This is the hot-path overload.
 	template<typename T>
 	void conv2d_separable_into(
 		std::vector<T>& out,
 		std::vector<T>& tmp,
+		Conv2dScratch<T>& scratch,
 		const std::vector<T>& field,
 		const std::vector<T>& kernel_x,
 		const std::vector<T>& kernel_y,
@@ -673,26 +737,36 @@ namespace dnf_composer::tools::math
 		const bool circular_x = !extIndex_x.empty();
 		const bool circular_y = !extIndex_y.empty();
 
-		std::vector<T> row(size_x);
-		std::vector<T> col(size_y);
-		std::vector<T> convRow(size_x);
-		std::vector<T> extRow(circular_x ? extIndex_x.size() : 0);
-		std::vector<T> convCol(size_y);
-		std::vector<T> extCol(circular_y ? extIndex_y.size() : 0);
+		std::vector<T>& row     = scratch.row;
+		std::vector<T>& col     = scratch.col;
+		std::vector<T>& convRow = scratch.convRow;
+		std::vector<T>& convCol = scratch.convCol;
+		std::vector<T>& extRow  = scratch.extRow;
+		std::vector<T>& extCol  = scratch.extCol;
 
-		// x-pass: convolve each row (fixed y) with kernel_x
+		// conv_valid_into derives its output length from extRow/extCol .size(), so
+		// these must match THIS call's extension length exactly — not the scratch's
+		// high-water capacity. (MexicanHat calls this twice with different kernel
+		// widths sharing one scratch; sizing to the max would make the narrower
+		// kernel emit > size_x outputs and overflow convRow.) resize() keeps the
+		// capacity ensure() reserved, so no reallocation occurs.
+		if (circular_x) extRow.resize(extIndex_x.size());
+		if (circular_y) extCol.resize(extIndex_y.size());
+
+		// x-pass: convolve each row (fixed y) with kernel_x. The row is a contiguous
+		// slice of `field`, so feed it directly (no copy in the circular path).
+		const T* __restrict fld = field.data();
 		for (int y = 0; y < size_y; ++y)
 		{
-			for (int x = 0; x < size_x; ++x)
-				row[x] = field[y * size_x + x];
-
 			if (circular_x)
 			{
-				obtainCircularVector_into(extRow, extIndex_x, row);
+				for (int i = 0; i < static_cast<int>(extIndex_x.size()); ++i)
+					extRow[i] = fld[y * size_x + (extIndex_x[i] - 1)];
 				conv_valid_into(convRow, extRow, kernel_x);
 			}
 			else
 			{
+				std::copy(fld + y * size_x, fld + y * size_x + size_x, row.begin());
 				conv_same_into(convRow, row, kernel_x);
 			}
 			for (int x = 0; x < size_x; ++x)
@@ -717,6 +791,26 @@ namespace dnf_composer::tools::math
 			for (int y = 0; y < size_y; ++y)
 				out[y * size_x + x] = convCol[y];
 		}
+	}
+
+	// In-place 2D separable convolution — owns its temporaries (allocates six
+	// vectors per call). Convenience wrapper; prefer the Conv2dScratch overload in
+	// hot paths. `out` and `tmp` must be pre-sized to size_x * size_y.
+	template<typename T>
+	void conv2d_separable_into(
+		std::vector<T>& out,
+		std::vector<T>& tmp,
+		const std::vector<T>& field,
+		const std::vector<T>& kernel_x,
+		const std::vector<T>& kernel_y,
+		int size_x, int size_y,
+		const std::vector<int>& extIndex_x,
+		const std::vector<int>& extIndex_y)
+	{
+		Conv2dScratch<T> scratch;
+		scratch.ensure(size_x, size_y, extIndex_x.size(), extIndex_y.size());
+		conv2d_separable_into(out, tmp, scratch, field, kernel_x, kernel_y,
+		                      size_x, size_y, extIndex_x, extIndex_y);
 	}
 
 	// Reduction operation used when collapsing one axis of a 2D buffer.

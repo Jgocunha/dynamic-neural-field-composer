@@ -393,6 +393,45 @@ TEST(GenerateNormalVector, NotAllZero)
     EXPECT_TRUE(anyNonZero);
 }
 
+namespace {
+    // mean / variance / finiteness checks for a standard-normal sample.
+    void expectStandardNormal(const std::vector<double>& v)
+    {
+        ASSERT_FALSE(v.empty());
+        double sum = 0.0, sumSq = 0.0;
+        for (double x : v)
+        {
+            ASSERT_TRUE(std::isfinite(x)) << "non-finite sample";
+            sum += x;
+            sumSq += x * x;
+        }
+        const double n = static_cast<double>(v.size());
+        const double mean = sum / n;
+        const double var = sumSq / n - mean * mean;
+        EXPECT_NEAR(mean, 0.0, 0.02) << "sample mean too far from 0";
+        EXPECT_NEAR(var, 1.0, 0.05) << "sample variance too far from 1";
+    }
+}
+
+TEST(GenerateNormalVector, IsApproximatelyStandardNormal)
+{
+    expectStandardNormal(generateNormalVector(100000));
+}
+
+TEST(FillNormal, IsApproximatelyStandardNormal)
+{
+    std::vector<double> v(100000, -42.0);
+    fillNormal(v.data(), v.size());
+    expectStandardNormal(v);
+}
+
+TEST(FillNormal, ZeroCountIsNoOp)
+{
+    std::vector<double> v;          // empty
+    fillNormal(v.data(), 0);        // must not crash / write
+    EXPECT_TRUE(v.empty());
+}
+
 // ---------------------------------------------------------------------------
 // hebbLearningRule
 // ---------------------------------------------------------------------------
@@ -558,4 +597,99 @@ TEST(Broadcast1DTo2DInto, NonPositiveDimensionsYieldEmpty)
     out = { 9, 9 };
     broadcast1DTo2D_into(out, std::vector<double>{ 1, 2 }, 3, 0, true);
     EXPECT_TRUE(out.empty());
+}
+
+// ---------------------------------------------------------------------------
+// conv2d_separable_into — optimized in-place path must match the original
+// allocating conv2d_separable bit-for-bit (covers AVX2 / branch-free interior /
+// symmetric-kernel folding refactors). Reference = the untouched
+// conv2d_separable (uses the original conv_valid / conv_same).
+// ---------------------------------------------------------------------------
+
+namespace {
+    // Build a normalized symmetric Gaussian tap vector of given half-range.
+    std::vector<double> gaussianTaps(int half, double sigma)
+    {
+        std::vector<int> r(2 * half + 1);
+        std::iota(r.begin(), r.end(), -half);
+        return gaussNorm(r, 0.0, sigma);
+    }
+
+    void expectConv2dMatchesReference(const std::vector<double>& field,
+        const std::vector<double>& kx, const std::vector<double>& ky,
+        int sx, int sy, bool circular)
+    {
+        std::vector<int> extX, extY;
+        if (circular)
+        {
+            // Symmetric kernel range: half = (size-1)/2 of the tap vector.
+            const std::array<int, 2> rx{ (static_cast<int>(kx.size()) - 1) / 2,
+                                         (static_cast<int>(kx.size()) - 1) / 2 };
+            const std::array<int, 2> ry{ (static_cast<int>(ky.size()) - 1) / 2,
+                                         (static_cast<int>(ky.size()) - 1) / 2 };
+            extX = createExtendedIndex(sx, rx);
+            extY = createExtendedIndex(sy, ry);
+        }
+
+        const auto reference = conv2d_separable(field, kx, ky, sx, sy, extX, extY);
+
+        std::vector<double> out(sx * sy), tmp(sx * sy);
+        conv2d_separable_into(out, tmp, field, kx, ky, sx, sy, extX, extY);
+
+        ASSERT_EQ(out.size(), reference.size());
+        for (size_t i = 0; i < out.size(); ++i)
+            EXPECT_NEAR(out[i], reference[i], 1e-12) << "mismatch at " << i;
+    }
+
+    std::vector<double> ramp(int n)
+    {
+        std::vector<double> v(n);
+        for (int i = 0; i < n; ++i) v[i] = std::sin(0.3 * i) + 0.1 * i;
+        return v;
+    }
+}
+
+TEST(Conv2dSeparableInto, CircularSymmetricGaussianMatchesReference)
+{
+    const int sx = 50, sy = 50;
+    const auto kx = gaussianTaps(9, 3.0); // 19 symmetric taps, like the benchmark kernel
+    expectConv2dMatchesReference(ramp(sx * sy), kx, kx, sx, sy, /*circular=*/true);
+}
+
+TEST(Conv2dSeparableInto, NonCircularSymmetricGaussianMatchesReference)
+{
+    const int sx = 40, sy = 30;
+    const auto kx = gaussianTaps(6, 2.0);
+    const auto ky = gaussianTaps(4, 1.5);
+    expectConv2dMatchesReference(ramp(sx * sy), kx, ky, sx, sy, /*circular=*/false);
+}
+
+TEST(Conv2dSeparableInto, AsymmetricKernelMatchesReference)
+{
+    // Non-symmetric kernel (exercises the non-folded path); odd length.
+    const std::vector<double> kx{ 0.1, 0.2, 0.4, 0.2, 0.05, 0.05, 0.0 };
+    const std::vector<double> ky{ 0.3, 0.5, 0.2 };
+    expectConv2dMatchesReference(ramp(20 * 16), kx, ky, 20, 16, /*circular=*/true);
+    expectConv2dMatchesReference(ramp(20 * 16), kx, ky, 20, 16, /*circular=*/false);
+}
+
+TEST(Conv2dSeparableInto, EvenLengthKernelMatchesReference)
+{
+    // Even tap count -> symmetric-folding fast path must be skipped.
+    const std::vector<double> kx{ 0.25, 0.25, 0.25, 0.25 };
+    expectConv2dMatchesReference(ramp(15 * 12), kx, kx, 15, 12, /*circular=*/false);
+}
+
+TEST(ConvValidInto, SymmetricFoldingMatchesNaive)
+{
+    // Direct check of the symmetric fold in conv_valid_into.
+    const std::vector<double> ext = ramp(30);
+    const auto k = gaussianTaps(5, 2.0); // 11 symmetric taps
+    const int n = static_cast<int>(ext.size()) - static_cast<int>(k.size()) + 1;
+    std::vector<double> got(n);
+    conv_valid_into(got, ext, k);
+    const auto ref = conv_valid(ext, k);
+    ASSERT_EQ(ref.size(), got.size());
+    for (size_t i = 0; i < got.size(); ++i)
+        EXPECT_NEAR(got[i], ref[i], 1e-12);
 }

@@ -51,6 +51,8 @@ namespace dnf_composer::element
 		std::vector<int>    extIndex_y;
 		std::vector<double> scratchTmp_;
 		std::vector<double> scratchConv_;
+		std::vector<double> whiteNoise_;       ///< Reusable white-noise buffer (avoids per-step alloc).
+		tools::math::Conv2dScratch<double> scratch2d_;
 	public:
 		CorrelatedNormalNoise2D(const ElementCommonParameters& elementCommonParameters,
 		                        const CorrelatedNormalNoise2DParameters& parameters);

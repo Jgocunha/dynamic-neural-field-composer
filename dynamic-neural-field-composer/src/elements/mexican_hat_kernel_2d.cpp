@@ -86,6 +86,9 @@ namespace dnf_composer
 			scratchTmp_.assign(totalSize, 0.0);
 			scratchExcConv_.assign(totalSize, 0.0);
 			scratchInhConv_.assign(totalSize, 0.0);
+			scratch2d_.ensure(size_x, size_y,
+				std::max(extIndexExc_x.size(), extIndexInh_x.size()),
+				std::max(extIndexExc_y.size(), extIndexInh_y.size()));
 
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
@@ -96,24 +99,28 @@ namespace dnf_composer
 		{
 			updateInput();
 
-			fullSum = std::accumulate(components["input"].begin(), components["input"].end(), 0.0);
+			const std::vector<double>& input = components["input"];
+			std::vector<double>& output = components["output"];
+
+			fullSum = std::accumulate(input.begin(), input.end(), 0.0);
 
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
 
 			tools::math::conv2d_separable_into(
-				scratchExcConv_, scratchTmp_,
-				components["input"], kernelExc_x, kernelExc_y,
+				scratchExcConv_, scratchTmp_, scratch2d_,
+				input, kernelExc_x, kernelExc_y,
 				size_x, size_y, extIndexExc_x, extIndexExc_y);
 
 			tools::math::conv2d_separable_into(
-				scratchInhConv_, scratchTmp_,
-				components["input"], kernelInh_x, kernelInh_y,
+				scratchInhConv_, scratchTmp_, scratch2d_,
+				input, kernelInh_x, kernelInh_y,
 				size_x, size_y, extIndexInh_x, extIndexInh_y);
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
-			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
-				components["output"][i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
+			const int n = static_cast<int>(output.size());
+			for (int i = 0; i < n; ++i)
+				output[i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
 		}
 
 		std::string MexicanHatKernel2D::toString() const

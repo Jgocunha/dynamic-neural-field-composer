@@ -22,7 +22,13 @@ namespace dnf_composer::element
 		for (std::size_t i = 0; i < n; ++i)
 		{
 			const float x = static_cast<float>(input[i]);
-			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(-s * (x - xs))));
+			// Clamp the exponent to the float exp() range. Beyond ~±88 the result
+			// has already saturated to 0/1 in float, so this is numerically a no-op,
+			// but it avoids the (much slower) overflow/inf path in std::exp — which
+			// dominates the field step when the steepness is large (e.g. 100).
+			float e = -s * (x - xs);
+			e = e < -88.0f ? -88.0f : (e > 88.0f ? 88.0f : e);
+			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(e)));
 		}
 	}
 

@@ -54,6 +54,7 @@ namespace dnf_composer::element
 		const int totalSize = size_x * size_y;
 		scratchTmp_.assign(totalSize, 0.0);
 		scratchConv_.assign(totalSize, 0.0);
+		scratch2d_.ensure(size_x, size_y, extIndex_x.size(), extIndex_y.size());
 	}
 
 	void CorrelatedNormalNoise2D::step(double t, double deltaT)
@@ -62,10 +63,21 @@ namespace dnf_composer::element
 		const int size_x    = commonParameters.dimensionParameters.size_x;
 		const int size_y    = commonParameters.dimensionParameters.size_y;
 
-		const std::vector<double> whiteNoise = tools::math::generateNormalVector(totalSize);
+		// Zero amplitude => output is identically zero; skip RNG + convolution.
+		if (parameters.amplitude == 0.0)
+		{
+			std::ranges::fill(components["output"], 0.0);
+			return;
+		}
+
+		// Reuse the member buffer (no per-step allocation) for the white noise.
+		if (static_cast<int>(whiteNoise_.size()) != totalSize)
+			whiteNoise_.assign(totalSize, 0.0);
+		tools::math::fillNormal(whiteNoise_.data(), static_cast<std::size_t>(totalSize));
+		const std::vector<double>& whiteNoise = whiteNoise_;
 
 		tools::math::conv2d_separable_into(
-			scratchConv_, scratchTmp_,
+			scratchConv_, scratchTmp_, scratch2d_,
 			whiteNoise, correlationKernel_x, correlationKernel_y,
 			size_x, size_y, extIndex_x, extIndex_y);
 

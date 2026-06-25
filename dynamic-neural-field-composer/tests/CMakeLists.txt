@@ -44,12 +44,21 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tools/test_logger.cpp"
             "tools/test_math.cpp"
             "tools/test_utils.cpp"
+            # validation (field-dynamics regression vs vendored reference data)
+            "validation/test_field_dynamics_1d.cpp"
+            "validation/test_field_dynamics_2d.cpp"
             # element_parameters
             "element_parameters/test_element_parameters.cpp"
             # exceptions
             "exceptions/test_exception.cpp"
     )
-    target_include_directories(dnf_composer_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    target_include_directories(dnf_composer_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/validation)
+
+    # Path to the vendored field-dynamics reference data (sim JSONs + expected CSVs).
+    target_compile_definitions(dnf_composer_tests PRIVATE
+            VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data")
     target_link_libraries(dnf_composer_tests PRIVATE
             ${CMAKE_PROJECT_NAME}
             GTest::gtest
@@ -60,4 +69,29 @@ if(DNF_COMPOSER_BUILD_TESTS)
 
     include(GoogleTest)
     gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)
+
+    # Standalone throughput benchmark (manual perf run; not a unit test, so it is
+    # NOT registered with gtest_discover_tests). Appends a dated session block to
+    # tests/benchmark/results.md.
+    add_executable(dnf_composer_benchmark "benchmark/benchmark_main.cpp")
+    target_include_directories(dnf_composer_benchmark PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    target_compile_definitions(dnf_composer_benchmark PRIVATE
+            BENCHMARK_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results.md")
+    target_link_libraries(dnf_composer_benchmark PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            imgui::imgui
+            imgui-platform-kit
+    )
+
+    # Per-step method profiler (manual perf run; not a unit test). Appends a dated
+    # session block to tests/profiler/profile.md.
+    add_executable(dnf_composer_profiler "profiler/profiler_main.cpp")
+    target_include_directories(dnf_composer_profiler PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    target_compile_definitions(dnf_composer_profiler PRIVATE
+            PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md")
+    target_link_libraries(dnf_composer_profiler PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            imgui::imgui
+            imgui-platform-kit
+    )
 endif()

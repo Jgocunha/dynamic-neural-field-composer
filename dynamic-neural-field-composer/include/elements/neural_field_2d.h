@@ -131,6 +131,7 @@ namespace dnf_composer::element
 		double* rest_ = nullptr;
 		bool    computeStateMetrics_ = true;
 		std::vector<NeuralField2DBump> prevBumps_;
+		std::vector<char> visited_; // reusable flood-fill scratch (avoids per-step alloc)
 	public:
 		NeuralField2D(const ElementCommonParameters& elementCommonParameters,
 		              const NeuralField2DParameters& parameters);

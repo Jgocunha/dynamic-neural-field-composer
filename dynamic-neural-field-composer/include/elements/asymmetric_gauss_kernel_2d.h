@@ -88,6 +88,7 @@ namespace dnf_composer::element
 		std::vector<double> kernel_1d_y;
 		std::vector<double> scratchTmp_;
 		std::vector<double> scratchConvolution_;
+		tools::math::Conv2dScratch<double> scratch2d_;
 	public:
 		AsymmetricGaussKernel2D(const ElementCommonParameters& elementCommonParameters,
 		                        const AsymmetricGaussKernel2DParameters& parameters);

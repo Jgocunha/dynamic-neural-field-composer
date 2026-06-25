@@ -238,6 +238,13 @@ set(src
 # Define library target
 add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
+
+# Enable AVX2 SIMD for the library (hot path: 2D separable convolution). Scoped to
+# this target only; keeps default /fp:precise so numeric results are unchanged.
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>
+)
 target_include_directories(${CMAKE_PROJECT_NAME} 
     PUBLIC $<INSTALL_INTERFACE:include> 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include 

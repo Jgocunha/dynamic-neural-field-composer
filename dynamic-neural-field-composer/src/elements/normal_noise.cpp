@@ -17,10 +17,22 @@ namespace dnf_composer
 
 		void NormalNoise::step(double t, double deltaT)
 		{
-			const std::vector<double> rand = tools::math::generateNormalVector(commonParameters.dimensionParameters.size);
+			// Zero amplitude => output is identically zero; skip the per-step RNG
+			// draw and allocation entirely (behaviour identical, output stays zero).
+			if (parameters.amplitude == 0.0)
+			{
+				std::ranges::fill(components["output"], 0.0);
+				return;
+			}
 
-			for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
-				components["output"][i] = parameters.amplitude / sqrt(deltaT) * rand[i];
+			// Fill the output with standard-normal samples in place (no temporary
+			// vector), then scale by amplitude/sqrt(dt) in the same pass.
+			std::vector<double>& out = components["output"];
+			const int n = commonParameters.dimensionParameters.size;
+			tools::math::fillNormal(out.data(), static_cast<std::size_t>(n));
+			const double scale = parameters.amplitude / std::sqrt(deltaT);
+			for (int i = 0; i < n; i++)
+				out[i] *= scale;
 		}
 
 		std::shared_ptr<Element> NormalNoise::clone() const
