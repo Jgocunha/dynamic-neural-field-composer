@@ -44,7 +44,7 @@ static constexpr double S_WIDTH      = 5.0;
 static constexpr double S_AMP        = 10.0;
 static constexpr int    WARMUP_STEPS = 200;
 static constexpr int    TIMED_STEPS  = 5000;
-static constexpr int    N_RUNS       = 3;
+static constexpr int    N_RUNS       = 10;
 
 static std::shared_ptr<Simulation> build_simulation(int N)
 {
