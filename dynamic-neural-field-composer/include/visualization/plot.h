@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "plot_parameters.h"
 
 namespace dnf_composer
@@ -14,7 +16,7 @@ namespace dnf_composer
 	class Plot
 	{
 	protected:
-		static inline int uniqueIdentifierCounter = 0; ///< Global counter for plot ID assignment.
+		static inline std::atomic<int> uniqueIdentifierCounter{0}; ///< Global counter for plot ID assignment (atomic: thread-safe construction).
 		int uniqueIdentifier;                          ///< Auto-assigned unique ID.
 		PlotCommonParameters commonParameters;         ///< Type, axes ranges, and annotation strings.
 	public:

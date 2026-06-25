@@ -4,7 +4,7 @@ namespace dnf_composer
 {
 
 	Plot::Plot(PlotCommonParameters parameters)
-		: uniqueIdentifier(uniqueIdentifierCounter++), commonParameters(std::move(parameters))
+		: uniqueIdentifier(uniqueIdentifierCounter.fetch_add(1, std::memory_order_relaxed)), commonParameters(std::move(parameters))
 	{
 	}
 
