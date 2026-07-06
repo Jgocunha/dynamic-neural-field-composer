@@ -22,14 +22,6 @@
   <img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS" />
 </p>
 
-<p align="center">
-  <a href="https://jgocunha.github.io/dynamic-neural-field-composer/">Docs</a> ·
-  <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/wiki">Wiki</a> ·
-  <a href="https://github.com/Jgocunha/dynamic-neural-field-composer/releases">Releases</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a>
-</p>
-
-
 ---
 
 ## About
