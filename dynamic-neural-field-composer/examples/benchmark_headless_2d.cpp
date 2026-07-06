@@ -30,82 +30,120 @@
 #include "elements/neural_field_2d.h"
 #include "elements/gauss_stimulus_2d.h"
 #include "elements/gauss_kernel_2d.h"
+#include "elements/mexican_hat_kernel_2d.h"
 #include "elements/normal_noise_2d.h"
 
 using namespace dnf_composer;
 using namespace dnf_composer::element;
 
-static constexpr int    GRID         = 50;
+static constexpr int    BASE_GRID    = 50;    // reference grid side the arch positions are defined on
 static constexpr double TAU          = 25.0;
-static constexpr double H            = -5.0;
-static constexpr double K_WIDTH      = 3.0;
-static constexpr double K_AMP        = 5.0;
-static constexpr double S_WIDTH      = 5.0;
-static constexpr double S_AMP        = 10.0;
+static constexpr double NOISE_AMP    = 0.1;    // benchmark uses A>0 so the RNG cost is measured
 static constexpr int    WARMUP_STEPS = 200;
-static constexpr int    TIMED_STEPS  = 5000;
-static constexpr int    N_RUNS       = 10;
+static constexpr int    TIMED_STEPS  = 2000;
+static constexpr int    N_RUNS       = 5;
 
-static std::shared_ptr<Simulation> build_simulation(int N)
+// ── Architecture definitions (2D) ───────────────────────────────────────────
+// Reuse the representative validation sim of each band (detection 001, selection
+// 021, memory 041, multi-peak 081), with the 2D amplitude adjustments from
+// cross-platform-validation-2d/generate_simulations_2d.py:
+//   positions on the 50-grid (pos2d = pos/2); selection kernel amp x4;
+//   memory exc/inh amp x2.5 and a global inhibition of -0.05.
+
+enum class KernelType { Gauss, MexicanHat };
+
+struct Stim { double amp, sigma, pos; };
+
+struct Arch {
+    std::string name;
+    double      h;
+    KernelType  kernel;
+    double      kWidth, kAmp, kGlobal;                    // Gauss
+    double      kWidthExc, kAmpExc, kWidthInh, kAmpInh, kGlobalMex;  // Mexican-hat
+    std::vector<Stim> stimuli;
+};
+
+static const Arch& get_arch(const std::string& name)
 {
-    auto sim = std::make_shared<Simulation>("bench2d", 25.0, 0.0, 0.0);
+    // positions are already 2D (pos/2). amplitudes already 2D-adjusted.
+    static const std::vector<Arch> archs = {
+        {"detection",    -8.0,  KernelType::Gauss,      3.0, 8.0, 0.0,   0,0,0,0,0,
+            {{12.0, 5.0, 25.0}}},
+        {"selection",   -10.0,  KernelType::Gauss,      3.0, 20.0, -0.15, 0,0,0,0,0,  // amp 5*4
+            {{10.0, 5.0, 12.5}, {10.5, 5.0, 37.5}}},
+        {"memory",       -5.0,  KernelType::MexicanHat, 0,0,0,
+            3.4, 44.25, 8.9, 33.75, -0.05,   // exc 17.7*2.5, inh 13.5*2.5, global -0.05
+            {{15.0, 5.0, 25.0}}},
+        {"multi-peak",   -8.0,  KernelType::Gauss,      2.0, 5.0, 0.0,   0,0,0,0,0,
+            {{12.0, 5.0, 12.5}, {12.0, 5.0, 37.5}}},
+    };
+    for (const auto& a : archs)
+        if (a.name == name) return a;
+    std::fprintf(stderr, "Unknown arch '%s'; defaulting to detection\n", name.c_str());
+    return archs[0];
+}
 
-    // Tile N stimulus centers across the 50x50 grid (row-major), matching the
-    // cosivina / cosivina-python generators.
-    const int cols = static_cast<int>(std::ceil(std::sqrt(static_cast<double>(N))));
-    const int rows = static_cast<int>(std::ceil(static_cast<double>(N) / cols));
+static std::shared_ptr<Simulation> build_simulation(int N, const Arch& arch, int grid)
+{
+    const double pos_scale = static_cast<double>(grid) / BASE_GRID;
+    auto sim = std::make_shared<Simulation>("bench2d", 25.0, 0.0, 0.0);
 
     for (int i = 0; i < N; ++i) {
         const std::string si = std::to_string(i);
-        const int c = i % cols;
-        const int r = i / cols;
-        const double px = (2.0 * c + 1.0) * GRID / (2.0 * cols);
-        const double py = (2.0 * r + 1.0) * GRID / (2.0 * rows);
-
-        const ElementDimensions dims(GRID, GRID, 1.0, 1.0);
-
-        // GaussStimulus2DParameters{width, amplitude, position_x, position_y, circular, normalized}
-        auto stim = std::make_shared<GaussStimulus2D>(
-            ElementCommonParameters{"stimulus_" + si, dims},
-            GaussStimulus2DParameters{S_WIDTH, S_AMP, px, py, true, false});
+        const ElementDimensions dims(grid, grid, 1.0, 1.0);
 
         // Neural field (logistic sigmoid, steepness=100)
         auto field = std::make_shared<NeuralField2D>(
             ElementCommonParameters{"field_" + si, dims},
-            NeuralField2DParameters{TAU, H, SigmoidFunction{0.0, 100.0}});
+            NeuralField2DParameters{TAU, arch.h, SigmoidFunction{0.0, 100.0}});
         // Throughput benchmark: bump/stability metrics are never read here, so
         // skip the per-step flood-fill they would otherwise run.
         field->setComputeStateMetrics(false);
+        sim->addElement(field);
 
-        // GaussKernel2DParameters{width, amplitude, amplitudeGlobal, circular, normalized}
-        auto kernel = std::make_shared<GaussKernel2D>(
-            ElementCommonParameters{"kernel_" + si, dims},
-            GaussKernel2DParameters{K_WIDTH, K_AMP, 0.0, true, true});
+        // Stimuli (1–3 per field)
+        for (size_t s = 0; s < arch.stimuli.size(); ++s) {
+            const Stim& st = arch.stimuli[s];
+            // GaussStimulus2DParameters{width, amplitude, position_x, position_y, circular, normalized}
+            auto stim = std::make_shared<GaussStimulus2D>(
+                ElementCommonParameters{"stimulus_" + si + "_" + std::to_string(s), dims},
+                GaussStimulus2DParameters{st.sigma, st.amp, st.pos * pos_scale, st.pos * pos_scale, true, false});
+            sim->addElement(stim);
+            field->addInput(stim);
+        }
 
-        // Normal noise (amplitude=0 — present to match element count)
+        // Lateral kernel
+        if (arch.kernel == KernelType::Gauss) {
+            auto kernel = std::make_shared<GaussKernel2D>(
+                ElementCommonParameters{"kernel_" + si, dims},
+                GaussKernel2DParameters{arch.kWidth, arch.kAmp, arch.kGlobal, true, true});
+            sim->addElement(kernel);
+            kernel->addInput(field);
+            field->addInput(kernel);
+        } else {
+            auto kernel = std::make_shared<MexicanHatKernel2D>(
+                ElementCommonParameters{"kernel_" + si, dims},
+                MexicanHatKernel2DParameters{arch.kWidthExc, arch.kAmpExc,
+                                             arch.kWidthInh, arch.kAmpInh,
+                                             arch.kGlobalMex, true, true});
+            sim->addElement(kernel);
+            kernel->addInput(field);
+            field->addInput(kernel);
+        }
+
+        // Normal noise (A>0 so the per-step RNG cost is part of the workload)
         auto noise = std::make_shared<NormalNoise2D>(
             ElementCommonParameters{"noise_" + si, dims},
-            NormalNoise2DParameters{0.0});
-
-        sim->addElement(stim);
-        sim->addElement(field);
-        sim->addElement(kernel);
+            NormalNoise2DParameters{NOISE_AMP});
         sim->addElement(noise);
-
-        // Wire: stimulus -> field, noise -> field
-        field->addInput(stim);
         field->addInput(noise);
-
-        // Lateral: field -> kernel -> field
-        kernel->addInput(field);
-        field->addInput(kernel);
     }
     return sim;
 }
 
-static void run_benchmark(int N, const std::string& outfile, int timedSteps, int nRuns)
+static void run_benchmark(int N, const Arch& arch, int grid, const std::string& outfile, int timedSteps, int nRuns)
 {
-    auto sim = build_simulation(N);
+    auto sim = build_simulation(N, arch, grid);
     sim->init();
 
     // Warm-up
@@ -123,8 +161,10 @@ static void run_benchmark(int N, const std::string& outfile, int timedSteps, int
 
         double elapsed = std::chrono::duration<double>(t1 - t0).count();
         double sps     = timedSteps / elapsed;
-        std::fprintf(fp,  "dnfc,headless,%d,%d,%.2f\n", N, run + 1, sps);
-        std::printf("dnfc 2D headless  N=%4d  run=%d  %.1f steps/s\n", N, run + 1, sps);
+        std::fprintf(fp,  "dnfc,default,%s,%d,headless,%d,%d,%.2f\n",
+                     arch.name.c_str(), grid, N, run + 1, sps);
+        std::printf("dnfc 2D %-12s fs=%dx%d N=%4d run=%d  %.1f steps/s\n",
+                    arch.name.c_str(), grid, grid, N, run + 1, sps);
         std::fflush(stdout);
     }
     std::fclose(fp);
@@ -146,12 +186,19 @@ static std::vector<int> parse_n_list(const std::string& s)
 
 int main(int argc, char* argv[])
 {
-    std::string outfile     = (argc > 1) ? argv[1] : "timings-dnfc-2d.csv";
-    std::vector<int> Ns      = (argc > 2) ? parse_n_list(argv[2]) : std::vector<int>{10, 50, 100, 500, 1000};
-    const int timedSteps     = (argc > 3) ? std::stoi(argv[3]) : TIMED_STEPS;
-    const int nRuns          = (argc > 4) ? std::stoi(argv[4]) : N_RUNS;
-    std::printf("dnfc 2D headless benchmark (50x50) -> %s\n", outfile.c_str());
+    // Usage: benchmark_headless_2d [output_csv] [arch] [N_csv] [grid_side] [timed_steps] [n_runs]
+    //   grid_side    field side length, NxN grid (default 50)
+    //   timed_steps  timed steps per run (default 5000); n_runs runs per N (default 10)
+    std::string      outfile  = (argc > 1) ? argv[1] : "timings-dnfc-2d.csv";
+    std::string      archName = (argc > 2) ? argv[2] : "detection";
+    std::vector<int> Ns       = (argc > 3) ? parse_n_list(argv[3]) : std::vector<int>{5, 10, 50, 100};
+    const int        grid       = (argc > 4) ? std::stoi(argv[4]) : BASE_GRID;
+    const int        timedSteps = (argc > 5) ? std::stoi(argv[5]) : TIMED_STEPS;
+    const int        nRuns      = (argc > 6) ? std::stoi(argv[6]) : N_RUNS;
+    const Arch& arch = get_arch(archName);
+    std::printf("dnfc 2D headless benchmark [arch=%s grid=%dx%d] -> %s\n",
+                arch.name.c_str(), grid, grid, outfile.c_str());
     for (int N : Ns)
-        run_benchmark(N, outfile, timedSteps, nRuns);
+        run_benchmark(N, arch, grid, outfile, timedSteps, nRuns);
     return 0;
 }
