@@ -134,6 +134,7 @@ namespace dnf_composer
         return element::UNINITIALIZED;
     }
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON serialization; splitting would scatter a single lookup table across files
     json SimulationFileManager::elementToJson(const std::shared_ptr<element::Element>& element)
     {
         json elementJson;
@@ -539,6 +540,7 @@ namespace dnf_composer
         return elementJson;
     }
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON deserialization; mirrors elementToJson's structure
     void SimulationFileManager::jsonToElements(const json& jsonElements) const
     {
         // Track names already loaded so duplicate uniqueNames in the file are rejected

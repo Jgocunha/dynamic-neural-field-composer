@@ -1,4 +1,7 @@
 #include "user_interface/simulation_window.h"
+
+#include <array>
+
 #include "user_interface/field_metrics_window.h"
 #include "user_interface/log_window.h"
 #include "user_interface/help_window.h"
@@ -122,14 +125,14 @@ namespace dnf_composer::user_interface
 		//ImGui::Spacing();
 
 		struct PaneInfo { const char* icon; const char* name; };
-		static constexpr PaneInfo kInfo[] = {
+		static constexpr std::array<PaneInfo, 6> kInfo = { {
 			{ .icon=ICON_FA_PLUS,     .name="Add elements"      },
 			{ .icon=ICON_FA_TRASH,    .name="Remove elements"   },
 			{ .icon=ICON_FA_LINK,     .name="Set interactions" },
 			{ .icon=ICON_FA_FILE_LINES , .name="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .name="Export data"      },
 			{ .icon=ICON_FA_HEART_PULSE, .name="Monitoring"       },
-		};
+		} };
 
 		ImGui::PushFont(g_LargeIconsFont);
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
@@ -149,14 +152,14 @@ namespace dnf_composer::user_interface
 	void SimulationWindow::drawIconStrip()
 	{
 		struct PaneTab { const char* icon; const char* tooltip; };
-		static constexpr PaneTab kPanes[] = {
+		static constexpr std::array<PaneTab, 6> kPanes = { {
 			{ .icon=ICON_FA_PLUS,     .tooltip="Add elements"      },
 			{ .icon=ICON_FA_TRASH,    .tooltip="Remove elements"   },
 			{ .icon=ICON_FA_LINK,     .tooltip="Set interactions" },
 			{ .icon=ICON_FA_FILE_LINES , .tooltip="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .tooltip="Export data"      },
 			{ .icon=ICON_FA_HEART_PULSE, .tooltip="Monitoring"       },
-		};
+		} };
 
 		ImGui::SetCursorPos(ImVec2(0.0F, 16.0F));
 		ImGui::BeginGroup();
@@ -198,7 +201,7 @@ namespace dnf_composer::user_interface
 }
 	}
 
-	// Clang-Tidy: Function 'renderAddElementCard' has cognitive complexity of 28 (threshold 25)
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::renderAddElementCard() const
 	{
 		ImGui::PushID("add_element_section");
@@ -239,23 +242,23 @@ namespace dnf_composer::user_interface
 		// ── Filtered type combo ─────────────────────────────────────────────
 		{
 			using L = element::ElementLabel;
-			static constexpr L k1D[] = {
+			static constexpr std::array<L, 15> k1D = {
 				L::NEURAL_FIELD, L::GAUSS_STIMULUS, L::TIMED_GAUSS_STIMULUS,
 				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
 				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
 				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE,
 				L::RESIZE, L::COLLAPSE
 			};
-			static constexpr L k2D[] = {
+			static constexpr std::array<L, 13> k2D = {
 				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
 				L::GAUSS_KERNEL_2D, L::MEXICAN_HAT_KERNEL_2D, L::OSCILLATORY_KERNEL_2D,
 				L::ASYMMETRIC_GAUSS_KERNEL_2D, L::NORMAL_NOISE_2D, L::CORRELATED_NORMAL_NOISE_2D,
 				L::BOOST_STIMULUS_2D, L::MEMORY_TRACE_2D,
 				L::RESIZE_2D, L::EXPAND
 			};
-			const L* pLabels = (dimensionality == 1) ? k1D : k2D;
-			const int nLabels = (dimensionality == 1) ? static_cast<int>(std::size(k1D))
-			                                          : static_cast<int>(std::size(k2D));
+			const L* pLabels = (dimensionality == 1) ? k1D.data() : k2D.data();
+			const int nLabels = (dimensionality == 1) ? static_cast<int>(k1D.size())
+			                                          : static_cast<int>(k2D.size());
 
 			ImGui::TextUnformatted("Type");
 			ImGui::SetNextItemWidth(-FLT_MIN);
@@ -276,7 +279,7 @@ namespace dnf_composer::user_interface
 		}
 
 		// ── Name input ──────────────────────────────────────────────────────
-		static char id[CHAR_SIZE] = {};
+		static std::array<char, CHAR_SIZE> id = {};
 		static element::ElementLabel prevSelected = element::ElementLabel::UNINITIALIZED;
 		if (selected != prevSelected)
 		{
@@ -287,13 +290,13 @@ namespace dnf_composer::user_interface
 }
 }
 			const std::string& typeName = element::ElementLabelToString.at(selected);
-			std::snprintf(id, sizeof(id), "%s %d", typeName.c_str(), count + 1);
+			std::snprintf(id.data(), id.size(), "%s %d", typeName.c_str(), count + 1);
 		}
 
 		ImGui::Spacing();
 		ImGui::TextUnformatted("Name");
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##id", "enter identifier", id, IM_ARRAYSIZE(id));
+		ImGui::InputTextWithHint("##id", "enter identifier", id.data(), id.size());
 		ImGui::Spacing();
 
 		// ── Parameters ──────────────────────────────────────────────────────
@@ -303,34 +306,34 @@ namespace dnf_composer::user_interface
 
 		switch (selected)
 		{
-			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id, addRequested);              break;
-			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id, addRequested);            break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id, addRequested);      break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id, addRequested);   break;
-			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id, addRequested);              break;
-			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id, addRequested);        break;
-			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id, addRequested);       break;
-			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id, addRequested);  break;
-			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id, addRequested);              break;
-			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id, addRequested);  break;
-			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id, addRequested);           break;
-			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id, addRequested);     break;
-			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id, addRequested);           break;
-			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id, addRequested);             break;
-			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id, addRequested);           break;
-			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id, addRequested);        break;
-			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id, addRequested);          break;
-			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id, addRequested);    break;
-			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id, addRequested);          break;
-			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id, addRequested);   break;
-			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id, addRequested); break;
-			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id, addRequested);        break;
-			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id, addRequested); break;
-			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id, addRequested);          break;
-			case element::ElementLabel::RESIZE:                     addElementResize(id, addRequested);                  break;
-			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id, addRequested);                break;
-			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id, addRequested);                break;
-			case element::ElementLabel::EXPAND:                     addElementExpand(id, addRequested);                  break;
+			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id.data(), addRequested);              break;
+			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id.data(), addRequested);            break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id.data(), addRequested);      break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id.data(), addRequested);   break;
+			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id.data(), addRequested);              break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id.data(), addRequested);        break;
+			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id.data(), addRequested);       break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id.data(), addRequested);  break;
+			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id.data(), addRequested);              break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id.data(), addRequested);  break;
+			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id.data(), addRequested);           break;
+			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id.data(), addRequested);     break;
+			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id.data(), addRequested);           break;
+			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id.data(), addRequested);             break;
+			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id.data(), addRequested);           break;
+			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id.data(), addRequested);        break;
+			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id.data(), addRequested);          break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id.data(), addRequested);    break;
+			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id.data(), addRequested);          break;
+			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id.data(), addRequested);   break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id.data(), addRequested); break;
+			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id.data(), addRequested);        break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id.data(), addRequested); break;
+			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id.data(), addRequested);          break;
+			case element::ElementLabel::RESIZE:                     addElementResize(id.data(), addRequested);                  break;
+			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id.data(), addRequested);                break;
+			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id.data(), addRequested);                break;
+			case element::ElementLabel::EXPAND:                     addElementExpand(id.data(), addRequested);                  break;
 			default: break;
 		}
 
@@ -433,7 +436,7 @@ namespace dnf_composer::user_interface
 		static double xShift    = 0.0;
 		static double steepness = 5.0;
 		static double absBeta   = 100.0;
-		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		static constexpr std::array<const char*, 3> actFnNames = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##nf_dim")) {
@@ -454,7 +457,7 @@ namespace dnf_composer::user_interface
 			paramTableSetup();
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
-			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf_fn", &actFnType, actFnNames, 3);
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf_fn", &actFnType, actFnNames.data(), static_cast<int>(actFnNames.size()));
 			paramRowDouble("Shift", "##nf_xsh", &xShift, "%.2f");
 			if (actFnType == element::SIGMOID) {
 				paramRowDouble("Steepness", "##nf_steep", &steepness, "%.2f");
@@ -1045,7 +1048,7 @@ namespace dnf_composer::user_interface
 		static double xShift    = 0.0;
 		static double steepness = 5.0;
 		static double absBeta   = 100.0;
-		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		static constexpr std::array<const char*, 3> actFnNames = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##nf2_dim")) {
@@ -1068,7 +1071,7 @@ namespace dnf_composer::user_interface
 			paramTableSetup();
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
-			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf2_fn", &actFnType, actFnNames, 3);
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf2_fn", &actFnType, actFnNames.data(), static_cast<int>(actFnNames.size()));
 			paramRowDouble("Shift", "##nf2_xsh", &xShift, "%.2f");
 			if (actFnType == element::SIGMOID) {
 				paramRowDouble("Steepness", "##nf2_steep", &steepness, "%.2f");
@@ -1599,6 +1602,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::addElementCollapse(char* id, bool addRequested) const
 	{
 		static int    x_max_out = 100;
@@ -1736,11 +1740,11 @@ namespace dnf_composer::user_interface
 			return {info.name, IM_COL32(info.r, info.g, info.b, 255)};
 		};
 
-		static char searchBuf[128] = {};
+		static std::array<char, 128> searchBuf = {};
 		static std::string pendingRemove;
 
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##re_search", "Search...", searchBuf, sizeof(searchBuf));
+		ImGui::InputTextWithHint("##re_search", "Search...", searchBuf.data(), searchBuf.size());
 		ImGui::Spacing();
 
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
@@ -1748,7 +1752,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 		ImGui::Spacing();
 
-		std::string filterLower(searchBuf);
+		std::string filterLower(searchBuf.data());
 		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
 
 		const float rowH   = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
@@ -1819,13 +1823,14 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::renderSetInteractionCard() const
 	{
 		static std::string selectedTarget;
 		static std::string selectedSource;
 		static std::string pendingRemoveTarget;
 		static std::string pendingRemoveSource;
-		static char connSearch[128] = {};
+		static std::array<char, 128> connSearch = {};
 
 		auto elementCombo = [&](const char* wid, const char* hint, std::string& value)
 		{
@@ -1902,10 +1907,10 @@ namespace dnf_composer::user_interface
 		ImGui::Spacing();
 
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##si_conn_search", "Search...", connSearch, sizeof(connSearch));
+		ImGui::InputTextWithHint("##si_conn_search", "Search...", connSearch.data(), connSearch.size());
 		ImGui::Spacing();
 
-		std::string filterLower(connSearch);
+		std::string filterLower(connSearch.data());
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
 
 		const float unlinkW = ImGui::GetFrameHeight() + 6.0F;
@@ -1988,6 +1993,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::renderDataCard() const
 	{
 		ImGui::PushID("data_card");
@@ -1997,7 +2003,7 @@ namespace dnf_composer::user_interface
 		static int  recordInterval = 10;
 		static int  unitIdx        = 1; // 0 = ms, 1 = ticks
 
-		static const char* kUnits[] = { "ms", "ticks" };
+		static constexpr std::array<const char*, 2> kUnits = { "ms", "ticks" };
 
 		const bool hasSelection = !selectedElementId.empty() && !selectedComponent.empty();
 		const bool currentlyRecording = hasSelection &&
@@ -2074,7 +2080,7 @@ namespace dnf_composer::user_interface
 }
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Combo("##rec_unit", &unitIdx, kUnits, 2);
+		ImGui::Combo("##rec_unit", &unitIdx, kUnits.data(), static_cast<int>(kUnits.size()));
 		ImGui::EndDisabled();
 		ImGui::Spacing();
 
@@ -2216,15 +2222,15 @@ namespace dnf_composer::user_interface
 		};
 
 		static std::string selectedId;
-		static char        searchBuf[128] = {};
+		static std::array<char, 128> searchBuf = {};
 
 		// ── Search bar ───────────────────────────────────────────────────────
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##lp_search", "Search...", searchBuf, sizeof(searchBuf));
+		ImGui::InputTextWithHint("##lp_search", "Search...", searchBuf.data(), searchBuf.size());
 		ImGui::Spacing();
 
 		// ── Element list (fills all space above the button) ───────────────────
-		std::string filterLower(searchBuf);
+		std::string filterLower(searchBuf.data());
 		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
 
 		const float rowH  = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;

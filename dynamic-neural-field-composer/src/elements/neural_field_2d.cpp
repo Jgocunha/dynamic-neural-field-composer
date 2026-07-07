@@ -86,6 +86,7 @@ namespace dnf_composer::element
 		updateBumps(deltaT);
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - flood-fill bump extraction; splitting would obscure the single-pass algorithm
 	void NeuralField2D::updateBumps(double deltaT)
 	{
 		const int    size_x = commonParameters.dimensionParameters.size_x;

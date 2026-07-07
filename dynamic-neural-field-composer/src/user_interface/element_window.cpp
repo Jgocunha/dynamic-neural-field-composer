@@ -1,7 +1,9 @@
 ﻿#include "user_interface/element_window.h"
 
+#include <array>
 #include <unordered_map>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <algorithm>
 #include <cctype>
@@ -177,6 +179,7 @@ namespace dnf_composer::user_interface
 		ImGui::End();
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void ElementWindow::renderElementControlCard()
 	{
 		const float ui = ImGui::GetIO().FontGlobalScale;
@@ -220,7 +223,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 
 		// Build a lowercase search string
-		std::string searchLower(searchBuf);
+		std::string searchLower(searchBuf.data());
 		std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
 			[](unsigned char c) { return std::tolower(c); });
 
@@ -457,11 +460,11 @@ namespace dnf_composer::user_interface
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("ID");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			char idBuf[32];
-			std::snprintf(idBuf, sizeof(idBuf), "%d", uid);
+			std::array<char, 32> idBuf{};
+			std::snprintf(idBuf.data(), idBuf.size(), "%d", uid);
 			ImGui::BeginDisabled(true);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::InputText("##uid_val", idBuf, sizeof(idBuf));
+			ImGui::InputText("##uid_val", idBuf.data(), idBuf.size());
 			ImGui::PopFont();
 			ImGui::EndDisabled();
 
@@ -469,17 +472,17 @@ namespace dnf_composer::user_interface
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Name");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			char nameBuf[256];
-			std::strncpy(nameBuf, staged.c_str(), sizeof(nameBuf) - 1);
-			nameBuf[sizeof(nameBuf) - 1] = '\0';
+			std::array<char, 256> nameBuf{};
+			std::strncpy(nameBuf.data(), staged.c_str(), nameBuf.size() - 1);
+			nameBuf.back() = '\0';
 			ImGui::PushFont(g_MonoMediumFont);
-			if (ImGui::InputText("##uname_val", nameBuf, sizeof(nameBuf))) {
-				staged = nameBuf;
+			if (ImGui::InputText("##uname_val", nameBuf.data(), nameBuf.size())) {
+				staged = nameBuf.data();
 }
 			ImGui::PopFont();
 			if (ImGui::IsItemDeactivatedAfterEdit())
 			{
-				const std::string newName(nameBuf);
+				const std::string newName(nameBuf.data());
 				if (!newName.empty() && newName != element->getUniqueName())
 				{
 					s_pendingRenameOld = element->getUniqueName();
@@ -904,6 +907,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void ElementWindow::modifyElementNeuralField(const std::shared_ptr<element::Element>& element)
 	{
 		const auto neuralField = std::dynamic_pointer_cast<element::NeuralField>(element);
@@ -933,13 +937,13 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Activation function");
 		if (ewBeginTable(("##nf_act" + uid).c_str())) {
 			ewTableSetup();
-			static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+			static constexpr std::array<const char*, 3> actFnNames = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 			int actFnType = nfp.activationFunction
 				? static_cast<int>(nfp.activationFunction->type) : element::SIGMOID;
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::Combo(("##nf_fn" + uid).c_str(), &actFnType, actFnNames, 3))
+			if (ImGui::Combo(("##nf_fn" + uid).c_str(), &actFnType, actFnNames.data(), static_cast<int>(actFnNames.size())))
 			{
 				switch (actFnType) {
 				case element::SIGMOID:    nfp.activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0); break;
@@ -2086,6 +2090,7 @@ namespace dnf_composer::user_interface
 			{ mtp.tauBuild = tauBuild; mtp.tauDecay = tauDecay; mtp.threshold = threshold; memoryTrace->setParameters(mtp); }
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void ElementWindow::modifyElementNeuralField2D(const std::shared_ptr<element::Element>& element)
 	{
 		const auto nf = std::dynamic_pointer_cast<element::NeuralField2D>(element);
@@ -2115,13 +2120,13 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Activation function");
 		if (ewBeginTable(("##nf2_act" + uid).c_str())) {
 			ewTableSetup();
-			static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+			static constexpr std::array<const char*, 3> actFnNames = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 			int actFnType = p.activationFunction
 				? static_cast<int>(p.activationFunction->type) : element::SIGMOID;
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::Combo(("##nf2_fn" + uid).c_str(), &actFnType, actFnNames, 3))
+			if (ImGui::Combo(("##nf2_fn" + uid).c_str(), &actFnType, actFnNames.data(), static_cast<int>(actFnNames.size())))
 			{
 				switch (actFnType) {
 				case element::SIGMOID:    p.activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0); break;

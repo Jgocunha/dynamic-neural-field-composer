@@ -1,4 +1,5 @@
 #include "user_interface/node_graph_window.h"
+#include <array>
 #include <cstring>
 
 #include "elements/correlated_normal_noise_2d.h"
@@ -17,6 +18,7 @@ namespace dnf_composer::user_interface
 		context = ImNodeEditor::CreateEditor(&config);
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void NodeGraphWindow::renderGraphContent() const
 	{
 		widgets::renderHelpMarker(
@@ -369,6 +371,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopFont();
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
 		constexpr float pad       = 0.0F;
@@ -581,6 +584,7 @@ namespace dnf_composer::user_interface
 		handleNodeSelection();
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - flat state machine over drag/hover/release pin events; splitting would obscure the transitions
 	void NodeGraphWindow::handlePinInteractions() const
 	{
 		// pendingOutputPin: set when user clicks an output pin; cleared when they click an input
@@ -775,6 +779,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state, const bool is2DField,
 		const std::shared_ptr<element::Element>& element, const bool isWM)
 	{
@@ -847,6 +852,7 @@ namespace dnf_composer::user_interface
 		ImGui::EndMenuBar();
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void NodeGraphWindow::renderPlotCardContent(const std::shared_ptr<element::Element>& element,
 		PlotCardState& state, const bool isWM, const bool is2DField)
 	{
@@ -1083,6 +1089,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type to format tooltip text; splitting would scatter a single lookup table
 	void NodeGraphWindow::renderElementTooltip(const std::shared_ptr<element::Element>& element)
 	{
 		ImGui::BeginTooltip();
@@ -1433,15 +1440,15 @@ namespace dnf_composer::user_interface
 		}
 		dl->AddRect(ImVec2(barX0, hmRect.Min.y), ImVec2(barX1, hmRect.Max.y), tickCol, 0.0F, 0, 0.5F);
 		// Colorbar ticks and value labels
-		char buf[16];
+		std::array<char, 16> buf{};
 		for (int i = 0; i <= nTicks; ++i)
 		{
 			const float  t   = static_cast<float>(i) / nTicks;
 			const float  y   = hmRect.Max.y - t * hmRect.GetHeight();
 			const double val = dMin + t * (dMax - dMin);
-			std::snprintf(buf, sizeof(buf), "%.1f", val);
+			std::snprintf(buf.data(), buf.size(), "%.1f", val);
 			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0F, y), tickCol, 1.0F);
-			dl->AddText(font, fs, ImVec2(barX1 + 3.0F, y - fs * 0.5F), textCol, buf);
+			dl->AddText(font, fs, ImVec2(barX1 + 3.0F, y - fs * 0.5F), textCol, buf.data());
 		}
 	}
 

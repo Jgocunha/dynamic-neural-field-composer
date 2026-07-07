@@ -1,5 +1,7 @@
 #include "user_interface/status_bar_window.h"
 
+#include <array>
+
 #include "application/application.h"
 
 
@@ -76,17 +78,17 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::SameLine(0, sep);
 
-			char fpsBuf[32];
-			char zoomBuf[16];
-			char memBuf[32];
-			std::snprintf(fpsBuf,  sizeof(fpsBuf),  "%.1f", ImGui::GetIO().Framerate);
-			std::snprintf(zoomBuf, sizeof(zoomBuf), "%d%%",  static_cast<int>(Application::getUiScalePct()));
-			std::snprintf(memBuf,  sizeof(memBuf),  "%.1f MB", tools::utils::getProcessMemoryMb());
+			std::array<char, 32> fpsBuf{};
+			std::array<char, 16> zoomBuf{};
+			std::array<char, 32> memBuf{};
+			std::snprintf(fpsBuf.data(),  fpsBuf.size(),  "%.1f", ImGui::GetIO().Framerate);
+			std::snprintf(zoomBuf.data(), zoomBuf.size(), "%d%%",  static_cast<int>(Application::getUiScalePct()));
+			std::snprintf(memBuf.data(),  memBuf.size(),  "%.1f MB", tools::utils::getProcessMemoryMb());
 
 			const float rW =
-				ImGui::CalcTextSize("FPS ").x + ImGui::CalcTextSize(fpsBuf).x  + sep +
-				ImGui::CalcTextSize("Zoom ").x + ImGui::CalcTextSize(zoomBuf).x + sep +
-				ImGui::CalcTextSize("Mem. ").x + ImGui::CalcTextSize(memBuf).x +
+				ImGui::CalcTextSize("FPS ").x + ImGui::CalcTextSize(fpsBuf.data()).x  + sep +
+				ImGui::CalcTextSize("Zoom ").x + ImGui::CalcTextSize(zoomBuf.data()).x + sep +
+				ImGui::CalcTextSize("Mem. ").x + ImGui::CalcTextSize(memBuf.data()).x +
 					ImGui::GetStyle().WindowPadding.x;
 
 			const float rightX = ImGui::GetWindowWidth() - rW;
@@ -99,21 +101,21 @@ namespace dnf_composer::user_interface
 			ImGui::TextUnformatted("FPS");
 			ImGui::SameLine(0, 4);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::TextUnformatted(fpsBuf);
+			ImGui::TextUnformatted(fpsBuf.data());
 			ImGui::PopFont();
 			ImGui::SameLine(0, sep);
 
 			ImGui::TextUnformatted("Zoom");
 			ImGui::SameLine(0, 4);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::TextUnformatted(zoomBuf);
+			ImGui::TextUnformatted(zoomBuf.data());
 			ImGui::PopFont();
 			ImGui::SameLine(0, sep);
 
 			ImGui::TextUnformatted("Mem.");
 			ImGui::SameLine(0, 4);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::TextUnformatted(memBuf);
+			ImGui::TextUnformatted(memBuf.data());
 			ImGui::PopFont();
 		}
 }

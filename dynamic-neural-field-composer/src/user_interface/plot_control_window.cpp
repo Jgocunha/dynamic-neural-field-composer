@@ -10,6 +10,7 @@ namespace dnf_composer::user_interface
 		:visualization(visualization), simulation(visualization->getSimulation())
 	{}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void PlotControlWindow::renderContent() const
 	{
 		// Add a new plot button

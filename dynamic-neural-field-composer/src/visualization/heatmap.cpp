@@ -1,4 +1,5 @@
 #include "visualization/heatmap.h"
+#include <array>
 #include <cmath>
 #include <utility>
 
@@ -67,6 +68,7 @@ namespace dnf_composer
 		return result.str();
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImPlot immediate-mode layout; splitting would fragment plot state across functions
 	void Heatmap::render(const std::vector<std::vector<double>*>& data, const std::vector<std::string>& legends)
 	{
 		const ImVec2 availableRegionSize = ImGui::GetContentRegionAvail();
@@ -87,12 +89,12 @@ namespace dnf_composer
 		std::string title = commonParameters.annotations.title;
 		std::string x_label = commonParameters.annotations.x_label;
 		std::string y_label = commonParameters.annotations.y_label;
-		char titleBuffer[128];
-		char xLabelBuffer[128];
-		char yLabelBuffer[128];
-		snprintf(titleBuffer, sizeof(titleBuffer), "%s", title.c_str());
-		snprintf(xLabelBuffer, sizeof(xLabelBuffer), "%s", x_label.c_str());
-		snprintf(yLabelBuffer, sizeof(yLabelBuffer), "%s", y_label.c_str());
+		std::array<char, 128> titleBuffer{};
+		std::array<char, 128> xLabelBuffer{};
+		std::array<char, 128> yLabelBuffer{};
+		snprintf(titleBuffer.data(), titleBuffer.size(), "%s", title.c_str());
+		snprintf(xLabelBuffer.data(), xLabelBuffer.size(), "%s", x_label.c_str());
+		snprintf(yLabelBuffer.data(), yLabelBuffer.size(), "%s", y_label.c_str());
 
 		static ImPlotColormap map = ImPlotColormap_Deep;
 		if (ImGui::BeginMenuBar())
@@ -137,19 +139,19 @@ namespace dnf_composer
 
 			if (ImGui::BeginMenu("Annotations"))
 			{
-				if (ImGui::InputText("Title", titleBuffer, sizeof(titleBuffer)))
+				if (ImGui::InputText("Title", titleBuffer.data(), titleBuffer.size()))
 				{
-					title = titleBuffer;
+					title = titleBuffer.data();
 					commonParameters.annotations.title = title;
 				}
-				if (ImGui::InputText("X label", xLabelBuffer, sizeof(xLabelBuffer)))
+				if (ImGui::InputText("X label", xLabelBuffer.data(), xLabelBuffer.size()))
 				{
-					x_label = xLabelBuffer;
+					x_label = xLabelBuffer.data();
 					commonParameters.annotations.x_label = x_label;
 				}
-				if (ImGui::InputText("Y label", yLabelBuffer, sizeof(yLabelBuffer)))
+				if (ImGui::InputText("Y label", yLabelBuffer.data(), yLabelBuffer.size()))
 				{
-					y_label = yLabelBuffer;
+					y_label = yLabelBuffer.data();
 					commonParameters.annotations.y_label = y_label;
 				}
 				ImGui::EndMenu();

@@ -69,6 +69,7 @@ namespace dnf_composer
 		return result.str();
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImPlot immediate-mode layout; splitting would fragment plot state across functions
 	void LinePlot::render(const std::vector<std::vector<double>*>& data, const std::vector<std::string>& legends)
 	{
         static constexpr double safeMargin = 0.01;

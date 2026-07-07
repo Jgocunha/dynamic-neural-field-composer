@@ -1,5 +1,6 @@
 #include "user_interface/field_metrics_window.h"
 
+#include <array>
 #include <algorithm>
 #include <cstdio>
 
@@ -50,6 +51,7 @@ namespace dnf_composer::user_interface
 		ImGui::End();
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void FieldMetricsWindow::renderContents(const std::shared_ptr<Simulation>& simulation)
 	{
 		bool anyNF = false;
@@ -181,31 +183,31 @@ namespace dnf_composer::user_interface
 
 				// ── Range row ─────────────────────────────────────────────────
 				{
-					char buf[64];
-					snprintf(buf, sizeof(buf), "%.2f ... %.2f", lo, hi);
+					std::array<char, 64> buf{};
+					snprintf(buf.data(), buf.size(), "%.2f ... %.2f", lo, hi);
 					ImGui::PushFont(g_MonoMediumFont);
-					const float valW = ImGui::CalcTextSize(buf).x;
+					const float valW = ImGui::CalcTextSize(buf.data()).x;
 					ImGui::PopFont();
 					ImGui::TextDisabled("Range");
 					ImGui::SameLine();
 					ImGui::SetCursorPosX(maxX - valW);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::TextUnformatted(buf);
+					ImGui::TextUnformatted(buf.data());
 					ImGui::PopFont();
 				}
 
 				// ── Bumps row ─────────────────────────────────────────────────
 				{
-					char buf[16];
-					snprintf(buf, sizeof(buf), "%d", bn);
+					std::array<char, 16> buf{};
+					snprintf(buf.data(), buf.size(), "%d", bn);
 					ImGui::PushFont(g_MonoMediumFont);
-					const float valW = ImGui::CalcTextSize(buf).x;
+					const float valW = ImGui::CalcTextSize(buf.data()).x;
 					ImGui::PopFont();
 					ImGui::TextDisabled("Bumps");
 					ImGui::SameLine();
 					ImGui::SetCursorPosX(maxX - valW);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::TextUnformatted(buf);
+					ImGui::TextUnformatted(buf.data());
 					ImGui::PopFont();
 				}
 

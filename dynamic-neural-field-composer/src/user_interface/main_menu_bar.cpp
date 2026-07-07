@@ -22,7 +22,7 @@ namespace dnf_composer::user_interface
 		handleShortcuts();
 	}
 
-	// Clang-Tidy: Function 'renderMainMenuBar' has cognitive complexity of 79 (threshold 25)
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode menu layout; splitting would fragment widget state across functions
     void MainMenuBar::renderMainMenuBar()
     {
         if (ImGui::BeginMainMenuBar())
@@ -290,6 +290,7 @@ namespace dnf_composer::user_interface
         }
     }
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity) - flat list of independent keyboard-shortcut checks; splitting would obscure the mapping
     void MainMenuBar::handleShortcuts()
     {
         const ImGuiIO& io = ImGui::GetIO();

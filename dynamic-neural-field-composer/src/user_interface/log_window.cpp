@@ -1,5 +1,6 @@
 #include "user_interface/log_window.h"
 
+#include <array>
 
 namespace dnf_composer::user_interface
 {
@@ -65,11 +66,11 @@ namespace dnf_composer::user_interface
 	{
    		va_list args;
 		va_start(args, fmt);
-		char buffer[1024];
-		vsnprintf(buffer, IM_ARRAYSIZE(buffer), fmt, args);
-		buffer[IM_ARRAYSIZE(buffer) - 1] = '\0';
+		std::array<char, 1024> buffer{};
+		vsnprintf(buffer.data(), buffer.size(), fmt, args);
+		buffer.back() = '\0';
 		 va_end(args);
-		logs.push_back({ buffer, color });
+		logs.push_back({ buffer.data(), color });
 	}
 
 	void LogWindow::draw()
