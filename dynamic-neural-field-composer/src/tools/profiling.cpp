@@ -1,11 +1,9 @@
 ﻿#include "tools/profiling.h"
 
 
-namespace dnf_composer
-{
-	namespace tools
-	{
-		namespace profiling
+
+	
+		namespace dnf_composer::tools::profiling
 		{
 			Timer::Timer(std::string signature, std::ostream& outStream)
 				: startTimepoint(std::chrono::high_resolution_clock::now()),
@@ -15,7 +13,13 @@ namespace dnf_composer
 
 			Timer::~Timer()
 			{
-				stop();
+				try
+				{
+					stop();
+				}
+				catch (...) // NOLINT(bugprone-empty-catch) - a failed timing report must not throw out of a destructor
+				{
+				}
 			}
 
 			void Timer::stop() const
@@ -30,5 +34,5 @@ namespace dnf_composer
 					<< '\n';
 			}
 		}
-	}
-}
+	
+

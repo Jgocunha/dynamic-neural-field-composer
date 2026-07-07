@@ -1,16 +1,16 @@
 ﻿#include "elements/gauss_stimulus.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		GaussStimulus::GaussStimulus(const ElementCommonParameters& elementCommonParameters, 
 			const GaussStimulusParameters& parameters)
 			: Element(elementCommonParameters), parameters(parameters)
 		{
-			if (parameters.position < 0 || parameters.position >= elementCommonParameters.dimensionParameters.x_max)
+			if (parameters.position < 0 || parameters.position >= elementCommonParameters.dimensionParameters.x_max) {
 				throw Exception(ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE, 
 					elementCommonParameters.identifiers.uniqueName);
+}
 
 			this->commonParameters.identifiers.label = ElementLabel::GAUSS_STIMULUS;
 		}
@@ -19,24 +19,27 @@ namespace dnf_composer
 		{
 			std::vector<double> g(commonParameters.dimensionParameters.size);
 
-			if (parameters.circular)
+			if (parameters.circular) {
 				g = tools::math::circularGauss(commonParameters.dimensionParameters.size, 
 												parameters.width, 
 												parameters.position / commonParameters.dimensionParameters.d_x);
-			else
+			} else {
 				g = tools::math::gauss(commonParameters.dimensionParameters.size, 
 					parameters.width, parameters.position / commonParameters.dimensionParameters.d_x);
+}
 
-			if (!parameters.normalized)
-				for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
+			if (!parameters.normalized) {
+				for (int i = 0; i < commonParameters.dimensionParameters.size; i++) {
 					components["output"][i] = parameters.amplitude * g[i];
-			else
+}
+			} else
 			{
 				const double sum = tools::math::calculateVectorSum(g);
-				if(sum != 0.0)
-					for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
+				if(sum != 0.0) {
+					for (int i = 0; i < commonParameters.dimensionParameters.size; i++) {
 						components["output"][i] = parameters.amplitude * g[i] / sum;
-				else
+}
+				} else
 				{
 					const std::string message = "Tried to initialize a normalized Gaussian stimulus '"
 						+ this->getUniqueName() + "'. With the sum of the output vector equal "
@@ -47,8 +50,9 @@ namespace dnf_composer
 
 			std::ranges::fill(components["input"], 0.0);
 			updateInput();
-			for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
+			for (int i = 0; i < commonParameters.dimensionParameters.size; i++) {
 				components["output"][i] += components["input"][i];
+}
 		}
 
 		void GaussStimulus::step(double t, double deltaT)
@@ -80,4 +84,3 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}

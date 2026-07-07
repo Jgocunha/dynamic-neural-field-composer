@@ -26,7 +26,7 @@ namespace dnf_composer
 		                 { PlotType::HEATMAP,
 			                 {0.0, 100.0, 0.0, 100.0, 1.0, 1.0},
 			                 PlotAnnotations{"Heatmap plot", "Spatial dimension output", "Spatial dimension input"}},
-		                 const HeatmapParameters& heatmapParameters = HeatmapParameters());
+		                 HeatmapParameters  heatmapParameters = HeatmapParameters());
 
 		void setScale(double min, double max);
 		std::pair<double, double> getScale() const;

@@ -23,7 +23,7 @@ namespace dnf_composer::user_interface::widgets
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0F);
 			ImGui::TextUnformatted(desc);
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
@@ -33,32 +33,38 @@ namespace dnf_composer::user_interface::widgets
 	bool renderSidebarTab(const char* icon, const char* /*label*/, bool selected)
 	{
 		ImGuiWindow* window = ImGui::GetCurrentWindow();
-		if (window->SkipItems) return false;
+		if (window->SkipItems) { return false;
+}
 
 		const ImGuiID id = window->GetID(icon);
 
-		constexpr float line_h  = 48.0f;  // row height — more vertical breathing room
-		constexpr float total_w = 52.0f;  // icon-only strip width
+		constexpr float line_h  = 48.0F;  // row height — more vertical breathing room
+		constexpr float total_w = 52.0F;  // icon-only strip width
 
 		const ImVec2 pos = window->DC.CursorPos;
 		const ImRect bb(pos, ImVec2(pos.x + total_w, pos.y + line_h));
 		ImGui::ItemSize(ImVec2(total_w, line_h), 0);
-		if (!ImGui::ItemAdd(bb, id)) return false;
+		if (!ImGui::ItemAdd(bb, id)) { return false;
+}
 
-		bool hovered, held;
+		bool hovered;
+		bool held;
 		const bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held);
 
-		if (hovered || held) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		if (hovered || held) { ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+}
 
 		// Animations
-		static std::map<ImGuiID,float> hover_animation, filled_animation, fill_animation;
+		static std::map<ImGuiID,float> hover_animation;
+		static std::map<ImGuiID,float> filled_animation;
+		static std::map<ImGuiID,float> fill_animation;
 		const ImGuiIO& io = ImGui::GetIO();
 		float& a_hover = hover_animation[id];
 		float& a_fill  = filled_animation[id]; // drives the left bar
 		float& a_mix   = fill_animation[id];   // drives icon color
-		a_hover = ImClamp(a_hover + (0.20f * io.DeltaTime * (hovered || ImGui::IsItemActive() ? 1.f : -1.f)), 0.0f, 0.15f);
-		a_fill  = ImClamp(a_fill  + (2.55f * io.DeltaTime * (selected ? 1.f : -1.f)), 0.0f, 1.0f);
-		a_mix   = ImClamp(a_mix   + (1.75f * io.DeltaTime * (selected ? 1.f : -1.f)), 0.0f, 1.0f);
+		a_hover = ImClamp(a_hover + (0.20F * io.DeltaTime * (hovered || ImGui::IsItemActive() ? 1.F : -1.F)), 0.0F, 0.15F);
+		a_fill  = ImClamp(a_fill  + (2.55F * io.DeltaTime * (selected ? 1.F : -1.F)), 0.0F, 1.0F);
+		a_mix   = ImClamp(a_mix   + (1.75F * io.DeltaTime * (selected ? 1.F : -1.F)), 0.0F, 1.0F);
 
 		const ImVec4 text_sel = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 		const ImVec4 text_uns = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
@@ -66,29 +72,30 @@ namespace dnf_composer::user_interface::widgets
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
 
-		if (a_fill > 0.001f)
+		if (a_fill > 0.001F)
 		{
 			ImVec4 a = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			a.w = a_fill;
 			const ImU32 col = ImGui::GetColorU32(a);
 			dl->AddRectFilled(
 				ImVec2(bb.Min.x, bb.Min.y),
-				ImVec2(bb.Min.x + a_fill * 6.0f, bb.Max.y),
-				col, 7.0f);
+				ImVec2(bb.Min.x + a_fill * 6.0F, bb.Max.y),
+				col, 7.0F);
 		}
 
 		auto centerTextY = [](const ImFont* font, const float y0, const float h) -> float
 		{
-			if (!font) return y0;
+			if (font == nullptr) { return y0;
+}
 			const ImFontBaked* baked = const_cast<ImFont*>(font)->GetFontBaked(font->LegacySize);
-			const float text_h = baked ? (baked->Ascent - baked->Descent) : font->LegacySize;
-			return y0 + (h - text_h) * 0.5f;
+			const float text_h = baked != nullptr ? (baked->Ascent - baked->Descent) : font->LegacySize;
+			return y0 + (h - text_h) * 0.5F;
 		};
 
 		ImGui::PushFont(g_LargeIconsFont);
 		const float icon_y = centerTextY(g_LargeIconsFont, bb.Min.y, line_h);
 		const ImVec2 icon_size = ImGui::CalcTextSize(icon);
-		const float icon_x = window->Pos.x + (window->Size.x - icon_size.x) * 0.5f;
+		const float icon_x = window->Pos.x + (window->Size.x - icon_size.x) * 0.5F;
 		dl->AddText(ImVec2(icon_x, icon_y), ImColor(icon_col), icon);
 		ImGui::PopFont();
 
@@ -104,7 +111,7 @@ namespace dnf_composer::user_interface::widgets
 		ImGui::BeginGroup();
 
 		// Button styling (rounded square, soft bg)
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f * uiScale);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0F * uiScale);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_Button,        colBg);
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colHover);
@@ -126,7 +133,7 @@ namespace dnf_composer::user_interface::widgets
 		const ImVec2 lbl = ImGui::CalcTextSize(label);
 		const auto btn = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 		// X: center within the tile using button's left edge
-		const float labelX = btn.Min.x + (tile - lbl.x) * 0.5f;
+		const float labelX = btn.Min.x + (tile - lbl.x) * 0.5F;
 		// Y: current cursor is already below the button; use it
 		ImVec2 labelPos = ImGui::GetCursorScreenPos();
 		labelPos.x = labelX;
@@ -149,10 +156,10 @@ namespace dnf_composer::user_interface::widgets
 		const ImVec2 a = topLeftPosition;
 		const auto b = ImVec2(topLeftPosition.x + size.x, topLeftPosition.y + size.y);
 
-		const float r   = 10.0f * uiScale;
-		const float pad = 22.0f * uiScale;
-		const float th  = 32.0f * uiScale;     // title bar height
-		const float titleGap = 10.0f  * uiScale;  // extra space below title
+		const float r   = 10.0F * uiScale;
+		const float pad = 22.0F * uiScale;
+		const float th  = 32.0F * uiScale;     // title bar height
+		const float titleGap = 10.0F  * uiScale;  // extra space below title
 
 		// background
 		dl->AddRectFilled(a, b, ImGui::GetColorU32(ImGuiCol_FrameBg), r);
@@ -162,8 +169,8 @@ namespace dnf_composer::user_interface::widgets
 		// title text
 		ImGui::PushFont(g_BlackLargeFont);
 		// place title using screen coordinates, aligned with the card's inner padding
-		const float yOffset = 20.0f * ImGui::GetIO().FontGlobalScale;  // tweak value to taste
-		const ImVec2 title_pos(a.x + pad, a.y + (th - ImGui::GetTextLineHeight()) * 0.5f + yOffset);
+		const float yOffset = 20.0F * ImGui::GetIO().FontGlobalScale;  // tweak value to taste
+		const ImVec2 title_pos(a.x + pad, a.y + (th - ImGui::GetTextLineHeight()) * 0.5F + yOffset);
 		ImGui::SetCursorScreenPos(title_pos);
 		ImGui::TextUnformatted(title.c_str());
 		ImGui::PopFont();
@@ -173,7 +180,7 @@ namespace dnf_composer::user_interface::widgets
 		const auto body_size = ImVec2(size.x - 2*pad, size.y - th - 2*pad - titleGap);
 		ImGui::SetCursorScreenPos(body_pos);
 
-		return ImGui::BeginChild(id.c_str(), body_size, false, ImGuiWindowFlags_NoSavedSettings);
+		return ImGui::BeginChild(id.c_str(), body_size, 0, ImGuiWindowFlags_NoSavedSettings);
 
 	}
 

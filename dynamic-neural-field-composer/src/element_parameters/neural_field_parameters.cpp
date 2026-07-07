@@ -1,10 +1,8 @@
 ﻿#include "element_parameters/neural_field_parameters.h"
 #include <format>
 
-namespace dnf_composer
+namespace dnf_composer::element
 {
-	namespace element
-	{
 		NeuralFieldParameters::NeuralFieldParameters()
 			:tau(0.0), startingRestingLevel(0.0), activationFunction(nullptr)
 		{}
@@ -118,5 +116,4 @@ namespace dnf_composer
 			tools::logger::log(tools::logger::LogLevel::INFO, str);
 		}
 
-	}
 }

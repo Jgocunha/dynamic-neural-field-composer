@@ -1,10 +1,9 @@
 ﻿#include "element_parameters/normal_noise_parameters.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
-		NormalNoiseParameters::NormalNoiseParameters(double amp = 1.0) : amplitude(amp) {}
+		NormalNoiseParameters::NormalNoiseParameters(const double amp) : amplitude(amp) {}
 
 		bool NormalNoiseParameters::operator==(const NormalNoiseParameters& other) const
 		{
@@ -20,4 +19,3 @@ namespace dnf_composer
 			return result;
 		}
 	}
-}

@@ -11,9 +11,7 @@
 #include "user_interface/widgets.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
-extern ImFont* g_BlackLargeFont;
 extern ImFont* g_BlackMediumFont;
-extern ImFont* g_MediumIconsFont;
 
 enum CharSize : size_t
 {

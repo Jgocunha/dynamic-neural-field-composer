@@ -50,24 +50,26 @@ namespace dnf_composer::user_interface
 					continue;
 				}
 				const ImVec2 prevA = prevNodePositions[idA];
-				const bool movedA = std::abs(posA.x - prevA.x) > 0.5f ||
-				                    std::abs(posA.y - prevA.y) > 0.5f;
+				const bool movedA = std::abs(posA.x - prevA.x) > 0.5F ||
+				                    std::abs(posA.y - prevA.y) > 0.5F;
 
-				if (movedA && !dragStartPositions.count(idA))
+				if (movedA && !dragStartPositions.contains(idA)) {
 					dragStartPositions[idA] = prevA;
+}
 
-				if (!movedA && !mouseHeld && dragStartPositions.count(idA))
+				if (!movedA && !mouseHeld && dragStartPositions.contains(idA))
 				{
 					bool finalOverlaps = false;
 					for (size_t j = 0; j < cachedNodeRects.size(); ++j)
 					{
-						if (i == j) continue;
+						if (i == j) { continue;
+}
 						const ImVec2 posB = cachedNodeRects[j].first;
 						const ImVec2 szB  = cachedNodeRects[j].second;
 						const float ox = std::min(posA.x + szA.x, posB.x + szB.x) - std::max(posA.x, posB.x);
 						const float oy = std::min(posA.y + szA.y, posB.y + szB.y) - std::max(posA.y, posB.y);
-						if (ox > 0.0f && oy > 0.0f &&
-						    ox * oy > 0.30f * std::min(szA.x * szA.y, szB.x * szB.y))
+						if (ox > 0.0F && oy > 0.0F &&
+						    ox * oy > 0.30F * std::min(szA.x * szA.y, szB.x * szB.y))
 						{
 							finalOverlaps = true;
 							break;
@@ -101,11 +103,11 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::render()
 	{
 		const ImGuiViewport* vp = ImGui::GetMainViewport();
-		const float panelY = vp->WorkPos.y + 52.0f;
-		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
-		const float panelX = vp->WorkPos.x + vp->WorkSize.x * 0.47f;
+		const float panelY = vp->WorkPos.y + 52.0F;
+		const float panelH = vp->WorkSize.y - 52.0F - 28.0F;
+		const float panelX = vp->WorkPos.x + vp->WorkSize.x * 0.47F;
 		ImGui::SetNextWindowPos(ImVec2(panelX, panelY), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.53f, panelH), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.53F, panelH), ImGuiCond_FirstUseEver);
 
 		const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
 			| ImGuiWindowFlags_NoTitleBar
@@ -115,11 +117,12 @@ namespace dnf_composer::user_interface
 
 		const bool open = ImGui::Begin("Node Graph##node_graph", nullptr, flags);
 
-		ImVec2 ngPos{}, ngSize{};
+		ImVec2 ngPos{};
+		ImVec2 ngSize{};
 		if (open)
 		{
 			const float startY = ImGui::GetCursorPosY();
-			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 			ImGui::PushFont(g_MediumIconsFont);
@@ -340,8 +343,9 @@ namespace dnf_composer::user_interface
 
 			if (ImGui::IsItemHovered())
 			{
-				if (!s_hoverStart.contains(id))
+				if (!s_hoverStart.contains(id)) {
 					s_hoverStart[id] = now;
+}
 				if (const auto elapsed = static_cast<float>(now - s_hoverStart.at(id)); elapsed > scrollDelay)
 				{
 					const float scrollTime = elapsed - scrollDelay;
@@ -367,25 +371,25 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
-		constexpr float pad       = 0.0f;
-		constexpr float axisRight = 30.0f;  // reserved for amplitude colorbar
+		constexpr float pad       = 0.0F;
+		constexpr float axisRight = 30.0F;  // reserved for amplitude colorbar
 
 		const auto  label       = element->getLabel();
 		const bool  isWeightMap = isWeightMapElement(label);
 		const bool  is2D        = element->getElementCommonParameters().dimensionParameters.dimensionality == 2;
-		const float plotH       = (isWeightMap || is2D) ? minNodeSize : 60.0f;
+		const float plotH       = (isWeightMap || is2D) ? minNodeSize : 60.0F;
 
 		const ImVec2 origin = ImGui::GetCursorScreenPos();
 		const ImRect rect(origin, ImVec2(origin.x + minNodeSize, origin.y + plotH));
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
-		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
-		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
+		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0F);
+		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0F);
 
 		const auto* comps = element->getComponents();
 		bool drewContent  = false;
 
-		if (isWeightMap && comps && comps->contains("weights"))
+		if (isWeightMap && (comps != nullptr) && comps->contains("weights"))
 		{
 			const auto& weights = comps->at("weights");
 			const int cols = comps->contains("output") ? static_cast<int>(comps->at("output").size()) : 0;
@@ -398,16 +402,17 @@ namespace dnf_composer::user_interface
 				{
 					static std::unordered_map<std::string, std::pair<double, double>> s_wmRangeCache;
 					const std::string key = element->getUniqueName();
-					if (const auto it = s_wmRangeCache.find(key); it == s_wmRangeCache.end())
+					if (const auto it = s_wmRangeCache.find(key); it == s_wmRangeCache.end()) {
 						s_wmRangeCache[key] = { frameMin, frameMax };
-					else
+					} else
 					{
 						constexpr double alpha = 0.05;
 						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
 						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
 					}
 					auto& [stableMin, stableMax] = s_wmRangeCache[key];
-					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
+					if (stableMax - stableMin < 1e-9) { stableMax = stableMin + 1.0;
+}
 
 					const ImRect hmRect(rect.Min, ImVec2(rect.Max.x - axisRight, rect.Max.y));
 					draw2DFieldHeatmap(dl, hmRect, weights, rows, cols, stableMin, stableMax);
@@ -416,7 +421,7 @@ namespace dnf_composer::user_interface
 				}
 			}
 		}
-		else if (is2D && comps)
+		else if (is2D && (comps != nullptr))
 		{
 			const std::string compName =
 				(label == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
@@ -433,19 +438,21 @@ namespace dnf_composer::user_interface
 					static std::unordered_map<std::string, std::pair<double,double>> s_rangeCache;
 					const double frameMin = *std::ranges::min_element(data);
 					const double frameMax = *std::ranges::max_element(data);
-					if (!std::isfinite(frameMin) || !std::isfinite(frameMax))
+					if (!std::isfinite(frameMin) || !std::isfinite(frameMax)) {
 						return;
+}
 					const std::string key = element->getUniqueName();
-					if (const auto it = s_rangeCache.find(key); it == s_rangeCache.end())
+					if (const auto it = s_rangeCache.find(key); it == s_rangeCache.end()) {
 						s_rangeCache[key] = { frameMin, frameMax };
-					else
+					} else
 					{
 						constexpr double alpha = 0.05;
 						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
 						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
 					}
 					auto& [stableMin, stableMax] = s_rangeCache[key];
-					if (stableMax - stableMin < 1e-9) stableMax = stableMin + 1.0;
+					if (stableMax - stableMin < 1e-9) { stableMax = stableMin + 1.0;
+}
 
 					const ImRect hmRect(
 						ImVec2(rect.Min.x,        rect.Min.y + pad),
@@ -457,11 +464,13 @@ namespace dnf_composer::user_interface
 			}
 		}
 
-		if (!drewContent && !isWeightMap && !is2D && comps)
+		if (!drewContent && !isWeightMap && !is2D && (comps != nullptr))
 		{
-			double globalMin =  1e300, globalMax = -1e300;
-			for (const auto& data : *comps | std::views::values)
+			double globalMin =  1e300;
+			double globalMax = -1e300;
+			for (const auto& data : *comps | std::views::values) {
 				for (const double v : data) { globalMin = std::min(globalMin, v); globalMax = std::max(globalMax, v); }
+}
 			const double range = (globalMax - globalMin) < 1e-9 ? 1.0 : (globalMax - globalMin);
 
 			int colorIdx = 0;
@@ -469,7 +478,7 @@ namespace dnf_composer::user_interface
 			{
 				if (data.size() < 2) { ++colorIdx; continue; }
 				const ImVec4 colF = ImPlot::GetColormapColor(colorIdx++, ImPlotColormap_Deep);
-				const ImU32  col  = ImGui::ColorConvertFloat4ToU32(ImVec4(colF.x, colF.y, colF.z, 0.86f));
+				const ImU32  col  = ImGui::ColorConvertFloat4ToU32(ImVec4(colF.x, colF.y, colF.z, 0.86F));
 				const int    n    = static_cast<int>(data.size());
 
 				auto toScreen = [&](const int i) -> ImVec2 {
@@ -480,8 +489,9 @@ namespace dnf_composer::user_interface
 					return { x, y };
 				};
 
-				for (int i = 0; i < n - 1; ++i)
-					dl->AddLine(toScreen(i), toScreen(i + 1), col, 1.8f);
+				for (int i = 0; i < n - 1; ++i) {
+					dl->AddLine(toScreen(i), toScreen(i + 1), col, 1.8F);
+}
 			}
 		}
 
@@ -491,7 +501,7 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderNodePins(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
 		using ax::Widgets::IconType;
-		constexpr auto pinColor = ImVec4(1.0f, 1.0f, 1.0f, 0.90f);
+		constexpr auto pinColor = ImVec4(1.0F, 1.0F, 1.0F, 0.90F);
 		constexpr auto iconSize = ImVec2(14, 14);
 
 		const auto lbl = element->getLabel();
@@ -506,7 +516,7 @@ namespace dnf_composer::user_interface
 			lbl != element::ElementLabel::BOOST_STIMULUS &&
 			lbl != element::ElementLabel::BOOST_STIMULUS_2D;
 
-		if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.f)))
+		if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.F)))
 		{
 			ImGui::TableSetupColumn("##in",  ImGuiTableColumnFlags_WidthStretch);
 			ImGui::TableSetupColumn("##out", ImGuiTableColumnFlags_WidthStretch);
@@ -517,7 +527,7 @@ namespace dnf_composer::user_interface
 			{
 				ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
 				                       ImNodeEditor::PinKind::Input);
-				ImNodeEditor::PinPivotAlignment(ImVec2(0.0f, 0.5f));
+				ImNodeEditor::PinPivotAlignment(ImVec2(0.0F, 0.5F));
 				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
 				ImGui::SameLine(0, 4);
 				ImGui::TextUnformatted("Input");
@@ -527,12 +537,13 @@ namespace dnf_composer::user_interface
 			ImGui::TableSetColumnIndex(1);
 			ImNodeEditor::BeginPin(startingOutputPinId + element->getUniqueIdentifier(),
 			                       ImNodeEditor::PinKind::Output);
-			ImNodeEditor::PinPivotAlignment(ImVec2(1.0f, 0.5f));
+			ImNodeEditor::PinPivotAlignment(ImVec2(1.0F, 0.5F));
 			{
 				const float avail  = ImGui::GetContentRegionAvail().x;
-				const float needed = ImGui::CalcTextSize("Output").x + 4.0f + iconSize.x;
-				if (avail > needed)
+				const float needed = ImGui::CalcTextSize("Output").x + 4.0F + iconSize.x;
+				if (avail > needed) {
 					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - needed);
+}
 			}
 			ImGui::TextUnformatted("Output");
 			ImGui::SameLine(0, 4);
@@ -545,8 +556,8 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderElementNodeConnections(const std::shared_ptr<element::Element>& element)
 	{
-		constexpr float thickness = 2.0f;
-		constexpr auto linkCol   = ImVec4(0.08f, 0.08f, 0.08f, 0.85f); // near-black
+		constexpr float thickness = 2.0F;
+		constexpr auto linkCol   = ImVec4(0.08F, 0.08F, 0.08F, 0.85F); // near-black
 
 		for (const auto& input : element->getInputs())
 		{
@@ -580,8 +591,9 @@ namespace dnf_composer::user_interface
 
 		// Cancel with Escape or right-click.
 		if (pendingOutputPin &&
-			(ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
+			(ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))) {
 			pendingOutputPin = 0;
+}
 
 		// Click-to-click: handle every left-click directly via GetHoveredPin().
 		// This runs before BeginCreate so it fires even when clicking a pin starts a new session.
@@ -624,7 +636,8 @@ namespace dnf_composer::user_interface
 		// Drag-to-connect via imgui-node-editor's BeginCreate API.
 		if (ImNodeEditor::BeginCreate())
 		{
-			ImNodeEditor::PinId startPin, endPin;
+			ImNodeEditor::PinId startPin;
+			ImNodeEditor::PinId endPin;
 			if (ImNodeEditor::QueryNewLink(&startPin, &endPin))
 			{
 				const int srcId = static_cast<int>(startPin.Get()) - startingOutputPinId;
@@ -648,8 +661,9 @@ namespace dnf_composer::user_interface
 
 			// Reject node-creation prompts (not supported).
 			ImNodeEditor::PinId newNodePin;
-			if (ImNodeEditor::QueryNewNode(&newNodePin))
+			if (ImNodeEditor::QueryNewNode(&newNodePin)) {
 				ImNodeEditor::RejectNewItem();
+}
 
 			ImNodeEditor::EndCreate();
 		}
@@ -658,16 +672,19 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::handleLinkInteractions() const
 	{
 		const ImNodeEditor::LinkId clicked = ImNodeEditor::GetDoubleClickedLink();
-		if (!clicked) return;
+		if (!clicked) { return;
+}
 
-		ImNodeEditor::PinId startPin, endPin;
+		ImNodeEditor::PinId startPin;
+		ImNodeEditor::PinId endPin;
 		GetLinkPins(clicked, &startPin, &endPin);
 
 		const int srcId  = static_cast<int>(startPin.Get()) - startingOutputPinId;
 		const int dstId  = static_cast<int>(endPin.Get())   - startingInputPinId;
 		const int maxIdx = simulation->getHighestElementIndex();
 
-		if (srcId < 0 || dstId < 0 || srcId > maxIdx || dstId > maxIdx) return;
+		if (srcId < 0 || dstId < 0 || srcId > maxIdx || dstId > maxIdx) { return;
+}
 
 		simulation->getElement(dstId)->removeInput(srcId);
 	}
@@ -675,19 +692,23 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::handleNodeSelection() const
 	{
 		const ImNodeEditor::NodeId hovered = ImNodeEditor::GetHoveredNode();
-		if (!hovered) return;
+		if (!hovered) { return;
+}
 
 		const size_t id = hovered.Get();
 
 		// Find the element associated with this node.
 		std::shared_ptr<element::Element> element;
-		for (const auto& el : simulation->getElements())
+		for (const auto& el : simulation->getElements()) {
 			if (getNodeId(el) == id) { element = el; break; }
-		if (!element) return;
+}
+		if (!element) { return;
+}
 
 		// Single-click to select an element in the control panel.
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
 			ElementWindow::setFocusedElement(element);
+}
 
 		// Double-click to open a plot card.
 		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -695,9 +716,9 @@ namespace dnf_composer::user_interface
 			if (!plotCards.contains(id))
 			{
 				PlotCardState state;
-				const float midX = ngBoundsMin.x + (ngBoundsMax.x - ngBoundsMin.x) * 0.5f;
-				const float midY = ngBoundsMin.y + (ngBoundsMax.y - ngBoundsMin.y) * 0.5f;
-				state.initialPos = ImVec2(midX - state.size.x * 0.5f, midY - state.size.y * 0.5f);
+				const float midX = ngBoundsMin.x + (ngBoundsMax.x - ngBoundsMin.x) * 0.5F;
+				const float midY = ngBoundsMin.y + (ngBoundsMax.y - ngBoundsMin.y) * 0.5F;
+				state.initialPos = ImVec2(midX - state.size.x * 0.5F, midY - state.size.y * 0.5F);
 				plotCards[id] = state;
 			}
 		}
@@ -711,8 +732,9 @@ namespace dnf_composer::user_interface
 			PlotCardState& state = it->second;
 
 			std::shared_ptr<element::Element> element;
-			for (const auto& el : simulation->getElements())
+			for (const auto& el : simulation->getElements()) {
 				if (getNodeId(el) == nodeId) { element = el; break; }
+}
 			if (!element) { it = plotCards.erase(it); continue; }
 
 			constexpr ImGuiWindowFlags cardFlags =
@@ -733,8 +755,8 @@ namespace dnf_composer::user_interface
 
 			bool open = true;
 			const float ui = ImGui::GetIO().FontGlobalScale;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
-			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95f, 0.97f, 0.98f, 1.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0F * ui));
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95F, 0.97F, 0.98F, 1.0F));
 			ImGui::PushFont(g_BlackLargeFont);
 			const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, cardFlags);
 			ImGui::PopFont();
@@ -756,15 +778,16 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderPlotCardMenuBar(PlotCardState& state, const bool is2DField,
 		const std::shared_ptr<element::Element>& element, const bool isWM)
 	{
-		if (!ImGui::BeginMenuBar()) return;
+		if (!ImGui::BeginMenuBar()) { return;
+}
 
 		if (ImGui::BeginMenu("Dimensions"))
 		{
-			ImGui::DragFloat("X max",  &state.xMax,  0.1f, state.xMin, 1000.f,    "%.1f");
-			ImGui::DragFloat("Y max",  &state.yMax,  0.1f, state.yMin, 1000.f,    "%.2f");
-			ImGui::DragFloat("X min",  &state.xMin,  0.1f, -1000.f,   state.xMax, "%.1f");
-			ImGui::DragFloat("Y min",  &state.yMin,  0.1f, -10000.f,  state.yMax, "%.2f");
-			ImGui::DragFloat("X step", &state.xStep, 0.1f, 0.1f,      1000.f,    "%.1f");
+			ImGui::DragFloat("X max",  &state.xMax,  0.1F, state.xMin, 1000.F,    "%.1f");
+			ImGui::DragFloat("Y max",  &state.yMax,  0.1F, state.yMin, 1000.F,    "%.2f");
+			ImGui::DragFloat("X min",  &state.xMin,  0.1F, -1000.F,   state.xMax, "%.1f");
+			ImGui::DragFloat("Y min",  &state.yMin,  0.1F, -10000.F,  state.yMax, "%.2f");
+			ImGui::DragFloat("X step", &state.xStep, 0.1F, 0.1F,      1000.F,    "%.1f");
 			ImGui::Checkbox("Auto-fit", &state.autoFit);
 			ImGui::EndMenu();
 		}
@@ -779,7 +802,7 @@ namespace dnf_composer::user_interface
 		{
 			if (ImGui::BeginMenu("Line Thickness"))
 			{
-				ImGui::SliderFloat("##lt", &state.lineThickness, 0.1f, 10.0f, "%.1f");
+				ImGui::SliderFloat("##lt", &state.lineThickness, 0.1F, 10.0F, "%.1f");
 				ImGui::EndMenu();
 			}
 		}
@@ -788,7 +811,7 @@ namespace dnf_composer::user_interface
 			if (ImGui::BeginMenu("Colormap"))
 			{
 				if (ImPlot::ColormapButton(ImPlot::GetColormapName(state.colormap),
-					ImVec2(120.0f, 0.0f), state.colormap))
+					ImVec2(120.0F, 0.0F), state.colormap))
 				{
 					state.colormap = (state.colormap + 1) % ImPlot::GetColormapCount();
 				}
@@ -797,13 +820,13 @@ namespace dnf_composer::user_interface
 			if (ImGui::BeginMenu("Scale"))
 			{
 				ImGui::DragFloatRange2("Min / Max", &state.scaleMin, &state.scaleMax,
-					0.01f, -1000.f, 1000.f, "%.2f");
+					0.01F, -1000.F, 1000.F, "%.2f");
 				ImGui::Checkbox("Auto scale", &state.autoScale);
 				ImGui::EndMenu();
 			}
 			if (is2DField)
 			{
-				if (const auto* comps = element->getComponents(); comps && ImGui::BeginMenu("Component"))
+				if (const auto* comps = element->getComponents(); (comps != nullptr) && ImGui::BeginMenu("Component"))
 				{
 					const std::string defaultComp =
 						(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
@@ -812,8 +835,9 @@ namespace dnf_composer::user_interface
 					for (const auto& name : *comps | std::views::keys)
 					{
 						const bool selected = (activeComp == name);
-						if (ImGui::MenuItem(name.c_str(), nullptr, selected))
+						if (ImGui::MenuItem(name.c_str(), nullptr, selected)) {
 							std::snprintf(state.selectedComponent, sizeof(state.selectedComponent), "%s", name.c_str());
+}
 					}
 					ImGui::EndMenu();
 				}
@@ -830,26 +854,30 @@ namespace dnf_composer::user_interface
 		const float plotW = ImGui::GetContentRegionAvail().x;
 		const float plotH = ImGui::GetContentRegionAvail().y;
 
-		if (isWM && comps && comps->contains("weights"))
+		if (isWM && (comps != nullptr) && comps->contains("weights"))
 		{
 			const auto& weights = comps->at("weights");
 			const int rows = comps->contains("input")  ? static_cast<int>(comps->at("input").size())  : 0;
 			const int cols = comps->contains("output") ? static_cast<int>(comps->at("output").size()) : 0;
 			if (rows > 0 && cols > 0 && rows * cols == static_cast<int>(weights.size()))
 			{
-				double scMin, scMax;
+				double scMin;
+				double scMax;
 				if (state.autoScale)
 				{
 					scMin = *std::ranges::min_element(weights);
 					scMax = *std::ranges::max_element(weights);
-					if (!std::isfinite(scMin) || !std::isfinite(scMax)) return;
-					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
+					if (!std::isfinite(scMin) || !std::isfinite(scMax)) { return;
+}
+					if (scMax - scMin < 1e-9) { scMax = scMin + 1.0;
+}
 				}
 				else
 				{
 					scMin = state.scaleMin;
 					scMax = state.scaleMax;
-					if (scMax <= scMin) scMax = scMin + 1.0;
+					if (scMax <= scMin) { scMax = scMin + 1.0;
+}
 				}
 
 				if (state.title[0] == '\0')
@@ -860,11 +888,12 @@ namespace dnf_composer::user_interface
 					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Input field");
 				}
 
-				const float cbW = 60.0f;
+				const float cbW = 60.0F;
 				const float hmW = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
 				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
-				if (!state.autoFit)
+				if (!state.autoFit) {
 					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
+}
 
 				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
 				ImPlot::PushColormap(state.colormap);
@@ -875,22 +904,24 @@ namespace dnf_composer::user_interface
 						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
 				}
-				ImGui::SameLine(0, 4.0f);
+				ImGui::SameLine(0, 4.0F);
 				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
 				ImPlot::PopColormap();
 			}
 		}
-		else if (is2DField && comps)
+		else if (is2DField && (comps != nullptr))
 		{
 			const std::string defaultComp =
 				(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
 			const std::string compName =
 				(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
-			if (!comps->contains(compName)) return;
+			if (!comps->contains(compName)) { return;
+}
 			const auto& dp   = element->getElementCommonParameters().dimensionParameters;
 			const auto& data = comps->at(compName);
 			const int total  = static_cast<int>(data.size());
-			int rows, cols;
+			int rows;
+			int cols;
 			if (dp.size_x * dp.size_y == total)
 			{
 				rows = dp.size_y;
@@ -901,24 +932,29 @@ namespace dnf_composer::user_interface
 				// Component (e.g. "kernel") is smaller than the full field — find
 				// the most square-like integer factoring of the data size.
 				rows = static_cast<int>(std::sqrt(static_cast<float>(total)));
-				while (rows > 1 && total % rows != 0) --rows;
+				while (rows > 1 && total % rows != 0) { --rows;
+}
 				cols = (rows > 0) ? total / rows : total;
 			}
 			if (rows > 0 && cols > 0 && rows * cols == total)
 			{
-				double scMin, scMax;
+				double scMin;
+				double scMax;
 				if (state.autoScale)
 				{
 					scMin = *std::ranges::min_element(data);
 					scMax = *std::ranges::max_element(data);
-					if (!std::isfinite(scMin) || !std::isfinite(scMax)) return;
-					if (scMax - scMin < 1e-9) scMax = scMin + 1.0;
+					if (!std::isfinite(scMin) || !std::isfinite(scMax)) { return;
+}
+					if (scMax - scMin < 1e-9) { scMax = scMin + 1.0;
+}
 				}
 				else
 				{
 					scMin = state.scaleMin;
 					scMax = state.scaleMax;
-					if (scMax <= scMin) scMax = scMin + 1.0;
+					if (scMax <= scMin) { scMax = scMin + 1.0;
+}
 				}
 
 				if (state.title[0] == '\0' || std::strcmp(state.autoTitleComponent, compName.c_str()) != 0)
@@ -931,11 +967,12 @@ namespace dnf_composer::user_interface
 
 				}
 
-				const float cbW    = 60.0f;
+				const float cbW    = 60.0F;
 				const float hmW    = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
 				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
-				if (!state.autoFit)
+				if (!state.autoFit) {
 					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
+}
 
 				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
 				ImPlot::PushColormap(state.colormap);
@@ -946,12 +983,12 @@ namespace dnf_composer::user_interface
 						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
 				}
-				ImGui::SameLine(0, 4.0f);
+				ImGui::SameLine(0, 4.0F);
 				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
 				ImPlot::PopColormap();
 			}
 		}
-		else if (!isWM && comps)
+		else if (!isWM && (comps != nullptr))
 		{
 			if (state.title[0] == '\0')
 			{
@@ -980,8 +1017,10 @@ namespace dnf_composer::user_interface
 
 				for (const auto& [name, seriesData] : *comps)
 				{
-					if (seriesData.size() < 2) continue;
-					std::vector<float> xs(seriesData.size()), ys(seriesData.size());
+					if (seriesData.size() < 2) { continue;
+}
+					std::vector<float> xs(seriesData.size());
+					std::vector<float> ys(seriesData.size());
 					for (int i = 0; i < static_cast<int>(seriesData.size()); ++i)
 					{
 						xs[i] = static_cast<float>(i + 1) * state.xStep;
@@ -1016,7 +1055,6 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
 		case element::ElementLabel::BOOST_STIMULUS_2D:
-			return 0;
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
 			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
@@ -1065,8 +1103,9 @@ namespace dnf_composer::user_interface
 			const auto& p = nf->getParameters();
 			ImGui::Text("Tau: %.2f", p.tau);
 			ImGui::Text("Resting level: %.2f", p.startingRestingLevel);
-			if (p.activationFunction)
+			if (p.activationFunction) {
 				ImGui::Text("Activation fn: %s", p.activationFunction->toString().c_str());
+}
 			break;
 		}
 		case element::ElementLabel::GAUSS_STIMULUS:
@@ -1369,22 +1408,22 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect,
 		const int rows, const int cols, const double dMin, const double dMax, const int colormap)
 	{
-		constexpr float  fs      = 9.0f;
+		constexpr float  fs      = 9.0F;
 		constexpr ImU32  textCol = IM_COL32( 40,  40,  40, 230);
 		constexpr ImU32  tickCol = IM_COL32( 80,  80,  80, 180);
 		constexpr int    nTicks  = 4;
 		ImFont* const    font    = ImGui::GetFont();
 
 		// Amplitude colorbar: vertical strip to the right of the heatmap
-		constexpr float barGap = 3.0f;
-		constexpr float barW   = 7.0f;
+		constexpr float barGap = 3.0F;
+		constexpr float barW   = 7.0F;
 		const float barX0 = hmRect.Max.x + barGap;
 		const float barX1 = barX0 + barW;
 		const int   steps = std::max(1, static_cast<int>(hmRect.GetHeight()));
 		for (int s = 0; s < steps; ++s)
 		{
-			const float t  = static_cast<float>(s) / steps;
-			const float y0 = hmRect.Max.y - (t + 1.0f / steps) * hmRect.GetHeight();
+			const float t  = static_cast<float>(s) / static_cast<float>(steps);
+			const float y0 = hmRect.Max.y - (t + 1.0F / static_cast<float>(steps)) * hmRect.GetHeight();
 			const float y1 = hmRect.Max.y - t * hmRect.GetHeight();
 			const ImVec4 c4  = ImPlot::SampleColormap(t, colormap);
 			const ImU32  col = IM_COL32(static_cast<int>(c4.x * 255),
@@ -1392,7 +1431,7 @@ namespace dnf_composer::user_interface
 			                            static_cast<int>(c4.z * 255), 255);
 			dl->AddRectFilled(ImVec2(barX0, y0), ImVec2(barX1, y1), col);
 		}
-		dl->AddRect(ImVec2(barX0, hmRect.Min.y), ImVec2(barX1, hmRect.Max.y), tickCol, 0.0f, 0, 0.5f);
+		dl->AddRect(ImVec2(barX0, hmRect.Min.y), ImVec2(barX1, hmRect.Max.y), tickCol, 0.0F, 0, 0.5F);
 		// Colorbar ticks and value labels
 		char buf[16];
 		for (int i = 0; i <= nTicks; ++i)
@@ -1401,24 +1440,24 @@ namespace dnf_composer::user_interface
 			const float  y   = hmRect.Max.y - t * hmRect.GetHeight();
 			const double val = dMin + t * (dMax - dMin);
 			std::snprintf(buf, sizeof(buf), "%.1f", val);
-			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0f, y), tickCol, 1.0f);
-			dl->AddText(font, fs, ImVec2(barX1 + 3.0f, y - fs * 0.5f), textCol, buf);
+			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0F, y), tickCol, 1.0F);
+			dl->AddText(font, fs, ImVec2(barX1 + 3.0F, y - fs * 0.5F), textCol, buf);
 		}
 	}
 
 	void NodeGraphWindow::renderNavigationControls(const ImVec2 winPos, const ImVec2 winSize) const
 	{
-		constexpr float kBtnSize = 40.0f;
-		constexpr float kGap     = 8.0f;
-		constexpr float kPad     = 10.0f;
+		constexpr float kBtnSize = 40.0F;
+		constexpr float kGap     = 8.0F;
+		constexpr float kPad     = 10.0F;
 
 		ImGui::SetNextWindowPos(
-			ImVec2(winPos.x + kPad, winPos.y + winSize.y - kBtnSize - kPad * 3.0f),
+			ImVec2(winPos.x + kPad, winPos.y + winSize.y - kBtnSize - kPad * 3.0F),
 			ImGuiCond_Always);
-		ImGui::SetNextWindowBgAlpha(0.9f);
+		ImGui::SetNextWindowBgAlpha(0.9F);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPad, kPad));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0F);
 
 		const bool open = ImGui::Begin("##ng_nav", nullptr,
 			ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
@@ -1430,10 +1469,10 @@ namespace dnf_composer::user_interface
 
 		if (open)
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
-			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.92f, 0.92f, 0.93f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.80f, 0.84f, 0.95f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.65f, 0.72f, 0.92f, 1.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0F);
+			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.92F, 0.92F, 0.93F, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.80F, 0.84F, 0.95F, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.65F, 0.72F, 0.92F, 1.0F));
 
 			ImGui::PushFont(g_MediumIconsFont);
 			const bool fitAll = ImGui::Button(ICON_FA_EXPAND,   ImVec2(kBtnSize, kBtnSize));
@@ -1447,19 +1486,21 @@ namespace dnf_composer::user_interface
 			ImGui::PopStyleVar(1);
 
 			// Tooltips are set after PopFont so they render with the default font.
-			if (hovAll) ImGui::SetTooltip("Fit all");
-			if (hovSel) ImGui::SetTooltip("Fit selection");
+			if (hovAll) { ImGui::SetTooltip("Fit all");
+}
+			if (hovSel) { ImGui::SetTooltip("Fit selection");
+}
 
 			if (fitAll)
 			{
 				ImNodeEditor::SetCurrentEditor(context);
-				ImNodeEditor::NavigateToContent(0.3f);
+				ImNodeEditor::NavigateToContent(0.3F);
 				ImNodeEditor::SetCurrentEditor(nullptr);
 			}
 			if (fitSel)
 			{
 				ImNodeEditor::SetCurrentEditor(context);
-				ImNodeEditor::NavigateToSelection(false, 0.3f);
+				ImNodeEditor::NavigateToSelection(false, 0.3F);
 				ImNodeEditor::SetCurrentEditor(nullptr);
 			}
 		}
@@ -1468,18 +1509,18 @@ namespace dnf_composer::user_interface
 
 	void NodeGraphWindow::renderMiniMap(const ImVec2 winPos, const ImVec2 winSize) const
 	{
-		constexpr float kW       = 200.0f;
-		constexpr float kH       = 130.0f;
-		constexpr float kPad     = 8.0f;
-		constexpr float kBBoxPad = 60.0f;
+		constexpr float kW       = 200.0F;
+		constexpr float kH       = 130.0F;
+		constexpr float kPad     = 8.0F;
+		constexpr float kBBoxPad = 60.0F;
 		ImGui::SetNextWindowPos(
-			ImVec2(winPos.x + winSize.x - kW - kPad * 3.0f,
-			       winPos.y + winSize.y - kH - kPad * 3.0f),
+			ImVec2(winPos.x + winSize.x - kW - kPad * 3.0F,
+			       winPos.y + winSize.y - kH - kPad * 3.0F),
 			ImGuiCond_Always);
-		ImGui::SetNextWindowSize(ImVec2(kW + kPad * 2.0f, kH + kPad * 2.0f), ImGuiCond_Always);
-		ImGui::SetNextWindowBgAlpha(0.88f);
+		ImGui::SetNextWindowSize(ImVec2(kW + kPad * 2.0F, kH + kPad * 2.0F), ImGuiCond_Always);
+		ImGui::SetNextWindowBgAlpha(0.88F);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPad, kPad));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0F);
 		const bool open = ImGui::Begin("##ng_minimap", nullptr,
 			ImGuiWindowFlags_NoDecoration    | ImGuiWindowFlags_NoMove              |
 			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking           |
@@ -1506,7 +1547,7 @@ namespace dnf_composer::user_interface
 			const float bboxW = bboxMax.x - bboxMin.x;
 			const float bboxH = bboxMax.y - bboxMin.y;
 
-			if (bboxW > 0.0f && bboxH > 0.0f)
+			if (bboxW > 0.0F && bboxH > 0.0F)
 			{
 				const float scale = std::min(kW / bboxW, kH / bboxH);
 
@@ -1525,13 +1566,13 @@ namespace dnf_composer::user_interface
 						cachedNodeRects[i].first.x + cachedNodeRects[i].second.x,
 						cachedNodeRects[i].first.y + cachedNodeRects[i].second.y });
 					const ImU32 col = getHeaderColorForElementType(cachedNodeLabels[i]);
-					dl->AddRectFilled(p0, p1, col, 2.0f);
-					dl->AddRect(p0, p1, IM_COL32(255, 255, 255, 60), 2.0f);
+					dl->AddRectFilled(p0, p1, col, 2.0F);
+					dl->AddRect(p0, p1, IM_COL32(255, 255, 255, 60), 2.0F);
 				}
 
 				const ImVec2 vp0 = toScreen(cachedVpMin);
 				const ImVec2 vp1 = toScreen(cachedVpMax);
-				dl->AddRect(vp0, vp1, IM_COL32(255, 255, 255, 200), 2.0f, 0, 1.5f);
+				dl->AddRect(vp0, vp1, IM_COL32(255, 255, 255, 200), 2.0F, 0, 1.5F);
 			}
 		}
 		ImGui::End();
@@ -1540,39 +1581,42 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::drawWeightHeatmap(ImDrawList* dl, const ImRect rect,
 		const std::vector<double>& weights, const int rows, const int cols)
 	{
-		constexpr float pad = 3.0f;
-		double wMin =  1e300, wMax = -1e300;
+		constexpr float pad = 3.0F;
+		double wMin =  1e300;
+		double wMax = -1e300;
 		for (const double v : weights) { wMin = std::min(wMin, v); wMax = std::max(wMax, v); }
 		const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
 		const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
 		const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);
-		for (int r = 0; r < rows; ++r)
+		for (int r = 0; r < rows; ++r) {
 			for (int c = 0; c < cols; ++c)
 			{
-				const float  t   = static_cast<float>((weights[r*cols+c] - wMin) / wRange);
-				const ImVec2 tl  = { rect.Min.x + pad + c*cellW, rect.Max.y - pad - (r+1)*cellH };
+				const auto  t   = static_cast<float>((weights[r*cols+c] - wMin) / wRange);
+				const ImVec2 tl  = { rect.Min.x + pad + static_cast<float>(c)*cellW, rect.Max.y - pad - static_cast<float>(r+1)*cellH };
 				const ImVec4 col = ImPlot::SampleColormap(t, ImPlotColormap_Deep);
 				dl->AddRectFilled(tl, { tl.x+cellW, tl.y+cellH }, ImGui::ColorConvertFloat4ToU32(col));
 			}
+}
 	}
 
 	void NodeGraphWindow::draw2DFieldHeatmap(ImDrawList* dl, const ImRect rect,
 		const std::vector<double>& data, const int rows, const int cols,
 		const double wMin, const double wMax, const int colormap)
 	{
-		constexpr float pad = 3.0f;
-		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0f);
-		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0f);
+		constexpr float pad = 3.0F;
+		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0F);
+		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0F);
 		const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
 		const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
 		const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);
-		for (int r = 0; r < rows; ++r)
+		for (int r = 0; r < rows; ++r) {
 			for (int c = 0; c < cols; ++c)
 			{
-				const float  t   = static_cast<float>((data[r*cols+c] - wMin) / wRange);
-				const ImVec2 tl  = { rect.Min.x + pad + c*cellW, rect.Max.y - pad - (r+1)*cellH };
+				const auto  t   = static_cast<float>((data[r*cols+c] - wMin) / wRange);
+				const ImVec2 tl  = { rect.Min.x + pad + static_cast<float>(c)*cellW, rect.Max.y - pad - static_cast<float>(r+1)*cellH };
 				const ImVec4 col = ImPlot::SampleColormap(t, colormap);
 				dl->AddRectFilled(tl, { tl.x+cellW, tl.y+cellH }, ImGui::ColorConvertFloat4ToU32(col));
 			}
+}
 	}
 }

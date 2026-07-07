@@ -65,7 +65,7 @@ namespace dnf_composer
 		/// @param elementId      Unique name of the element.
 		/// @param componentName  Name of the component.
 		/// @param sim            The simulation (used to read the component and current time).
-		void takeSnapshot(const std::string& simName,
+		static void takeSnapshot(const std::string& simName,
 		                  const std::string& elementId,
 		                  const std::string& componentName,
 		                  const Simulation& sim);

@@ -111,8 +111,9 @@ namespace dnf_composer
 
         for (const auto& [name, rgba] : j.at("colors").items())
         {
-            if (const auto it = kColorIndex.find(name); it != kColorIndex.end())
+            if (const auto it = kColorIndex.find(name); it != kColorIndex.end()) {
                 s.Colors[it->second] = toVec4(rgba);
+}
         }
     }
 }

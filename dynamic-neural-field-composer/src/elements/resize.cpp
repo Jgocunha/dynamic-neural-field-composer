@@ -1,8 +1,7 @@
 #include "elements/resize.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		Resize::Resize(const ElementCommonParameters& elementCommonParameters,
 			const ResizeParameters& parameters)
@@ -99,4 +98,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

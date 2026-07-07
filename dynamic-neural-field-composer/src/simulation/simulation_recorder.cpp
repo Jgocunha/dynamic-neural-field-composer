@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <chrono>
+#include <ranges>
 #include <sstream>
 #include <iomanip>
 #include <cmath>
@@ -35,11 +36,13 @@ namespace dnf_composer
 	void SimulationRecorder::writeHeader(std::ofstream& file, const size_t componentSize,
 	                                     const int sizeX, const int sizeY)
 	{
-		if (sizeY > 1)
+		if (sizeY > 1) {
 			file << "# size_x=" << sizeX << ",size_y=" << sizeY << "\n";
+}
 		file << "ticks,ms";
-		for (size_t i = 0; i < componentSize; ++i)
+		for (size_t i = 0; i < componentSize; ++i) {
 			file << "," << i;
+}
 		file << "\n";
 	}
 
@@ -47,8 +50,9 @@ namespace dnf_composer
 	                                  const std::vector<double>& component)
 	{
 		file << ticks << "," << std::fixed << std::setprecision(6) << ms;
-		for (const double v : component)
+		for (const double v : component) {
 			file << "," << v;
+}
 		file << "\n";
 	}
 
@@ -100,11 +104,13 @@ namespace dnf_composer
 				return s.elementId == elementId && s.componentName == componentName;
 			});
 
-		if (it == sessions.end())
+		if (it == sessions.end()) {
 			return;
+}
 
-		if (it->file.is_open())
+		if (it->file.is_open()) {
 			it->file.close();
+}
 
 		tools::logger::log(tools::logger::LogLevel::INFO,
 			"Recording stopped for '" + elementId + "' / '" + componentName + "'.");
@@ -114,16 +120,19 @@ namespace dnf_composer
 
 	void SimulationRecorder::stopAll()
 	{
-		for (auto& s : sessions)
-			if (s.file.is_open())
+		for (auto& s : sessions) {
+			if (s.file.is_open()) {
 				s.file.close();
+}
+}
 		sessions.clear();
 	}
 
 	void SimulationRecorder::update(const Simulation& sim)
 	{
-		if (sessions.empty())
+		if (sessions.empty()) {
 			return;
+}
 
 		const int    ticks = deriveTicks(sim);
 		const double ms    = sim.t;
@@ -144,7 +153,7 @@ namespace dnf_composer
 			}
 
 			const std::vector<double>* component = element->getComponentPtr(s.componentName);
-			if (!component)
+			if (component == nullptr)
 			{
 				tools::logger::log(tools::logger::LogLevel::WARNING,
 					"Stopping recording for '" + s.elementId + "' / '" + s.componentName + "': component unavailable.");
@@ -155,8 +164,9 @@ namespace dnf_composer
 			const double current = (s.unit == RecordingIntervalUnit::Ticks)
 				? static_cast<double>(ticks) : ms;
 
-			if (current < s.nextSampleAt)
+			if (current < s.nextSampleAt) {
 				continue;
+}
 
 			if (s.file.tellp() == 0)
 			{
@@ -170,11 +180,12 @@ namespace dnf_composer
 			s.nextSampleAt = current + static_cast<double>(s.sampleInterval);
 		}
 
-		for (auto it = toStop.rbegin(); it != toStop.rend(); ++it)
+		for (unsigned long long & it : std::ranges::reverse_view(toStop))
 		{
-			if (sessions[*it].file.is_open())
-				sessions[*it].file.close();
-			sessions.erase(sessions.begin() + static_cast<std::ptrdiff_t>(*it));
+			if (sessions[it].file.is_open()) {
+				sessions[it].file.close();
+}
+			sessions.erase(sessions.begin() + static_cast<std::ptrdiff_t>(it));
 		}
 	}
 
@@ -192,7 +203,7 @@ namespace dnf_composer
 		}
 
 		const std::vector<double>* component = element->getComponentPtr(componentName);
-		if (!component)
+		if (component == nullptr)
 		{
 			tools::logger::log(tools::logger::LogLevel::ERROR,
 				"Snapshot failed: component '" + componentName + "' not found on '" + elementId + "'.");

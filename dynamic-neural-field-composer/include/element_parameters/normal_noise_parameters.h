@@ -9,7 +9,7 @@ namespace dnf_composer
 		struct NormalNoiseParameters : ElementSpecificParameters
 		{
 			double amplitude;
-			NormalNoiseParameters(double amp);
+			NormalNoiseParameters(double amp = 1.0);
 			bool operator==(const NormalNoiseParameters& other) const;
 			std::string toString() const override;
 		};

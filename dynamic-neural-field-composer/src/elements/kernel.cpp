@@ -1,8 +1,7 @@
 ﻿#include "elements/kernel.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		Kernel::Kernel(const ElementCommonParameters& elementCommonParameters)
 			: Element(elementCommonParameters)
@@ -25,4 +24,3 @@ namespace dnf_composer
 			return extIndex;
 		}
 	}
-}

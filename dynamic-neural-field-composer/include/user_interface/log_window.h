@@ -9,9 +9,7 @@
 #include "application/application.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
-extern ImFont* g_BlackLargeFont;
 extern ImFont* g_MonoMediumFont;
-extern ImFont* g_MediumIconsFont;
 
 namespace dnf_composer::user_interface
 {

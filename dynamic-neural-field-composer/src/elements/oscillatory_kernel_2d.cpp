@@ -2,14 +2,16 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/oscillatory_kernel_2d.h"
 
 
 namespace dnf_composer::element
 {
 	OscillatoryKernel2D::OscillatoryKernel2D(const ElementCommonParameters& elementCommonParameters,
-	                                         const OscillatoryKernel2DParameters& parameters)
-		: Kernel(elementCommonParameters), parameters(parameters)
+	                                         OscillatoryKernel2DParameters  parameters)
+		: Kernel(elementCommonParameters), parameters(std::move(parameters))
 	{
 		commonParameters.identifiers.label = ElementLabel::OSCILLATORY_KERNEL_2D;
 	}
@@ -46,7 +48,7 @@ namespace dnf_composer::element
 			std::vector<double> k(kSize);
 			for (int i = 0; i < kSize; ++i)
 			{
-				const double r = static_cast<double>(rangeVec[i]);
+				const auto r = static_cast<double>(rangeVec[i]);
 				const double decayFactor = std::exp(-parameters.decay * std::abs(r));
 				const double oscillation = std::sin(parameters.decay * std::abs(parameters.zeroCrossings * r))
 				                         + std::cos(parameters.zeroCrossings * r);
@@ -56,8 +58,10 @@ namespace dnf_composer::element
 			if (parameters.normalized)
 			{
 				const double normFactor = std::accumulate(k.begin(), k.end(), 0.0);
-				if (std::abs(normFactor) > 1e-12)
-					for (double& v : k) v /= normFactor;
+				if (std::abs(normFactor) > 1e-12) {
+					for (double& v : k) { v /= normFactor;
+}
+}
 			}
 
 			return k;
@@ -65,15 +69,18 @@ namespace dnf_composer::element
 
 		kernel_1d_x = buildKernel1D(kernelRange_x);
 		kernel_1d_y = buildKernel1D(kernelRange_y);
-		for (auto& v : kernel_1d_x) v *= parameters.amplitude;
+		for (auto& v : kernel_1d_x) { v *= parameters.amplitude;
+}
 
 		// Populate components["kernel"] with the outer product (row-major)
 		const int kx = static_cast<int>(kernel_1d_x.size());
 		const int ky = static_cast<int>(kernel_1d_y.size());
-		components["kernel"].resize(kx * ky);
-		for (int i = 0; i < kx; ++i)
-			for (int j = 0; j < ky; ++j)
+		components["kernel"].resize(static_cast<std::size_t>(kx) * ky);
+		for (int i = 0; i < kx; ++i) {
+			for (int j = 0; j < ky; ++j) {
 				components["kernel"][j * kx + i] = kernel_1d_x[i] * kernel_1d_y[j];
+}
+}
 
 		const int totalSize = size_x * size_y;
 		scratchTmp_.assign(totalSize, 0.0);
@@ -98,8 +105,9 @@ namespace dnf_composer::element
 			components["input"], kernel_1d_x, kernel_1d_y,
 			size_x, size_y, extIndex_x, extIndex_y);
 
-		for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
+		for (int i = 0; i < static_cast<int>(components["output"].size()); ++i) {
 			components["output"][i] = scratchConvolution_[i] + parameters.amplitudeGlobal * fullSum;
+}
 	}
 
 	std::string OscillatoryKernel2D::toString() const
@@ -118,9 +126,11 @@ namespace dnf_composer::element
 	void OscillatoryKernel2D::setParameters(const OscillatoryKernel2DParameters& p)
 	{
 		parameters = p;
-		if (parameters.zeroCrossings < 0.0) parameters.zeroCrossings = 0.0;
-		else if (parameters.zeroCrossings > 1.0) parameters.zeroCrossings = 1.0;
-		if (parameters.decay <= 0.0) parameters.decay = 0.01;
+		if (parameters.zeroCrossings < 0.0) { parameters.zeroCrossings = 0.0;
+		} else if (parameters.zeroCrossings > 1.0) { parameters.zeroCrossings = 1.0;
+}
+		if (parameters.decay <= 0.0) { parameters.decay = 0.01;
+}
 		init();
 	}
 

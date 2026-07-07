@@ -16,13 +16,13 @@ namespace dnf_composer::element
 
 	void SigmoidFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
 	{
-		const float s  = static_cast<float>(steepness);
-		const float xs = static_cast<float>(x_shift);
+		const auto s  = static_cast<float>(steepness);
+		const auto xs = static_cast<float>(x_shift);
 		const std::size_t n = input.size();
 		for (std::size_t i = 0; i < n; ++i)
 		{
-			const float x = static_cast<float>(input[i]);
-			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(-s * (x - xs))));
+			const auto x = static_cast<float>(input[i]);
+			out[i] = static_cast<double>(1.0F / (1.0F + std::exp(-s * (x - xs))));
 		}
 	}
 
@@ -77,8 +77,9 @@ namespace dnf_composer::element
 
 	void HeavisideFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
 	{
-		for (std::size_t i = 0; i < input.size(); ++i)
+		for (std::size_t i = 0; i < input.size(); ++i) {
 			out[i] = (input[i] > x_shift) ? 1.0 : 0.0;
+}
 	}
 
 	bool HeavisideFunction::operator==(const HeavisideFunction& other) const

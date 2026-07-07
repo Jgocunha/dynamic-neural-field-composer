@@ -24,7 +24,7 @@ namespace dnf_composer
 		                  { PlotType::LINE_PLOT,
 			                  {0.0, 100.0, -20.0, 20.0, 1.0, 1.0},
 			                  PlotAnnotations{"Line plot", "Spatial dimension", "Amplitude"} },
-		                  const LinePlotParameters& linePlotParameters = LinePlotParameters());
+		                  LinePlotParameters  linePlotParameters = LinePlotParameters());
 
 		void setLineThickness(double lineThickness);
 		void setAutoFit(bool autoFit);

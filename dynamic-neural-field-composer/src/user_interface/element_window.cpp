@@ -46,17 +46,17 @@ namespace dnf_composer::user_interface
 {
 	// ── param-table helpers ─────────────────────────────────────────────────
 	namespace {
-		static bool ewBeginTable(const char* id) {
+		bool ewBeginTable(const char* id) {
 			const float ui     = ImGui::GetIO().FontGlobalScale;
-			const float tableW = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+			const float tableW = ImGui::GetContentRegionAvail().x - 10.0F * ui;
 			return ImGui::BeginTable(id, 2, ImGuiTableFlags_None, ImVec2(tableW, 0));
 		}
-		static void ewTableSetup() {
-			ImGui::TableSetupColumn("##l", ImGuiTableColumnFlags_WidthStretch, 1.0f);
-			ImGui::TableSetupColumn("##v", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+		void ewTableSetup() {
+			ImGui::TableSetupColumn("##l", ImGuiTableColumnFlags_WidthStretch, 1.0F);
+			ImGui::TableSetupColumn("##v", ImGuiTableColumnFlags_WidthStretch, 1.0F);
 		}
-		static void ewEndTable() { ImGui::EndTable(); }
-		static void ewRowDrag(const char* lbl, const char* wid, float* v,
+		void ewEndTable() { ImGui::EndTable(); }
+		void ewRowDrag(const char* lbl, const char* wid, float* v,
 		                      float spd, float mn, float mx, const char* fmt = "%.3f") {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(lbl);
@@ -65,15 +65,15 @@ namespace dnf_composer::user_interface
 			ImGui::DragFloat(wid, v, spd, mn, mx, fmt);
 			ImGui::PopFont();
 		}
-		static void ewRowBool(const char* lbl, const char* wid, bool* v) {
+		void ewRowBool(const char* lbl, const char* wid, bool* v) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(lbl);
 			ImGui::TableSetColumnIndex(1); ImGui::Checkbox(wid, v);
 		}
-		static void ewScrollingText(const std::string& name, float availW, int uid) {
-			static constexpr float scrollSpeed = 50.0f;
-			static constexpr float scrollDelay = 0.5f;
-			static constexpr float scrollPause = 1.0f;
+		void ewScrollingText(const std::string& name, float availW, int uid) {
+			static constexpr float scrollSpeed = 50.0F;
+			static constexpr float scrollDelay = 0.5F;
+			static constexpr float scrollPause = 1.0F;
 			static std::unordered_map<int, double> s_hoverStart;
 
 			const float textW = ImGui::CalcTextSize(name.c_str()).x;
@@ -89,11 +89,12 @@ namespace dnf_composer::user_interface
 
 			const double now      = ImGui::GetTime();
 			const float  overflow = textW - availW;
-			float        offsetX  = 0.0f;
+			float        offsetX  = 0.0F;
 
 			if (ImGui::IsItemHovered()) {
-				if (!s_hoverStart.contains(uid))
+				if (!s_hoverStart.contains(uid)) {
 					s_hoverStart[uid] = now;
+}
 				const auto elapsed = static_cast<float>(now - s_hoverStart.at(uid));
 				if (elapsed > scrollDelay) {
 					const float cycleDur = (overflow / scrollSpeed) + scrollPause;
@@ -110,20 +111,21 @@ namespace dnf_composer::user_interface
 				name.c_str());
 			ImGui::PopClipRect();
 		}
-		static void ewSectionLabel(const char* lbl) {
+		void ewSectionLabel(const char* lbl) {
 			ImGui::Spacing();
 			const float ui    = ImGui::GetIO().FontGlobalScale;
-			const float lineW = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+			const float lineW = ImGui::GetContentRegionAvail().x - 10.0F * ui;
 			const ImVec2 pos  = ImGui::GetCursorScreenPos();
 			const float textW = ImGui::CalcTextSize(lbl).x;
-			const float lineY = pos.y + ImGui::GetTextLineHeight() * 0.5f;
-			const float x0    = pos.x + textW + 6.0f * ui;
+			const float lineY = pos.y + ImGui::GetTextLineHeight() * 0.5F;
+			const float x0    = pos.x + textW + 6.0F * ui;
 			const float x1    = pos.x + lineW;
 			ImGui::TextUnformatted(lbl);
-			if (x1 > x0)
+			if (x1 > x0) {
 				ImGui::GetWindowDrawList()->AddLine(
 					ImVec2(x0, lineY), ImVec2(x1, lineY),
-					ImGui::GetColorU32(ImGuiCol_Separator), 1.0f);
+					ImGui::GetColorU32(ImGuiCol_Separator), 1.0F);
+}
 		}
 	}
 
@@ -145,10 +147,10 @@ namespace dnf_composer::user_interface
 	void ElementWindow::render()
 	{
 		const ImGuiViewport* vp = ImGui::GetMainViewport();
-		const float panelY = vp->WorkPos.y + 52.0f;
-		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
-		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.25f, panelY), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.22f, panelH), ImGuiCond_FirstUseEver);
+		const float panelY = vp->WorkPos.y + 52.0F;
+		const float panelH = vp->WorkSize.y - 52.0F - 28.0F;
+		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.25F, panelY), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.22F, panelH), ImGuiCond_FirstUseEver);
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
 		const bool open = ImGui::Begin("Element Control##element_control", nullptr,
 			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
@@ -156,7 +158,7 @@ namespace dnf_composer::user_interface
 		if (open)
 		{
 			const float startY = ImGui::GetCursorPosY();
-			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 			ImGui::PushFont(g_MediumIconsFont);
@@ -183,15 +185,17 @@ namespace dnf_composer::user_interface
 		if (focusedElement)
 		{
 			bool stillValid = false;
-			for (const auto& el : simulation->getElements())
+			for (const auto& el : simulation->getElements()) {
 				if (el == focusedElement) { stillValid = true; break; }
-			if (!stillValid) focusedElement = nullptr;
+}
+			if (!stillValid) { focusedElement = nullptr;
+}
 		}
 
 		// Search bar
-		static char searchBuf[128] = {};
-		ImGui::SetNextItemWidth(-1.0f);
-		ImGui::InputTextWithHint("##ew_search", "Search elements...", searchBuf, sizeof(searchBuf));
+		static std::array<char, 128> searchBuf = {};
+		ImGui::SetNextItemWidth(-1.0F);
+		ImGui::InputTextWithHint("##ew_search", "Search elements...", searchBuf.data(), searchBuf.size());
 		ImGui::Spacing();
 
 		// Sync external focus (from node graph)
@@ -203,15 +207,16 @@ namespace dnf_composer::user_interface
 		}
 		if (!s_pendingRenameOld.empty())
 		{
-			if (selectedName == s_pendingRenameOld)
+			if (selectedName == s_pendingRenameOld) {
 				selectedName = s_pendingRenameNew;
+}
 			s_pendingRenameOld.clear();
 			s_pendingRenameNew.clear();
 		}
 
 		constexpr ImGuiWindowFlags childFlags = ImGuiWindowFlags_NoSavedSettings;
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
-		ImGui::BeginChild("##element_scroll", ImVec2(0, 0), false, childFlags);
+		ImGui::BeginChild("##element_scroll", ImVec2(0, 0), 0, childFlags);
 		ImGui::PopStyleColor();
 
 		// Build a lowercase search string
@@ -228,8 +233,9 @@ namespace dnf_composer::user_interface
 
 		// Group elements by type
 		std::map<element::ElementLabel, std::vector<std::shared_ptr<element::Element>>> byType;
-		for (const auto& e : simulation->getElements())
+		for (const auto& e : simulation->getElements()) {
 			byType[e->getLabel()].push_back(e);
+}
 
 		if (byType.empty())
 		{
@@ -238,16 +244,16 @@ namespace dnf_composer::user_interface
 			return;
 		}
 
-		static constexpr ImVec4 kCardBg     = { 1.0f, 1.0f, 1.0f, 1.0f };
-		static constexpr ImVec4 kCardBorder = { 0.82f, 0.85f, 0.89f, 1.0f };
-		static constexpr float  kCardRound  = 8.0f;
-		static constexpr float  kCardBordSz = 1.5f;
-		static constexpr float  kStripW     = 4.0f;
+		static constexpr ImVec4 kCardBg     = { 1.0F, 1.0F, 1.0F, 1.0F };
+		static constexpr ImVec4 kCardBorder = { 0.82F, 0.85F, 0.89F, 1.0F };
+		static constexpr float  kCardRound  = 8.0F;
+		static constexpr float  kCardBordSz = 1.5F;
+		static constexpr float  kStripW     = 4.0F;
 
 		ImDrawList* dl   = ImGui::GetWindowDrawList();
 		const float rowH = ImGui::GetFrameHeight();
-		const float padX = 10.0f * ui;
-		const float padY =  8.0f * ui;
+		const float padX = 10.0F * ui;
+		const float padY =  8.0F * ui;
 
 		// renderRow: collapsed row or, if selected, a fully auto-sized bordered card
 		auto renderRow = [&](const std::shared_ptr<element::Element>& e,
@@ -263,13 +269,14 @@ namespace dnf_composer::user_interface
 				// ── Collapsed row ─────────────────────────────────────────────
 				const ImVec2 rowMin = ImGui::GetCursorScreenPos();
 				ImGui::Selectable(("##ew_" + name).c_str(), false, 0, {avail, rowH});
-				if (ImGui::IsItemClicked())
+				if (ImGui::IsItemClicked()) {
 					selectedName = name;
+}
 
-				dl->AddCircleFilled({rowMin.x + 10.f, rowMin.y + rowH * 0.5f}, 5.f, dotClr);
-				ImGui::SetCursorScreenPos({rowMin.x + 22.f,
-					rowMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5f});
-				ewScrollingText(name, avail - 22.f, e->getUniqueIdentifier());
+				dl->AddCircleFilled({rowMin.x + 10.F, rowMin.y + rowH * 0.5F}, 5.F, dotClr);
+				ImGui::SetCursorScreenPos({rowMin.x + 22.F,
+					rowMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5F});
+				ewScrollingText(name, avail - 22.F, e->getUniqueIdentifier());
 			}
 			else
 			{
@@ -285,7 +292,7 @@ namespace dnf_composer::user_interface
 				dl->ChannelsSplit(2);
 				dl->ChannelsSetCurrent(1);
 
-				const float innerW = avail - padX * 2.0f;
+				const float innerW = avail - padX * 2.0F;
 				ImGui::SetCursorScreenPos({panelTL.x + padX, panelTL.y + padY});
 				ImGui::BeginGroup();
 
@@ -293,20 +300,21 @@ namespace dnf_composer::user_interface
 				{
 					const ImVec2 hMin = ImGui::GetCursorScreenPos();
 					ImGui::Selectable(("##ew_hdr_" + name).c_str(), false, 0, {innerW, rowH});
-					if (ImGui::IsItemClicked())
+					if (ImGui::IsItemClicked()) {
 						selectedName = "";
+}
 
-					dl->AddCircleFilled({hMin.x + 10.f, hMin.y + rowH * 0.5f}, 5.f, dotClr);
-					ImGui::SetCursorScreenPos({hMin.x + 22.f,
-						hMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5f});
+					dl->AddCircleFilled({hMin.x + 10.F, hMin.y + rowH * 0.5F}, 5.F, dotClr);
+					ImGui::SetCursorScreenPos({hMin.x + 22.F,
+						hMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5F});
 					ImGui::PushFont(g_BlackMediumFont);
 					const char* badge  = shortTypeName(e->getLabel());
 					const float badgeW = ImGui::CalcTextSize(badge).x;
-					ewScrollingText(name, innerW - 22.f - badgeW - 8.f, e->getUniqueIdentifier());
+					ewScrollingText(name, innerW - 22.F - badgeW - 8.F, e->getUniqueIdentifier());
 					ImGui::PopFont();
 					dl->AddText(
 						ImVec2(hMin.x + innerW - badgeW,
-						       hMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5f),
+						       hMin.y + (rowH - ImGui::GetTextLineHeight()) * 0.5F),
 						ImGui::GetColorU32(ImGuiCol_TextDisabled),
 						badge);
 				}
@@ -334,7 +342,7 @@ namespace dnf_composer::user_interface
 				dl->AddRect      (panelTL, panelBR, borderClr, kCardRound, 0, kCardBordSz);
 				dl->ChannelsMerge();
 
-				ImGui::SetCursorScreenPos({panelTL.x, panelBR.y + 6.0f * ui});
+				ImGui::SetCursorScreenPos({panelTL.x, panelBR.y + 6.0F * ui});
 			}
 		};
 
@@ -359,7 +367,8 @@ namespace dnf_composer::user_interface
 			std::vector<std::shared_ptr<element::Element>> filtered;
 			for (const auto& e : elems)
 			{
-				if (e->getUniqueName() == selectedName) continue;
+				if (e->getUniqueName() == selectedName) { continue;
+}
 				if (searchLower.empty()) { filtered.push_back(e); continue; }
 				std::string nameLow = e->getUniqueName();
 				std::transform(nameLow.begin(), nameLow.end(), nameLow.begin(),
@@ -368,10 +377,12 @@ namespace dnf_composer::user_interface
 				std::transform(typeLow.begin(), typeLow.end(), typeLow.begin(),
 					[](unsigned char c) { return std::tolower(c); });
 				if (nameLow.find(searchLower) != std::string::npos ||
-					typeLow.find(searchLower) != std::string::npos)
+					typeLow.find(searchLower) != std::string::npos) {
 					filtered.push_back(e);
+}
 			}
-			if (filtered.empty()) continue;
+			if (filtered.empty()) { continue;
+}
 
 			const std::string hdr = getElementTypeDisplayName(label) + "  \xc2\xb7  " + std::to_string(filtered.size());
 			ImGui::PushFont(g_BlackSmallFont);
@@ -382,8 +393,9 @@ namespace dnf_composer::user_interface
 			const ImVec4 col   = getColorForElementType(label);
 			const char*  badge = shortTypeName(label);
 
-			for (const auto& e : filtered)
+			for (const auto& e : filtered) {
 				renderRow(e, col, badge);
+}
 
 			ImGui::Spacing();
 		}
@@ -406,7 +418,7 @@ namespace dnf_composer::user_interface
 		{
 			ImVec4 color = getColorForElementType(label);
 			ImGui::PushStyleColor(ImGuiCol_Header, color);
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(color.x * 1.1f, color.y * 1.1f, color.z * 1.1f, color.w));
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(color.x * 1.1F, color.y * 1.1F, color.z * 1.1F, color.w));
 
 			std::string headerName = getElementTypeDisplayName(label) + " (" + std::to_string(elements.size()) + ")";
 
@@ -430,8 +442,9 @@ namespace dnf_composer::user_interface
 		static std::unordered_map<int, std::string> stagedName;
 		const int uid    = element->getUniqueIdentifier();
 		auto& staged     = stagedName[uid];
-		if (staged.empty())
+		if (staged.empty()) {
 			staged = element->getUniqueName();
+}
 
 		const std::string elemId = element->getUniqueName();
 		ImGui::PushID(("##ids_" + elemId).c_str());
@@ -460,8 +473,9 @@ namespace dnf_composer::user_interface
 			std::strncpy(nameBuf, staged.c_str(), sizeof(nameBuf) - 1);
 			nameBuf[sizeof(nameBuf) - 1] = '\0';
 			ImGui::PushFont(g_MonoMediumFont);
-			if (ImGui::InputText("##uname_val", nameBuf, sizeof(nameBuf)))
+			if (ImGui::InputText("##uname_val", nameBuf, sizeof(nameBuf))) {
 				staged = nameBuf;
+}
 			ImGui::PopFont();
 			if (ImGui::IsItemDeactivatedAfterEdit())
 			{
@@ -495,7 +509,7 @@ namespace dnf_composer::user_interface
 		auto& s = staged[id];
 
 		const auto& dim = element->getElementCommonParameters().dimensionParameters;
-		if (s.xMax == 0.0f)
+		if (s.xMax == 0.0F)
 		{
 			s.xMax = static_cast<float>(dim.x_max);
 			s.yMax = static_cast<float>(dim.y_max);
@@ -526,25 +540,25 @@ namespace dnf_composer::user_interface
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Size x");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##xmax", &s.xMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##xmax", &s.xMax, 1.0F, 1.0F, 10000.0F, "%.1f"); ImGui::PopFont();
 			commitIf();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Step x");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##dx", &s.dx, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##dx", &s.dx, 0.01F, 0.001F, 10.0F, "%.2f"); ImGui::PopFont();
 			commitIf();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Size y");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##ymax", &s.yMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##ymax", &s.yMax, 1.0F, 1.0F, 10000.0F, "%.1f"); ImGui::PopFont();
 			commitIf();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Step y");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##dy", &s.dy, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##dy", &s.dy, 0.01F, 0.001F, 10.0F, "%.2f"); ImGui::PopFont();
 			commitIf();
 
 			ewEndTable();
@@ -569,14 +583,14 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::renderInputDimensionControls2D(const std::shared_ptr<element::Element>& element,
 		const element::ElementDimensions& current,
-		const std::function<void(const element::ElementDimensions&)>& apply) const
+		const std::function<void(const element::ElementDimensions&)>& apply) 
 	{
 		struct Staged2D { float xMax = 0, yMax = 0, dx = 0, dy = 0; };
 		static std::unordered_map<int, Staged2D> stagedIn;
 		const int id = element->getUniqueIdentifier();
 		auto& si = stagedIn[id];
 
-		if (si.xMax == 0.0f)
+		if (si.xMax == 0.0F)
 		{
 			si.xMax = static_cast<float>(current.x_max);
 			si.yMax = static_cast<float>(current.y_max);
@@ -585,8 +599,10 @@ namespace dnf_composer::user_interface
 		}
 
 		auto applyInputDim = [&]() {
-			if (!ImGui::IsItemDeactivatedAfterEdit()) return;
-			if (si.xMax <= 0 || si.yMax <= 0 || si.dx <= 0 || si.dy <= 0) return;
+			if (!ImGui::IsItemDeactivatedAfterEdit()) { return;
+}
+			if (si.xMax <= 0 || si.yMax <= 0 || si.dx <= 0 || si.dy <= 0) { return;
+}
 			const element::ElementDimensions newInDim(
 				static_cast<int>(si.xMax), static_cast<int>(si.yMax),
 				static_cast<double>(si.dx), static_cast<double>(si.dy));
@@ -605,25 +621,25 @@ namespace dnf_composer::user_interface
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Size x");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_xmax", &si.xMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_xmax", &si.xMax, 1.0F, 1.0F, 10000.0F, "%.1f"); ImGui::PopFont();
 			applyInputDim();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Step x");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_dx", &si.dx, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_dx", &si.dx, 0.01F, 0.001F, 10.0F, "%.2f"); ImGui::PopFont();
 			applyInputDim();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Size y");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_ymax", &si.yMax, 1.0f, 1.0f, 10000.0f, "%.1f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_ymax", &si.yMax, 1.0F, 1.0F, 10000.0F, "%.1f"); ImGui::PopFont();
 			applyInputDim();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Step y");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_dy", &si.dy, 0.01f, 0.001f, 10.0f, "%.2f"); ImGui::PopFont();
+			ImGui::PushFont(g_MonoMediumFont); ImGui::DragFloat("##in_dy", &si.dy, 0.01F, 0.001F, 10.0F, "%.2f"); ImGui::PopFont();
 			applyInputDim();
 
 			ewEndTable();
@@ -633,7 +649,7 @@ namespace dnf_composer::user_interface
 	void ElementWindow::renderDimensionControls(const std::shared_ptr<element::Element>& element) const
 	{
 		const float ui     = ImGui::GetIO().FontGlobalScale;
-		const float inputW = 150.0f * ui;
+		const float inputW = 150.0F * ui;
 		const std::string elemId = element->getUniqueName();
 		const element::ElementLabel label = element->getLabel();
 		// Elements that own a separate (editable) input field of differing size/dim.
@@ -647,7 +663,7 @@ namespace dnf_composer::user_interface
 		auto& [stagedXmax, stagedDx] = staged[id];
 
 		const auto& dim = element->getElementCommonParameters().dimensionParameters;
-		if (stagedXmax == 0.0f && stagedDx == 0.0f)
+		if (stagedXmax == 0.0F && stagedDx == 0.0F)
 		{
 			stagedXmax = static_cast<float>(dim.x_max);
 			stagedDx   = static_cast<float>(dim.d_x);
@@ -672,9 +688,9 @@ namespace dnf_composer::user_interface
 			ImGui::TableSetColumnIndex(1);
 			ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat("##x_max", &stagedXmax, 1.0f, 1.0f, 10000.0f, "%.1f");
+			ImGui::DragFloat("##x_max", &stagedXmax, 1.0F, 1.0F, 10000.0F, "%.1f");
 			ImGui::PopFont();
-			if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+			if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0F && stagedDx > 0.0F)
 			{
 				const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
 				simulation->changeDimensions(elemId, newDim);
@@ -690,9 +706,9 @@ namespace dnf_composer::user_interface
 			ImGui::TableSetColumnIndex(1);
 			ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat("##dx", &stagedDx, 0.01f, 0.001f, 10.0f, "%.2f");
+			ImGui::DragFloat("##dx", &stagedDx, 0.01F, 0.001F, 10.0F, "%.2f");
 			ImGui::PopFont();
-			if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0f && stagedDx > 0.0f)
+			if (ImGui::IsItemDeactivatedAfterEdit() && stagedXmax > 0.0F && stagedDx > 0.0F)
 			{
 				const element::ElementDimensions newDim(static_cast<int>(stagedXmax), static_cast<double>(stagedDx));
 				simulation->changeDimensions(elemId, newDim);
@@ -734,20 +750,21 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::renderInputDimensionControls1D(const std::shared_ptr<element::Element>& element,
 		const element::ElementDimensions& current,
-		const std::function<void(const element::ElementDimensions&)>& apply) const
+		const std::function<void(const element::ElementDimensions&)>& apply) 
 	{
 		static std::unordered_map<int, std::pair<float, float>> stagedIn;
 		const int id = element->getUniqueIdentifier();
 		auto& [stagedInXmax, stagedInDx] = stagedIn[id];
 
-		if (stagedInXmax == 0.0f && stagedInDx == 0.0f)
+		if (stagedInXmax == 0.0F && stagedInDx == 0.0F)
 		{
 			stagedInXmax = static_cast<float>(current.x_max);
 			stagedInDx   = static_cast<float>(current.d_x);
 		}
 
 		auto applyInputDim = [&]() {
-			if (stagedInXmax <= 0.0f || stagedInDx <= 0.0f) return;
+			if (stagedInXmax <= 0.0F || stagedInDx <= 0.0F) { return;
+}
 			const element::ElementDimensions newInDim(static_cast<int>(stagedInXmax), static_cast<double>(stagedInDx));
 			element->removeInputs();
 			element->removeOutputs();
@@ -764,17 +781,19 @@ namespace dnf_composer::user_interface
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Size");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat("##in_x_max", &stagedInXmax, 1.0f, 1.0f, 10000.0f, "%.1f");
+			ImGui::DragFloat("##in_x_max", &stagedInXmax, 1.0F, 1.0F, 10000.0F, "%.1f");
 			ImGui::PopFont();
-			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			if (ImGui::IsItemDeactivatedAfterEdit()) { applyInputDim();
+}
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Step");
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat("##in_dx", &stagedInDx, 0.01f, 0.001f, 10.0f, "%.2f");
+			ImGui::DragFloat("##in_dx", &stagedInDx, 0.01F, 0.001F, 10.0F, "%.2f");
 			ImGui::PopFont();
-			if (ImGui::IsItemDeactivatedAfterEdit()) applyInputDim();
+			if (ImGui::IsItemDeactivatedAfterEdit()) { applyInputDim();
+}
 
 			ewEndTable();
 		}
@@ -897,8 +916,8 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##nf_dyn" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Resting level", ("##nf_rl"  + uid).c_str(), &restingLevel, 0.1f, -30.0f,   0.0f);
-			ewRowDrag("Time scale",           ("##nf_tau"  + uid).c_str(), &tau,          0.5f,   1.0f, 300.0f);
+			ewRowDrag("Resting level", ("##nf_rl"  + uid).c_str(), &restingLevel, 0.1F, -30.0F,   0.0F);
+			ewRowDrag("Time scale",           ("##nf_tau"  + uid).c_str(), &tau,          0.5F,   1.0F, 300.0F);
 			ewEndTable();
 		}
 		static constexpr double epsilon = 1e-6;
@@ -933,12 +952,12 @@ namespace dnf_composer::user_interface
 			if (actFnType == element::SIGMOID)
 			{
 				const auto* sig = dynamic_cast<const element::SigmoidFunction*>(nfp.activationFunction.get());
-				const float storedXShift    = sig ? static_cast<float>(sig->getXShift())    : 0.0f;
-				const float storedSteepness = sig ? static_cast<float>(sig->getSteepness()) : 10.0f;
+				const float storedXShift    = sig != nullptr ? static_cast<float>(sig->getXShift())    : 0.0F;
+				const float storedSteepness = sig != nullptr ? static_cast<float>(sig->getSteepness()) : 10.0F;
 				auto xShift    = storedXShift;
 				auto steepness = storedSteepness;
-				ewRowDrag("x shift",   ("##nf_xs" + uid).c_str(), &xShift,    0.1f,  -30.0f, 30.0f);
-				ewRowDrag("Steepness", ("##nf_st" + uid).c_str(), &steepness, 0.5f,    0.1f, 500.0f);
+				ewRowDrag("x shift",   ("##nf_xs" + uid).c_str(), &xShift,    0.1F,  -30.0F, 30.0F);
+				ewRowDrag("Steepness", ("##nf_st" + uid).c_str(), &steepness, 0.5F,    0.1F, 500.0F);
 				if (std::abs(xShift - storedXShift) > epsilon || std::abs(steepness - storedSteepness) > epsilon)
 				{
 					nfp.activationFunction = std::make_unique<element::SigmoidFunction>(
@@ -949,9 +968,9 @@ namespace dnf_composer::user_interface
 			else if (actFnType == element::HEAVISIDE)
 			{
 				const auto* hv = dynamic_cast<const element::HeavisideFunction*>(nfp.activationFunction.get());
-				const float storedXShift = hv ? static_cast<float>(hv->getXShift()) : 0.0f;
+				const float storedXShift = hv != nullptr ? static_cast<float>(hv->getXShift()) : 0.0F;
 				auto xShift = storedXShift;
-				ewRowDrag("x shift", ("##nf_hxs" + uid).c_str(), &xShift, 0.1f, -30.0f, 30.0f);
+				ewRowDrag("x shift", ("##nf_hxs" + uid).c_str(), &xShift, 0.1F, -30.0F, 30.0F);
 				if (std::abs(xShift - storedXShift) > epsilon)
 				{
 					nfp.activationFunction = std::make_unique<element::HeavisideFunction>(static_cast<double>(xShift));
@@ -961,12 +980,12 @@ namespace dnf_composer::user_interface
 			else if (actFnType == element::ABSSIGMOID)
 			{
 				const auto* ab = dynamic_cast<const element::AbsSigmoidFunction*>(nfp.activationFunction.get());
-				const float storedXShift = ab ? static_cast<float>(ab->getXShift()) : 0.0f;
-				const float storedBeta   = ab ? static_cast<float>(ab->getBeta())   : 100.0f;
+				const float storedXShift = ab != nullptr ? static_cast<float>(ab->getXShift()) : 0.0F;
+				const float storedBeta   = ab != nullptr ? static_cast<float>(ab->getBeta())   : 100.0F;
 				auto xShift = storedXShift;
 				auto beta   = storedBeta;
-				ewRowDrag("x shift", ("##nf_axs" + uid).c_str(), &xShift, 0.1f,  -30.0f,  30.0f);
-				ewRowDrag("Beta",    ("##nf_ab"  + uid).c_str(), &beta,   1.0f,    0.1f, 1000.0f);
+				ewRowDrag("x shift", ("##nf_axs" + uid).c_str(), &xShift, 0.1F,  -30.0F,  30.0F);
+				ewRowDrag("Beta",    ("##nf_ab"  + uid).c_str(), &beta,   1.0F,    0.1F, 1000.0F);
 				if (std::abs(xShift - storedXShift) > epsilon || std::abs(beta - storedBeta) > epsilon)
 				{
 					nfp.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
@@ -976,7 +995,8 @@ namespace dnf_composer::user_interface
 			}
 			ewEndTable();
 		}
-		if (updated) neuralField->setParameters(nfp);
+		if (updated) { neuralField->setParameters(nfp);
+}
 	}
 
 	void ElementWindow::modifyElementGaussStimulus(const std::shared_ptr<element::Element>& element)
@@ -994,9 +1014,9 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gs_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##gs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
-			ewRowDrag("Width",     ("##gs_w"   + uid).c_str(), &width,     0.01f, 0.1f, 30.0f);
-			ewRowDrag("Position",  ("##gs_pos" + uid).c_str(), &position,  0.1f,  0.0f,
+			ewRowDrag("Amplitude", ("##gs_amp" + uid).c_str(), &amplitude, 0.1F,  0.0F, 30.0F);
+			ewRowDrag("Width",     ("##gs_w"   + uid).c_str(), &width,     0.01F, 0.1F, 30.0F);
+			ewRowDrag("Position",  ("##gs_pos" + uid).c_str(), &position,  0.1F,  0.0F,
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 			ewEndTable();
 		}
@@ -1036,9 +1056,9 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##tgs_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##tgs_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
-			ewRowDrag("Width",     ("##tgs_w"   + uid).c_str(), &width,     0.01f, 0.1f, 30.0f);
-			ewRowDrag("Position",  ("##tgs_pos" + uid).c_str(), &position,  0.1f,  0.0f,
+			ewRowDrag("Amplitude", ("##tgs_amp" + uid).c_str(), &amplitude, 0.1F,  0.0F, 30.0F);
+			ewRowDrag("Width",     ("##tgs_w"   + uid).c_str(), &width,     0.01F, 0.1F, 30.0F);
+			ewRowDrag("Position",  ("##tgs_pos" + uid).c_str(), &position,  0.1F,  0.0F,
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
 			ewEndTable();
 		}
@@ -1053,14 +1073,15 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Timing");
 		static std::unordered_map<int, std::pair<float, float>> tgsPending;
 		const int tgsEid = element->getUniqueIdentifier();
-		if (!tgsPending.count(tgsEid)) tgsPending[tgsEid] = { 0.0f, 1.0f };
+		if (!tgsPending.contains(tgsEid)) { tgsPending[tgsEid] = { 0.0F, 1.0F };
+}
 		auto& [tgsNs, tgsNe] = tgsPending[tgsEid];
 
 		int tgsDeleteIdx = -1;
 		bool tgsAddClicked = false;
 		{
-			const float tgsBtnColW = g_MediumIconsFont->LegacySize + ImGui::GetStyle().FramePadding.x * 2.0f + ImGui::GetStyle().CellPadding.x * 2.0f;
-			const float tgsTableW  = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+			const float tgsBtnColW = g_MediumIconsFont->LegacySize + ImGui::GetStyle().FramePadding.x * 2.0F + ImGui::GetStyle().CellPadding.x * 2.0F;
+			const float tgsTableW  = ImGui::GetContentRegionAvail().x - 10.0F * ui;
 			constexpr ImGuiTableFlags tgsTFlags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV;
 			if (ImGui::BeginTable(("##tgs_tm" + uid).c_str(), 3, tgsTFlags, ImVec2(tgsTableW, 0)))
 			{
@@ -1068,35 +1089,38 @@ namespace dnf_composer::user_interface
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, tgsBtnColW);
 
-				static constexpr float tgsEps = 1e-4f;
+				static constexpr float tgsEps = 1e-4F;
 				for (int i = 0; i < static_cast<int>(tgsp.onTimes.size()); ++i)
 				{
-					const float storedStart = static_cast<float>(tgsp.onTimes[i].first);
-					const float storedEnd   = static_cast<float>(tgsp.onTimes[i].second);
-					auto start = storedStart, end = storedEnd;
+					const auto storedStart = static_cast<float>(tgsp.onTimes[i].first);
+					const auto storedEnd   = static_cast<float>(tgsp.onTimes[i].second);
+					auto start = storedStart;
+					auto end = storedEnd;
 
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs_s" + uid + std::to_string(i)).c_str(), &start, 0.1f, 0.0f, 1e6f, "%.2f");
+					ImGui::DragFloat(("##tgs_s" + uid + std::to_string(i)).c_str(), &start, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(1);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs_e" + uid + std::to_string(i)).c_str(), &end, 0.1f, 0.0f, 1e6f, "%.2f");
+					ImGui::DragFloat(("##tgs_e" + uid + std::to_string(i)).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(2);
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.25f, 0.25f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85F, 0.25F, 0.25F, 1.0F));
 					ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
 					ImGui::PushFont(g_MediumIconsFont);
-					if (ImGui::Button((ICON_FA_TRASH "##tgs_del" + uid + std::to_string(i)).c_str()))
+					if (ImGui::Button((ICON_FA_TRASH "##tgs_del" + uid + std::to_string(i)).c_str())) {
 						tgsDeleteIdx = i;
+}
 					ImGui::PopFont();
 					ImGui::PopStyleColor(4);
-					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove interval");
+					if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Remove interval");
+}
 
 					if ((std::abs(start - storedStart) > tgsEps || std::abs(end - storedEnd) > tgsEps) && start < end)
 					{
@@ -1109,22 +1133,23 @@ namespace dnf_composer::user_interface
 				ImGui::TableSetColumnIndex(0);
 				ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##tgs_ns" + uid).c_str(), &tgsNs, 0.1f, 0.0f, 1e6f, "%.2f");
+				ImGui::DragFloat(("##tgs_ns" + uid).c_str(), &tgsNs, 0.1F, 0.0F, 1e6F, "%.2f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(1);
 				ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##tgs_ne" + uid).c_str(), &tgsNe, 0.1f, 0.0f, 1e6f, "%.2f");
+				ImGui::DragFloat(("##tgs_ne" + uid).c_str(), &tgsNe, 0.1F, 0.0F, 1e6F, "%.2f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(2);
 				ImGui::PushFont(g_MediumIconsFont);
 				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
 				tgsAddClicked = ImGui::Button((ICON_FA_CIRCLE_PLUS "##tgs_add" + uid).c_str());
 				ImGui::PopFont();
 				ImGui::PopStyleColor(3);
-				if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add interval");
+				if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Add interval");
+}
 
 				ImGui::EndTable();
 			}
@@ -1140,7 +1165,7 @@ namespace dnf_composer::user_interface
 		{
 			tgsp.onTimes.emplace_back(static_cast<double>(tgsNs), static_cast<double>(tgsNe));
 			stimulus->setParameters(tgsp);
-			tgsNs = 0.0f; tgsNe = 1.0f;
+			tgsNs = 0.0F; tgsNe = 1.0F;
 			return;
 		}
 
@@ -1173,11 +1198,11 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##tgs2_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",  ("##tgs2_amp" + uid).c_str(), &amplitude, 0.1f,  0.0f, 30.0f);
-			ewRowDrag("Width",      ("##tgs2_w"   + uid).c_str(), &width,     0.01f, 0.1f, 30.0f);
-			ewRowDrag("Position x", ("##tgs2_px"  + uid).c_str(), &posX,      0.5f,  0.0f,
+			ewRowDrag("Amplitude",  ("##tgs2_amp" + uid).c_str(), &amplitude, 0.1F,  0.0F, 30.0F);
+			ewRowDrag("Width",      ("##tgs2_w"   + uid).c_str(), &width,     0.01F, 0.1F, 30.0F);
+			ewRowDrag("Position x", ("##tgs2_px"  + uid).c_str(), &posX,      0.5F,  0.0F,
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.x_max));
-			ewRowDrag("Position y", ("##tgs2_py"  + uid).c_str(), &posY,      0.5f,  0.0f,
+			ewRowDrag("Position y", ("##tgs2_py"  + uid).c_str(), &posY,      0.5F,  0.0F,
 				static_cast<float>(stimulus->getElementCommonParameters().dimensionParameters.y_max));
 			ewEndTable();
 		}
@@ -1192,14 +1217,15 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Timing");
 		static std::unordered_map<int, std::pair<float, float>> tgs2Pending;
 		const int tgs2Eid = element->getUniqueIdentifier();
-		if (!tgs2Pending.count(tgs2Eid)) tgs2Pending[tgs2Eid] = { 0.0f, 1.0f };
+		if (!tgs2Pending.contains(tgs2Eid)) { tgs2Pending[tgs2Eid] = { 0.0F, 1.0F };
+}
 		auto& [tgs2Ns, tgs2Ne] = tgs2Pending[tgs2Eid];
 
 		int tgs2DeleteIdx = -1;
 		bool tgs2AddClicked = false;
 		{
-			const float tgs2BtnColW = g_MediumIconsFont->LegacySize + ImGui::GetStyle().FramePadding.x * 2.0f + ImGui::GetStyle().CellPadding.x * 2.0f;
-			const float tgs2TableW  = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+			const float tgs2BtnColW = g_MediumIconsFont->LegacySize + ImGui::GetStyle().FramePadding.x * 2.0F + ImGui::GetStyle().CellPadding.x * 2.0F;
+			const float tgs2TableW  = ImGui::GetContentRegionAvail().x - 10.0F * ui;
 			constexpr ImGuiTableFlags tgs2TFlags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV;
 			if (ImGui::BeginTable(("##tgs2_tm" + uid).c_str(), 3, tgs2TFlags, ImVec2(tgs2TableW, 0)))
 			{
@@ -1207,35 +1233,38 @@ namespace dnf_composer::user_interface
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, tgs2BtnColW);
 
-				static constexpr float tgs2Eps = 1e-4f;
+				static constexpr float tgs2Eps = 1e-4F;
 				for (int i = 0; i < static_cast<int>(p.onTimes.size()); ++i)
 				{
-					const float storedStart = static_cast<float>(p.onTimes[i].first);
-					const float storedEnd   = static_cast<float>(p.onTimes[i].second);
-					auto start = storedStart, end = storedEnd;
+					const auto storedStart = static_cast<float>(p.onTimes[i].first);
+					const auto storedEnd   = static_cast<float>(p.onTimes[i].second);
+					auto start = storedStart;
+					auto end = storedEnd;
 
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs2_s" + uid + std::to_string(i)).c_str(), &start, 0.1f, 0.0f, 1e6f, "%.2f");
+					ImGui::DragFloat(("##tgs2_s" + uid + std::to_string(i)).c_str(), &start, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(1);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs2_e" + uid + std::to_string(i)).c_str(), &end, 0.1f, 0.0f, 1e6f, "%.2f");
+					ImGui::DragFloat(("##tgs2_e" + uid + std::to_string(i)).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(2);
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.25f, 0.25f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85F, 0.25F, 0.25F, 1.0F));
 					ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
 					ImGui::PushFont(g_MediumIconsFont);
-					if (ImGui::Button((ICON_FA_TRASH "##tgs2_del" + uid + std::to_string(i)).c_str()))
+					if (ImGui::Button((ICON_FA_TRASH "##tgs2_del" + uid + std::to_string(i)).c_str())) {
 						tgs2DeleteIdx = i;
+}
 					ImGui::PopFont();
 					ImGui::PopStyleColor(4);
-					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove interval");
+					if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Remove interval");
+}
 
 					if ((std::abs(start - storedStart) > tgs2Eps || std::abs(end - storedEnd) > tgs2Eps) && start < end)
 					{
@@ -1248,22 +1277,23 @@ namespace dnf_composer::user_interface
 				ImGui::TableSetColumnIndex(0);
 				ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##tgs2_ns" + uid).c_str(), &tgs2Ns, 0.1f, 0.0f, 1e6f, "%.2f");
+				ImGui::DragFloat(("##tgs2_ns" + uid).c_str(), &tgs2Ns, 0.1F, 0.0F, 1e6F, "%.2f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(1);
 				ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##tgs2_ne" + uid).c_str(), &tgs2Ne, 0.1f, 0.0f, 1e6f, "%.2f");
+				ImGui::DragFloat(("##tgs2_ne" + uid).c_str(), &tgs2Ne, 0.1F, 0.0F, 1e6F, "%.2f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(2);
 				ImGui::PushFont(g_MediumIconsFont);
 				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
 				tgs2AddClicked = ImGui::Button((ICON_FA_CIRCLE_PLUS "##tgs2_add" + uid).c_str());
 				ImGui::PopFont();
 				ImGui::PopStyleColor(3);
-				if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add interval");
+				if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Add interval");
+}
 
 				ImGui::EndTable();
 			}
@@ -1279,7 +1309,7 @@ namespace dnf_composer::user_interface
 		{
 			p.onTimes.emplace_back(static_cast<double>(tgs2Ns), static_cast<double>(tgs2Ne));
 			stimulus->setParameters(p);
-			tgs2Ns = 0.0f; tgs2Ne = 1.0f;
+			tgs2Ns = 0.0F; tgs2Ne = 1.0F;
 			return;
 		}
 
@@ -1329,8 +1359,8 @@ namespace dnf_composer::user_interface
 				ImGui::EndCombo();
 			}
 
-			ewRowDrag("Learning rate", ("##fc_lrate" + uid).c_str(), &learningRate, 0.01f, 0.0f, 10.0f);
-			ewRowDrag("Scalar",        ("##fc_sc"    + uid).c_str(), &scalar,       0.1f, -20.0f, 20.0f);
+			ewRowDrag("Learning rate", ("##fc_lrate" + uid).c_str(), &learningRate, 0.01F, 0.0F, 10.0F);
+			ewRowDrag("Scalar",        ("##fc_sc"    + uid).c_str(), &scalar,       0.1F, -20.0F, 20.0F);
 			ewRowBool("Activate learning", ("##fc_al" + uid).c_str(), &activateLearning);
 
 			ewEndTable();
@@ -1360,7 +1390,8 @@ namespace dnf_composer::user_interface
 			fieldCoupling->writeWeights();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Clear")) fieldCoupling->clearWeights();
+		if (ImGui::Button("Clear")) { fieldCoupling->clearWeights();
+}
 		ImGui::PopID();
 	}
 
@@ -1379,9 +1410,9 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gk_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",   ("##gk_amp" + uid).c_str(), &amplitude,       0.1f, -50.0f, 50.0f);
-			ewRowDrag("Width",       ("##gk_w"   + uid).c_str(), &width,           0.1f,   0.1f, 30.0f);
-			ewRowDrag("Amp. global", ("##gk_ag"  + uid).c_str(), &amplitudeGlobal, 0.1f, -10.0f, 10.0f);
+			ewRowDrag("Amplitude",   ("##gk_amp" + uid).c_str(), &amplitude,       0.1F, -50.0F, 50.0F);
+			ewRowDrag("Width",       ("##gk_w"   + uid).c_str(), &width,           0.1F,   0.1F, 30.0F);
+			ewRowDrag("Amp. global", ("##gk_ag"  + uid).c_str(), &amplitudeGlobal, 0.1F, -10.0F, 10.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -1421,11 +1452,11 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##mhk_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amp. exc.",   ("##mhk_ae" + uid).c_str(), &amplitudeExc,    0.1f,  -50.0f,  50.0f);
-			ewRowDrag("Width exc.",  ("##mhk_we" + uid).c_str(), &widthExc,        0.1f,    0.1f,  30.0f);
-			ewRowDrag("Amp. inh.",   ("##mhk_ai" + uid).c_str(), &amplitudeInh,    0.1f,    0.0f, 100.0f);
-			ewRowDrag("Width inh.",  ("##mhk_wi" + uid).c_str(), &widthInh,        0.1f,    0.1f,  30.0f);
-			ewRowDrag("Amp. global", ("##mhk_ag" + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,   0.0f);
+			ewRowDrag("Amp. exc.",   ("##mhk_ae" + uid).c_str(), &amplitudeExc,    0.1F,  -50.0F,  50.0F);
+			ewRowDrag("Width exc.",  ("##mhk_we" + uid).c_str(), &widthExc,        0.1F,    0.1F,  30.0F);
+			ewRowDrag("Amp. inh.",   ("##mhk_ai" + uid).c_str(), &amplitudeInh,    0.1F,    0.0F, 100.0F);
+			ewRowDrag("Width inh.",  ("##mhk_wi" + uid).c_str(), &widthInh,        0.1F,    0.1F,  30.0F);
+			ewRowDrag("Amp. global", ("##mhk_ag" + uid).c_str(), &amplitudeGlobal, 0.01F, -10.0F,   0.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -1462,7 +1493,7 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##nn_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##nn_amp" + uid).c_str(), &amplitude, 0.01f, 0.0f, 5.0f);
+			ewRowDrag("Amplitude", ("##nn_amp" + uid).c_str(), &amplitude, 0.01F, 0.0F, 5.0F);
 			ewEndTable();
 		}
 		static constexpr double epsilon = 1e-6;
@@ -1483,8 +1514,8 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##cnn_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##cnn_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f,  5.0f, "%.4f");
-			ewRowDrag("Width",     ("##cnn_w"   + uid).c_str(), &width,     0.1f,   0.1f, 30.0f);
+			ewRowDrag("Amplitude", ("##cnn_amp" + uid).c_str(), &amplitude, 0.001F, 0.0F,  5.0F, "%.4f");
+			ewRowDrag("Width",     ("##cnn_w"   + uid).c_str(), &width,     0.1F,   0.1F, 30.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -1529,15 +1560,16 @@ namespace dnf_composer::user_interface
 
 		static std::unordered_map<int, std::tuple<float, float, float, float>> gfcPending;
 		const int gfcEid = element->getUniqueIdentifier();
-		if (!gfcPending.count(gfcEid)) gfcPending[gfcEid] = { 0.0f, 0.0f, 1.0f, 1.0f };
+		if (!gfcPending.contains(gfcEid)) { gfcPending[gfcEid] = { 0.0F, 0.0F, 1.0F, 1.0F };
+}
 		auto& [gfcNxi, gfcNxj, gfcNamp, gfcNw] = gfcPending[gfcEid];
 
 		int  gfcDeleteIdx  = -1;
 		bool gfcAddClicked = false;
 
 		const float gfcBtnColW = g_MediumIconsFont->LegacySize
-			+ ImGui::GetStyle().FramePadding.x * 2.0f;
-		const float gfcTableW = ImGui::GetContentRegionAvail().x - 10.0f * ui;
+			+ ImGui::GetStyle().FramePadding.x * 2.0F;
+		const float gfcTableW = ImGui::GetContentRegionAvail().x - 10.0F * ui;
 		constexpr ImGuiTableFlags gfcTFlags =
 			ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV;
 
@@ -1550,7 +1582,7 @@ namespace dnf_composer::user_interface
 			ImGui::TableSetupColumn("",       ImGuiTableColumnFlags_WidthFixed, gfcBtnColW);
 			ImGui::TableHeadersRow();
 
-			static constexpr float gfcEps = 1e-4f;
+			static constexpr float gfcEps = 1e-4F;
 			for (int i = 0; i < static_cast<int>(gfcp.couplings.size()); ++i)
 			{
 				auto& c = gfcp.couplings[i];
@@ -1560,34 +1592,44 @@ namespace dnf_composer::user_interface
 				auto amp = static_cast<float>(c.amplitude);
 				auto w   = static_cast<float>(c.width);
 
+				const auto gfcLabel = [&uid, &si](const char* prefix)
+				{
+					std::string label = prefix;
+					label += uid;
+					label += si;
+					return label;
+				};
+
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0); ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##gfc_xi"  + uid + si).c_str(), &xi,  0.05f, 0.0f, static_cast<float>(other_size), "%.1f");
+				ImGui::DragFloat(gfcLabel("##gfc_xi").c_str(), &xi,  0.05F, 0.0F, static_cast<float>(other_size), "%.1f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##gfc_xj"  + uid + si).c_str(), &xj,  0.05f, 0.0f, static_cast<float>(size), "%.1f");
+				ImGui::DragFloat(gfcLabel("##gfc_xj").c_str(), &xj,  0.05F, 0.0F, static_cast<float>(size), "%.1f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##gfc_amp" + uid + si).c_str(), &amp, 0.1f,  0.0f, 100.0f, "%.2f");
+				ImGui::DragFloat(gfcLabel("##gfc_amp").c_str(), &amp, 0.1F,  0.0F, 100.0F, "%.2f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
 				ImGui::PushFont(g_MonoMediumFont);
-				ImGui::DragFloat(("##gfc_w"   + uid + si).c_str(), &w,   0.1f,  1.0f,  30.0f, "%.2f");
+				ImGui::DragFloat(gfcLabel("##gfc_w").c_str(), &w,   0.1F,  1.0F,  30.0F, "%.2f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(4);
-				ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85f, 0.25f, 0.25f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85F, 0.25F, 0.25F, 1.0F));
 				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
 				ImGui::PushFont(g_MediumIconsFont);
-				if (ImGui::Button((ICON_FA_TRASH "##gfc_del" + uid + si).c_str()))
+				if (ImGui::Button(gfcLabel(ICON_FA_TRASH "##gfc_del").c_str())) {
 					gfcDeleteIdx = i;
+}
 				ImGui::PopFont();
 				ImGui::PopStyleColor(4);
-				if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove coupling");
+				if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Remove coupling");
+}
 
 				if (std::abs(xi  - static_cast<float>(c.x_i))        > gfcEps ||
 				    std::abs(xj  - static_cast<float>(c.x_j))        > gfcEps ||
@@ -1602,29 +1644,30 @@ namespace dnf_composer::user_interface
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat(("##gfc_nxi"  + uid).c_str(), &gfcNxi,  0.05f, 0.0f, static_cast<float>(other_size), "%.1f");
+			ImGui::DragFloat(("##gfc_nxi"  + uid).c_str(), &gfcNxi,  0.05F, 0.0F, static_cast<float>(other_size), "%.1f");
 			ImGui::PopFont();
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat(("##gfc_nxj"  + uid).c_str(), &gfcNxj,  0.05f, 0.0f, static_cast<float>(size), "%.1f");
+			ImGui::DragFloat(("##gfc_nxj"  + uid).c_str(), &gfcNxj,  0.05F, 0.0F, static_cast<float>(size), "%.1f");
 			ImGui::PopFont();
 			ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat(("##gfc_namp" + uid).c_str(), &gfcNamp, 0.1f,  0.0f, 100.0f, "%.2f");
+			ImGui::DragFloat(("##gfc_namp" + uid).c_str(), &gfcNamp, 0.1F,  0.0F, 100.0F, "%.2f");
 			ImGui::PopFont();
 			ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat(("##gfc_nw"   + uid).c_str(), &gfcNw,   0.1f,  1.0f,  30.0f, "%.2f");
+			ImGui::DragFloat(("##gfc_nw"   + uid).c_str(), &gfcNw,   0.1F,  1.0F,  30.0F, "%.2f");
 			ImGui::PopFont();
 			ImGui::TableSetColumnIndex(4);
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
 			gfcAddClicked = ImGui::Button((ICON_FA_CIRCLE_PLUS "##gfc_add" + uid).c_str());
 			ImGui::PopFont();
 			ImGui::PopStyleColor(3);
-			if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add coupling");
+			if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Add coupling");
+}
 
 			ImGui::EndTable();
 		}
@@ -1641,7 +1684,7 @@ namespace dnf_composer::user_interface
 			gfc->addCoupling({ static_cast<double>(gfcNxi), static_cast<double>(gfcNxj),
 			                   static_cast<double>(gfcNamp), static_cast<double>(gfcNw) });
 			gfc->init();
-			gfcNxi = 0.0f; gfcNxj = 0.0f; gfcNamp = 1.0f; gfcNw = 1.0f;
+			gfcNxi = 0.0F; gfcNxj = 0.0F; gfcNamp = 1.0F; gfcNw = 1.0F;
 			return;
 		}
 	}
@@ -1662,10 +1705,10 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##ok_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",      ("##ok_amp" + uid).c_str(), &amplitude,       0.1f,   0.0f,  50.0f);
-			ewRowDrag("Decay",          ("##ok_dec" + uid).c_str(), &decay,           0.005f, 0.001f, 10.0f);
-			ewRowDrag("Zero crossings", ("##ok_zc"  + uid).c_str(), &zeroCrossings,   0.005f, 0.0f,   1.0f);
-			ewRowDrag("Amp. global",    ("##ok_ag"  + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,  0.0f);
+			ewRowDrag("Amplitude",      ("##ok_amp" + uid).c_str(), &amplitude,       0.1F,   0.0F,  50.0F);
+			ewRowDrag("Decay",          ("##ok_dec" + uid).c_str(), &decay,           0.005F, 0.001F, 10.0F);
+			ewRowDrag("Zero crossings", ("##ok_zc"  + uid).c_str(), &zeroCrossings,   0.005F, 0.0F,   1.0F);
+			ewRowDrag("Amp. global",    ("##ok_ag"  + uid).c_str(), &amplitudeGlobal, 0.01F, -10.0F,  0.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -1704,10 +1747,10 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##agk_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",   ("##agk_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
-			ewRowDrag("Width",       ("##agk_w"   + uid).c_str(), &width,           0.005f,   0.1f, 30.0f);
-			ewRowDrag("Amp. global", ("##agk_ag"  + uid).c_str(), &amplitudeGlobal, 0.005f, -10.0f,  0.0f);
-			ewRowDrag("Time shift",  ("##agk_ts"  + uid).c_str(), &timeShift,       0.01f,  -10.0f, 10.0f);
+			ewRowDrag("Amplitude",   ("##agk_amp" + uid).c_str(), &amplitude,       0.05F,  -30.0F, 30.0F);
+			ewRowDrag("Width",       ("##agk_w"   + uid).c_str(), &width,           0.005F,   0.1F, 30.0F);
+			ewRowDrag("Amp. global", ("##agk_ag"  + uid).c_str(), &amplitudeGlobal, 0.005F, -10.0F,  0.0F);
+			ewRowDrag("Time shift",  ("##agk_ts"  + uid).c_str(), &timeShift,       0.01F,  -10.0F, 10.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -1743,7 +1786,7 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##bs_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##bs_amp" + uid).c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
+			ewRowDrag("Amplitude", ("##bs_amp" + uid).c_str(), &amplitude, 0.1F, -30.0F, 30.0F);
 			ewRowBool("Active",    ("##bs_act" + uid).c_str(), &isActive);
 			ewEndTable();
 		}
@@ -1764,7 +1807,7 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##bs2_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##bs2_amp" + uid).c_str(), &amplitude, 0.1f, -30.0f, 30.0f);
+			ewRowDrag("Amplitude", ("##bs2_amp" + uid).c_str(), &amplitude, 0.1F, -30.0F, 30.0F);
 			ewRowBool("Active",    ("##bs2_act" + uid).c_str(), &isActive);
 			ewEndTable();
 		}
@@ -1786,8 +1829,8 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##cnn2_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##cnn2_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f,  5.0f, "%.4f");
-			ewRowDrag("Width",     ("##cnn2_w"   + uid).c_str(), &width,     0.1f,   0.1f, 30.0f);
+			ewRowDrag("Amplitude", ("##cnn2_amp" + uid).c_str(), &amplitude, 0.001F, 0.0F,  5.0F, "%.4f");
+			ewRowDrag("Width",     ("##cnn2_w"   + uid).c_str(), &width,     0.1F,   0.1F, 30.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -1819,11 +1862,11 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##agk2_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",    ("##agk2_amp" + uid).c_str(), &amplitude,       0.05f,  -30.0f, 30.0f);
-			ewRowDrag("Width",        ("##agk2_w"   + uid).c_str(), &width,           0.005f,   0.1f, 30.0f);
-			ewRowDrag("Amp. global",  ("##agk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.005f, -10.0f,  0.0f);
-			ewRowDrag("Time shift x", ("##agk2_tsx" + uid).c_str(), &timeShift_x,     0.01f,  -10.0f, 10.0f);
-			ewRowDrag("Time shift y", ("##agk2_tsy" + uid).c_str(), &timeShift_y,     0.01f,  -10.0f, 10.0f);
+			ewRowDrag("Amplitude",    ("##agk2_amp" + uid).c_str(), &amplitude,       0.05F,  -30.0F, 30.0F);
+			ewRowDrag("Width",        ("##agk2_w"   + uid).c_str(), &width,           0.005F,   0.1F, 30.0F);
+			ewRowDrag("Amp. global",  ("##agk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.005F, -10.0F,  0.0F);
+			ewRowDrag("Time shift x", ("##agk2_tsx" + uid).c_str(), &timeShift_x,     0.01F,  -10.0F, 10.0F);
+			ewRowDrag("Time shift y", ("##agk2_tsy" + uid).c_str(), &timeShift_y,     0.01F,  -10.0F, 10.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -1861,9 +1904,9 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##mt2_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Time scale build",  ("##mt2_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
-			ewRowDrag("Time scale decay",  ("##mt2_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
-			ewRowDrag("Threshold",  ("##mt2_th" + uid).c_str(), &threshold, 0.01f, -2.0f,     2.0f);
+			ewRowDrag("Time scale build",  ("##mt2_tb" + uid).c_str(), &tauBuild,  1.0F,  1.0F,  10000.0F);
+			ewRowDrag("Time scale decay",  ("##mt2_td" + uid).c_str(), &tauDecay,  5.0F,  1.0F, 100000.0F);
+			ewRowDrag("Threshold",  ("##mt2_th" + uid).c_str(), &threshold, 0.01F, -2.0F,     2.0F);
 			ewEndTable();
 		}
 		static constexpr double epsilon = 1e-6;
@@ -2031,9 +2074,9 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##mt_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Time scale build",  ("##mt_tb" + uid).c_str(), &tauBuild,  1.0f,  1.0f,  10000.0f);
-			ewRowDrag("Time scale decay",  ("##mt_td" + uid).c_str(), &tauDecay,  5.0f,  1.0f, 100000.0f);
-			ewRowDrag("Threshold",  ("##mt_th" + uid).c_str(), &threshold, 0.01f, -2.0f,     2.0f);
+			ewRowDrag("Time scale build",  ("##mt_tb" + uid).c_str(), &tauBuild,  1.0F,  1.0F,  10000.0F);
+			ewRowDrag("Time scale decay",  ("##mt_td" + uid).c_str(), &tauDecay,  5.0F,  1.0F, 100000.0F);
+			ewRowDrag("Threshold",  ("##mt_th" + uid).c_str(), &threshold, 0.01F, -2.0F,     2.0F);
 			ewEndTable();
 		}
 		static constexpr double epsilon = 1e-6;
@@ -2055,8 +2098,8 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Dynamics");
 		if (ewBeginTable(("##nf2_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Time scale",           ("##nf2_tau" + uid).c_str(), &tau,          0.5f,   1.0f, 1000.0f);
-			ewRowDrag("Resting level", ("##nf2_rl"  + uid).c_str(), &restingLevel, 0.1f, -30.0f,   30.0f);
+			ewRowDrag("Time scale",           ("##nf2_tau" + uid).c_str(), &tau,          0.5F,   1.0F, 1000.0F);
+			ewRowDrag("Resting level", ("##nf2_rl"  + uid).c_str(), &restingLevel, 0.1F, -30.0F,   30.0F);
 			ewEndTable();
 		}
 		static constexpr double epsilon = 1e-6;
@@ -2091,12 +2134,12 @@ namespace dnf_composer::user_interface
 			if (actFnType == element::SIGMOID)
 			{
 				const auto* sig = dynamic_cast<const element::SigmoidFunction*>(p.activationFunction.get());
-				const float storedXShift    = sig ? static_cast<float>(sig->getXShift())    : 0.0f;
-				const float storedSteepness = sig ? static_cast<float>(sig->getSteepness()) : 10.0f;
+				const float storedXShift    = sig != nullptr ? static_cast<float>(sig->getXShift())    : 0.0F;
+				const float storedSteepness = sig != nullptr ? static_cast<float>(sig->getSteepness()) : 10.0F;
 				auto xShift    = storedXShift;
 				auto steepness = storedSteepness;
-				ewRowDrag("x shift",   ("##nf2_xs" + uid).c_str(), &xShift,    0.1f,  -30.0f, 30.0f);
-				ewRowDrag("Steepness", ("##nf2_st" + uid).c_str(), &steepness, 0.5f,    0.1f, 500.0f);
+				ewRowDrag("x shift",   ("##nf2_xs" + uid).c_str(), &xShift,    0.1F,  -30.0F, 30.0F);
+				ewRowDrag("Steepness", ("##nf2_st" + uid).c_str(), &steepness, 0.5F,    0.1F, 500.0F);
 				if (std::abs(xShift - storedXShift) > epsilon || std::abs(steepness - storedSteepness) > epsilon)
 				{
 					p.activationFunction = std::make_unique<element::SigmoidFunction>(
@@ -2107,9 +2150,9 @@ namespace dnf_composer::user_interface
 			else if (actFnType == element::HEAVISIDE)
 			{
 				const auto* hv = dynamic_cast<const element::HeavisideFunction*>(p.activationFunction.get());
-				const float storedXShift = hv ? static_cast<float>(hv->getXShift()) : 0.0f;
+				const float storedXShift = hv != nullptr ? static_cast<float>(hv->getXShift()) : 0.0F;
 				auto xShift = storedXShift;
-				ewRowDrag("x shift", ("##nf2_hxs" + uid).c_str(), &xShift, 0.1f, -30.0f, 30.0f);
+				ewRowDrag("x shift", ("##nf2_hxs" + uid).c_str(), &xShift, 0.1F, -30.0F, 30.0F);
 				if (std::abs(xShift - storedXShift) > epsilon)
 				{
 					p.activationFunction = std::make_unique<element::HeavisideFunction>(static_cast<double>(xShift));
@@ -2119,12 +2162,12 @@ namespace dnf_composer::user_interface
 			else if (actFnType == element::ABSSIGMOID)
 			{
 				const auto* ab = dynamic_cast<const element::AbsSigmoidFunction*>(p.activationFunction.get());
-				const float storedXShift = ab ? static_cast<float>(ab->getXShift()) : 0.0f;
-				const float storedBeta   = ab ? static_cast<float>(ab->getBeta())   : 100.0f;
+				const float storedXShift = ab != nullptr ? static_cast<float>(ab->getXShift()) : 0.0F;
+				const float storedBeta   = ab != nullptr ? static_cast<float>(ab->getBeta())   : 100.0F;
 				auto xShift = storedXShift;
 				auto beta   = storedBeta;
-				ewRowDrag("x shift", ("##nf2_axs" + uid).c_str(), &xShift, 0.1f,  -30.0f,  30.0f);
-				ewRowDrag("Beta",    ("##nf2_ab"  + uid).c_str(), &beta,   1.0f,    0.1f, 1000.0f);
+				ewRowDrag("x shift", ("##nf2_axs" + uid).c_str(), &xShift, 0.1F,  -30.0F,  30.0F);
+				ewRowDrag("Beta",    ("##nf2_ab"  + uid).c_str(), &beta,   1.0F,    0.1F, 1000.0F);
 				if (std::abs(xShift - storedXShift) > epsilon || std::abs(beta - storedBeta) > epsilon)
 				{
 					p.activationFunction = std::make_unique<element::AbsSigmoidFunction>(
@@ -2134,7 +2177,8 @@ namespace dnf_composer::user_interface
 			}
 			ewEndTable();
 		}
-		if (updated) nf->setParameters(p);
+		if (updated) { nf->setParameters(p);
+}
 	}
 
 	void ElementWindow::modifyElementGaussStimulus2D(const std::shared_ptr<element::Element>& element)
@@ -2153,10 +2197,10 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gs2_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",  ("##gs2_amp" + uid).c_str(), &amplitude, 0.5f,  -50.0f,   50.0f);
-			ewRowDrag("Width",      ("##gs2_w"   + uid).c_str(), &width,     0.1f,    0.1f,  100.0f);
-			ewRowDrag("Position x", ("##gs2_px"  + uid).c_str(), &posX,      0.5f,    0.0f, 1000.0f);
-			ewRowDrag("Position y", ("##gs2_py"  + uid).c_str(), &posY,      0.5f,    0.0f, 1000.0f);
+			ewRowDrag("Amplitude",  ("##gs2_amp" + uid).c_str(), &amplitude, 0.5F,  -50.0F,   50.0F);
+			ewRowDrag("Width",      ("##gs2_w"   + uid).c_str(), &width,     0.1F,    0.1F,  100.0F);
+			ewRowDrag("Position x", ("##gs2_px"  + uid).c_str(), &posX,      0.5F,    0.0F, 1000.0F);
+			ewRowDrag("Position y", ("##gs2_py"  + uid).c_str(), &posY,      0.5F,    0.0F, 1000.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -2195,9 +2239,9 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##gk2_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",        ("##gk2_amp" + uid).c_str(), &amplitude,       0.1f,  -50.0f, 50.0f);
-			ewRowDrag("Width",            ("##gk2_w"   + uid).c_str(), &width,           0.1f,    0.1f, 100.0f);
-			ewRowDrag("Amplitude global", ("##gk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.001f,  -1.0f,  1.0f);
+			ewRowDrag("Amplitude",        ("##gk2_amp" + uid).c_str(), &amplitude,       0.1F,  -50.0F, 50.0F);
+			ewRowDrag("Width",            ("##gk2_w"   + uid).c_str(), &width,           0.1F,    0.1F, 100.0F);
+			ewRowDrag("Amplitude global", ("##gk2_ag"  + uid).c_str(), &amplitudeGlobal, 0.001F,  -1.0F,  1.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -2236,11 +2280,11 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##mhk2_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude exc",    ("##mhk2_ae" + uid).c_str(), &amplitudeExc,    0.1f,   -50.0f, 50.0f);
-			ewRowDrag("Width exc",        ("##mhk2_we" + uid).c_str(), &widthExc,        0.1f,     0.1f, 100.0f);
-			ewRowDrag("Amplitude inh",    ("##mhk2_ai" + uid).c_str(), &amplitudeInh,    0.1f,   -50.0f, 50.0f);
-			ewRowDrag("Width inh",        ("##mhk2_wi" + uid).c_str(), &widthInh,        0.1f,     0.1f, 100.0f);
-			ewRowDrag("Amplitude global", ("##mhk2_ag" + uid).c_str(), &amplitudeGlobal, 0.001f,  -1.0f,   1.0f);
+			ewRowDrag("Amplitude exc",    ("##mhk2_ae" + uid).c_str(), &amplitudeExc,    0.1F,   -50.0F, 50.0F);
+			ewRowDrag("Width exc",        ("##mhk2_we" + uid).c_str(), &widthExc,        0.1F,     0.1F, 100.0F);
+			ewRowDrag("Amplitude inh",    ("##mhk2_ai" + uid).c_str(), &amplitudeInh,    0.1F,   -50.0F, 50.0F);
+			ewRowDrag("Width inh",        ("##mhk2_wi" + uid).c_str(), &widthInh,        0.1F,     0.1F, 100.0F);
+			ewRowDrag("Amplitude global", ("##mhk2_ag" + uid).c_str(), &amplitudeGlobal, 0.001F,  -1.0F,   1.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -2276,7 +2320,7 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##nn2_tbl" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude", ("##nn2_amp" + uid).c_str(), &amplitude, 0.001f, 0.0f, 10.0f);
+			ewRowDrag("Amplitude", ("##nn2_amp" + uid).c_str(), &amplitude, 0.001F, 0.0F, 10.0F);
 			ewEndTable();
 		}
 		static constexpr double epsilon = 1e-6;
@@ -2300,10 +2344,10 @@ namespace dnf_composer::user_interface
 		ewSectionLabel("Shape");
 		if (ewBeginTable(("##ok2_shp" + uid).c_str())) {
 			ewTableSetup();
-			ewRowDrag("Amplitude",      ("##ok2_amp" + uid).c_str(), &amplitude,       0.1f,   0.0f,  50.0f);
-			ewRowDrag("Decay",          ("##ok2_dec" + uid).c_str(), &decay,           0.005f, 0.001f, 10.0f);
-			ewRowDrag("Zero crossings", ("##ok2_zc"  + uid).c_str(), &zeroCrossings,   0.005f, 0.0f,   1.0f);
-			ewRowDrag("Amp. global",    ("##ok2_ag"  + uid).c_str(), &amplitudeGlobal, 0.01f, -10.0f,  0.0f);
+			ewRowDrag("Amplitude",      ("##ok2_amp" + uid).c_str(), &amplitude,       0.1F,   0.0F,  50.0F);
+			ewRowDrag("Decay",          ("##ok2_dec" + uid).c_str(), &decay,           0.005F, 0.001F, 10.0F);
+			ewRowDrag("Zero crossings", ("##ok2_zc"  + uid).c_str(), &zeroCrossings,   0.005F, 0.0F,   1.0F);
+			ewRowDrag("Amp. global",    ("##ok2_ag"  + uid).c_str(), &amplitudeGlobal, 0.01F, -10.0F,  0.0F);
 			ewEndTable();
 		}
 		ewSectionLabel("Options");
@@ -2331,63 +2375,63 @@ namespace dnf_composer::user_interface
 		switch (label)
 		{
 		case element::ElementLabel::NEURAL_FIELD:
-			return ImVec4(0.337f, 0.502f, 0.749f, 1.0f);  // Soft Blue
+			return {0.337F, 0.502F, 0.749F, 1.0F};  // Soft Blue
 		case element::ElementLabel::NORMAL_NOISE:
-			return ImVec4(0.875f, 0.580f, 0.329f, 1.0f);  // Warm Orange
+			return {0.875F, 0.580F, 0.329F, 1.0F};  // Warm Orange
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
-			return ImVec4(0.820f, 0.490f, 0.200f, 1.0f);  // Deep Orange
+			return {0.820F, 0.490F, 0.200F, 1.0F};  // Deep Orange
 		case element::ElementLabel::GAUSS_KERNEL:
-			return ImVec4(0.749f, 0.247f, 0.247f, 1.0f);  // Muted Red
+			return {0.749F, 0.247F, 0.247F, 1.0F};  // Muted Red
 		case element::ElementLabel::GAUSS_STIMULUS:
-			return ImVec4(0.498f, 0.749f, 0.498f, 1.0f);  // Sage Green
+			return {0.498F, 0.749F, 0.498F, 1.0F};  // Sage Green
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
-			return ImVec4(0.604f, 0.475f, 0.749f, 1.0f);  // Lavender
+			return {0.604F, 0.475F, 0.749F, 1.0F};  // Lavender
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
-			return ImVec4(0.647f, 0.400f, 0.278f, 1.0f);  // Warm Brown
+			return {0.647F, 0.400F, 0.278F, 1.0F};  // Warm Brown
 		case element::ElementLabel::FIELD_COUPLING:
-			return ImVec4(0.831f, 0.753f, 0.475f, 1.0f);  // Cream Gold
+			return {0.831F, 0.753F, 0.475F, 1.0F};  // Cream Gold
 		case element::ElementLabel::OSCILLATORY_KERNEL:
-			return ImVec4(0.686f, 0.522f, 0.733f, 1.0f);  // Dusty Rose
+			return {0.686F, 0.522F, 0.733F, 1.0F};  // Dusty Rose
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
-			return ImVec4(0.580f, 0.698f, 0.714f, 1.0f);  // Soft Teal
+			return {0.580F, 0.698F, 0.714F, 1.0F};  // Soft Teal
 		case element::ElementLabel::BOOST_STIMULUS:
-			return ImVec4(0.949f, 0.820f, 0.325f, 1.0f);  // Warm Yellow
+			return {0.949F, 0.820F, 0.325F, 1.0F};  // Warm Yellow
 		case element::ElementLabel::MEMORY_TRACE:
-			return ImVec4(0.431f, 0.627f, 0.549f, 1.0f);  // Sage Green
+			return {0.431F, 0.627F, 0.549F, 1.0F};  // Sage Green
 		case element::ElementLabel::NEURAL_FIELD_2D:
-			return ImVec4(0.293f, 0.437f, 0.651f, 1.0f);  // Deeper Soft Blue
+			return {0.293F, 0.437F, 0.651F, 1.0F};  // Deeper Soft Blue
 		case element::ElementLabel::GAUSS_STIMULUS_2D:
-			return ImVec4(0.433f, 0.651f, 0.433f, 1.0f);  // Deeper Sage Green
+			return {0.433F, 0.651F, 0.433F, 1.0F};  // Deeper Sage Green
 		case element::ElementLabel::GAUSS_KERNEL_2D:
-			return ImVec4(0.651f, 0.216f, 0.216f, 1.0f);  // Deeper Muted Red
+			return {0.651F, 0.216F, 0.216F, 1.0F};  // Deeper Muted Red
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
-			return ImVec4(0.525f, 0.412f, 0.651f, 1.0f);  // Deeper Lavender
+			return {0.525F, 0.412F, 0.651F, 1.0F};  // Deeper Lavender
 		case element::ElementLabel::NORMAL_NOISE_2D:
-			return ImVec4(0.761f, 0.506f, 0.286f, 1.0f);  // Deeper Warm Orange
+			return {0.761F, 0.506F, 0.286F, 1.0F};  // Deeper Warm Orange
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
-			return ImVec4(0.596f, 0.455f, 0.639f, 1.0f);  // Deeper Dusty Rose
+			return {0.596F, 0.455F, 0.639F, 1.0F};  // Deeper Dusty Rose
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
-			return ImVec4(0.380f, 0.631f, 0.380f, 1.0f);  // Darker Sage Green
+			return {0.380F, 0.631F, 0.380F, 1.0F};  // Darker Sage Green
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
-			return ImVec4(0.314f, 0.522f, 0.314f, 1.0f);  // Deepest Sage Green
+			return {0.314F, 0.522F, 0.314F, 1.0F};  // Deepest Sage Green
 		case element::ElementLabel::BOOST_STIMULUS_2D:
-			return ImVec4(0.825f, 0.714f, 0.283f, 1.0f);  // Deeper Warm Yellow
+			return {0.825F, 0.714F, 0.283F, 1.0F};  // Deeper Warm Yellow
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
-			return ImVec4(0.714f, 0.427f, 0.173f, 1.0f);  // Deeper Deep Orange
+			return {0.714F, 0.427F, 0.173F, 1.0F};  // Deeper Deep Orange
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
-			return ImVec4(0.506f, 0.608f, 0.622f, 1.0f);  // Deeper Soft Teal
+			return {0.506F, 0.608F, 0.622F, 1.0F};  // Deeper Soft Teal
 		case element::ElementLabel::MEMORY_TRACE_2D:
-			return ImVec4(0.376f, 0.545f, 0.478f, 1.0f);  // Deeper Sage Green
+			return {0.376F, 0.545F, 0.478F, 1.0F};  // Deeper Sage Green
 		case element::ElementLabel::RESIZE:
-			return ImVec4(0.500f, 0.600f, 0.700f, 1.0f);  // Steel Blue
+			return {0.500F, 0.600F, 0.700F, 1.0F};  // Steel Blue
 		case element::ElementLabel::RESIZE_2D:
-			return ImVec4(0.420f, 0.510f, 0.600f, 1.0f);  // Deeper Steel Blue
+			return {0.420F, 0.510F, 0.600F, 1.0F};  // Deeper Steel Blue
 		case element::ElementLabel::COLLAPSE:
-			return ImVec4(0.450f, 0.650f, 0.620f, 1.0f);  // Teal
+			return {0.450F, 0.650F, 0.620F, 1.0F};  // Teal
 		case element::ElementLabel::EXPAND:
-			return ImVec4(0.380f, 0.560f, 0.530f, 1.0f);  // Deeper Teal
+			return {0.380F, 0.560F, 0.530F, 1.0F};  // Deeper Teal
 		default:
-			return ImVec4(0.498f, 0.498f, 0.498f, 1.0f);  // Neutral Gray
+			return {0.498F, 0.498F, 0.498F, 1.0F};  // Neutral Gray
 		}
 	}
 
@@ -2433,12 +2477,12 @@ namespace dnf_composer::user_interface
 
 		PanelScope p{};
 		p.ui       = ImGui::GetIO().FontGlobalScale;
-		p.rounding = 12.0f * p.ui;
-		p.pad      = ImVec2(10.0f * p.ui, 8.0f * p.ui);
+		p.rounding = 12.0F * p.ui;
+		p.pad      = ImVec2(10.0F * p.ui, 8.0F * p.ui);
 
 		// soft fill/border from base color
-		p.fill   = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.18f));
-		p.border = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.35f));
+		p.fill   = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.18F));
+		p.border = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.35F));
 
 		// fixed rect from the current cursor (screen coords)
 		const ImVec2 topLeft = ImGui::GetCursorScreenPos();
@@ -2448,7 +2492,7 @@ namespace dnf_composer::user_interface
 		// draw the panel *behind* content
 		ImDrawList* dl = ImGui::GetWindowDrawList();
 		dl->AddRectFilled(p.rect.Min, p.rect.Max, p.fill, p.rounding);
-		dl->AddRect      (p.rect.Min, p.rect.Max, p.border, p.rounding, 0, 1.5f * p.ui);
+		dl->AddRect      (p.rect.Min, p.rect.Max, p.border, p.rounding, 0, 1.5F * p.ui);
 
 		// move the cursor inside, honoring padding, then start the content group
 		const auto innerPos = ImVec2(p.rect.Min.x + p.pad.x, p.rect.Min.y + p.pad.y);
@@ -2461,6 +2505,6 @@ namespace dnf_composer::user_interface
 	{
 		ImGui::EndGroup();
 		// advance cursor to just below the panel, keeping normal flow
-		ImGui::SetCursorScreenPos(ImVec2(p.rect.Min.x, p.rect.Max.y + 6.0f * p.ui));
+		ImGui::SetCursorScreenPos(ImVec2(p.rect.Min.x, p.rect.Max.y + 6.0F * p.ui));
 	}
 }

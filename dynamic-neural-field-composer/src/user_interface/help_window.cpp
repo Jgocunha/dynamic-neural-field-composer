@@ -26,10 +26,10 @@ namespace dnf_composer::user_interface
 
 		ImGui::SetNextWindowSize(ImVec2(640.0F * scale, 500.0F * scale), ImGuiCond_Always);
 		ImGui::SetNextWindowPos(
-			ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.5f,
-			       vp->WorkPos.y + vp->WorkSize.y * 0.5f),
+			ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.5F,
+			       vp->WorkPos.y + vp->WorkSize.y * 0.5F),
 			ImGuiCond_Always,
-			ImVec2(0.5f, 0.5f));
+			ImVec2(0.5F, 0.5F));
 
 		constexpr ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoResize        |
@@ -313,8 +313,9 @@ namespace dnf_composer::user_interface
 		renderTip("Adjust the UI scale (70-150%%) via View > UI Scale, or use %s + / %s - keyboard shortcuts.", kCtrl, kCtrl);
 		renderTip("Save via File > Save (%s+S) or Save As (%s+Shift+S). Open a simulation via File > Open (%s+O).", kCtrl, kCtrl, kCtrl);
 
-		for (const auto* tip : kTips)
+		for (const auto* tip : kTips) {
 			renderTip("%s", tip);
+}
 
 		ImGui::PopTextWrapPos();
 	}

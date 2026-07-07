@@ -1,9 +1,8 @@
 ﻿#include "element_parameters/mexican_hat_kernel_parameters.h"
 #include <format>
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		MexicanHatKernelParameters::MexicanHatKernelParameters(double widthExc, double amplitudeExc, double widthInh,
 			double amplitudeInh, bool circular, bool normalized)
@@ -36,4 +35,3 @@ namespace dnf_composer
         widthExc, amplitudeExc, widthInh, amplitudeInh, circular, normalized);
 		}
 	}
-}

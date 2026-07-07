@@ -1,11 +1,9 @@
 ﻿#include "tools/math.h"
 
 
-namespace dnf_composer
-{
-	namespace tools
-	{
-		namespace math
+
+	
+		namespace dnf_composer::tools::math
 		{
 			std::array<int, 2> computeKernelRange(double sigma, int cutOfFactor, int fieldSize, bool circular)
 			{
@@ -56,11 +54,11 @@ namespace dnf_composer
 				std::normal_distribution<> dist(0.0, 1.0);
 
 				std::vector<double> vec(size);
-				for (int i = 0; i < size; ++i)
+				for (int i = 0; i < size; ++i) {
 					vec[i] = dist(gen);
+}
 
 				return vec;
 			}
 		}
-	}
-}
+	

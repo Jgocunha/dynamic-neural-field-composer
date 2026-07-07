@@ -176,7 +176,7 @@ namespace dnf_composer::user_interface
 
         		ImGui::Separator();
         		const auto& io = ImGui::GetIO();
-        		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
+        		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate != 0.0F ? 1000.0F / io.Framerate : 0.0F);
         		ImGui::Separator();
 
         		ImGui::MenuItem("Dear ImGuiStyle Editor", nullptr,
@@ -210,9 +210,9 @@ namespace dnf_composer::user_interface
                          DNF_COMPOSER_VERSION_MAJOR, DNF_COMPOSER_VERSION_MINOR, DNF_COMPOSER_VERSION_PATCH);
                 const float textW = ImGui::CalcTextSize(verBuf.data()).x;
                 const float avail = ImGui::GetContentRegionAvail().x;
-                if (avail > textW + 8.0f)
+                if (avail > textW + 8.0F)
                 {
-                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - textW - 4.0f);
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - textW - 4.0F);
                     ImGui::Text("%s", verBuf.data());
                 }
             }

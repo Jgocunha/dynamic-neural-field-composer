@@ -2,6 +2,8 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/correlated_normal_noise_2d.h"
 
 //https://github.com/stevenlovegrove/Pangolin/issues/352
@@ -17,8 +19,8 @@ namespace dnf_composer::element
 {
 	CorrelatedNormalNoise2D::CorrelatedNormalNoise2D(
 		const ElementCommonParameters& elementCommonParameters,
-		const CorrelatedNormalNoise2DParameters& parameters)
-		: Element(elementCommonParameters), parameters(parameters)
+		CorrelatedNormalNoise2DParameters  parameters)
+		: Element(elementCommonParameters), parameters(std::move(parameters))
 	{
 		commonParameters.identifiers.label = ElementLabel::CORRELATED_NORMAL_NOISE_2D;
 	}
@@ -70,8 +72,9 @@ namespace dnf_composer::element
 			size_x, size_y, extIndex_x, extIndex_y);
 
 		const double scale = parameters.amplitude / std::sqrt(deltaT);
-		for (int i = 0; i < totalSize; ++i)
+		for (int i = 0; i < totalSize; ++i) {
 			components["output"][i] = scale * scratchConv_[i];
+}
 	}
 
 	std::string CorrelatedNormalNoise2D::toString() const

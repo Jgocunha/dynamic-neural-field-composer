@@ -1,9 +1,8 @@
 ﻿#include "element_parameters/gauss_kernel_parameters.h"
 #include <format>
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		GaussKernelParameters::GaussKernelParameters(double width, double amp,
 			bool circular, bool normalized)
@@ -31,4 +30,3 @@ namespace dnf_composer
         width, amplitude, circular, normalized);
 		}
 	}
-}

@@ -10,9 +10,10 @@ namespace dnf_composer::element
 	                                       const TimedGaussStimulusParameters& parameters)
 		: Element(elementCommonParameters), parameters(parameters)
 	{
-		if (parameters.position < 0 || parameters.position >= elementCommonParameters.dimensionParameters.x_max)
+		if (parameters.position < 0 || parameters.position >= elementCommonParameters.dimensionParameters.x_max) {
 			throw Exception(ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE,
 				elementCommonParameters.identifiers.uniqueName);
+}
 
 		commonParameters.identifiers.label = ElementLabel::TIMED_GAUSS_STIMULUS;
 	}
@@ -23,25 +24,28 @@ namespace dnf_composer::element
 		stimulusPattern.resize(size);
 
 		std::vector<double> g(size);
-		if (parameters.circular)
+		if (parameters.circular) {
 			g = tools::math::circularGauss(size, parameters.width,
 				parameters.position / commonParameters.dimensionParameters.d_x);
-		else
+		} else {
 			g = tools::math::gauss(size, parameters.width,
 				parameters.position / commonParameters.dimensionParameters.d_x);
+}
 
 		if (!parameters.normalized)
 		{
-			for (int i = 0; i < size; ++i)
+			for (int i = 0; i < size; ++i) {
 				stimulusPattern[i] = parameters.amplitude * g[i];
+}
 		}
 		else
 		{
 			const double sum = tools::math::calculateVectorSum(g);
-			if (sum != 0.0)
-				for (int i = 0; i < size; ++i)
+			if (sum != 0.0) {
+				for (int i = 0; i < size; ++i) {
 					stimulusPattern[i] = parameters.amplitude * g[i] / sum;
-			else
+}
+			} else
 			{
 				const std::string message = "Tried to normalize TimedGaussStimulus '"
 					+ getUniqueName() + "' but sum of Gaussian is zero.";
@@ -59,10 +63,11 @@ namespace dnf_composer::element
 			return t >= interval.first && t <= interval.second;
 		});
 
-		if (isOn)
+		if (isOn) {
 			components["output"] = stimulusPattern;
-		else
+		} else {
 			std::ranges::fill(components["output"], 0.0);
+}
 	}
 
 	std::string TimedGaussStimulus::toString() const
@@ -80,9 +85,10 @@ namespace dnf_composer::element
 
 	void TimedGaussStimulus::setParameters(const TimedGaussStimulusParameters& p)
 	{
-		if (p.position < 0 || p.position >= commonParameters.dimensionParameters.x_max)
+		if (p.position < 0 || p.position >= commonParameters.dimensionParameters.x_max) {
 			throw Exception(ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE,
 				commonParameters.identifiers.uniqueName);
+}
 		parameters = p;
 		init();
 	}

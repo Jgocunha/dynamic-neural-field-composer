@@ -11,5 +11,5 @@ Checks: >
   performance-*
 
 HeaderFilterRegex: 'include/.*'
-WarningsAsErrors: ''
+WarningsAsErrors: '*'
 FormatStyle: none

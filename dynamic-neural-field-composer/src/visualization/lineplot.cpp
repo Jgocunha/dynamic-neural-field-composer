@@ -1,6 +1,7 @@
 #include "visualization/lineplot.h"
 
 #include <array>
+#include <utility>
 #include "application/application.h"
 
 namespace dnf_composer
@@ -25,16 +26,12 @@ namespace dnf_composer
 	bool LinePlotParameters::operator==(const LinePlotParameters& other) const
 	{
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(lineThickness - other.lineThickness) > epsilon || autoFit != other.autoFit)
-		{
-			return false;
-		}
-		return true;
+		return std::abs(lineThickness - other.lineThickness) <= epsilon && autoFit == other.autoFit;
 	}
 
 
-	LinePlot::LinePlot(const PlotCommonParameters& parameters, const LinePlotParameters& linePlotParameters)
-		: Plot(parameters), linePlotParameters(linePlotParameters)
+	LinePlot::LinePlot(const PlotCommonParameters& parameters, LinePlotParameters  linePlotParameters)
+		: Plot(parameters), linePlotParameters(std::move(linePlotParameters))
 	{
 		if (commonParameters.type != PlotType::LINE_PLOT)
 		{
@@ -59,7 +56,7 @@ namespace dnf_composer
 
 	double LinePlot::getAutoFit() const
 	{
-		return linePlotParameters.autoFit;
+		return static_cast<double>(linePlotParameters.autoFit);
 	}
 
 	std::string LinePlot::toString() const
@@ -78,7 +75,7 @@ namespace dnf_composer
 		bool whereDimensionsChangedByUser = false;
 
         const ImVec2 availableRegionSize = ImGui::GetContentRegionAvail();
-        const ImVec2 plotSize = ImVec2(availableRegionSize.x - 5.0f, availableRegionSize.y - 5.0f);
+        const ImVec2 plotSize = ImVec2(availableRegionSize.x - 5.0F, availableRegionSize.y - 5.0F);
 
         ImPlotFlags flags = ImPlotFlags_Crosshairs;
         const std::string uniquePlotID = commonParameters.annotations.title + "##" + std::to_string(uniqueIdentifier);
@@ -106,27 +103,27 @@ namespace dnf_composer
         {
 			if (ImGui::BeginMenu("Dimensions"))
 			{
-				if (ImGui::DragFloat("X max", &x_max, 0.1f, x_min, 1000))
+				if (ImGui::DragFloat("X max", &x_max, 0.1F, x_min, 1000))
 				{
 					commonParameters.dimensions.xMax = x_max;
 					whereDimensionsChangedByUser = true;
 				}
-				if (ImGui::DragFloat("Y max", &y_max, 0.1f, y_min, 1000))
+				if (ImGui::DragFloat("Y max", &y_max, 0.1F, y_min, 1000))
 				{
 					commonParameters.dimensions.yMax = y_max;
 					whereDimensionsChangedByUser = true;
 				}
-				if (ImGui::DragFloat("X min", &x_min, 0.1f, -1000, x_max))
+				if (ImGui::DragFloat("X min", &x_min, 0.1F, -1000, x_max))
 				{
 					commonParameters.dimensions.xMin = x_min;
 					whereDimensionsChangedByUser = true;
 				}
-				if (ImGui::DragFloat("Y min", &y_min, 0.1f, -10000, y_max))
+				if (ImGui::DragFloat("Y min", &y_min, 0.1F, -10000, y_max))
 				{
 					commonParameters.dimensions.yMin = y_min;
 					whereDimensionsChangedByUser = true;
 				}
-				if (ImGui::DragFloat("X step", &x_step, 0.1f, 0.1f, 1000))
+				if (ImGui::DragFloat("X step", &x_step, 0.1F, 0.1F, 1000))
 				{
 					commonParameters.dimensions.xStep = x_step;
 					whereDimensionsChangedByUser = true;
@@ -161,7 +158,7 @@ namespace dnf_composer
 
             if (ImGui::BeginMenu("Line Thickness"))
             {
-                ImGui::SliderFloat("##LineWeight", &lineWeight, 0.1f, 10.0f);
+                ImGui::SliderFloat("##LineWeight", &lineWeight, 0.1F, 10.0F);
 				linePlotParameters.lineThickness = lineWeight;
                 ImGui::EndMenu();
             }
@@ -219,7 +216,7 @@ namespace dnf_composer
             ImPlot::SetupAxes(commonParameters.annotations.x_label.c_str(), commonParameters.annotations.y_label.c_str());
             if (whereDimensionsChangedByUser) {
                 auto* currentPlot = ImPlot::GetCurrentPlot();
-                if (currentPlot) {
+                if (currentPlot != nullptr) {
                     currentPlot->Axes[0].Range.Min = commonParameters.dimensions.xMin - safeMargin;
                     currentPlot->Axes[0].Range.Max = commonParameters.dimensions.xMax + safeMargin;
                     currentPlot->Axes[3].Range.Min = commonParameters.dimensions.yMin - safeMargin;

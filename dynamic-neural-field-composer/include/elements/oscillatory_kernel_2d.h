@@ -98,7 +98,7 @@ namespace dnf_composer::element
 		std::vector<double> scratchConvolution_;
 	public:
 		OscillatoryKernel2D(const ElementCommonParameters& elementCommonParameters,
-		                    const OscillatoryKernel2DParameters& parameters);
+		                    OscillatoryKernel2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

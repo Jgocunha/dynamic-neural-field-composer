@@ -2,14 +2,16 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/asymmetric_gauss_kernel_2d.h"
 
 namespace dnf_composer::element
 {
 	AsymmetricGaussKernel2D::AsymmetricGaussKernel2D(
 		const ElementCommonParameters& elementCommonParameters,
-		const AsymmetricGaussKernel2DParameters& parameters)
-		: Kernel(elementCommonParameters), parameters(parameters)
+		AsymmetricGaussKernel2DParameters  parameters)
+		: Kernel(elementCommonParameters), parameters(std::move(parameters))
 	{
 		commonParameters.identifiers.label = ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D;
 	}
@@ -39,7 +41,8 @@ namespace dnf_composer::element
 			std::vector<int> rangeVec(kSize);
 			std::iota(rangeVec.begin(), rangeVec.end(), -static_cast<int>(kernelRange_x[0]));
 
-			std::vector<double> g, gd;
+			std::vector<double> g;
+			std::vector<double> gd;
 			if (parameters.normalized)
 			{
 				g  = tools::math::gaussNorm(rangeVec, 0.0, parameters.width);
@@ -52,8 +55,9 @@ namespace dnf_composer::element
 			}
 
 			kernel_1d_x.resize(kSize);
-			for (int i = 0; i < kSize; ++i)
+			for (int i = 0; i < kSize; ++i) {
 				kernel_1d_x[i] = g[i] + parameters.timeShift_x * gd[i];
+}
 		}
 
 		// Build y-axis kernel: gauss + timeShift_y * gaussDerivative (no amplitude)
@@ -62,7 +66,8 @@ namespace dnf_composer::element
 			std::vector<int> rangeVec(kSize);
 			std::iota(rangeVec.begin(), rangeVec.end(), -static_cast<int>(kernelRange_y[0]));
 
-			std::vector<double> g, gd;
+			std::vector<double> g;
+			std::vector<double> gd;
 			if (parameters.normalized)
 			{
 				g  = tools::math::gaussNorm(rangeVec, 0.0, parameters.width);
@@ -75,20 +80,24 @@ namespace dnf_composer::element
 			}
 
 			kernel_1d_y.resize(kSize);
-			for (int i = 0; i < kSize; ++i)
+			for (int i = 0; i < kSize; ++i) {
 				kernel_1d_y[i] = g[i] + parameters.timeShift_y * gd[i];
+}
 		}
 
 		// Apply amplitude to x only to avoid amplitude² scaling in separable convolution
-		for (auto& v : kernel_1d_x) v *= parameters.amplitude;
+		for (auto& v : kernel_1d_x) { v *= parameters.amplitude;
+}
 
 		// Populate components["kernel"] with the outer product (row-major)
 		const int kx = static_cast<int>(kernel_1d_x.size());
 		const int ky = static_cast<int>(kernel_1d_y.size());
-		components["kernel"].resize(kx * ky);
-		for (int i = 0; i < kx; ++i)
-			for (int j = 0; j < ky; ++j)
+		components["kernel"].resize(static_cast<std::size_t>(kx) * ky);
+		for (int i = 0; i < kx; ++i) {
+			for (int j = 0; j < ky; ++j) {
 				components["kernel"][j * kx + i] = kernel_1d_x[i] * kernel_1d_y[j];
+}
+}
 
 		const int totalSize = size_x * size_y;
 		scratchTmp_.assign(totalSize, 0.0);
@@ -114,8 +123,9 @@ namespace dnf_composer::element
 			size_x, size_y, extIndex_x, extIndex_y);
 
 		const double globalOffset = parameters.amplitudeGlobal * fullSum;
-		for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
+		for (int i = 0; i < static_cast<int>(components["output"].size()); ++i) {
 			components["output"][i] = scratchConvolution_[i] + globalOffset;
+}
 	}
 
 	std::string AsymmetricGaussKernel2D::toString() const

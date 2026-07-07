@@ -1,8 +1,7 @@
 #include "elements/resize_2d.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		namespace
 		{
@@ -66,21 +65,25 @@ namespace dnf_composer
 			// Pass 1: resample each row along x (inSizeX -> outSizeX) into scratch (outSizeX x inSizeY).
 			for (int y = 0; y < inSizeY; ++y)
 			{
-				for (int x = 0; x < inSizeX; ++x)
+				for (int x = 0; x < inSizeX; ++x) {
 					rowIn[x] = in[static_cast<std::size_t>(y) * inSizeX + x];
+}
 				resample1d(rowIn, rowOut, parameters.method);
-				for (int x = 0; x < outSizeX; ++x)
+				for (int x = 0; x < outSizeX; ++x) {
 					scratch[static_cast<std::size_t>(y) * outSizeX + x] = rowOut[x];
+}
 			}
 
 			// Pass 2: resample each column along y (inSizeY -> outSizeY) into out (outSizeX x outSizeY).
 			for (int x = 0; x < outSizeX; ++x)
 			{
-				for (int y = 0; y < inSizeY; ++y)
+				for (int y = 0; y < inSizeY; ++y) {
 					colIn[y] = scratch[static_cast<std::size_t>(y) * outSizeX + x];
+}
 				resample1d(colIn, colOut, parameters.method);
-				for (int y = 0; y < outSizeY; ++y)
+				for (int y = 0; y < outSizeY; ++y) {
 					out[static_cast<std::size_t>(y) * outSizeX + x] = colOut[y];
+}
 			}
 		}
 
@@ -142,4 +145,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

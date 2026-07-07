@@ -20,8 +20,9 @@ namespace dnf_composer::element
 	void Element::changeDimensions(const ElementDimensions& newDimensions)
 	{
 		commonParameters.dimensionParameters = newDimensions;
-		for (auto &vec: components | std::views::values)
+		for (auto &vec: components | std::views::values) {
 			vec.assign(newDimensions.size, 0.0);
+}
 		inputPtr = nullptr; // components ["input"] was reallocated; rebuild cache on next updateInput()
 		init();
 	}
@@ -78,7 +79,7 @@ namespace dnf_composer::element
 
 	void Element::removeInput(const std::string& inputElementId)
 	{
-		for (auto& key : inputs | std::views::keys)
+		for (const auto& key : inputs | std::views::keys)
 		{
 			if (key->commonParameters.identifiers.uniqueName == inputElementId) {
 				inputs.erase(key);
@@ -92,7 +93,7 @@ namespace dnf_composer::element
 
 	void Element::removeInput(const int uniqueId)
 	{
-		for (auto& key : inputs | std::views::keys)
+		for (const auto& key : inputs | std::views::keys)
 		{
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 				inputs.erase(key);
@@ -110,9 +111,7 @@ namespace dnf_composer::element
 			const auto& [key, value] = pair;
 			return key->commonParameters.identifiers.uniqueName == inputElementName && value == inputComponent;
 		});
-		if (found)
-			return true;
-		return false;
+		return found;
 	}
 
 	bool Element::hasInput(int inputElementId, const std::string& inputComponent)
@@ -121,9 +120,7 @@ namespace dnf_composer::element
 			const auto& [key, value] = pair;
 			return key->commonParameters.identifiers.uniqueIdentifier == inputElementId && value == inputComponent;
 		});
-		if (found)
-			return true;
-		return false;
+		return found;
 	}
 
 	void Element::removeInputs()
@@ -155,12 +152,15 @@ namespace dnf_composer::element
 
 	void Element::updateInput()
 	{
-		if (!inputPtr)
+		if (inputPtr == nullptr) {
 			buildInputCache();
+}
 		std::fill_n(inputPtr, inputSize, 0.0);
-		for (const auto&[src, size] : cachedInputs)
-			for (std::size_t i = 0; i < size; ++i)
+		for (const auto&[src, size] : cachedInputs) {
+			for (std::size_t i = 0; i < size; ++i) {
 				inputPtr[i] += src[i];
+}
+}
 	}
 
 	int Element::getMaxSpatialDimension() const
@@ -179,9 +179,7 @@ namespace dnf_composer::element
 			const auto& [key, value] = pair;
 			return key->commonParameters.identifiers.uniqueName == outputElementName && value == outputComponent;
 		});
-		if (found)
-			return true;
-		return false;
+		return found;
 	}
 
 	ElementCommonParameters Element::getElementCommonParameters() const
@@ -195,9 +193,7 @@ namespace dnf_composer::element
 			const auto& [key, value] = pair;
 			return key->commonParameters.identifiers.uniqueIdentifier == outputElementId && value == outputComponent;
 		});
-		if (found)
-			return true;
-		return false;
+		return found;
 	}
 
 	void Element::removeOutputs()
@@ -205,7 +201,7 @@ namespace dnf_composer::element
 		// views::keys can be used
 		for (const auto &key: outputs | std::views::keys)
 		{
-			const auto outputElement = key;
+			const auto& outputElement = key;
 			outputElement->inputs.erase(this->shared_from_this());
 		}
 		outputs.clear();
@@ -218,7 +214,7 @@ namespace dnf_composer::element
 
 	void Element::removeOutput(const int uniqueId)
 	{
-		for (auto& key : outputs | std::views::keys)
+		for (const auto& key : outputs | std::views::keys)
 		{
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 				outputs.erase(key);
@@ -231,7 +227,7 @@ namespace dnf_composer::element
 
 	void Element::removeOutput(const std::string& outputElementId)
 	{
-		for (auto& key : outputs | std::views::keys)
+		for (const auto& key : outputs | std::views::keys)
 		{
 			if (key->commonParameters.identifiers.uniqueName == outputElementId) {
 				outputs.erase(key);
@@ -264,15 +260,17 @@ namespace dnf_composer::element
 
 	std::vector<double> Element::getComponent(const std::string& componentName)
 	{
-		if (components.contains(componentName))
+		if (components.contains(componentName)) {
 			return components.at(componentName);
+}
 		throw Exception(ErrorCode::ELEM_COMP_NOT_FOUND, commonParameters.identifiers.uniqueName, componentName);
 	}
 
 	std::vector<double>* Element::getComponentPtr(const std::string& componentName)
 	{
-		if (components.contains(componentName))
+		if (components.contains(componentName)) {
 			return &components.at(componentName);
+}
 		throw Exception(ErrorCode::ELEM_COMP_NOT_FOUND, commonParameters.identifiers.uniqueName, componentName);
 	}
 
@@ -301,8 +299,9 @@ namespace dnf_composer::element
 		std::vector<std::shared_ptr<Element>> inputVec;
 		inputVec.reserve(inputs.size());
 
-		for (const auto& key : inputs | std::views::keys)
+		for (const auto& key : inputs | std::views::keys) {
 			inputVec.push_back(key);
+}
 
 		return inputVec;
 	}
@@ -327,8 +326,9 @@ namespace dnf_composer::element
 		std::vector<std::shared_ptr<Element>> outputVec;
 		outputVec.reserve(outputs.size());
 
-		for (const auto& key : outputs | std::views::keys)
+		for (const auto& key : outputs | std::views::keys) {
 			outputVec.push_back(key);
+}
 
 		return outputVec;
 	}

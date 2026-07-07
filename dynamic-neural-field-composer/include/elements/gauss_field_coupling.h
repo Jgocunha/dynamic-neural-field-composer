@@ -116,7 +116,7 @@ namespace dnf_composer::element
 		/// @param elementCommonParameters  Name, label, and output field dimensions.
 		/// @param gfc_parameters           Coupling parameters (source dims + coupling list).
 		GaussFieldCoupling(const ElementCommonParameters& elementCommonParameters,
-		                   const GaussFieldCouplingParameters& gfc_parameters);
+		                   GaussFieldCouplingParameters  gfc_parameters);
 
 		/// @brief Append a new point-coupling at runtime.
 		/// @param coupling  The GaussCoupling to add.

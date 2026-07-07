@@ -40,10 +40,10 @@ namespace dnf_composer
 		}
 	}
 
-	PlotDimensions::PlotDimensions(double xStep)
-		: xMin(0), xMax(100), yMin(0), yMax(1), xStep(xStep), yStep(1.0)
+	PlotDimensions::PlotDimensions(const double x_step)
+		: xMin(0), xMax(100), yMin(0), yMax(1), xStep(x_step), yStep(1.0)
 	{
-		if (xStep <= 0)
+		if (x_step <= 0)
 		{
 			this->xStep = 1.0;
 			log(tools::logger::LogLevel::WARNING, "xStep must be positive.");
@@ -121,9 +121,7 @@ namespace dnf_composer
 
 	bool PlotCommonParameters::operator==(const PlotCommonParameters& other) const
 	{
-		if (dimensions != other.dimensions || annotations != other.annotations)
-			return false;
-		return true;
+		return !(dimensions != other.dimensions || annotations != other.annotations);
 	}
 
 }

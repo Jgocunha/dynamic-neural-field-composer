@@ -1,9 +1,8 @@
 ﻿#include "element_parameters/gauss_stimulus_parameters.h"
 #include <format>
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 
 		GaussStimulusParameters::GaussStimulusParameters(double width, double amplitude,
@@ -33,4 +32,3 @@ namespace dnf_composer
         width, amplitude, position, circular, normalized);
 		}
 	}
-}

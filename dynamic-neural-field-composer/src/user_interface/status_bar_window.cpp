@@ -3,17 +3,8 @@
 #include "application/application.h"
 
 
-namespace dnf_composer
+namespace dnf_composer::user_interface
 {
-	extern ImFont* g_BlackLargeFont;
-	extern ImFont* g_BlackMediumFont;
-	extern ImFont* g_BlackSmallFont;
-	extern ImFont* g_MonoMediumFont;
-	extern ImFont* g_MediumIconsFont;
-	extern ImFont* g_SmallIconsFont;
-
-	namespace user_interface
-	{
 		StatusBarWindow::StatusBarWindow(const std::shared_ptr<Simulation> &simulation)
         :simulation(simulation)
 		{}
@@ -21,8 +12,8 @@ namespace dnf_composer
 		void StatusBarWindow::render()
 		{
 			const ImGuiViewport* vp = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, vp->WorkPos.y + vp->WorkSize.y - 28.0f), ImGuiCond_FirstUseEver);
-			ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x, 28.0f), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, vp->WorkPos.y + vp->WorkSize.y - 28.0F), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x, 28.0F), ImGuiCond_FirstUseEver);
 
 			const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
 				| ImGuiWindowFlags_NoScrollbar
@@ -41,16 +32,17 @@ namespace dnf_composer
 
 		void StatusBarWindow::drawContents() const
 		{
-			if (const float slackTop = (ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight()) * 0.5f; slackTop > 0.0f)
+			if (const float slackTop = (ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight()) * 0.5F; slackTop > 0.0F) {
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + slackTop);
+}
 
 			constexpr float sep = 20.0F;
 			const bool running = simulation->isInitialized() && !simulation->isPaused();
 			const bool paused  = simulation->isInitialized() &&  simulation->isPaused();
 
-			const ImVec4 dotColor = running ? ImVec4(0.20f, 0.75f, 0.20f, 1.0f)
-							: paused  ? ImVec4(0.90f, 0.70f, 0.10f, 1.0f)
-										: ImVec4(0.75f, 0.20f, 0.20f, 1.0f);
+			const ImVec4 dotColor = running ? ImVec4(0.20F, 0.75F, 0.20F, 1.0F)
+							: paused  ? ImVec4(0.90F, 0.70F, 0.10F, 1.0F)
+										: ImVec4(0.75F, 0.20F, 0.20F, 1.0F);
 			const char* stateStr  = running ? "Running" : paused ? "Paused" : "Stopped";
 
 			ImGui::TextColored(dotColor, "\xe2\x97\x8f");  // U+25CF BLACK CIRCLE
@@ -124,5 +116,4 @@ namespace dnf_composer
 			ImGui::TextUnformatted(memBuf);
 			ImGui::PopFont();
 		}
-    }
 }

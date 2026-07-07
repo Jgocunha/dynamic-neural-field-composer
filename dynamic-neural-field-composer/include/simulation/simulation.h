@@ -106,10 +106,10 @@ namespace dnf_composer
 		/// @brief Disconnect all connections from @p elementId and resize it to @p newDimensions.
 		/// @param elementId      Unique name of the element to resize.
 		/// @param newDimensions  New spatial discretization.
-		void changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions);
+		void changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions) const;
 
 		/// @brief Rename an element. No-op if oldName does not exist or newName is already in use.
-		void renameElement(const std::string& oldName, const std::string& newName);
+		void renameElement(const std::string& oldName, const std::string& newName) const;
 
 		/// @brief Wire @p stimulusElementId's @p stimulusComponent as input to @p receivingElementId.
 		/// @param stimulusElementId   Source element name.

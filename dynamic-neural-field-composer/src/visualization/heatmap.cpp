@@ -1,5 +1,6 @@
 #include "visualization/heatmap.h"
 #include <cmath>
+#include <utility>
 
 namespace dnf_composer
 {
@@ -24,13 +25,11 @@ namespace dnf_composer
 	bool HeatmapParameters::operator==(const HeatmapParameters& other) const
 	{
 		static constexpr double epsilon = 1e-6;
-		if (std::abs(scaleMin - other.scaleMin) > epsilon || std::abs(scaleMax - other.scaleMax) > epsilon)
-			return false;
-		return true;
+		return std::abs(scaleMin - other.scaleMin) <= epsilon && std::abs(scaleMax - other.scaleMax) <= epsilon;
 	}
 
-	Heatmap::Heatmap(const PlotCommonParameters& parameters, const HeatmapParameters& heatmapParameters)
-		: Plot(parameters), heatmapParameters(heatmapParameters)
+	Heatmap::Heatmap(const PlotCommonParameters& parameters, HeatmapParameters  heatmapParameters)
+		: Plot(parameters), heatmapParameters(std::move(heatmapParameters))
 	{
 	}
 
@@ -71,7 +70,7 @@ namespace dnf_composer
 	void Heatmap::render(const std::vector<std::vector<double>*>& data, const std::vector<std::string>& legends)
 	{
 		const ImVec2 availableRegionSize = ImGui::GetContentRegionAvail();
-		const ImVec2 plotSize = ImVec2(availableRegionSize.x - 65.0f, availableRegionSize.y - 5.0f);
+		const ImVec2 plotSize = ImVec2(availableRegionSize.x - 65.0F, availableRegionSize.y - 5.0F);
 
 		const std::string uniquePlotID = commonParameters.annotations.title + "##" + std::to_string(uniqueIdentifier);
 
@@ -101,29 +100,37 @@ namespace dnf_composer
 			if (ImGui::BeginMenu("Dimensions"))
 			{
 				bool autoDim = heatmapParameters.autoDimensions;
-				if (ImGui::Checkbox("Auto-fit from data", &autoDim))
+				if (ImGui::Checkbox("Auto-fit from data", &autoDim)) {
 					heatmapParameters.autoDimensions = autoDim;
-				if (ImGui::IsItemHovered())
+}
+				if (ImGui::IsItemHovered()) {
 					ImGui::SetTooltip(
 						"Automatically derive rows and columns from the\n"
 						"data size. Finds the two integer factors closest\n"
 						"to a square root (works for square and rectangular\n"
 						"weight matrices). Manual settings are ignored.");
+}
 				if (!heatmapParameters.autoDimensions)
 				{
 					ImGui::Separator();
-					if(ImGui::DragInt("X max", &x_max, 1, x_min, 1000))
+					if(ImGui::DragInt("X max", &x_max, 1, x_min, 1000)) {
 						commonParameters.dimensions.xMax = x_max;
-					if(ImGui::DragInt("Y max", &y_max, 1, y_min, 1000))
+}
+					if(ImGui::DragInt("Y max", &y_max, 1, y_min, 1000)) {
 						commonParameters.dimensions.yMax = y_max;
-					if(ImGui::DragInt("X min", &x_min, 1, 0, x_max))
+}
+					if(ImGui::DragInt("X min", &x_min, 1, 0, x_max)) {
 						commonParameters.dimensions.xMin = x_min;
-					if(ImGui::DragInt("Y min", &y_min, 1, 0, y_max))
+}
+					if(ImGui::DragInt("Y min", &y_min, 1, 0, y_max)) {
 						commonParameters.dimensions.yMin = y_min;
-					if (ImGui::DragFloat("X step", &x_step, 0.1f, 0.1f, 1000))
+}
+					if (ImGui::DragFloat("X step", &x_step, 0.1F, 0.1F, 1000)) {
 						commonParameters.dimensions.xStep = x_step;
-					if (ImGui::DragFloat("Y step", &y_step, 0.1f, 0.1f, 1000))
+}
+					if (ImGui::DragFloat("Y step", &y_step, 0.1F, 0.1F, 1000)) {
 						commonParameters.dimensions.yStep = y_step;
+}
 				}
 				ImGui::EndMenu();
 			}
@@ -151,7 +158,7 @@ namespace dnf_composer
 			if (ImGui::BeginMenu("Colormap"))
 			{
 				if (ImPlot::ColormapButton(ImPlot::GetColormapName(map),
-					ImVec2(availableRegionSize.x - 90.0f, 0.0f), map))
+					ImVec2(availableRegionSize.x - 90.0F, 0.0F), map))
 				{
 					map = (map + 1) % ImPlot::GetColormapCount();
 					ImPlot::BustColorCache(uniquePlotID.c_str());
@@ -162,7 +169,7 @@ namespace dnf_composer
 			if (ImGui::BeginMenu("Scale"))
 			{
 				ImGui::DragFloatRange2("Min / Max", &scaleMin,
-					&scaleMax, 0.01f, -20, 20);
+					&scaleMax, 0.01F, -20, 20);
 				heatmapParameters.scaleMin = scaleMin;
 				heatmapParameters.scaleMax = scaleMax;
 				ImGui::Checkbox("Auto scale", &autoScale);
@@ -173,10 +180,11 @@ namespace dnf_composer
 			ImGui::EndMenuBar();
 		}
 
-		if (data.size() != 1)
+		if (data.size() != 1) {
 			return;
+}
 
-		const auto flattened_matrix = data[0];
+		auto *const flattened_matrix = data[0];
 
 		if (autoScale)
 		{
@@ -187,7 +195,8 @@ namespace dnf_composer
 			scaleMax = static_cast<float>(heatmapParameters.scaleMax);
 		}
 
-		int rows, cols;
+		int rows;
+		int cols;
 		if (heatmapParameters.autoDimensions)
 		{
 			if (heatmapParameters.hintRows > 0 && heatmapParameters.hintCols > 0)
@@ -203,8 +212,9 @@ namespace dnf_composer
 				// each other (most square-like — works when no hint is available).
 				const int total = static_cast<int>(flattened_matrix->size());
 				rows = static_cast<int>(std::sqrt(static_cast<float>(total)));
-				while (rows > 1 && total % rows != 0)
+				while (rows > 1 && total % rows != 0) {
 					--rows;
+}
 				cols = (rows > 0) ? total / rows : total;
 			}
 			// Keep axis bounds in sync so the tick labels match the data

@@ -65,7 +65,7 @@ namespace dnf_composer::element
 		MemoryTrace2DParameters parameters;
 	public:
 		MemoryTrace2D(const ElementCommonParameters& elementCommonParameters,
-		              const MemoryTrace2DParameters& parameters);
+		              MemoryTrace2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

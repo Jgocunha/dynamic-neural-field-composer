@@ -1,8 +1,7 @@
 ﻿#include "elements/normal_noise.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		NormalNoise::NormalNoise(const ElementCommonParameters& elementCommonParameters, NormalNoiseParameters parameters)
 			: Element(elementCommonParameters), parameters(std::move(parameters))
@@ -19,8 +18,9 @@ namespace dnf_composer
 		{
 			const std::vector<double> rand = tools::math::generateNormalVector(commonParameters.dimensionParameters.size);
 
-			for (int i = 0; i < commonParameters.dimensionParameters.size; i++)
+			for (int i = 0; i < commonParameters.dimensionParameters.size; i++) {
 				components["output"][i] = parameters.amplitude / sqrt(deltaT) * rand[i];
+}
 		}
 
 		std::shared_ptr<Element> NormalNoise::clone() const
@@ -48,4 +48,3 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
