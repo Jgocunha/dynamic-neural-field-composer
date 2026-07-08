@@ -831,6 +831,8 @@ namespace dnf_composer::tools::math
 	struct Conv2dScratch
 	{
 		std::vector<T> row, col, convRow, convCol, extRow, extCol;
+		// Column-major tiles for the cache-blocked y-pass (up to 64 columns).
+		std::vector<T> tileIn, tileOut;
 
 		void ensure(int size_x, int size_y, std::size_t extX, std::size_t extY)
 		{
@@ -840,13 +842,18 @@ namespace dnf_composer::tools::math
 			if (convCol.size() != static_cast<std::size_t>(size_y)) convCol.assign(size_y, T());
 			if (extRow.size()  != extX) extRow.assign(extX, T());
 			if (extCol.size()  != extY) extCol.assign(extY, T());
+			const std::size_t tile = static_cast<std::size_t>(std::min(64, size_x)) * size_y;
+			if (tileIn.size()  != tile) tileIn.assign(tile, T());
+			if (tileOut.size() != tile) tileOut.assign(tile, T());
 		}
 	};
 
 	// In-place 2D separable convolution into caller-supplied buffers, reusing the
-	// six temporaries held in `scratch` (no per-call heap allocation). `out` and
-	// `tmp` must be pre-sized to size_x * size_y; `scratch` must be ensure()'d for
-	// these dimensions and extension lengths. This is the hot-path overload.
+	// temporaries held in `scratch` (no per-call heap allocation). `out` and
+	// `tmp` must be pre-sized to size_x * size_y and must be DISTINCT buffers
+	// (the y-pass reads tmp rows while writing out rows); `scratch` must be
+	// ensure()'d for these dimensions and extension lengths. This is the
+	// hot-path overload.
 	template<typename T>
 	void conv2d_separable_into(
 		std::vector<T>& out,
@@ -865,28 +872,35 @@ namespace dnf_composer::tools::math
 		std::vector<T>& row     = scratch.row;
 		std::vector<T>& col     = scratch.col;
 		std::vector<T>& convRow = scratch.convRow;
-		std::vector<T>& convCol = scratch.convCol;
 		std::vector<T>& extRow  = scratch.extRow;
-		std::vector<T>& extCol  = scratch.extCol;
 
-		// conv_valid_into derives its output length from extRow/extCol .size(), so
-		// these must match THIS call's extension length exactly — not the scratch's
+		// conv_valid_into derives its output length from extRow .size(), so it
+		// must match THIS call's extension length exactly — not the scratch's
 		// high-water capacity. (MexicanHat calls this twice with different kernel
 		// widths sharing one scratch; sizing to the max would make the narrower
 		// kernel emit > size_x outputs and overflow convRow.) resize() keeps the
 		// capacity ensure() reserved, so no reallocation occurs.
 		if (circular_x) extRow.resize(extIndex_x.size());
-		if (circular_y) extCol.resize(extIndex_y.size());
 
-		// x-pass: convolve each row (fixed y) with kernel_x. The row is a contiguous
-		// slice of `field`, so feed it directly (no copy in the circular path).
+		// x-pass: convolve each row (fixed y) with kernel_x. The circular
+		// extension is three contiguous copies — createExtendedIndex lays the
+		// extended row out as [last kR1 elems | whole row | first kR0 elems]
+		// (1-based indices), so kR1 = size_x - extIndex_x[0] + 1.
 		const T* __restrict fld = field.data();
+		int kR0_x = 0, kR1_x = 0;
+		if (circular_x)
+		{
+			kR1_x = size_x - extIndex_x[0] + 1;
+			kR0_x = static_cast<int>(extIndex_x.size()) - size_x - kR1_x;
+		}
 		for (int y = 0; y < size_y; ++y)
 		{
 			if (circular_x)
 			{
-				for (int i = 0; i < static_cast<int>(extIndex_x.size()); ++i)
-					extRow[i] = fld[y * size_x + (extIndex_x[i] - 1)];
+				const T* rowBase = fld + static_cast<std::size_t>(y) * size_x;
+				std::copy(rowBase + size_x - kR1_x, rowBase + size_x, extRow.begin());
+				std::copy(rowBase, rowBase + size_x, extRow.begin() + kR1_x);
+				std::copy(rowBase, rowBase + kR0_x, extRow.begin() + kR1_x + size_x);
 				conv_valid_into(convRow, extRow, kernel_x);
 			}
 			else
@@ -899,25 +913,74 @@ namespace dnf_composer::tools::math
 }
 		}
 
-		// y-pass: convolve each column (fixed x) with kernel_y
-		for (int x = 0; x < size_x; ++x)
-		{
-			for (int y = 0; y < size_y; ++y) {
-				col[y] = tmp[y * size_x + x];
-}
+		// y-pass: per-column convolution with the SAME conv_valid_into /
+		// conv_same_into calls as before — the per-element arithmetic is
+		// bit-identical (a faster row-streamed accumulation was tried first,
+		// but ANY change to the per-element summation/FMA pattern flips the
+		// knife-edge 2D memory attractors — validation sims 049/050 — past the
+		// 1e-4 golden-reference gate). What changes is only the MEMORY ACCESS
+		// PATTERN: the old pass gathered and scattered every column element at
+		// stride size_x straight from/to the full-size buffers, which thrashes
+		// the cache at grid >= 100 and dominated 2D cost. Columns are now
+		// processed in tiles of up to 64: one row-streamed gather turns them
+		// into a column-major tile (contiguous reads of tmp), the per-column
+		// convs run on contiguous L1/L2-resident columns, and one row-streamed
+		// scatter writes the results back (contiguous writes of out).
+		std::vector<T>& extCol  = scratch.extCol;
+		std::vector<T>& convCol = scratch.convCol;
+		std::vector<T>& tileIn  = scratch.tileIn;
+		std::vector<T>& tileOut = scratch.tileOut;
+		if (circular_y) extCol.resize(extIndex_y.size());
 
-			if (circular_y)
+		// Circular extension layout, as for the x-pass: [last kR1 | col | first kR0].
+		int kR0_y = 0, kR1_y = 0;
+		if (circular_y)
+		{
+			kR1_y = size_y - extIndex_y[0] + 1;
+			kR0_y = static_cast<int>(extIndex_y.size()) - size_y - kR1_y;
+		}
+
+		const T* __restrict tp = tmp.data();
+		T* __restrict op = out.data();
+		const int W = std::min(64, size_x);
+		for (int x0 = 0; x0 < size_x; x0 += W)
+		{
+			const int w = std::min(W, size_x - x0);
+
+			// gather: contiguous reads of tmp rows into the column-major tile
+			for (int y = 0; y < size_y; ++y)
 			{
-				obtainCircularVector_into(extCol, extIndex_y, col);
-				conv_valid_into(convCol, extCol, kernel_y);
+				const T* __restrict src = tp + static_cast<std::size_t>(y) * size_x + x0;
+				for (int c = 0; c < w; ++c)
+					tileIn[static_cast<std::size_t>(c) * size_y + y] = src[c];
 			}
-			else
+
+			for (int c = 0; c < w; ++c)
 			{
-				conv_same_into(convCol, col, kernel_y);
+				const T* colBase = tileIn.data() + static_cast<std::size_t>(c) * size_y;
+				if (circular_y)
+				{
+					std::copy(colBase + size_y - kR1_y, colBase + size_y, extCol.begin());
+					std::copy(colBase, colBase + size_y, extCol.begin() + kR1_y);
+					std::copy(colBase, colBase + kR0_y, extCol.begin() + kR1_y + size_y);
+					conv_valid_into(convCol, extCol, kernel_y);
+				}
+				else
+				{
+					std::copy(colBase, colBase + size_y, col.begin());
+					conv_same_into(convCol, col, kernel_y);
+				}
+				std::copy(convCol.begin(), convCol.end(),
+				          tileOut.begin() + static_cast<std::size_t>(c) * size_y);
 			}
-			for (int y = 0; y < size_y; ++y) {
-				out[y * size_x + x] = convCol[y];
-}
+
+			// scatter: contiguous writes of out rows from the tile
+			for (int y = 0; y < size_y; ++y)
+			{
+				T* __restrict dst = op + static_cast<std::size_t>(y) * size_x + x0;
+				for (int c = 0; c < w; ++c)
+					dst[c] = tileOut[static_cast<std::size_t>(c) * size_y + y];
+			}
 		}
 	}
 
