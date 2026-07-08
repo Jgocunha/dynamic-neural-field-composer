@@ -9,7 +9,7 @@ var searchData=
   ['timeshift_6',['timeShift',['../structdnf__composer_1_1element_1_1AsymmetricGaussKernelParameters.html#acb64cd69fc56f1d057e070bfa33b62ee',1,'dnf_composer::element::AsymmetricGaussKernelParameters']]],
   ['timeshift_5fx_7',['timeShift_x',['../structdnf__composer_1_1element_1_1AsymmetricGaussKernel2DParameters.html#a8de555f97c5f6284da336460b5892157',1,'dnf_composer::element::AsymmetricGaussKernel2DParameters']]],
   ['timeshift_5fy_8',['timeShift_y',['../structdnf__composer_1_1element_1_1AsymmetricGaussKernel2DParameters.html#ae6b3a1e7690334a1e90b5913db138078',1,'dnf_composer::element::AsymmetricGaussKernel2DParameters']]],
-  ['title_9',['title',['../structdnf__composer_1_1user__interface_1_1PlotCardState.html#af667ff98a814f0e986834ef137454171',1,'dnf_composer::user_interface::PlotCardState::title'],['../structdnf__composer_1_1PlotAnnotations.html#a6e745e3d462fce354d8e59f557012c31',1,'dnf_composer::PlotAnnotations::title']]],
+  ['title_9',['title',['../structdnf__composer_1_1user__interface_1_1PlotCardState.html#a4ef24eb49885020b3b9c3c35ebf5f04d',1,'dnf_composer::user_interface::PlotCardState::title'],['../structdnf__composer_1_1PlotAnnotations.html#a6e745e3d462fce354d8e59f557012c31',1,'dnf_composer::PlotAnnotations::title']]],
   ['type_10',['type',['../structdnf__composer_1_1element_1_1ActivationFunction.html#aa79010e7864128b058cff51f453a74a9',1,'dnf_composer::element::ActivationFunction::type'],['../structdnf__composer_1_1PlotCommonParameters.html#af8a44d5d89c43f8a7f6a1de5b07f9011',1,'dnf_composer::PlotCommonParameters::type']]],
   ['tzero_11',['tZero',['../classdnf__composer_1_1Simulation.html#abbd57e3c1b469321ac3d7a4dcf91e263',1,'dnf_composer::Simulation']]]
 ];

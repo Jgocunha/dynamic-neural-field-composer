@@ -1,25 +1,31 @@
 <map id="dnf_composer::tools::utils::getResourceRoot" name="dnf_composer::tools::utils::getResourceRoot">
-<area shape="rect" id="Node000001" title=" " alt="" coords="583,191,760,231"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a7af578f4c654acfce33920528d239c7d" title="Construct a FieldCoupling." alt="" coords="297,5,512,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="648,180,601,118,569,86,533,60,510,48,512,43,536,55,573,82,605,115,653,177"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="309,69,501,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="633,184,587,153,534,124,500,111,502,106,536,119,590,148,636,180"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1Application.html#ad9787ecf2d64ff85c949f2ba24784a08" title="Initialize the GUI and all registered windows. Call once before step()." alt="" coords="307,133,502,173"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="568,191,498,176,499,171,570,186"/>
-<area shape="rect" id="Node000008" href="$namespaceFileDialog.html#a665aae6a75d9f9635f4bf7e8135b48c0" title=" " alt="" coords="307,198,502,223"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="569,213,502,213,502,208,569,208"/>
-<area shape="rect" id="Node000010" href="$classdnf__composer_1_1SimulationFileManager.html#ac3c402cf84127446d2b2aba586bae542" title="Construct a SimulationFileManager." alt="" coords="275,248,535,288"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="570,235,499,251,498,245,568,230"/>
-<area shape="rect" id="Node000011" href="$classdnf__composer_1_1SimulationRecorder.html#ad2130d98d72a3e3abb30bb024a4eac8b" title="Start a new continuous recording for the given element/component pair. Creates data/&lt;simName&gt;/recordi..." alt="" coords="309,312,501,352"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="636,241,590,273,536,302,502,315,500,310,534,298,587,269,633,237"/>
-<area shape="rect" id="Node000012" href="$classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/..." alt="" coords="309,376,501,416"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="653,244,605,307,573,339,536,366,502,382,500,377,533,362,569,335,601,303,648,241"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="20,12,212,52"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="295,70,212,54,213,48,296,65"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="5,77,227,102"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="295,92,227,92,227,87,295,87"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="20,127,212,167"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="296,114,213,130,212,125,295,108"/>
-<area shape="rect" id="Node000009" href="$namespaceFileDialog.html#ad9d1c40a19c4dac5851a6534c505914b" title=" " alt="" coords="11,198,221,223"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="294,213,221,213,221,208,294,208"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1113,191,1291,231"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a7af578f4c654acfce33920528d239c7d" title="Construct a FieldCoupling." alt="" coords="828,5,1043,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1179,180,1131,118,1100,86,1064,60,1040,48,1043,43,1067,55,1103,82,1135,115,1183,177"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="839,69,1031,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1163,184,1117,153,1064,124,1030,111,1032,106,1066,119,1120,148,1166,180"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1Application.html#ad9787ecf2d64ff85c949f2ba24784a08" title="Initialize the GUI and all registered windows. Call once before step()." alt="" coords="838,133,1033,173"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1099,191,1028,176,1030,171,1100,186"/>
+<area shape="rect" id="Node000008" href="$namespaceFileDialog.html#a665aae6a75d9f9635f4bf7e8135b48c0" title=" " alt="" coords="838,198,1033,223"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1100,213,1033,213,1033,208,1100,208"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1SimulationFileManager.html#ac3c402cf84127446d2b2aba586bae542" title="Construct a SimulationFileManager." alt="" coords="805,248,1065,288"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1100,235,1030,251,1028,245,1099,230"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1SimulationRecorder.html#ad2130d98d72a3e3abb30bb024a4eac8b" title="Start a new continuous recording for the given element/component pair. Creates data/&lt;simName&gt;/recordi..." alt="" coords="839,312,1031,352"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1166,241,1120,273,1066,302,1032,315,1030,310,1064,298,1117,269,1163,237"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/..." alt="" coords="839,376,1031,416"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1183,244,1135,307,1103,339,1067,366,1033,382,1030,377,1064,362,1100,335,1131,303,1179,241"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="551,12,743,52"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="825,70,743,54,744,48,826,65"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="536,77,757,102"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="825,92,757,92,757,87,825,87"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="551,127,743,167"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="826,114,744,130,743,125,825,108"/>
+<area shape="rect" id="Node000009" href="$namespaceFileDialog.html#ad9d1c40a19c4dac5851a6534c505914b" title=" " alt="" coords="542,198,751,223"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="824,213,752,213,752,208,824,208"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" title=" " alt="" coords="538,369,755,423"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="826,399,755,399,755,393,826,393"/>
+<area shape="rect" id="Node000014" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" title=" " alt="" coords="271,369,488,423"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="524,399,488,399,488,393,524,393"/>
+<area shape="rect" id="Node000015" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" title=" " alt="" coords="5,369,223,423"/>
+<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="257,399,223,399,223,393,257,393"/>
 </map>

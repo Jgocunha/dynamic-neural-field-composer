@@ -16,7 +16,7 @@ var searchData=
   ['kernelrange_13',['kernelRange',['../classdnf__composer_1_1element_1_1Kernel.html#a21bfe5104e2b8711d063b60218452955',1,'dnf_composer::element::Kernel']]],
   ['kmargin_14',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
   ['kpagecount_15',['kPageCount',['../namespacednf__composer_1_1user__interface.html#ae93e92a1246e1e8b64fa164c7292621a',1,'dnf_composer::user_interface']]],
-  ['kpagetitles_16',['kPageTitles',['../namespacednf__composer_1_1user__interface.html#a5f1e948621f2df685ec9529c7eb02039',1,'dnf_composer::user_interface']]],
+  ['kpagetitles_16',['kPageTitles',['../namespacednf__composer_1_1user__interface.html#a957431631bb82454c6c54443c88246fb',1,'dnf_composer::user_interface']]],
   ['krounding_17',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
   ['kstatusbarh_18',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
   ['ktopbarh_19',['kTopBarH',['../namespacednf__composer_1_1user__interface.html#a94b8e14815bca9944462e2c32f484f02',1,'dnf_composer::user_interface']]]

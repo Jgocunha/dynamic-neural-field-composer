@@ -1,0 +1,11 @@
+<map id="dnf_composer::user_interface::SimulationWindow::renderDataCard" name="dnf_composer::user_interface::SimulationWindow::renderDataCard">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,62,223,117"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/..." alt="" coords="271,69,463,109"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="223,87,257,87,257,92,223,92"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="511,5,703,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="442,67,517,46,519,51,443,72"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title=" " alt="" coords="518,69,695,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="463,87,504,87,504,92,463,92"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="529,133,684,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="443,107,519,127,517,132,442,112"/>
+</map>

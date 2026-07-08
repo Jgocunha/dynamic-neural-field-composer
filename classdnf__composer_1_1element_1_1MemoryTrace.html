@@ -106,9 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8dd3513ae84b164fe73dd9aa4f494e6d" id="r_a8dd3513ae84b164fe73dd9aa4f494e6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html#a8dd3513ae84b164fe73dd9aa4f494e6d">init</a> () override</td></tr>
 <tr class="memdesc:a8dd3513ae84b164fe73dd9aa4f494e6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the element (called once before the simulation loop).  <br /></td></tr>
 <tr class="separator:a8dd3513ae84b164fe73dd9aa4f494e6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fbcc99105d784f45439599f2402a03f" id="r_a5fbcc99105d784f45439599f2402a03f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html#a5fbcc99105d784f45439599f2402a03f">MemoryTrace</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">ElementCommonParameters</a> &amp;elementCommonParameters, const <a class="el" href="structdnf__composer_1_1element_1_1MemoryTraceParameters.html">MemoryTraceParameters</a> &amp;parameters)</td></tr>
-<tr class="memdesc:a5fbcc99105d784f45439599f2402a03f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html" title="Persistent spatial memory that accumulates and decays field activity.">MemoryTrace</a> element.  <br /></td></tr>
-<tr class="separator:a5fbcc99105d784f45439599f2402a03f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58daafe2211a9e8e0549ac8c69557799" id="r_a58daafe2211a9e8e0549ac8c69557799"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html#a58daafe2211a9e8e0549ac8c69557799">MemoryTrace</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">ElementCommonParameters</a> &amp;elementCommonParameters, <a class="el" href="structdnf__composer_1_1element_1_1MemoryTraceParameters.html">MemoryTraceParameters</a> parameters)</td></tr>
+<tr class="memdesc:a58daafe2211a9e8e0549ac8c69557799"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html" title="Persistent spatial memory that accumulates and decays field activity.">MemoryTrace</a> element.  <br /></td></tr>
+<tr class="separator:a58daafe2211a9e8e0549ac8c69557799"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a611ae120e1f0bbcb84f58c263e8d6cf8" id="r_a611ae120e1f0bbcb84f58c263e8d6cf8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html#a611ae120e1f0bbcb84f58c263e8d6cf8">setParameters</a> (const <a class="el" href="structdnf__composer_1_1element_1_1MemoryTraceParameters.html">MemoryTraceParameters</a> &amp;parameters)</td></tr>
 <tr class="separator:a611ae120e1f0bbcb84f58c263e8d6cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0979d0eaf416db2d48e127c031a4642" id="r_ac0979d0eaf416db2d48e127c031a4642"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html#ac0979d0eaf416db2d48e127c031a4642">step</a> (double t, double deltaT) override</td></tr>
@@ -220,8 +220,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>Persistent spatial memory that accumulates and decays field activity. </p>
 <p>A <a class="el" href="classdnf__composer_1_1element_1_1MemoryTrace.html" title="Persistent spatial memory that accumulates and decays field activity.">MemoryTrace</a> integrates above-threshold input from a <a class="el" href="classdnf__composer_1_1element_1_1NeuralField.html" title="Continuous attractor neural field — the core DFT building block.">NeuralField</a> over time: while input exceeds <code>threshold</code> the trace grows with time constant <code>tauBuild</code>; below threshold it decays with time constant <code>tauDecay</code>. When fed back through a <a class="el" href="classdnf__composer_1_1element_1_1GaussKernel.html" title="Gaussian convolution kernel providing local excitation and optional global inhibition.">GaussKernel</a> into the originating field, the trace sustains a localized peak even after the original stimulus is removed — implementing spatial working memory. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5fbcc99105d784f45439599f2402a03f" name="a5fbcc99105d784f45439599f2402a03f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fbcc99105d784f45439599f2402a03f">&#9670;&#160;</a></span>MemoryTrace()</h2>
+<a id="a58daafe2211a9e8e0549ac8c69557799" name="a58daafe2211a9e8e0549ac8c69557799"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58daafe2211a9e8e0549ac8c69557799">&#9670;&#160;</a></span>MemoryTrace()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -235,7 +235,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1MemoryTraceParameters.html">MemoryTraceParameters</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structdnf__composer_1_1element_1_1MemoryTraceParameters.html">MemoryTraceParameters</a>&#160;</td>
           <td class="paramname"><em>parameters</em>&#160;</td>
         </tr>
         <tr>

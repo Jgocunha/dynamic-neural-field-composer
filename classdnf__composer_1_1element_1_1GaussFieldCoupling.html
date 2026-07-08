@@ -110,9 +110,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a011959c9655f8768d27b19fe039eba00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a350dc1b1affe055403becc2c63f8b567" id="r_a350dc1b1affe055403becc2c63f8b567"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a350dc1b1affe055403becc2c63f8b567">clone</a> () const override</td></tr>
 <tr class="separator:a350dc1b1affe055403becc2c63f8b567"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3b957f2b9c17ee8b7fc1200c05eb3c6" id="r_aa3b957f2b9c17ee8b7fc1200c05eb3c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#aa3b957f2b9c17ee8b7fc1200c05eb3c6">GaussFieldCoupling</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">ElementCommonParameters</a> &amp;elementCommonParameters, const <a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html">GaussFieldCouplingParameters</a> &amp;gfc_parameters)</td></tr>
-<tr class="memdesc:aa3b957f2b9c17ee8b7fc1200c05eb3c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html" title="Sparse Gaussian field coupling with a fixed, user-defined projection.">GaussFieldCoupling</a>.  <br /></td></tr>
-<tr class="separator:aa3b957f2b9c17ee8b7fc1200c05eb3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe604e42989bce08e96d267d485d241f" id="r_abe604e42989bce08e96d267d485d241f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#abe604e42989bce08e96d267d485d241f">GaussFieldCoupling</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">ElementCommonParameters</a> &amp;elementCommonParameters, <a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html">GaussFieldCouplingParameters</a> gfc_parameters)</td></tr>
+<tr class="memdesc:abe604e42989bce08e96d267d485d241f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html" title="Sparse Gaussian field coupling with a fixed, user-defined projection.">GaussFieldCoupling</a>.  <br /></td></tr>
+<tr class="separator:abe604e42989bce08e96d267d485d241f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96c6ef528c11db804286068c42d281d8" id="r_a96c6ef528c11db804286068c42d281d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a96c6ef528c11db804286068c42d281d8">getInputFieldDimensions</a> () const</td></tr>
 <tr class="separator:a96c6ef528c11db804286068c42d281d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd54a46832e4f9f6c0c88f3a4a5eb3d" id="r_aebd54a46832e4f9f6c0c88f3a4a5eb3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html">GaussFieldCouplingParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#aebd54a46832e4f9f6c0c88f3a4a5eb3d">getParameters</a> () const</td></tr>
@@ -228,8 +228,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>Sparse Gaussian field coupling with a fixed, user-defined projection. </p>
 <p>Unlike <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a> (which learns a full weight matrix), <a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html" title="Sparse Gaussian field coupling with a fixed, user-defined projection.">GaussFieldCoupling</a> uses an explicit list of <code><a class="el" href="structdnf__composer_1_1element_1_1GaussCoupling.html" title="A single sparse Gaussian point-coupling between two spatial locations.">GaussCoupling</a></code> descriptors. Each descriptor projects activity from a source location <code>x_i</code> to a target location <code>x_j</code> with a Gaussian spread. This is useful for hand-crafted or evolution-derived projections where the exact connectivity is known in advance. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aa3b957f2b9c17ee8b7fc1200c05eb3c6" name="aa3b957f2b9c17ee8b7fc1200c05eb3c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3b957f2b9c17ee8b7fc1200c05eb3c6">&#9670;&#160;</a></span>GaussFieldCoupling()</h2>
+<a id="abe604e42989bce08e96d267d485d241f" name="abe604e42989bce08e96d267d485d241f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe604e42989bce08e96d267d485d241f">&#9670;&#160;</a></span>GaussFieldCoupling()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,7 +243,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html">GaussFieldCouplingParameters</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html">GaussFieldCouplingParameters</a>&#160;</td>
           <td class="paramname"><em>gfc_parameters</em>&#160;</td>
         </tr>
         <tr>

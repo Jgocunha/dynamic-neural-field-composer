@@ -10,7 +10,7 @@ var searchData=
   ['noncirculargauss_7',['nonCircularGauss',['../namespacednf__composer_1_1tools_1_1math.html#aba1568ba564c9065b69472bf9c0b94ad',1,'dnf_composer::tools::math']]],
   ['normalize_8',['normalize',['../namespacednf__composer_1_1tools_1_1math.html#a8ec5a685cd59263f4084c652149e4b28',1,'dnf_composer::tools::math::normalize(const std::vector&lt; T &gt; &amp;vector)'],['../namespacednf__composer_1_1tools_1_1math.html#a29939f6048461d5f4b6bd3d54d85f8c8',1,'dnf_composer::tools::math::normalize(const double value, const double min, const double max)']]],
   ['normalnoise_9',['NormalNoise',['../classdnf__composer_1_1element_1_1NormalNoise.html#a667894b02a600d5ff64a4d7b3279d7a9',1,'dnf_composer::element::NormalNoise']]],
-  ['normalnoise2d_10',['NormalNoise2D',['../classdnf__composer_1_1element_1_1NormalNoise2D.html#ad7512d45705d5475541c8026193f6e7a',1,'dnf_composer::element::NormalNoise2D']]],
+  ['normalnoise2d_10',['NormalNoise2D',['../classdnf__composer_1_1element_1_1NormalNoise2D.html#aacfff8b29463a2c65e8ff3811e0ad7c5',1,'dnf_composer::element::NormalNoise2D']]],
   ['normalnoise2dparameters_11',['NormalNoise2DParameters',['../structdnf__composer_1_1element_1_1NormalNoise2DParameters.html#a8e465b8b5f7d06c8a1ff4a7660b84b98',1,'dnf_composer::element::NormalNoise2DParameters']]],
-  ['normalnoiseparameters_12',['normalnoiseparameters',['../structdnf__composer_1_1element_1_1NormalNoiseParameters.html#a94a8cbefc7fe6c2fa4f55c5638b78df5',1,'dnf_composer::element::NormalNoiseParameters::NormalNoiseParameters(double amp)'],['../structdnf__composer_1_1element_1_1NormalNoiseParameters.html#a490e63dffced1a2aecf8819a03eb597a',1,'dnf_composer::element::NormalNoiseParameters::NormalNoiseParameters(const double amp=0.2)']]]
+  ['normalnoiseparameters_12',['NormalNoiseParameters',['../structdnf__composer_1_1element_1_1NormalNoiseParameters.html#a490e63dffced1a2aecf8819a03eb597a',1,'dnf_composer::element::NormalNoiseParameters']]]
 ];

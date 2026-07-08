@@ -11,7 +11,5 @@ var searchData=
   ['mexican_5fhat_5fkernel_2ecpp_8',['mexican_hat_kernel.cpp',['../mexican__hat__kernel_8cpp.html',1,'']]],
   ['mexican_5fhat_5fkernel_2eh_9',['mexican_hat_kernel.h',['../mexican__hat__kernel_8h.html',1,'']]],
   ['mexican_5fhat_5fkernel_5f2d_2ecpp_10',['mexican_hat_kernel_2d.cpp',['../mexican__hat__kernel__2d_8cpp.html',1,'']]],
-  ['mexican_5fhat_5fkernel_5f2d_2eh_11',['mexican_hat_kernel_2d.h',['../mexican__hat__kernel__2d_8h.html',1,'']]],
-  ['mexican_5fhat_5fkernel_5fparameters_2ecpp_12',['mexican_hat_kernel_parameters.cpp',['../mexican__hat__kernel__parameters_8cpp.html',1,'']]],
-  ['mexican_5fhat_5fkernel_5fparameters_2eh_13',['mexican_hat_kernel_parameters.h',['../mexican__hat__kernel__parameters_8h.html',1,'']]]
+  ['mexican_5fhat_5fkernel_5f2d_2eh_11',['mexican_hat_kernel_2d.h',['../mexican__hat__kernel__2d_8h.html',1,'']]]
 ];

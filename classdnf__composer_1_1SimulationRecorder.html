@@ -78,6 +78,7 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classdnf__composer_1_1SimulationRecorder-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">dnf_composer::SimulationRecorder Class Reference<div class="ingroups"><a class="el" href="group__simulation.html">Simulation</a> &raquo; <a class="el" href="group__simulation__recorder.html">Simulation Recorder</a></div></div></div>
 </div><!--header-->
@@ -110,12 +111,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a65d78b751a8d4c936091162e649fd427" id="r_a65d78b751a8d4c936091162e649fd427"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#a65d78b751a8d4c936091162e649fd427">stopRecording</a> (const std::string &amp;elementId, const std::string &amp;componentName)</td></tr>
 <tr class="memdesc:a65d78b751a8d4c936091162e649fd427"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop the recording for a specific element/component pair. The CSV file is closed and the session is removed. No-op if not recording.  <br /></td></tr>
 <tr class="separator:a65d78b751a8d4c936091162e649fd427"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6a67166f5f8420901788dd360115e46" id="r_ad6a67166f5f8420901788dd360115e46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46">takeSnapshot</a> (const std::string &amp;simName, const std::string &amp;elementId, const std::string &amp;componentName, const <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &amp;sim)</td></tr>
-<tr class="memdesc:ad6a67166f5f8420901788dd360115e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a single-row snapshot CSV for the given element/component. Output path: <code>data/&lt;simName&gt;/exports/&lt;elementId&gt;_&lt;componentName&gt;_&lt;timestamp&gt;.csv</code>  <br /></td></tr>
-<tr class="separator:ad6a67166f5f8420901788dd360115e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae82a04488e5edcccdd38a7e02545b4b4" id="r_ae82a04488e5edcccdd38a7e02545b4b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4">update</a> (const <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &amp;sim)</td></tr>
 <tr class="memdesc:ae82a04488e5edcccdd38a7e02545b4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called each simulation step to append rows to active recordings. Ticks are derived from <code>sim.t</code>, <code>sim.tZero</code>, and <code>sim.deltaT</code>.  <br /></td></tr>
 <tr class="separator:ae82a04488e5edcccdd38a7e02545b4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ad6a67166f5f8420901788dd360115e46" id="r_ad6a67166f5f8420901788dd360115e46"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46">takeSnapshot</a> (const std::string &amp;simName, const std::string &amp;elementId, const std::string &amp;componentName, const <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &amp;sim)</td></tr>
+<tr class="memdesc:ad6a67166f5f8420901788dd360115e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a single-row snapshot CSV for the given element/component. Output path: <code>data/&lt;simName&gt;/exports/&lt;elementId&gt;_&lt;componentName&gt;_&lt;timestamp&gt;.csv</code>  <br /></td></tr>
+<tr class="separator:ad6a67166f5f8420901788dd360115e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages ongoing time-series recordings and snapshot exports of element component data for a simulation. </p>
@@ -310,6 +314,9 @@ Here is the call graph for this function:</div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void dnf_composer::SimulationRecorder::takeSnapshot </td>
@@ -341,6 +348,11 @@ Here is the call graph for this function:</div>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Write a single-row snapshot CSV for the given element/component. Output path: <code>data/&lt;simName&gt;/exports/&lt;elementId&gt;_&lt;componentName&gt;_&lt;timestamp&gt;.csv</code> </p>
@@ -357,6 +369,11 @@ Here is the call graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1SimulationRecorder_ad6a67166f5f8420901788dd360115e46_cgraph.svg" width="443" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1SimulationRecorder_ad6a67166f5f8420901788dd360115e46_icgraph.svg" width="999" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

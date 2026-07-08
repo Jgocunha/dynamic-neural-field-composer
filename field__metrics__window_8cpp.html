@@ -82,6 +82,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="field__metrics__window_8h_source.html">user_interface/field_metrics_window.h</a>&quot;</code><br />
+<code>#include &lt;array&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;cstdio&gt;</code><br />
 <code>#include &quot;<a class="el" href="neural__field_8h_source.html">elements/neural_field.h</a>&quot;</code><br />
@@ -90,7 +91,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for field_metrics_window.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="field__metrics__window_8cpp__incl.svg" width="2959" height="784"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="field__metrics__window_8cpp__incl.svg" width="2826" height="784"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -104,17 +105,17 @@ Namespaces</h2></td></tr>
 Variables</h2></td></tr>
 <tr class="memitem:a3f4e8c7d5b0ddb0b5b625a6ed1f681d5" id="r_a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"><td class="memItemLeft" align="right" valign="top">ImFont *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="field__metrics__window_8cpp.html#a3f4e8c7d5b0ddb0b5b625a6ed1f681d5">g_MonoMediumFont</a></td></tr>
 <tr class="separator:a3f4e8c7d5b0ddb0b5b625a6ed1f681d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef9a079e69686ae89eeb09831a54dc43" id="r_aef9a079e69686ae89eeb09831a54dc43"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#aef9a079e69686ae89eeb09831a54dc43">dnf_composer::user_interface::kBarH</a> = 6.0f</td></tr>
+<tr class="memitem:aef9a079e69686ae89eeb09831a54dc43" id="r_aef9a079e69686ae89eeb09831a54dc43"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#aef9a079e69686ae89eeb09831a54dc43">dnf_composer::user_interface::kBarH</a> = 6.0F</td></tr>
 <tr class="separator:aef9a079e69686ae89eeb09831a54dc43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abba5c52e4c225a500dd50968329edba8" id="r_abba5c52e4c225a500dd50968329edba8"><td class="memItemLeft" align="right" valign="top">static constexpr ImVec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#abba5c52e4c225a500dd50968329edba8">dnf_composer::user_interface::kCardBg</a> = { 1.0f, 1.0f, 1.0f, 1.0f }</td></tr>
+<tr class="memitem:abba5c52e4c225a500dd50968329edba8" id="r_abba5c52e4c225a500dd50968329edba8"><td class="memItemLeft" align="right" valign="top">static constexpr ImVec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#abba5c52e4c225a500dd50968329edba8">dnf_composer::user_interface::kCardBg</a> = { 1.0F, 1.0F, 1.0F, 1.0F }</td></tr>
 <tr class="separator:abba5c52e4c225a500dd50968329edba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1ee46fcbcd48226e6c0aa10ec2741c8" id="r_ae1ee46fcbcd48226e6c0aa10ec2741c8"><td class="memItemLeft" align="right" valign="top">static constexpr ImVec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ae1ee46fcbcd48226e6c0aa10ec2741c8">dnf_composer::user_interface::kCardBorder</a> = { 0.82f, 0.85f, 0.89f, 1.0f }</td></tr>
+<tr class="memitem:ae1ee46fcbcd48226e6c0aa10ec2741c8" id="r_ae1ee46fcbcd48226e6c0aa10ec2741c8"><td class="memItemLeft" align="right" valign="top">static constexpr ImVec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ae1ee46fcbcd48226e6c0aa10ec2741c8">dnf_composer::user_interface::kCardBorder</a> = { 0.82F, 0.85F, 0.89F, 1.0F }</td></tr>
 <tr class="separator:ae1ee46fcbcd48226e6c0aa10ec2741c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd6ad9e6b7c7b730f65e1acdfa0819b4" id="r_abd6ad9e6b7c7b730f65e1acdfa0819b4"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#abd6ad9e6b7c7b730f65e1acdfa0819b4">dnf_composer::user_interface::kCardBordSz</a> = 1.5f</td></tr>
+<tr class="memitem:abd6ad9e6b7c7b730f65e1acdfa0819b4" id="r_abd6ad9e6b7c7b730f65e1acdfa0819b4"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#abd6ad9e6b7c7b730f65e1acdfa0819b4">dnf_composer::user_interface::kCardBordSz</a> = 1.5F</td></tr>
 <tr class="separator:abd6ad9e6b7c7b730f65e1acdfa0819b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59e1ccc40ebb7ccd87a9cb530d20383b" id="r_a59e1ccc40ebb7ccd87a9cb530d20383b"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a59e1ccc40ebb7ccd87a9cb530d20383b">dnf_composer::user_interface::kCardRound</a> = 8.0f</td></tr>
+<tr class="memitem:a59e1ccc40ebb7ccd87a9cb530d20383b" id="r_a59e1ccc40ebb7ccd87a9cb530d20383b"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a59e1ccc40ebb7ccd87a9cb530d20383b">dnf_composer::user_interface::kCardRound</a> = 8.0F</td></tr>
 <tr class="separator:a59e1ccc40ebb7ccd87a9cb530d20383b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9d33242f7f365761ff34043091f420f" id="r_ac9d33242f7f365761ff34043091f420f"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ac9d33242f7f365761ff34043091f420f">dnf_composer::user_interface::kDotR</a> = 5.0f</td></tr>
+<tr class="memitem:ac9d33242f7f365761ff34043091f420f" id="r_ac9d33242f7f365761ff34043091f420f"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ac9d33242f7f365761ff34043091f420f">dnf_composer::user_interface::kDotR</a> = 5.0F</td></tr>
 <tr class="separator:ac9d33242f7f365761ff34043091f420f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
