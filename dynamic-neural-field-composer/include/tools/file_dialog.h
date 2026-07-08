@@ -28,7 +28,7 @@ namespace FileDialog {
 	static float padding = 10.0;
 
 	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - adapted third-party ImGui dialog; linear immediate-mode layout not worth restructuring
-	inline void ShowFileDialog(const bool* open, char* buffer, [[maybe_unused]] unsigned int buffer_size,
+	inline void ShowFileDialog(const bool* open, char* buffer, unsigned int buffer_size,
 		FileDialogType type = FileDialogType::OpenFile)
 	{
 		static int file_dialog_file_select_index = 0;
@@ -376,7 +376,7 @@ namespace FileDialog {
 						// Use std::filesystem::path for proper path concatenation
 						std::filesystem::path folder_path = std::filesystem::path(file_dialog_current_path) / file_dialog_current_folder;
 						std::string path = folder_path.string();
-						snprintf(buffer, path.length() + 1, "%s", path.c_str());
+						snprintf(buffer, buffer_size, "%s", path.c_str());
 						snprintf(file_dialog_error.data(), file_dialog_error.size(), "%s", "");
 						reset_everything();
 					}
@@ -389,7 +389,7 @@ namespace FileDialog {
 						// Use std::filesystem::path for proper path concatenation
 						std::filesystem::path file_path = std::filesystem::path(file_dialog_current_path) / file_dialog_current_file;
 						std::string path = file_path.string();
-						snprintf(buffer, path.length() + 1, "%s", path.c_str());
+						snprintf(buffer, buffer_size, "%s", path.c_str());
 						snprintf(file_dialog_error.data(), file_dialog_error.size(), "%s", "");
 						reset_everything();
 					}
