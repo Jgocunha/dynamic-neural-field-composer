@@ -139,13 +139,7 @@ namespace dnf_composer::user_interface
         		static constexpr std::array<int, 6> presets = { 80, 90, 100, 110, 125, 150 };
         		static constexpr int presetCount = static_cast<int>(presets.size());
 
-        		// find index of the current scale in presets (or nearest)
         		const int current = static_cast<int>(Application::getUiScalePct());
-        		int currentIdx = 2; // default to 100%
-        		for (int i = 0; i < presetCount; ++i)
-        		{
-        			if (presets[i] == current) { currentIdx = i; break; }
-        		}
 
         		std::array<char, 16> previewBuf{};
         		snprintf(previewBuf.data(), previewBuf.size(), "%d%%", current);

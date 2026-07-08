@@ -2,10 +2,8 @@
 
 #include "element_parameters.h"
 
-namespace dnf_composer
+namespace dnf_composer::element
 {
-	namespace element
-	{
 		struct MexicanHatKernelParameters : ElementSpecificParameters
 		{
 			double widthExc;
@@ -18,7 +16,6 @@ namespace dnf_composer
 			MexicanHatKernelParameters(double widthExc, double amplitudeExc, double widthInh,
 				double amplitudeInh, bool circular = true, bool normalized = true);
 			bool operator==(const MexicanHatKernelParameters& other) const;
-			std::string toString() const override;
+			[[nodiscard]] std::string toString() const override;
 		};
-	}
 }

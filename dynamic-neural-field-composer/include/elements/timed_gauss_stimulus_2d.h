@@ -53,7 +53,8 @@ namespace dnf_composer::element
 				<< "OnTimes: [";
 			for (size_t i = 0; i < onTimes.size(); ++i)
 			{
-				if (i > 0) result << "; ";
+				if (i > 0) { result << "; ";
+}
 				result << onTimes[i].first << "-" << onTimes[i].second;
 			}
 			result << "], "

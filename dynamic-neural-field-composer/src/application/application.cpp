@@ -16,8 +16,7 @@ namespace dnf_composer
 		const std::shared_ptr<Visualization>& visualization)
 		: simulation(simulation ? simulation : std::make_shared<Simulation>("default",
 			1.0, 0.0, 0.0)),
-		visualization(visualization ? visualization : std::make_shared<Visualization>(this->simulation)),
-		guiActive(true)
+		visualization(visualization ? visualization : std::make_shared<Visualization>(this->simulation))
 	{
 		if (this->visualization->getSimulation() != this->simulation) {
 			throw Exception(ErrorCode::APP_VIS_SIM_MISMATCH);

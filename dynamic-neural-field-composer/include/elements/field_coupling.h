@@ -36,7 +36,7 @@ namespace dnf_composer
 			LearningRule learningRule;              ///< Which weight update rule to use.
 			double scalar;                          ///< Scaling factor applied to the coupling output.
 			double learningRate;                    ///< Learning rate η (step size for weight updates).
-			bool isLearningActive;                  ///< If true, weights are updated each step.
+			bool isLearningActive{false};                  ///< If true, weights are updated each step.
 
 			/// @brief Construct FieldCoupling parameters.
 			/// @param inputFieldDimensions  Dimensions of the source field.
@@ -48,7 +48,7 @@ namespace dnf_composer
 				const double scalar = 1.0, const double learningRate = 0.01)
 					: inputFieldDimensions(inputFieldDimensions),
 				learningRule(learningRule), scalar(scalar),
-				learningRate(learningRate), isLearningActive(false)
+				learningRate(learningRate) 
 			{}
 
 			bool operator==(const FieldCouplingParameters& other) const

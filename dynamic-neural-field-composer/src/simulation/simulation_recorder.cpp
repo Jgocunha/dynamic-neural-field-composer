@@ -180,12 +180,12 @@ namespace dnf_composer
 			s.nextSampleAt = current + static_cast<double>(s.sampleInterval);
 		}
 
-		for (unsigned long long & it : std::ranges::reverse_view(toStop))
+		for (const std::size_t idx : std::ranges::reverse_view(toStop))
 		{
-			if (sessions[it].file.is_open()) {
-				sessions[it].file.close();
+			if (sessions[idx].file.is_open()) {
+				sessions[idx].file.close();
 }
-			sessions.erase(sessions.begin() + static_cast<std::ptrdiff_t>(it));
+			sessions.erase(sessions.begin() + static_cast<std::ptrdiff_t>(idx));
 		}
 	}
 

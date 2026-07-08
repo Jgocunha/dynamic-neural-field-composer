@@ -46,7 +46,7 @@ namespace dnf_composer
 		double deltaT;  ///< Integration step size.
 		double tZero;   ///< Start time.
 		double t;       ///< Current simulation time.
-	public:
+	
 
 		/// @brief Construct a simulation.
 		/// @param identifier  Human-readable name.
@@ -57,7 +57,7 @@ namespace dnf_composer
 		Simulation(const Simulation& other);
 		Simulation& operator=(const Simulation& other);
 		Simulation(Simulation&& other) noexcept;
-		Simulation& operator=(Simulation&&) noexcept;
+		Simulation& operator=(Simulation&& other) noexcept;
 
 		/// @brief Initialize all registered elements. Must be called before @c step().
 		void init();
@@ -106,10 +106,12 @@ namespace dnf_composer
 		/// @brief Disconnect all connections from @p elementId and resize it to @p newDimensions.
 		/// @param elementId      Unique name of the element to resize.
 		/// @param newDimensions  New spatial discretization.
-		void changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions) const;
+		// NOLINTNEXTLINE(readability-make-member-function-const) - mutates simulation state through shared_ptr members; const would be misleading
+		void changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions);
 
 		/// @brief Rename an element. No-op if oldName does not exist or newName is already in use.
-		void renameElement(const std::string& oldName, const std::string& newName) const;
+		// NOLINTNEXTLINE(readability-make-member-function-const) - mutates element identity through shared_ptr members; const would be misleading
+		void renameElement(const std::string& oldName, const std::string& newName);
 
 		/// @brief Wire @p stimulusElementId's @p stimulusComponent as input to @p receivingElementId.
 		/// @param stimulusElementId   Source element name.
@@ -167,7 +169,7 @@ namespace dnf_composer
 		~Simulation() = default;
 		std::chrono::nanoseconds lastStepDuration{ 0 };
 		std::chrono::nanoseconds accumulatedRunDuration{ 0 };
-		std::chrono::steady_clock::time_point runSegmentStart{};
+		std::chrono::steady_clock::time_point runSegmentStart;
 
 		/// @brief Enable or disable per-step wall-clock timing (default: enabled).
 		/// Disable for headless/benchmark runs to avoid two steady_clock::now() calls per step.

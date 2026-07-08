@@ -798,9 +798,9 @@ namespace dnf_composer::user_interface
 		}
 		if (ImGui::BeginMenu("Annotations"))
 		{
-			ImGui::InputText("Title",   state.title,  sizeof(state.title));
-			ImGui::InputText("X label", state.xLabel, sizeof(state.xLabel));
-			ImGui::InputText("Y label", state.yLabel, sizeof(state.yLabel));
+			ImGui::InputText("Title",   state.title.data(),  state.title.size());
+			ImGui::InputText("X label", state.xLabel.data(), state.xLabel.size());
+			ImGui::InputText("Y label", state.yLabel.data(), state.yLabel.size());
 			ImGui::EndMenu();
 		}
 		if (!is2DField && !isWM)
@@ -836,12 +836,12 @@ namespace dnf_composer::user_interface
 					const std::string defaultComp =
 						(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
 					const std::string activeComp =
-						(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
+						(state.selectedComponent[0] != '\0') ? std::string(state.selectedComponent.data()) : defaultComp;
 					for (const auto& name : *comps | std::views::keys)
 					{
 						const bool selected = (activeComp == name);
 						if (ImGui::MenuItem(name.c_str(), nullptr, selected)) {
-							std::snprintf(state.selectedComponent, sizeof(state.selectedComponent), "%s", name.c_str());
+							std::snprintf(state.selectedComponent.data(), state.selectedComponent.size(), "%s", name.c_str());
 }
 					}
 					ImGui::EndMenu();
@@ -889,9 +889,9 @@ namespace dnf_composer::user_interface
 				if (state.title[0] == '\0')
 				{
 					const std::string defaultTitle = element->getUniqueName() + " weights";
-					std::snprintf(state.title,  sizeof(state.title),  "%s", defaultTitle.c_str());
-					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Output field");
-					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Input field");
+					std::snprintf(state.title.data(),  state.title.size(),  "%s", defaultTitle.c_str());
+					std::snprintf(state.xLabel.data(), state.xLabel.size(), "%s", "Output field");
+					std::snprintf(state.yLabel.data(), state.yLabel.size(), "%s", "Input field");
 				}
 
 				const float cbW = 60.0F;
@@ -901,11 +901,11 @@ namespace dnf_composer::user_interface
 					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
 }
 
-				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+				const std::string uniquePlotId = std::string(state.title.data()) + "##node_" + element->getUniqueName();
 				ImPlot::PushColormap(state.colormap);
 				if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(hmW, plotH), ImPlotFlags_Crosshairs))
 				{
-					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+					ImPlot::SetupAxes(state.xLabel.data(), state.yLabel.data(), axF, axF);
 					ImPlot::PlotHeatmap("##data", weights.data(), rows, cols, scMin, scMax, nullptr,
 						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
@@ -920,7 +920,7 @@ namespace dnf_composer::user_interface
 			const std::string defaultComp =
 				(element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D) ? "activation" : "output";
 			const std::string compName =
-				(state.selectedComponent[0] != '\0') ? state.selectedComponent : defaultComp;
+				(state.selectedComponent[0] != '\0') ? std::string(state.selectedComponent.data()) : defaultComp;
 			if (!comps->contains(compName)) { return;
 }
 			const auto& dp   = element->getElementCommonParameters().dimensionParameters;
@@ -963,13 +963,13 @@ namespace dnf_composer::user_interface
 }
 				}
 
-				if (state.title[0] == '\0' || std::strcmp(state.autoTitleComponent, compName.c_str()) != 0)
+				if (state.title[0] == '\0' || std::strcmp(state.autoTitleComponent.data(), compName.c_str()) != 0)
 				{
 					const std::string defaultTitle = element->getUniqueName() + " " + compName;
-					std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
-					std::snprintf(state.autoTitleComponent, sizeof(state.autoTitleComponent), "%s", compName.c_str());
-					std::snprintf(state.xLabel, sizeof(state.xLabel), "%s", "Spatial location x");
-					std::snprintf(state.yLabel, sizeof(state.yLabel), "%s", "Spatial location y");
+					std::snprintf(state.title.data(), state.title.size(), "%s", defaultTitle.c_str());
+					std::snprintf(state.autoTitleComponent.data(), state.autoTitleComponent.size(), "%s", compName.c_str());
+					std::snprintf(state.xLabel.data(), state.xLabel.size(), "%s", "Spatial location x");
+					std::snprintf(state.yLabel.data(), state.yLabel.size(), "%s", "Spatial location y");
 
 				}
 
@@ -980,11 +980,11 @@ namespace dnf_composer::user_interface
 					ImPlot::SetNextAxesLimits(state.xMin, state.xMax, state.yMin, state.yMax, ImPlotCond_Always);
 }
 
-				const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+				const std::string uniquePlotId = std::string(state.title.data()) + "##node_" + element->getUniqueName();
 				ImPlot::PushColormap(state.colormap);
 				if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(hmW, plotH), ImPlotFlags_Crosshairs))
 				{
-					ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+					ImPlot::SetupAxes(state.xLabel.data(), state.yLabel.data(), axF, axF);
 					ImPlot::PlotHeatmap("##data", data.data(), rows, cols, scMin, scMax, nullptr,
 						ImPlotPoint(0, rows), ImPlotPoint(cols, 0));
 					ImPlot::EndPlot();
@@ -999,7 +999,7 @@ namespace dnf_composer::user_interface
 			if (state.title[0] == '\0')
 			{
 				const std::string defaultTitle = element->getUniqueName() + " components";
-				std::snprintf(state.title, sizeof(state.title), "%s", defaultTitle.c_str());
+				std::snprintf(state.title.data(), state.title.size(), "%s", defaultTitle.c_str());
 			}
 
 			constexpr ImPlotFlags    plotFlags = ImPlotFlags_Crosshairs;
@@ -1013,12 +1013,12 @@ namespace dnf_composer::user_interface
 					ImPlotCond_Always);
 			}
 
-			const std::string uniquePlotId = std::string(state.title) + "##node_" + element->getUniqueName();
+			const std::string uniquePlotId = std::string(state.title.data()) + "##node_" + element->getUniqueName();
 			const ImPlotSpec lineSpec = { ImPlotProp_LineWeight, state.lineThickness };
 			ImPlot::PushColormap(state.colormap);
 			if (ImPlot::BeginPlot(uniquePlotId.c_str(), ImVec2(plotW, plotH), plotFlags))
 			{
-				ImPlot::SetupAxes(state.xLabel, state.yLabel, axF, axF);
+				ImPlot::SetupAxes(state.xLabel.data(), state.yLabel.data(), axF, axF);
 				ImPlot::SetupLegend(ImPlotLocation_SouthWest, ImPlotLegendFlags_None);
 
 				for (const auto& [name, seriesData] : *comps)

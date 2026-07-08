@@ -15,7 +15,7 @@ namespace dnf_composer::user_interface
 		float  ui{};
 		ImU32  fill{}, border{};
 		float  rounding{};
-		ImVec2 pad{};
+		ImVec2 pad;
 	};
 
 	class ElementWindow final : public imgui_kit::UserInterfaceWindow

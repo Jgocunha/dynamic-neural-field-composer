@@ -25,13 +25,15 @@ namespace dnf_composer::element
 			circular(circular), normalized(normalized)
 		{
 			// zero crossings must be in the range [0, 1]
-			if (zeroCrossings < 0.0)
+			if (zeroCrossings < 0.0) {
 				this->zeroCrossings = 0.0;
-			else if (zeroCrossings > 1.0)
+			} else if (zeroCrossings > 1.0) {
 				this->zeroCrossings = 1.0;
+}
 			// decay cannot be negative or zero
-			if (decay <= 0.0)
+			if (decay <= 0.0) {
 				this->decay = 0.01;
+}
 		}
 
 		bool operator==(const OscillatoryKernelParameters& other) const

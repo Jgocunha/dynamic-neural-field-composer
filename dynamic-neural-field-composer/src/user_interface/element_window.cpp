@@ -651,8 +651,6 @@ namespace dnf_composer::user_interface
 
 	void ElementWindow::renderDimensionControls(const std::shared_ptr<element::Element>& element) const
 	{
-		const float ui     = ImGui::GetIO().FontGlobalScale;
-		const float inputW = 150.0F * ui;
 		const std::string elemId = element->getUniqueName();
 		const element::ElementLabel label = element->getLabel();
 		// Elements that own a separate (editable) input field of differing size/dim.
@@ -757,7 +755,11 @@ namespace dnf_composer::user_interface
 	{
 		static std::unordered_map<int, std::pair<float, float>> stagedIn;
 		const int id = element->getUniqueIdentifier();
-		auto& [stagedInXmax, stagedInDx] = stagedIn[id];
+		// Explicit references instead of a structured binding: capturing structured
+		// bindings in the lambda below trips clang-analyzer-core.NullDereference.
+		auto& stagedPair = stagedIn[id];
+		float& stagedInXmax = stagedPair.first;
+		float& stagedInDx = stagedPair.second;
 
 		if (stagedInXmax == 0.0F && stagedInDx == 0.0F)
 		{
@@ -805,7 +807,6 @@ namespace dnf_composer::user_interface
 	void ElementWindow::switchElementToModify(const std::shared_ptr<element::Element>& element,
 	                                          const std::string& simId)
 	{
-		const std::string elementId = element->getUniqueName();
 		static bool missingElementAcknowledged = false;
 
 		switch (const element::ElementLabel label = element->getLabel())

@@ -2,10 +2,8 @@
 
 #include "element_parameters.h"
 
-namespace dnf_composer
+namespace dnf_composer::element
 {
-	namespace element
-	{
 		struct GaussStimulusParameters : ElementSpecificParameters
 		{
 			double width;
@@ -17,7 +15,6 @@ namespace dnf_composer
 			GaussStimulusParameters(double width = 5.0, double amplitude = 15.0,
 				double position = 0.0, bool circular = true, bool normalized = false);
 			bool operator==(const GaussStimulusParameters& other) const;
-			std::string toString() const override;
+			[[nodiscard]] std::string toString() const override;
 		};
-	}
 }

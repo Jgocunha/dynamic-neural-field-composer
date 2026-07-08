@@ -11,7 +11,7 @@ namespace dnf_composer
 
 		LinePlotParameters();
 		LinePlotParameters(double lineThickness, bool autoFit);
-		std::string toString() const override;
+		[[nodiscard]] std::string toString() const override;
 		bool operator==(const LinePlotParameters& other) const;
 	};
 
@@ -28,9 +28,9 @@ namespace dnf_composer
 
 		void setLineThickness(double lineThickness);
 		void setAutoFit(bool autoFit);
-		double getLineThickness() const;
-		double getAutoFit() const;
-		std::string toString() const override;
+		[[nodiscard]] double getLineThickness() const;
+		[[nodiscard]] double getAutoFit() const;
+		[[nodiscard]] std::string toString() const override;
 		void render(const std::vector<std::vector<double>*>& data, const std::vector<std::string>& legends) override;
 	};
 }

@@ -23,8 +23,9 @@ namespace dnf_composer::tools::utils
 	void resizeMatrix(std::vector<std::vector<T>>& matrix, int newRowSize, int newColSize)
 	{
 		matrix.resize(newRowSize);
-		for (int i = 0; i < newRowSize; i++)
+		for (int i = 0; i < newRowSize; i++) {
 			matrix[i].resize(newColSize);
+}
 	}
 
 	template <typename T>
@@ -45,9 +46,11 @@ namespace dnf_composer::tools::utils
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<> dis(minRange, maxRange);
-		for (auto& row : matrix)
-			for (auto& element : row)
+		for (auto& row : matrix) {
+			for (auto& element : row) {
 				element = dis(gen);
+}
+}
 	}
 
 	inline bool safe_localtime(const std::time_t* time, std::tm* result)

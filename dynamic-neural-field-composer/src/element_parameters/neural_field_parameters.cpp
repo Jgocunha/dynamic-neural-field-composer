@@ -16,10 +16,11 @@ namespace dnf_composer::element
 		{
 			tau = other.tau;
 			startingRestingLevel = other.startingRestingLevel;
-			if (other.activationFunction == nullptr)
+			if (other.activationFunction == nullptr) {
 				activationFunction = std::make_unique<HeavisideFunction>(0);
-			else
+			} else {
 				activationFunction = other.activationFunction->clone();
+			}
 		}
 
 		NeuralFieldParameters& NeuralFieldParameters::operator=(const NeuralFieldParameters& other)
@@ -28,10 +29,11 @@ namespace dnf_composer::element
 			{
 				tau = other.tau;
 				startingRestingLevel = other.startingRestingLevel;
-				if (other.activationFunction)
+				if (other.activationFunction) {
 					activationFunction = other.activationFunction->clone();
-				else
+				} else {
 					activationFunction.reset();
+				}
 			}
 			return *this;
 		}
@@ -89,10 +91,7 @@ namespace dnf_composer::element
 		}
 
 
-		NeuralFieldState::NeuralFieldState()
-			: bumps({}), stable(false), lowestActivation(0.0), highestActivation(0.0),
-				thresholdForStability(0.035)
-		{}
+		NeuralFieldState::NeuralFieldState() = default;
 
 		std::string NeuralFieldState::toString() const
 		{
@@ -104,9 +103,10 @@ namespace dnf_composer::element
 				"Threshold for stability: {:.2f}\n"
 				"Bumps:\n",
 				stable, lowestActivation, highestActivation, thresholdForStability);
-		    for (const auto& bump : bumps)
-			str += bump.toString();
-			
+		    for (const auto& bump : bumps) {
+				str += bump.toString();
+			}
+
 			return str;
 		}
 

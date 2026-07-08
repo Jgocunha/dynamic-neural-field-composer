@@ -26,7 +26,7 @@ namespace dnf_composer::tools::profiling
 		~Timer();
 	private:
 		void stop() const;
-	private:
+	
 		std::chrono::time_point<std::chrono::high_resolution_clock> startTimepoint;
 		std::string signature;
 		std::ostream& outStream;

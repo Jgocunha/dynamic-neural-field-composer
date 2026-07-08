@@ -49,6 +49,11 @@ namespace dnf_composer
 			case PlotType::LINE_PLOT:
 			{
 				const auto *const linePlotParameters = dynamic_cast<const LinePlotParameters*>(&specificParameters);
+				if (linePlotParameters == nullptr)
+				{
+					log(tools::logger::LogLevel::FATAL, "Plot type is LINE_PLOT but the specific parameters are not LinePlotParameters; plot not added.");
+					return;
+				}
 				LinePlot plot(parameters, *linePlotParameters);
 				plots[std::make_shared<LinePlot>(plot)] = data;
 				break;
@@ -56,6 +61,11 @@ namespace dnf_composer
 			case PlotType::HEATMAP:
 			{
 				const auto *const heatmapParameters = dynamic_cast<const HeatmapParameters*>(&specificParameters);
+				if (heatmapParameters == nullptr)
+				{
+					log(tools::logger::LogLevel::FATAL, "Plot type is HEATMAP but the specific parameters are not HeatmapParameters; plot not added.");
+					return;
+				}
 				Heatmap plot(parameters, *heatmapParameters);
 				plots[std::make_shared<Heatmap>(plot)] = data;
 				break;
@@ -215,6 +225,9 @@ namespace dnf_composer
 
 	void Visualization::render()
 	{
+		// Removing a plot while iterating `plots` would invalidate the loop's
+		// iterators, so removals are collected and applied after the loop.
+		std::vector<int> plotsToRemove;
 		for (const auto&[fst, snd] : plots)
 		{
 			std::vector<std::pair<std::string, std::string>> data = snd;
@@ -225,8 +238,8 @@ namespace dnf_composer
 				return simulation->componentExists(d.first, d.second);
 				}))
 			{
-				removePlot(fst->getUniqueIdentifier());
-				return;
+				plotsToRemove.push_back(fst->getUniqueIdentifier());
+				continue;
 			}
 
 			std::vector<std::vector<double>*> allDataToPlotPtr;
@@ -271,8 +284,12 @@ namespace dnf_composer
 			ImGui::End();
 
 			if (!open) {
-				removePlot(plotID);
+				plotsToRemove.push_back(plotID);
 }
 		}
+
+		for (const int plotId : plotsToRemove) {
+			removePlot(plotId);
+}
 	}
 }

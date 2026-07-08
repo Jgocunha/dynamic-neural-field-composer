@@ -4,10 +4,8 @@
 #include "elements/activation_function.h"
 
 
-namespace dnf_composer
+namespace dnf_composer::element
 {
-	namespace element
-	{
 		struct NeuralFieldParameters : ElementSpecificParameters
 		{
 			double tau;
@@ -19,7 +17,7 @@ namespace dnf_composer
 			NeuralFieldParameters(const NeuralFieldParameters& other);
 			NeuralFieldParameters& operator=(const NeuralFieldParameters& other);
 			bool operator==(const NeuralFieldParameters& other) const;
-			std::string toString() const override;
+			[[nodiscard]] std::string toString() const override;
 
 		};
 
@@ -37,19 +35,20 @@ namespace dnf_composer
 				double amplitude = 0.0,
 				double width = 0.0);
 			bool operator==(const NeuralFieldBump& other) const;
-			std::string toString() const;
+			[[nodiscard]] std::string toString() const;
 			void print() const;
 		};
 
 		struct NeuralFieldState
 		{
 			std::vector<NeuralFieldBump> bumps;
-			bool stable;
-			double lowestActivation;
-			double highestActivation;
-			double thresholdForStability;
+			bool stable = false;
+			double lowestActivation = 0.0;
+			double highestActivation = 0.0;
+			double thresholdForStability = 0.035;
 
 			NeuralFieldState();
-			std::string toString() const;
+			[[nodiscard]] std::string toString() const;
 			void print() const;
 		};
+}

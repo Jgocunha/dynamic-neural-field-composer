@@ -103,8 +103,9 @@ namespace dnf_composer::tools::math
 		const int n = std::max(nf, ng) - std::min(nf, ng) + 1;
 		for (int i = 0; i < n; ++i) {
 			T acc = T();
-			for (int j = static_cast<int>(min_v.size()) - 1, k = i; j >= 0; --j, ++k)
+			for (int j = static_cast<int>(min_v.size()) - 1, k = i; j >= 0; --j, ++k) {
 				acc += min_v[j] * max_v[k];
+}
 			out[i] = acc;
 		}
 	}
@@ -119,8 +120,9 @@ namespace dnf_composer::tools::math
 			T acc = T();
 			for (int j = 0; j < ng; ++j) {
 				const int fIndex = i + j - pad;
-				if (fIndex >= 0 && fIndex < nf)
+				if (fIndex >= 0 && fIndex < nf) {
 					acc += f[fIndex] * g[j];
+}
 			}
 			out[i] = acc;
 		}
@@ -130,22 +132,25 @@ namespace dnf_composer::tools::math
 	void obtainCircularVector_into(std::vector<T>& out, const std::vector<int>& indices,
 	                               const std::vector<T>& contents)
 	{
-		for (int i = 0; i < static_cast<int>(indices.size()); ++i)
+		for (int i = 0; i < static_cast<int>(indices.size()); ++i) {
 			out[i] = contents[indices[i] - 1];
+}
 	}
 
 	template<typename T>
 	std::vector<T> gaussNorm(const std::vector<int>& rangeX, const T& position, const T& sigma)
 	{
 		std::vector<T> g(rangeX.size());
-		for (int i = 0; i < g.size(); i++)
+		for (int i = 0; i < g.size(); i++) {
 			g[i] = exp(-0.5 * pow((rangeX[i] - position), 2) / pow(sigma, 2));
+}
 
 		if (!g.empty())
 		{
 			double sumOfG = std::reduce(g.begin(), g.end());
-			for (int i = 0; i < g.size(); i++)
+			for (int i = 0; i < g.size(); i++) {
 				g[i] = g[i] / sumOfG;
+}
 		}
 
 		return g;
@@ -156,8 +161,9 @@ namespace dnf_composer::tools::math
 	{
 		std::vector<T> g(rangeX.size());
 
-		for (int i = 0; i < g.size(); i++)
+		for (int i = 0; i < g.size(); i++) {
 			g[i] = exp(-0.5 * pow((rangeX[i] - position), 2) / pow(sigma, 2));
+}
 
 		return g;
 	}
@@ -243,8 +249,9 @@ namespace dnf_composer::tools::math
 
 		if (sumOfAbs > static_cast<T>(0))
 		{
-			for (T& value : derivative)
+			for (T& value : derivative) {
 				value /= sumOfAbs;
+}
 		}
 
 		return derivative;
@@ -254,8 +261,9 @@ namespace dnf_composer::tools::math
 	std::vector<T> obtainCircularVector(const std::vector<int>& indices, const std::vector<T>& contents)
 	{
 		std::vector<T> newContents(indices.size());
-		for (int i = 0; i < indices.size(); i++)
+		for (int i = 0; i < indices.size(); i++) {
 			newContents[i] = contents[indices[i] - 1];
+}
 		return newContents;
 	}
 
@@ -290,8 +298,9 @@ namespace dnf_composer::tools::math
 	std::vector<T> heaviside(const std::vector<T>& x, T threshold)
 	{
 		std::vector<T> h(x.size());
-		for (int i = 0; i < static_cast<int>(h.size()); i++)
+		for (int i = 0; i < static_cast<int>(h.size()); i++) {
 			h[i] = (x[i] > threshold) ? 1 : 0;
+}
 		return h;
 	}
 
@@ -299,8 +308,9 @@ namespace dnf_composer::tools::math
 	std::vector<T> sumGauss(const std::vector<T>& gauss1, const std::vector<T>& gauss2)
 	{
 		std::vector<T> gaussResult(gauss1.size());
-		for (int i = 0; i < gauss1.size(); i++)
+		for (int i = 0; i < gauss1.size(); i++) {
 			gaussResult[i] = gauss1[i] + gauss2[i];
+}
 		return gaussResult;
 	}
 
@@ -319,14 +329,16 @@ namespace dnf_composer::tools::math
 		const T minVal = *std::ranges::min_element(vector.begin(), vector.end()) - epsilon;
 
 		std::vector<T> normalizedVector = vector;
-		for (T& val : normalizedVector)
+		for (T& val : normalizedVector) {
 			val += minVal;
+}
 
 		normalizedVector = math::sigmoid(normalizedVector, 0.2, std::abs(minVal) + offset);
 		const T newMinVal = *std::ranges::min_element(normalizedVector.begin(), normalizedVector.end());
 
-		for (T& val : normalizedVector)
+		for (T& val : normalizedVector) {
 			val -= newMinVal;
+}
 
 		return normalizedVector;
 	}
@@ -334,23 +346,26 @@ namespace dnf_composer::tools::math
 	template <typename T>
 	std::vector<T> hebbLearningRule(std::vector<T>& weights, const std::vector<T>& input, const std::vector<T>& output, double learningRate)
 	{
-		if (input.empty() || output.empty())
+		if (input.empty() || output.empty()) {
 			throw std::invalid_argument("Input and output vectors cannot be empty");
+}
 
 		const size_t inputSize = input.size();
 		const size_t outputSize = output.size();
 		const size_t expectedSize = inputSize * outputSize;
 
-		if (weights.size() != expectedSize)
+		if (weights.size() != expectedSize) {
 			throw std::invalid_argument("Weight matrix size mismatch");
+}
 
 		for (size_t i = 0; i < inputSize; ++i)
 		{
 			const T scaledInput = learningRate * input[i];
 			const size_t baseIndex = i * outputSize;
 
-			for (size_t j = 0; j < outputSize; ++j)
+			for (size_t j = 0; j < outputSize; ++j) {
 				weights[baseIndex + j] += scaledInput * output[j];
+}
 		}
 
 		return weights;
@@ -362,12 +377,13 @@ namespace dnf_composer::tools::math
 		const int inputSize = input.size();
 		const int outputSize = output.size();
 
-		for (int i = 0; i < inputSize; i++)
+		for (int i = 0; i < inputSize; i++) {
 			for (int j = 0; j < outputSize; j++)
 			{
 				int index = i * outputSize + j; // Compute the index for the flattened matrix
 				weights[index] += learningRate * (input[i] * output[j] - output[j] * input[i] * weights[index]);
 			}
+}
 
 		return weights;
 	}
@@ -474,8 +490,10 @@ namespace dnf_composer::tools::math
 
 	inline double normalize(const double value, const double min, const double max)
 	{
-		if (value < min) return 0.0;
-		if (value > max) return 1.0;
+		if (value < min) { return 0.0;
+}
+		if (value > max) { return 1.0;
+}
 		return (value - min) / (max - min);
 	}
 
@@ -490,8 +508,10 @@ namespace dnf_composer::tools::math
 	}
 
 	inline double wrap(double value, double max_value) {
-		if (value < 0) return value + max_value;
-		if (value >= max_value) return value - max_value;
+		if (value < 0) { return value + max_value;
+}
+		if (value >= max_value) { return value - max_value;
+}
 		return value;
 	}
 
@@ -508,9 +528,11 @@ namespace dnf_composer::tools::math
 		const int rows = matrix.size();
 		const int cols = matrix[0].size();
 		std::vector<T> flat_matrix(rows * cols);
-		for (int i = 0; i < rows; ++i)
-			for (int j = 0; j < cols; ++j)
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
 				flat_matrix[i * cols + j] = static_cast<T>(matrix[i][j]);
+}
+}
 		return flat_matrix;
 	}
 
@@ -518,10 +540,13 @@ namespace dnf_composer::tools::math
 	template<typename T>
 	std::vector<T> resample(const std::vector<T>& input, int outputSize)
 	{
-		if (input.empty() || outputSize <= 0) return {};
+		if (input.empty() || outputSize <= 0) { return {};
+}
 		const int N = static_cast<int>(input.size());
-		if (N == outputSize) return input;
-		if (outputSize == 1) return { input[N / 2] };
+		if (N == outputSize) { return input;
+}
+		if (outputSize == 1) { return { input[N / 2] };
+}
 		std::vector<T> out(outputSize);
 		for (int i = 0; i < outputSize; ++i)
 		{
@@ -540,7 +565,8 @@ namespace dnf_composer::tools::math
 	{
 		const int N = static_cast<int>(input.size());
 		const int outputSize = static_cast<int>(output.size());
-		if (input.empty() || outputSize <= 0) return;
+		if (input.empty() || outputSize <= 0) { return;
+}
 		if (N == outputSize) { std::copy(input.begin(), input.end(), output.begin()); return; }
 		if (outputSize == 1) { output[0] = input[N / 2]; return; }
 		for (int i = 0; i < outputSize; ++i)
@@ -558,7 +584,8 @@ namespace dnf_composer::tools::math
 	{
 		const int N = static_cast<int>(input.size());
 		const int M = static_cast<int>(output.size());
-		if (input.empty() || M <= 0) return;
+		if (input.empty() || M <= 0) { return;
+}
 		if (N == M) { std::copy(input.begin(), input.end(), output.begin()); return; }
 		if (M == 1) { output[0] = input[N / 2]; return; }
 		for (int i = 0; i < M; ++i)
@@ -574,7 +601,8 @@ namespace dnf_composer::tools::math
 	{
 		const int N = static_cast<int>(input.size());
 		const int M = static_cast<int>(output.size());
-		if (input.empty() || M <= 0) return;
+		if (input.empty() || M <= 0) { return;
+}
 		if (N == M) { std::copy(input.begin(), input.end(), output.begin()); return; }
 		if (M == 1) { output[0] = input[N / 2]; return; }
 		const auto clamp = [N](int idx) { return std::max(0, std::min(idx, N - 1)); };
@@ -583,10 +611,10 @@ namespace dnf_composer::tools::math
 			const double pos = static_cast<double>(i) * (N - 1) / (M - 1);
 			const int lo = static_cast<int>(pos);
 			const double t = pos - lo;
-			const double p0 = static_cast<double>(input[clamp(lo - 1)]);
-			const double p1 = static_cast<double>(input[clamp(lo)]);
-			const double p2 = static_cast<double>(input[clamp(lo + 1)]);
-			const double p3 = static_cast<double>(input[clamp(lo + 2)]);
+			const auto p0 = static_cast<double>(input[clamp(lo - 1)]);
+			const auto p1 = static_cast<double>(input[clamp(lo)]);
+			const auto p2 = static_cast<double>(input[clamp(lo + 1)]);
+			const auto p3 = static_cast<double>(input[clamp(lo + 2)]);
 			output[i] = static_cast<T>(0.5 * (2.0 * p1 + (-p0 + p2) * t +
 				(2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t * t +
 				(-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t * t * t));
@@ -615,8 +643,9 @@ namespace dnf_composer::tools::math
 		for (int y = 0; y < size_y; ++y)
 		{
 			std::vector<T> row(size_x);
-			for (int x = 0; x < size_x; ++x)
+			for (int x = 0; x < size_x; ++x) {
 				row[x] = field[y * size_x + x];
+}
 
 			std::vector<T> convRow;
 			if (circular_x)
@@ -628,8 +657,9 @@ namespace dnf_composer::tools::math
 			{
 				convRow = conv_same(row, kernel_x);
 			}
-			for (int x = 0; x < size_x; ++x)
+			for (int x = 0; x < size_x; ++x) {
 				tmp[y * size_x + x] = convRow[x];
+}
 		}
 
 		// y-pass: convolve each column (fixed x) along the y-axis with kernel_y
@@ -637,8 +667,9 @@ namespace dnf_composer::tools::math
 		for (int x = 0; x < size_x; ++x)
 		{
 			std::vector<T> col(size_y);
-			for (int y = 0; y < size_y; ++y)
+			for (int y = 0; y < size_y; ++y) {
 				col[y] = tmp[y * size_x + x];
+}
 
 			std::vector<T> convCol;
 			if (circular_y)
@@ -650,8 +681,9 @@ namespace dnf_composer::tools::math
 			{
 				convCol = conv_same(col, kernel_y);
 			}
-			for (int y = 0; y < size_y; ++y)
+			for (int y = 0; y < size_y; ++y) {
 				result[y * size_x + x] = convCol[y];
+}
 		}
 
 		return result;
@@ -683,8 +715,9 @@ namespace dnf_composer::tools::math
 		// x-pass: convolve each row (fixed y) with kernel_x
 		for (int y = 0; y < size_y; ++y)
 		{
-			for (int x = 0; x < size_x; ++x)
+			for (int x = 0; x < size_x; ++x) {
 				row[x] = field[y * size_x + x];
+}
 
 			if (circular_x)
 			{
@@ -695,15 +728,17 @@ namespace dnf_composer::tools::math
 			{
 				conv_same_into(convRow, row, kernel_x);
 			}
-			for (int x = 0; x < size_x; ++x)
+			for (int x = 0; x < size_x; ++x) {
 				tmp[y * size_x + x] = convRow[x];
+}
 		}
 
 		// y-pass: convolve each column (fixed x) with kernel_y
 		for (int x = 0; x < size_x; ++x)
 		{
-			for (int y = 0; y < size_y; ++y)
+			for (int y = 0; y < size_y; ++y) {
 				col[y] = tmp[y * size_x + x];
+}
 
 			if (circular_y)
 			{
@@ -714,8 +749,9 @@ namespace dnf_composer::tools::math
 			{
 				conv_same_into(convCol, col, kernel_y);
 			}
-			for (int y = 0; y < size_y; ++y)
+			for (int y = 0; y < size_y; ++y) {
 				out[y * size_x + x] = convCol[y];
+}
 		}
 	}
 
@@ -742,7 +778,8 @@ namespace dnf_composer::tools::math
 
 		const int outSize = keepX ? size_x : size_y;
 		const int reduceCount = keepX ? size_y : size_x;
-		if (out.size() != static_cast<std::size_t>(outSize)) out.assign(outSize, T());
+		if (out.size() != static_cast<std::size_t>(outSize)) { out.assign(outSize, T());
+}
 
 		for (int o = 0; o < outSize; ++o)
 		{
@@ -764,8 +801,9 @@ namespace dnf_composer::tools::math
 				case ReduceOp::MINIMUM: acc = std::min(acc, v); break;
 				}
 			}
-			if (op == ReduceOp::AVERAGE)
+			if (op == ReduceOp::AVERAGE) {
 				acc /= static_cast<T>(reduceCount);
+}
 			out[o] = acc;
 		}
 	}
@@ -783,15 +821,17 @@ namespace dnf_composer::tools::math
 		if (size_x <= 0 || size_y <= 0) { out.clear(); return; }
 
 		const std::size_t total = static_cast<std::size_t>(size_x) * static_cast<std::size_t>(size_y);
-		if (out.size() != total) out.assign(total, T());
+		if (out.size() != total) { out.assign(total, T());
+}
 		if (profile.empty()) { std::fill(out.begin(), out.end(), T()); return; }
 		const int profileSize = static_cast<int>(profile.size());
-		for (int y = 0; y < size_y; ++y)
+		for (int y = 0; y < size_y; ++y) {
 			for (int x = 0; x < size_x; ++x)
 			{
 				// Clamp the profile index so a mismatched profile size cannot read OOB.
 				const int idx = std::min(alongX ? x : y, profileSize - 1);
 				out[static_cast<std::size_t>(y) * size_x + x] = profile[idx];
 			}
+}
 	}
 }

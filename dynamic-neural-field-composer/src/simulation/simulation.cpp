@@ -346,7 +346,8 @@ namespace dnf_composer
 		}
 	}
 
-	void Simulation::changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions) const
+	// NOLINTNEXTLINE(readability-make-member-function-const) - mutates simulation state through shared_ptr members; const would be misleading
+	void Simulation::changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions)
 	{
 		const auto element = getElement(elementId);
 		element->removeInputs();
@@ -357,7 +358,8 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, logMessage);
 	}
 
-	void Simulation::renameElement(const std::string& oldName, const std::string& newName) const
+	// NOLINTNEXTLINE(readability-make-member-function-const) - mutates element identity through shared_ptr members; const would be misleading
+	void Simulation::renameElement(const std::string& oldName, const std::string& newName)
 	{
 		if (oldName == newName) { return;
 }

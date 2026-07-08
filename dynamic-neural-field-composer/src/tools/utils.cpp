@@ -31,8 +31,9 @@ namespace dnf_composer::tools::utils
 			if (_NSGetExecutablePath(buf.data(), &size) != 0) {
 				// buf was too small; size now holds the required length
 				std::string dynbuf(size, '\0');
-				if (_NSGetExecutablePath(dynbuf.data(), &size) != 0)
-					return std::string(PROJECT_DIR);
+				if (_NSGetExecutablePath(dynbuf.data(), &size) != 0) {
+					return {PROJECT_DIR};
+				}
 				exeDir = std::filesystem::path(dynbuf).parent_path();
 			} else {
 				exeDir = std::filesystem::path(buf.data()).parent_path();
@@ -40,8 +41,9 @@ namespace dnf_composer::tools::utils
 #else
 			std::array<char, PATH_MAX> buf{};
 			const ssize_t len = readlink("/proc/self/exe", buf.data(), buf.size() - 1);
-			if (len <= 0)
-				return std::string(PROJECT_DIR);
+			if (len <= 0) {
+				return {PROJECT_DIR};
+			}
 			buf.at(len) = '\0';
 			exeDir = std::filesystem::path(buf.data()).parent_path();
 #endif
@@ -106,20 +108,22 @@ namespace dnf_composer::tools::utils
 		task_vm_info_data_t info{};
 		mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
 		if (task_info(mach_task_self(), TASK_VM_INFO,
-		              reinterpret_cast<task_info_t>(&info), &count) == KERN_SUCCESS)
-			return static_cast<float>(info.phys_footprint) / (1024.0f * 1024.0f);
-		return 0.0f;
+		              reinterpret_cast<task_info_t>(&info), &count) == KERN_SUCCESS) {
+			return static_cast<float>(info.phys_footprint) / (1024.0F * 1024.0F);
+		}
+		return 0.0F;
 #else
 		std::ifstream f("/proc/self/status");
 		std::string line;
-		while (std::getline(f, line))
-			if (line.rfind("VmRSS:", 0) == 0)
+		while (std::getline(f, line)) {
+			if (line.starts_with("VmRSS:"))
 			{
 				long kb = 0;
 				sscanf(line.c_str(), "VmRSS: %ld kB", &kb);
-				return static_cast<float>(kb) / 1024.0f;
+				return static_cast<float>(kb) / 1024.0F;
 			}
-		return 0.0f;
+		}
+		return 0.0F;
 #endif
 	}
 

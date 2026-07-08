@@ -42,10 +42,18 @@ namespace dnf_composer::user_interface
 			const bool running = simulation->isInitialized() && !simulation->isPaused();
 			const bool paused  = simulation->isInitialized() &&  simulation->isPaused();
 
-			const ImVec4 dotColor = running ? ImVec4(0.20F, 0.75F, 0.20F, 1.0F)
-							: paused  ? ImVec4(0.90F, 0.70F, 0.10F, 1.0F)
-										: ImVec4(0.75F, 0.20F, 0.20F, 1.0F);
-			const char* stateStr  = running ? "Running" : paused ? "Paused" : "Stopped";
+			ImVec4 dotColor(0.75F, 0.20F, 0.20F, 1.0F);
+			const char* stateStr = "Stopped";
+			if (running)
+			{
+				dotColor = ImVec4(0.20F, 0.75F, 0.20F, 1.0F);
+				stateStr = "Running";
+			}
+			else if (paused)
+			{
+				dotColor = ImVec4(0.90F, 0.70F, 0.10F, 1.0F);
+				stateStr = "Paused";
+			}
 
 			ImGui::TextColored(dotColor, "\xe2\x97\x8f");  // U+25CF BLACK CIRCLE
 			ImGui::SameLine(0, 4);
