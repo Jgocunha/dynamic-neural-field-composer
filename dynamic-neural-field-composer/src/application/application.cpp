@@ -1,4 +1,5 @@
-﻿#include <utility>
+﻿#include <array>
+#include <utility>
 
 #include "application/application.h"
 
@@ -15,8 +16,7 @@ namespace dnf_composer
 		const std::shared_ptr<Visualization>& visualization)
 		: simulation(simulation ? simulation : std::make_shared<Simulation>("default",
 			1.0, 0.0, 0.0)),
-		visualization(visualization ? visualization : std::make_shared<Visualization>(this->simulation)),
-		guiActive(true)
+		visualization(visualization ? visualization : std::make_shared<Visualization>(this->simulation))
 	{
 		if (this->visualization->getSimulation() != this->simulation) {
 			throw Exception(ErrorCode::APP_VIS_SIM_MISMATCH);
@@ -194,20 +194,20 @@ namespace dnf_composer
 		io.FontDefault = g_MediumMediumFont;
 
 		// Add icon fonts (3 sizes, each standalone)
-		static constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+		static constexpr std::array<ImWchar, 3> icons_ranges = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 		ImFontConfig icons_config;
 		icons_config.MergeMode = false;
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 12.0F, &icons_config, icons_ranges);
+			FA_compressed_size, 12.0F, &icons_config, icons_ranges.data());
 		g_SmallIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 18.0F, &icons_config, icons_ranges);
+			FA_compressed_size, 18.0F, &icons_config, icons_ranges.data());
 		g_MediumIconsFont = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data,
-			FA_compressed_size, 26.0F, &icons_config, icons_ranges);
+			FA_compressed_size, 26.0F, &icons_config, icons_ranges.data());
 		g_LargeIconsFont  = io.Fonts->Fonts[io.Fonts->Fonts.Size - 1];
 
 		io.Fonts->Build();

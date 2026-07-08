@@ -57,7 +57,7 @@ namespace dnf_composer
 		std::shared_ptr<Simulation> simulation;
 		std::shared_ptr<Visualization> visualization;
 		std::shared_ptr<imgui_kit::UserInterface> gui;
-		bool guiActive;
+		bool guiActive = true;
 		static float uiScalePct; ///< User-controlled UI scale percentage (50–200%).
 
 	public:

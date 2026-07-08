@@ -10,12 +10,13 @@ namespace dnf_composer::user_interface
 		:visualization(visualization), simulation(visualization->getSimulation())
 	{}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void PlotControlWindow::renderContent() const
 	{
 		// Add a new plot button
 		ImGui::Text("Add a new plot:"); ImGui::SameLine();
 			static auto selectedPlotType = PlotType::LINE_PLOT;
-			ImGui::SetNextItemWidth(150.0f);
+			ImGui::SetNextItemWidth(150.0F);
 			ImGui::Combo("##PlotType", reinterpret_cast<int*>(&selectedPlotType), "Line plot\0Heatmap\0\0");
 			ImGui::SameLine();
 			if (ImGui::Button("Add"))
@@ -31,49 +32,57 @@ namespace dnf_composer::user_interface
 		// Alternatives: ICON_FA_CHART_LINE, ICON_FA_BRAIN, ICON_FA_LAYER_GROUP, ICON_FA_SIGNAL
 		const bool clicked = ImGui::Button(ICON_FA_WAVE_SQUARE "##plotfields");
 		ImGui::PopFont();
-		if (ImGui::IsItemHovered())
+		if (ImGui::IsItemHovered()) {
 			ImGui::SetTooltip("Add one line plot per neural field,\nwith all its components plotted.");
+}
 		if (clicked)
 		{
 			// Build a set of element names already present in any existing plot
 			std::unordered_set<std::string> alreadyPlotted;
-			for (const auto& [p, data] : visualization->getPlots())
-				for (const auto &elemName: data | std::views::keys)
+			for (const auto& [p, data] : visualization->getPlots()) {
+				for (const auto &elemName: data | std::views::keys) {
 					alreadyPlotted.insert(elemName);
+}
+}
 
 			for (const auto& element : simulation->getElements())
 			{
-				if (element->getLabel() != element::ElementLabel::NEURAL_FIELD)
+				if (element->getLabel() != element::ElementLabel::NEURAL_FIELD) {
 					continue;
-				if (alreadyPlotted.contains(element->getUniqueName()))
+}
+				if (alreadyPlotted.contains(element->getUniqueName())) {
 					continue;
+}
 				const auto* comps = element->getComponents();
-				if (!comps || comps->empty())
+				if ((comps == nullptr) || comps->empty()) {
 					continue;
+}
 				// Create the plot with the first component, then append the rest
 				auto it = comps->begin();
 				visualization->plot(element->getUniqueName(), it->first);
 				// Fetch the id of the plot that was just created
 				int newId = -1;
-				for (const auto& [p, _] : visualization->getPlots())
+				for (const auto& [p, _] : visualization->getPlots()) {
 					newId = std::max(newId, p->getUniqueIdentifier());
+}
 				++it;
-				for (; it != comps->end(); ++it)
+				for (; it != comps->end(); ++it) {
 					visualization->plot(newId, element->getUniqueName(), it->first);
+}
 			}
 		}
 
 			const float availWidth = ImGui::GetContentRegionAvail().x;
-			const float idColWidth       = availWidth * 0.050f;
-			const float typeColWidth     = availWidth * 0.100f;
-			const float dataColWidth     = availWidth * 0.500f;
-			const float changeColWidth   = availWidth * 0.250f;
+			const float idColWidth       = availWidth * 0.050F;
+			const float typeColWidth     = availWidth * 0.100F;
+			const float dataColWidth     = availWidth * 0.500F;
+			const float changeColWidth   = availWidth * 0.250F;
 
 			const float tableHeight = ImGui::GetContentRegionAvail().y;
 			if (ImGui::BeginTable("PlotControlTable", 4,
 				ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg |
 				ImGuiTableFlags_ScrollY,
-				ImVec2(0.0f, tableHeight)))
+				ImVec2(0.0F, tableHeight)))
 			{
 				// Set column headers
 				ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed, idColWidth);
@@ -121,7 +130,8 @@ namespace dnf_composer::user_interface
 					}
 					ImGui::PopFont();
 
-					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add data");
+					if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Add data");
+}
 
 					if (ImGui::BeginPopup(popup_id.c_str()))
 					{
@@ -152,7 +162,8 @@ namespace dnf_composer::user_interface
 						ImGui::OpenPopup(remove_popup_id.c_str());
 					}
 					ImGui::PopFont();
-					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove data");
+					if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Remove data");
+}
 
 					if (ImGui::BeginPopup(remove_popup_id.c_str()))
 					{
@@ -178,7 +189,8 @@ namespace dnf_composer::user_interface
 						visualization->removePlot(fst->getUniqueIdentifier());
 					}
 					ImGui::PopFont();
-					if (ImGui::IsItemHovered()) ImGui::SetTooltip("Remove plot");
+					if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Remove plot");
+}
 				}
 
 			}
@@ -192,14 +204,14 @@ namespace dnf_composer::user_interface
 		if (open)
 		{
 			const float startY = ImGui::GetCursorPosY();
-			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_CHART_LINE);
 			ImGui::PopFont();
 			ImGui::PopStyleColor();
-			ImGui::SameLine(0, 8.0f);
+			ImGui::SameLine(0, 8.0F);
 			ImGui::SetCursorPosY(startY);
 			ImGui::PushFont(g_BlackLargeFont);
 			ImGui::TextUnformatted("Plot Control");

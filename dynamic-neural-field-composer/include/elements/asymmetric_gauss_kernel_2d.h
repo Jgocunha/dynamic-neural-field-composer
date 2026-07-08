@@ -90,7 +90,7 @@ namespace dnf_composer::element
 		std::vector<double> scratchConvolution_;
 	public:
 		AsymmetricGaussKernel2D(const ElementCommonParameters& elementCommonParameters,
-		                        const AsymmetricGaussKernel2DParameters& parameters);
+		                        AsymmetricGaussKernel2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

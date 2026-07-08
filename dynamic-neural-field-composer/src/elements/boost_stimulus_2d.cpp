@@ -2,13 +2,15 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/boost_stimulus_2d.h"
 
 namespace dnf_composer::element
 {
 	BoostStimulus2D::BoostStimulus2D(const ElementCommonParameters& elementCommonParameters,
-	                                 const BoostStimulus2DParameters& parameters)
-		: Element(elementCommonParameters), parameters(parameters)
+	                                 BoostStimulus2DParameters  parameters)
+		: Element(elementCommonParameters), parameters(std::move(parameters))
 	{
 		commonParameters.identifiers.label = ElementLabel::BOOST_STIMULUS_2D;
 	}

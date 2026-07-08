@@ -1,5 +1,7 @@
 ﻿#include "tools/utils.h"
 
+#include <array>
+
 #ifdef _WIN32
 #  include <windows.h>
 #  include <psapi.h>
@@ -20,33 +22,36 @@ namespace dnf_composer::tools::utils
 		{
 			std::filesystem::path exeDir;
 #ifdef _WIN32
-			char buf[MAX_PATH];
-			GetModuleFileNameA(nullptr, buf, MAX_PATH);
-			exeDir = std::filesystem::path(buf).parent_path();
+			std::array<char, MAX_PATH> buf{};
+			GetModuleFileNameA(nullptr, buf.data(), MAX_PATH);
+			exeDir = std::filesystem::path(buf.data()).parent_path();
 #elif defined(__APPLE__)
-			char buf[PATH_MAX] = {};
+			std::array<char, PATH_MAX> buf{};
 			uint32_t size = sizeof(buf);
-			if (_NSGetExecutablePath(buf, &size) != 0) {
+			if (_NSGetExecutablePath(buf.data(), &size) != 0) {
 				// buf was too small; size now holds the required length
 				std::string dynbuf(size, '\0');
-				if (_NSGetExecutablePath(dynbuf.data(), &size) != 0)
-					return std::string(PROJECT_DIR);
+				if (_NSGetExecutablePath(dynbuf.data(), &size) != 0) {
+					return {PROJECT_DIR};
+				}
 				exeDir = std::filesystem::path(dynbuf).parent_path();
 			} else {
-				exeDir = std::filesystem::path(buf).parent_path();
+				exeDir = std::filesystem::path(buf.data()).parent_path();
 			}
 #else
-			char buf[PATH_MAX] = {};
-			const ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
-			if (len <= 0)
-				return std::string(PROJECT_DIR);
-			buf[len] = '\0';
-			exeDir = std::filesystem::path(buf).parent_path();
+			std::array<char, PATH_MAX> buf{};
+			const ssize_t len = readlink("/proc/self/exe", buf.data(), buf.size() - 1);
+			if (len <= 0) {
+				return {PROJECT_DIR};
+			}
+			buf.at(len) = '\0';
+			exeDir = std::filesystem::path(buf.data()).parent_path();
 #endif
 			const auto parent = std::filesystem::weakly_canonical(exeDir / "..");
-			if (std::filesystem::exists(parent / "resources"))
+			if (std::filesystem::exists(parent / "resources")) {
 				return parent.string();
-			return std::string(PROJECT_DIR);
+}
+			return {PROJECT_DIR};
 		}();
 		return cached;
 	}
@@ -72,8 +77,9 @@ namespace dnf_composer::tools::utils
 		std::ofstream file(filename);
 		if (file.is_open())
 		{
-			for (auto& element : vector)
+			for (const auto& element : vector) {
 				file << element << " ";
+}
 			file.close();
 			return true;
 		}
@@ -84,8 +90,9 @@ namespace dnf_composer::tools::utils
 	{
 		std::string adjustedStr = str;
 		size_t pos;
-		while ((pos = adjustedStr.find('/')) != std::string::npos)
+		while ((pos = adjustedStr.find('/')) != std::string::npos) {
 			adjustedStr.replace(pos, 1, "\\");
+}
 		return adjustedStr;
 	}
 
@@ -93,27 +100,30 @@ namespace dnf_composer::tools::utils
 	{
 #ifdef _WIN32
 		PROCESS_MEMORY_COUNTERS pmc{};
-		if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc)))
-			return static_cast<float>(pmc.WorkingSetSize) / (1024.0f * 1024.0f);
-		return 0.0f;
+		if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+			return static_cast<float>(pmc.WorkingSetSize) / (1024.0F * 1024.0F);
+}
+		return 0.0F;
 #elif defined(__APPLE__)
 		task_vm_info_data_t info{};
 		mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
 		if (task_info(mach_task_self(), TASK_VM_INFO,
-		              reinterpret_cast<task_info_t>(&info), &count) == KERN_SUCCESS)
-			return static_cast<float>(info.phys_footprint) / (1024.0f * 1024.0f);
-		return 0.0f;
+		              reinterpret_cast<task_info_t>(&info), &count) == KERN_SUCCESS) {
+			return static_cast<float>(info.phys_footprint) / (1024.0F * 1024.0F);
+		}
+		return 0.0F;
 #else
 		std::ifstream f("/proc/self/status");
 		std::string line;
-		while (std::getline(f, line))
-			if (line.rfind("VmRSS:", 0) == 0)
+		while (std::getline(f, line)) {
+			if (line.starts_with("VmRSS:"))
 			{
 				long kb = 0;
 				sscanf(line.c_str(), "VmRSS: %ld kB", &kb);
-				return static_cast<float>(kb) / 1024.0f;
+				return static_cast<float>(kb) / 1024.0F;
 			}
-		return 0.0f;
+		}
+		return 0.0F;
 #endif
 	}
 

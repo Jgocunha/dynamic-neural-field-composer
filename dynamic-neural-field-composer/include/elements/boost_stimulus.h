@@ -58,7 +58,7 @@ namespace dnf_composer::element
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.
 		/// @param parameters               Stimulus-specific parameters.
 		BoostStimulus(const ElementCommonParameters& elementCommonParameters,
-		              const BoostStimulusParameters& parameters);
+		              BoostStimulusParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

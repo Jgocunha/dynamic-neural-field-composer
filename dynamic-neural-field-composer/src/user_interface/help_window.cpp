@@ -1,5 +1,6 @@
 #include "user_interface/help_window.h"
 
+#include <array>
 #include <cstdarg>
 
 #include "application/application.h"
@@ -8,7 +9,7 @@ namespace dnf_composer::user_interface
 {
 	static constexpr int kPageCount = 4;
 
-	static constexpr const char* kPageTitles[kPageCount] = {
+	static constexpr std::array<const char*, kPageCount> kPageTitles = {
 		"About",
 		"How to use",
 		"Quick tips",
@@ -26,10 +27,10 @@ namespace dnf_composer::user_interface
 
 		ImGui::SetNextWindowSize(ImVec2(640.0F * scale, 500.0F * scale), ImGuiCond_Always);
 		ImGui::SetNextWindowPos(
-			ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.5f,
-			       vp->WorkPos.y + vp->WorkSize.y * 0.5f),
+			ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.5F,
+			       vp->WorkPos.y + vp->WorkSize.y * 0.5F),
 			ImGuiCond_Always,
-			ImVec2(0.5f, 0.5f));
+			ImVec2(0.5F, 0.5F));
 
 		constexpr ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoResize        |
@@ -166,14 +167,14 @@ namespace dnf_composer::user_interface
 		ImGui::Spacing();
 
 		struct Row { const char* label; const char* desc; };
-		static constexpr Row kRows[] = {
+		static constexpr std::array<Row, 6> kRows = { {
 			{ "Simulation engine",      "Time-stepped loop that manages and steps all elements." },
 			{ "Element library",        "Neural fields, lateral interaction kernels, stimuli, field couplings, noise sources." },
 			{ "Learnable couplings",    "Weight-matrix couplings with Hebbian, Oja, and Delta learning rules." },
 			{ "Real-time visualization","Line plots and heatmaps rendered via ImPlot." },
 			{ "Interactive GUI",        "Node-graph editor, element inspector, field metrics panel, plot controls." },
 			{ "Serialization",          "Save and load complete simulation configurations as JSON." },
-		};
+		} };
 
 		for (const auto& [label, desc] : kRows)
 		{
@@ -213,14 +214,14 @@ namespace dnf_composer::user_interface
 		ImGui::Spacing();
 
 		struct TabRow { const char* icon; const char* name; const char* desc; };
-		static constexpr TabRow kTabs[] = {
+		static constexpr std::array<TabRow, 6> kTabs = { {
 			{ ICON_FA_PLUS,       "Add elements",    "Instantiate neural fields, kernels, stimuli, noise sources, or couplings." },
 			{ ICON_FA_TRASH,      "Remove elements", "Delete an existing element and all of its connections." },
 			{ ICON_FA_LINK,       "Set interactions","Connect and disconnect elements." },
 			{ ICON_FA_FILE_LINES, "Log parameters",  "Print the current parameter values of any element to the console." },
 			{ ICON_FA_DOWNLOAD,   "Export data",     "Record element components continuously to CSV, or take a one-time snapshot. Files are saved to data/<sim_name>/." },
 			{ ICON_FA_HEART_PULSE,"Monitoring",      "Open the field-metrics panel to track peak detection and activity statistics." },
-		};
+		} };
 
 		const float scale = ImGui::GetIO().FontGlobalScale;
 		if (ImGui::BeginTable("##sim_ctrl_table", 2, ImGuiTableFlags_None))
@@ -285,7 +286,7 @@ namespace dnf_composer::user_interface
 
 		ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);
 
-		static constexpr const char* kTips[] = {
+		static constexpr std::array<const char*, 5> kTips = {
 			"Toggle the console log with the terminal icon at the bottom of the sidebar to see real-time messages.",
 			"Use the Element Control panel on the right to tweak parameters live — no restart needed.",
 			"Open the Field Metrics window from the Monitoring tab to watch peak position and amplitude over time.",
@@ -313,8 +314,9 @@ namespace dnf_composer::user_interface
 		renderTip("Adjust the UI scale (70-150%%) via View > UI Scale, or use %s + / %s - keyboard shortcuts.", kCtrl, kCtrl);
 		renderTip("Save via File > Save (%s+S) or Save As (%s+Shift+S). Open a simulation via File > Open (%s+O).", kCtrl, kCtrl, kCtrl);
 
-		for (const auto* tip : kTips)
+		for (const auto* tip : kTips) {
 			renderTip("%s", tip);
+}
 
 		ImGui::PopTextWrapPos();
 	}
@@ -329,7 +331,7 @@ namespace dnf_composer::user_interface
 		ImGui::Spacing();
 
 		struct Resource { const char* icon; const char* label; const char* url; const char* note; };
-		static constexpr Resource kResources[] = {
+		static constexpr std::array<Resource, 3> kResources = { {
 			{
 				ICON_FA_CODE_BRANCH,
 				"GitHub Repository",
@@ -348,7 +350,7 @@ namespace dnf_composer::user_interface
 				"dynamic-neural-field-composer/docs/html/index.html",
 				"Generated HTML reference for all classes and functions (build locally)."
 			},
-		};
+		} };
 
 		for (const auto& [icon, label, url, note] : kResources)
 		{

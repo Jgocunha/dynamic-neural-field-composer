@@ -14,14 +14,15 @@ namespace dnf_composer::user_interface::widgets
 						   float tile, float uiScale,
 						   ImU32 colBg, ImU32 colHover, ImU32 colActive,
 						   ImU32 colText, ImU32 colLabel);
-	inline void Spring(float weight = 1.0f, const float spacing = 0.0f)
+	inline void Spring(float weight = 1.0F, const float spacing = 0.0F)
 	{
 		ImGui::Dummy(ImVec2(spacing, 0));
 		ImGui::SameLine(0, 0);
 	}
-	inline bool BeginHorizontal(const void* id = nullptr, float spacing = 0.0f)
+	inline bool BeginHorizontal(const void* id = nullptr, float spacing = 0.0F)
 	{
-		if (id) ImGui::PushID(id);
+		if (id != nullptr) { ImGui::PushID(id);
+}
 		ImGui::BeginGroup();
 		return true;
 	}
@@ -31,9 +32,10 @@ namespace dnf_composer::user_interface::widgets
 		ImGui::EndGroup();
 		ImGui::PopID();
 	}
-	inline bool BeginVertical(const void* id = nullptr, float spacing = 0.0f)
+	inline bool BeginVertical(const void* id = nullptr, float spacing = 0.0F)
 	{
-		if (id) ImGui::PushID(id);
+		if (id != nullptr) { ImGui::PushID(id);
+}
 		ImGui::BeginGroup();
 		return true;
 	}
@@ -41,7 +43,8 @@ namespace dnf_composer::user_interface::widgets
 	inline void EndVertical()
 	{
 		ImGui::EndGroup();
-		if (ImGui::GetID(static_cast<const void*>(nullptr)) != 0) ImGui::PopID();
+		if (ImGui::GetID(static_cast<const void*>(nullptr)) != 0) { ImGui::PopID();
+}
 	}
 	class Card
 	{

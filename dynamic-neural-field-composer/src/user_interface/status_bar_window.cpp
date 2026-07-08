@@ -1,19 +1,12 @@
 #include "user_interface/status_bar_window.h"
 
+#include <array>
+
 #include "application/application.h"
 
 
-namespace dnf_composer
+namespace dnf_composer::user_interface
 {
-	extern ImFont* g_BlackLargeFont;
-	extern ImFont* g_BlackMediumFont;
-	extern ImFont* g_BlackSmallFont;
-	extern ImFont* g_MonoMediumFont;
-	extern ImFont* g_MediumIconsFont;
-	extern ImFont* g_SmallIconsFont;
-
-	namespace user_interface
-	{
 		StatusBarWindow::StatusBarWindow(const std::shared_ptr<Simulation> &simulation)
         :simulation(simulation)
 		{}
@@ -21,8 +14,8 @@ namespace dnf_composer
 		void StatusBarWindow::render()
 		{
 			const ImGuiViewport* vp = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, vp->WorkPos.y + vp->WorkSize.y - 28.0f), ImGuiCond_FirstUseEver);
-			ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x, 28.0f), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, vp->WorkPos.y + vp->WorkSize.y - 28.0F), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x, 28.0F), ImGuiCond_FirstUseEver);
 
 			const ImGuiWindowFlags flags = imgui_kit::getGlobalWindowFlags()
 				| ImGuiWindowFlags_NoScrollbar
@@ -41,17 +34,26 @@ namespace dnf_composer
 
 		void StatusBarWindow::drawContents() const
 		{
-			if (const float slackTop = (ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight()) * 0.5f; slackTop > 0.0f)
+			if (const float slackTop = (ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight()) * 0.5F; slackTop > 0.0F) {
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + slackTop);
+}
 
 			constexpr float sep = 20.0F;
 			const bool running = simulation->isInitialized() && !simulation->isPaused();
 			const bool paused  = simulation->isInitialized() &&  simulation->isPaused();
 
-			const ImVec4 dotColor = running ? ImVec4(0.20f, 0.75f, 0.20f, 1.0f)
-							: paused  ? ImVec4(0.90f, 0.70f, 0.10f, 1.0f)
-										: ImVec4(0.75f, 0.20f, 0.20f, 1.0f);
-			const char* stateStr  = running ? "Running" : paused ? "Paused" : "Stopped";
+			ImVec4 dotColor(0.75F, 0.20F, 0.20F, 1.0F);
+			const char* stateStr = "Stopped";
+			if (running)
+			{
+				dotColor = ImVec4(0.20F, 0.75F, 0.20F, 1.0F);
+				stateStr = "Running";
+			}
+			else if (paused)
+			{
+				dotColor = ImVec4(0.90F, 0.70F, 0.10F, 1.0F);
+				stateStr = "Paused";
+			}
 
 			ImGui::TextColored(dotColor, "\xe2\x97\x8f");  // U+25CF BLACK CIRCLE
 			ImGui::SameLine(0, 4);
@@ -84,17 +86,17 @@ namespace dnf_composer
 			ImGui::PopFont();
 			ImGui::SameLine(0, sep);
 
-			char fpsBuf[32];
-			char zoomBuf[16];
-			char memBuf[32];
-			std::snprintf(fpsBuf,  sizeof(fpsBuf),  "%.1f", ImGui::GetIO().Framerate);
-			std::snprintf(zoomBuf, sizeof(zoomBuf), "%d%%",  static_cast<int>(Application::getUiScalePct()));
-			std::snprintf(memBuf,  sizeof(memBuf),  "%.1f MB", tools::utils::getProcessMemoryMb());
+			std::array<char, 32> fpsBuf{};
+			std::array<char, 16> zoomBuf{};
+			std::array<char, 32> memBuf{};
+			std::snprintf(fpsBuf.data(),  fpsBuf.size(),  "%.1f", ImGui::GetIO().Framerate);
+			std::snprintf(zoomBuf.data(), zoomBuf.size(), "%d%%",  static_cast<int>(Application::getUiScalePct()));
+			std::snprintf(memBuf.data(),  memBuf.size(),  "%.1f MB", tools::utils::getProcessMemoryMb());
 
 			const float rW =
-				ImGui::CalcTextSize("FPS ").x + ImGui::CalcTextSize(fpsBuf).x  + sep +
-				ImGui::CalcTextSize("Zoom ").x + ImGui::CalcTextSize(zoomBuf).x + sep +
-				ImGui::CalcTextSize("Mem. ").x + ImGui::CalcTextSize(memBuf).x +
+				ImGui::CalcTextSize("FPS ").x + ImGui::CalcTextSize(fpsBuf.data()).x  + sep +
+				ImGui::CalcTextSize("Zoom ").x + ImGui::CalcTextSize(zoomBuf.data()).x + sep +
+				ImGui::CalcTextSize("Mem. ").x + ImGui::CalcTextSize(memBuf.data()).x +
 					ImGui::GetStyle().WindowPadding.x;
 
 			const float rightX = ImGui::GetWindowWidth() - rW;
@@ -107,22 +109,21 @@ namespace dnf_composer
 			ImGui::TextUnformatted("FPS");
 			ImGui::SameLine(0, 4);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::TextUnformatted(fpsBuf);
+			ImGui::TextUnformatted(fpsBuf.data());
 			ImGui::PopFont();
 			ImGui::SameLine(0, sep);
 
 			ImGui::TextUnformatted("Zoom");
 			ImGui::SameLine(0, 4);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::TextUnformatted(zoomBuf);
+			ImGui::TextUnformatted(zoomBuf.data());
 			ImGui::PopFont();
 			ImGui::SameLine(0, sep);
 
 			ImGui::TextUnformatted("Mem.");
 			ImGui::SameLine(0, 4);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::TextUnformatted(memBuf);
+			ImGui::TextUnformatted(memBuf.data());
 			ImGui::PopFont();
 		}
-    }
 }

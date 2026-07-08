@@ -65,18 +65,19 @@ namespace dnf_composer
 		/// @param elementId      Unique name of the element.
 		/// @param componentName  Name of the component.
 		/// @param sim            The simulation (used to read the component and current time).
-		void takeSnapshot(const std::string& simName,
+		static void takeSnapshot(const std::string& simName,
 		                  const std::string& elementId,
 		                  const std::string& componentName,
 		                  const Simulation& sim);
 
 		/// @brief Return true if a recording is currently active for the given pair.
-		bool isRecording(const std::string& elementId, const std::string& componentName) const;
+		[[nodiscard]] bool isRecording(const std::string& elementId, const std::string& componentName) const;
 
 		/// @brief Return true if at least one recording session is active.
-		bool hasActiveRecordings() const;
+		[[nodiscard]] bool hasActiveRecordings() const;
 
 	private:
+		// NOLINTNEXTLINE(bugprone-exception-escape) - implicit move uses std::ofstream's move, which is formally allowed to throw
 		struct Session
 		{
 			std::string elementId;

@@ -1,5 +1,6 @@
 #include "user_interface/log_window.h"
 
+#include <array>
 
 namespace dnf_composer::user_interface
 {
@@ -17,25 +18,28 @@ namespace dnf_composer::user_interface
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::Button("Options"))
+		if (ImGui::Button("Options")) {
 			ImGui::OpenPopup("Options");
+}
 		ImGui::SameLine();
-		if (ImGui::Button("Clear"))
+		if (ImGui::Button("Clear")) {
 			clean();
+}
 		ImGui::SameLine();
-		if (ImGui::Button("Copy"))
+		if (ImGui::Button("Copy")) {
 			ImGui::LogToClipboard();
+}
 		ImGui::SameLine();
-		filter.Draw("Filter", -100.0f);
+		filter.Draw("Filter", -100.0F);
 
 		ImGui::Separator();
-		ImGui::PushStyleColor(ImGuiCol_ChildBg,    ImVec4(0.07f, 0.07f, 0.07f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImVec4(0.07f, 0.07f, 0.07f, 1.0f));
-		if (ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_None))
+		ImGui::PushStyleColor(ImGuiCol_ChildBg,    ImVec4(0.07F, 0.07F, 0.07F, 1.0F));
+		ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImVec4(0.07F, 0.07F, 0.07F, 1.0F));
+		if (ImGui::BeginChild("scrolling", ImVec2(0, 0), 0, ImGuiWindowFlags_None))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::PushTextWrapPos(0.0f);
+			ImGui::PushTextWrapPos(0.0F);
 			for (const auto& [message, color] : logs)
 			{
 				if (filter.PassFilter(message.c_str()))
@@ -49,8 +53,9 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::PopStyleVar();
 
-			if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-				ImGui::SetScrollHereY(1.0f);
+			if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+				ImGui::SetScrollHereY(1.0F);
+}
 		}
 		ImGui::EndChild();
 		ImGui::PopStyleColor(2);
@@ -61,31 +66,31 @@ namespace dnf_composer::user_interface
 	{
    		va_list args;
 		va_start(args, fmt);
-		char buffer[1024];
-		vsnprintf(buffer, IM_ARRAYSIZE(buffer), fmt, args);
-		buffer[IM_ARRAYSIZE(buffer) - 1] = '\0';
+		std::array<char, 1024> buffer{};
+		vsnprintf(buffer.data(), buffer.size(), fmt, args);
+		buffer.back() = '\0';
 		 va_end(args);
-		logs.push_back({ buffer, color });
+		logs.push_back({ buffer.data(), color });
 	}
 
 	void LogWindow::draw()
 	{
 		const ImGuiViewport* vp = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.3f, vp->WorkPos.y + vp->WorkSize.y * 0.6f), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(700.0f, 300.0f), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.3F, vp->WorkPos.y + vp->WorkSize.y * 0.6F), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(700.0F, 300.0F), ImGuiCond_FirstUseEver);
 		const bool open = ImGui::Begin("Log##log_window", &isWindowActive,
 			imgui_kit::getGlobalWindowFlags() | ImGuiWindowFlags_NoTitleBar);
 		if (open)
 		{
 			const float startY = ImGui::GetCursorPosY();
-			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+			const float yOff = (g_BlackLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 			ImGui::PushFont(g_MediumIconsFont);
 			ImGui::TextUnformatted(ICON_FA_TERMINAL);
 			ImGui::PopFont();
 			ImGui::PopStyleColor();
-			ImGui::SameLine(0, 8.0f);
+			ImGui::SameLine(0, 8.0F);
 			ImGui::SetCursorPosY(startY);
 			ImGui::PushFont(g_BlackLargeFont);
 			ImGui::TextUnformatted("Logs");

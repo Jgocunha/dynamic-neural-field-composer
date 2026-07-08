@@ -34,7 +34,8 @@ namespace dnf_composer
 	}
 
 	Simulation::Simulation(const Simulation& other)
-		:	initialized(other.initialized),
+		:	std::enable_shared_from_this<Simulation>(other),
+			initialized(other.initialized),
 			paused(other.paused),
 			uniqueIdentifier(other.uniqueIdentifier), 
 			deltaT(other.deltaT),
@@ -165,16 +166,18 @@ namespace dnf_composer
 		{
 			const auto t0 = std::chrono::steady_clock::now();
 			t += deltaT;
-			for (const auto& element : elements)
+			for (const auto& element : elements) {
 				element->step(t, deltaT);
+}
 			lastStepDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(
 				std::chrono::steady_clock::now() - t0);
 		}
 		else
 		{
 			t += deltaT;
-			for (const auto& element : elements)
+			for (const auto& element : elements) {
 				element->step(t, deltaT);
+}
 		}
 		recorder.update(*this);
 	}
@@ -343,6 +346,7 @@ namespace dnf_composer
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-make-member-function-const) - mutates simulation state through shared_ptr members; const would be misleading
 	void Simulation::changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions)
 	{
 		const auto element = getElement(elementId);
@@ -354,9 +358,11 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, logMessage);
 	}
 
+	// NOLINTNEXTLINE(readability-make-member-function-const) - mutates element identity through shared_ptr members; const would be misleading
 	void Simulation::renameElement(const std::string& oldName, const std::string& newName)
 	{
-		if (oldName == newName) return;
+		if (oldName == newName) { return;
+}
 		const auto elem = getElement(oldName);
 		if (!elem)
 		{

@@ -1,5 +1,7 @@
 #include "elements/neural_field_2d.h"
 
+#include <array>
+
 
 namespace dnf_composer::element
 {
@@ -31,16 +33,18 @@ namespace dnf_composer::element
 		updateInput();
 		calculateActivation(t, deltaT);
 		calculateOutput();
-		if (computeStateMetrics_)
+		if (computeStateMetrics_) {
 			updateState(deltaT);
+}
 	}
 
 	void NeuralField2D::calculateActivation(double /*t*/, double deltaT)
 	{
 		const double dtOverTau = deltaT / parameters.tau;
 		const int sz = commonParameters.dimensionParameters.size;
-		for (int i = 0; i < sz; ++i)
+		for (int i = 0; i < sz; ++i) {
 			act_[i] += dtOverTau * (-act_[i] + rest_[i] + inp_[i]);
+}
 	}
 
 	void NeuralField2D::calculateOutput()
@@ -50,16 +54,20 @@ namespace dnf_composer::element
 
 	void NeuralField2D::updateState(double deltaT)
 	{
-		const std::size_t n = static_cast<std::size_t>(commonParameters.dimensionParameters.size);
-		double sum = 0.0, sumSq = 0.0;
-		double vmin = act_[0], vmax = act_[0];
+		const auto n = static_cast<std::size_t>(commonParameters.dimensionParameters.size);
+		double sum = 0.0;
+		double sumSq = 0.0;
+		double vmin = act_[0];
+		double vmax = act_[0];
 		for (std::size_t i = 0; i < n; ++i)
 		{
 			const double v = act_[i];
 			sum   += v;
 			sumSq += v * v;
-			if (v < vmin) vmin = v;
-			if (v > vmax) vmax = v;
+			if (v < vmin) { vmin = v;
+}
+			if (v > vmax) { vmax = v;
+}
 		}
 		const double norm = std::sqrt(sumSq);
 		const double avg  = sum / static_cast<double>(n);
@@ -78,6 +86,7 @@ namespace dnf_composer::element
 		updateBumps(deltaT);
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - flood-fill bump extraction; splitting would obscure the single-pass algorithm
 	void NeuralField2D::updateBumps(double deltaT)
 	{
 		const int    size_x = commonParameters.dimensionParameters.size_x;
@@ -89,18 +98,21 @@ namespace dnf_composer::element
 		prevBumps_.swap(state.bumps);
 		state.bumps.clear();
 
-		std::vector<bool> visited(size_x * size_y, false);
+		std::vector<bool> visited(static_cast<std::size_t>(size_x) * size_y, false);
 
 		for (int xi = 0; xi < size_x; ++xi)
 		{
 			for (int yi = 0; yi < size_y; ++yi)
 			{
 				const int idx = yi * size_x + xi;
-				if (act_[idx] <= threshold || visited[idx])
+				if (act_[idx] <= threshold || visited[idx]) {
 					continue;
+}
 
 				NeuralField2DBump bump;
-				double sumX = 0.0, sumY = 0.0, sumAct = 0.0;
+				double sumX = 0.0;
+				double sumY = 0.0;
+				double sumAct = 0.0;
 				int cellCount = 0;
 
 				std::queue<int> q;
@@ -120,12 +132,13 @@ namespace dnf_composer::element
 					sumAct += a;
 					++cellCount;
 
-					const int nx[4] = { cx - 1, cx + 1, cx,     cx     };
-					const int ny[4] = { cy,     cy,     cy - 1, cy + 1 };
+					const std::array<int, 4> nx = { cx - 1, cx + 1, cx,     cx     };
+					const std::array<int, 4> ny = { cy,     cy,     cy - 1, cy + 1 };
 					for (int k = 0; k < 4; ++k)
 					{
-						if (nx[k] < 0 || nx[k] >= size_x || ny[k] < 0 || ny[k] >= size_y)
+						if (nx[k] < 0 || nx[k] >= size_x || ny[k] < 0 || ny[k] >= size_y) {
 							continue;
+}
 						const int nIdx = ny[k] * size_x + nx[k];
 						if (!visited[nIdx] && act_[nIdx] > threshold)
 						{

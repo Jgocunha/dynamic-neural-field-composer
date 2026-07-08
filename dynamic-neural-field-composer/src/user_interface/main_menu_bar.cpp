@@ -22,7 +22,7 @@ namespace dnf_composer::user_interface
 		handleShortcuts();
 	}
 
-	// Clang-Tidy: Function 'renderMainMenuBar' has cognitive complexity of 79 (threshold 25)
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode menu layout; splitting would fragment widget state across functions
     void MainMenuBar::renderMainMenuBar()
     {
         if (ImGui::BeginMainMenuBar())
@@ -139,13 +139,7 @@ namespace dnf_composer::user_interface
         		static constexpr std::array<int, 6> presets = { 80, 90, 100, 110, 125, 150 };
         		static constexpr int presetCount = static_cast<int>(presets.size());
 
-        		// find index of the current scale in presets (or nearest)
         		const int current = static_cast<int>(Application::getUiScalePct());
-        		int currentIdx = 2; // default to 100%
-        		for (int i = 0; i < presetCount; ++i)
-        		{
-        			if (presets[i] == current) { currentIdx = i; break; }
-        		}
 
         		std::array<char, 16> previewBuf{};
         		snprintf(previewBuf.data(), previewBuf.size(), "%d%%", current);
@@ -176,7 +170,7 @@ namespace dnf_composer::user_interface
 
         		ImGui::Separator();
         		const auto& io = ImGui::GetIO();
-        		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
+        		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate != 0.0F ? 1000.0F / io.Framerate : 0.0F);
         		ImGui::Separator();
 
         		ImGui::MenuItem("Dear ImGuiStyle Editor", nullptr,
@@ -210,9 +204,9 @@ namespace dnf_composer::user_interface
                          DNF_COMPOSER_VERSION_MAJOR, DNF_COMPOSER_VERSION_MINOR, DNF_COMPOSER_VERSION_PATCH);
                 const float textW = ImGui::CalcTextSize(verBuf.data()).x;
                 const float avail = ImGui::GetContentRegionAvail().x;
-                if (avail > textW + 8.0f)
+                if (avail > textW + 8.0F)
                 {
-                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - textW - 4.0f);
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - textW - 4.0F);
                     ImGui::Text("%s", verBuf.data());
                 }
             }
@@ -290,6 +284,7 @@ namespace dnf_composer::user_interface
         }
     }
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity) - flat list of independent keyboard-shortcut checks; splitting would obscure the mapping
     void MainMenuBar::handleShortcuts()
     {
         const ImGuiIO& io = ImGui::GetIO();

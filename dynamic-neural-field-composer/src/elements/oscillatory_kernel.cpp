@@ -1,9 +1,8 @@
 ﻿#include "elements/oscillatory_kernel.h"
 
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		OscillatoryKernel::OscillatoryKernel(const ElementCommonParameters& elementCommonParameters,
 			OscillatoryKernelParameters ok_parameters)
@@ -20,10 +19,11 @@ namespace dnf_composer
 			kernelRange = tools::math::computeKernelRange(effectiveRange, cutOfFactor,
 				commonParameters.dimensionParameters.size, parameters.circular);
 
-			if (parameters.circular)
+			if (parameters.circular) {
 				extIndex = tools::math::createExtendedIndex(commonParameters.dimensionParameters.size, kernelRange);
-			else
+			} else {
 				extIndex = {};
+}
 
 			// Create the range for kernel computation
 			int rangeXsize = kernelRange[0] + kernelRange[1] + 1;
@@ -45,8 +45,9 @@ namespace dnf_composer
 				const double normFactor = std::accumulate(components["kernel"].begin(), components["kernel"].end(), 0.0);
 				if (normFactor != 0.0)
 				{
-					for (double& value : components["kernel"])
+					for (double& value : components["kernel"]) {
 						value /= normFactor;
+}
 				}
 			}
 
@@ -74,8 +75,9 @@ namespace dnf_composer
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			auto& out = components["output"];
-			for (int i = 0; i < static_cast<int>(out.size()); i++)
+			for (int i = 0; i < static_cast<int>(out.size()); i++) {
 				out[i] = scratchConvolution[i] + globalOffset;
+}
 		}
 
 		std::string OscillatoryKernel::toString() const
@@ -96,13 +98,15 @@ namespace dnf_composer
 		{
 			parameters = ok_parameters;
 			// correct zero crossings if necessary
-			if (parameters.zeroCrossings < 0.0)
+			if (parameters.zeroCrossings < 0.0) {
 				parameters.zeroCrossings = 0.0;
-			else if (parameters.zeroCrossings > 1.0)
+			} else if (parameters.zeroCrossings > 1.0) {
 				parameters.zeroCrossings = 1.0;
+}
 			// correct decay if necessary
-			if (parameters.decay <= 0.0)
+			if (parameters.decay <= 0.0) {
 				parameters.decay = 0.01;
+}
 			init();
 		}
 
@@ -111,4 +115,3 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}

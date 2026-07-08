@@ -2,17 +2,8 @@
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 
-namespace dnf_composer
+namespace dnf_composer::user_interface
 {
-	extern ImFont* g_BlackLargeFont;
-	extern ImFont* g_BlackMediumFont;
-	extern ImFont* g_BlackSmallFont;
-	extern ImFont* g_MonoMediumFont;
-	extern ImFont* g_MediumIconsFont;
-	extern ImFont* g_SmallIconsFont;
-
-	namespace user_interface
-	{
 		// ── Column widths (fixed px at a UI scale = 1.0, scale with zoom) ──────────
 		static constexpr float kColABase   = 515.0F;  // Simulation Control
 		static constexpr float kColBBase   = 400.0F;  // Element Control (rightmost)
@@ -156,8 +147,8 @@ namespace dnf_composer
 		void StaticLayoutWindow::drawPanelSimulation(const ImVec2 pos, const ImVec2 size) const
 		{
 			ImGui::SetCursorScreenPos(pos);
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			if (ImGui::BeginChild("##sl_sim", size, false,
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+			if (ImGui::BeginChild("##sl_sim", size, 0,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
 				simulationWindow->renderSidebarContents();
@@ -176,7 +167,7 @@ namespace dnf_composer
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
 				const float startY = ImGui::GetCursorPosY();
-				const float yOff   = (g_MediumLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+				const float yOff   = (g_MediumLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
 				ImGui::SetCursorPosY(startY + yOff);
 				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 				ImGui::PushFont(g_MediumIconsFont);
@@ -205,7 +196,7 @@ namespace dnf_composer
 			if (beginPanelFixed("##sl_node", pos, size))
 			{
 			const float startY = ImGui::GetCursorPosY();
-				const float yOff   = (g_MediumLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5f;
+				const float yOff   = (g_MediumLargeFont->LegacySize - g_MediumIconsFont->LegacySize) * 0.5F;
 				ImGui::SetCursorPosY(startY + yOff);
 				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
 				ImGui::PushFont(g_MediumIconsFont);
@@ -219,8 +210,8 @@ namespace dnf_composer
 				ImGui::PopFont();
 				ImGui::Separator();
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-				if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, 0), false,
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+				if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, 0), 0,
 					ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 				{
 					nodeGraphWindow->renderEmbedded();
@@ -253,5 +244,4 @@ namespace dnf_composer
 			endPanel();
 			ImGui::PopStyleVar();
 		}
-	}
 }

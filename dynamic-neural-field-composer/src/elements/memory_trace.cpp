@@ -1,12 +1,13 @@
-﻿#include "elements/memory_trace.h"
+﻿#include <utility>
 
-namespace dnf_composer
-{
-	namespace element
+#include "elements/memory_trace.h"
+
+
+	namespace dnf_composer::element
 	{
 		MemoryTrace::MemoryTrace(const ElementCommonParameters& elementCommonParameters,
-			const MemoryTraceParameters& parameters)
-			: Element(elementCommonParameters), parameters(parameters)
+			MemoryTraceParameters  parameters)
+			: Element(elementCommonParameters), parameters(std::move(parameters))
 		{
 			this->commonParameters.identifiers.label = ElementLabel::MEMORY_TRACE;
 		}
@@ -25,10 +26,11 @@ namespace dnf_composer
 			for (int i = 0; i < size; ++i)
 			{
 				const double in = components["input"][i];
-				if (in > parameters.threshold)
+				if (in > parameters.threshold) {
 					components["output"][i] += deltaT * (1.0 / parameters.tauBuild) * (-components["output"][i] + in);
-				else
+				} else {
 					components["output"][i] += deltaT * (1.0 / parameters.tauDecay) * (-components["output"][i]);
+}
 			}
 		}
 
@@ -56,4 +58,3 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}

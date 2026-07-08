@@ -53,7 +53,7 @@ namespace dnf_composer::element
 		std::vector<double> scratchConv_;
 	public:
 		CorrelatedNormalNoise2D(const ElementCommonParameters& elementCommonParameters,
-		                        const CorrelatedNormalNoise2DParameters& parameters);
+		                        CorrelatedNormalNoise2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

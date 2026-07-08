@@ -6,8 +6,9 @@ namespace dnf_composer
 
 	Visualization::Visualization(const std::shared_ptr<Simulation>& simulation)
 	{
-		if (simulation == nullptr)
+		if (simulation == nullptr) {
 			throw Exception(ErrorCode::VIS_INVALID_SIM);
+}
 
 		this->simulation = simulation;
 		plots = {};
@@ -47,14 +48,24 @@ namespace dnf_composer
 		{
 			case PlotType::LINE_PLOT:
 			{
-				const auto linePlotParameters = dynamic_cast<const LinePlotParameters*>(&specificParameters);
+				const auto *const linePlotParameters = dynamic_cast<const LinePlotParameters*>(&specificParameters);
+				if (linePlotParameters == nullptr)
+				{
+					log(tools::logger::LogLevel::FATAL, "Plot type is LINE_PLOT but the specific parameters are not LinePlotParameters; plot not added.");
+					return;
+				}
 				LinePlot plot(parameters, *linePlotParameters);
 				plots[std::make_shared<LinePlot>(plot)] = data;
 				break;
 			}
 			case PlotType::HEATMAP:
 			{
-				const auto heatmapParameters = dynamic_cast<const HeatmapParameters*>(&specificParameters);
+				const auto *const heatmapParameters = dynamic_cast<const HeatmapParameters*>(&specificParameters);
+				if (heatmapParameters == nullptr)
+				{
+					log(tools::logger::LogLevel::FATAL, "Plot type is HEATMAP but the specific parameters are not HeatmapParameters; plot not added.");
+					return;
+				}
 				Heatmap plot(parameters, *heatmapParameters);
 				plots[std::make_shared<Heatmap>(plot)] = data;
 				break;
@@ -158,11 +169,13 @@ namespace dnf_composer
 		const std::shared_ptr<Simulation>& simulation)
 	{
 		auto* heatmap = dynamic_cast<Heatmap*>(plot.get());
-		if (!heatmap) return;
+		if (heatmap == nullptr) { return;
+}
 
 		for (const auto& [elemName, compName] : data)
 		{
-			if (compName != "weights") continue;
+			if (compName != "weights") { continue;
+}
 			// rows = input size, cols = output size
 			if (simulation->componentExists(elemName, "input") &&
 			    simulation->componentExists(elemName, "output"))
@@ -179,7 +192,8 @@ namespace dnf_composer
 	{
 		const auto it = std::ranges::find_if(plots.begin(), plots.end(),
 			[plotId](const auto& p) { return p.first->getUniqueIdentifier() == plotId; });
-		if (it == plots.end()) return;
+		if (it == plots.end()) { return;
+}
 
 		const auto& data = it->second;
 		if (!std::ranges::all_of(data, [this](const std::pair<std::string, std::string>& d)
@@ -193,19 +207,27 @@ namespace dnf_composer
 
 		std::vector<std::vector<double>*> ptrs;
 		ptrs.reserve(data.size());
-		for (const auto& [name, comp] : data)
+		for (const auto& [name, comp] : data) {
 			ptrs.emplace_back(simulation->getComponentPtr(name, comp));
+}
 
 		std::vector<std::string> legends;
 		legends.reserve(data.size());
-		for (const auto& [name, comp] : data)
-			legends.emplace_back(name + " - " + comp);
+		for (const auto& [name, comp] : data) {
+			std::string legend = name;
+			legend += " - ";
+			legend += comp;
+			legends.emplace_back(std::move(legend));
+}
 
 		it->first->render(ptrs, legends);
 	}
 
 	void Visualization::render()
 	{
+		// Removing a plot while iterating `plots` would invalidate the loop's
+		// iterators, so removals are collected and applied after the loop.
+		std::vector<int> plotsToRemove;
 		for (const auto&[fst, snd] : plots)
 		{
 			std::vector<std::pair<std::string, std::string>> data = snd;
@@ -216,15 +238,15 @@ namespace dnf_composer
 				return simulation->componentExists(d.first, d.second);
 				}))
 			{
-				removePlot(fst->getUniqueIdentifier());
-				return;
+				plotsToRemove.push_back(fst->getUniqueIdentifier());
+				continue;
 			}
 
 			std::vector<std::vector<double>*> allDataToPlotPtr;
 			allDataToPlotPtr.reserve(data.size());
 			for (const auto&[fst, snd] : data)
 			{
-				const auto singleDataToPlotPtr = simulation->getComponentPtr(fst, snd);
+				auto *const singleDataToPlotPtr = simulation->getComponentPtr(fst, snd);
 				allDataToPlotPtr.emplace_back(singleDataToPlotPtr);
 			}
 
@@ -232,7 +254,10 @@ namespace dnf_composer
 			legends.reserve(data.size());
 			for (const auto&[fst, snd] : data)
 			{
-				legends.emplace_back(fst + " - " + snd);
+				std::string legend = fst;
+				legend += " - ";
+				legend += snd;
+				legends.emplace_back(std::move(legend));
 			}
 
 			const int plotID = fst->getUniqueIdentifier();
@@ -241,12 +266,12 @@ namespace dnf_composer
 
 			const ImGuiViewport* vp = ImGui::GetMainViewport();
 			ImGui::SetNextWindowPos(
-				ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.47f, vp->WorkPos.y + 52.0f),
+				ImVec2(vp->WorkPos.x + vp->WorkSize.x * 0.47F, vp->WorkPos.y + 52.0F),
 				ImGuiCond_FirstUseEver);
-			ImGui::SetNextWindowSize(ImVec2(500.0f, 350.0f), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(500.0F, 350.0F), ImGuiCond_FirstUseEver);
 
 			const float ui = ImGui::GetIO().FontGlobalScale;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0f * ui));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0F * ui));
 			ImGui::PushFont(g_BlackLargeFont);
 			const bool open = ImGui::Begin(plotWindowTitle.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 			ImGui::PopFont();
@@ -258,8 +283,13 @@ namespace dnf_composer
 			}
 			ImGui::End();
 
-			if (!open)
-				removePlot(plotID);
+			if (!open) {
+				plotsToRemove.push_back(plotID);
+}
 		}
+
+		for (const int plotId : plotsToRemove) {
+			removePlot(plotId);
+}
 	}
 }

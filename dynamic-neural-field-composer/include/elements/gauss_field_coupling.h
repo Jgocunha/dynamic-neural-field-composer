@@ -29,8 +29,9 @@ namespace dnf_composer::element
 		GaussCoupling(const double x_i, const double x_j, const double amplitude, const double width)
 			: x_i(x_i), x_j(x_j), amplitude(amplitude), width(width)
 		{
-			if (x_i <= 0.0 || x_j <= 0.0 || amplitude <= 0.0 || width <= 0.0)
+			if (x_i <= 0.0 || x_j <= 0.0 || amplitude <= 0.0 || width <= 0.0) {
 				throw Exception(ErrorCode::ELEM_INVALID_PARAMETER, "GaussCoupling");
+}
 		}
 
 		bool operator==(const GaussCoupling& other) const
@@ -91,8 +92,9 @@ namespace dnf_composer::element
 				<< "Normalized: " << (normalized ? "true" : "false") << ", "
 				<< "Input field dimensions: " + inputFieldDimensions.toString() << "]\n";
 
-			for (const auto& coupling : couplings)
+			for (const auto& coupling : couplings) {
 				result << coupling.toString();
+}
 
 			return result.str();
 		}
@@ -116,7 +118,7 @@ namespace dnf_composer::element
 		/// @param elementCommonParameters  Name, label, and output field dimensions.
 		/// @param gfc_parameters           Coupling parameters (source dims + coupling list).
 		GaussFieldCoupling(const ElementCommonParameters& elementCommonParameters,
-		                   const GaussFieldCouplingParameters& gfc_parameters);
+		                   GaussFieldCouplingParameters  gfc_parameters);
 
 		/// @brief Append a new point-coupling at runtime.
 		/// @param coupling  The GaussCoupling to add.

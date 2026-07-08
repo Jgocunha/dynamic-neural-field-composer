@@ -1,4 +1,7 @@
 #include "user_interface/simulation_window.h"
+
+#include <array>
+
 #include "user_interface/field_metrics_window.h"
 #include "user_interface/log_window.h"
 #include "user_interface/help_window.h"
@@ -6,7 +9,7 @@
 #include "elements/neural_field_2d.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
-extern ImFont* g_MonoMediumFont;
+
 extern ImFont* g_MediumMediumFont;
 
 namespace dnf_composer::user_interface
@@ -21,10 +24,10 @@ namespace dnf_composer::user_interface
 	void SimulationWindow::render()
 	{
 		const ImGuiViewport* vp = ImGui::GetMainViewport();
-		const float panelY = vp->WorkPos.y + 52.0f;
-		const float panelH = vp->WorkSize.y - 52.0f - 28.0f;
+		const float panelY = vp->WorkPos.y + 52.0F;
+		const float panelH = vp->WorkSize.y - 52.0F - 28.0F;
 		ImGui::SetNextWindowPos(ImVec2(vp->WorkPos.x, panelY), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.25f, panelH), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(vp->WorkSize.x * 0.25F, panelH), ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
 		const bool open = ImGui::Begin("Simulation Control##simulation_control", nullptr,
 			imgui_kit::getGlobalWindowFlags()
@@ -57,7 +60,7 @@ namespace dnf_composer::user_interface
 				ImGui::GetContentRegionAvail().y - kMargin
 			};
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
-			if (ImGui::BeginChild("##sim_inset", insetSz, false,
+			if (ImGui::BeginChild("##sim_inset", insetSz, 0,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoSavedSettings))
 			{
 				renderSidebarContents();
@@ -80,7 +83,7 @@ namespace dnf_composer::user_interface
 		const ImVec4 wbg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0F * ui, 4.0F * ui));
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(wbg.x * 0.96f, wbg.y * 0.96f, wbg.z * 0.96f, wbg.w));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(wbg.x * 0.96F, wbg.y * 0.96F, wbg.z * 0.96F, wbg.w));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, 1,
@@ -122,14 +125,14 @@ namespace dnf_composer::user_interface
 		//ImGui::Spacing();
 
 		struct PaneInfo { const char* icon; const char* name; };
-		static constexpr PaneInfo kInfo[] = {
+		static constexpr std::array<PaneInfo, 6> kInfo = { {
 			{ .icon=ICON_FA_PLUS,     .name="Add elements"      },
 			{ .icon=ICON_FA_TRASH,    .name="Remove elements"   },
 			{ .icon=ICON_FA_LINK,     .name="Set interactions" },
 			{ .icon=ICON_FA_FILE_LINES , .name="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .name="Export data"      },
 			{ .icon=ICON_FA_HEART_PULSE, .name="Monitoring"       },
-		};
+		} };
 
 		ImGui::PushFont(g_LargeIconsFont);
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight));
@@ -149,14 +152,14 @@ namespace dnf_composer::user_interface
 	void SimulationWindow::drawIconStrip()
 	{
 		struct PaneTab { const char* icon; const char* tooltip; };
-		static constexpr PaneTab kPanes[] = {
+		static constexpr std::array<PaneTab, 6> kPanes = { {
 			{ .icon=ICON_FA_PLUS,     .tooltip="Add elements"      },
 			{ .icon=ICON_FA_TRASH,    .tooltip="Remove elements"   },
 			{ .icon=ICON_FA_LINK,     .tooltip="Set interactions" },
 			{ .icon=ICON_FA_FILE_LINES , .tooltip="Log parameters"   },
 			{ .icon=ICON_FA_DOWNLOAD, .tooltip="Export data"      },
 			{ .icon=ICON_FA_HEART_PULSE, .tooltip="Monitoring"       },
-		};
+		} };
 
 		ImGui::SetCursorPos(ImVec2(0.0F, 16.0F));
 		ImGui::BeginGroup();
@@ -173,28 +176,32 @@ namespace dnf_composer::user_interface
 		}
 		ImGui::EndGroup();
 
-		const float consoleY = ImGui::GetWindowHeight() - 96.0f;
-		ImGui::SetCursorPos(ImVec2(0.0f, consoleY));
+		const float consoleY = ImGui::GetWindowHeight() - 96.0F;
+		ImGui::SetCursorPos(ImVec2(0.0F, consoleY));
 		const bool consoleOpen = LogWindow::isActive();
 		ImGui::PushID("##console_btn");
-		if (widgets::renderSidebarTab(ICON_FA_TERMINAL, "", consoleOpen))
+		if (widgets::renderSidebarTab(ICON_FA_TERMINAL, "", consoleOpen)) {
 			LogWindow::setActive(!consoleOpen);
+}
 		ImGui::PopID();
-		if (ImGui::IsItemHovered())
+		if (ImGui::IsItemHovered()) {
 			ImGui::SetTooltip("Console");
+}
 
-		const float helpY = ImGui::GetWindowHeight() - 48.0f;
-		ImGui::SetCursorPos(ImVec2(0.0f, helpY));
+		const float helpY = ImGui::GetWindowHeight() - 48.0F;
+		ImGui::SetCursorPos(ImVec2(0.0F, helpY));
 		const bool helpOpen = HelpWindow::isActive();
 		ImGui::PushID("##help_btn");
-		if (widgets::renderSidebarTab(ICON_FA_CIRCLE_QUESTION, "", helpOpen))
+		if (widgets::renderSidebarTab(ICON_FA_CIRCLE_QUESTION, "", helpOpen)) {
 			HelpWindow::setActive(!helpOpen);
+}
 		ImGui::PopID();
-		if (ImGui::IsItemHovered())
+		if (ImGui::IsItemHovered()) {
 			ImGui::SetTooltip("Help");
+}
 	}
 
-	// Clang-Tidy: Function 'renderAddElementCard' has cognitive complexity of 28 (threshold 25)
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::renderAddElementCard() const
 	{
 		ImGui::PushID("add_element_section");
@@ -207,11 +214,11 @@ namespace dnf_composer::user_interface
 
 		{
 			using L = element::ElementLabel;
-			const float btnW    = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+			const float btnW    = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5F;
 			const ImVec4 accent  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			const ImVec4 bg      = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
 			const ImVec4 bgHov   = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered);
-			constexpr ImVec4 textSel(1.f, 1.f, 1.f, 1.f);
+			constexpr ImVec4 textSel(1.F, 1.F, 1.F, 1.F);
 			const ImVec4 textNorm = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 
 			auto dimBtn = [&](const char* label, int dim)
@@ -221,7 +228,8 @@ namespace dnf_composer::user_interface
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, on ? accent : bgHov);
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  accent);
 				ImGui::PushStyleColor(ImGuiCol_Text,          on ? textSel : textNorm);
-				if (ImGui::Button(label, {btnW, 0})) dimensionality = dim;
+				if (ImGui::Button(label, {btnW, 0})) { dimensionality = dim;
+}
 				ImGui::PopStyleColor(4);
 			};
 			dimBtn("1D", 1);
@@ -234,23 +242,23 @@ namespace dnf_composer::user_interface
 		// ── Filtered type combo ─────────────────────────────────────────────
 		{
 			using L = element::ElementLabel;
-			static constexpr L k1D[] = {
+			static constexpr std::array<L, 15> k1D = {
 				L::NEURAL_FIELD, L::GAUSS_STIMULUS, L::TIMED_GAUSS_STIMULUS,
 				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
 				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
 				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE,
 				L::RESIZE, L::COLLAPSE
 			};
-			static constexpr L k2D[] = {
+			static constexpr std::array<L, 13> k2D = {
 				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
 				L::GAUSS_KERNEL_2D, L::MEXICAN_HAT_KERNEL_2D, L::OSCILLATORY_KERNEL_2D,
 				L::ASYMMETRIC_GAUSS_KERNEL_2D, L::NORMAL_NOISE_2D, L::CORRELATED_NORMAL_NOISE_2D,
 				L::BOOST_STIMULUS_2D, L::MEMORY_TRACE_2D,
 				L::RESIZE_2D, L::EXPAND
 			};
-			const L* pLabels = (dimensionality == 1) ? k1D : k2D;
-			const int nLabels = (dimensionality == 1) ? static_cast<int>(std::size(k1D))
-			                                          : static_cast<int>(std::size(k2D));
+			const L* pLabels = (dimensionality == 1) ? k1D.data() : k2D.data();
+			const int nLabels = (dimensionality == 1) ? static_cast<int>(k1D.size())
+			                                          : static_cast<int>(k2D.size());
 
 			ImGui::TextUnformatted("Type");
 			ImGui::SetNextItemWidth(-FLT_MIN);
@@ -260,31 +268,35 @@ namespace dnf_composer::user_interface
 				{
 					const L lbl = pLabels[i];
 					const bool is_sel = (selected == lbl);
-					if (ImGui::Selectable(element::ElementLabelToString.at(lbl).c_str(), is_sel))
+					if (ImGui::Selectable(element::ElementLabelToString.at(lbl).c_str(), is_sel)) {
 						selected = lbl;
-					if (is_sel) ImGui::SetItemDefaultFocus();
+}
+					if (is_sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
 		}
 
 		// ── Name input ──────────────────────────────────────────────────────
-		static char id[CHAR_SIZE] = {};
+		static std::array<char, CHAR_SIZE> id = {};
 		static element::ElementLabel prevSelected = element::ElementLabel::UNINITIALIZED;
 		if (selected != prevSelected)
 		{
 			prevSelected = selected;
 			int count = 0;
-			for (const auto& e : simulation->getElements())
-				if (e->getLabel() == selected) ++count;
+			for (const auto& e : simulation->getElements()) {
+				if (e->getLabel() == selected) { ++count;
+}
+}
 			const std::string& typeName = element::ElementLabelToString.at(selected);
-			std::snprintf(id, sizeof(id), "%s %d", typeName.c_str(), count + 1);
+			std::snprintf(id.data(), id.size(), "%s %d", typeName.c_str(), count + 1);
 		}
 
 		ImGui::Spacing();
 		ImGui::TextUnformatted("Name");
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##id", "enter identifier", id, IM_ARRAYSIZE(id));
+		ImGui::InputTextWithHint("##id", "enter identifier", id.data(), id.size());
 		ImGui::Spacing();
 
 		// ── Parameters ──────────────────────────────────────────────────────
@@ -294,47 +306,48 @@ namespace dnf_composer::user_interface
 
 		switch (selected)
 		{
-			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id, addRequested);              break;
-			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id, addRequested);            break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id, addRequested);      break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id, addRequested);   break;
-			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id, addRequested);              break;
-			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id, addRequested);        break;
-			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id, addRequested);       break;
-			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id, addRequested);  break;
-			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id, addRequested);              break;
-			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id, addRequested);  break;
-			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id, addRequested);           break;
-			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id, addRequested);     break;
-			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id, addRequested);           break;
-			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id, addRequested);             break;
-			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id, addRequested);           break;
-			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id, addRequested);        break;
-			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id, addRequested);          break;
-			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id, addRequested);    break;
-			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id, addRequested);          break;
-			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id, addRequested);   break;
-			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id, addRequested); break;
-			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id, addRequested);        break;
-			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id, addRequested); break;
-			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id, addRequested);          break;
-			case element::ElementLabel::RESIZE:                     addElementResize(id, addRequested);                  break;
-			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id, addRequested);                break;
-			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id, addRequested);                break;
-			case element::ElementLabel::EXPAND:                     addElementExpand(id, addRequested);                  break;
+			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id.data(), addRequested);              break;
+			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id.data(), addRequested);            break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id.data(), addRequested);      break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id.data(), addRequested);   break;
+			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id.data(), addRequested);              break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id.data(), addRequested);        break;
+			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id.data(), addRequested);       break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id.data(), addRequested);  break;
+			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id.data(), addRequested);              break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id.data(), addRequested);  break;
+			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id.data(), addRequested);           break;
+			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id.data(), addRequested);     break;
+			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id.data(), addRequested);           break;
+			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id.data(), addRequested);             break;
+			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id.data(), addRequested);           break;
+			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id.data(), addRequested);        break;
+			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id.data(), addRequested);          break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id.data(), addRequested);    break;
+			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id.data(), addRequested);          break;
+			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id.data(), addRequested);   break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id.data(), addRequested); break;
+			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id.data(), addRequested);        break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id.data(), addRequested); break;
+			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id.data(), addRequested);          break;
+			case element::ElementLabel::RESIZE:                     addElementResize(id.data(), addRequested);                  break;
+			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id.data(), addRequested);                break;
+			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id.data(), addRequested);                break;
+			case element::ElementLabel::EXPAND:                     addElementExpand(id.data(), addRequested);                  break;
 			default: break;
 		}
 
 		ImGui::Spacing();
 		{
-			const float addBtnH = ImGui::GetFrameHeight() * 1.5f;
+			const float addBtnH = ImGui::GetFrameHeight() * 1.5F;
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
-			if (ImGui::Button("     Add element", {-FLT_MIN, addBtnH}))
+			if (ImGui::Button("     Add element", {-FLT_MIN, addBtnH})) {
 				s_addRequested = true;
+}
 			ImGui::PopStyleColor(4);
 
 			const ImVec2 bMin = ImGui::GetItemRectMin();
@@ -342,8 +355,8 @@ namespace dnf_composer::user_interface
 			ImGui::PushFont(g_MediumIconsFont);
 			const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_PLUS);
 			const float  labelW = ImGui::CalcTextSize("     Add element").x;
-			const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
-			const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+			const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
+			const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
 			ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 				{iconX, iconY}, IM_COL32(255, 255, 255, 255), ICON_FA_PLUS);
 			ImGui::PopFont();
@@ -423,7 +436,7 @@ namespace dnf_composer::user_interface
 		static double xShift    = 0.0;
 		static double steepness = 5.0;
 		static double absBeta   = 100.0;
-		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		static constexpr std::array<const char*, 3> actFnNames = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##nf_dim")) {
@@ -444,24 +457,26 @@ namespace dnf_composer::user_interface
 			paramTableSetup();
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
-			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf_fn", &actFnType, actFnNames, 3);
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf_fn", &actFnType, actFnNames.data(), static_cast<int>(actFnNames.size()));
 			paramRowDouble("Shift", "##nf_xsh", &xShift, "%.2f");
-			if (actFnType == element::SIGMOID)
+			if (actFnType == element::SIGMOID) {
 				paramRowDouble("Steepness", "##nf_steep", &steepness, "%.2f");
-			else if (actFnType == element::ABSSIGMOID)
+			} else if (actFnType == element::ABSSIGMOID) {
 				paramRowDouble("Beta", "##nf_beta", &absBeta, "%.2f");
+}
 			endParamTable();
 		}
 
 		if (addRequested)
 		{
 			std::unique_ptr<element::ActivationFunction> af;
-			if (actFnType == element::SIGMOID)
+			if (actFnType == element::SIGMOID) {
 				af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
-			else if (actFnType == element::HEAVISIDE)
+			} else if (actFnType == element::HEAVISIDE) {
 				af = std::make_unique<element::HeavisideFunction>(xShift);
-			else
+			} else {
 				af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+}
 			const element::NeuralFieldParameters nfp{ tau, resting, *af };
 			const element::ElementCommonParameters common{ element::ElementIdentifiers{id}, element::ElementDimensions{ x_max, d_x } };
 			simulation->addElement(std::make_shared<element::NeuralField>(common, nfp));
@@ -561,12 +576,18 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementTimedGaussStimulus2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
-		static double width = 5.0, amplitude = 15.0;
-		static double pos_x = 25.0, pos_y = 25.0;
-		static double tStart = 0.0, tEnd = 10.0;
-		static bool   circular = true, normalized = false;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
+		static double width = 5.0;
+		static double amplitude = 15.0;
+		static double pos_x = 25.0;
+		static double pos_y = 25.0;
+		static double tStart = 0.0;
+		static double tEnd = 10.0;
+		static bool   circular = true;
+		static bool   normalized = false;
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##tgs2_dim")) {
@@ -893,8 +914,10 @@ namespace dnf_composer::user_interface
 				for (const auto& [lr, name] : LearningRuleToString)
 				{
 					const bool sel = (rule == lr);
-					if (ImGui::Selectable(name.c_str(), sel)) rule = lr;
-					if (sel) ImGui::SetItemDefaultFocus();
+					if (ImGui::Selectable(name.c_str(), sel)) { rule = lr;
+}
+					if (sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
@@ -1015,14 +1038,17 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementNeuralField2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
-		static double tau = 25.0, restingLevel = -5.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
+		static double tau = 25.0;
+		static double restingLevel = -5.0;
 		static int    actFnType = element::SIGMOID;
 		static double xShift    = 0.0;
 		static double steepness = 5.0;
 		static double absBeta   = 100.0;
-		static const char* actFnNames[] = { "Sigmoid", "Heaviside", "AbsSigmoid" };
+		static constexpr std::array<const char*, 3> actFnNames = { "Sigmoid", "Heaviside", "AbsSigmoid" };
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##nf2_dim")) {
@@ -1045,24 +1071,26 @@ namespace dnf_composer::user_interface
 			paramTableSetup();
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted("Function");
-			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf2_fn", &actFnType, actFnNames, 3);
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Combo("##nf2_fn", &actFnType, actFnNames.data(), static_cast<int>(actFnNames.size()));
 			paramRowDouble("Shift", "##nf2_xsh", &xShift, "%.2f");
-			if (actFnType == element::SIGMOID)
+			if (actFnType == element::SIGMOID) {
 				paramRowDouble("Steepness", "##nf2_steep", &steepness, "%.2f");
-			else if (actFnType == element::ABSSIGMOID)
+			} else if (actFnType == element::ABSSIGMOID) {
 				paramRowDouble("Beta", "##nf2_beta", &absBeta, "%.2f");
+}
 			endParamTable();
 		}
 
 		if (addRequested)
 		{
 			std::unique_ptr<element::ActivationFunction> af;
-			if (actFnType == element::SIGMOID)
+			if (actFnType == element::SIGMOID) {
 				af = std::make_unique<element::SigmoidFunction>(xShift, steepness);
-			else if (actFnType == element::HEAVISIDE)
+			} else if (actFnType == element::HEAVISIDE) {
 				af = std::make_unique<element::HeavisideFunction>(xShift);
-			else
+			} else {
 				af = std::make_unique<element::AbsSigmoidFunction>(xShift, absBeta);
+}
 			const element::NeuralField2DParameters nfp{ tau, restingLevel, *af };
 			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, y_max, d_x, d_y } };
 			simulation->addElement(std::make_shared<element::NeuralField2D>(common, nfp));
@@ -1071,11 +1099,16 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementGaussStimulus2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
-		static double width = 5.0, amplitude = 15.0;
-		static double pos_x = 25.0, pos_y = 25.0;
-		static bool   circular = true, normalized = false;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
+		static double width = 5.0;
+		static double amplitude = 15.0;
+		static double pos_x = 25.0;
+		static double pos_y = 25.0;
+		static bool   circular = true;
+		static bool   normalized = false;
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##gs2_dim")) {
@@ -1113,10 +1146,15 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementGaussKernel2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
-		static double width = 3.0, amplitude = 3.0, amplitudeGlobal = -0.01;
-		static bool   circular = true, normalized = true;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
+		static double width = 3.0;
+		static double amplitude = 3.0;
+		static double amplitudeGlobal = -0.01;
+		static bool   circular = true;
+		static bool   normalized = true;
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##gk2_dim")) {
@@ -1153,12 +1191,17 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementMexicanHatKernel2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
-		static double widthExc = 2.5, amplitudeExc = 11.0;
-		static double widthInh = 5.0, amplitudeInh = 15.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
+		static double widthExc = 2.5;
+		static double amplitudeExc = 11.0;
+		static double widthInh = 5.0;
+		static double amplitudeInh = 15.0;
 		static double amplitudeGlobal = -0.1;
-		static bool   circular = true, normalized = true;
+		static bool   circular = true;
+		static bool   normalized = true;
 
 		ImGui::SeparatorText("Dimensions");
 		if (beginParamTable("##mhk2_dim")) {
@@ -1207,8 +1250,10 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementNormalNoise2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
 		static double amplitude = 0.2;
 
 		ImGui::SeparatorText("Dimensions");
@@ -1237,8 +1282,10 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementOscillatoryKernel2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
 		static double amplitude       = 1.0;
 		static double decay           = 0.08;
 		static double zeroCrossings   = 0.3;
@@ -1282,8 +1329,10 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementAsymmetricGaussKernel2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
 		static double width           = 3.0;
 		static double amplitude       = 3.0;
 		static double amplitudeGlobal = 0.0;
@@ -1330,8 +1379,10 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementBoostStimulus2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
 		static double amplitude = 5.0;
 		static bool   isActive  = true;
 
@@ -1362,8 +1413,10 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementCorrelatedNormalNoise2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
 		static double amplitude = 0.05;
 		static double width     = 1.0;
 		static bool   circular  = true;
@@ -1401,8 +1454,10 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementMemoryTrace2D(char* id, bool addRequested) const
 	{
-		static int    x_max = 50, y_max = 50;
-		static double d_x = 1.0, d_y = 1.0;
+		static int    x_max = 50;
+		static int    y_max = 50;
+		static double d_x = 1.0;
+		static double d_y = 1.0;
 		static double tauBuild  = 100.0;
 		static double tauDecay  = 1000.0;
 		static double threshold = 0.5;
@@ -1467,8 +1522,10 @@ namespace dnf_composer::user_interface
 				for (const auto& [m, name] : element::InterpolationMethodToString)
 				{
 					const bool sel = (method == m);
-					if (ImGui::Selectable(name.c_str(), sel)) method = m;
-					if (sel) ImGui::SetItemDefaultFocus();
+					if (ImGui::Selectable(name.c_str(), sel)) { method = m;
+}
+					if (sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
@@ -1486,10 +1543,14 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementResize2D(char* id, bool addRequested) const
 	{
-		static int    x_max_out = 50, y_max_out = 50;
-		static double d_x_out = 1.0, d_y_out = 1.0;
-		static int    x_max_in = 50, y_max_in = 50;
-		static double d_x_in = 1.0, d_y_in = 1.0;
+		static int    x_max_out = 50;
+		static int    y_max_out = 50;
+		static double d_x_out = 1.0;
+		static double d_y_out = 1.0;
+		static int    x_max_in = 50;
+		static int    y_max_in = 50;
+		static double d_x_in = 1.0;
+		static double d_y_in = 1.0;
 		static auto   method = element::InterpolationMethod::LINEAR;
 
 		ImGui::SeparatorText("Output dimensions");
@@ -1522,8 +1583,10 @@ namespace dnf_composer::user_interface
 				for (const auto& [m, name] : element::InterpolationMethodToString)
 				{
 					const bool sel = (method == m);
-					if (ImGui::Selectable(name.c_str(), sel)) method = m;
-					if (sel) ImGui::SetItemDefaultFocus();
+					if (ImGui::Selectable(name.c_str(), sel)) { method = m;
+}
+					if (sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
@@ -1539,12 +1602,15 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::addElementCollapse(char* id, bool addRequested) const
 	{
 		static int    x_max_out = 100;
 		static double d_x_out   = 1.0;
-		static int    x_max_in = 50, y_max_in = 50;
-		static double d_x_in = 1.0, d_y_in = 1.0;
+		static int    x_max_in = 50;
+		static int    y_max_in = 50;
+		static double d_x_in = 1.0;
+		static double d_y_in = 1.0;
 		static auto   compression = element::CompressionType::SUM;
 		static auto   keepAxis    = element::ProjectionAxis::X;
 
@@ -1575,8 +1641,10 @@ namespace dnf_composer::user_interface
 				for (const auto& [t, name] : element::CompressionTypeToString)
 				{
 					const bool sel = (compression == t);
-					if (ImGui::Selectable(name.c_str(), sel)) compression = t;
-					if (sel) ImGui::SetItemDefaultFocus();
+					if (ImGui::Selectable(name.c_str(), sel)) { compression = t;
+}
+					if (sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
@@ -1588,8 +1656,10 @@ namespace dnf_composer::user_interface
 				for (const auto& [a, name] : element::ProjectionAxisToString)
 				{
 					const bool sel = (keepAxis == a);
-					if (ImGui::Selectable(name.c_str(), sel)) keepAxis = a;
-					if (sel) ImGui::SetItemDefaultFocus();
+					if (ImGui::Selectable(name.c_str(), sel)) { keepAxis = a;
+}
+					if (sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
@@ -1607,8 +1677,10 @@ namespace dnf_composer::user_interface
 
 	void SimulationWindow::addElementExpand(char* id, bool addRequested) const
 	{
-		static int    x_max_out = 50, y_max_out = 50;
-		static double d_x_out = 1.0, d_y_out = 1.0;
+		static int    x_max_out = 50;
+		static int    y_max_out = 50;
+		static double d_x_out = 1.0;
+		static double d_y_out = 1.0;
 		static int    x_max_in = 50;
 		static double d_x_in   = 1.0;
 		static auto   profileAxis = element::ProjectionAxis::X;
@@ -1640,8 +1712,10 @@ namespace dnf_composer::user_interface
 				for (const auto& [a, name] : element::ProjectionAxisToString)
 				{
 					const bool sel = (profileAxis == a);
-					if (ImGui::Selectable(name.c_str(), sel)) profileAxis = a;
-					if (sel) ImGui::SetItemDefaultFocus();
+					if (ImGui::Selectable(name.c_str(), sel)) { profileAxis = a;
+}
+					if (sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
@@ -1666,11 +1740,11 @@ namespace dnf_composer::user_interface
 			return {info.name, IM_COL32(info.r, info.g, info.b, 255)};
 		};
 
-		static char searchBuf[128] = {};
+		static std::array<char, 128> searchBuf = {};
 		static std::string pendingRemove;
 
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##re_search", "Search...", searchBuf, sizeof(searchBuf));
+		ImGui::InputTextWithHint("##re_search", "Search...", searchBuf.data(), searchBuf.size());
 		ImGui::Spacing();
 
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
@@ -1678,7 +1752,7 @@ namespace dnf_composer::user_interface
 		ImGui::PopStyleColor();
 		ImGui::Spacing();
 
-		std::string filterLower(searchBuf);
+		std::string filterLower(searchBuf.data());
 		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
 
 		const float rowH   = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
@@ -1686,8 +1760,8 @@ namespace dnf_composer::user_interface
 		const float trashW = ImGui::GetFrameHeight() + 10.0F;
 		const float typeW  = 65.0F * ImGui::GetIO().FontGlobalScale;
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-		if (ImGui::BeginChild("##re_list", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+		if (ImGui::BeginChild("##re_list", {0, 0}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			for (const auto& e : simulation->getElements())
 			{
@@ -1701,8 +1775,9 @@ namespace dnf_composer::user_interface
 					std::string catLower(cat.label);
 					std::transform(catLower.begin(), catLower.end(), catLower.begin(), ::tolower);
 					if (nameLower.find(filterLower) == std::string::npos &&
-						catLower.find(filterLower)  == std::string::npos)
+						catLower.find(filterLower)  == std::string::npos) {
 						continue;
+}
 				}
 
 				ImGui::PushID(name.c_str());
@@ -1714,9 +1789,9 @@ namespace dnf_composer::user_interface
 				ImGui::Selectable("##row", false, ImGuiSelectableFlags_AllowOverlap, {avail, selH});
 
 				ImDrawList* dl = ImGui::GetWindowDrawList();
-				const float cy    = rowMin.y + selH * 0.5f;
+				const float cy    = rowMin.y + selH * 0.5F;
 				const float cx    = rowMin.x + 12.0F;
-				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5F;
 
 				dl->AddCircleFilled({cx, cy}, dotR, cat.color);
 				dl->AddText({cx + dotR + 8.0F, textY}, ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
@@ -1726,10 +1801,11 @@ namespace dnf_composer::user_interface
 				ImGui::SetCursorScreenPos({rowMin.x + avail - trashW, rowMin.y});
 				ImGui::PushFont(g_MediumIconsFont);
 				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12f));
-				if (ImGui::Button(ICON_FA_TRASH, {trashW, selH}))
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+				if (ImGui::Button(ICON_FA_TRASH, {trashW, selH})) {
 					pendingRemove = name;
+}
 				ImGui::PopStyleColor(3);
 				ImGui::PopFont();
 
@@ -1747,13 +1823,14 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::renderSetInteractionCard() const
 	{
 		static std::string selectedTarget;
 		static std::string selectedSource;
 		static std::string pendingRemoveTarget;
 		static std::string pendingRemoveSource;
-		static char connSearch[128] = {};
+		static std::array<char, 128> connSearch = {};
 
 		auto elementCombo = [&](const char* wid, const char* hint, std::string& value)
 		{
@@ -1765,8 +1842,10 @@ namespace dnf_composer::user_interface
 				{
 					const std::string& name = e->getUniqueName();
 					const bool sel = (value == name);
-					if (ImGui::Selectable(name.c_str(), sel)) value = name;
-					if (sel) ImGui::SetItemDefaultFocus();
+					if (ImGui::Selectable(name.c_str(), sel)) { value = name;
+}
+					if (sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 				ImGui::EndCombo();
 			}
@@ -1782,13 +1861,13 @@ namespace dnf_composer::user_interface
 		// Connect button — right after the source combo
 		{
 			const bool canConn = !selectedTarget.empty() && !selectedSource.empty();
-			const float btnH   = ImGui::GetFrameHeight() * 1.5f;
+			const float btnH   = ImGui::GetFrameHeight() * 1.5F;
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+				ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+				ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
 			ImGui::BeginDisabled(!canConn);
 			const bool pressed = ImGui::Button("     Connect", {-FLT_MIN, btnH});
@@ -1801,8 +1880,8 @@ namespace dnf_composer::user_interface
 				ImGui::PushFont(g_MediumIconsFont);
 				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_LINK);
 				const float  labelW = ImGui::CalcTextSize("     Connect").x;
-				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
-				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
 				const ImU32  col    = canConn ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
 				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 					{iconX, iconY}, col, ICON_FA_LINK);
@@ -1828,16 +1907,16 @@ namespace dnf_composer::user_interface
 		ImGui::Spacing();
 
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##si_conn_search", "Search...", connSearch, sizeof(connSearch));
+		ImGui::InputTextWithHint("##si_conn_search", "Search...", connSearch.data(), connSearch.size());
 		ImGui::Spacing();
 
-		std::string filterLower(connSearch);
+		std::string filterLower(connSearch.data());
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
 
 		const float unlinkW = ImGui::GetFrameHeight() + 6.0F;
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-		if (ImGui::BeginChild("##si_connections", {0, 0}, false, ImGuiWindowFlags_NoSavedSettings))
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+		if (ImGui::BeginChild("##si_connections", {0, 0}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			bool any = false;
 			for (const auto& tgt : simulation->getElements())
@@ -1845,13 +1924,15 @@ namespace dnf_composer::user_interface
 				for (const auto& [src, comp] : tgt->getInputsAndComponents())
 				{
 					std::string label = src->getUniqueName() + " \xe2\x86\x92 " + tgt->getUniqueName();
-					if (comp != "output") label += " (" + comp + ")";
+					if (comp != "output") { label += " (" + comp + ")";
+}
 
 					if (!filterLower.empty())
 					{
 						std::string labelLower = label;
 						std::transform(labelLower.begin(), labelLower.end(), labelLower.begin(), ::tolower);
-						if (labelLower.find(filterLower) == std::string::npos) continue;
+						if (labelLower.find(filterLower) == std::string::npos) { continue;
+}
 					}
 
 					any = true;
@@ -1866,7 +1947,7 @@ namespace dnf_composer::user_interface
 					const bool hov = ImGui::IsItemHovered();
 
 					ImDrawList* dl = ImGui::GetWindowDrawList();
-					const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+					const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5F;
 					dl->AddText({rowMin.x + 6.0F, textY}, ImGui::GetColorU32(ImGuiCol_Text),
 						label.c_str());
 
@@ -1875,9 +1956,9 @@ namespace dnf_composer::user_interface
 						ImGui::SetCursorScreenPos({rowMin.x + avail - unlinkW, rowMin.y});
 						ImGui::PushFont(g_MediumIconsFont);
 						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0F, 0.0F, 0.0F, 0.12f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0F, 0.0F, 0.0F, 0.22f));
-						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85f, 0.15f, 0.15f, 1.0F));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0F, 0.0F, 0.0F, 0.12F));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0F, 0.0F, 0.0F, 0.22F));
+						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85F, 0.15F, 0.15F, 1.0F));
 						if (ImGui::Button(ICON_FA_LINK_SLASH, {unlinkW, selH}))
 						{
 							pendingRemoveTarget = tgt->getUniqueName();
@@ -1912,6 +1993,7 @@ namespace dnf_composer::user_interface
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void SimulationWindow::renderDataCard() const
 	{
 		ImGui::PushID("data_card");
@@ -1921,7 +2003,7 @@ namespace dnf_composer::user_interface
 		static int  recordInterval = 10;
 		static int  unitIdx        = 1; // 0 = ms, 1 = ticks
 
-		static const char* kUnits[] = { "ms", "ticks" };
+		static constexpr std::array<const char*, 2> kUnits = { "ms", "ticks" };
 
 		const bool hasSelection = !selectedElementId.empty() && !selectedComponent.empty();
 		const bool currentlyRecording = hasSelection &&
@@ -1944,7 +2026,8 @@ namespace dnf_composer::user_interface
 					selectedElementId = name;
 					selectedComponent.clear();
 				}
-				if (is_sel) ImGui::SetItemDefaultFocus();
+				if (is_sel) { ImGui::SetItemDefaultFocus();
+}
 			}
 			ImGui::EndCombo();
 		}
@@ -1964,9 +2047,11 @@ namespace dnf_composer::user_interface
 				for (const auto& comp : elem->getComponentList())
 				{
 					const bool is_sel = (selectedComponent == comp);
-					if (ImGui::Selectable(comp.c_str(), is_sel))
+					if (ImGui::Selectable(comp.c_str(), is_sel)) {
 						selectedComponent = comp;
-					if (is_sel) ImGui::SetItemDefaultFocus();
+}
+					if (is_sel) { ImGui::SetItemDefaultFocus();
+}
 				}
 			}
 			ImGui::EndCombo();
@@ -1986,30 +2071,31 @@ namespace dnf_composer::user_interface
 		// Interval row: label | input | unit combo
 		ImGui::TextUnformatted("Interval");
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.45f);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.45F);
 		ImGui::BeginDisabled(currentlyRecording);
 		ImGui::PushFont(g_MonoMediumFont);
 		ImGui::InputInt("##rec_interval", &recordInterval, 0, 0);
 		ImGui::PopFont();
-		if (recordInterval < 1) recordInterval = 1;
+		if (recordInterval < 1) { recordInterval = 1;
+}
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Combo("##rec_unit", &unitIdx, kUnits, 2);
+		ImGui::Combo("##rec_unit", &unitIdx, kUnits.data(), static_cast<int>(kUnits.size()));
 		ImGui::EndDisabled();
 		ImGui::Spacing();
 
 		// Start / Stop buttons side by side
 		{
-			const float halfW = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
-			const float btnH  = ImGui::GetFrameHeight() * 1.5f;
+			const float halfW = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5F;
+			const float btnH  = ImGui::GetFrameHeight() * 1.5F;
 
 			// Start button (red circle icon)
 			{
 				const bool canStart = hasSelection && !currentlyRecording;
-				const ImVec4 col = ImVec4(0.72f, 0.13f, 0.13f, canStart ? 1.0f : 0.4f);
+				const ImVec4 col = ImVec4(0.72F, 0.13F, 0.13F, canStart ? 1.0F : 0.4F);
 				ImGui::PushStyleColor(ImGuiCol_Button,        col);
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(col.x * 0.85f, col.y * 0.85f, col.z * 0.85f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(col.x * 0.70f, col.y * 0.70f, col.z * 0.70f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(col.x * 0.85F, col.y * 0.85F, col.z * 0.85F, 1.0F));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(col.x * 0.70F, col.y * 0.70F, col.z * 0.70F, 1.0F));
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
 				ImGui::BeginDisabled(!canStart);
 				const bool startPressed = ImGui::Button("    Record", { halfW, btnH });
@@ -2022,20 +2108,21 @@ namespace dnf_composer::user_interface
 					ImGui::PushFont(g_MediumIconsFont);
 					const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_CIRCLE);
 					const float  labelW = ImGui::CalcTextSize("    Record").x;
-					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
-					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
+					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
 					const ImU32  icol   = canStart ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
 					ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 						{iconX, iconY}, icol, ICON_FA_CIRCLE);
 					ImGui::PopFont();
 				}
 
-				if (startPressed)
+				if (startPressed) {
 					simulation->getRecorder().startRecording(
 						simulation->getUniqueIdentifier(),
 						selectedElementId, selectedComponent,
 						recordInterval,
 						unitIdx == 0 ? RecordingIntervalUnit::Milliseconds : RecordingIntervalUnit::Ticks);
+}
 			}
 
 			ImGui::SameLine();
@@ -2043,13 +2130,13 @@ namespace dnf_composer::user_interface
 			// Stop button
 			{
 				const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
-				const float  alpha  = currentlyRecording ? 1.0f : 0.4f;
+				const float  alpha  = currentlyRecording ? 1.0F : 0.4F;
 				ImGui::PushStyleColor(ImGuiCol_Button,
 					ImVec4(accent.x, accent.y, accent.z, alpha));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-					ImVec4(accent.x * 0.85f, accent.y * 0.85f, accent.z * 0.85f, 1.0f));
+					ImVec4(accent.x * 0.85F, accent.y * 0.85F, accent.z * 0.85F, 1.0F));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-					ImVec4(accent.x * 0.70f, accent.y * 0.70f, accent.z * 0.70f, 1.0f));
+					ImVec4(accent.x * 0.70F, accent.y * 0.70F, accent.z * 0.70F, 1.0F));
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
 				ImGui::BeginDisabled(!currentlyRecording);
 				const bool stopPressed = ImGui::Button("    Stop", { halfW, btnH });
@@ -2062,16 +2149,17 @@ namespace dnf_composer::user_interface
 					ImGui::PushFont(g_MediumIconsFont);
 					const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_STOP);
 					const float  labelW = ImGui::CalcTextSize("    Stop").x;
-					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
-					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
+					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
 					const ImU32  icol   = currentlyRecording ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
 					ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 						{iconX, iconY}, icol, ICON_FA_STOP);
 					ImGui::PopFont();
 				}
 
-				if (stopPressed)
+				if (stopPressed) {
 					simulation->getRecorder().stopRecording(selectedElementId, selectedComponent);
+}
 			}
 		}
 
@@ -2087,13 +2175,13 @@ namespace dnf_composer::user_interface
 
 		{
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
-			const float  btnH   = ImGui::GetFrameHeight() * 1.5f;
+			const float  btnH   = ImGui::GetFrameHeight() * 1.5F;
 			ImGui::PushStyleColor(ImGuiCol_Button,
-				ImVec4(accent.x, accent.y, accent.z, hasSelection ? 1.0f : accent.w));
+				ImVec4(accent.x, accent.y, accent.z, hasSelection ? 1.0F : accent.w));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0f));
+				ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0f));
+				ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
 			ImGui::BeginDisabled(!hasSelection);
 			const bool snapped = ImGui::Button("     Export", {-FLT_MIN, btnH});
@@ -2106,18 +2194,19 @@ namespace dnf_composer::user_interface
 				ImGui::PushFont(g_MediumIconsFont);
 				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_CAMERA);
 				const float  labelW = ImGui::CalcTextSize("     Export").x;
-				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
-				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
 				const ImU32  col    = hasSelection ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
 				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 					{iconX, iconY}, col, ICON_FA_CAMERA);
 				ImGui::PopFont();
 			}
 
-			if (snapped)
-				simulation->getRecorder().takeSnapshot(
+			if (snapped) {
+				SimulationRecorder::takeSnapshot(
 					simulation->getUniqueIdentifier(),
 					selectedElementId, selectedComponent, *simulation);
+}
 		}
 
 		ImGui::PopID();
@@ -2133,21 +2222,21 @@ namespace dnf_composer::user_interface
 		};
 
 		static std::string selectedId;
-		static char        searchBuf[128] = {};
+		static std::array<char, 128> searchBuf = {};
 
 		// ── Search bar ───────────────────────────────────────────────────────
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputTextWithHint("##lp_search", "Search...", searchBuf, sizeof(searchBuf));
+		ImGui::InputTextWithHint("##lp_search", "Search...", searchBuf.data(), searchBuf.size());
 		ImGui::Spacing();
 
 		// ── Element list (fills all space above the button) ───────────────────
-		std::string filterLower(searchBuf);
+		std::string filterLower(searchBuf.data());
 		std::ranges::transform(filterLower, filterLower.begin(), ::tolower);
 
 		const float rowH  = ImGui::GetFrameHeight() + ImGui::GetStyle().ItemSpacing.y;
 		const float dotR  = 5.0F;
 		const float typeW = 65.0F * ImGui::GetIO().FontGlobalScale;
-		const float btnH  = ImGui::GetFrameHeight() * 1.5f;
+		const float btnH  = ImGui::GetFrameHeight() * 1.5F;
 
 		int matchCount = 0;
 		for (const auto& e : simulation->getElements())
@@ -2166,7 +2255,7 @@ namespace dnf_composer::user_interface
 		const float maxListH = std::max(availH - btnH - ImGui::GetStyle().ItemSpacing.y, rowH);
 		const float listH    = std::min(static_cast<float>(std::max(matchCount, 1)) * rowH, maxListH);
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
 		if (ImGui::BeginChild("##lp_list", {0, listH}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			const auto& style = ImGui::GetStyle();
@@ -2182,8 +2271,9 @@ namespace dnf_composer::user_interface
 					std::ranges::transform(nl, nl.begin(), ::tolower);
 					std::string cl(label);
 					std::ranges::transform(cl, cl.begin(), ::tolower);
-					if (nl.find(filterLower) == std::string::npos && cl.find(filterLower) == std::string::npos)
+					if (nl.find(filterLower) == std::string::npos && cl.find(filterLower) == std::string::npos) {
 						continue;
+}
 				}
 
 				ImGui::PushID(name.c_str());
@@ -2193,12 +2283,13 @@ namespace dnf_composer::user_interface
 				const float  selH    = rowH - style.ItemSpacing.y;
 				const bool   selected = (selectedId == name);
 
-				if (ImGui::Selectable("##lp_row", selected, 0, {avail, selH}))
+				if (ImGui::Selectable("##lp_row", selected, 0, {avail, selH})) {
 					selectedId = name;
+}
 
 				ImDrawList* dl    = ImGui::GetWindowDrawList();
-				const float cy    = rowMin.y + selH * 0.5f;
-				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5f;
+				const float cy    = rowMin.y + selH * 0.5F;
+				const float textY = rowMin.y + (selH - ImGui::GetTextLineHeight()) * 0.5F;
 
 				dl->AddCircleFilled({rowMin.x + 12.0F, cy}, dotR, color);
 				dl->AddText({rowMin.x + 12.0F + dotR + 8.0F, textY},
@@ -2218,9 +2309,9 @@ namespace dnf_composer::user_interface
 			ImGui::PushStyleColor(ImGuiCol_Button,
 				ImVec4(accent.x, accent.y, accent.z, canLog ? 1.0F : accent.w));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9f, accent.y * 0.9f, accent.z * 0.9f, 1.0F));
+				ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8f, accent.y * 0.8f, accent.z * 0.8f, 1.0F));
+				ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
 			ImGui::BeginDisabled(!canLog);
 			const bool pressed = ImGui::Button("     Log to console", {-FLT_MIN, btnH});
@@ -2233,8 +2324,8 @@ namespace dnf_composer::user_interface
 				ImGui::PushFont(g_MediumIconsFont);
 				const ImVec2 iconSz = ImGui::CalcTextSize(ICON_FA_TERMINAL);
 				const float  labelW = ImGui::CalcTextSize("     Log to console").x;
-				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5f - labelW * 0.5f;
-				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5f;
+				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
+				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
 				const ImU32  col    = canLog ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
 				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 					{iconX, iconY}, col, ICON_FA_TERMINAL);

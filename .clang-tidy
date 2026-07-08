@@ -1,3 +1,5 @@
+# -performance-enum-size: shrinking enum underlying types breaks the
+# reinterpret_cast<int*>(&enumVar) pattern required by ImGui::Combo.
 Checks: >
   -*,
   bugprone-*,
@@ -8,8 +10,10 @@ Checks: >
   -readability-magic-numbers,
   -readability-identifier-length,
   clang-analyzer-*,
-  performance-*
+  performance-*,
+  -performance-enum-size
 
-HeaderFilterRegex: 'include/.*'
-WarningsAsErrors: ''
+# Project headers only; vendored code (user_interface/fonts, user_interface/node_utilities) excluded.
+HeaderFilterRegex: 'include[/\\]((application|element_parameters|elements|exceptions|simulation|tools|visualization)[/\\].*|user_interface[/\\][^/\\]+)$'
+WarningsAsErrors: '*'
 FormatStyle: none

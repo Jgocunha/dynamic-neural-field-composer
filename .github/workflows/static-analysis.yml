@@ -71,5 +71,5 @@ jobs:
       - name: Run clang-tidy
         run: |
           run-clang-tidy -p build \
-            -header-filter='dynamic-neural-field-composer/include/.*' \
-            $(find dynamic-neural-field-composer/src -name '*.cpp')
+            -header-filter='dynamic-neural-field-composer/include/((application|element_parameters|elements|exceptions|simulation|tools|visualization)/.*|user_interface/[^/]+)$' \
+            $(find dynamic-neural-field-composer/src -name '*.cpp' ! -path '*/user_interface/fonts/*' ! -path '*/user_interface/node_utilities/*')

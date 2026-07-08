@@ -1,8 +1,7 @@
 ﻿#include "elements/element_factory.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 
 		ElementFactory::ElementFactory()
@@ -15,169 +14,169 @@ namespace dnf_composer
 			// Register element creators for each element type
 			elementCreators[ElementLabel::NEURAL_FIELD] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const NeuralFieldParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const NeuralFieldParameters*>(&elementSpecificParameters);
 					return std::make_shared<NeuralField>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::GAUSS_STIMULUS] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const GaussStimulusParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const GaussStimulusParameters*>(&elementSpecificParameters);
 					return std::make_shared<GaussStimulus>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::GAUSS_KERNEL] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const GaussKernelParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const GaussKernelParameters*>(&elementSpecificParameters);
 					return std::make_shared<GaussKernel>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::MEXICAN_HAT_KERNEL] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const MexicanHatKernelParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const MexicanHatKernelParameters*>(&elementSpecificParameters);
 					return std::make_shared<MexicanHatKernel>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::NORMAL_NOISE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const NormalNoiseParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const NormalNoiseParameters*>(&elementSpecificParameters);
 					return std::make_shared<NormalNoise>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::CORRELATED_NORMAL_NOISE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const CorrelatedNormalNoiseParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const CorrelatedNormalNoiseParameters*>(&elementSpecificParameters);
 					return std::make_shared<CorrelatedNormalNoise>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::GAUSS_FIELD_COUPLING] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const GaussFieldCouplingParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const GaussFieldCouplingParameters*>(&elementSpecificParameters);
 					return std::make_shared<GaussFieldCoupling>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::FIELD_COUPLING] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const FieldCouplingParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const FieldCouplingParameters*>(&elementSpecificParameters);
 					return std::make_shared<FieldCoupling>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::OSCILLATORY_KERNEL] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const OscillatoryKernelParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const OscillatoryKernelParameters*>(&elementSpecificParameters);
 					return std::make_shared<OscillatoryKernel>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::ASYMMETRIC_GAUSS_KERNEL] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const AsymmetricGaussKernelParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const AsymmetricGaussKernelParameters*>(&elementSpecificParameters);
 					return std::make_shared<AsymmetricGaussKernel>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::BOOST_STIMULUS] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const BoostStimulusParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const BoostStimulusParameters*>(&elementSpecificParameters);
 					return std::make_shared<BoostStimulus>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::MEMORY_TRACE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const MemoryTraceParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const MemoryTraceParameters*>(&elementSpecificParameters);
 					return std::make_shared<MemoryTrace>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::NEURAL_FIELD_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const NeuralField2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const NeuralField2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<NeuralField2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::GAUSS_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const GaussStimulus2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const GaussStimulus2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<GaussStimulus2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::GAUSS_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const GaussKernel2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const GaussKernel2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<GaussKernel2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::MEXICAN_HAT_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const MexicanHatKernel2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const MexicanHatKernel2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<MexicanHatKernel2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::NORMAL_NOISE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const NormalNoise2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const NormalNoise2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<NormalNoise2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::OSCILLATORY_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const OscillatoryKernel2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const OscillatoryKernel2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<OscillatoryKernel2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::TIMED_GAUSS_STIMULUS] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const TimedGaussStimulusParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const TimedGaussStimulusParameters*>(&elementSpecificParameters);
 					return std::make_shared<TimedGaussStimulus>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::TIMED_GAUSS_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const TimedGaussStimulus2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const TimedGaussStimulus2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<TimedGaussStimulus2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::BOOST_STIMULUS_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const BoostStimulus2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const BoostStimulus2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<BoostStimulus2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::CORRELATED_NORMAL_NOISE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const CorrelatedNormalNoise2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const CorrelatedNormalNoise2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<CorrelatedNormalNoise2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const AsymmetricGaussKernel2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const AsymmetricGaussKernel2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<AsymmetricGaussKernel2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::MEMORY_TRACE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const MemoryTrace2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const MemoryTrace2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<MemoryTrace2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::RESIZE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const ResizeParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const ResizeParameters*>(&elementSpecificParameters);
 					return std::make_shared<Resize>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::RESIZE_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const Resize2DParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const Resize2DParameters*>(&elementSpecificParameters);
 					return std::make_shared<Resize2D>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::COLLAPSE] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const CollapseParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const CollapseParameters*>(&elementSpecificParameters);
 					return std::make_shared<Collapse>(elementCommonParameters, *params);
 				};
 
 			elementCreators[ElementLabel::EXPAND] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
-					const auto params = dynamic_cast<const ExpandParameters*>(&elementSpecificParameters);
+					const auto *const params = dynamic_cast<const ExpandParameters*>(&elementSpecificParameters);
 					return std::make_shared<Expand>(elementCommonParameters, *params);
 				};
 
@@ -191,7 +190,7 @@ namespace dnf_composer
 			{
 				return creator->second(elementCommonParameters, elementSpecificParameters);
 			}
-			else
+			
 				return nullptr;
 		}
 		std::shared_ptr<Element> ElementFactory::createElement(ElementLabel type)
@@ -265,4 +264,3 @@ namespace dnf_composer
 			return nullptr;
 		}
 	}
-}

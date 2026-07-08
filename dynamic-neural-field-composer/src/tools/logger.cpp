@@ -14,15 +14,17 @@ namespace dnf_composer::tools::logger
 
     void Logger::log(const std::string& message) const
     {
-        if (logLevel < Logger::minLogLevel)
+        if (logLevel < Logger::minLogLevel) {
             return;
+}
 
         const auto now = std::chrono::system_clock::now();
         const auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
         std::tm buf;
-        if (!utils::safe_localtime(&in_time_t, &buf))
+        if (!utils::safe_localtime(&in_time_t, &buf)) {
             throw Exception(ErrorCode::LOG_LOCAL_TIME_ERROR);
+}
 
         const std::string levelStr = getLogLevelText(logLevel);
         const std::string prefixStr = "<dnf-composer> " + levelStr;
@@ -78,8 +80,9 @@ namespace dnf_composer::tools::logger
     void log(const LogLevel level, const std::string& message, const LogOutputMode mode)
     {
 #ifndef _DEBUG
-        if (level == LogLevel::DEBUG)
+        if (level == LogLevel::DEBUG) {
             return;
+}
 #endif
 
         logger = Logger(level, mode);
@@ -102,7 +105,7 @@ namespace dnf_composer::tools::logger
     ImVec4 Logger::getLogLevelColorCodeGui(const LogLevel level)
     {
         ImVec4 currentTextColor = imgui_kit::colours::Gray;
-        if (ImGui::GetCurrentContext())
+        if (ImGui::GetCurrentContext() != nullptr)
         {
             const ImGuiStyle& style = ImGui::GetStyle();
             currentTextColor = style.Colors[ImGuiCol_Text];

@@ -150,8 +150,9 @@ namespace dnf_composer::element
 	{
 		const auto& table = elementCategoryTable();
 		const auto it = table.find(label);
-		if (it != table.end())
+		if (it != table.end()) {
 			return it->second;
+}
 		return {ElementCategory::UNKNOWN, "Unknown", 150, 150, 150};
 	}
 

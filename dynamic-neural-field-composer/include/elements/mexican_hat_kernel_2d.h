@@ -81,7 +81,7 @@ namespace dnf_composer::element
 		std::vector<double> scratchInhConv_;
 	public:
 		MexicanHatKernel2D(const ElementCommonParameters& elementCommonParameters,
-		                   const MexicanHatKernel2DParameters& parameters);
+		                   MexicanHatKernel2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

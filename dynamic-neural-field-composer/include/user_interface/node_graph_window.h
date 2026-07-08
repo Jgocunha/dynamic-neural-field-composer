@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <unordered_map>
 #include <unordered_set>
 #include <implot.h>
@@ -103,16 +104,16 @@ namespace dnf_composer::user_interface
 		float  xMin = 0.F, xMax = 100.F, yMin = -20.F, yMax = 20.F;
 		float  xStep          = 1.0F;
 		float  lineThickness  = 2.5F;
-		char   title[128]     = "";
-		char   xLabel[64]     = "Spatial location";
-		char   yLabel[64]     = "Amplitude";
+		std::array<char, 128> title  = {""};
+		std::array<char, 64>  xLabel = {"Spatial location"};
+		std::array<char, 64>  yLabel = {"Amplitude"};
 		// 2D heatmap options
 		int    colormap       = ImPlotColormap_Deep;
 		float  scaleMin       = -20.0F;
 		float  scaleMax       =  20.0F;
 		bool   autoScale      = true;
-		char   selectedComponent[64]  = "";
-		char   autoTitleComponent[64] = "";
+		std::array<char, 64>  selectedComponent  = {""};
+		std::array<char, 64>  autoTitleComponent = {""};
 	};
 
 	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
@@ -141,8 +142,8 @@ namespace dnf_composer::user_interface
 		mutable std::vector<std::pair<ImVec2, ImVec2>> cachedNodeRects;
 		mutable std::vector<element::ElementLabel>     cachedNodeLabels;
 		mutable std::vector<size_t>                    cachedNodeIds;
-		mutable ImVec2                                 cachedVpMin{};
-		mutable ImVec2                                 cachedVpMax{};
+		mutable ImVec2                                 cachedVpMin;
+		mutable ImVec2                                 cachedVpMax;
 
 		// Overlap prevention: baseline positions and drag-start positions for snap-on-drop.
 		mutable std::unordered_map<size_t, ImVec2> prevNodePositions;

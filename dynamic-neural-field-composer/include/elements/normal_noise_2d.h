@@ -38,7 +38,7 @@ namespace dnf_composer::element
 		NormalNoise2DParameters parameters;
 	public:
 		NormalNoise2D(const ElementCommonParameters& elementCommonParameters,
-		              const NormalNoise2DParameters& parameters);
+		              NormalNoise2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

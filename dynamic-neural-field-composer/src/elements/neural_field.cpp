@@ -1,9 +1,8 @@
 ﻿#include "elements/neural_field.h"
 
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		void NeuralFieldBump::print() const
 		{
@@ -46,8 +45,9 @@ namespace dnf_composer
 			updateInput();
 			calculateActivation(t, deltaT);
 			calculateOutput();
-			if (computeStateMetrics_)
+			if (computeStateMetrics_) {
 				updateState(deltaT);
+}
 		}
 
 		void NeuralField::setParameters(const NeuralFieldParameters& neuralFieldParameters)
@@ -63,9 +63,7 @@ namespace dnf_composer
 
 		bool NeuralField::isStable() const
 		{
-			if (state.stable)
-				return true;
-			return false;
+			return state.stable;
 		}
 
 		std::shared_ptr<Kernel> NeuralField::getSelfExcitationKernel() const
@@ -78,8 +76,9 @@ namespace dnf_composer
 					auto kernel = std::dynamic_pointer_cast<Kernel>(input.first);
 					for (const auto& kernelInput : kernel->getInputs())
 					{
-						if (kernelInput->getUniqueName() == commonParameters.identifiers.uniqueName)
+						if (kernelInput->getUniqueName() == commonParameters.identifiers.uniqueName) {
 							return kernel;
+}
 					}
 				}
 			}
@@ -105,8 +104,9 @@ namespace dnf_composer
 		{
 			const double dtOverTau = deltaT / parameters.tau;
 			const int sz = commonParameters.dimensionParameters.size;
-			for (int i = 0; i < sz; ++i)
+			for (int i = 0; i < sz; ++i) {
 				act_[i] += dtOverTau * (-act_[i] + rest_[i] + inp_[i]);
+}
 		}
 
 		void NeuralField::calculateOutput()
@@ -116,19 +116,23 @@ namespace dnf_composer
 
 		void NeuralField::updateState(double deltaT)
 		{
-			const std::size_t n = static_cast<std::size_t>(commonParameters.dimensionParameters.size);
+			const auto n = static_cast<std::size_t>(commonParameters.dimensionParameters.size);
 
 			// One pass over act_: compute sum, sumSq (for norm), min, max simultaneously.
 			// Replaces 5 separate O(N) passes that each also did a string hash-map lookup.
-			double sum = 0.0, sumSq = 0.0;
-			double vmin = act_[0], vmax = act_[0];
+			double sum = 0.0;
+			double sumSq = 0.0;
+			double vmin = act_[0];
+			double vmax = act_[0];
 			for (std::size_t i = 0; i < n; ++i)
 			{
 				const double v = act_[i];
 				sum   += v;
 				sumSq += v * v;
-				if (v < vmin) vmin = v;
-				if (v > vmax) vmax = v;
+				if (v < vmin) { vmin = v;
+}
+				if (v > vmax) { vmax = v;
+}
 			}
 			const double norm = std::sqrt(sumSq);
 			const double avg  = sum / static_cast<double>(n);
@@ -271,4 +275,3 @@ namespace dnf_composer
 			}
 		}
 	}
-}

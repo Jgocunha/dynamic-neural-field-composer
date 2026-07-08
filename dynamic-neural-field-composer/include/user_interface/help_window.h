@@ -4,35 +4,27 @@
 
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
-namespace dnf_composer
+namespace dnf_composer::user_interface
 {
-	extern ImFont* g_MediumLargeFont;
-	extern ImFont* g_BoldLargeFont;
-	extern ImFont* g_BoldMediumFont;
-	extern ImFont* g_MediumIconsFont;
-
-	namespace user_interface
+	class HelpWindow final : public imgui_kit::UserInterfaceWindow
 	{
-		class HelpWindow final : public imgui_kit::UserInterfaceWindow
-		{
-		private:
-			inline static bool isWindowActive = false;
-			inline static int  activePage     = 0;
+	private:
+		inline static bool isWindowActive = false;
+		inline static int  activePage     = 0;
 
-		public:
-			HelpWindow() = default;
-			void render() override { draw(); }
-			static bool isActive()        { return isWindowActive; }
-			static void setActive(bool v) { isWindowActive = v; }
-			~HelpWindow() override = default;
+	public:
+		HelpWindow() = default;
+		void render() override { draw(); }
+		static bool isActive()        { return isWindowActive; }
+		static void setActive(bool v) { isWindowActive = v; }
+		~HelpWindow() override = default;
 
-		private:
-			static void draw();
-			static void renderPageNav();
-			static void renderPageAbout();
-			static void renderPageHowToUse();
-			static void renderPageQuickTips();
-			static void renderPageResources();
-		};
-	}
+	private:
+		static void draw();
+		static void renderPageNav();
+		static void renderPageAbout();
+		static void renderPageHowToUse();
+		static void renderPageQuickTips();
+		static void renderPageResources();
+	};
 }

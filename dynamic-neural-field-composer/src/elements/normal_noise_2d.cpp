@@ -2,15 +2,16 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/normal_noise_2d.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		NormalNoise2D::NormalNoise2D(const ElementCommonParameters& elementCommonParameters,
-			const NormalNoise2DParameters& parameters)
-			: Element(elementCommonParameters), parameters(parameters)
+			NormalNoise2DParameters  parameters)
+			: Element(elementCommonParameters), parameters(std::move(parameters))
 		{
 			commonParameters.identifiers.label = ElementLabel::NORMAL_NOISE_2D;
 		}
@@ -25,8 +26,9 @@ namespace dnf_composer
 			const std::vector<double> rand = tools::math::generateNormalVector(
 				commonParameters.dimensionParameters.size);
 			const double scale = parameters.amplitude / std::sqrt(deltaT);
-			for (int i = 0; i < commonParameters.dimensionParameters.size; ++i)
+			for (int i = 0; i < commonParameters.dimensionParameters.size; ++i) {
 				components["output"][i] = scale * rand[i];
+}
 		}
 
 		std::string NormalNoise2D::toString() const
@@ -52,4 +54,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

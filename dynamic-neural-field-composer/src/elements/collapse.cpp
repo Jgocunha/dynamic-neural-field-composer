@@ -1,8 +1,7 @@
 #include "elements/collapse.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		Collapse::Collapse(const ElementCommonParameters& elementCommonParameters,
 			const CollapseParameters& parameters)
@@ -147,4 +146,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

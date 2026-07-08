@@ -1,8 +1,7 @@
 #include "elements/expand.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		Expand::Expand(const ElementCommonParameters& elementCommonParameters,
 			const ExpandParameters& parameters)
@@ -137,4 +136,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

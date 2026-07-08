@@ -2,13 +2,15 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/memory_trace_2d.h"
 
 namespace dnf_composer::element
 {
 	MemoryTrace2D::MemoryTrace2D(const ElementCommonParameters& elementCommonParameters,
-	                             const MemoryTrace2DParameters& parameters)
-		: Element(elementCommonParameters), parameters(parameters)
+	                             MemoryTrace2DParameters  parameters)
+		: Element(elementCommonParameters), parameters(std::move(parameters))
 	{
 		commonParameters.identifiers.label = ElementLabel::MEMORY_TRACE_2D;
 	}
@@ -27,10 +29,11 @@ namespace dnf_composer::element
 		for (int i = 0; i < size; ++i)
 		{
 			const double in = components["input"][i];
-			if (in > parameters.threshold)
+			if (in > parameters.threshold) {
 				components["output"][i] += deltaT * (1.0 / parameters.tauBuild) * (-components["output"][i] + in);
-			else
+			} else {
 				components["output"][i] += deltaT * (1.0 / parameters.tauDecay) * (-components["output"][i]);
+}
 		}
 	}
 

@@ -1,12 +1,13 @@
-﻿#include "elements/gauss_field_coupling.h"
+﻿#include <utility>
 
-namespace dnf_composer
-{
-	namespace element
+#include "elements/gauss_field_coupling.h"
+
+
+	namespace dnf_composer::element
 	{
 		GaussFieldCoupling::GaussFieldCoupling(const ElementCommonParameters& elementCommonParameters, 
-			const GaussFieldCouplingParameters& gfc_parameters)
-			: Element(elementCommonParameters), parameters(gfc_parameters)
+			GaussFieldCouplingParameters  gfc_parameters)
+			: Element(elementCommonParameters), parameters(std::move(gfc_parameters))
 		{
 			commonParameters.identifiers.label = ElementLabel::GAUSS_FIELD_COUPLING;
 			components["input"] = std::vector<double>(parameters.inputFieldDimensions.size);
@@ -35,17 +36,19 @@ namespace dnf_composer
 					for (const auto& coupling : parameters.couplings)
 					{
 						double amplitude = coupling.amplitude;
-						if (parameters.normalized)	
+						if (parameters.normalized) {	
 							amplitude /= sqrt(2 * std::numbers::pi * std::pow(coupling.width, 2));
-						if (parameters.circular)
+}
+						if (parameters.circular) {
 							value += tools::math::gaussian_2d_periodic(j, i,
 								coupling.x_i/parameters.inputFieldDimensions.d_x, coupling.x_j/commonParameters.dimensionParameters.d_x,
 								coupling.width, amplitude,
 								rows, cols);
-						else
+						} else {
 							value += tools::math::gaussian_2d(j, i,
 								coupling.x_i / parameters.inputFieldDimensions.d_x, coupling.x_j / commonParameters.dimensionParameters.d_x,
 								coupling.width, coupling.width, amplitude);
+}
 					}
 					const size_t index = j * cols + i;
 					components["weights"][index] = value;
@@ -102,7 +105,7 @@ namespace dnf_composer
 			commonParameters.dimensionParameters = newDimensions;
 			const int inputSize = static_cast<int>(components["input"].size());
 			components["output"].assign(newDimensions.size, 0.0);
-			components["weights"].assign(inputSize * newDimensions.size, 0.0);
+			components["weights"].assign(static_cast<std::size_t>(inputSize) * newDimensions.size, 0.0);
 			init();
 		}
 
@@ -111,7 +114,7 @@ namespace dnf_composer
 			parameters.inputFieldDimensions = newInputDimensions;
 			const int outputSize = static_cast<int>(components["output"].size());
 			components["input"].assign(newInputDimensions.size, 0.0);
-			components["weights"].assign(newInputDimensions.size * outputSize, 0.0);
+			components["weights"].assign(static_cast<std::size_t>(newInputDimensions.size) * outputSize, 0.0);
 			init();
 		}
 
@@ -148,4 +151,3 @@ namespace dnf_composer
 			parameters.inputFieldDimensions = input->getElementCommonParameters().dimensionParameters;
 		}
 	}
-}

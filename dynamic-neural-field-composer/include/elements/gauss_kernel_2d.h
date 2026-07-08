@@ -63,7 +63,7 @@ namespace dnf_composer::element
 		std::vector<double> scratchConvolution_;
 	public:
 		GaussKernel2D(const ElementCommonParameters& elementCommonParameters,
-		              const GaussKernel2DParameters& parameters);
+		              GaussKernel2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

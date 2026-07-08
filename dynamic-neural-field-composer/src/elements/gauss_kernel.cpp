@@ -1,9 +1,8 @@
 ﻿#include "elements/gauss_kernel.h"
 
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		GaussKernel::GaussKernel(const ElementCommonParameters& elementCommonParameters, GaussKernelParameters gk_parameters)
 			: Kernel(elementCommonParameters), parameters(std::move(gk_parameters))
@@ -33,14 +32,16 @@ namespace dnf_composer
 			std::iota(rangeX.begin(), rangeX.end(), -startingValue);
 			std::vector<double> gauss(commonParameters.dimensionParameters.size);
 
-			if (parameters.normalized)
+			if (parameters.normalized) {
 				gauss = tools::math::gaussNorm(rangeX, 0.0, parameters.width);
-			else
+			} else {
 				gauss = tools::math::gauss(rangeX, 0.0, parameters.width);
+}
 
 			components["kernel"].resize(rangeX.size());
-			for (int i = 0; i < components["kernel"].size(); i++)
+			for (int i = 0; i < components["kernel"].size(); i++) {
 				components["kernel"][i] = parameters.amplitude * gauss[i];
+}
 			 
 			scratchExtended.assign(extIndex.empty() ? 0 : extIndex.size(), 0.0);
 			scratchConvolution.assign(commonParameters.dimensionParameters.size, 0.0);
@@ -66,8 +67,9 @@ namespace dnf_composer
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
 			auto& out = components["output"];
-			for (int i = 0; i < static_cast<int>(out.size()); i++)
+			for (int i = 0; i < static_cast<int>(out.size()); i++) {
 				out[i] = scratchConvolution[i] + globalOffset;
+}
 		}
 
 		std::string GaussKernel::toString() const
@@ -95,4 +97,3 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}

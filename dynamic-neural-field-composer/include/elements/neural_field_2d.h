@@ -109,8 +109,9 @@ namespace dnf_composer::element
 			str += "Highest act.: " + std::format("{:.2f}", highestActivation) + ", ";
 			str += "Threshold: " + std::format("{:.2f}", thresholdForStability) + "]\n";
 			str += "Bumps: {";
-			for (const auto& bump : bumps)
+			for (const auto& bump : bumps) {
 				str += bump.toString();
+}
 			str += "}";
 			return str;
 		}

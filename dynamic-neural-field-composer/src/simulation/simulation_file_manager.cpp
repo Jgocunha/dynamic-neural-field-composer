@@ -10,8 +10,9 @@ namespace dnf_composer
 	SimulationFileManager::SimulationFileManager(const std::shared_ptr<Simulation>& simulation, const std::string& filePath)
 		: simulation(simulation), filePath(filePath)
 	{
-        if (filePath.empty())
+        if (filePath.empty()) {
             this->filePath = tools::utils::getResourceRoot() + "/data/";
+}
 	}
 
 	void SimulationFileManager::saveElementsToJson() const
@@ -30,8 +31,9 @@ namespace dnf_composer
         }
 
         json elementsJson = json::array();
-		for (const auto& element : simulation->getElements())
+		for (const auto& element : simulation->getElements()) {
             elementsJson.emplace_back(elementToJson(element));
+}
 
         json root;
         root["identifier"] = simulation->getUniqueIdentifier();
@@ -83,21 +85,24 @@ namespace dnf_composer
             }
             elementsJson = elems;
 
-            if (root.contains("identifier") && root["identifier"].is_string())
+            if (root.contains("identifier") && root["identifier"].is_string()) {
                 simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
-            else if (root.contains("identifier"))
+            } else if (root.contains("identifier")) {
                 log(tools::logger::ERROR, "Invalid simulation file: \"identifier\" is not a string: " + filePath);
+}
 
             if (root.contains("deltaT") && root["deltaT"].is_number())
             {
                 const double dt = root["deltaT"].get<double>();
-                if (std::isfinite(dt) && dt > 0.0)
+                if (std::isfinite(dt) && dt > 0.0) {
                     simulation->setDeltaT(dt);
-                else
+                } else {
                     log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a valid positive number: " + filePath);
+}
             }
-            else if (root.contains("deltaT"))
+            else if (root.contains("deltaT")) {
                 log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a number: " + filePath);
+}
         }
         else
         {
@@ -122,11 +127,14 @@ namespace dnf_composer
 
     static element::ElementLabel elementLabelFromString(const std::string& s)
     {
-        for (const auto& [k, v] : element::ElementLabelToString)
-            if (v == s) return k;
+        for (const auto& [k, v] : element::ElementLabelToString) {
+            if (v == s) { return k;
+}
+}
         return element::UNINITIALIZED;
     }
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON serialization; splitting would scatter a single lookup table across files
     json SimulationFileManager::elementToJson(const std::shared_ptr<element::Element>& element)
     {
         json elementJson;
@@ -172,7 +180,7 @@ namespace dnf_composer
             switch (activationFunctionType) {
             case element::ActivationFunctionType::HEAVISIDE:
             {
-	            if (const auto heavisideActivationFunction = dynamic_cast<const element::HeavisideFunction*>(neuralFieldParameters.activationFunction.get())) {
+	            if (const auto *const heavisideActivationFunction = dynamic_cast<const element::HeavisideFunction*>(neuralFieldParameters.activationFunction.get())) {
                     elementJson["activationFunction"] = {
                         {"type", "heaviside"},
                         {"x_shift", heavisideActivationFunction->getXShift()}
@@ -182,7 +190,7 @@ namespace dnf_composer
             break;
             case element::ActivationFunctionType::SIGMOID:
             {
-	            if (const auto sigmoidActivationFunction = dynamic_cast<const element::SigmoidFunction*>(neuralFieldParameters.activationFunction.get())) {
+	            if (const auto *const sigmoidActivationFunction = dynamic_cast<const element::SigmoidFunction*>(neuralFieldParameters.activationFunction.get())) {
                     elementJson["activationFunction"] = {
                         {"type", "sigmoid"},
                         {"x_shift", sigmoidActivationFunction->getXShift()},
@@ -193,8 +201,8 @@ namespace dnf_composer
             break;
             case element::ActivationFunctionType::ABSSIGMOID:
             {
-                const auto absSigmoidFn = dynamic_cast<const element::AbsSigmoidFunction*>(neuralFieldParameters.activationFunction.get());
-                if (absSigmoidFn) {
+                const auto *const absSigmoidFn = dynamic_cast<const element::AbsSigmoidFunction*>(neuralFieldParameters.activationFunction.get());
+                if (absSigmoidFn != nullptr) {
                     elementJson["activationFunction"] = {
                         {"type", "abs_sigmoid"},
                         {"x_shift", absSigmoidFn->getXShift()},
@@ -277,8 +285,9 @@ namespace dnf_composer
             elementJson["input_x_max"] = gaussFieldCouplingParameters.inputFieldDimensions.x_max;
             elementJson["input_d_x"] = gaussFieldCouplingParameters.inputFieldDimensions.d_x;
             elementJson["couplings"] = json::array();
-            for (const auto& coupling : gaussFieldCouplingParameters.couplings)
+            for (const auto& coupling : gaussFieldCouplingParameters.couplings) {
                 elementJson["couplings"].push_back(json::array({coupling.x_i, coupling.x_j, coupling.amplitude, coupling.width}));
+}
         }
         break;
         case element::OSCILLATORY_KERNEL:
@@ -419,8 +428,9 @@ namespace dnf_composer
             elementJson["circular"]  = p.circular;
             elementJson["normalized"]= p.normalized;
             json onTimesJson = json::array();
-            for (const auto& [start, end] : p.onTimes)
+            for (const auto& [start, end] : p.onTimes) {
                 onTimesJson.push_back({start, end});
+}
             elementJson["onTimes"] = onTimesJson;
         }
         break;
@@ -435,8 +445,9 @@ namespace dnf_composer
             elementJson["circular"]   = p.circular;
             elementJson["normalized"] = p.normalized;
             json onTimesJson = json::array();
-            for (const auto& [start, end] : p.onTimes)
+            for (const auto& [start, end] : p.onTimes) {
                 onTimesJson.push_back({start, end});
+}
             elementJson["onTimes"] = onTimesJson;
         }
         break;
@@ -529,6 +540,7 @@ namespace dnf_composer
         return elementJson;
     }
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON deserialization; mirrors elementToJson's structure
     void SimulationFileManager::jsonToElements(const json& jsonElements) const
     {
         // Track names already loaded so duplicate uniqueNames in the file are rejected
@@ -583,8 +595,9 @@ namespace dnf_composer
 		                    activationFunction = std::make_unique<element::AbsSigmoidFunction>(x_shift, beta);
 		                }
 		            }
-		            if (!activationFunction)
+		            if (!activationFunction) {
 		                activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0);
+}
 
 		            auto neuralField = std::make_shared<element::NeuralField>(
 		                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -695,7 +708,7 @@ namespace dnf_composer
 					    const double x_j = coupling[1];
                         const double amp = coupling[2];
                         const double width = coupling[3];
-					    couplings.push_back(element::GaussCoupling(x_i, x_j, amp, width));
+					    couplings.emplace_back(x_i, x_j, amp, width);
 				    }
                 }
 
@@ -872,9 +885,11 @@ namespace dnf_composer
             const bool circular    = elementJson["circular"];
             const bool normalized  = elementJson["normalized"];
             std::vector<std::pair<double, double>> onTimes;
-            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array())
-                for (const auto& pair : elementJson["onTimes"])
+            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array()) {
+                for (const auto& pair : elementJson["onTimes"]) {
                     onTimes.emplace_back(pair[0].get<double>(), pair[1].get<double>());
+}
+}
 
             auto tgs = std::make_shared<element::TimedGaussStimulus>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -892,9 +907,11 @@ namespace dnf_composer
             const bool circular     = elementJson["circular"];
             const bool normalized   = elementJson["normalized"];
             std::vector<std::pair<double, double>> onTimes;
-            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array())
-                for (const auto& pair : elementJson["onTimes"])
+            if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array()) {
+                for (const auto& pair : elementJson["onTimes"]) {
                     onTimes.emplace_back(pair[0].get<double>(), pair[1].get<double>());
+}
+}
 
             auto tgs = std::make_shared<element::TimedGaussStimulus2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1039,8 +1056,9 @@ namespace dnf_composer
 	        // Skip the interactions of a duplicate entry: only the first occurrence of a
 	        // name was loaded, so wiring a later duplicate's inputs would attach them to
 	        // the wrong (first) element.
-	        if (!wiredNames.insert(uniqueName).second)
+	        if (!wiredNames.insert(uniqueName).second) {
 	            continue;
+}
 
 	        const auto& inputsJson = elementJson["inputs"];
 
@@ -1058,8 +1076,12 @@ namespace dnf_composer
                     // Wiring to a missing element would corrupt the loaded graph.
                     if (!simulation->getElement(keyUniqueName) || !simulation->getElement(uniqueName))
                     {
-                        log(tools::logger::WARNING, "Skipping interaction '" + keyUniqueName
-                            + "' -> '" + uniqueName + "': one or both elements were not loaded.");
+                        std::string message = "Skipping interaction '";
+                        message += keyUniqueName;
+                        message += "' -> '";
+                        message += uniqueName;
+                        message += "': one or both elements were not loaded.";
+                        log(tools::logger::WARNING, message);
                         continue;
                     }
 

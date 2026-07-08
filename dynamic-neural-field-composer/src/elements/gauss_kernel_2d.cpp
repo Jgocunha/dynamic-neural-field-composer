@@ -2,15 +2,16 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/gauss_kernel_2d.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		GaussKernel2D::GaussKernel2D(const ElementCommonParameters& elementCommonParameters,
-			const GaussKernel2DParameters& parameters)
-			: Kernel(elementCommonParameters), parameters(parameters)
+			GaussKernel2DParameters  parameters)
+			: Kernel(elementCommonParameters), parameters(std::move(parameters))
 		{
 			commonParameters.identifiers.label = ElementLabel::GAUSS_KERNEL_2D;
 		}
@@ -53,15 +54,18 @@ namespace dnf_composer
 				kernel_1d_y = tools::math::gauss(rangeY, 0.0, parameters.width);
 			}
 
-			for (auto& v : kernel_1d_x) v *= parameters.amplitude;
+			for (auto& v : kernel_1d_x) { v *= parameters.amplitude;
+}
 
 			// Populate components["kernel"] with the outer product (row-major)
 			const int kx = static_cast<int>(kernel_1d_x.size());
 			const int ky = static_cast<int>(kernel_1d_y.size());
-			components["kernel"].resize(kx * ky);
-			for (int i = 0; i < kx; ++i)
-				for (int j = 0; j < ky; ++j)
+			components["kernel"].resize(static_cast<std::size_t>(kx) * ky);
+			for (int i = 0; i < kx; ++i) {
+				for (int j = 0; j < ky; ++j) {
 					components["kernel"][j * kx + i] = kernel_1d_x[i] * kernel_1d_y[j];
+}
+}
 
 			const int totalSize = size_x * size_y;
 			scratchTmp_.assign(totalSize, 0.0);
@@ -87,8 +91,9 @@ namespace dnf_composer
 				size_x, size_y, extIndex_x, extIndex_y);
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
-			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
+			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i) {
 				components["output"][i] = scratchConvolution_[i] + globalOffset;
+}
 		}
 
 		std::string GaussKernel2D::toString() const
@@ -115,4 +120,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

@@ -4,20 +4,21 @@
 
 #include "elements/gauss_stimulus_2d.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		GaussStimulus2D::GaussStimulus2D(const ElementCommonParameters& elementCommonParameters,
 			const GaussStimulus2DParameters& parameters)
 			: Element(elementCommonParameters), parameters(parameters)
 		{
-			if (parameters.position_x < 0 || parameters.position_x >= elementCommonParameters.dimensionParameters.x_max)
+			if (parameters.position_x < 0 || parameters.position_x >= elementCommonParameters.dimensionParameters.x_max) {
 				throw Exception(ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE,
 					elementCommonParameters.identifiers.uniqueName);
-			if (parameters.position_y < 0 || parameters.position_y >= elementCommonParameters.dimensionParameters.y_max)
+}
+			if (parameters.position_y < 0 || parameters.position_y >= elementCommonParameters.dimensionParameters.y_max) {
 				throw Exception(ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE,
 					elementCommonParameters.identifiers.uniqueName);
+}
 
 			commonParameters.identifiers.label = ElementLabel::GAUSS_STIMULUS_2D;
 		}
@@ -37,14 +38,15 @@ namespace dnf_composer
 				{
 					const double y = (yi + 1) * commonParameters.dimensionParameters.d_y;
 					double val;
-					if (parameters.circular)
+					if (parameters.circular) {
 						val = tools::math::gaussian_2d_periodic(x, y,
 							parameters.position_x, parameters.position_y,
 							parameters.width, 1.0, x_max, y_max);
-					else
+					} else {
 						val = tools::math::gaussian_2d(x, y,
 							parameters.position_x, parameters.position_y,
 							parameters.width, parameters.width, 1.0);
+}
 					components["output"][yi * size_x + xi] = val;
 					sum += val;
 				}
@@ -52,15 +54,17 @@ namespace dnf_composer
 
 			if (!parameters.normalized)
 			{
-				for (auto& v : components["output"])
+				for (auto& v : components["output"]) {
 					v *= parameters.amplitude;
+}
 			}
 			else
 			{
 				if (sum > 1e-12)
 				{
-					for (auto& v : components["output"])
+					for (auto& v : components["output"]) {
 						v = parameters.amplitude * v / sum;
+}
 				}
 				else
 				{
@@ -74,8 +78,9 @@ namespace dnf_composer
 			std::ranges::fill(components["input"], 0.0);
 			updateInput();
 			const int totalSize = size_x * size_y;
-			for (int i = 0; i < totalSize; ++i)
+			for (int i = 0; i < totalSize; ++i) {
 				components["output"][i] += components["input"][i];
+}
 		}
 
 		void GaussStimulus2D::step(double t, double deltaT)
@@ -106,4 +111,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

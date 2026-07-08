@@ -2,9 +2,8 @@
 #include "tools/utils.h"
 #include <filesystem>
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 
 		FieldCoupling::FieldCoupling(const ElementCommonParameters& elementCommonParameters, 
@@ -28,17 +27,20 @@ namespace dnf_composer
 
 			updateInputField();
 			updateOutputField();
-			if(!checkValidConnections())
+			if(!checkValidConnections()) {
 				return;
+}
 		}
 
 		void FieldCoupling::step(double t, double deltaT)
 		{
 			updateInput();
 			updateOutput();
-			if (parameters.isLearningActive)
-				if(checkValidConnections())
+			if (parameters.isLearningActive) {
+				if(checkValidConnections()) {
 					updateWeights();
+}
+}
 		}
 
 		std::string FieldCoupling::toString() const
@@ -60,7 +62,7 @@ namespace dnf_composer
 			commonParameters.dimensionParameters = newDimensions;
 			const int inputSize = static_cast<int>(components["input"].size());
 			components["output"].assign(newDimensions.size, 0.0);
-			components["weights"].assign(inputSize * newDimensions.size, 0.0);
+			components["weights"].assign(static_cast<std::size_t>(inputSize) * newDimensions.size, 0.0);
 			init();
 		}
 
@@ -69,7 +71,7 @@ namespace dnf_composer
 			parameters.inputFieldDimensions = newInputDimensions;
 			const int outputSize = static_cast<int>(components["output"].size());
 			components["input"].assign(newInputDimensions.size, 0.0);
-			components["weights"].assign(newInputDimensions.size * outputSize, 0.0);
+			components["weights"].assign(static_cast<std::size_t>(newInputDimensions.size) * outputSize, 0.0);
 			init();
 		}
 
@@ -309,4 +311,3 @@ namespace dnf_composer
 		}
 
 	}
-}

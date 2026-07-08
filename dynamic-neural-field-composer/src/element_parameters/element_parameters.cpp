@@ -60,8 +60,9 @@ namespace dnf_composer::element
 		result << ", Dimensions: ["
 				<< "x_max: " << x_max << ", "
 				<< "d_x: " << d_x;
-		if (size_y > 1)
+		if (size_y > 1) {
 			result << ", y_max: " << y_max << ", d_y: " << d_y;
+}
 		result << ", Samples: " << size << "]";
 		return result.str();
 	}
@@ -105,12 +106,12 @@ namespace dnf_composer::element
 	}
 
 	ElementCommonParameters::ElementCommonParameters(const ElementLabel label)
-		: identifiers(label), dimensionParameters()
+		: identifiers(label) 
 	{
 	}
 
 	ElementCommonParameters::ElementCommonParameters(const std::string& elementName)
-		: identifiers(elementName), dimensionParameters()
+		: identifiers(elementName) 
 	{}
 
 	ElementCommonParameters::ElementCommonParameters(const std::string& elementName, int x_max)

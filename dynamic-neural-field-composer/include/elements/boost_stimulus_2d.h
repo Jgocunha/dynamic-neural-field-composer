@@ -50,7 +50,7 @@ namespace dnf_composer::element
 		BoostStimulus2DParameters parameters;
 	public:
 		BoostStimulus2D(const ElementCommonParameters& elementCommonParameters,
-		                const BoostStimulus2DParameters& parameters);
+		                BoostStimulus2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

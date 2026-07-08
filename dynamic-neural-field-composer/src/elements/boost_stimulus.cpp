@@ -1,12 +1,13 @@
-﻿#include "elements/boost_stimulus.h"
+﻿#include <utility>
 
-namespace dnf_composer
-{
-	namespace element
+#include "elements/boost_stimulus.h"
+
+
+	namespace dnf_composer::element
 	{
 		BoostStimulus::BoostStimulus(const ElementCommonParameters& elementCommonParameters,
-			const BoostStimulusParameters& parameters)
-			: Element(elementCommonParameters), parameters(parameters)
+			BoostStimulusParameters  parameters)
+			: Element(elementCommonParameters), parameters(std::move(parameters))
 		{
 			this->commonParameters.identifiers.label = ElementLabel::BOOST_STIMULUS;
 		}
@@ -48,4 +49,3 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}

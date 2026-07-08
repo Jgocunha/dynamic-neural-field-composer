@@ -2,15 +2,16 @@
 
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
+#include <utility>
+
 #include "elements/mexican_hat_kernel_2d.h"
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		MexicanHatKernel2D::MexicanHatKernel2D(const ElementCommonParameters& elementCommonParameters,
-			const MexicanHatKernel2DParameters& parameters)
-			: Kernel(elementCommonParameters), parameters(parameters)
+			MexicanHatKernel2DParameters  parameters)
+			: Kernel(elementCommonParameters), parameters(std::move(parameters))
 		{
 			commonParameters.identifiers.label = ElementLabel::MEXICAN_HAT_KERNEL_2D;
 		}
@@ -63,21 +64,25 @@ namespace dnf_composer
 				extIndexInh_x, extIndexInh_y,
 				kernelInh_x, kernelInh_y);
 
-			for (auto& v : kernelExc_x) v *= parameters.amplitudeExc;
-			for (auto& v : kernelInh_x) v *= parameters.amplitudeInh;
+			for (auto& v : kernelExc_x) { v *= parameters.amplitudeExc;
+}
+			for (auto& v : kernelInh_x) { v *= parameters.amplitudeInh;
+}
 
 			// Populate components["kernel"] with the net outer product (exc - inh), row-major.
 			// Use the larger of the two kernel ranges as the output size, centering the smaller kernel.
 			const int kx = static_cast<int>(std::max(kernelExc_x.size(), kernelInh_x.size()));
 			const int ky = static_cast<int>(std::max(kernelExc_y.size(), kernelInh_y.size()));
-			components["kernel"].assign(kx * ky, 0.0);
+			components["kernel"].assign(static_cast<std::size_t>(kx) * ky, 0.0);
 			auto addProduct = [&](const std::vector<double>& kxVec, const std::vector<double>& kyVec, double sign)
 			{
 				const int offX = (kx - static_cast<int>(kxVec.size())) / 2;
 				const int offY = (ky - static_cast<int>(kyVec.size())) / 2;
-				for (int i = 0; i < static_cast<int>(kxVec.size()); ++i)
-					for (int j = 0; j < static_cast<int>(kyVec.size()); ++j)
+				for (int i = 0; i < static_cast<int>(kxVec.size()); ++i) {
+					for (int j = 0; j < static_cast<int>(kyVec.size()); ++j) {
 						components["kernel"][(j + offY) * kx + (i + offX)] += sign * kxVec[i] * kyVec[j];
+}
+}
 			};
 			addProduct(kernelExc_x, kernelExc_y, +1.0);
 			addProduct(kernelInh_x, kernelInh_y, -1.0);
@@ -112,8 +117,9 @@ namespace dnf_composer
 				size_x, size_y, extIndexInh_x, extIndexInh_y);
 
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
-			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i)
+			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i) {
 				components["output"][i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
+}
 		}
 
 		std::string MexicanHatKernel2D::toString() const
@@ -140,4 +146,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

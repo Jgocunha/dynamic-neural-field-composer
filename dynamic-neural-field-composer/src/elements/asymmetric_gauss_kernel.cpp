@@ -1,9 +1,8 @@
 #include "elements/asymmetric_gauss_kernel.h"
 
 
-namespace dnf_composer
-{
-	namespace element
+
+	namespace dnf_composer::element
 	{
 		AsymmetricGaussKernel::AsymmetricGaussKernel(const ElementCommonParameters& elementCommonParameters, AsymmetricGaussKernelParameters agk_parameters)
 			: Kernel(elementCommonParameters), parameters(std::move(agk_parameters))
@@ -81,8 +80,9 @@ namespace dnf_composer
 
             const double globalOffset = parameters.amplitudeGlobal * fullSum;
             auto& out = components["output"];
-            for (int i = 0; i < static_cast<int>(out.size()); i++)
+            for (int i = 0; i < static_cast<int>(out.size()); i++) {
                 out[i] = scratchConvolution[i] + globalOffset;
+}
 		}
 
 		std::string AsymmetricGaussKernel::toString() const
@@ -110,4 +110,4 @@ namespace dnf_composer
 			return parameters;
 		}
 	}
-}
+

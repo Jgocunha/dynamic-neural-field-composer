@@ -4,23 +4,23 @@ namespace dnf_composer
 {
 
 	Exception::Exception(std::string message)
-		: errorCode(ErrorCode::OK), errorMessage(std::move(message)), errorElement(), errorComponent(), errorIndex(0)
+		: errorCode(ErrorCode::OK), errorMessage(std::move(message)),  errorIndex(0)
 	{}
 
 	Exception::Exception(const ErrorCode errorCode)
-		: errorCode(errorCode), errorComponent(), errorIndex(0)
+		: errorCode(errorCode),  errorIndex(0)
 	{
 		errorMessage = getErrorMessage();
 	}
 
 	Exception::Exception(const ErrorCode errorCode, std::string errorElement)
-		: errorCode(errorCode), errorElement(std::move(errorElement)), errorComponent(), errorIndex(0)
+		: errorCode(errorCode), errorElement(std::move(errorElement)),  errorIndex(0)
 	{
 		errorMessage = getErrorMessage();
 	}
 
 	Exception::Exception(const ErrorCode errorCode, int errorIndex)
-		: errorCode(errorCode), errorElement(), errorComponent()
+		: errorCode(errorCode) 
 	{
 		this->errorIndex = errorIndex;
 		errorMessage = getErrorMessage();

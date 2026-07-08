@@ -15,9 +15,6 @@
 #undef min
 #endif
 
-extern ImFont* g_BlackLargeFont;
-extern ImFont* g_MediumIconsFont;
-
 namespace dnf_composer::user_interface
 {
 	class PlotControlWindow final : public imgui_kit::UserInterfaceWindow

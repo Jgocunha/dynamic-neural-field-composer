@@ -41,9 +41,11 @@ namespace dnf_composer::element
 			: amplitude(amplitude), decay(decay), zeroCrossings(zeroCrossings),
 			  amplitudeGlobal(amplitudeGlobal), circular(circular), normalized(normalized)
 		{
-			if (this->zeroCrossings < 0.0) this->zeroCrossings = 0.0;
-			else if (this->zeroCrossings > 1.0) this->zeroCrossings = 1.0;
-			if (this->decay <= 0.0) this->decay = 0.01;
+			if (this->zeroCrossings < 0.0) { this->zeroCrossings = 0.0;
+			} else if (this->zeroCrossings > 1.0) { this->zeroCrossings = 1.0;
+}
+			if (this->decay <= 0.0) { this->decay = 0.01;
+}
 		}
 
 		bool operator==(const OscillatoryKernel2DParameters& other) const
@@ -98,7 +100,7 @@ namespace dnf_composer::element
 		std::vector<double> scratchConvolution_;
 	public:
 		OscillatoryKernel2D(const ElementCommonParameters& elementCommonParameters,
-		                    const OscillatoryKernel2DParameters& parameters);
+		                    OscillatoryKernel2DParameters  parameters);
 
 		void init() override;
 		void step(double t, double deltaT) override;

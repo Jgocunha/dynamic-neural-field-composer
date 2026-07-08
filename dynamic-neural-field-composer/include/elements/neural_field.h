@@ -21,10 +21,11 @@ namespace dnf_composer::element
 			{
 				tau = other.tau;
 				startingRestingLevel = other.startingRestingLevel;
-				if (other.activationFunction)
+				if (other.activationFunction) {
 					activationFunction = other.activationFunction->clone();
-				else
+				} else {
 					activationFunction.reset();
+}
 			}
 			return *this;
 		}
@@ -56,10 +57,11 @@ namespace dnf_composer::element
 		{
 			tau = other.tau;
 			startingRestingLevel = other.startingRestingLevel;
-			if (other.activationFunction == nullptr)
+			if (other.activationFunction == nullptr) {
 				activationFunction = std::make_unique<SigmoidFunction>(0.0, 10.0);
-			else
+			} else {
 				activationFunction = other.activationFunction->clone();
+}
 		}
 
 		[[nodiscard]] std::string toString() const override
@@ -128,17 +130,16 @@ namespace dnf_composer::element
 	struct NeuralFieldState
 	{
 		std::vector<NeuralFieldBump> bumps; ///< Currently active above-threshold peaks.
-		bool stable;                        ///< True when the activation change falls below the stability threshold.
-		double lowestActivation;            ///< Minimum activation across the field.
-		double highestActivation;           ///< Maximum activation across the field.
-		double thresholdForStability;       ///< Convergence criterion (default 0.895).
+		bool stable{false};                        ///< True when the activation change falls below the stability threshold.
+		double lowestActivation{0.0};            ///< Minimum activation across the field.
+		double highestActivation{0.0};           ///< Maximum activation across the field.
+		double thresholdForStability{0.895};       ///< Convergence criterion (default 0.895).
 		double previousActivationSum  = 0.0; ///< Activation sum at the previous step — used to detect convergence.
 		double previousActivationAvg  = 0.0; ///< Activation average at the previous step — used to detect convergence.
 		double previousActivationNorm = 0.0; ///< L2 norm of activation at the previous step — used to detect convergence.
 
 		NeuralFieldState()
-			:bumps({}), stable(false), lowestActivation(0.0),
-			 highestActivation(0.0), thresholdForStability(0.895)
+			:bumps({}) 
 		{}
 
 		[[nodiscard]] std::string toString() const
@@ -149,8 +150,9 @@ namespace dnf_composer::element
 			str += "Highest act.: " + std::format("{:.2f}", highestActivation) + ", ";
 			str += "Threshold: " + std::format("{:.2f}", thresholdForStability) + "]\n";
 			str += "Bumps: {";
-			for (const auto& bump : bumps)
+			for (const auto& bump : bumps) {
 				str += bump.toString();
+}
 			str += "}";
 
 			return str;

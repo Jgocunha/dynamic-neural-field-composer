@@ -24,13 +24,13 @@ namespace dnf_composer
 		/// @param parameters  Type, dimensions, and annotations (defaults to LINE_PLOT with default ranges).
 		explicit Plot(PlotCommonParameters parameters = PlotCommonParameters());
 
-		int getUniqueIdentifier() const;
-		PlotType getType() const;
-		PlotDimensions getDimensions() const;
-		PlotAnnotations getAnnotations() const;
+		[[nodiscard]] int getUniqueIdentifier() const;
+		[[nodiscard]] PlotType getType() const;
+		[[nodiscard]] PlotDimensions getDimensions() const;
+		[[nodiscard]] PlotAnnotations getAnnotations() const;
 		void setDimensions(const PlotDimensions& dimensions);
 		void setAnnotations(const PlotAnnotations& annotations);
-		virtual std::string toString() const = 0;
+		[[nodiscard]] virtual std::string toString() const = 0;
 
 		/// @brief Render the plot using the provided data and legends.
 		/// @param data     Pointers to the component vectors to display.
