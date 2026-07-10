@@ -85,8 +85,7 @@ namespace dnf_composer::tools::logger
 }
 #endif
 
-        logger = Logger(level, mode);
-        logger.log(message);
+        Logger(level, mode).log(message);
     }
 
     std::string Logger::getLogLevelColorCodeCmd(const LogLevel level)

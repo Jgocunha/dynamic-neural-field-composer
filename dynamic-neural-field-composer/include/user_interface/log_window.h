@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <cstdarg>
+#include <mutex>
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "application/application.h"
@@ -23,6 +24,7 @@ namespace dnf_composer::user_interface
 	{
     private:
         inline static std::vector<LogEntry> logs;
+        inline static std::mutex logsMutex;
         inline static ImGuiTextFilter filter;
         inline static bool autoScroll = true;
         inline static bool isWindowActive = false;
@@ -37,7 +39,7 @@ namespace dnf_composer::user_interface
         static void setExpanded(bool v)   { s_expanded = v; }
         ~LogWindow() override = default;
     private:
-        static void clean() { logs.clear(); }
+        static void clean() { std::lock_guard lock(logsMutex); logs.clear(); }
         static void draw();
         static void renderContent();
     };

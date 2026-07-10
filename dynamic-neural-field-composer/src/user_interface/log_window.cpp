@@ -40,13 +40,16 @@ namespace dnf_composer::user_interface
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 			ImGui::PushFont(g_MonoMediumFont);
 			ImGui::PushTextWrapPos(0.0F);
-			for (const auto& [message, color] : logs)
 			{
-				if (filter.PassFilter(message.c_str()))
+				std::lock_guard lock(logsMutex);
+				for (const auto& [message, color] : logs)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Text, color);
-					ImGui::TextEx(message.c_str());
-					ImGui::PopStyleColor();
+					if (filter.PassFilter(message.c_str()))
+					{
+						ImGui::PushStyleColor(ImGuiCol_Text, color);
+						ImGui::TextEx(message.c_str());
+						ImGui::PopStyleColor();
+					}
 				}
 			}
 			ImGui::PopTextWrapPos();
@@ -70,6 +73,7 @@ namespace dnf_composer::user_interface
 		vsnprintf(buffer.data(), buffer.size(), fmt, args);
 		buffer.back() = '\0';
 		 va_end(args);
+		std::lock_guard lock(logsMutex);
 		logs.push_back({ buffer.data(), color });
 	}
 

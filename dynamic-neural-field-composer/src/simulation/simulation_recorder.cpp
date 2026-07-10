@@ -21,8 +21,11 @@ namespace dnf_composer
 			const auto t    = std::chrono::system_clock::to_time_t(now);
 			const auto ms   = std::chrono::duration_cast<std::chrono::milliseconds>(
 			                      now.time_since_epoch()) % 1000;
+			std::tm tm{};
+			tools::utils::safe_localtime(&t, &tm);
+
 			std::ostringstream oss;
-			oss << std::put_time(std::localtime(&t), "%Y-%m-%d_%H-%M-%S")
+			oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S")
 			    << "_" << std::setfill('0') << std::setw(3) << ms.count();
 			return oss.str();
 		}
