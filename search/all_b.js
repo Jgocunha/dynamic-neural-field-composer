@@ -22,7 +22,7 @@ var searchData=
   ['log_5fwindow_2ecpp_19',['log_window.cpp',['../log__window_8cpp.html',1,'']]],
   ['log_5fwindow_2eh_20',['log_window.h',['../log__window_8h.html',1,'']]],
   ['logentry_21',['LogEntry',['../structdnf__composer_1_1user__interface_1_1LogEntry.html',1,'dnf_composer::user_interface']]],
-  ['logger_22',['logger',['../namespacednf__composer_1_1tools_1_1logger.html#ac4bcc1c92bfd05e36c2fc6fd475e75bb',1,'dnf_composer::tools::logger::logger(LogLevel::INFO)'],['../classdnf__composer_1_1tools_1_1logger_1_1Logger.html',1,'dnf_composer::tools::logger::Logger'],['../classdnf__composer_1_1tools_1_1logger_1_1Logger.html#a69c7c0b1a7116c43871029ca74c42e6d',1,'dnf_composer::tools::logger::Logger::Logger()']]],
+  ['logger_22',['logger',['../classdnf__composer_1_1tools_1_1logger_1_1Logger.html#a69c7c0b1a7116c43871029ca74c42e6d',1,'dnf_composer::tools::logger::Logger::Logger()'],['../classdnf__composer_1_1tools_1_1logger_1_1Logger.html',1,'dnf_composer::tools::logger::Logger']]],
   ['logger_2ecpp_23',['logger.cpp',['../logger_8cpp.html',1,'']]],
   ['logger_2eh_24',['logger.h',['../logger_8h.html',1,'']]],
   ['loglevel_25',['LogLevel',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd',1,'dnf_composer::tools::logger']]],

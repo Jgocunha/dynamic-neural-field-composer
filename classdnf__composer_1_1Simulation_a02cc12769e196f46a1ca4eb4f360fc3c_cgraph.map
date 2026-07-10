@@ -4,8 +4,8 @@
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,143,263,111,265,116,166,148"/>
 <area shape="rect" id="Node000005" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="245,145,437,185"/>
 <area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="197,163,232,163,232,168,197,168"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="245,235,437,275"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="157,183,275,227,273,232,155,188"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="245,235,437,275"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="157,183,275,227,273,232,155,188"/>
 <area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#a19103585fab0d6a554634db1cd33b1bb" title="Pause the simulation (subsequent step() calls are no&#45;ops)." alt="" coords="485,5,677,45"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="416,67,492,46,493,51,418,72"/>
 <area shape="rect" id="Node000004" href="$classdnf__composer_1_1SimulationRecorder.html#a691afc08bae84b7b8d21a30801acd96b" title="Stop all active recordings and close all open files." alt="" coords="485,69,677,109"/>
@@ -14,9 +14,13 @@
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="437,158,479,156,479,161,438,163"/>
 <area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="744,191,899,231"/>
 <area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="438,177,486,183,730,203,730,208,485,188,437,182"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" title="Called each simulation step to append rows to active recordings. Ticks are derived from sim...." alt="" coords="485,248,677,288"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="438,257,472,259,472,265,437,263"/>
-<area shape="poly" id="edge10_Node000009_Node000007" title=" " alt="" coords="665,245,730,230,731,235,666,251"/>
-<area shape="rect" id="Node000010" href="$classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="725,255,917,295"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="678,268,712,269,712,274,677,273"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="965,191,1120,231"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="899,208,952,208,952,213,899,213"/>
+<area shape="rect" id="Node000009" href="$namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" title=" " alt="" coords="1168,191,1331,231"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="1121,208,1154,208,1154,213,1121,213"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" title="Called each simulation step to append rows to active recordings. Ticks are derived from sim...." alt="" coords="485,248,677,288"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="438,257,472,259,472,265,437,263"/>
+<area shape="poly" id="edge12_Node000011_Node000007" title=" " alt="" coords="665,245,730,230,731,235,666,251"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="725,255,917,295"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="678,268,712,269,712,274,677,273"/>
 </map>
