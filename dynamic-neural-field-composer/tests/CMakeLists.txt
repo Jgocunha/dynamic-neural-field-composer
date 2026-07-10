@@ -44,10 +44,13 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tools/test_logger.cpp"
             "tools/test_math.cpp"
             "tools/test_utils.cpp"
+            "tools/test_profiling.cpp"
             # element_parameters
             "element_parameters/test_element_parameters.cpp"
             # exceptions
             "exceptions/test_exception.cpp"
+            # visualization
+            "visualization/test_visualization.cpp"
     )
     target_include_directories(dnf_composer_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
     target_link_libraries(dnf_composer_tests PRIVATE

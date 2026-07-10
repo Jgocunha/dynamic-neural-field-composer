@@ -325,6 +325,72 @@ TEST(SimulationRecorderFile, NoDimensionCommentFor1D)
 }
 
 // ---------------------------------------------------------------------------
+// Milliseconds interval unit (Ticks-only was previously the only path tested)
+// ---------------------------------------------------------------------------
+
+TEST(SimulationRecorderSampling, MillisecondIntervalProducesCorrectRowCount)
+{
+    const std::string simId = "rec-ms-interval";
+    cleanSimDir(simId);
+    auto sim = makeRunningSimulation(simId);
+
+    // deltaT=1.0 -> each tick advances sim.t (in ms) by 1. Sample every 2 ms
+    // over 10 steps must produce the same row count as the equivalent Ticks
+    // test: fires at ms 1,3,5,7,9 (5 rows) + 1 header = 6.
+    sim->getRecorder().startRecording(simId, "stim", "output", 2, RecordingIntervalUnit::Milliseconds);
+    for (int i = 0; i < 10; ++i)
+        sim->step();
+    sim->getRecorder().stopAll();
+
+    std::string csvPath;
+    for (const auto& entry : fs::directory_iterator(recDir(simId)))
+        if (entry.path().extension() == ".csv") { csvPath = entry.path().string(); break; }
+
+    ASSERT_FALSE(csvPath.empty());
+    int lineCount = 0;
+    {
+        std::ifstream f(csvPath);
+        std::string line;
+        while (std::getline(f, line)) ++lineCount;
+    }
+    EXPECT_EQ(lineCount, 6);
+    cleanSimDir(simId);
+}
+
+// ---------------------------------------------------------------------------
+// No-op branches
+// ---------------------------------------------------------------------------
+
+TEST(SimulationRecorderNoOps, DuplicateStartRecordingIsNoOp)
+{
+    const std::string simId = "rec-duplicate-start";
+    cleanSimDir(simId);
+    auto sim = makeRunningSimulation(simId);
+
+    sim->getRecorder().startRecording(simId, "stim", "output", 1, RecordingIntervalUnit::Ticks);
+    sim->getRecorder().startRecording(simId, "stim", "output", 1, RecordingIntervalUnit::Ticks);
+    sim->step();
+    sim->getRecorder().stopAll();
+
+    int csvCount = 0;
+    for (const auto& entry : fs::directory_iterator(recDir(simId)))
+        if (entry.path().extension() == ".csv") ++csvCount;
+    EXPECT_EQ(csvCount, 1);
+    cleanSimDir(simId);
+}
+
+TEST(SimulationRecorderNoOps, StopRecordingNeverStartedIsNoOp)
+{
+    const std::string simId = "rec-stop-never-started";
+    cleanSimDir(simId);
+    auto sim = makeRunningSimulation(simId);
+
+    EXPECT_NO_THROW(sim->getRecorder().stopRecording("stim", "output"));
+    EXPECT_FALSE(sim->getRecorder().isRecording("stim", "output"));
+    cleanSimDir(simId);
+}
+
+// ---------------------------------------------------------------------------
 // Ticks derivation
 // ---------------------------------------------------------------------------
 
