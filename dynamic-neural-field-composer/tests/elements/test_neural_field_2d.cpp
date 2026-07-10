@@ -364,9 +364,14 @@ TEST(NeuralField2DBumps, VelocityZeroForStationaryBump)
 
 TEST(NeuralField2DBumps, AreaGrowsWithGridSpacing)
 {
-    // area = cellCount * d_x * d_y. Coarser spacing means each above-threshold
-    // cell covers more physical space, so area must grow even though the
-    // field still resolves to a single bump of comparable cell count.
+    // area = cellCount * d_x * d_y. position_x/y and sigma are physical-space
+    // quantities (compared against (index+1)*d_x in the stimulus and bump
+    // code, and ElementDimensions(x_max, y_max, d_x, d_y) takes x_max/y_max
+    // directly rather than a cell count), so to isolate the d_x*d_y effect on
+    // area we must double x_max/y_max together with d_x/d_y — this keeps
+    // size_x = round(x_max/d_x) (and hence cellCount) identical across both
+    // fields — and scale sigma/position by the same factor to keep the bump's
+    // footprint in grid-index units constant too.
     auto stim1 = std::make_shared<GaussStimulus2D>(
         ElementCommonParameters{ "stim1", ElementDimensions(30, 30, 1.0, 1.0) },
         GaussStimulus2DParameters{ 2.0, 20.0, 15.0, 15.0, false, false });
@@ -378,11 +383,11 @@ TEST(NeuralField2DBumps, AreaGrowsWithGridSpacing)
         nf1->step(static_cast<double>(i), 1.0);
 
     auto stim2 = std::make_shared<GaussStimulus2D>(
-        ElementCommonParameters{ "stim2", ElementDimensions(30, 30, 2.0, 2.0) },
-        GaussStimulus2DParameters{ 2.0, 20.0, 15.0, 15.0, false, false });
+        ElementCommonParameters{ "stim2", ElementDimensions(60, 60, 2.0, 2.0) },
+        GaussStimulus2DParameters{ 4.0, 20.0, 30.0, 30.0, false, false });
     stim2->init();
     auto nf2 = std::make_shared<NeuralField2D>(
-        ElementCommonParameters{ "nf2", ElementDimensions(30, 30, 2.0, 2.0) },
+        ElementCommonParameters{ "nf2", ElementDimensions(60, 60, 2.0, 2.0) },
         NeuralField2DParameters{ 10.0, -5.0, SigmoidFunction(0.0, 10.0) });
     nf2->addInput(stim2);
     nf2->init();
