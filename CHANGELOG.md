@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.9.4] - 2026-07-10
+
 ### Fixed
 - Fixed two data races (reported by the downstream `neat-dnfs` TSan CI job, see
   `.claude/reports/dnf_composer-tsan-data-races.md`) that surfaced under any concurrent use of
