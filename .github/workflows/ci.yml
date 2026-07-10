@@ -130,6 +130,18 @@ jobs:
   sanitizers-linux:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include:
+          - name: asan-ubsan
+            build_dir: build/linux-asan
+            cxx_flags: "-fsanitize=address,undefined -fno-omit-frame-pointer -g"
+            linker_flags: "-fsanitize=address,undefined"
+          - name: tsan
+            build_dir: build/linux-tsan
+            cxx_flags: "-fsanitize=thread -fno-omit-frame-pointer -g"
+            linker_flags: "-fsanitize=thread"
+
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-linux
@@ -178,25 +190,26 @@ jobs:
           chmod +x scripts/setup.sh
           ./scripts/setup.sh
 
-      - name: Configure CMake (ASan + UBSan)
+      - name: Configure CMake (${{ matrix.name }})
         working-directory: ./dynamic-neural-field-composer
         run: |
-          cmake -S . -B build/linux-asan \
+          cmake -S . -B ${{ matrix.build_dir }} \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dynamic-neural-field-composer/deps/ipk-install \
                 -DCMAKE_CXX_COMPILER=g++-13 \
                 -DCMAKE_C_COMPILER=gcc-13 \
-                -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -g" \
-                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+                -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}" \
+                -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.linker_flags }}"
 
-      - name: Build (ASan + UBSan)
+      - name: Build (${{ matrix.name }})
         working-directory: ./dynamic-neural-field-composer
-        run: cmake --build build/linux-asan --parallel $(nproc)
+        run: cmake --build ${{ matrix.build_dir }} --parallel $(nproc)
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests (ASan + UBSan)
-        working-directory: ./dynamic-neural-field-composer/build/linux-asan
+        if: matrix.name == 'asan-ubsan'
+        working-directory: ./dynamic-neural-field-composer/${{ matrix.build_dir }}
         env:
           # detect_leaks=0: connected elements hold shared_ptr to each other in
           # both directions (Element::inputs/outputs), a known ownership cycle
@@ -204,6 +217,13 @@ jobs:
           # the input-cache/ownership redesign breaks the cycle.
           ASAN_OPTIONS: halt_on_error=1:detect_leaks=0
           UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: ctest --output-on-failure --parallel $(nproc)
+
+      - name: Run tests (TSan)
+        if: matrix.name == 'tsan'
+        working-directory: ./dynamic-neural-field-composer/${{ matrix.build_dir }}
+        env:
+          TSAN_OPTIONS: halt_on_error=1:second_deadlock_stack=1
         run: ctest --output-on-failure --parallel $(nproc)
 
   build-and-test-windows:

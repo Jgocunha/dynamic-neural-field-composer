@@ -4,7 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Fixed two data races (reported by the downstream `neat-dnfs` TSan CI job, see
+  `.claude/reports/dnf_composer-tsan-data-races.md`) that surfaced under any concurrent use of
+  `Simulation`, e.g. evaluating multiple simulations in parallel via `std::async`:
+  - `Simulation::generateUniqueIdentifier()` and `SimulationRecorder`'s internal timestamp
+    helper used `std::localtime`, which returns a pointer to shared static storage; both now use
+    the existing reentrant `tools::utils::safe_localtime()` helper
+  - `tools::utils::getResourceRoot()`'s function-local `static const` initialization is now
+    guarded by an explicit `std::call_once` instead of relying solely on compiler-provided
+    thread-safe statics
+- Fixed a third, previously-unreported data race found while writing the regression test above:
+  `LogWindow::addLog()`/`renderContent()`/`clean()` mutated and iterated the shared static `logs`
+  vector with no locking, and `Logger::log()` reassigned a shared static `Logger` instance —
+  since every `Simulation` construction logs a message, concurrent construction reliably
+  corrupted the heap. `logs` access is now guarded by a mutex, and `Logger::log()` no longer
+  mutates shared state (the unused shared `Logger` instance was removed)
+
 ### CI
+- Added a `tsan` leg to the `sanitizers-linux` job (in addition to the existing ASan+UBSan leg)
+  to catch data races in CI
 - Added CodeRabbit configuration (`.coderabbit.yaml`) for automatic PR code review and
   external contributor onboarding (free for public repositories, no API key required)
 - Added `gemini-issue-triage.yml` workflow: classifies new issues, creates labels

@@ -1,6 +1,7 @@
 ﻿#include "tools/utils.h"
 
 #include <array>
+#include <mutex>
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -16,9 +17,12 @@
 
 namespace dnf_composer::tools::utils
 {
-	std::string getResourceRoot()
+	namespace
 	{
-		static const std::string cached = []() -> std::string
+		std::once_flag resourceRootOnce;
+		std::string resourceRootCache;
+
+		std::string computeResourceRoot()
 		{
 			std::filesystem::path exeDir;
 #ifdef _WIN32
@@ -52,8 +56,13 @@ namespace dnf_composer::tools::utils
 				return parent.string();
 }
 			return {PROJECT_DIR};
-		}();
-		return cached;
+		}
+	}
+
+	std::string getResourceRoot()
+	{
+		std::call_once(resourceRootOnce, [] { resourceRootCache = computeResourceRoot(); });
+		return resourceRootCache;
 	}
 
 	int countNumOfLinesInFile(const std::string& filename)
