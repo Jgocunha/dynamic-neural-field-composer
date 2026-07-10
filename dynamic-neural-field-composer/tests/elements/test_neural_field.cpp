@@ -407,3 +407,157 @@ TEST(NeuralFieldBumps, BumpVelocityNonZeroWhenStimulusMoves)
 
     EXPECT_GT(maxVelocity, 1e-9);
 }
+
+// ---------------------------------------------------------------------------
+// getBumps — additional branches: multi-bump, end-of-field, wrap-around,
+// acceleration, metrics toggle, stability-threshold accessors
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldBumps, TwoSeparatedBumps)
+{
+    Simulation sim("two-bumps", 1.0, 0.0, 0.0);
+    const auto stim1 = makeStimulus("stim1", 25.0, 30.0);
+    const auto stim2 = makeStimulus("stim2", 75.0, 30.0);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim1);
+    sim.addElement(stim2);
+    sim.addElement(field);
+    sim.createInteraction("stim1", "output", "field");
+    sim.createInteraction("stim2", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+
+    const auto bumps = field->getBumps();
+    ASSERT_EQ(bumps.size(), 2u);
+    const bool foundNear25 = std::ranges::any_of(bumps, [](const NeuralFieldBump& b) {
+        return std::abs(b.centroid - 25.0) < 10.0;
+    });
+    const bool foundNear75 = std::ranges::any_of(bumps, [](const NeuralFieldBump& b) {
+        return std::abs(b.centroid - 75.0) < 10.0;
+    });
+    EXPECT_TRUE(foundNear25);
+    EXPECT_TRUE(foundNear75);
+}
+
+TEST(NeuralFieldBumps, BumpTouchingLastIndexIsFinalized)
+{
+    // Non-circular stimulus centred at the very edge of the field: activation
+    // stays above threshold all the way through the last index, exercising
+    // the end-of-field finalize branch (never wraps, never drops below
+    // threshold before the loop ends).
+    Simulation sim("end-of-field", 1.0, 0.0, 0.0);
+    ElementCommonParameters cp{ "stim", 100 };
+    GaussStimulusParameters gsp{ 5.0, 30.0, 99.9, false, false };
+    const auto stim = std::make_shared<GaussStimulus>(cp, gsp);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+
+    const auto bumps = field->getBumps();
+    ASSERT_FALSE(bumps.empty());
+    const bool touchesEnd = std::ranges::any_of(bumps, [](const NeuralFieldBump& b) {
+        return std::abs(b.endPosition - 100.0) < 1e-9;
+    });
+    EXPECT_TRUE(touchesEnd);
+}
+
+TEST(NeuralFieldBumps, WrapAroundBumpIsMerged)
+{
+    // Circular stimulus centred at the field boundary: activation is
+    // suprathreshold at both index 0 and the last index, forcing the
+    // first-and-last-bump merge branch.
+    Simulation sim("wrap-around", 1.0, 0.0, 0.0);
+    ElementCommonParameters cp{ "stim", 100 };
+    GaussStimulusParameters gsp{ 5.0, 30.0, 99.9, true, false };
+    const auto stim = std::make_shared<GaussStimulus>(cp, gsp);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+
+    const auto bumps = field->getBumps();
+    // The wrap-around merge collapses the boundary-straddling bump into one.
+    ASSERT_EQ(bumps.size(), 1u);
+    const double centroid = bumps.front().centroid;
+    const bool nearBoundary = centroid < 10.0 || centroid > 90.0;
+    EXPECT_TRUE(nearBoundary);
+}
+
+TEST(NeuralFieldBumps, AccelerationNonZeroDuringSpeedChange)
+{
+    Simulation sim("acceleration-test", 1.0, 0.0, 0.0);
+    const auto stim  = makeStimulus("stim", 50.0, 30.0);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+    ASSERT_FALSE(field->getBumps().empty());
+
+    const auto stimCast = std::dynamic_pointer_cast<GaussStimulus>(sim.getElement("stim"));
+    ASSERT_NE(stimCast, nullptr);
+    stimCast->setParameters(GaussStimulusParameters{ 5.0, 30.0, 65.0, true, false });
+
+    double maxAcceleration = 0.0;
+    for (int i = 0; i < 200; ++i)
+    {
+        sim.step();
+        for (const auto& b : field->getBumps())
+            maxAcceleration = std::max(maxAcceleration, std::abs(b.acceleration));
+    }
+
+    EXPECT_GT(maxAcceleration, 1e-9);
+}
+
+TEST(NeuralFieldMetricsToggle, DisabledSkipsStateAndBumps)
+{
+    Simulation sim("metrics-toggle", 1.0, 0.0, 0.0);
+    const auto stim  = makeStimulus("stim", 50.0, 30.0);
+    const auto field = makeField("field", 100, 25.0, -5.0);
+    sim.addElement(stim);
+    sim.addElement(field);
+    sim.createInteraction("stim", "output", "field");
+    sim.init();
+
+    field->setComputeStateMetrics(false);
+    EXPECT_FALSE(field->getComputeStateMetrics());
+
+    for (int i = 0; i < 200; ++i)
+        sim.step();
+
+    EXPECT_TRUE(field->getBumps().empty());
+    EXPECT_DOUBLE_EQ(field->getHighestActivation(), 0.0);
+    EXPECT_DOUBLE_EQ(field->getLowestActivation(), 0.0);
+}
+
+TEST(NeuralFieldStability, ThresholdAccessorsRoundTrip)
+{
+    const auto f = makeField("f", 100);
+    f->init();
+    f->setThresholdForStability(0.5);
+    EXPECT_DOUBLE_EQ(f->getStabilityThreshold(), 0.5);
+}
+
+TEST(NeuralFieldStability, HugeThresholdIsStableQuickly)
+{
+    const auto f = makeField("f", 100, 25.0, -5.0);
+    f->setThresholdForStability(1e9);
+    f->init();
+    f->step(0.0, 1.0);
+    f->step(1.0, 1.0);
+    EXPECT_TRUE(f->isStable());
+}

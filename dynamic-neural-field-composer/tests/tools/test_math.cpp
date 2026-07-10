@@ -559,3 +559,538 @@ TEST(Broadcast1DTo2DInto, NonPositiveDimensionsYieldEmpty)
     broadcast1DTo2D_into(out, std::vector<double>{ 1, 2 }, 3, 0, true);
     EXPECT_TRUE(out.empty());
 }
+
+// ---------------------------------------------------------------------------
+// conv_valid_into / conv_same_into — in-place variants agree with the
+// allocating versions
+// ---------------------------------------------------------------------------
+
+TEST(ConvValidInto, MatchesConvValid)
+{
+    const std::vector<double> f{ 1, 2, 3, 4, 5 };
+    const std::vector<double> g{ 1, 1, 1 };
+    const auto expected = conv_valid(f, g);
+    std::vector<double> out(expected.size());
+    conv_valid_into(out, f, g);
+    EXPECT_EQ(out, expected);
+}
+
+TEST(ConvSameInto, MatchesConvSame)
+{
+    const std::vector<double> f{ 1, 2, 3, 4, 5 };
+    const std::vector<double> g{ 1, 1, 1 };
+    const auto expected = conv_same(f, g);
+    std::vector<double> out(expected.size());
+    conv_same_into(out, f, g);
+    EXPECT_EQ(out, expected);
+}
+
+TEST(ConvSame, KnownResult)
+{
+    // f=[1,2,3,4,5], g=[1,1,1], pad=1 -> zero-padded 3-box sum per position.
+    const std::vector<double> f{ 1, 2, 3, 4, 5 };
+    const std::vector<double> g{ 1, 1, 1 };
+    const auto result = conv_same(f, g);
+    ASSERT_EQ(result.size(), 5u);
+    EXPECT_NEAR(result[0], 3.0, 1e-9);
+    EXPECT_NEAR(result[1], 6.0, 1e-9);
+    EXPECT_NEAR(result[2], 9.0, 1e-9);
+    EXPECT_NEAR(result[3], 12.0, 1e-9);
+    EXPECT_NEAR(result[4], 9.0, 1e-9);
+}
+
+// ---------------------------------------------------------------------------
+// obtainCircularVector / obtainCircularVector_into — 1-based index lookup
+// ---------------------------------------------------------------------------
+
+TEST(ObtainCircularVector, KnownPermutation)
+{
+    const std::vector<int> indices{ 3, 1, 2 };
+    const std::vector<double> contents{ 10, 20, 30 };
+    const auto result = obtainCircularVector(indices, contents);
+    // indices are 1-based: contents[indices[i]-1]
+    EXPECT_EQ(result, (std::vector<double>{ 30, 10, 20 }));
+}
+
+TEST(ObtainCircularVectorInto, MatchesAllocatingVersion)
+{
+    const std::vector<int> indices{ 3, 1, 2, 2 };
+    const std::vector<double> contents{ 10, 20, 30 };
+    const auto expected = obtainCircularVector(indices, contents);
+    std::vector<double> out(expected.size());
+    obtainCircularVector_into(out, indices, contents);
+    EXPECT_EQ(out, expected);
+}
+
+// ---------------------------------------------------------------------------
+// gauss(size, sigma, position) overload / nonCircularGauss
+// ---------------------------------------------------------------------------
+
+TEST(GaussSizeOverload, PeakAtOneBasedPosition)
+{
+    // x = i+1, so position=6 -> peak at index 5.
+    const auto g = gauss(11, 2.0, 6.0);
+    const int peakIdx = static_cast<int>(std::ranges::max_element(g) - g.begin());
+    EXPECT_EQ(peakIdx, 5);
+    EXPECT_NEAR(g[peakIdx], 1.0, 1e-9);
+}
+
+TEST(NonCircularGauss, MatchesSizeOverload)
+{
+    const auto a = gauss(11, 2.0, 6.0);
+    const auto b = nonCircularGauss<double>(11, 2.0, 6.0);
+    ASSERT_EQ(a.size(), b.size());
+    for (std::size_t i = 0; i < a.size(); ++i)
+        EXPECT_NEAR(a[i], b[i], 1e-9);
+}
+
+// ---------------------------------------------------------------------------
+// circularGauss — periodic wrap-around
+// ---------------------------------------------------------------------------
+
+TEST(CircularGauss, PeakNearPosition)
+{
+    const auto g = circularGauss<double>(20, 2.0, 5.0);
+    const int peakIdx = static_cast<int>(std::ranges::max_element(g) - g.begin());
+    // Position is 1-based (x = i+1); peak should land at index position-1.
+    EXPECT_EQ(peakIdx, 4);
+}
+
+TEST(CircularGauss, WrapsAroundEdge)
+{
+    // Position at the very start of the field: the far edge should show
+    // elevated activation compared to the mid-field, since periodic distance
+    // wraps around.
+    const auto g = circularGauss<double>(20, 2.0, 1.0);
+    const int lastIdx = static_cast<int>(g.size()) - 1;
+    const int midIdx = static_cast<int>(g.size()) / 2;
+    EXPECT_GT(g[lastIdx], g[midIdx]);
+}
+
+// ---------------------------------------------------------------------------
+// gaussDerivative / gaussDerivativeNorm
+// ---------------------------------------------------------------------------
+
+TEST(GaussDerivative, ZeroAtPosition)
+{
+    const std::vector<int> rangeX{ -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5 };
+    const auto d = gaussDerivative(rangeX, 0.0, 2.0, 1.0);
+    EXPECT_NEAR(d[5], 0.0, 1e-9); // rangeX[5] == 0 == position
+}
+
+TEST(GaussDerivative, AntisymmetricAroundPosition)
+{
+    const std::vector<int> rangeX{ -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5 };
+    const auto d = gaussDerivative(rangeX, 0.0, 2.0, 1.0);
+    // d[6] is at rangeX=1 (distance +1), d[4] is at rangeX=-1 (distance -1)
+    EXPECT_NEAR(d[6], -d[4], 1e-9);
+}
+
+TEST(GaussDerivative, NegativeAboveMean)
+{
+    const std::vector<int> rangeX{ 0, 1, 2, 3 };
+    const auto d = gaussDerivative(rangeX, 0.0, 2.0, 1.0);
+    EXPECT_LT(d[1], 0.0); // x=1 > position=0, positive amplitude -> negative slope contribution
+}
+
+TEST(GaussDerivativeNorm, SumOfAbsIsOne)
+{
+    const std::vector<int> rangeX{ -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5 };
+    const auto d = gaussDerivativeNorm(rangeX, 0.0, 2.0, 1.0);
+    const double sumAbs = std::accumulate(d.begin(), d.end(), 0.0,
+        [](double acc, double v) { return acc + std::abs(v); });
+    EXPECT_NEAR(sumAbs, 1.0, 1e-9);
+}
+
+TEST(GaussDerivativeNorm, ZeroAmplitudeDoesNotDivideByZero)
+{
+    const std::vector<int> rangeX{ -2, -1, 0, 1, 2 };
+    const auto d = gaussDerivativeNorm(rangeX, 0.0, 2.0, 0.0);
+    for (double v : d)
+        EXPECT_TRUE(std::isfinite(v));
+}
+
+// ---------------------------------------------------------------------------
+// sumGauss
+// ---------------------------------------------------------------------------
+
+TEST(SumGauss, ElementWiseSum)
+{
+    const std::vector<double> a{ 1.0, 2.0, 3.0 };
+    const std::vector<double> b{ 10.0, 20.0, 30.0 };
+    const auto result = sumGauss(a, b);
+    EXPECT_EQ(result, (std::vector<double>{ 11.0, 22.0, 33.0 }));
+}
+
+// ---------------------------------------------------------------------------
+// absSigmoid
+// ---------------------------------------------------------------------------
+
+TEST(AbsSigmoid, MidpointIsHalf)
+{
+    const std::vector<double> x{ 3.0 };
+    const auto s = absSigmoid(x, 10.0, 3.0);
+    EXPECT_NEAR(s[0], 0.5, 1e-9);
+}
+
+TEST(AbsSigmoid, IsMonotonicIncreasing)
+{
+    const std::vector<double> x{ -5.0, -1.0, 0.0, 1.0, 5.0 };
+    const auto s = absSigmoid(x, 10.0, 0.0);
+    for (std::size_t i = 1; i < s.size(); ++i)
+        EXPECT_GE(s[i], s[i - 1]);
+}
+
+TEST(AbsSigmoid, OutputInUnitInterval)
+{
+    const std::vector<double> x{ -100.0, -1.0, 0.0, 1.0, 100.0 };
+    for (const auto s = absSigmoid(x, 10.0, 0.0); double v : s)
+    {
+        EXPECT_GE(v, 0.0);
+        EXPECT_LE(v, 1.0);
+    }
+}
+
+TEST(AbsSigmoid, AgreesWithSigmoidFarFromShift)
+{
+    const std::vector<double> x{ -10.0, 10.0 };
+    const auto absS = absSigmoid(x, 100.0, 0.0);
+    const auto expS = sigmoid(x, 100.0, 0.0);
+    for (std::size_t i = 0; i < x.size(); ++i)
+        EXPECT_NEAR(absS[i], expS[i], 0.05);
+}
+
+// ---------------------------------------------------------------------------
+// gaussian_2d_periodic / circular_gaussian_2d
+// ---------------------------------------------------------------------------
+
+TEST(GaussianPeriodic2d, PeakAtMean)
+{
+    const double peak = gaussian_2d_periodic(5.0, 5.0, 5.0, 5.0, 1.0, 3.0, 20.0, 20.0);
+    EXPECT_NEAR(peak, 3.0, 1e-9);
+}
+
+TEST(GaussianPeriodic2d, WrapsAcrossBoundary)
+{
+    // max_x = 20: point at x=19 is periodic-distance 1 from mu_x=0 (via wrap),
+    // same as a point at x=1 would be from mu_x=0 directly.
+    const double wrapped = gaussian_2d_periodic(19.0, 0.0, 0.0, 0.0, 2.0, 1.0, 20.0, 20.0);
+    const double direct  = gaussian_2d_periodic(1.0, 0.0, 0.0, 0.0, 2.0, 1.0, 20.0, 20.0);
+    EXPECT_NEAR(wrapped, direct, 1e-9);
+}
+
+TEST(CircularGaussian2d, PeakAtMean)
+{
+    const double peak = circular_gaussian_2d(2.0, 3.0, 2.0, 3.0, 1.0, 4.0);
+    EXPECT_NEAR(peak, 4.0, 1e-9);
+}
+
+TEST(CircularGaussian2d, IsotropicDecay)
+{
+    // Equal radius in different directions must give equal values.
+    const double a = circular_gaussian_2d(1.0, 0.0, 0.0, 0.0, 1.0, 1.0);
+    const double b = circular_gaussian_2d(0.0, 1.0, 0.0, 0.0, 1.0, 1.0);
+    EXPECT_NEAR(a, b, 1e-9);
+}
+
+// ---------------------------------------------------------------------------
+// Learning rules — oja, delta (Widrow-Hoff, Krogh-Hertz)
+// ---------------------------------------------------------------------------
+
+TEST(OjaLearningRule, MatchesHebbFromZeroWeights)
+{
+    // With w=0, the decay term (-out*in*w) vanishes, so Oja's update equals Hebb's.
+    std::vector<double> ojaWeights{ 0.0, 0.0, 0.0, 0.0 };
+    std::vector<double> hebbWeights{ 0.0, 0.0, 0.0, 0.0 };
+    const std::vector<double> input{ 1.0, 2.0 };
+    const std::vector<double> output{ 0.5, 1.5 };
+    constexpr double lr = 0.1;
+
+    const auto ojaResult = ojaLearningRule(ojaWeights, input, output, lr);
+    const auto hebbResult = hebbLearningRule(hebbWeights, input, output, lr);
+
+    ASSERT_EQ(ojaResult.size(), hebbResult.size());
+    for (std::size_t i = 0; i < ojaResult.size(); ++i)
+        EXPECT_NEAR(ojaResult[i], hebbResult[i], 1e-9);
+}
+
+TEST(OjaLearningRule, DecayShrinksUpdateFromNonZeroWeights)
+{
+    std::vector<double> weights{ 1.0, 1.0, 1.0, 1.0 };
+    const std::vector<double> input{ 1.0, 1.0 };
+    const std::vector<double> output{ 1.0, 1.0 };
+    constexpr double lr = 0.1;
+
+    // Hand-computed: w[0] += lr*(in[0]*out[0] - out[0]*in[0]*w[0])
+    //              = 1.0 + 0.1*(1*1 - 1*1*1) = 1.0 + 0.1*(1 - 1) = 1.0
+    const auto result = ojaLearningRule(weights, input, output, lr);
+    EXPECT_NEAR(result[0], 1.0, 1e-9);
+}
+
+TEST(DeltaLearningRuleWidrowHoff, ZeroErrorMeansNoChange)
+{
+    std::vector<std::vector<double>> weights{ { 1.0, 2.0 }, { 3.0, 4.0 } };
+    const auto original = weights;
+    const std::vector<double> input{ 1.0, 1.0 };
+    const std::vector<double> actual{ 5.0, 5.0 };
+    const std::vector<double> target{ 5.0, 5.0 };
+
+    const auto result = deltaLearningRuleWidrowHoff(weights, input, actual, target, 0.1);
+    EXPECT_EQ(result, original);
+}
+
+TEST(DeltaLearningRuleWidrowHoff, HandComputedUpdate)
+{
+    // w[i][j] += lr * (target[j]-actual[j]) * input[i]
+    std::vector<std::vector<double>> weights{ { 0.0, 0.0 } };
+    const std::vector<double> input{ 2.0 };
+    const std::vector<double> actual{ 1.0, 1.0 };
+    const std::vector<double> target{ 2.0, 3.0 };
+    constexpr double lr = 0.5;
+
+    const auto result = deltaLearningRuleWidrowHoff(weights, input, actual, target, lr);
+    // error = [1, 2]; w[0][0] += 0.5*1*2 = 1.0; w[0][1] += 0.5*2*2 = 2.0
+    EXPECT_NEAR(result[0][0], 1.0, 1e-9);
+    EXPECT_NEAR(result[0][1], 2.0, 1e-9);
+}
+
+TEST(DeltaLearningRuleKroghHertz, ArgumentOrderIsTargetThenActual)
+{
+    // Krogh-Hertz signature is (weights, input, targetOutput, actualOutput, lr) —
+    // the opposite order of the (actualOutput, targetOutput) params vs Widrow-Hoff.
+    // This test pins that order down.
+    std::vector<std::vector<double>> weights{ { 0.0, 0.0 } };
+    const std::vector<double> input{ 2.0 };
+    const std::vector<double> targetOutput{ 2.0, 3.0 };
+    const std::vector<double> actualOutput{ 1.0, 1.0 };
+    constexpr double lr = 0.5;
+
+    const auto result = deltaLearningRuleKroghHertz(weights, input, targetOutput, actualOutput, lr);
+    EXPECT_NEAR(result[0][0], 1.0, 1e-9);
+    EXPECT_NEAR(result[0][1], 2.0, 1e-9);
+}
+
+// ---------------------------------------------------------------------------
+// normalize(vector) / flattenMatrix
+// ---------------------------------------------------------------------------
+
+TEST(NormalizeVector, MinIsZero)
+{
+    const std::vector<double> v{ 3.0, 1.0, 5.0, 2.0 };
+    const auto result = normalize(v);
+    ASSERT_EQ(result.size(), v.size());
+    const double minVal = *std::ranges::min_element(result);
+    EXPECT_NEAR(minVal, 0.0, 1e-6);
+}
+
+TEST(NormalizeVector, PreservesRelativeOrder)
+{
+    const std::vector<double> v{ 3.0, 1.0, 5.0, 2.0 };
+    const auto result = normalize(v);
+    // sigmoid is monotone increasing, so relative ordering must be preserved.
+    EXPECT_LT(result[1], result[3]); // 1.0 < 2.0
+    EXPECT_LT(result[3], result[0]); // 2.0 < 3.0
+    EXPECT_LT(result[0], result[2]); // 3.0 < 5.0
+}
+
+TEST(FlattenMatrix, RowMajorOrder)
+{
+    const std::vector<std::vector<double>> m{ { 1.0, 2.0 }, { 3.0, 4.0 } };
+    const auto flat = flattenMatrix(m);
+    EXPECT_EQ(flat, (std::vector<double>{ 1.0, 2.0, 3.0, 4.0 }));
+}
+
+// ---------------------------------------------------------------------------
+// resample / resampleInto / resampleNearestInto / resampleCubicInto
+// ---------------------------------------------------------------------------
+
+TEST(Resample, IdentityWhenSizesMatch)
+{
+    const std::vector<double> in{ 1.0, 2.0, 3.0 };
+    const auto out = resample(in, 3);
+    EXPECT_EQ(out, in);
+}
+
+TEST(Resample, PreservesEndpoints)
+{
+    const std::vector<double> in{ 0.0, 10.0, 20.0, 30.0 };
+    const auto up = resample(in, 10);
+    EXPECT_NEAR(up.front(), in.front(), 1e-9);
+    EXPECT_NEAR(up.back(), in.back(), 1e-9);
+
+    const auto down = resample(in, 2);
+    EXPECT_NEAR(down.front(), in.front(), 1e-9);
+    EXPECT_NEAR(down.back(), in.back(), 1e-9);
+}
+
+TEST(Resample, LinearDataStaysLinearWhenUpsampled)
+{
+    const std::vector<double> in{ 0.0, 2.0, 4.0, 6.0 }; // slope 2 per unit index
+    const auto out = resample(in, 7);
+    ASSERT_EQ(out.size(), 7u);
+    // Positions 0..6 map onto original index range [0,3] linearly -> slope (6-0)/6 = 1
+    for (std::size_t i = 0; i < out.size(); ++i)
+        EXPECT_NEAR(out[i], static_cast<double>(i), 1e-9);
+}
+
+TEST(Resample, SingleOutputIsMiddleElement)
+{
+    const std::vector<double> in{ 1.0, 2.0, 3.0, 4.0, 5.0 };
+    const auto out = resample(in, 1);
+    ASSERT_EQ(out.size(), 1u);
+    EXPECT_NEAR(out[0], in[in.size() / 2], 1e-9);
+}
+
+TEST(Resample, EmptyInputYieldsEmpty)
+{
+    const std::vector<double> in;
+    EXPECT_TRUE(resample(in, 5).empty());
+}
+
+TEST(ResampleInto, MatchesResampleWhenSizesMatch)
+{
+    const std::vector<double> in{ 1.0, 2.0, 3.0, 4.0 };
+    std::vector<double> out(6);
+    resampleInto(in, out);
+    const auto expected = resample(in, 6);
+    for (std::size_t i = 0; i < out.size(); ++i)
+        EXPECT_NEAR(out[i], expected[i], 1e-9);
+}
+
+TEST(ResampleNearestInto, OutputValuesAreSubsetOfInput)
+{
+    const std::vector<double> in{ 1.0, 2.0, 3.0, 4.0, 5.0 };
+    std::vector<double> out(9);
+    resampleNearestInto(in, out);
+    for (double v : out)
+        EXPECT_NE(std::ranges::find(in, v), in.end());
+}
+
+TEST(ResampleNearestInto, CopiesWhenSizesMatch)
+{
+    const std::vector<double> in{ 1.0, 2.0, 3.0 };
+    std::vector<double> out(3);
+    resampleNearestInto(in, out);
+    EXPECT_EQ(out, in);
+}
+
+TEST(ResampleCubicInto, ReproducesLinearDataExactlyInInterior)
+{
+    // Catmull-Rom is exactly linear wherever all four control points
+    // (clamp(lo-1)..clamp(lo+2)) fall strictly inside the input range;
+    // near the edges the boundary clamp duplicates a control point, which
+    // breaks exactness there. With N=5 input samples and M=9 outputs,
+    // pos(i)=i/2 and lo=floor(pos); the unclamped window requires
+    // lo in [1,2], i.e. i in [2,5].
+    const std::vector<double> in{ 0.0, 2.0, 4.0, 6.0, 8.0 };
+    std::vector<double> out(9);
+    resampleCubicInto(in, out);
+    for (std::size_t i = 2; i <= 5; ++i)
+        EXPECT_NEAR(out[i], static_cast<double>(i), 1e-9);
+}
+
+TEST(ResampleCubicInto, InterpolatesThroughSamplePoints)
+{
+    const std::vector<double> in{ 1.0, 5.0, 2.0, 8.0 };
+    std::vector<double> out(in.size()); // same size -> should just copy
+    resampleCubicInto(in, out);
+    for (std::size_t i = 0; i < out.size(); ++i)
+        EXPECT_NEAR(out[i], in[i], 1e-9);
+}
+
+// ---------------------------------------------------------------------------
+// conv2d_separable / conv2d_separable_into
+// ---------------------------------------------------------------------------
+
+TEST(Conv2dSeparable, DeltaKernelIsIdentity)
+{
+    // Non-circular delta kernels [0,1,0] along both axes must reproduce the input.
+    const std::vector<double> field{
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 9
+    };
+    const std::vector<double> kx{ 0, 1, 0 };
+    const std::vector<double> ky{ 0, 1, 0 };
+    const auto result = conv2d_separable(field, kx, ky, 3, 3, {}, {});
+    for (std::size_t i = 0; i < field.size(); ++i)
+        EXPECT_NEAR(result[i], field[i], 1e-9);
+}
+
+TEST(Conv2dSeparable, BoxBlurOnOneHotField)
+{
+    // 3x3 field with a single 1 in the centre; box blur [1,1,1]x[1,1,1] (non-circular,
+    // zero-padded) spreads it to all 9 cells with value 1 (each cell's 3x3 same-mode
+    // window touches the centre exactly once through the separable two-pass sum).
+    std::vector<double> field(9, 0.0);
+    field[4] = 1.0; // centre (y=1,x=1)
+    const std::vector<double> kx{ 1, 1, 1 };
+    const std::vector<double> ky{ 1, 1, 1 };
+    const auto result = conv2d_separable(field, kx, ky, 3, 3, {}, {});
+
+    // Every cell within the 3x3 same-convolution window of the centre receives
+    // exactly one contribution from the one-hot value -> all cells equal 1.
+    for (double v : result)
+        EXPECT_NEAR(v, 1.0, 1e-9);
+}
+
+TEST(Conv2dSeparable, AsymmetricKernelShiftsAlongIntendedAxis)
+{
+    // conv_same computes out[i] = sum_j f[i+j-pad]*g[j] with pad=(ng-1)/2=1.
+    // Kernel [0,0,1] (only j=2 nonzero) gives out[i] = f[i+2-1] = f[i+1]:
+    // mass at input index k surfaces at output index k-1 (a shift toward
+    // smaller x). Applying it only along x (identity along y, kernel [0,1,0])
+    // must confine that shift to the x axis and leave y untouched.
+    std::vector<double> field(9, 0.0);
+    field[4] = 1.0; // (y=1, x=1)
+    const std::vector<double> kx{ 0, 0, 1 };
+    const std::vector<double> ky{ 0, 1, 0 };
+    const auto result = conv2d_separable(field, kx, ky, 3, 3, {}, {});
+
+    // Row y=1: original mass at x=1 must have shifted to x=0; y unchanged.
+    EXPECT_NEAR(result[3], 1.0, 1e-9); // (y=1,x=0)
+    EXPECT_NEAR(result[4], 0.0, 1e-9); // (y=1,x=1)
+    EXPECT_NEAR(result[1], 0.0, 1e-9); // (y=0,x=1) must stay untouched
+    EXPECT_NEAR(result[7], 0.0, 1e-9); // (y=2,x=1) must stay untouched
+}
+
+TEST(Conv2dSeparableInto, MatchesAllocatingVersion)
+{
+    const std::vector<double> field{
+        1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 10, 11, 12,
+        13, 14, 15, 16
+    };
+    const std::vector<double> kx{ 1, 1, 1 };
+    const std::vector<double> ky{ 1, 1, 1 };
+    const auto expected = conv2d_separable(field, kx, ky, 4, 4, {}, {});
+
+    std::vector<double> out(16, 0.0);
+    std::vector<double> tmp(16, 0.0);
+    conv2d_separable_into(out, tmp, field, kx, ky, 4, 4, {}, {});
+
+    for (std::size_t i = 0; i < expected.size(); ++i)
+        EXPECT_NEAR(out[i], expected[i], 1e-9);
+}
+
+TEST(Conv2dSeparableInto, CircularModeMatchesAllocatingVersion)
+{
+    constexpr int size = 6;
+    const auto range = computeKernelRange(1.0, 1, size, true);
+    const auto extIdx = createExtendedIndex(size, range);
+
+    std::vector<double> field(size * size, 0.0);
+    field[0] = 1.0;
+    const std::vector<double> kx{ 1, 1, 1 };
+    const std::vector<double> ky{ 1, 1, 1 };
+
+    const auto expected = conv2d_separable(field, kx, ky, size, size, extIdx, extIdx);
+
+    std::vector<double> out(size * size, 0.0);
+    std::vector<double> tmp(size * size, 0.0);
+    conv2d_separable_into(out, tmp, field, kx, ky, size, size, extIdx, extIdx);
+
+    for (std::size_t i = 0; i < expected.size(); ++i)
+        EXPECT_NEAR(out[i], expected[i], 1e-9);
+}

@@ -132,7 +132,16 @@ INSTANTIATE_TEST_SUITE_P(AllCodes, ExceptionErrorMessageTest, ::testing::Values(
     ErrorCode::VIS_INVALID_SIM,
     ErrorCode::VIS_DATA_NOT_FOUND,
     ErrorCode::VIS_INVALID_PLOTTING_INDEX,
-    ErrorCode::PLOT_INVALID_VIS_OBJ
+    ErrorCode::PLOT_INVALID_VIS_OBJ,
+    ErrorCode::SIM_ELEM_NOT_FOUND,
+    ErrorCode::SIM_ELEM_INDEX,
+    ErrorCode::SIM_ELEM_ALREADY_EXISTS,
+    ErrorCode::ELEM_INPUT_SIZE_MISMATCH,
+    ErrorCode::ELEM_SIZE_NOT_ALLOWED,
+    ErrorCode::ELEM_RENAME_NOT_ALLOWED,
+    ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE,
+    ErrorCode::GAUSS_STIMULUS_SUM_MISMATCH,
+    ErrorCode::LOG_LOCAL_TIME_ERROR
 ));
 
 TEST_P(ExceptionErrorMessageTest, MessageIsNonEmpty)

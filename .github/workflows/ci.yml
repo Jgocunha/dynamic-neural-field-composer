@@ -111,6 +111,7 @@ jobs:
             --gcov-executable gcov-13 \
             --exclude '.*vcpkg.*' \
             --exclude '.*/tests/.*' \
+            --exclude '.*/examples/.*' \
             --exclude '.*/imgui-platform-kit.*' \
             --exclude-directories '.*CMakeFiles.*' \
             --gcov-ignore-errors=no_working_dir_found \

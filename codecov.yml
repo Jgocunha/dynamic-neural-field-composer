@@ -1,0 +1,56 @@
+# Codecov configuration — scope the coverage figure to the testable core library.
+# See .claude/tests/01-coverage-reporting.md for the rationale (issue #55).
+
+coverage:
+  precision: 2
+  round: down
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        informational: true
+
+# Paths that must not count against coverage:
+# - examples/  : interactive demo main()s, not unit-testable by design
+# - tests/     : the test code itself (also excluded in the gcovr step)
+# gcovr emits paths relative to the nested project dir (examples/...), but
+# Codecov path-fixing may re-prefix them — cover both forms.
+ignore:
+  - "examples/**"
+  - "**/examples/**"
+  - "tests/**"
+  - "**/tests/**"
+
+# Track the testable core and the GUI layer separately on the dashboard.
+component_management:
+  individual_components:
+    - component_id: core
+      name: core
+      paths:
+        - "**/src/elements/**"
+        - "**/src/simulation/**"
+        - "**/src/tools/**"
+        - "**/src/exceptions/**"
+        - "**/src/element_parameters/**"
+        - "**/include/elements/**"
+        - "**/include/simulation/**"
+        - "**/include/tools/**"
+        - "**/include/exceptions/**"
+        - "**/include/element_parameters/**"
+    - component_id: gui
+      name: gui
+      paths:
+        - "**/src/user_interface/**"
+        - "**/src/application/**"
+        - "**/src/visualization/**"
+        - "**/include/user_interface/**"
+        - "**/include/application/**"
+        - "**/include/visualization/**"
+
+comment:
+  layout: "condensed_header, diff, components"
+  behavior: default
+  require_changes: false
