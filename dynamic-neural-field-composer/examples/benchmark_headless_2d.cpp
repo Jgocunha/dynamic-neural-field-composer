@@ -96,9 +96,6 @@ static std::shared_ptr<Simulation> build_simulation(int N, const Arch& arch, int
         auto field = std::make_shared<NeuralField2D>(
             ElementCommonParameters{"field_" + si, dims},
             NeuralField2DParameters{TAU, arch.h, SigmoidFunction{0.0, 100.0}});
-        // Throughput benchmark: bump/stability metrics are never read here, so
-        // skip the per-step flood-fill they would otherwise run.
-        field->setComputeStateMetrics(false);
         sim->addElement(field);
 
         // Stimuli (1–3 per field)
@@ -141,9 +138,44 @@ static std::shared_ptr<Simulation> build_simulation(int N, const Arch& arch, int
     return sim;
 }
 
+// For "memory": collect the stimuli so their amplitude can be established then
+// zeroed once per run — the timed measurement covers genuine self-sustained memory
+// maintenance, not stimulus-driven activity. sim->init() resets field/output state
+// but not element parameters, so a stimulus zeroed by a previous run would otherwise
+// stay zeroed; the cached original parameters let each run re-establish it fresh.
+static std::vector<std::shared_ptr<GaussStimulus2D>> collect_stimuli(const std::shared_ptr<Simulation>& sim)
+{
+    std::vector<std::shared_ptr<GaussStimulus2D>> stimuli;
+    for (const auto& el : sim->getElements())
+        if (auto stim = std::dynamic_pointer_cast<GaussStimulus2D>(el))
+            stimuli.push_back(stim);
+    return stimuli;
+}
+
+static void establish_then_remove_stimulus(const std::vector<std::shared_ptr<GaussStimulus2D>>& stimuli,
+                                            const std::vector<GaussStimulus2DParameters>& originalParams,
+                                            const std::shared_ptr<Simulation>& sim)
+{
+    for (size_t i = 0; i < stimuli.size(); ++i) stimuli[i]->setParameters(originalParams[i]);
+    for (int t = 0; t < 100; ++t) sim->step();
+    for (auto& s : stimuli) {
+        auto p = s->getParameters();
+        p.amplitude = 0.0;
+        s->setParameters(p);
+    }
+}
+
 static void run_benchmark(int N, const Arch& arch, int grid, const std::string& outfile, int timedSteps, int nRuns)
 {
     auto sim = build_simulation(N, arch, grid);
+
+    std::vector<std::shared_ptr<GaussStimulus2D>> stimuli;
+    std::vector<GaussStimulus2DParameters> stimuliParams;
+    if (arch.name == "memory") {
+        stimuli = collect_stimuli(sim);
+        for (const auto& s : stimuli) stimuliParams.push_back(s->getParameters());
+    }
+
     sim->init();
 
     // Warm-up
@@ -154,6 +186,7 @@ static void run_benchmark(int N, const Arch& arch, int grid, const std::string& 
 
     for (int run = 0; run < nRuns; ++run) {
         sim->init();
+        if (arch.name == "memory") establish_then_remove_stimulus(stimuli, stimuliParams, sim);
 
         auto t0 = std::chrono::high_resolution_clock::now();
         for (int t = 0; t < timedSteps; ++t) sim->step();
@@ -167,6 +200,25 @@ static void run_benchmark(int N, const Arch& arch, int grid, const std::string& 
                     arch.name.c_str(), grid, grid, N, run + 1, sps);
         std::fflush(stdout);
     }
+    std::fclose(fp);
+}
+
+static void dump_final_field(const Arch& arch, int grid, int timedSteps, const std::string& dumpPath)
+{
+    auto sim = build_simulation(1, arch, grid);
+    sim->init();
+    if (arch.name == "memory") {
+        auto stimuli = collect_stimuli(sim);
+        std::vector<GaussStimulus2DParameters> stimuliParams;
+        for (const auto& s : stimuli) stimuliParams.push_back(s->getParameters());
+        establish_then_remove_stimulus(stimuli, stimuliParams, sim);
+    }
+    for (int t = 0; t < timedSteps; ++t) sim->step();
+    auto field = std::dynamic_pointer_cast<NeuralField2D>(sim->getElement("field_0"));
+    const auto& act = field->getComponent("activation");
+    FILE* fp = std::fopen(dumpPath.c_str(), "w");
+    if (!fp) { std::fprintf(stderr, "Cannot open %s\n", dumpPath.c_str()); return; }
+    for (double v : act) std::fprintf(fp, "%.10g\n", v);
     std::fclose(fp);
 }
 
@@ -196,6 +248,11 @@ int main(int argc, char* argv[])
     const int        timedSteps = (argc > 5) ? std::stoi(argv[5]) : TIMED_STEPS;
     const int        nRuns      = (argc > 6) ? std::stoi(argv[6]) : N_RUNS;
     const Arch& arch = get_arch(archName);
+    if (argc > 7) {
+        // Behavioral-validation mode: dump field_0's final activation instead of timing.
+        dump_final_field(arch, grid, timedSteps, argv[7]);
+        return 0;
+    }
     std::printf("dnfc 2D headless benchmark [arch=%s grid=%dx%d] -> %s\n",
                 arch.name.c_str(), grid, grid, outfile.c_str());
     for (int N : Ns)

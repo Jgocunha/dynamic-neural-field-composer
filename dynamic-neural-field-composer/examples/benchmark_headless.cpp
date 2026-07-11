@@ -27,8 +27,8 @@ static constexpr int    BASE_SIZE    = 100;   // reference grid the arch positio
 static constexpr double TAU          = 25.0;
 static constexpr double NOISE_AMP    = 0.1;    // benchmark uses A>0 so the RNG cost is measured
 static constexpr int    WARMUP_STEPS = 200;
-static constexpr int    TIMED_STEPS  = 5000;
-static constexpr int    N_RUNS       = 10;
+static constexpr int    TIMED_STEPS  = 2000;
+static constexpr int    N_RUNS       = 5;
 
 // ── Architecture definitions ────────────────────────────────────────────────
 // The four benchmark architectures reuse the representative sim of each band in
@@ -138,9 +138,44 @@ static std::shared_ptr<Simulation> build_simulation(int N, const Arch& arch, int
     return sim;
 }
 
+// For "memory": collect the stimuli so their amplitude can be established then
+// zeroed once per run — the timed measurement covers genuine self-sustained memory
+// maintenance, not stimulus-driven activity. sim->init() resets field/output state
+// but not element parameters, so a stimulus zeroed by a previous run would otherwise
+// stay zeroed; the cached original parameters let each run re-establish it fresh.
+static std::vector<std::shared_ptr<GaussStimulus>> collect_stimuli(const std::shared_ptr<Simulation>& sim)
+{
+    std::vector<std::shared_ptr<GaussStimulus>> stimuli;
+    for (const auto& el : sim->getElements())
+        if (auto stim = std::dynamic_pointer_cast<GaussStimulus>(el))
+            stimuli.push_back(stim);
+    return stimuli;
+}
+
+static void establish_then_remove_stimulus(const std::vector<std::shared_ptr<GaussStimulus>>& stimuli,
+                                            const std::vector<GaussStimulusParameters>& originalParams,
+                                            const std::shared_ptr<Simulation>& sim)
+{
+    for (size_t i = 0; i < stimuli.size(); ++i) stimuli[i]->setParameters(originalParams[i]);
+    for (int t = 0; t < 100; ++t) sim->step();
+    for (auto& s : stimuli) {
+        auto p = s->getParameters();
+        p.amplitude = 0.0;
+        s->setParameters(p);
+    }
+}
+
 static void run_benchmark(int N, const Arch& arch, int field_size, const std::string& outfile)
 {
     auto sim = build_simulation(N, arch, field_size);
+
+    std::vector<std::shared_ptr<GaussStimulus>> stimuli;
+    std::vector<GaussStimulusParameters> stimuliParams;
+    if (arch.name == "memory") {
+        stimuli = collect_stimuli(sim);
+        for (const auto& s : stimuli) stimuliParams.push_back(s->getParameters());
+    }
+
     sim->init();
 
     // Warm-up
@@ -151,6 +186,7 @@ static void run_benchmark(int N, const Arch& arch, int field_size, const std::st
 
     for (int run = 0; run < N_RUNS; ++run) {
         sim->init();
+        if (arch.name == "memory") establish_then_remove_stimulus(stimuli, stimuliParams, sim);
 
         auto t0 = std::chrono::high_resolution_clock::now();
         for (int t = 0; t < TIMED_STEPS; ++t) sim->step();

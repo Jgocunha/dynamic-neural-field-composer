@@ -1169,3 +1169,770 @@ zigguratNormal now takes `const ZigguratTables&`, fetched once per fillNormal ba
 (Considered vectorizing the Gaussian via Box-Muller, but the measured hotspot was the magic-static
 guard, not the arithmetic — this hoist is the real easy win, no math/stream change. Kernel
 component-pointer caching was evaluated and skipped: no per-cell map lookups remain, ~0.1us churn only.)
+## 2026-07-08 21:50:06  (dnfc 2.9.3, 5000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.88 | 0.90 | 0.80 | 68.80 |
+| GaussKernel | 0.32 | 0.30 | 0.30 | 2.90 |
+| MexicanHatKernel | 0.45 | 0.40 | 0.40 | 2.10 |
+| OscillatoryKernel | 1.33 | 1.30 | 1.30 | 3.90 |
+| AsymmetricGaussKernel | 0.31 | 0.30 | 0.30 | 2.50 |
+| NormalNoise | 0.34 | 0.30 | 0.20 | 1.60 |
+| CorrelatedNormalNoise | 1.59 | 1.60 | 1.40 | 5.40 |
+| MemoryTrace | 0.07 | 0.10 | 0.00 | 0.10 |
+| GaussStimulus | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus | 0.02 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.04 | 0.00 | 0.00 | 0.10 |
+| NeuralField2D | 18.10 | 17.50 | 16.50 | 477.50 |
+| GaussKernel2D | 12.44 | 12.00 | 11.40 | 154.30 |
+| MexicanHatKernel2D | 36.18 | 36.00 | 33.90 | 595.20 |
+| OscillatoryKernel2D | 26.60 | 26.20 | 24.60 | 116.70 |
+| AsymmetricGaussKernel2D | 11.82 | 11.70 | 10.80 | 173.30 |
+| NormalNoise2D | 7.26 | 7.10 | 6.60 | 54.50 |
+| CorrelatedNormalNoise2D | 12.72 | 12.50 | 12.00 | 66.60 |
+| MemoryTrace2D | 1.12 | 1.10 | 1.00 | 12.40 |
+| GaussStimulus2D | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.08 | 0.10 | 0.00 | 0.20 |
+| BoostStimulus2D | 0.08 | 0.10 | 0.00 | 0.10 |
+| Collapse (2D->1D) | 2.16 | 2.20 | 1.90 | 23.80 |
+| Expand (1D->2D) | 1.25 | 1.20 | 1.10 | 16.40 |
+| Resize (1D) | 0.12 | 0.10 | 0.10 | 1.00 |
+
+### Representative 1D detection sim  (total 1.19 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.01 | 1.13% |
+| neural field u | NeuralField | 0.86 | 71.87% |
+| gauss kernel | GaussKernel | 0.30 | 25.02% |
+| normal noise | NormalNoise | 0.02 | 1.97% |
+
+### Representative 2D detection sim  (total 31.58 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.06% |
+| neural field u | NeuralField2D | 19.81 | 62.72% |
+| gauss kernel 2d | GaussKernel2D | 11.52 | 36.49% |
+| normal noise 2d | NormalNoise2D | 0.23 | 0.73% |
+
+## 2026-07-08 22:06:28  (dnfc 2.9.3, 2000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.89 | 0.90 | 0.80 | 9.80 |
+| GaussKernel | 0.75 | 0.70 | 0.60 | 40.40 |
+| MexicanHatKernel | 1.16 | 1.20 | 1.10 | 4.20 |
+| OscillatoryKernel | 2.59 | 2.60 | 2.50 | 68.20 |
+| AsymmetricGaussKernel | 0.71 | 0.70 | 0.70 | 2.40 |
+| NormalNoise | 0.40 | 0.30 | 0.30 | 109.90 |
+| CorrelatedNormalNoise | 1.74 | 1.70 | 1.50 | 28.20 |
+| MemoryTrace | 0.08 | 0.10 | 0.00 | 0.60 |
+| GaussStimulus | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus | 0.02 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.04 | 0.00 | 0.00 | 1.30 |
+| NeuralField2D | 17.78 | 17.40 | 16.10 | 209.70 |
+| GaussKernel2D | 30.09 | 29.30 | 29.00 | 132.00 |
+| MexicanHatKernel2D | 75.52 | 73.40 | 73.10 | 261.60 |
+| OscillatoryKernel2D | 50.58 | 49.20 | 48.80 | 217.40 |
+| AsymmetricGaussKernel2D | 29.14 | 28.50 | 28.20 | 185.40 |
+| NormalNoise2D | 7.16 | 7.10 | 6.70 | 51.00 |
+| CorrelatedNormalNoise2D | 20.45 | 20.30 | 19.90 | 116.80 |
+| MemoryTrace2D | 1.13 | 1.10 | 1.00 | 3.60 |
+| GaussStimulus2D | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.08 | 0.10 | 0.00 | 0.10 |
+| BoostStimulus2D | 0.08 | 0.10 | 0.00 | 0.10 |
+| Collapse (2D->1D) | 2.08 | 2.20 | 1.70 | 51.70 |
+| Expand (1D->2D) | 1.12 | 1.10 | 1.10 | 3.30 |
+| Resize (1D) | 0.12 | 0.10 | 0.10 | 0.20 |
+
+### Representative 1D detection sim  (total 1.57 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.01 | 0.82% |
+| neural field u | NeuralField | 0.86 | 54.59% |
+| gauss kernel | GaussKernel | 0.68 | 43.07% |
+| normal noise | NormalNoise | 0.02 | 1.52% |
+
+### Representative 2D detection sim  (total 48.80 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.04% |
+| neural field u | NeuralField2D | 19.65 | 40.26% |
+| gauss kernel 2d | GaussKernel2D | 28.90 | 59.23% |
+| normal noise 2d | NormalNoise2D | 0.23 | 0.47% |
+
+### Benchmark-condition detection sim @100  (total 206.59 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 62.16 | 30.09% |
+| stimulus | GaussStimulus2D | 0.02 | 0.01% |
+| noise | NormalNoise2D | 29.46 | 14.26% |
+| kernel | GaussKernel2D | 114.95 | 55.64% |
+
+### Benchmark-condition memory sim @100  (total 626.73 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 63.09 | 10.07% |
+| stimulus | GaussStimulus2D | 0.03 | 0.00% |
+| noise | NormalNoise2D | 30.50 | 4.87% |
+| kernel | Element | 533.11 | 85.06% |
+
+### Method-level primitives @100
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 113.61 |
+| conv sigma=3.4 (35 taps) | 126.13 |
+| conv sigma=8.9 (91 taps) | 412.95 |
+| noise fill+scale | 30.93 |
+| sigmoid apply | 22.48 |
+| full-field add | 1.39 |
+| full-field copy | 1.22 |
+| euler pass | 1.44 |
+
+### Benchmark-condition detection sim @200  (total 826.72 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 256.39 | 31.01% |
+| stimulus | GaussStimulus2D | 0.06 | 0.01% |
+| noise | NormalNoise2D | 119.19 | 14.42% |
+| kernel | GaussKernel2D | 451.07 | 54.56% |
+
+### Benchmark-condition memory sim @200  (total 2503.53 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 269.67 | 10.77% |
+| stimulus | GaussStimulus2D | 0.06 | 0.00% |
+| noise | NormalNoise2D | 119.28 | 4.76% |
+| kernel | Element | 2114.52 | 84.46% |
+
+### Method-level primitives @200
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 425.77 |
+| conv sigma=3.4 (35 taps) | 493.29 |
+| conv sigma=8.9 (91 taps) | 1564.37 |
+| noise fill+scale | 120.74 |
+| sigmoid apply | 86.92 |
+| full-field add | 5.12 |
+| full-field copy | 4.25 |
+| euler pass | 5.41 |
+
+## 2026-07-08 22:09:34  (dnfc 2.9.3, 800 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.90 | 0.90 | 0.80 | 13.70 |
+| GaussKernel | 0.80 | 0.80 | 0.70 | 34.10 |
+| MexicanHatKernel | 1.20 | 1.20 | 1.10 | 4.60 |
+| OscillatoryKernel | 2.64 | 2.60 | 2.50 | 14.60 |
+| AsymmetricGaussKernel | 0.72 | 0.70 | 0.70 | 5.20 |
+| NormalNoise | 0.34 | 0.30 | 0.30 | 0.50 |
+| CorrelatedNormalNoise | 1.76 | 1.80 | 1.60 | 7.80 |
+| MemoryTrace | 0.07 | 0.10 | 0.00 | 0.10 |
+| GaussStimulus | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus | 0.03 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.04 | 0.00 | 0.00 | 0.10 |
+| NeuralField2D | 17.86 | 17.60 | 17.50 | 64.90 |
+| GaussKernel2D | 31.13 | 30.80 | 30.60 | 92.80 |
+| MexicanHatKernel2D | 78.53 | 77.40 | 77.10 | 273.00 |
+| OscillatoryKernel2D | 53.47 | 51.90 | 48.90 | 253.60 |
+| AsymmetricGaussKernel2D | 30.50 | 30.00 | 29.80 | 95.70 |
+| NormalNoise2D | 7.18 | 7.10 | 6.70 | 17.00 |
+| CorrelatedNormalNoise2D | 21.79 | 21.40 | 19.90 | 86.10 |
+| MemoryTrace2D | 1.12 | 1.10 | 1.00 | 3.30 |
+| GaussStimulus2D | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.08 | 0.10 | 0.00 | 0.20 |
+| BoostStimulus2D | 0.08 | 0.10 | 0.00 | 0.10 |
+| Collapse (2D->1D) | 2.54 | 2.40 | 2.00 | 77.60 |
+| Expand (1D->2D) | 1.16 | 1.20 | 1.10 | 2.30 |
+| Resize (1D) | 0.12 | 0.10 | 0.10 | 0.20 |
+
+### Representative 1D detection sim  (total 1.60 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.01 | 0.77% |
+| neural field u | NeuralField | 0.87 | 54.39% |
+| gauss kernel | GaussKernel | 0.69 | 43.34% |
+| normal noise | NormalNoise | 0.02 | 1.51% |
+
+### Representative 2D detection sim  (total 52.19 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.03% |
+| neural field u | NeuralField2D | 20.89 | 40.04% |
+| gauss kernel 2d | GaussKernel2D | 31.02 | 59.45% |
+| normal noise 2d | NormalNoise2D | 0.25 | 0.48% |
+
+### Benchmark-condition detection sim @100  (total 220.31 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 68.53 | 31.11% |
+| stimulus | GaussStimulus2D | 0.02 | 0.01% |
+| noise | NormalNoise2D | 31.47 | 14.29% |
+| kernel | GaussKernel2D | 120.28 | 54.60% |
+
+### Benchmark-condition memory sim @100  (total 651.25 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 65.53 | 10.06% |
+| stimulus | GaussStimulus2D | 0.03 | 0.00% |
+| noise | NormalNoise2D | 31.42 | 4.82% |
+| kernel | Element | 554.27 | 85.11% |
+
+### Method-level primitives @100
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 126.53 |
+| conv sigma=3.4 (35 taps) | 139.72 |
+| conv sigma=8.9 (91 taps) | 417.62 |
+| noise fill+scale | 31.82 |
+| sigmoid apply | 25.83 |
+| full-field add | 1.42 |
+| full-field copy | 1.16 |
+| euler pass | 1.55 |
+
+### Benchmark-condition detection sim @200  (total 882.96 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 269.36 | 30.51% |
+| stimulus | GaussStimulus2D | 0.07 | 0.01% |
+| noise | NormalNoise2D | 127.54 | 14.45% |
+| kernel | GaussKernel2D | 485.98 | 55.04% |
+
+### Benchmark-condition memory sim @200  (total 2710.42 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 290.52 | 10.72% |
+| stimulus | GaussStimulus2D | 0.09 | 0.00% |
+| noise | NormalNoise2D | 126.25 | 4.66% |
+| kernel | Element | 2293.55 | 84.62% |
+
+### Method-level primitives @200
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 461.35 |
+| conv sigma=3.4 (35 taps) | 533.63 |
+| conv sigma=8.9 (91 taps) | 1675.55 |
+| noise fill+scale | 129.70 |
+| sigmoid apply | 96.35 |
+| full-field add | 5.42 |
+| full-field copy | 4.50 |
+| euler pass | 5.73 |
+
+## 2026-07-08 22:11:31  (dnfc 2.9.3, 2000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.83 | 0.80 | 0.80 | 8.20 |
+| GaussKernel | 0.32 | 0.30 | 0.30 | 1.50 |
+| MexicanHatKernel | 0.45 | 0.40 | 0.40 | 0.50 |
+| OscillatoryKernel | 1.31 | 1.30 | 1.20 | 4.20 |
+| AsymmetricGaussKernel | 0.31 | 0.30 | 0.30 | 0.40 |
+| NormalNoise | 0.34 | 0.30 | 0.20 | 0.60 |
+| CorrelatedNormalNoise | 1.79 | 1.80 | 1.60 | 46.00 |
+| MemoryTrace | 0.08 | 0.10 | 0.00 | 0.10 |
+| GaussStimulus | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus | 0.02 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.04 | 0.00 | 0.00 | 0.10 |
+| NeuralField2D | 17.64 | 17.50 | 16.50 | 181.80 |
+| GaussKernel2D | 12.90 | 11.90 | 11.60 | 202.10 |
+| MexicanHatKernel2D | 35.82 | 35.40 | 33.30 | 156.60 |
+| OscillatoryKernel2D | 25.87 | 25.00 | 24.50 | 395.20 |
+| AsymmetricGaussKernel2D | 11.52 | 11.10 | 10.70 | 173.50 |
+| NormalNoise2D | 7.11 | 7.10 | 6.70 | 35.40 |
+| CorrelatedNormalNoise2D | 12.49 | 12.40 | 12.00 | 62.90 |
+| MemoryTrace2D | 1.09 | 1.10 | 1.00 | 3.50 |
+| GaussStimulus2D | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.08 | 0.10 | 0.00 | 0.20 |
+| BoostStimulus2D | 0.08 | 0.10 | 0.00 | 0.10 |
+| Collapse (2D->1D) | 2.12 | 2.10 | 2.00 | 4.80 |
+| Expand (1D->2D) | 1.28 | 1.20 | 1.10 | 3.60 |
+| Resize (1D) | 0.12 | 0.10 | 0.10 | 0.80 |
+
+### Representative 1D detection sim  (total 1.18 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.01 | 1.16% |
+| neural field u | NeuralField | 0.85 | 71.60% |
+| gauss kernel | GaussKernel | 0.30 | 25.12% |
+| normal noise | NormalNoise | 0.03 | 2.13% |
+
+### Representative 2D detection sim  (total 31.71 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.06% |
+| neural field u | NeuralField2D | 20.17 | 63.61% |
+| gauss kernel 2d | GaussKernel2D | 11.28 | 35.58% |
+| normal noise 2d | NormalNoise2D | 0.24 | 0.75% |
+
+### Benchmark-condition detection sim @100  (total 128.89 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 61.12 | 47.42% |
+| stimulus | GaussStimulus2D | 0.02 | 0.02% |
+| noise | NormalNoise2D | 28.88 | 22.41% |
+| kernel | GaussKernel2D | 38.86 | 30.15% |
+
+### Benchmark-condition memory sim @100  (total 259.67 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 63.52 | 24.46% |
+| stimulus | GaussStimulus2D | 0.02 | 0.01% |
+| noise | NormalNoise2D | 30.53 | 11.76% |
+| kernel | Element | 165.60 | 63.77% |
+
+### Method-level primitives @100
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 35.19 |
+| conv sigma=3.4 (35 taps) | 39.69 |
+| conv sigma=8.9 (91 taps) | 117.18 |
+| noise fill+scale | 30.40 |
+| sigmoid apply | 23.30 |
+| full-field add | 1.10 |
+| full-field copy | 1.14 |
+| euler pass | 1.29 |
+
+### Benchmark-condition detection sim @200  (total 522.19 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 255.00 | 48.83% |
+| stimulus | GaussStimulus2D | 0.06 | 0.01% |
+| noise | NormalNoise2D | 117.73 | 22.55% |
+| kernel | GaussKernel2D | 149.40 | 28.61% |
+
+### Benchmark-condition memory sim @200  (total 1001.30 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 257.91 | 25.76% |
+| stimulus | GaussStimulus2D | 0.07 | 0.01% |
+| noise | NormalNoise2D | 119.46 | 11.93% |
+| kernel | Element | 623.85 | 62.30% |
+
+### Method-level primitives @200
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 126.53 |
+| conv sigma=3.4 (35 taps) | 149.71 |
+| conv sigma=8.9 (91 taps) | 430.83 |
+| noise fill+scale | 125.44 |
+| sigmoid apply | 88.43 |
+| full-field add | 4.30 |
+| full-field copy | 4.52 |
+| euler pass | 4.90 |
+
+## 2026-07-08 22:13:22  (dnfc 2.9.3, 2000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.88 | 0.90 | 0.80 | 12.00 |
+| GaussKernel | 0.32 | 0.30 | 0.30 | 4.70 |
+| MexicanHatKernel | 0.45 | 0.40 | 0.40 | 1.70 |
+| OscillatoryKernel | 1.31 | 1.30 | 1.20 | 3.70 |
+| AsymmetricGaussKernel | 0.32 | 0.30 | 0.30 | 1.80 |
+| NormalNoise | 0.34 | 0.30 | 0.20 | 6.30 |
+| CorrelatedNormalNoise | 1.49 | 1.50 | 1.40 | 4.90 |
+| MemoryTrace | 0.07 | 0.10 | 0.00 | 0.70 |
+| GaussStimulus | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus | 0.03 | 0.00 | 0.00 | 1.30 |
+| BoostStimulus | 0.04 | 0.00 | 0.00 | 0.10 |
+| NeuralField2D | 16.78 | 16.40 | 16.30 | 74.00 |
+| GaussKernel2D | 12.32 | 11.90 | 11.50 | 83.30 |
+| MexicanHatKernel2D | 34.61 | 33.70 | 33.40 | 439.10 |
+| OscillatoryKernel2D | 25.84 | 25.40 | 24.60 | 172.40 |
+| AsymmetricGaussKernel2D | 11.10 | 11.00 | 10.70 | 19.00 |
+| NormalNoise2D | 7.13 | 7.10 | 6.70 | 48.00 |
+| CorrelatedNormalNoise2D | 12.54 | 12.50 | 12.10 | 19.80 |
+| MemoryTrace2D | 1.13 | 1.10 | 1.00 | 5.40 |
+| GaussStimulus2D | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.08 | 0.10 | 0.00 | 0.60 |
+| BoostStimulus2D | 0.11 | 0.10 | 0.00 | 23.90 |
+| Collapse (2D->1D) | 2.04 | 2.00 | 1.90 | 27.30 |
+| Expand (1D->2D) | 1.12 | 1.10 | 1.10 | 2.80 |
+| Resize (1D) | 0.11 | 0.10 | 0.10 | 0.20 |
+
+### Representative 1D detection sim  (total 1.30 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.01 | 1.04% |
+| neural field u | NeuralField | 0.95 | 72.99% |
+| gauss kernel | GaussKernel | 0.31 | 24.14% |
+| normal noise | NormalNoise | 0.02 | 1.83% |
+
+### Representative 2D detection sim  (total 31.82 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.07% |
+| neural field u | NeuralField2D | 20.15 | 63.34% |
+| gauss kernel 2d | GaussKernel2D | 11.41 | 35.85% |
+| normal noise 2d | NormalNoise2D | 0.24 | 0.74% |
+
+### Benchmark-condition detection sim @100  (total 132.26 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 62.96 | 47.61% |
+| stimulus | GaussStimulus2D | 0.02 | 0.01% |
+| noise | NormalNoise2D | 29.52 | 22.32% |
+| kernel | GaussKernel2D | 39.75 | 30.06% |
+
+### Benchmark-condition memory sim @100  (total 252.86 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 61.67 | 24.39% |
+| stimulus | GaussStimulus2D | 0.03 | 0.01% |
+| noise | NormalNoise2D | 29.19 | 11.54% |
+| kernel | Element | 161.97 | 64.05% |
+
+### Ablation field+stim only @100  (total 53.62 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 53.60 | 99.96% |
+| stimulus | GaussStimulus2D | 0.02 | 0.04% |
+
+### Method-level primitives @100
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 35.48 |
+| conv sigma=3.4 (35 taps) | 40.75 |
+| conv sigma=8.9 (91 taps) | 114.58 |
+| noise fill+scale | 31.48 |
+| sigmoid apply | 22.18 |
+| full-field add | 1.08 |
+| full-field copy | 1.11 |
+| euler pass | 1.25 |
+
+### Benchmark-condition detection sim @200  (total 520.58 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 254.83 | 48.95% |
+| stimulus | GaussStimulus2D | 0.06 | 0.01% |
+| noise | NormalNoise2D | 118.76 | 22.81% |
+| kernel | GaussKernel2D | 146.93 | 28.22% |
+
+### Benchmark-condition memory sim @200  (total 1036.06 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 268.46 | 25.91% |
+| stimulus | GaussStimulus2D | 0.07 | 0.01% |
+| noise | NormalNoise2D | 124.72 | 12.04% |
+| kernel | Element | 642.81 | 62.04% |
+
+### Ablation field+stim only @200  (total 221.89 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 221.86 | 99.99% |
+| stimulus | GaussStimulus2D | 0.03 | 0.01% |
+
+### Method-level primitives @200
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 124.98 |
+| conv sigma=3.4 (35 taps) | 142.19 |
+| conv sigma=8.9 (91 taps) | 451.69 |
+| noise fill+scale | 123.82 |
+| sigmoid apply | 86.86 |
+| full-field add | 4.07 |
+| full-field copy | 4.30 |
+| euler pass | 4.85 |
+
+## 2026-07-08 22:15:19  (dnfc 2.9.3, 600 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.86 | 0.90 | 0.80 | 0.90 |
+| GaussKernel | 0.32 | 0.30 | 0.30 | 0.40 |
+| MexicanHatKernel | 0.44 | 0.40 | 0.40 | 0.50 |
+| OscillatoryKernel | 1.47 | 1.30 | 1.30 | 89.80 |
+| AsymmetricGaussKernel | 0.33 | 0.30 | 0.30 | 4.80 |
+| NormalNoise | 0.34 | 0.30 | 0.20 | 1.50 |
+| CorrelatedNormalNoise | 1.57 | 1.50 | 1.40 | 14.50 |
+| MemoryTrace | 0.07 | 0.10 | 0.00 | 0.10 |
+| GaussStimulus | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus | 0.03 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.04 | 0.00 | 0.00 | 0.10 |
+| NeuralField2D | 17.52 | 17.50 | 17.40 | 21.00 |
+| GaussKernel2D | 12.66 | 12.50 | 12.30 | 66.60 |
+| MexicanHatKernel2D | 34.02 | 33.60 | 33.40 | 123.70 |
+| OscillatoryKernel2D | 25.46 | 25.10 | 25.00 | 40.70 |
+| AsymmetricGaussKernel2D | 11.01 | 11.00 | 10.60 | 15.80 |
+| NormalNoise2D | 7.41 | 7.40 | 6.70 | 18.50 |
+| CorrelatedNormalNoise2D | 13.25 | 13.10 | 12.40 | 68.00 |
+| MemoryTrace2D | 1.29 | 1.30 | 1.20 | 5.10 |
+| GaussStimulus2D | 0.01 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.08 | 0.10 | 0.00 | 0.10 |
+| BoostStimulus2D | 0.09 | 0.10 | 0.00 | 0.10 |
+| Collapse (2D->1D) | 1.97 | 2.00 | 1.80 | 4.40 |
+| Expand (1D->2D) | 1.13 | 1.10 | 1.10 | 1.20 |
+| Resize (1D) | 0.12 | 0.10 | 0.10 | 0.20 |
+
+### Representative 1D detection sim  (total 1.24 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.01 | 0.65% |
+| neural field u | NeuralField | 0.88 | 71.30% |
+| gauss kernel | GaussKernel | 0.33 | 26.45% |
+| normal noise | NormalNoise | 0.02 | 1.60% |
+
+### Representative 2D detection sim  (total 32.36 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.06% |
+| neural field u | NeuralField2D | 20.50 | 63.35% |
+| gauss kernel 2d | GaussKernel2D | 11.59 | 35.83% |
+| normal noise 2d | NormalNoise2D | 0.25 | 0.76% |
+
+### Benchmark-condition detection sim @100  (total 139.26 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 65.63 | 47.12% |
+| stimulus | GaussStimulus2D | 0.03 | 0.02% |
+| noise | NormalNoise2D | 30.42 | 21.85% |
+| kernel | GaussKernel2D | 43.19 | 31.01% |
+
+### Benchmark-condition memory sim @100  (total 255.29 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 62.06 | 24.31% |
+| stimulus | GaussStimulus2D | 0.02 | 0.01% |
+| noise | NormalNoise2D | 29.45 | 11.53% |
+| kernel | Element | 163.75 | 64.14% |
+
+### Ablation field+stim only @100  (total 57.72 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 57.70 | 99.96% |
+| stimulus | GaussStimulus2D | 0.02 | 0.04% |
+
+### Method-level primitives @100
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 37.29 |
+| conv sigma=3.4 (35 taps) | 40.85 |
+| conv sigma=8.9 (91 taps) | 115.78 |
+| noise fill+scale | 30.80 |
+| sigmoid apply (mixed) | 21.95 |
+| sigmoid apply (resting -8) | 51.99 |
+| full-field add | 1.03 |
+| full-field copy | 1.10 |
+| euler pass | 1.21 |
+
+### Benchmark-condition detection sim @200  (total 521.67 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 257.82 | 49.42% |
+| stimulus | GaussStimulus2D | 0.08 | 0.02% |
+| noise | NormalNoise2D | 116.13 | 22.26% |
+| kernel | GaussKernel2D | 147.63 | 28.30% |
+
+### Benchmark-condition memory sim @200  (total 983.93 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 252.30 | 25.64% |
+| stimulus | GaussStimulus2D | 0.05 | 0.00% |
+| noise | NormalNoise2D | 118.33 | 12.03% |
+| kernel | Element | 613.25 | 62.33% |
+
+### Ablation field+stim only @200  (total 217.60 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 217.58 | 99.99% |
+| stimulus | GaussStimulus2D | 0.02 | 0.01% |
+
+### Method-level primitives @200
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 131.26 |
+| conv sigma=3.4 (35 taps) | 143.69 |
+| conv sigma=8.9 (91 taps) | 440.14 |
+| noise fill+scale | 123.87 |
+| sigmoid apply (mixed) | 87.97 |
+| sigmoid apply (resting -8) | 205.08 |
+| full-field add | 4.12 |
+| full-field copy | 4.28 |
+| euler pass | 4.54 |
+
+## 2026-07-09 12:59:08  (dnfc 2.9.3, 20000 iters)
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.49 | 0.50 | 0.40 | 9.80 |
+| GaussKernel | 0.29 | 0.30 | 0.20 | 3.20 |
+| MexicanHatKernel | 0.36 | 0.40 | 0.30 | 10.10 |
+| OscillatoryKernel | 0.68 | 0.70 | 0.60 | 4.00 |
+| AsymmetricGaussKernel | 0.29 | 0.30 | 0.20 | 3.00 |
+| NormalNoise | 0.34 | 0.30 | 0.20 | 6.20 |
+| CorrelatedNormalNoise | 1.59 | 1.60 | 1.40 | 140.80 |
+| MemoryTrace | 0.08 | 0.10 | 0.00 | 5.60 |
+| GaussStimulus | 0.01 | 0.00 | 0.00 | 0.60 |
+| TimedGaussStimulus | 0.02 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.04 | 0.00 | 0.00 | 3.70 |
+| NeuralField2D | 12.27 | 11.70 | 10.90 | 536.30 |
+| GaussKernel2D | 11.98 | 11.70 | 11.00 | 251.40 |
+| MexicanHatKernel2D | 25.94 | 24.60 | 24.10 | 549.30 |
+| OscillatoryKernel2D | 16.30 | 16.10 | 15.10 | 473.50 |
+| AsymmetricGaussKernel2D | 10.10 | 9.70 | 9.40 | 222.50 |
+| NormalNoise2D | 7.55 | 7.40 | 6.60 | 313.20 |
+| CorrelatedNormalNoise2D | 13.16 | 12.50 | 11.50 | 556.00 |
+| MemoryTrace2D | 1.31 | 1.30 | 1.20 | 87.10 |
+| GaussStimulus2D | 0.03 | 0.00 | 0.00 | 406.50 |
+| TimedGaussStimulus2D | 0.08 | 0.10 | 0.00 | 43.20 |
+| BoostStimulus2D | 0.09 | 0.10 | 0.00 | 4.50 |
+| Collapse (2D->1D) | 1.99 | 1.90 | 1.70 | 141.50 |
+| Expand (1D->2D) | 1.21 | 1.20 | 1.10 | 119.60 |
+| Resize (1D) | 0.15 | 0.10 | 0.10 | 560.20 |
+
+### Representative 1D detection sim  (total 0.89 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.01 | 1.49% |
+| neural field u | NeuralField | 0.56 | 62.14% |
+| gauss kernel | GaussKernel | 0.30 | 33.36% |
+| normal noise | NormalNoise | 0.03 | 3.01% |
+
+### Representative 2D detection sim  (total 26.67 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.02 | 0.08% |
+| neural field u | NeuralField2D | 15.62 | 58.58% |
+| gauss kernel 2d | GaussKernel2D | 10.79 | 40.46% |
+| normal noise 2d | NormalNoise2D | 0.24 | 0.89% |
+
+### Benchmark-condition detection sim @100  (total 121.45 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 53.83 | 44.32% |
+| stimulus | GaussStimulus2D | 0.02 | 0.02% |
+| noise | NormalNoise2D | 29.83 | 24.56% |
+| kernel | GaussKernel2D | 37.77 | 31.10% |
+
+### Benchmark-condition memory sim @100  (total 201.80 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 56.01 | 27.76% |
+| stimulus | GaussStimulus2D | 0.02 | 0.01% |
+| noise | NormalNoise2D | 29.86 | 14.80% |
+| kernel | Element | 115.91 | 57.44% |
+
+### Ablation field+stim only @100  (total 44.46 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 44.44 | 99.95% |
+| stimulus | GaussStimulus2D | 0.02 | 0.05% |
+
+### Method-level primitives @100
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 31.45 |
+| conv sigma=3.4 (35 taps) | 33.65 |
+| conv sigma=8.9 (91 taps) | 74.19 |
+| noise fill+scale | 31.95 |
+| sigmoid apply (mixed) | 28.42 |
+| sigmoid apply (resting -8) | 28.05 |
+| full-field add | 1.05 |
+| full-field copy | 1.15 |
+| euler pass | 1.24 |
+
+### Benchmark-condition detection sim @200  (total 473.05 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 220.74 | 46.66% |
+| stimulus | GaussStimulus2D | 0.07 | 0.01% |
+| noise | NormalNoise2D | 119.70 | 25.30% |
+| kernel | GaussKernel2D | 132.54 | 28.02% |
+
+### Benchmark-condition memory sim @200  (total 768.09 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 227.80 | 29.66% |
+| stimulus | GaussStimulus2D | 0.05 | 0.01% |
+| noise | NormalNoise2D | 120.74 | 15.72% |
+| kernel | Element | 419.49 | 54.61% |
+
+### Ablation field+stim only @200  (total 177.82 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 177.80 | 99.98% |
+| stimulus | GaussStimulus2D | 0.03 | 0.02% |
+
+### Method-level primitives @200
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 109.92 |
+| conv sigma=3.4 (35 taps) | 116.83 |
+| conv sigma=8.9 (91 taps) | 261.66 |
+| noise fill+scale | 124.61 |
+| sigmoid apply (mixed) | 114.25 |
+| sigmoid apply (resting -8) | 114.24 |
+| full-field add | 4.07 |
+| full-field copy | 4.48 |
+| euler pass | 4.94 |

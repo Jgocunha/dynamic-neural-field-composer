@@ -153,11 +153,41 @@ namespace dnf_composer::tools::math
 				for (int j = 0, c = M - 1; j < c; ++j, --c)
 					if (kr[j] != kr[c]) { symmetric = false; break; }
 
+			// Four independent accumulator chains (16 outputs per iteration) hide
+			// the fmadd latency — a single-accumulator chain is latency-bound
+			// (~4-5 cycles per serialized fmadd, ~10x off throughput). Vector ops
+			// are element-wise, so regrouping outputs into wider blocks does NOT
+			// change any element's operation sequence (center tap, then pairs in
+			// ascending j / taps in ascending m) — bit-identical to the 4-wide
+			// body, which is kept as the bridge so tail elements get the exact
+			// same treatment as before the unroll.
 			int i = 0;
 			double* __restrict o = out.data();
 			if (symmetric)
 			{
 				const int c = M / 2; // center tap index
+				const __m256d kc = _mm256_set1_pd(kr[c]);
+				for (; i + 16 <= n; i += 16)
+				{
+					const double* __restrict w = mx + i;
+					__m256d a0 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c));
+					__m256d a1 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c + 4));
+					__m256d a2 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c + 8));
+					__m256d a3 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c + 12));
+					for (int j = 0; j < c; ++j)
+					{
+						const __m256d kv = _mm256_set1_pd(kr[j]);
+						const int mj = 2 * c - j;
+						a0 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j),      _mm256_loadu_pd(w + mj)),      a0);
+						a1 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j + 4),  _mm256_loadu_pd(w + mj + 4)),  a1);
+						a2 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j + 8),  _mm256_loadu_pd(w + mj + 8)),  a2);
+						a3 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j + 12), _mm256_loadu_pd(w + mj + 12)), a3);
+					}
+					_mm256_storeu_pd(o + i,      a0);
+					_mm256_storeu_pd(o + i + 4,  a1);
+					_mm256_storeu_pd(o + i + 8,  a2);
+					_mm256_storeu_pd(o + i + 12, a3);
+				}
 				for (; i + 4 <= n; i += 4)
 				{
 					const double* __restrict w = mx + i;
@@ -183,7 +213,27 @@ namespace dnf_composer::tools::math
 			}
 
 			// Non-symmetric: vectorize across the OUTPUT index (bit-identical — each
-			// output's tap sum keeps the original m-order).
+			// output's tap sum keeps the original m-order). Same 4-chain unroll.
+			for (; i + 16 <= n; i += 16)
+			{
+				const double* __restrict w = mx + i;
+				__m256d a0 = _mm256_setzero_pd();
+				__m256d a1 = _mm256_setzero_pd();
+				__m256d a2 = _mm256_setzero_pd();
+				__m256d a3 = _mm256_setzero_pd();
+				for (int m = 0; m < M; ++m)
+				{
+					const __m256d kv = _mm256_set1_pd(kr[m]);
+					a0 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m),      a0);
+					a1 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m + 4),  a1);
+					a2 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m + 8),  a2);
+					a3 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m + 12), a3);
+				}
+				_mm256_storeu_pd(o + i,      a0);
+				_mm256_storeu_pd(o + i + 4,  a1);
+				_mm256_storeu_pd(o + i + 8,  a2);
+				_mm256_storeu_pd(o + i + 12, a3);
+			}
 			for (; i + 4 <= n; i += 4)
 			{
 				__m256d acc = _mm256_setzero_pd();

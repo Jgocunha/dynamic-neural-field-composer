@@ -322,6 +322,131 @@ std::vector<InstanceResult> profileSim(const std::shared_ptr<Simulation>& sim, i
 	return out;
 }
 
+// ── Section 3: benchmark-condition micro-profile ────────────────────────────
+// Mirrors benchmark_headless_2d's detection and memory architectures at the
+// real benchmark grids (noise amplitude 0.1, state metrics off, sigmoid
+// steepness 100, cutoff-5 kernels). Reports per-instance step() cost plus
+// direct timings of the method-level primitives inside those steps, so hot
+// methods are measured, not guessed.
+
+std::shared_ptr<Simulation> buildBench2d(int grid, bool memoryArch)
+{
+	auto sim = std::make_shared<Simulation>("bench2d", 25.0, 0.0, 0.0);
+	const ElementDimensions d(grid, grid, 1.0, 1.0);
+	const double pos = 25.0 * grid / 50.0;
+	auto field = std::make_shared<NeuralField2D>(ElementCommonParameters{"field", d},
+		NeuralField2DParameters{25.0, memoryArch ? -5.0 : -8.0, SigmoidFunction{0.0, 100.0}});
+	auto stim = std::make_shared<GaussStimulus2D>(ElementCommonParameters{"stimulus", d},
+		GaussStimulus2DParameters{memoryArch ? 15.0 : 12.0, 5.0, pos, pos, true, false});
+	auto noise = std::make_shared<NormalNoise2D>(ElementCommonParameters{"noise", d},
+		NormalNoise2DParameters{0.1});
+	sim->addElement(field); sim->addElement(stim); sim->addElement(noise);
+	field->addInput(stim); field->addInput(noise);
+	if (memoryArch)
+	{
+		auto k = std::make_shared<MexicanHatKernel2D>(ElementCommonParameters{"kernel", d},
+			MexicanHatKernel2DParameters{3.4, 44.25, 8.9, 33.75, -0.05, true, true});
+		sim->addElement(k); k->addInput(field); field->addInput(k);
+	}
+	else
+	{
+		auto k = std::make_shared<GaussKernel2D>(ElementCommonParameters{"kernel", d},
+			GaussKernel2DParameters{3.0, 8.0, 0.0, true, true});
+		sim->addElement(k); k->addInput(field); field->addInput(k);
+	}
+	return sim;
+}
+
+// Ablation: field + stimulus only (no kernel, no noise) — isolates the field
+// step's own cost (updateInput with one source + euler + sigmoid) from the
+// full-architecture cache/plumbing effects.
+std::shared_ptr<Simulation> buildFieldOnly2d(int grid)
+{
+	auto sim = std::make_shared<Simulation>("fieldonly2d", 25.0, 0.0, 0.0);
+	const ElementDimensions d(grid, grid, 1.0, 1.0);
+	auto field = std::make_shared<NeuralField2D>(ElementCommonParameters{"field", d},
+		NeuralField2DParameters{25.0, -8.0, SigmoidFunction{0.0, 100.0}});
+	auto stim = std::make_shared<GaussStimulus2D>(ElementCommonParameters{"stimulus", d},
+		GaussStimulus2DParameters{12.0, 5.0, 25.0 * grid / 50.0, 25.0 * grid / 50.0, true, false});
+	sim->addElement(field); sim->addElement(stim);
+	field->addInput(stim);
+	return sim;
+}
+
+struct MicroResult { std::string name; double mean_us; };
+
+std::vector<MicroResult> microPrimitives(int grid, int iters)
+{
+	using namespace tools::math;
+	const int n = grid * grid;
+	std::vector<MicroResult> out;
+	std::vector<double> a(n), b(n), c(n);
+	for (int i = 0; i < n; ++i) a[i] = std::sin(0.13 * i);
+
+	auto convCase = [&](const std::string& nm, double sigma) {
+		const auto kr = computeKernelRange(sigma, 5, grid, true);
+		std::vector<int> rng(static_cast<std::size_t>(kr[0]) + kr[1] + 1);
+		std::iota(rng.begin(), rng.end(), -kr[0]);
+		const auto taps = gaussNorm(rng, 0.0, sigma);
+		const auto ext = createExtendedIndex(grid, kr);
+		Conv2dScratch<double> scratch;
+		scratch.ensure(grid, grid, ext.size(), ext.size());
+		std::vector<double> outBuf(n), tmpBuf(n);
+		const Stats s = timeCalls([&] {
+			conv2d_separable_into(outBuf, tmpBuf, scratch, a, taps, taps, grid, grid, ext, ext);
+		}, iters);
+		out.push_back({ nm + " (" + std::to_string(taps.size()) + " taps)", s.mean_us });
+	};
+	convCase("conv sigma=3.0", 3.0);
+	convCase("conv sigma=3.4", 3.4);
+	convCase("conv sigma=8.9", 8.9);
+
+	{
+		const Stats s = timeCalls([&] {
+			fillNormal(b.data(), static_cast<std::size_t>(n));
+			const double scale = 0.1 / std::sqrt(25.0);
+			for (int i = 0; i < n; ++i) b[i] *= scale;
+		}, iters);
+		out.push_back({ "noise fill+scale", s.mean_us });
+	}
+	{
+		SigmoidFunction sf{ 0.0, 100.0 };
+		const Stats s = timeCalls([&] { sf.apply(a, c); }, iters);
+		out.push_back({ "sigmoid apply (mixed)", s.mean_us });
+	}
+	{
+		// Resting-field case: u = -8 everywhere -> 1/(1+exp(+88)) ~ 6e-39, a
+		// DENORMAL float result for every cell. If this is much slower than the
+		// mixed case, denormal microcode assists dominate the field step.
+		SigmoidFunction sf{ 0.0, 100.0 };
+		std::vector<double> rest(n, -8.0);
+		const Stats s = timeCalls([&] { sf.apply(rest, c); }, iters);
+		out.push_back({ "sigmoid apply (resting -8)", s.mean_us });
+	}
+	{
+		const Stats s = timeCalls([&] {
+			const double* __restrict ap = a.data();
+			double* __restrict cp = c.data();
+			for (int i = 0; i < n; ++i) cp[i] += ap[i];
+		}, iters);
+		out.push_back({ "full-field add", s.mean_us });
+	}
+	{
+		const Stats s = timeCalls([&] { std::copy(a.begin(), a.end(), c.begin()); }, iters);
+		out.push_back({ "full-field copy", s.mean_us });
+	}
+	{
+		const Stats s = timeCalls([&] {
+			const double k = 1.0;
+			const double* __restrict ap = a.data();
+			double* __restrict cp = c.data();
+			for (int i = 0; i < n; ++i) cp[i] += k * (-cp[i] + (-5.0) + ap[i]);
+		}, iters);
+		out.push_back({ "euler pass", s.mean_us });
+	}
+	return out;
+}
+
 const char* labelName(ElementLabel l)
 {
 	switch (l)
@@ -406,6 +531,40 @@ int main(int argc, char* argv[])
 	};
 	writeSim("Representative 1D detection sim", sim1d);
 	writeSim("Representative 2D detection sim", sim2d);
+
+	// Section 3: benchmark-condition profile (also printed to stdout).
+	const int bIters = std::max(200, iters / 4);
+	auto section3 = [&](int grid) {
+		for (const bool mem : { false, true })
+		{
+			const auto rs = profileSim(buildBench2d(grid, mem), bIters);
+			double total = 0.0; for (const auto& r : rs) total += r.mean_us;
+			std::printf("-- bench %s@%d (total %.1f us/step) --\n",
+				mem ? "memory" : "detection", grid, total);
+			for (const auto& r : rs)
+				std::printf("  %-12s %-18s %8.2f us  %5.1f%%\n", r.label.c_str(), r.type.c_str(),
+					r.mean_us, total > 0 ? 100.0 * r.mean_us / total : 0.0);
+			writeSim((std::string("Benchmark-condition ") + (mem ? "memory" : "detection")
+				+ " sim @" + std::to_string(grid)).c_str(), rs);
+		}
+		{
+			const auto rs = profileSim(buildFieldOnly2d(grid), bIters);
+			std::printf("-- ablation field+stim only @%d --\n", grid);
+			for (const auto& r : rs)
+				std::printf("  %-12s %-18s %8.2f us\n", r.label.c_str(), r.type.c_str(), r.mean_us);
+			writeSim((std::string("Ablation field+stim only @") + std::to_string(grid)).c_str(), rs);
+		}
+		const auto micro = microPrimitives(grid, bIters);
+		std::printf("-- primitives @%d --\n", grid);
+		f << "\n### Method-level primitives @" << grid << "\n\n| primitive | mean us |\n|---|--:|\n";
+		for (const auto& m : micro)
+		{
+			std::printf("  %-28s %8.2f us\n", m.name.c_str(), m.mean_us);
+			f << "| " << m.name << " | " << m.mean_us << " |\n";
+		}
+	};
+	section3(100);
+	section3(200);
 
 	std::printf("Appended session to %s\n", path.c_str());
 	return 0;

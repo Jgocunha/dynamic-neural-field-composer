@@ -66,6 +66,18 @@ namespace dnf_composer::element
 		std::size_t i = 0;
 
 #if DNFC_HAVE_AVX2
+		// Flush float denormals for the duration of this pass. At resting
+		// activation (e.g. u=-8 with steepness 100) the saturated branch
+		// computes 1/(1+exp(+88)) ~ 6e-39 — a DENORMAL float — for nearly every
+		// cell, and every denormal result costs a microcode assist (measured:
+		// 2.4x slower sigmoid on a resting field, the single largest cost in
+		// the 2D field step). With FTZ those flush to exact 0.0f. The
+		// difference (<= 6e-39) is orders of magnitude below double's
+		// absorption threshold against every term of the field dynamics, so
+		// the activation u stays bit-identical (golden field-dynamics suite is
+		// the gate). MXCSR is restored before returning.
+		const unsigned int oldCsr = _mm_getcsr();
+		_mm_setcsr(oldCsr | 0x8040u); // FTZ (bit 15) + DAZ (bit 6)
 		// Vectorized path: 8 cells at a time. Same formula as the scalar fallback
 		// (clamp the exponent to [-88,88] then 1/(1+exp(e))) but exp via the SIMD
 		// Cephes approximation. This is an elementwise MAP — no reduction/summation
@@ -101,6 +113,9 @@ namespace dnf_composer::element
 			e = e < -88.0f ? -88.0f : (e > 88.0f ? 88.0f : e);
 			out[i] = static_cast<double>(1.0f / (1.0f + std::exp(e)));
 		}
+#if DNFC_HAVE_AVX2
+		_mm_setcsr(oldCsr);
+#endif
 	}
 
 	bool SigmoidFunction::operator==(const SigmoidFunction& other) const

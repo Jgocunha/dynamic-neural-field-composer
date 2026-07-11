@@ -103,6 +103,13 @@ if(DNF_COMPOSER_BUILD_TESTS)
     # session block to tests/profiler/profile.md.
     add_executable(dnf_composer_profiler "profiler/profiler_main.cpp")
     target_include_directories(dnf_composer_profiler PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    # Match the library's SIMD flags: the math.h templates instantiated in this
+    # TU are COMDATs — without /arch:AVX2 the linker may keep this TU's scalar
+    # copies for the whole exe, silently overriding the library's AVX2
+    # instantiations (and the profiler must measure the code the library runs).
+    target_compile_options(dnf_composer_profiler PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+            $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>)
     target_compile_definitions(dnf_composer_profiler PRIVATE
             PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md")
     target_link_libraries(dnf_composer_profiler PRIVATE
