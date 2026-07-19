@@ -240,7 +240,11 @@ add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
 
 # Enable AVX2 SIMD for the library (hot path: 2D separable convolution). Scoped to
-# this target only; keeps default /fp:precise so numeric results are unchanged.
+# this target only; keeps default /fp:precise so numeric results are unchanged. AVX2 is
+# required for dnf-composer's 2D throughput to stay ahead of the other DFT frameworks
+# (an ablation showed ~4x on the convolution and a loss of the 2D lead without it — see
+# .claude reports in the benchmarking repo), so it is always on, library-wide, and every
+# dnf-composer executable inherits it.
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
     $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>

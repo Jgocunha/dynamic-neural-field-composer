@@ -1,21 +1,23 @@
-// dnfc_benchmark_headless_2d — headless 2D timing benchmark for dnfc (50x50).
+// dnfc_benchmark_headless_2d — headless 2D timing benchmark for dnfc.
 //
 // Programmatically creates N independent 2D neural fields (no JSON loading),
 // each with 1 GaussStimulus2D + 1 GaussKernel2D (lateral) + 1 NormalNoise2D
-// (amp=0). Times 5000 Euler steps and records steps/second.
+// (amp=0.1). Times 2000 Euler steps per run (200-step warm-up discarded), 5 runs,
+// and records steps/second.
 //
 // 2D counterpart of benchmark_headless.cpp. Same protocol and per-field
-// architecture, promoted to 2D on a fixed 50x50 grid.
+// architecture, promoted to 2D on an NxN grid given by the grid_side argument.
 //
 // Build inside the dnf-composer tree like the examples: register with
 // add_example_executable(benchmark_headless_2d benchmark_headless_2d.cpp) in
 // examples/CMakeLists.txt (links the imgui include path the logger header needs).
 //
-// Usage: benchmark_headless_2d [output_csv] [N_csv] [timed_steps] [n_runs]
+// Usage: benchmark_headless_2d [output_csv] [arch] [N_csv] [grid_side] [timed_steps] [n_runs]
 //   output_csv   defaults to "timings-dnfc-2d.csv"
-//   N_csv        comma-separated field counts, e.g. "10,50,100" (default "10,50,100,500,1000")
-//   timed_steps  timed steps per run (default 5000)
-//   n_runs       runs per N (default 3)
+//   N_csv        comma-separated field counts, e.g. "10,50,100" (default "5,10,50,100")
+//   grid_side    field side length, NxN grid (default 50)
+//   timed_steps  timed steps per run (default 2000)
+//   n_runs       runs per N (default 5)
 // The extra args exist for fast iteration; the no-arg defaults reproduce the
 // canonical protocol.
 

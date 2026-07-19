@@ -1,11 +1,12 @@
 // dnfc_benchmark_headless — headless timing benchmark for dnfc.
 //
 // Programmatically creates N independent neural fields (no JSON loading),
-// each with 1 GaussStimulus + 1 GaussKernel (lateral) + 1 NormalNoise (amp=0).
-// Times 5000 Euler steps and records steps/second.
+// each with 1 GaussStimulus + 1 GaussKernel (lateral) + 1 NormalNoise (amp=0.1).
+// Times 2000 Euler steps per run (200-step warm-up discarded), 5 runs, and records
+// steps/second.
 //
-// Usage: dnfc_benchmark_headless [output_csv]
-//   output_csv defaults to "timings.csv"
+// Usage: benchmark_headless [output_csv] [arch] [N_csv] [field_size]
+//   output_csv defaults to "timings-dnfc.csv"
 
 #include <chrono>
 #include <cstdio>
