@@ -294,6 +294,19 @@ TEST(SimulationComponents, GetComponentPtrReturnsNonNull)
     EXPECT_NE(ptr, nullptr);
 }
 
+TEST(SimulationComponents, GetComponentReturnsEmptyForMissingElement)
+{
+    const Simulation sim("s", 1.0, 0.0, 0.0);
+    const auto data = sim.getComponent("nonexistent", "output");
+    EXPECT_TRUE(data.empty());
+}
+
+TEST(SimulationComponents, GetComponentPtrReturnsNullForMissingElement)
+{
+    const Simulation sim("s", 1.0, 0.0, 0.0);
+    EXPECT_EQ(sim.getComponentPtr("nonexistent", "output"), nullptr);
+}
+
 // ---------------------------------------------------------------------------
 // Time / parameter setters
 // ---------------------------------------------------------------------------
