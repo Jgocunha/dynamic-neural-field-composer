@@ -453,12 +453,22 @@ namespace dnf_composer
 	std::vector<double> Simulation::getComponent(const std::string& id, const std::string& componentName) const
 	{
 		const std::shared_ptr<element::Element> foundElement = getElement(id);
+		if (!foundElement)
+		{
+			log(tools::logger::LogLevel::FATAL, "Element '" + id + "' was not found and consequently no component was returned.");
+			return {};
+		}
 		return foundElement->getComponent(componentName);
 	}
 
 	std::vector<double>* Simulation::getComponentPtr(const std::string& id, const std::string& componentName) const
 	{
 		const std::shared_ptr<element::Element> foundElement = getElement(id);
+		if (!foundElement)
+		{
+			log(tools::logger::LogLevel::FATAL, "Element '" + id + "' was not found and consequently no component was returned.");
+			return nullptr;
+		}
 		return foundElement->getComponentPtr(componentName);
 	}
 
