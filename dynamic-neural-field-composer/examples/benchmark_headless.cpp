@@ -179,6 +179,11 @@ static void run_benchmark(int N, const Arch& arch, int field_size, const std::st
 
     sim->init();
 
+    // For "memory", establish-then-remove the stimulus before warm-up too (matches the
+    // Cedar driver), so the discarded warm-up steps reflect the same post-establish state
+    // the timed runs start from, rather than the stimulus sitting at its initial value.
+    if (arch.name == "memory") establish_then_remove_stimulus(stimuli, stimuliParams, sim);
+
     // Warm-up
     for (int t = 0; t < WARMUP_STEPS; ++t) sim->step();
 

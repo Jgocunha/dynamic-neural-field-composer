@@ -21,15 +21,11 @@
 #include <fstream>
 #include <type_traits>
 
-// AVX2 intrinsics for the vectorized FP64 convolution inner loop. __AVX2__ is
-// defined by MSVC under /arch:AVX2 and by GCC/Clang under -mavx2, which the
-// CMake target sets. Guarded so non-AVX2 builds fall back to the scalar loop.
-#if defined(__AVX2__)
-	#include <immintrin.h>
-	#define DNFC_HAVE_AVX2 1
-#else
-	#define DNFC_HAVE_AVX2 0
-#endif
+// Runtime-dispatched AVX2+FMA convolution kernel (see simd_dispatch.h): the
+// decision to use it is a runtime cpuid check, not a compile-time macro, so this
+// header compiles and the resulting binary runs correctly whether or not the
+// host CPU has AVX2.
+#include "tools/simd_dispatch.h"
 
 namespace dnf_composer::tools::math
 {
@@ -135,128 +131,22 @@ namespace dnf_composer::tools::math
 		const T* __restrict kr = krev.data();
 		const T* __restrict mx = max_v.data();
 
-#if DNFC_HAVE_AVX2
 		if constexpr (std::is_same_v<T, double>)
 		{
-			// Symmetric-kernel folding. For a symmetric kernel kr (Gauss / the
-			// symmetric axis of Asymmetric / correlated-noise taps), each output is
-			// out[i] = kr[c]*w[c] + sum_{j<c} kr[j]*(w[j] + w[2c-j]) — half the
-			// multiplies. This reorders the per-output summation (pairs summed before
-			// scaling), so it is NOT bit-identical; it is gated on the 1e-4 field-
-			// dynamics validation suite. Measured: worst-case deviation across all
-			// 600 sims stays at the ~5e-5 reference-CSV truncation floor (i.e. folding
-			// adds no error beyond what's already there), with the same ~2x margin to
-			// 1e-4 as the unfolded path. Vectorized 4 outputs at a time; non-symmetric
-			// kernels (e.g. Oscillatory) fall through to the bit-identical path below.
-			bool symmetric = (M % 2 == 1);
-			if (symmetric)
-				for (int j = 0, c = M - 1; j < c; ++j, --c)
-					if (kr[j] != kr[c]) { symmetric = false; break; }
-
-			// Four independent accumulator chains (16 outputs per iteration) hide
-			// the fmadd latency — a single-accumulator chain is latency-bound
-			// (~4-5 cycles per serialized fmadd, ~10x off throughput). Vector ops
-			// are element-wise, so regrouping outputs into wider blocks does NOT
-			// change any element's operation sequence (center tap, then pairs in
-			// ascending j / taps in ascending m) — bit-identical to the 4-wide
-			// body, which is kept as the bridge so tail elements get the exact
-			// same treatment as before the unroll.
-			int i = 0;
-			double* __restrict o = out.data();
-			if (symmetric)
+			// Runtime dispatch (checked once, cached): use the AVX2+FMA kernel only
+			// if the host CPU actually supports it. See simd_dispatch.h/.cpp — this
+			// replaces what used to be a compile-time #if on the caller's own build
+			// flags, so this same binary is correct on pre-AVX2 x86-64 CPUs too.
+			if (detail::avx2_fma_available())
 			{
-				const int c = M / 2; // center tap index
-				const __m256d kc = _mm256_set1_pd(kr[c]);
-				for (; i + 16 <= n; i += 16)
-				{
-					const double* __restrict w = mx + i;
-					__m256d a0 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c));
-					__m256d a1 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c + 4));
-					__m256d a2 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c + 8));
-					__m256d a3 = _mm256_mul_pd(kc, _mm256_loadu_pd(w + c + 12));
-					for (int j = 0; j < c; ++j)
-					{
-						const __m256d kv = _mm256_set1_pd(kr[j]);
-						const int mj = 2 * c - j;
-						a0 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j),      _mm256_loadu_pd(w + mj)),      a0);
-						a1 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j + 4),  _mm256_loadu_pd(w + mj + 4)),  a1);
-						a2 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j + 8),  _mm256_loadu_pd(w + mj + 8)),  a2);
-						a3 = _mm256_fmadd_pd(kv, _mm256_add_pd(_mm256_loadu_pd(w + j + 12), _mm256_loadu_pd(w + mj + 12)), a3);
-					}
-					_mm256_storeu_pd(o + i,      a0);
-					_mm256_storeu_pd(o + i + 4,  a1);
-					_mm256_storeu_pd(o + i + 8,  a2);
-					_mm256_storeu_pd(o + i + 12, a3);
-				}
-				for (; i + 4 <= n; i += 4)
-				{
-					const double* __restrict w = mx + i;
-					__m256d acc = _mm256_mul_pd(_mm256_set1_pd(kr[c]), _mm256_loadu_pd(w + c));
-					for (int j = 0; j < c; ++j)
-					{
-						const __m256d kv  = _mm256_set1_pd(kr[j]);
-						const __m256d sum = _mm256_add_pd(_mm256_loadu_pd(w + j),
-						                                  _mm256_loadu_pd(w + (2 * c - j)));
-						acc = _mm256_fmadd_pd(kv, sum, acc);
-					}
-					_mm256_storeu_pd(o + i, acc);
-				}
-				for (; i < n; ++i)
-				{
-					const double* __restrict w = mx + i;
-					double acc = kr[c] * w[c];
-					for (int j = 0; j < c; ++j)
-						acc += kr[j] * (w[j] + w[2 * c - j]);
-					o[i] = acc;
-				}
+				detail::conv_valid_into_avx2_f64(kr, M, mx, out.data(), n);
 				return;
 			}
-
-			// Non-symmetric: vectorize across the OUTPUT index (bit-identical — each
-			// output's tap sum keeps the original m-order). Same 4-chain unroll.
-			for (; i + 16 <= n; i += 16)
-			{
-				const double* __restrict w = mx + i;
-				__m256d a0 = _mm256_setzero_pd();
-				__m256d a1 = _mm256_setzero_pd();
-				__m256d a2 = _mm256_setzero_pd();
-				__m256d a3 = _mm256_setzero_pd();
-				for (int m = 0; m < M; ++m)
-				{
-					const __m256d kv = _mm256_set1_pd(kr[m]);
-					a0 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m),      a0);
-					a1 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m + 4),  a1);
-					a2 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m + 8),  a2);
-					a3 = _mm256_fmadd_pd(kv, _mm256_loadu_pd(w + m + 12), a3);
-				}
-				_mm256_storeu_pd(o + i,      a0);
-				_mm256_storeu_pd(o + i + 4,  a1);
-				_mm256_storeu_pd(o + i + 8,  a2);
-				_mm256_storeu_pd(o + i + 12, a3);
-			}
-			for (; i + 4 <= n; i += 4)
-			{
-				__m256d acc = _mm256_setzero_pd();
-				const double* __restrict w = mx + i;
-				for (int m = 0; m < M; ++m)
-				{
-					const __m256d kv = _mm256_set1_pd(kr[m]);
-					const __m256d wv = _mm256_loadu_pd(w + m);
-					acc = _mm256_fmadd_pd(kv, wv, acc);
-				}
-				_mm256_storeu_pd(o + i, acc);
-			}
-			for (; i < n; ++i)
-			{
-				const double* __restrict w = mx + i;
-				double acc = 0.0;
-				for (int m = 0; m < M; ++m)
-					acc += kr[m] * w[m];
-				o[i] = acc;
-			}
-			return;
 		}
-#endif
+		{
+			static thread_local int dbgCount = 0;
+			if (dbgCount < 8) { std::fprintf(stderr, "[SCALARDBG] M=%d n=%d T=double?%d\n", M, n, (int)std::is_same_v<T,double>); ++dbgCount; }
+		}
 		for (int i = 0; i < n; ++i)
 		{
 			const T* __restrict w = mx + i;

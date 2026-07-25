@@ -210,6 +210,8 @@ set(src
         "src/element_parameters/element_parameters.cpp"
 
         "src/tools/math.cpp"
+        "src/tools/simd_dispatch.cpp"
+        "src/tools/simd_dispatch_avx2.cpp"
         "src/tools/profiling.cpp"
         "src/tools/utils.cpp"
         "src/tools/logger.cpp"
@@ -239,15 +241,20 @@ set(src
 add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
 
-# Enable AVX2 SIMD for the library (hot path: 2D separable convolution). Scoped to
-# this target only; keeps default /fp:precise so numeric results are unchanged. AVX2 is
-# required for dnf-composer's 2D throughput to stay ahead of the other DFT frameworks
-# (an ablation showed ~4x on the convolution and a loss of the 2D lead without it — see
-# .claude reports in the benchmarking repo), so it is always on, library-wide, and every
-# dnf-composer executable inherits it.
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>
+# AVX2+FMA is scoped to ONE translation unit (src/tools/simd_dispatch_avx2.cpp),
+# not the whole library: every other file, and every dnf-composer executable,
+# compiles at the toolchain's default baseline. Whether the AVX2 kernel actually
+# runs is decided at RUNTIME by a cpuid check (tools/simd_dispatch.cpp/.h) — the
+# same mechanism OpenCV/FFTW use to dispatch their own AVX2 code paths — so this
+# is a portability fix, not a fairness reduction: an ablation showed AVX2 is
+# worth ~4x on the convolution hot path and required for dnf-composer's 2D
+# throughput to stay ahead of the other DFT frameworks (see .claude reports in
+# the benchmarking repo), so the kernel is still used whenever the host CPU
+# supports it — it just no longer requires the CPU to support it to run at all.
+# GCC/Clang's -mavx2 does not imply FMA the way MSVC's /arch:AVX2 does, so -mfma
+# is required alongside it for the _mm256_fmadd_pd calls in that one file.
+set_source_files_properties(src/tools/simd_dispatch_avx2.cpp PROPERTIES
+    COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>;$<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>;$<$<CXX_COMPILER_ID:GNU,Clang>:-mfma>"
 )
 target_include_directories(${CMAKE_PROJECT_NAME} 
     PUBLIC $<INSTALL_INTERFACE:include> 
