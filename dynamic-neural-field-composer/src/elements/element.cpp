@@ -99,6 +99,29 @@ namespace dnf_composer::element
 			return;
 		}
 
+		// A matching flattened size does not guarantee a compatible spatial layout
+		// (e.g. a 1D size-10 element and a 2D 5x2 element both flatten to 10 samples).
+		// Elements that intentionally bridge dimensionality (Collapse, Expand, Resize,
+		// Resize2D) resize their own "input" component ahead of this call, after doing
+		// their own shape validation, so they are exempt from this stricter gate; every
+		// other element still has its "input" component sized to its own declared
+		// dimensions here, so compare shapes directly against the source.
+		if (this->getComponentPtr("input")->size() == this->getSize())
+		{
+			const ElementDimensions inputDims = inputElement->getElementCommonParameters().dimensionParameters;
+			const ElementDimensions& thisDims = this->commonParameters.dimensionParameters;
+			if (inputDims.dimensionality != thisDims.dimensionality ||
+				inputDims.size_x != thisDims.size_x ||
+				inputDims.size_y != thisDims.size_y)
+			{
+				const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' has an incompatible shape ("
+				                               + inputDims.toString() + ") for '" + this->getUniqueName() + "' ("
+				                               + thisDims.toString() + ").";
+				log(tools::logger::LogLevel::ERROR, logMessage);
+				return;
+			}
+		}
+
 		if (inputElement->getComponentPtr("output")->size() != this->getComponentPtr("input")->size())
 		{
 			if (inputElement->getComponentPtr("output")->size() != this->getSize())
