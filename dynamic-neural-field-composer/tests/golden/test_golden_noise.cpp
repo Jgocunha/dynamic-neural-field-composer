@@ -130,12 +130,12 @@ TEST(GoldenNormalNoise1D, StatisticalMeanAndStdAcrossRegimes)
         }
 
         const auto [mean, var] = computeMoments(samples);
-        const double std = std::sqrt(var);
+        const double sampleStd = std::sqrt(var);
         const double expectedStd = r.amplitude / std::sqrt(r.deltaT);
 
         EXPECT_NEAR(mean, 0.0, g::kStatTol)
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
-        EXPECT_NEAR(std, expectedStd, g::kStatTol)
+        EXPECT_NEAR(sampleStd, expectedStd, g::kStatTol)
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
     }
 }
@@ -168,12 +168,12 @@ TEST(GoldenNormalNoise2D, StatisticalMeanAndStdAcrossRegimes)
         }
 
         const auto [mean, var] = computeMoments(samples);
-        const double std = std::sqrt(var);
+        const double sampleStd = std::sqrt(var);
         const double expectedStd = r.amplitude / std::sqrt(r.deltaT);
 
         EXPECT_NEAR(mean, 0.0, g::kStatTol)
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
-        EXPECT_NEAR(std, expectedStd, g::kStatTol)
+        EXPECT_NEAR(sampleStd, expectedStd, g::kStatTol)
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
     }
 }

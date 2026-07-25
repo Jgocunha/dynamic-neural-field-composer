@@ -14,13 +14,10 @@
 //  we independently re-derive and check, in addition to the resulting
 //  output = W * input.
 //
-//  NOTE on issue #54: reading src/elements/gauss_field_coupling.cpp as of
-//  this worktree, the Gaussian-coupling weight computation is NOT
-//  commented out — both the circular (gaussian_2d_periodic) and
-//  non-circular (gaussian_2d) branches are live and populate "weights" from
-//  parameters.couplings. The golden tests below therefore characterize the
-//  ACTUAL current (functional) behaviour. If #54 refers to an earlier
-//  revision, it may already be resolved — flagged to god either way.
+//  GaussFieldCoupling weight computation: both the circular
+//  (gaussian_2d_periodic) and non-circular (gaussian_2d) branches populate
+//  "weights" from parameters.couplings. The golden tests below characterize
+//  this current behaviour.
 // ----------------------------------------------------------------------------
 #include <gtest/gtest.h>
 #include <memory>

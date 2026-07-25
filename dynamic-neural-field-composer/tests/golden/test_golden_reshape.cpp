@@ -85,7 +85,13 @@ namespace
         source->init();
         resize->addInput(source);
         resize->init();
-        std::copy(input.begin(), input.end(), source->getComponentPtr("output")->begin());
+        auto* out = source->getComponentPtr("output");
+        if (out->size() != input.size())
+        {
+            ADD_FAILURE() << "source output size " << out->size() << " != probe size " << input.size();
+            return {};
+        }
+        std::copy(input.begin(), input.end(), out->begin());
         resize->step(0.0, 1.0);
         return resize->getComponent("output");
     }
@@ -114,7 +120,13 @@ namespace
         source->init();
         resize->addInput(source);
         resize->init();
-        std::copy(field.begin(), field.end(), source->getComponentPtr("output")->begin());
+        auto* out = source->getComponentPtr("output");
+        if (out->size() != field.size())
+        {
+            ADD_FAILURE() << "source output size " << out->size() << " != probe size " << field.size();
+            return {};
+        }
+        std::copy(field.begin(), field.end(), out->begin());
         resize->step(0.0, 1.0);
         return resize->getComponent("output");
     }
@@ -136,7 +148,13 @@ namespace
         source->init();
         collapse->addInput(source);
         collapse->init();
-        std::copy(field.begin(), field.end(), source->getComponentPtr("output")->begin());
+        auto* out = source->getComponentPtr("output");
+        if (out->size() != field.size())
+        {
+            ADD_FAILURE() << "source output size " << out->size() << " != probe size " << field.size();
+            return {};
+        }
+        std::copy(field.begin(), field.end(), out->begin());
         collapse->step(0.0, 1.0);
         return collapse->getComponent("output");
     }
@@ -169,7 +187,13 @@ namespace
         source->init();
         expand->addInput(source);
         expand->init();
-        std::copy(profile.begin(), profile.end(), source->getComponentPtr("output")->begin());
+        auto* out = source->getComponentPtr("output");
+        if (out->size() != profile.size())
+        {
+            ADD_FAILURE() << "source output size " << out->size() << " != probe size " << profile.size();
+            return {};
+        }
+        std::copy(profile.begin(), profile.end(), out->begin());
         expand->step(0.0, 1.0);
         return expand->getComponent("output");
     }
