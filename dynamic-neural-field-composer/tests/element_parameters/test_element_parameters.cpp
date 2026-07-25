@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <limits>
 #include "element_parameters/element_parameters.h"
 #include "exceptions/exception.h"
 
@@ -146,6 +147,16 @@ TEST(ElementDimensions, FourArgConstructorRejectsNonPositiveExtentOrStep)
     EXPECT_THROW(ElementDimensions(100, -5, 1.0, 1.0), dnf_composer::Exception);
     EXPECT_THROW(ElementDimensions(100, 100, 0.0, 1.0), dnf_composer::Exception);
     EXPECT_THROW(ElementDimensions(100, 100, 1.0, -2.0), dnf_composer::Exception);
+}
+
+TEST(ElementDimensions, RejectsTinyPositiveStepThatOverflowsSampleCount)
+{
+    // A finite, positive-but-tiny step makes extent/step non-finite or exceed the
+    // safe sample range; the quotient must be rejected BEFORE std::llround (whose
+    // out-of-range result is implementation-defined and could bypass the range check).
+    EXPECT_THROW(ElementDimensions(200, 1e-310), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(200, std::numeric_limits<double>::denorm_min()), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(200, 200, 1e-310, 1.0), dnf_composer::Exception);
 }
 
 // ---------------------------------------------------------------------------

@@ -30,7 +30,19 @@ namespace dnf_composer::element
 					std::to_string(spacing) + '.');
 			}
 
-			const auto samples = std::llround(static_cast<double>(extent) / spacing);
+			// Guard the quotient BEFORE std::llround: a tiny positive spacing can make
+			// extent/spacing non-finite or exceed long long's range, in which case
+			// std::llround signals a domain error and returns an implementation-defined
+			// value that could slip past the range check below.
+			const double rawSamples = static_cast<double>(extent) / spacing;
+			if (!std::isfinite(rawSamples) || rawSamples > static_cast<double>(kMaxAxisSamples))
+			{
+				throw Exception("ElementDimensions: extent " + std::to_string(extent) + " / step " +
+					std::to_string(spacing) + " is non-finite or exceeds the safe sample range 1.." +
+					std::to_string(kMaxAxisSamples) + "; refusing to size a field/buffer from it.");
+			}
+
+			const auto samples = std::llround(rawSamples);
 			if (samples <= 0 || samples > kMaxAxisSamples)
 			{
 				throw Exception("ElementDimensions: computed sample count " + std::to_string(samples) +
