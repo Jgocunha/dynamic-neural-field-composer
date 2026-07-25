@@ -2,6 +2,7 @@
 #include <memory>
 #include <filesystem>
 #include <fstream>
+#include <algorithm>
 
 #include "elements/field_coupling.h"
 #include "elements/neural_field.h"
@@ -266,6 +267,105 @@ TEST(FieldCouplingTest, AddInputAtRuntimeDoesNotDisableLearning)
 
     // checkValidConnections() must find both pointers valid; learning must stay active.
     EXPECT_TRUE(fc->getParameters().isLearningActive);
+}
+
+// ---------------------------------------------------------------------------
+// DELTA learning rule (issue #38) — updateWeights() reads fc->input's and
+// fc->output's own "activation" components (the connected NeuralFields, not
+// FieldCoupling's internal "input"/"output"), normalizes them, and calls
+// tools::math::unsupervisedDeltaLearningRule(). These tests wire that up
+// directly, bypassing NeuralField::step() so the hand-set activations are
+// not overwritten by field dynamics.
+// ---------------------------------------------------------------------------
+
+namespace
+{
+    // Wires inputField -> fc -> outputField the same way
+    // FieldCouplingTest.AddInputAtRuntimeDoesNotDisableLearning does, without
+    // ever stepping the NeuralFields (so their "activation" stays whatever the
+    // test sets it to).
+    void wireCoupling(const std::shared_ptr<NeuralField>& inputField,
+        const std::shared_ptr<FieldCoupling>& fc,
+        const std::shared_ptr<NeuralField>& outputField)
+    {
+        outputField->addInput(fc);
+        inputField->init();
+        fc->init();
+        outputField->init();
+        fc->addInput(inputField);
+    }
+}
+
+TEST(FieldCouplingDeltaLearningRule, ZeroErrorProducesNoWeightChange)
+{
+    constexpr int size = 10;
+    const auto inputField = makeField("delta-in", size);
+    const auto outputField = makeField("delta-out", size);
+    ElementDimensions inDim{ size, 1.0 };
+    FieldCouplingParameters fcp{ inDim, LearningRule::DELTA, 1.0, 0.1 };
+    const auto fc = std::make_shared<FieldCoupling>(ElementCommonParameters{ "delta-fc", size }, fcp);
+
+    wireCoupling(inputField, fc, outputField);
+
+    // Weights start at zero (constructor default), so the coupling's
+    // prediction w^T*input is zero regardless of the input activation.
+    const auto originalWeights = *fc->getComponentPtr("weights");
+    for (double w : originalWeights)
+        EXPECT_DOUBLE_EQ(w, 0.0);
+
+    // A uniform output activation normalizes to an all-zero target (every
+    // entry is the vector's minimum, which normalize() maps to 0), so the
+    // error (target - predicted) is exactly zero everywhere.
+    auto* outActivation = outputField->getComponentPtr("activation");
+    std::fill(outActivation->begin(), outActivation->end(), 3.0);
+    auto* inActivation = inputField->getComponentPtr("activation");
+    for (std::size_t i = 0; i < inActivation->size(); ++i)
+        (*inActivation)[i] = static_cast<double>(i) * 0.37;
+
+    fc->setLearning(true);
+    fc->step(0.0, 0.1);
+
+    const auto updatedWeights = *fc->getComponentPtr("weights");
+    EXPECT_EQ(updatedWeights, originalWeights);
+}
+
+TEST(FieldCouplingDeltaLearningRule, NonUniformTargetIncreasesWeightsFromZero)
+{
+    constexpr int size = 10;
+    const auto inputField = makeField("delta-in2", size);
+    const auto outputField = makeField("delta-out2", size);
+    ElementDimensions inDim{ size, 1.0 };
+    FieldCouplingParameters fcp{ inDim, LearningRule::DELTA, 1.0, 0.1 };
+    const auto fc = std::make_shared<FieldCoupling>(ElementCommonParameters{ "delta-fc2", size }, fcp);
+
+    wireCoupling(inputField, fc, outputField);
+
+    // Weights start at zero, so predicted = 0 and error = normalize(output).
+    // A non-uniform output activation normalizes to a non-negative vector
+    // that is not all-zero (normalize() preserves relative order — see
+    // NormalizeVector.PreservesRelativeOrder in test_math.cpp).
+    auto* outActivation = outputField->getComponentPtr("activation");
+    for (std::size_t i = 0; i < outActivation->size(); ++i)
+        (*outActivation)[i] = static_cast<double>(i) * 1.5;
+    auto* inActivation = inputField->getComponentPtr("activation");
+    for (std::size_t i = 0; i < inActivation->size(); ++i)
+        (*inActivation)[i] = static_cast<double>(i) * 0.37 + 1.0;
+
+    fc->setLearning(true);
+    fc->step(0.0, 0.1);
+
+    const auto updatedWeights = *fc->getComponentPtr("weights");
+
+    // Both input and error are non-negative (normalize()'s range), so no
+    // weight should have moved below zero, and since neither vector is
+    // all-zero, at least one weight must have strictly increased.
+    bool anyIncreased = false;
+    for (double w : updatedWeights)
+    {
+        EXPECT_GE(w, 0.0);
+        if (w > 1e-9) anyIncreased = true;
+    }
+    EXPECT_TRUE(anyIncreased);
 }
 
 // ---------------------------------------------------------------------------

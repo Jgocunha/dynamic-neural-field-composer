@@ -587,6 +587,68 @@ namespace dnf_composer::tools::math
 		return weights;
 	}
 
+	/// @brief Unsupervised (error-driven) delta rule used by FieldCoupling's DELTA
+	/// learning rule.
+	///
+	/// Formula: Δw[i][j] = η · (target[j] − predicted[j]) · input[i], i.e. the
+	/// classic Widrow-Hoff/delta update Δw = η · (target − output) · inputᵀ.
+	///
+	/// FieldCoupling only ever exposes the two (normalized) field activations to
+	/// its learning rules -- see hebbLearningRule()/ojaLearningRule() above, which
+	/// likewise only take `input`/`output`. There is no separate, externally
+	/// supplied teacher signal in that API. To keep this rule genuinely
+	/// error-driven (rather than degenerating into pure Hebbian correlation) while
+	/// staying unsupervised, we take the *output field's own activation* as the
+	/// teaching/target signal -- exactly the role it already plays as the
+	/// post-synaptic term for HEBB/OJA -- and compare it against this coupling's
+	/// own current linear estimate, predicted[j] = sum_i weights[i][j] * input[i]
+	/// (the same product FieldCoupling::updateOutput() computes). The weights are
+	/// then nudged so that w^T * input converges towards the observed output
+	/// activation. This reduces to the standard supervised delta rule the moment a
+	/// caller treats `output` as a genuine externally-provided target.
+	///
+	/// Weight layout matches hebbLearningRule()/ojaLearningRule(): a flattened
+	/// (inputSize x outputSize) row-major matrix, weights[i * outputSize + j].
+	template <typename T>
+	std::vector<T> unsupervisedDeltaLearningRule(std::vector<T>& weights, const std::vector<T>& input, const std::vector<T>& output, double learningRate)
+	{
+		if (input.empty() || output.empty()) {
+			throw std::invalid_argument("Input and output vectors cannot be empty");
+}
+
+		const size_t inputSize = input.size();
+		const size_t outputSize = output.size();
+		const size_t expectedSize = inputSize * outputSize;
+
+		if (weights.size() != expectedSize) {
+			throw std::invalid_argument("Weight matrix size mismatch");
+}
+
+		// predicted[j] = sum_i weights[i * outputSize + j] * input[i]
+		std::vector<T> predicted(outputSize, T());
+		for (size_t i = 0; i < inputSize; ++i)
+		{
+			const size_t baseIndex = i * outputSize;
+			for (size_t j = 0; j < outputSize; ++j) {
+				predicted[j] += weights[baseIndex + j] * input[i];
+}
+		}
+
+		for (size_t i = 0; i < inputSize; ++i)
+		{
+			const size_t baseIndex = i * outputSize;
+			const T scaledInput = learningRate * input[i];
+
+			for (size_t j = 0; j < outputSize; ++j)
+			{
+				const T error = output[j] - predicted[j];
+				weights[baseIndex + j] += scaledInput * error;
+}
+		}
+
+		return weights;
+	}
+
 	template <typename T>
 	std::vector<std::vector<T>> deltaLearningRuleWidrowHoff(std::vector<std::vector<T>>& weights, const std::vector<T>& input,
 	                                                        const std::vector<T>& actualOutput, const std::vector<T>& targetOutput, double learningRate)

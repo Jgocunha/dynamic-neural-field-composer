@@ -185,8 +185,7 @@
 			switch (parameters.learningRule)
 			{
 			case LearningRule::DELTA:
-				log(tools::logger::LogLevel::ERROR, "Unsupervised delta learning rule is not implemented yet.");
-				//tools::math::unsupervisedDeltaLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
+				tools::math::unsupervisedDeltaLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
 				break;
 			case LearningRule::HEBB:
 				tools::math::hebbLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);

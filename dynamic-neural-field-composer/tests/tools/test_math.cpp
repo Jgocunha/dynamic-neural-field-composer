@@ -891,6 +891,68 @@ TEST(OjaLearningRule, DecayShrinksUpdateFromNonZeroWeights)
     EXPECT_NEAR(result[0], 1.0, 1e-9);
 }
 
+// ---------------------------------------------------------------------------
+// unsupervisedDeltaLearningRule — flat-matrix delta rule used by FieldCoupling
+// ---------------------------------------------------------------------------
+
+TEST(UnsupervisedDeltaLearningRule, ZeroWeightsHandComputedUpdate)
+{
+    // With w=0, predicted[j]=0, so error[j]=output[j] and
+    // w[i][j] += lr * input[i] * output[j] (index = i*outputSize+j).
+    std::vector<double> weights{ 0.0, 0.0, 0.0, 0.0 };
+    const std::vector<double> input{ 1.0, 2.0 };
+    const std::vector<double> output{ 0.5, 1.5 };
+    constexpr double lr = 0.1;
+
+    const auto result = unsupervisedDeltaLearningRule(weights, input, output, lr);
+    EXPECT_NEAR(result[0], 0.05, 1e-9); // i=0,j=0: 0.1*1*0.5
+    EXPECT_NEAR(result[1], 0.15, 1e-9); // i=0,j=1: 0.1*1*1.5
+    EXPECT_NEAR(result[2], 0.10, 1e-9); // i=1,j=0: 0.1*2*0.5
+    EXPECT_NEAR(result[3], 0.30, 1e-9); // i=1,j=1: 0.1*2*1.5
+}
+
+TEST(UnsupervisedDeltaLearningRule, ZeroErrorMeansNoChange)
+{
+    // predicted[j] = sum_i weights[i*outputSize+j] * input[i]; if the
+    // "target" (output) is set to exactly match that prediction, error is
+    // zero everywhere and the weights must not move at all.
+    std::vector<double> weights{ 1.0, 2.0, 3.0, 4.0 };
+    const auto original = weights;
+    const std::vector<double> input{ 1.0, 1.0 };
+    // predicted[0] = w[0]+w[2] = 1+3 = 4; predicted[1] = w[1]+w[3] = 2+4 = 6.
+    const std::vector<double> output{ 4.0, 6.0 };
+
+    const auto result = unsupervisedDeltaLearningRule(weights, input, output, 0.5);
+    EXPECT_EQ(result, original);
+}
+
+TEST(UnsupervisedDeltaLearningRule, PositiveErrorIncreasesWeightTowardsTarget)
+{
+    std::vector<double> weights{ 0.0 };
+    const std::vector<double> input{ 1.0 };
+    const std::vector<double> output{ 2.0 }; // predicted starts at 0 -> error = +2
+    constexpr double lr = 0.25;
+
+    const auto result = unsupervisedDeltaLearningRule(weights, input, output, lr);
+    EXPECT_GT(result[0], 0.0);
+}
+
+TEST(UnsupervisedDeltaLearningRule, EmptyInputThrows)
+{
+    std::vector<double> weights{ 0.0 };
+    const std::vector<double> input;
+    const std::vector<double> output{ 1.0 };
+    EXPECT_THROW(unsupervisedDeltaLearningRule(weights, input, output, 0.1), std::invalid_argument);
+}
+
+TEST(UnsupervisedDeltaLearningRule, SizeMismatchThrows)
+{
+    std::vector<double> weights{ 0.0, 0.0 };  // should be 2*2=4 for 2 inputs, 2 outputs
+    const std::vector<double> input{ 1.0, 1.0 };
+    const std::vector<double> output{ 1.0, 1.0 };
+    EXPECT_THROW(unsupervisedDeltaLearningRule(weights, input, output, 0.1), std::invalid_argument);
+}
+
 TEST(DeltaLearningRuleWidrowHoff, ZeroErrorMeansNoChange)
 {
     std::vector<std::vector<double>> weights{ { 1.0, 2.0 }, { 3.0, 4.0 } };
