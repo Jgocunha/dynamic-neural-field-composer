@@ -200,13 +200,16 @@ TEST(PlotDimensionsEquality, NotEqualBeyondEpsilon)
 
 TEST(PlotDimensionsToString, ContainsAllFields)
 {
-    const PlotDimensions dims{ 0.0, 50.0, -5.0, 5.0, 2.0, 3.0 };
+    // distinct value per field so an omission of any one is caught
+    const PlotDimensions dims{ 1.0, 50.0, -7.0, 8.0, 2.0, 3.0 };
     const auto str = dims.toString();
     EXPECT_FALSE(str.empty());
-    EXPECT_NE(str.find("50.00"), std::string::npos);
-    EXPECT_NE(str.find("-5.00"), std::string::npos);
-    EXPECT_NE(str.find("2.00"), std::string::npos);
-    EXPECT_NE(str.find("3.00"), std::string::npos);
+    EXPECT_NE(str.find("xMin: 1.00"), std::string::npos);
+    EXPECT_NE(str.find("xMax: 50.00"), std::string::npos);
+    EXPECT_NE(str.find("yMin: -7.00"), std::string::npos);
+    EXPECT_NE(str.find("yMax: 8.00"), std::string::npos);
+    EXPECT_NE(str.find("xStep: 2.00"), std::string::npos);
+    EXPECT_NE(str.find("yStep: 3.00"), std::string::npos);
 }
 
 // ---------------------------------------------------------------------------
