@@ -19,6 +19,7 @@
 //  to fail even though the exact bytes are never reproducible.
 // ----------------------------------------------------------------------------
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <cmath>
 #include <numeric>
 #include <vector>
@@ -133,9 +134,14 @@ TEST(GoldenNormalNoise1D, StatisticalMeanAndStdAcrossRegimes)
         const double sampleStd = std::sqrt(var);
         const double expectedStd = r.amplitude / std::sqrt(r.deltaT);
 
-        EXPECT_NEAR(mean, 0.0, g::kStatTol)
+        // Scale the tolerance by the estimators' sampling standard error so the
+        // bound is regime-independent; keep kStatTol as a relative floor.
+        const double n = static_cast<double>(samples.size());
+        const double seMean = expectedStd / std::sqrt(n);
+        const double seStd = expectedStd / std::sqrt(2.0 * n);
+        EXPECT_NEAR(mean, 0.0, std::max(g::kStatTol, 6.0 * seMean))
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
-        EXPECT_NEAR(sampleStd, expectedStd, g::kStatTol)
+        EXPECT_NEAR(sampleStd, expectedStd, std::max(g::kStatTol, 6.0 * seStd))
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
     }
 }
@@ -171,9 +177,14 @@ TEST(GoldenNormalNoise2D, StatisticalMeanAndStdAcrossRegimes)
         const double sampleStd = std::sqrt(var);
         const double expectedStd = r.amplitude / std::sqrt(r.deltaT);
 
-        EXPECT_NEAR(mean, 0.0, g::kStatTol)
+        // Scale the tolerance by the estimators' sampling standard error so the
+        // bound is regime-independent; keep kStatTol as a relative floor.
+        const double n = static_cast<double>(samples.size());
+        const double seMean = expectedStd / std::sqrt(n);
+        const double seStd = expectedStd / std::sqrt(2.0 * n);
+        EXPECT_NEAR(mean, 0.0, std::max(g::kStatTol, 6.0 * seMean))
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
-        EXPECT_NEAR(sampleStd, expectedStd, g::kStatTol)
+        EXPECT_NEAR(sampleStd, expectedStd, std::max(g::kStatTol, 6.0 * seStd))
             << "amplitude=" << r.amplitude << " deltaT=" << r.deltaT;
     }
 }
