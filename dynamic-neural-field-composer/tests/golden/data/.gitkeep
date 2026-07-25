@@ -1,0 +1,2 @@
+# Committed golden-data fixtures (frozen algebraic-equivalence baselines) land here.
+# CSVs are the durable validation dataset; regenerate only with DNF_UPDATE_GOLDEN=1.
