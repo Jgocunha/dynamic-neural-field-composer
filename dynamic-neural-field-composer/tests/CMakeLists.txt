@@ -58,6 +58,8 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "exceptions/test_exception.cpp"
             # visualization
             "visualization/test_visualization.cpp"
+            # user_interface
+            "user_interface/test_plot_control_window.cpp"
     )
     target_include_directories(dnf_composer_tests PRIVATE
             ${CMAKE_SOURCE_DIR}/include
