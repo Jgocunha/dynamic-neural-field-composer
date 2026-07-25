@@ -185,8 +185,17 @@
 			switch (parameters.learningRule)
 			{
 			case LearningRule::DELTA:
-				tools::math::unsupervisedDeltaLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
+			{
+				// updateOutput() applies parameters.scalar (output = scalar * W * input), so the
+				// delta rule must learn that same scaled forward model. Feeding scalar-adjusted
+				// input makes both the prediction and the gradient carry the coupling scalar.
+				std::vector<double> scaledInput = inputActivation;
+				for (double& value : scaledInput) {
+					value *= parameters.scalar;
+}
+				tools::math::unsupervisedDeltaLearningRule(components["weights"], scaledInput, outputActivation, parameters.learningRate);
 				break;
+			}
 			case LearningRule::HEBB:
 				tools::math::hebbLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
 				break;

@@ -368,6 +368,61 @@ TEST(FieldCouplingDeltaLearningRule, NonUniformTargetIncreasesWeightsFromZero)
     EXPECT_TRUE(anyIncreased);
 }
 
+TEST(FieldCouplingDeltaLearningRule, NonUnitScalarZeroErrorLeavesNonzeroWeightsUnchanged)
+{
+    // Regression for the coupling-scalar fix. updateOutput() evaluates
+    // output = scalar * W * input, so DELTA must learn that *scaled* model. We
+    // hand-build nonzero weights whose scaled prediction reproduces the
+    // (normalized) target exactly, giving zero error -- a correct implementation
+    // must therefore leave the weights untouched. Before the fix the prediction
+    // dropped `scalar`, producing a spurious error that would drift these weights.
+    constexpr int size = 4;
+    constexpr double scalar = 2.0;
+    const auto inputField = makeField("delta-in3", size);
+    const auto outputField = makeField("delta-out3", size);
+    ElementDimensions inDim{ size, 1.0 };
+    FieldCouplingParameters fcp{ inDim, LearningRule::DELTA, scalar, 0.1 };
+    const auto fc = std::make_shared<FieldCoupling>(ElementCommonParameters{ "delta-fc3", size }, fcp);
+
+    wireCoupling(inputField, fc, outputField);
+
+    // Drive the fields with non-uniform activations and reproduce the exact
+    // normalization the learning path applies, so we know the operands.
+    std::vector<double> rawIn(size), rawOut(size);
+    for (int i = 0; i < size; ++i) { rawIn[i] = 0.5 + i; rawOut[i] = 1.0 + 2.0 * i; }
+    auto* inAct = inputField->getComponentPtr("activation");
+    auto* outAct = outputField->getComponentPtr("activation");
+    std::copy(rawIn.begin(), rawIn.end(), inAct->begin());
+    std::copy(rawOut.begin(), rawOut.end(), outAct->begin());
+
+    const std::vector<double> normIn = tools::math::normalize(rawIn);
+    const std::vector<double> normTarget = tools::math::normalize(rawOut);
+
+    // Concentrate the weight mass on the largest normalized-input index i*, so
+    // predicted[j] = W[i*,j] * (scalar * normIn[i*]). Choosing
+    // W[i*,j] = normTarget[j] / (scalar * normIn[i*]) makes scalar*W*normIn equal
+    // normTarget exactly -> zero error.
+    const auto iStar = static_cast<int>(std::distance(normIn.begin(),
+        std::max_element(normIn.begin(), normIn.end())));
+    const double m = normIn[iStar];
+    ASSERT_GT(m, 0.0);
+
+    std::vector<double> W(static_cast<std::size_t>(size) * size, 0.0);
+    for (int j = 0; j < size; ++j)
+        W[static_cast<std::size_t>(iStar) * size + j] = normTarget[j] / (scalar * m);
+
+    auto* weights = fc->getComponentPtr("weights");
+    ASSERT_EQ(weights->size(), W.size());
+    std::copy(W.begin(), W.end(), weights->begin());
+
+    fc->setLearning(true);
+    fc->step(0.0, 0.1);
+
+    const auto updatedWeights = *fc->getComponentPtr("weights");
+    for (std::size_t k = 0; k < W.size(); ++k)
+        EXPECT_NEAR(updatedWeights[k], W[k], 1e-12);
+}
+
 // ---------------------------------------------------------------------------
 // FieldCouplingParameters equality / toString
 // ---------------------------------------------------------------------------

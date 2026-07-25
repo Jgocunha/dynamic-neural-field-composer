@@ -601,11 +601,16 @@ namespace dnf_composer::tools::math
 	/// staying unsupervised, we take the *output field's own activation* as the
 	/// teaching/target signal -- exactly the role it already plays as the
 	/// post-synaptic term for HEBB/OJA -- and compare it against this coupling's
-	/// own current linear estimate, predicted[j] = sum_i weights[i][j] * input[i]
-	/// (the same product FieldCoupling::updateOutput() computes). The weights are
-	/// then nudged so that w^T * input converges towards the observed output
-	/// activation. This reduces to the standard supervised delta rule the moment a
-	/// caller treats `output` as a genuine externally-provided target.
+	/// own current linear estimate, predicted[j] = sum_i weights[i][j] * input[i].
+	/// The weights are then nudged so that w^T * input converges towards the
+	/// observed output activation. This reduces to the standard supervised delta
+	/// rule the moment a caller treats `output` as a genuine externally-provided
+	/// target.
+	///
+	/// Note: FieldCoupling::updateOutput() applies a gain, output = scalar * W *
+	/// input, so its caller passes scalar-adjusted input here; that makes both
+	/// `predicted` and the gradient carry the scalar, i.e. the rule learns the
+	/// same scaled forward model the coupling actually evaluates.
 	///
 	/// Weight layout matches hebbLearningRule()/ojaLearningRule(): a flattened
 	/// (inputSize x outputSize) row-major matrix, weights[i * outputSize + j].
