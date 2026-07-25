@@ -30,7 +30,7 @@ namespace dnf_composer::element
 					std::to_string(spacing) + '.');
 			}
 
-			const auto samples = static_cast<long long>(std::llround(static_cast<double>(extent) / spacing));
+			const auto samples = std::llround(static_cast<double>(extent) / spacing);
 			if (samples <= 0 || samples > kMaxAxisSamples)
 			{
 				throw Exception("ElementDimensions: computed sample count " + std::to_string(samples) +
