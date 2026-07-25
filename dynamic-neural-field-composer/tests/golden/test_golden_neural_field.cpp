@@ -123,17 +123,20 @@ TEST(GoldenNeuralField, AmariTrajectory1DAcrossRegimes)
         sim->addElement(field);
 
         std::vector<double> externalInput(static_cast<std::size_t>(r.size), 0.0);
+        std::shared_ptr<GaussStimulus> stim;
         if (r.stimAmplitude != 0.0)
         {
             const ElementCommonParameters stimCp(r.slug + "_stim", r.size);
             const GaussStimulusParameters gsp(r.stimSigma, r.stimAmplitude, r.stimPosition, r.stimCircular, false);
-            const auto stim = std::make_shared<GaussStimulus>(stimCp, gsp);
+            stim = std::make_shared<GaussStimulus>(stimCp, gsp);
             sim->addElement(stim);
             sim->createInteraction(stim->getUniqueName(), "output", field->getUniqueName());
-            externalInput = stim->getComponent("output"); // constant for all steps (step() is a no-op)
         }
 
         sim->init();
+        // Read the stimulus AFTER init (matches the sibling tests); the output is
+        // constant for all steps since GaussStimulus::step() is a no-op.
+        if (stim) externalInput = stim->getComponent("output");
 
         const auto [prodAct_, prodOut_] = captureActivationAndOutput(*sim, field->getUniqueName(), r.steps);
 
