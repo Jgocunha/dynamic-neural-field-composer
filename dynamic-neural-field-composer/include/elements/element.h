@@ -32,10 +32,22 @@ namespace dnf_composer::element
 		std::unordered_map<std::shared_ptr<Element>, std::string> inputs;   ///< Upstream elements and the component they expose.
 		std::unordered_map<std::shared_ptr<Element>, std::string> outputs;  ///< Downstream elements that read this element's output.
 	private:
-		struct CachedInput { const double* src; std::size_t size; };
-		std::vector<CachedInput> cachedInputs;
+		// Caches a pointer to each connected input's *vector object* (not a raw
+		// data() snapshot). A std::vector stored as an unordered_map value keeps its
+		// address stable across resizes (only its internal buffer reallocates), so
+		// re-reading ->size()/data() from it on every updateInput() call can never
+		// dangle -- it always reflects the source's current dimensions, even if the
+		// source was resized via changeDimensions() after this cache was built.
+		std::vector<const std::vector<double>*> cachedInputs;
 		double*     inputPtr  = nullptr;
 		std::size_t inputSize = 0;
+
+		/// @brief Remove any input whose source component no longer fits within
+		///        this element's "input" buffer (e.g. the source was resized larger
+		///        via changeDimensions() after the cache was built, so accumulating
+		///        it in full would write out-of-bounds). Logs a warning per severed
+		///        connection and forces a cache rebuild on the next updateInput().
+		void severIncompatibleInputs();
 	public:
 		/// @brief Construct an element with the given common parameters.
 		/// @param parameters  Name, label, and spatial dimensions.
