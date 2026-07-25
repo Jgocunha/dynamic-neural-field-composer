@@ -63,13 +63,13 @@ builds after that are fast. `GOLDEN_DATA_DIR` is injected by CMake.
 
 ```
 tests/golden/
-  README.md                       # this file (god is scribe)
-  golden_test_utils.h             # shared harness (god — do not fork it)
+  README.md                       # this file 
+  golden_test_utils.h             # shared harness 
   reference/                      # independent golden implementations
-    ref_gauss_stimulus.h          # exemplar (god)
+    ref_gauss_stimulus.h          # exemplar
     ref_<family>.h                # per agent
   data/                           # committed frozen CSVs
-  test_golden_gauss_stimulus.cpp  # exemplar (god)
+  test_golden_gauss_stimulus.cpp  # exemplar 
   test_golden_<family>.cpp        # per agent
 ```
 
