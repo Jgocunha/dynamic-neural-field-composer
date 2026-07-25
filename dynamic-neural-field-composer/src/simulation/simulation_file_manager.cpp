@@ -557,27 +557,27 @@ namespace dnf_composer
             if (!elementJson.contains("uniqueName") || !elementJson["uniqueName"].is_string())
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
-                    + " is missing a valid \"uniqueName\": " + filePath);
+                    + R"( is missing a valid "uniqueName": )" + filePath);
                 return;
             }
             if (!elementJson.contains("label") || !elementJson["label"].is_array()
                 || elementJson["label"].size() != 2 || !elementJson["label"][1].is_string())
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
-                    + " has a missing or malformed \"label\" (expected a 2-element array): " + filePath);
+                    + R"( has a missing or malformed "label" (expected a 2-element array): )" + filePath);
                 return;
             }
             if (!elementJson.contains("x_max") || !elementJson["x_max"].is_number()
                 || !elementJson.contains("d_x") || !elementJson["d_x"].is_number())
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
-                    + " is missing a valid \"x_max\" or \"d_x\": " + filePath);
+                    + R"( is missing a valid "x_max" or "d_x": )" + filePath);
                 return;
             }
             if (elementJson["x_max"].get<double>() <= 0.0 || elementJson["d_x"].get<double>() <= 0.0)
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
-                    + " has a non-positive \"x_max\" or \"d_x\" (both must be > 0): " + filePath);
+                    + R"( has a non-positive "x_max" or "d_x" (both must be > 0): )" + filePath);
                 return;
             }
         }
