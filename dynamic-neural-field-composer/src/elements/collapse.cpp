@@ -1,5 +1,6 @@
 #include "elements/collapse.h"
 
+#include <format>
 
 	namespace dnf_composer::element
 	{
@@ -23,10 +24,10 @@
 			                                : parameters.inputDimensions.size_y;
 			if (commonParameters.dimensionParameters.size != keptAxisSize)
 			{
-				log(tools::logger::LogLevel::ERROR, "Collapse '" + this->getUniqueName()
-					+ "': output size (" + std::to_string(commonParameters.dimensionParameters.size)
-					+ ") must equal the kept " + ProjectionAxisToString.at(parameters.keepAxis)
-					+ "-axis size (" + std::to_string(keptAxisSize) + ").");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Collapse '{}': output size ({}) must equal the kept {}-axis size ({}).",
+					this->getUniqueName(), commonParameters.dimensionParameters.size,
+					ProjectionAxisToString.at(parameters.keepAxis), keptAxisSize));
 				throw Exception(ErrorCode::ELEM_INVALID_SIZE, this->getUniqueName());
 			}
 
@@ -70,8 +71,8 @@
 			// past the resized "input" buffer. Reject any additional input.
 			if (!inputs.empty())
 			{
-				log(tools::logger::LogLevel::ERROR, "Collapse '" + this->getUniqueName()
-					+ "' already has an input; only one input is allowed.");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Collapse '{}' already has an input; only one input is allowed.", this->getUniqueName()));
 				return;
 			}
 
@@ -80,9 +81,9 @@
 			const auto& srcDims = inputElement->getElementCommonParameters().dimensionParameters;
 			if (srcDims.dimensionality != 2)
 			{
-				log(tools::logger::LogLevel::ERROR, "Collapse '" + this->getUniqueName()
-					+ "': input must be a 2D element (got dimensionality "
-					+ std::to_string(srcDims.dimensionality) + ").");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Collapse '{}': input must be a 2D element (got dimensionality {}).",
+					this->getUniqueName(), srcDims.dimensionality));
 				return;
 			}
 
@@ -93,11 +94,10 @@
 			const int keptAxisSize = keepX ? srcDims.size_x : srcDims.size_y;
 			if (commonParameters.dimensionParameters.size != keptAxisSize)
 			{
-				log(tools::logger::LogLevel::ERROR, "Collapse '" + this->getUniqueName()
-					+ "': cannot connect input; output size ("
-					+ std::to_string(commonParameters.dimensionParameters.size)
-					+ ") must equal the source's kept " + ProjectionAxisToString.at(parameters.keepAxis)
-					+ "-axis size (" + std::to_string(keptAxisSize) + ").");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Collapse '{}': cannot connect input; output size ({}) must equal the source's kept {}-axis size ({}).",
+					this->getUniqueName(), commonParameters.dimensionParameters.size,
+					ProjectionAxisToString.at(parameters.keepAxis), keptAxisSize));
 				return;
 			}
 

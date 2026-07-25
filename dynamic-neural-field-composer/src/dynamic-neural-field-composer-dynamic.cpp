@@ -1,5 +1,7 @@
 ﻿#include "dynamic-neural-field-composer-dynamic.h"
 
+#include <format>
+
 #include "user_interface/control_bar_window.h"
 #include "user_interface/static_layout.h"
 #include "user_interface/status_bar_window.h"
@@ -39,13 +41,13 @@ int main()
 	}
 	catch (const dnf_composer::Exception& ex)
 	{
-		const std::string errorMessage = "Exception: " + std::string(ex.what()) + " ErrorCode: " + std::to_string(static_cast<int>(ex.getErrorCode())) + ". ";
+		const std::string errorMessage = std::format("Exception: {} ErrorCode: {}. ", ex.what(), static_cast<int>(ex.getErrorCode()));
 		log(dnf_composer::tools::logger::LogLevel::FATAL, errorMessage, dnf_composer::tools::logger::LogOutputMode::CONSOLE);
 		return static_cast<int>(ex.getErrorCode());
 	}
 	catch (const std::exception& ex)
 	{
-		log(dnf_composer::tools::logger::LogLevel::FATAL, "Exception caught: " + std::string(ex.what()) + ". ", dnf_composer::tools::logger::LogOutputMode::CONSOLE);
+		log(dnf_composer::tools::logger::LogLevel::FATAL, std::format("Exception caught: {}. ", ex.what()), dnf_composer::tools::logger::LogOutputMode::CONSOLE);
 		return 1;
 	}
 	catch (...)

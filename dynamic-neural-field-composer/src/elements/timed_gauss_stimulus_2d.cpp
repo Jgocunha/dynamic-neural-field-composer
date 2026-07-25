@@ -4,6 +4,8 @@
 
 #include "elements/timed_gauss_stimulus_2d.h"
 
+#include <format>
+
 namespace dnf_composer::element
 {
 	TimedGaussStimulus2D::TimedGaussStimulus2D(const ElementCommonParameters& elementCommonParameters,
@@ -72,8 +74,8 @@ namespace dnf_composer::element
 			}
 			else
 			{
-				const std::string message = "Tried to normalize TimedGaussStimulus2D '"
-					+ getUniqueName() + "' but sum of Gaussian is zero.";
+				const std::string message = std::format("Tried to normalize TimedGaussStimulus2D '{}' but sum of Gaussian is zero.",
+					getUniqueName());
 				log(tools::logger::LogLevel::ERROR, message);
 			}
 		}

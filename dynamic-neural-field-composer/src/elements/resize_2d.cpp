@@ -1,5 +1,6 @@
 #include "elements/resize_2d.h"
 
+#include <format>
 
 	namespace dnf_composer::element
 	{
@@ -101,8 +102,8 @@
 			// past the resized "input" buffer. Reject any additional input.
 			if (!inputs.empty())
 			{
-				log(tools::logger::LogLevel::ERROR, "Resize2D '" + this->getUniqueName()
-					+ "' already has an input; only one input is allowed.");
+				log(tools::logger::LogLevel::ERROR, std::format("Resize2D '{}' already has an input; only one input is allowed.",
+					this->getUniqueName()));
 				return;
 			}
 
