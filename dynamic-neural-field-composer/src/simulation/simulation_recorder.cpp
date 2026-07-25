@@ -10,6 +10,7 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <system_error>
 
 namespace dnf_composer
 {
@@ -59,7 +60,7 @@ namespace dnf_composer
 		file << "\n";
 	}
 
-	void SimulationRecorder::startRecording(const std::string& simName,
+	bool SimulationRecorder::startRecording(const std::string& simName,
 	                                        const std::string& elementId,
 	                                        const std::string& componentName,
 	                                        const int sampleInterval,
@@ -69,12 +70,21 @@ namespace dnf_composer
 		{
 			tools::logger::log(tools::logger::LogLevel::WARNING,
 				"Recording already active for '" + elementId + "' / '" + componentName + "'.");
-			return;
+			return false;
 		}
 
 		const std::filesystem::path dir = std::filesystem::path(tools::utils::getResourceRoot())
 			/ "data" / simName / "recordings";
-		std::filesystem::create_directories(dir);
+
+		std::error_code ec;
+		std::filesystem::create_directories(dir, ec);
+		if (ec || !std::filesystem::is_directory(dir))
+		{
+			tools::logger::log(tools::logger::LogLevel::ERROR,
+				R"(Recording not started: failed to create recording directory ")" + dir.string() +
+				R"(" ()" + ec.message() + ").");
+			return false;
+		}
 
 		const std::string filename = (dir / (elementId + "_" + componentName + "_" + makeTimestamp() + ".csv")).string();
 
@@ -89,14 +99,16 @@ namespace dnf_composer
 		if (!session.file.is_open())
 		{
 			tools::logger::log(tools::logger::LogLevel::ERROR,
-				"Failed to open recording file: " + filename);
-			return;
+				R"(Recording not started: failed to open recording file ")" + filename +
+				R"(" (check disk space and write permissions).)");
+			return false;
 		}
 
 		tools::logger::log(tools::logger::LogLevel::INFO,
 			"Recording started: " + filename);
 
 		sessions.push_back(std::move(session));
+		return true;
 	}
 
 	void SimulationRecorder::stopRecording(const std::string& elementId,

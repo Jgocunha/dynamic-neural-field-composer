@@ -34,12 +34,18 @@ namespace dnf_composer
 		/// @brief Start a new continuous recording for the given element/component pair.
 		/// Creates `data/<simName>/recordings/<elementId>_<componentName>_<timestamp>.csv`
 		/// and writes the header row. No-op if an identical recording is already active.
+		///
+		/// On failure (directory could not be created, or the file could not be opened)
+		/// a distinct, descriptive error is logged and no session is created — the
+		/// recorder does NOT enter the "recording" state, so @ref isRecording and
+		/// @ref hasActiveRecordings continue to reflect reality.
 		/// @param simName         Simulation unique identifier (used as the sub-folder name).
 		/// @param elementId       Unique name of the element to record.
 		/// @param componentName   Name of the component vector (e.g. "activation").
 		/// @param sampleInterval  How often to sample (in the chosen unit).
 		/// @param unit            Whether @p sampleInterval is in ticks or milliseconds.
-		void startRecording(const std::string& simName,
+		/// @return true if the recording session was started successfully, false otherwise.
+		bool startRecording(const std::string& simName,
 		                    const std::string& elementId,
 		                    const std::string& componentName,
 		                    int sampleInterval,
