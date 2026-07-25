@@ -62,6 +62,18 @@ if(DNF_COMPOSER_BUILD_TESTS)
             imgui-platform-kit
     )
 
+    # --- Golden algebraic-equivalence tests -------------------------------
+    # Auto-discover every tests/golden/*.cpp so parallel contributors can drop
+    # new golden test files in without editing this list (CONFIGURE_DEPENDS makes
+    # the build re-glob when files are added/removed). Reference headers live in
+    # tests/golden/reference/ and are #included directly.
+    file(GLOB golden_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/golden/*.cpp")
+    target_sources(dnf_composer_tests PRIVATE ${golden_sources})
+    # Absolute path to the committed golden-data directory, injected as a macro
+    # so the harness can locate/refresh the frozen CSV fixtures.
+    target_compile_definitions(dnf_composer_tests PRIVATE
+            GOLDEN_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden/data")
+
     include(GoogleTest)
     gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)
 endif()
