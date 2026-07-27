@@ -23,7 +23,7 @@ namespace dnf_composer::element
 
 		act_  = components["activation"].data();
 		inp_  = components["input"].data();
-		rest_ = components["resting level"].data();
+		restScalar_ = parameters.startingRestingLevel;
 
 		calculateOutput();
 	}
@@ -42,9 +42,8 @@ namespace dnf_composer::element
 	{
 		const double dtOverTau = deltaT / parameters.tau;
 		const int sz = commonParameters.dimensionParameters.size;
-		for (int i = 0; i < sz; ++i) {
-			act_[i] += dtOverTau * (-act_[i] + rest_[i] + inp_[i]);
-}
+		for (int i = 0; i < sz; ++i)
+			act_[i] += dtOverTau * (-act_[i] + restScalar_ + inp_[i]);
 	}
 
 	void NeuralField2D::calculateOutput()

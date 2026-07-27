@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 // Runtime CPU-feature dispatch for the AVX2+FMA convolution kernel — mirrors how
 // OpenCV/FFTW select their SIMD code path at runtime rather than at compile time,
 // so a single dnf-composer binary runs correctly on any x86-64 CPU instead of
@@ -27,4 +29,15 @@ namespace dnf_composer::tools::math::detail
 	// least n elements; `kr` has M elements; `mx` must be readable up to index
 	// n + M - 2.
 	void conv_valid_into_avx2_f64(const double* kr, int M, const double* mx, double* o, int n);
+
+	// Vectorized double-precision logistic sigmoid:
+	//   out[i] = 1 / (1 + exp(clamp(-s * (in[i] - xs), -88, 88)))
+	// Same denormal-avoidance clamp as the scalar SigmoidFunction::apply (see
+	// activation_function.cpp) — the exponential itself uses a Cephes-style
+	// rational-polynomial range-reduction (~1e-15 relative accuracy), far inside
+	// the ~1e-7 the project's 1e-4 field-dynamics gate can absorb since the
+	// sigmoid is a pointwise map, not an accumulated reduction. `out` and `in`
+	// may alias (element-wise, read-before-write per lane). Safe to call only
+	// after avx2_fma_available() has returned true.
+	void sigmoid_avx2_f64(const double* in, double* out, std::size_t n, double s, double xs);
 }

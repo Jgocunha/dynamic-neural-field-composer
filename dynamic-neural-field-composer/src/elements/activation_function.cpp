@@ -1,4 +1,5 @@
 #include "elements/activation_function.h"
+#include "tools/simd_dispatch.h"
 
 
 namespace dnf_composer::element
@@ -27,6 +28,16 @@ namespace dnf_composer::element
 		const double s  = steepness;
 		const double xs = x_shift;
 		const std::size_t n = input.size();
+
+		// Runtime-dispatched AVX2+FMA path (see simd_dispatch.h) — same clamp,
+		// same formula, ~1e-15-accurate vectorized exp; falls back to the scalar
+		// loop below on pre-AVX2 hosts.
+		if (tools::math::detail::avx2_fma_available())
+		{
+			tools::math::detail::sigmoid_avx2_f64(input.data(), out.data(), n, s, xs);
+			return;
+		}
+
 		for (std::size_t i = 0; i < n; ++i)
 		{
 			double e = -s * (input[i] - xs);

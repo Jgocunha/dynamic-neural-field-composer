@@ -11,9 +11,95 @@
 
 #include "tools/simd_dispatch.h"
 #include <immintrin.h>
+#include <cmath>
 
 namespace dnf_composer::tools::math::detail
 {
+	namespace
+	{
+		// Vectorized exp(x) for 4 packed doubles, Cephes-style range reduction +
+		// rational (Padé) approximation of the fractional part — same algorithm
+		// and same coefficients as the widely-used cephes/exp.c double routine,
+		// just retargeted from scalar floor/ldexp to AVX2 lanes. Valid for the
+		// clamped domain this is actually called with ([-88, 88]); not a
+		// general-purpose exp (no under/overflow saturation outside that range).
+		inline __m256d exp_pd(__m256d x)
+		{
+			const __m256d log2e = _mm256_set1_pd(1.4426950408889634073599);
+			const __m256d c1    = _mm256_set1_pd(6.93145751953125E-1);   // ln2 hi
+			const __m256d c2    = _mm256_set1_pd(1.42860682030941723212E-6); // ln2 lo
+			const __m256d half  = _mm256_set1_pd(0.5);
+			const __m256d one   = _mm256_set1_pd(1.0);
+			const __m256d two   = _mm256_set1_pd(2.0);
+
+			// n = floor(log2(e) * x + 0.5); x -= n*ln2 (hi+lo split for precision)
+			__m256d n = _mm256_floor_pd(_mm256_fmadd_pd(log2e, x, half));
+			x = _mm256_fnmadd_pd(n, c1, x);
+			x = _mm256_fnmadd_pd(n, c2, x);
+
+			const __m256d xx = _mm256_mul_pd(x, x);
+
+			// P(xx), degree 2 (Horner)
+			const __m256d P0 = _mm256_set1_pd(1.26177193074810590878E-4);
+			const __m256d P1 = _mm256_set1_pd(3.02994407707441961300E-2);
+			const __m256d P2 = _mm256_set1_pd(9.99999999999999999910E-1);
+			__m256d p = _mm256_fmadd_pd(P0, xx, P1);
+			p = _mm256_fmadd_pd(p, xx, P2);
+			p = _mm256_mul_pd(p, x);
+
+			// Q(xx), degree 3 (Horner)
+			const __m256d Q0 = _mm256_set1_pd(3.00198505138664455042E-6);
+			const __m256d Q1 = _mm256_set1_pd(2.52448340349684104192E-3);
+			const __m256d Q2 = _mm256_set1_pd(2.27265548208155028766E-1);
+			const __m256d Q3 = _mm256_set1_pd(2.00000000000000000009E0);
+			__m256d q = _mm256_fmadd_pd(Q0, xx, Q1);
+			q = _mm256_fmadd_pd(q, xx, Q2);
+			q = _mm256_fmadd_pd(q, xx, Q3);
+
+			// x = 1 + 2*p/(q-p)
+			__m256d r = _mm256_div_pd(p, _mm256_sub_pd(q, p));
+			r = _mm256_fmadd_pd(two, r, one);
+
+			// scale by 2^n via direct exponent-bit construction (n is small and
+			// exact here — |n| <= ~127 for the clamped [-88,88] input domain).
+			__m128i n32 = _mm256_cvttpd_epi32(n);
+			__m256i n64 = _mm256_cvtepi32_epi64(n32);
+			__m256i biased = _mm256_add_epi64(n64, _mm256_set1_epi64x(1023));
+			__m256i pow2n_bits = _mm256_slli_epi64(biased, 52);
+			__m256d pow2n = _mm256_castsi256_pd(pow2n_bits);
+
+			return _mm256_mul_pd(r, pow2n);
+		}
+	}
+
+	void sigmoid_avx2_f64(const double* in, double* out, std::size_t n, double s, double xs)
+	{
+		const __m256d sv    = _mm256_set1_pd(s);
+		const __m256d xsv   = _mm256_set1_pd(xs);
+		const __m256d lo    = _mm256_set1_pd(-88.0);
+		const __m256d hi    = _mm256_set1_pd(88.0);
+		const __m256d one   = _mm256_set1_pd(1.0);
+		const __m256d zero  = _mm256_setzero_pd();
+
+		std::size_t i = 0;
+		for (; i + 4 <= n; i += 4)
+		{
+			__m256d x = _mm256_loadu_pd(in + i);
+			__m256d t = _mm256_sub_pd(x, xsv);
+			__m256d e = _mm256_fnmadd_pd(sv, t, zero); // -(s*t)
+			e = _mm256_max_pd(lo, _mm256_min_pd(hi, e));
+			__m256d ee = exp_pd(e);
+			__m256d res = _mm256_div_pd(one, _mm256_add_pd(one, ee));
+			_mm256_storeu_pd(out + i, res);
+		}
+		for (; i < n; ++i)
+		{
+			double e = -s * (in[i] - xs);
+			e = e < -88.0 ? -88.0 : (e > 88.0 ? 88.0 : e);
+			out[i] = 1.0 / (1.0 + std::exp(e));
+		}
+	}
+
 	void conv_valid_into_avx2_f64(const double* kr, int M, const double* mx, double* o, int n)
 	{
 		// Symmetric-kernel folding. For a symmetric kernel kr (Gauss / the

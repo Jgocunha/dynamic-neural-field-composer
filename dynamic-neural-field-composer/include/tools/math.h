@@ -143,10 +143,6 @@ namespace dnf_composer::tools::math
 				return;
 			}
 		}
-		{
-			static thread_local int dbgCount = 0;
-			if (dbgCount < 8) { std::fprintf(stderr, "[SCALARDBG] M=%d n=%d T=double?%d\n", M, n, (int)std::is_same_v<T,double>); ++dbgCount; }
-		}
 		for (int i = 0; i < n; ++i)
 		{
 			const T* __restrict w = mx + i;

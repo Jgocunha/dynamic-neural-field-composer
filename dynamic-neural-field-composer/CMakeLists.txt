@@ -212,6 +212,7 @@ set(src
         "src/tools/math.cpp"
         "src/tools/simd_dispatch.cpp"
         "src/tools/simd_dispatch_avx2.cpp"
+        "src/tools/fft_convolution.cpp"
         "src/tools/profiling.cpp"
         "src/tools/utils.cpp"
         "src/tools/logger.cpp"
@@ -273,6 +274,12 @@ find_package(unofficial-imgui-node-editor CONFIG REQUIRED)
 # Setup nlohmann-json
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+
+# FFTW3 — spectral (circular) convolution for kernels wide enough that the
+# direct/separable path is no longer cheaper (tools/fft_convolution.h). GPL
+# licensed; compatible with this project's GPL-3.0 license (see LICENSE).
+find_package(FFTW3 CONFIG REQUIRED)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE FFTW3::fftw3)
 
 # OpenGL must be found before importing imgui-platform-kit so that the
 # OpenGL::GL target exists when CMake resolves its exported link interface.
