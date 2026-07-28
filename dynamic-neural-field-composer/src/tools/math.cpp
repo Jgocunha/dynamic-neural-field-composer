@@ -95,6 +95,12 @@
 					return e;
 				}
 
+				Xoshiro256& threadEngine()
+				{
+					static thread_local Xoshiro256 eng = makeSeededEngine();
+					return eng;
+				}
+
 				// ---- Ziggurat normal sampler (Marsaglia & Tsang, 256 layers) -----
 				// Exact standard normal. Tables built once (thread-safe static init).
 				struct ZigguratTables
@@ -171,7 +177,7 @@
 
 			void fillNormal(double* dst, std::size_t n)
 			{
-				static thread_local Xoshiro256 eng = makeSeededEngine();
+				Xoshiro256& eng = threadEngine();
 				// Fetch the ziggurat tables once for the whole batch. zigTables() is a
 				// function-local static whose thread-safe-init guard was otherwise
 				// checked on every single sample (measured as the largest cost inside
@@ -186,6 +192,62 @@
 				std::vector<double> vec(size);
 				fillNormal(vec.data(), static_cast<std::size_t>(size));
 				return vec;
+			}
+
+			void seedNormal(std::uint64_t seed)
+			{
+				// SplitMix64 expansion of a single seed into the four 64-bit words
+				// Xoshiro256's state needs. Same seed => same subsequent fillNormal
+				// sequence on the calling thread.
+				std::uint64_t state = seed;
+				auto splitmix64 = [&state]() {
+					state += 0x9E3779B97F4A7C15ull;
+					std::uint64_t z = state;
+					z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
+					z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
+					return z ^ (z >> 31);
+				};
+
+				Xoshiro256& eng = threadEngine();
+				for (auto& v : eng.s) v = splitmix64();
+				// Avoid the degenerate all-zero state (see makeSeededEngine).
+				if ((eng.s[0] | eng.s[1] | eng.s[2] | eng.s[3]) == 0) eng.s[0] = 0x9E3779B97F4A7C15ull;
+			}
+
+			void embedWrapped1D(std::vector<double>& out, std::span<const double> window, int kR0)
+			{
+				const int M = static_cast<int>(window.size());
+				const int N = static_cast<int>(out.size());
+				if (N <= 0) return;
+				for (int j = 0; j < M; ++j)
+				{
+					const int offset = j - kR0;
+					const int idx = ((offset % N) + N) % N;
+					out[idx] += window[j];
+				}
+			}
+
+			std::vector<double> buildWrappedSeparableKernel2D(
+				int size_x, int size_y, std::span<const SeparableKernelTerm2D> terms)
+			{
+				if (size_x <= 0 || size_y <= 0) return {};
+
+				std::vector<double> combined(static_cast<std::size_t>(size_x) * size_y, 0.0);
+				std::vector<double> wx(size_x), wy(size_y);
+				for (const auto& term : terms)
+				{
+					if (term.taps_x.empty() || term.taps_y.empty()) continue;
+
+					std::ranges::fill(wx, 0.0);
+					std::ranges::fill(wy, 0.0);
+					embedWrapped1D(wx, term.taps_x, term.kR0_x);
+					embedWrapped1D(wy, term.taps_y, term.kR0_y);
+
+					for (int y = 0; y < size_y; ++y)
+						for (int x = 0; x < size_x; ++x)
+							combined[static_cast<std::size_t>(y) * size_x + x] += term.sign * wx[x] * wy[y];
+				}
+				return combined;
 			}
 		}
 	

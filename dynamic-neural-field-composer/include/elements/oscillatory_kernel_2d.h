@@ -6,6 +6,7 @@
 #include <array>
 
 #include "tools/math.h"
+#include "tools/fft_convolution.h"
 #include "kernel.h"
 
 //https://github.com/stevenlovegrove/Pangolin/issues/352
@@ -99,6 +100,15 @@ namespace dnf_composer::element
 		std::vector<double> scratchTmp_;
 		std::vector<double> scratchConvolution_;
 		tools::math::Conv2dScratch<double> scratch2d_;
+
+		// Spectral (FFTW) path — used instead of the direct separable path above
+		// when shouldUseSpectral2D (tools/fft_convolution.h) says the kernel is
+		// wide enough and circular=true. Shared dispatch rule/member pair with
+		// every other 2D convolution element (see MexicanHatKernel2D). This
+		// element's default decay=0.08 gives the widest support of the five,
+		// making it the strongest spectral-path candidate.
+		bool useFFT_ = false;
+		tools::math::SpectralConvolver2D spectral_;
 	public:
 		OscillatoryKernel2D(const ElementCommonParameters& elementCommonParameters,
 		                    OscillatoryKernel2DParameters  parameters);

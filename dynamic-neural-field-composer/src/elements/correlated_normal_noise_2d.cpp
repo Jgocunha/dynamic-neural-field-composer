@@ -32,20 +32,35 @@ namespace dnf_composer::element
 		const int size_x = commonParameters.dimensionParameters.size_x;
 		const int size_y = commonParameters.dimensionParameters.size_y;
 
+		// Clamp kernel support to the field size per axis via computeKernelRange
+		// (matching every other 2D kernel element), rather than the previous
+		// unclamped halfWidth = 5*effectiveWidth. Unclamped, a wide width on a
+		// small field (e.g. width=3.0 on a 10x10 field -> halfWidth=15) made
+		// createExtendedIndex return a negative starting index, which
+		// conv2d_separable_into's circular x-pass then read as an out-of-bounds
+		// offset before the row buffer -- a real, reachable heap OOB read (the
+		// UI allows width up to 30), not merely a semantic wart.
 		const double effectiveWidth = std::max(parameters.width, 1e-3);
-		const int halfWidth = std::max(1, static_cast<int>(5.0 * effectiveWidth));
-		const int kernelSize = 2 * halfWidth + 1;
+		kernelRange_x = tools::math::computeKernelRange(effectiveWidth, kCutOfFactor, size_x, parameters.circular);
+		kernelRange_y = tools::math::computeKernelRange(effectiveWidth, kCutOfFactor, size_y, parameters.circular);
 
-		std::vector<int> rangeVec(kernelSize);
-		std::iota(rangeVec.begin(), rangeVec.end(), -halfWidth);
-		correlationKernel_x = tools::math::gaussNorm(rangeVec, 0.0, effectiveWidth);
-		correlationKernel_y = correlationKernel_x;
+		// Built per axis (not copied from x to y): computeKernelRange's clamp
+		// can differ between axes -- both when size_x != size_y, and on an
+		// EVEN field size where the circular clamp itself yields kR0 != kR1
+		// (e.g. size=100 -> {49,50}) even when both fields are square.
+		auto buildTaps = [&](const std::array<int, 2>& range)
+		{
+			std::vector<int> rangeVec(range[0] + range[1] + 1);
+			std::iota(rangeVec.begin(), rangeVec.end(), -range[0]);
+			return tools::math::gaussNorm(rangeVec, 0.0, effectiveWidth);
+		};
+		correlationKernel_x = buildTaps(kernelRange_x);
+		correlationKernel_y = buildTaps(kernelRange_y);
 
 		if (parameters.circular)
 		{
-			const std::array<int, 2> kernelRange = { halfWidth, halfWidth };
-			extIndex_x = tools::math::createExtendedIndex(size_x, kernelRange);
-			extIndex_y = tools::math::createExtendedIndex(size_y, kernelRange);
+			extIndex_x = tools::math::createExtendedIndex(size_x, kernelRange_x);
+			extIndex_y = tools::math::createExtendedIndex(size_y, kernelRange_y);
 		}
 		else
 		{
@@ -57,6 +72,16 @@ namespace dnf_composer::element
 		scratchTmp_.assign(totalSize, 0.0);
 		scratchConv_.assign(totalSize, 0.0);
 		scratch2d_.ensure(size_x, size_y, extIndex_x.size(), extIndex_y.size());
+
+		const int totalTaps = (kernelRange_x[0] + kernelRange_x[1] + 1)
+		                    + (kernelRange_y[0] + kernelRange_y[1] + 1);
+		useFFT_ = tools::math::shouldUseSpectral2D(parameters.circular, totalTaps, size_x, size_y);
+		if (useFFT_)
+		{
+			spectral_.init(size_x, size_y);
+			spectral_.setKernel(tools::math::buildWrappedSeparableKernel2D(size_x, size_y,
+				{ tools::math::SeparableKernelTerm2D{ correlationKernel_x, kernelRange_x[0], correlationKernel_y, kernelRange_y[0], +1.0 } }));
+		}
 	}
 
 	void CorrelatedNormalNoise2D::step(double t, double deltaT)
@@ -78,10 +103,13 @@ namespace dnf_composer::element
 		tools::math::fillNormal(whiteNoise_.data(), static_cast<std::size_t>(totalSize));
 		const std::vector<double>& whiteNoise = whiteNoise_;
 
-		tools::math::conv2d_separable_into(
-			scratchConv_, scratchTmp_, scratch2d_,
-			whiteNoise, correlationKernel_x, correlationKernel_y,
-			size_x, size_y, extIndex_x, extIndex_y);
+		if (useFFT_)
+			spectral_.apply(whiteNoise.data(), scratchConv_.data());
+		else
+			tools::math::conv2d_separable_into(
+				scratchConv_, scratchTmp_, scratch2d_,
+				whiteNoise, correlationKernel_x, correlationKernel_y,
+				size_x, size_y, extIndex_x, extIndex_y);
 
 		const double scale = parameters.amplitude / std::sqrt(deltaT);
 		// Hoist the output buffer out of the per-cell loop (unordered_map lookup).

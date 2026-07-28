@@ -17,6 +17,41 @@ namespace dnf_composer::element
 		components["input"] = std::vector<double>(commonParameters.dimensionParameters.size);
 	}
 
+	Element::Element(const Element& other)
+		: std::enable_shared_from_this<Element>(other),
+		  commonParameters(other.commonParameters),
+		  components(other.components),
+		  inputs(other.inputs),
+		  outputs(other.outputs)
+	{
+		// inputPtr/cachedInputs/inputSize are deliberately left at their default
+		// member initializers (nullptr/empty/0), NOT copied from other. inputPtr
+		// is a raw pointer into THIS object's own components["input"].data();
+		// copying it by value (the implicit copy ctor's behaviour before this
+		// was added) would leave a stepped-then-cloned element aliasing the
+		// SOURCE's input buffer instead of its own freshly-copied one, so
+		// updateInput() would silently read the wrong (and, worse, write into
+		// the wrong) object's memory. Leaving it null forces updateInput() to
+		// call buildInputCache() and re-derive it correctly on first use, the
+		// same recovery path changeDimensions()/addInput()/removeInput() use.
+	}
+
+	Element& Element::operator=(const Element& other)
+	{
+		if (this != &other)
+		{
+			commonParameters = other.commonParameters;
+			components = other.components;
+			inputs = other.inputs;
+			outputs = other.outputs;
+			// See the copy constructor above for why these are reset, not copied.
+			inputPtr = nullptr;
+			inputSize = 0;
+			cachedInputs.clear();
+		}
+		return *this;
+	}
+
 	void Element::changeDimensions(const ElementDimensions& newDimensions)
 	{
 		commonParameters.dimensionParameters = newDimensions;

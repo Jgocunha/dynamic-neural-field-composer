@@ -4,6 +4,50 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Extended the hybrid direct/FFT convolution path (previously `MexicanHatKernel2D`
+  only) to `GaussKernel2D`, `AsymmetricGaussKernel2D`, `OscillatoryKernel2D`, and
+  `CorrelatedNormalNoise2D`, via a shared dispatch rule (`tools::math::shouldUseSpectral2D`)
+  and wrap-embedding helpers (`embedWrapped1D`, `buildWrappedSeparableKernel2D`) hoisted
+  out of `mexican_hat_kernel_2d.cpp` into `tools/math.h` and `tools/fft_convolution.h`
+- Added a process-global `tools::math::ConvolutionMode` override
+  (`Auto`/`ForceDirect`/`ForceSpectral`, via `ScopedConvolutionMode`) as a test seam for
+  building direct/spectral twins of the same element configuration
+- `SpectralConvolver2D::init()` now no-ops when re-initialized at an unchanged size
+  (only `setKernel()` re-runs), and plans with `FFTW_ESTIMATE` instead of `FFTW_MEASURE`,
+  so `setParameters()` — called on every frame while a width slider is dragged — no longer
+  triggers FFTW timing trials on the UI thread
+- `tools::math::seedNormal()`: deterministic re-seed of the thread-local normal generator
+  behind `fillNormal`, enabling reproducible direct-vs-spectral comparisons for elements
+  whose input is itself randomly generated (`CorrelatedNormalNoise2D`)
+- 128x128 golden fixtures under `tests/validation/data/2d_spectral/`, chosen to straddle
+  the spectral dispatch threshold, plus a regeneration tool
+  (`dnf_composer_regen_spectral_golden`) and `SpectralGolden2D` regression tests pinning
+  both the direct and spectral paths against numerical/qualitative drift
+- `fftw3` added to `scripts/setup.bat`/`setup.sh` vcpkg package lists (previously missing
+  despite being a hard `find_package(... REQUIRED)` dependency, so a fresh clone could not
+  configure)
+
+### Fixed
+- `CorrelatedNormalNoise2D::init()` now clamps kernel support to the field size per axis via
+  `computeKernelRange` (matching every other 2D kernel element), instead of the previous
+  unclamped `halfWidth = 5*width`: a wide `width` on a small field (e.g. `width=3.0` on a
+  10x10 field) produced a negative starting index from `createExtendedIndex`, which
+  `conv2d_separable_into`'s circular x-pass then read as an out-of-bounds offset before the
+  row buffer — a real, reachable heap OOB read (the UI allows `width` up to 30)
+- `Element`'s implicit copy constructor/assignment copied `inputPtr` (a raw pointer into the
+  object's own `components["input"]`) by value, so any element cloned via the
+  `make_shared<T>(*this)` pattern after it had already stepped once would alias the
+  *source's* input buffer instead of its own, silently dropping input on the clone. `Element`
+  now has an explicit copy constructor/assignment that resets the input cache, forcing a
+  correct rebuild on first `updateInput()` — the same recovery path `changeDimensions()` /
+  `addInput()` / `removeInput()` already use
+- `OscillatoryKernel2D::clone()` now copy-constructs (`make_shared<OscillatoryKernel2D>(*this)`)
+  instead of using the parameter constructor, matching every other element: the previous form
+  left `kernel_1d_x/y`, `extIndex_x/y`, and the scratch buffers default-constructed empty,
+  which is unsound whenever a clone is stepped without an intervening `init()` (e.g.
+  `Simulation`'s copy constructor deep-copies elements via `clone()` without calling `init()`)
+
 ## [2.9.4] - 2026-07-10
 
 ### Fixed
@@ -339,12 +383,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - `CorrelatedNormalNoise` element: spatially correlated Gaussian noise via convolution of white
-  noise with a normalized Gaussian kernel (parameters: `amplitude`, `width`, `circular`);
-  cedar-equivalent to `NeuralField::NoiseCorrelationKernel`
-- `AbsSigmoidFunction` activation function: rational sigmoid `σ(u) = 0.5·(1 + β·u / (1 + β·|u|))`,
-  algebraically equivalent to cedar's default `AbsSigmoid`; enables cedar-exact simulations
-- Cross-framework Doxygen equivalence tables in `activation_function.h` documenting the
-  correspondence between dnf-composer, cedar, and cosivina activation functions
+  noise with a normalized Gaussian kernel (parameters: `amplitude`, `width`, `circular`)
+- `AbsSigmoidFunction` activation function: rational sigmoid `σ(u) = 0.5·(1 + β·u / (1 + β·|u|))`
 - `circular` checkbox exposed in the Element Control UI for `CorrelatedNormalNoise`
 
 ### Fixed

@@ -30,6 +30,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "elements/test_asymmetric_gauss_kernel_2d.cpp"
             "elements/test_memory_trace_2d.cpp"
             "elements/test_mexican_hat_kernel_2d.cpp"
+            "elements/test_spectral_dispatch_2d.cpp"
             "elements/test_change_dimensions.cpp"
             "elements/test_resize.cpp"
             "elements/test_resize_2d.cpp"
@@ -46,9 +47,11 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "tools/test_math.cpp"
             "tools/test_utils.cpp"
             "tools/test_profiling.cpp"
+            "tools/test_fft_convolution.cpp"
             # validation (field-dynamics regression vs vendored reference data)
             "validation/test_field_dynamics_1d.cpp"
             "validation/test_field_dynamics_2d.cpp"
+            "validation/test_spectral_golden_2d.cpp"
             # element_parameters
             "element_parameters/test_element_parameters.cpp"
             # exceptions
@@ -113,6 +116,25 @@ if(DNF_COMPOSER_BUILD_TESTS)
     target_compile_definitions(dnf_composer_profiler PRIVATE
             PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md")
     target_link_libraries(dnf_composer_profiler PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            imgui::imgui
+            imgui-platform-kit
+    )
+
+    # Regenerates tests/validation/data/2d_spectral/expected/*.csv from the sim
+    # JSONs under tests/validation/data/2d_spectral/simulations/. Not a unit
+    # test (NOT registered with gtest_discover_tests) and not built as part of
+    # ALL -- golden data changes only deliberately. Run manually:
+    #   cmake --build <builddir> --target dnf_composer_regen_spectral_golden
+    #   <builddir>/tests/.../dnf_composer_regen_spectral_golden[.exe]
+    add_executable(dnf_composer_regen_spectral_golden EXCLUDE_FROM_ALL
+            "validation/tools/regenerate_spectral_golden.cpp")
+    target_include_directories(dnf_composer_regen_spectral_golden PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/validation)
+    target_compile_definitions(dnf_composer_regen_spectral_golden PRIVATE
+            VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data")
+    target_link_libraries(dnf_composer_regen_spectral_golden PRIVATE
             ${CMAKE_PROJECT_NAME}
             imgui::imgui
             imgui-platform-kit

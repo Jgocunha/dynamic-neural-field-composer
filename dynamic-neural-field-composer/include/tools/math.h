@@ -20,6 +20,8 @@
 #include <numbers>
 #include <fstream>
 #include <type_traits>
+#include <span>
+#include <cstdint>
 
 // Runtime-dispatched AVX2+FMA convolution kernel (see simd_dispatch.h): the
 // decision to use it is a runtime cpuid check, not a compile-time macro, so this
@@ -348,8 +350,6 @@ namespace dnf_composer::tools::math
 	///
 	/// Formula: s(x) = 0.5 * (1 + beta * (x - x0) / (1 + beta * |x - x0|))
 	///
-	/// Equivalent to cedar's AbsSigmoid(beta, theta=x0). At beta >= 20 virtually
-	/// indistinguishable from the ExpSigmoid but avoids std::exp() entirely.
 	template <typename T>
 	std::vector<T> absSigmoid(const std::vector<T>& x, T beta, T x0)
 	{
@@ -389,6 +389,59 @@ namespace dnf_composer::tools::math
 	void fillNormal(double* dst, std::size_t n);
 
 	std::vector<double> generateNormalVector(int size);
+
+	// Deterministically re-seed the thread_local normal generator fillNormal
+	// draws from. Same seed => same subsequent sequence, on the calling thread.
+	// Used to make convolution inputs reproducible when a step's input is itself
+	// randomly generated (e.g. CorrelatedNormalNoise2D), so its direct and
+	// spectral convolution paths can be compared against identical input.
+	void seedNormal(std::uint64_t seed);
+
+	// One separable term of a wrapped 2D kernel: sign * outer(taps_x, taps_y).
+	// taps_x/taps_y are ordered ascending offset -kR0..+kR1 (the layout every 2D
+	// kernel element's std::iota(-kernelRange[0]) already produces).
+	struct SeparableKernelTerm2D
+	{
+		std::span<const double> taps_x;
+		int kR0_x = 0;
+		std::span<const double> taps_y;
+		int kR0_y = 0;
+		double sign = 1.0; // +1 excitatory, -1 inhibitory
+	};
+
+	// Embeds a 1D kernel window (ordered ascending offset -kR0..+kR1, length
+	// window.size()) into out via circular wraparound: out[0] holds the
+	// zero-offset tap, out[j] the +j offset, out[N-j] the -j offset. Accumulates
+	// (+=) so a window longer than out.size() aliases correctly. `out` must
+	// already be sized to the target length and zeroed by the caller.
+	//
+	// This is the spatial-domain placement whose FFT equals what the direct
+	// circular convolution (conv_valid_into against the same window, via the
+	// wraparound createExtendedIndex builds) computes. Derivation: the extended
+	// row conv2d_separable_into builds satisfies extRow[t] = field[(t-kR1) mod N]
+	// (see conv2d_separable_into below), and conv_valid_into reads the kernel
+	// backwards (out[i] = sum_m k[M-1-m]*ext[i+m]). Substituting o = j-kR0 gives
+	// out[i] = sum_o w[o]*field[(i-o) mod N] -- a true circular convolution,
+	// exactly what multiplying by DFT(h) computes when h[o mod N] = w[o], i.e.
+	// exactly this embedding. No index flip is needed, including when the
+	// window is not palindromic (e.g. AsymmetricGaussKernel2D's shifted taps).
+	void embedWrapped1D(std::vector<double>& out, std::span<const double> window, int kR0);
+
+	// Builds the fused, wrap-embedded size_x*size_y real kernel (row-major,
+	// y-major: index y*size_x+x) whose forward FFT is the spectrum
+	// SpectralConvolver2D::setKernel expects: sum over terms of
+	// sign * outer(embed(taps_x), embed(taps_y)). Terms with an empty taps_x or
+	// taps_y are skipped. Returns {} for non-positive dimensions.
+	std::vector<double> buildWrappedSeparableKernel2D(
+		int size_x, int size_y, std::span<const SeparableKernelTerm2D> terms);
+
+	// Convenience overload so 1- and 2-term call sites read as one line.
+	inline std::vector<double> buildWrappedSeparableKernel2D(
+		int size_x, int size_y, std::initializer_list<SeparableKernelTerm2D> terms)
+	{
+		return buildWrappedSeparableKernel2D(size_x, size_y,
+			std::span<const SeparableKernelTerm2D>(terms.begin(), terms.size()));
+	}
 
 	template <typename T>
 	std::vector<T> normalize(const std::vector<T>& vector)

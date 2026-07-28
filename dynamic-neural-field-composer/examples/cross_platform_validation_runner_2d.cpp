@@ -1,4 +1,4 @@
-// dnfc_suite_runner_2d — 2D cross-framework algebraic equivalence test suite runner
+// dnfc_suite_runner_2d — 2D cross-platform algebraic equivalence test suite runner
 //
 // Reads every JSON file from the 2D simulations/dnfc directory, runs the
 // two-phase protocol (500 steps stimulus ON, 500 steps stimulus OFF), and saves

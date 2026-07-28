@@ -5,8 +5,9 @@
 // Times 2000 Euler steps per run (200-step warm-up discarded), 5 runs, and records
 // steps/second.
 //
-// Usage: benchmark_headless [output_csv] [arch] [N_csv] [field_size]
+// Usage: benchmark_headless [output_csv] [arch] [N_csv] [field_size] [timed_steps] [n_runs]
 //   output_csv defaults to "timings-dnfc.csv"
+//   timed_steps: timed steps per run (default 2000); n_runs: runs per N (default 5)
 
 #include <chrono>
 #include <cstdio>
@@ -166,7 +167,8 @@ static void establish_then_remove_stimulus(const std::vector<std::shared_ptr<Gau
     }
 }
 
-static void run_benchmark(int N, const Arch& arch, int field_size, const std::string& outfile)
+static void run_benchmark(int N, const Arch& arch, int field_size, const std::string& outfile,
+                          int timedSteps, int nRuns)
 {
     auto sim = build_simulation(N, arch, field_size);
 
@@ -190,16 +192,16 @@ static void run_benchmark(int N, const Arch& arch, int field_size, const std::st
     FILE* fp = std::fopen(outfile.c_str(), "a");
     if (!fp) { std::fprintf(stderr, "Cannot open %s\n", outfile.c_str()); return; }
 
-    for (int run = 0; run < N_RUNS; ++run) {
+    for (int run = 0; run < nRuns; ++run) {
         sim->init();
         if (arch.name == "memory") establish_then_remove_stimulus(stimuli, stimuliParams, sim);
 
         auto t0 = std::chrono::high_resolution_clock::now();
-        for (int t = 0; t < TIMED_STEPS; ++t) sim->step();
+        for (int t = 0; t < timedSteps; ++t) sim->step();
         auto t1 = std::chrono::high_resolution_clock::now();
 
         double elapsed = std::chrono::duration<double>(t1 - t0).count();
-        double sps     = TIMED_STEPS / elapsed;
+        double sps     = timedSteps / elapsed;
         std::fprintf(fp,  "dnfc,default,%s,%d,headless,%d,%d,%.2f\n",
                      arch.name.c_str(), field_size, N, run + 1, sps);
         std::printf("dnfc %-12s fs=%4d N=%4d run=%d  %.1f steps/s\n",
@@ -224,20 +226,24 @@ static std::vector<int> parse_n_list(const std::string& s)
 
 int main(int argc, char* argv[])
 {
-    // Usage: benchmark_headless [output_csv] [arch] [N_csv] [field_size]
+    // Usage: benchmark_headless [output_csv] [arch] [N_csv] [field_size] [timed_steps] [n_runs]
     //   output_csv  default "timings-dnfc.csv"
     //   arch        detection|selection|memory|multi-peak (default detection)
     //   N_csv       comma-separated field counts (default "5,10,50,100")
     //   field_size  field length (default 100)
+    //   timed_steps timed steps per run (default 2000)
+    //   n_runs      runs per N (default 5)
     std::string      outfile = (argc > 1) ? argv[1] : "timings-dnfc.csv";
     std::string      archName = (argc > 2) ? argv[2] : "detection";
     std::vector<int> Ns       = (argc > 3) ? parse_n_list(argv[3])
                                            : std::vector<int>{5, 10, 50, 100};
     const int        field_size = (argc > 4) ? std::stoi(argv[4]) : BASE_SIZE;
+    const int        timedSteps = (argc > 5) ? std::stoi(argv[5]) : TIMED_STEPS;
+    const int        nRuns      = (argc > 6) ? std::stoi(argv[6]) : N_RUNS;
     const Arch& arch = get_arch(archName);
     std::printf("dnfc headless benchmark [arch=%s fs=%d] -> %s\n",
                 arch.name.c_str(), field_size, outfile.c_str());
     for (int N : Ns)
-        run_benchmark(N, arch, field_size, outfile);
+        run_benchmark(N, arch, field_size, outfile, timedSteps, nRuns);
     return 0;
 }

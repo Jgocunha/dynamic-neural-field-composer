@@ -848,18 +848,9 @@ form is numerically tamer.) Non-symmetric kernels (Oscillatory) keep the bit-ide
 | CorrelatedNormalNoise2D | 29.8 | 27.0 | 1.10x | |
 | OscillatoryKernel2D | 56.9 | 57.6 | ~flat | not symmetric (bit-identical path) |
 
-### Benchmark vs Cedar (median steps/sec; Cedar = FP32, dnfc = FP64)
-
-| dim/N | Cedar | dnfc now | dnfc/Cedar |
-|-------|------:|---------:|-----------:|
-| 2D N=10  | 1545 | 2008 | 1.30x |
-| 2D N=50  | 297  | 334  | 1.12x |
-| 2D N=100 | 144  | 161  | 1.12x |
-| 1D N=100 | 297  | 5877 | 19.8x |
-
-dnf-composer now beats Cedar at every 2D size in full FP64. Cumulative this session: conv AVX2 (across
-outputs) + map-lookup hoist + sigmoid AVX2 exp + symmetric folding took 2D from ~6x slower than Cedar to
-12-30% faster. `conv_valid_into` is still the top cost; the remaining lever is across-field threading.
+Cumulative this session: conv AVX2 (across outputs) + map-lookup hoist + sigmoid AVX2 exp + symmetric
+folding took 2D throughput from ~6x slower than the pre-optimization baseline to 12-30% faster.
+`conv_valid_into` is still the top cost; the remaining lever is across-field threading.
 ## 2026-06-25 14:58:12  (dnfc 2.9.3, 200000 iters)
 
 ### Per element-type step()
