@@ -50,8 +50,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "element_parameters/test_element_parameters.cpp"
             # exceptions
             "exceptions/test_exception.cpp"
-            # visualization
-            "visualization/test_visualization.cpp"
+            # visualization/ is auto-discovered below (see ui_sources rationale)
     )
     target_include_directories(dnf_composer_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
     target_link_libraries(dnf_composer_tests PRIVATE
@@ -73,6 +72,17 @@ if(DNF_COMPOSER_BUILD_TESTS)
     # so the harness can locate/refresh the frozen CSV fixtures.
     target_compile_definitions(dnf_composer_tests PRIVATE
             GOLDEN_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden/data")
+
+    # --- Headless UI tests ------------------------------------------------
+    # Same auto-discovery rationale as the golden suite: parallel contributors
+    # drop tests/ui/*.cpp in without touching this file. The harness in
+    # tests/ui/ui_test_harness.h drives real render() calls against a headless
+    # ImGui context (no window, no GL), so user_interface/ stops being a
+    # permanent 0%-covered block in the coverage denominator.
+    file(GLOB ui_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ui/*.cpp")
+    file(GLOB visualization_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/visualization/*.cpp")
+    target_sources(dnf_composer_tests PRIVATE ${ui_sources} ${visualization_sources})
+    target_include_directories(dnf_composer_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ui")
 
     include(GoogleTest)
     gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)

@@ -668,9 +668,15 @@ namespace dnf_composer::user_interface
 			if (ImNodeEditor::QueryNewNode(&newNodePin)) {
 				ImNodeEditor::RejectNewItem();
 }
-
-			ImNodeEditor::EndCreate();
 		}
+
+		// EndCreate() must be called unconditionally: BeginCreate() marks the creator
+		// action active *before* it can return false, and only EndCreate() clears that
+		// flag. Skipping it on the false path leaves the action stuck active, so the
+		// next frame trips IM_ASSERT(false == m_InActive) (and silently breaks
+		// drag-to-connect in builds where asserts are compiled out). Upstream's own
+		// examples call EndCreate() outside the if for this reason.
+		ImNodeEditor::EndCreate();
 	}
 
 	void NodeGraphWindow::handleLinkInteractions() const
