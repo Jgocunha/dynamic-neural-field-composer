@@ -81,3 +81,21 @@ _(values = median steps/sec)_
 | 2D  | 0.0035 | 0.0007 | 0.0003 |
 
 _(values = median steps/sec; second table = ratio to calibration)_
+
+## 2026-07-29 11:05:33   (dnfc 2.9.4, 2000 steps x 3 runs)
+
+**Env:** AMD Ryzen 5 3600 6-Core Processor (12T) | Windows | MSVC 19.44 | Release | AVX2: yes | FFTW 3.3.10 | git cc4fb38b
+
+| dim | N=10 | N=50 | N=100 |
+|-----|-----:|-----:|------:|
+| 1D  | 84808.7 | 16019.4 | 7695.2 |
+| 2D  | 2726.1 | 538.6 | 228.4 |
+
+**Calibration** (1 field, 1D size 100): 846131.1 steps/s
+
+| dim | N=10 | N=50 | N=100 |
+|-----|-----:|-----:|------:|
+| 1D  | 0.1002 | 0.0189 | 0.0091 |
+| 2D  | 0.0032 | 0.0006 | 0.0003 |
+
+_(values = median steps/sec; second table = ratio to calibration)_
