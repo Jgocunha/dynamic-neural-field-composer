@@ -28,8 +28,9 @@ namespace dnf_composer::tools::logger
 
     void Logger::log(const std::string& message) const
     {
-        if (logLevel < Logger::minLogLevel.load(std::memory_order_relaxed))
+        if (logLevel < Logger::minLogLevel.load(std::memory_order_relaxed)) {
             return;
+        }
 
         const auto now = std::chrono::system_clock::now();
         const auto in_time_t = std::chrono::system_clock::to_time_t(now);

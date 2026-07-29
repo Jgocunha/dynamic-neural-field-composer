@@ -38,8 +38,9 @@
 			const int n = commonParameters.dimensionParameters.size;
 			tools::math::fillNormal(out.data(), static_cast<std::size_t>(n));
 			const double scale = parameters.amplitude / std::sqrt(deltaT);
-			for (int i = 0; i < n; ++i)
+			for (int i = 0; i < n; ++i) {
 				out[i] *= scale;
+			}
 		}
 
 		std::string NormalNoise2D::toString() const

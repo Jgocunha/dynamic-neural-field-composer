@@ -55,7 +55,9 @@ namespace dnf_composer::tools::math
 		// DEFINED for circular boundaries. This precedes the override check on
 		// purpose: ForceSpectral means "spectral wherever it is legal", never
 		// "always".
-		if (!circular || size_x <= 0 || size_y <= 0) return false;
+		if (!circular || size_x <= 0 || size_y <= 0) {
+			return false;
+		}
 
 		switch (convolutionModeOverride())
 		{
@@ -71,12 +73,24 @@ namespace dnf_composer::tools::math
 	void SpectralConvolver2D::destroy()
 	{
 		std::lock_guard<std::mutex> lock(plannerMutex());
-		if (forwardPlan_) fftw_destroy_plan(static_cast<fftw_plan>(forwardPlan_));
-		if (inversePlan_) fftw_destroy_plan(static_cast<fftw_plan>(inversePlan_));
-		if (fieldReal_)  fftw_free(fieldReal_);
-		if (fieldFreq_)  fftw_free(fieldFreq_);
-		if (kernelFreq_) fftw_free(kernelFreq_);
-		if (resultReal_) fftw_free(resultReal_);
+		if (forwardPlan_ != nullptr) {
+			fftw_destroy_plan(static_cast<fftw_plan>(forwardPlan_));
+		}
+		if (inversePlan_ != nullptr) {
+			fftw_destroy_plan(static_cast<fftw_plan>(inversePlan_));
+		}
+		if (fieldReal_ != nullptr) {
+			fftw_free(fieldReal_);
+		}
+		if (fieldFreq_ != nullptr) {
+			fftw_free(fieldFreq_);
+		}
+		if (kernelFreq_ != nullptr) {
+			fftw_free(kernelFreq_);
+		}
+		if (resultReal_ != nullptr) {
+			fftw_free(resultReal_);
+		}
 		forwardPlan_ = inversePlan_ = nullptr;
 		fieldReal_ = fieldFreq_ = kernelFreq_ = resultReal_ = nullptr;
 		size_x_ = size_y_ = 0;
@@ -89,11 +103,12 @@ namespace dnf_composer::tools::math
 
 	void SpectralConvolver2D::copyFrom(const SpectralConvolver2D& other)
 	{
-		if (other.size_x_ == 0 || other.size_y_ == 0)
+		if (other.size_x_ == 0 || other.size_y_ == 0) {
 			return;
+		}
 
 		init(other.size_x_, other.size_y_);
-		if (other.kernelFreq_)
+		if (other.kernelFreq_ != nullptr)
 		{
 			const std::size_t bytes =
 				static_cast<std::size_t>(size_y_) * freqCols(size_x_) * sizeof(fftw_complex);
@@ -151,8 +166,9 @@ namespace dnf_composer::tools::math
 		// be short-circuited into a no-op. NOTE this preserves kernelFreq_,
 		// which is exactly why every caller must still call setKernel() after
 		// init() whenever the taps may have changed: see setKernel()'s comment.
-		if (size_x == size_x_ && size_y == size_y_ && forwardPlan_ && inversePlan_)
+		if (size_x == size_x_ && size_y == size_y_ && forwardPlan_ != nullptr && inversePlan_ != nullptr) {
 			return;
+		}
 
 		destroy();
 		size_x_ = size_x;
@@ -165,8 +181,9 @@ namespace dnf_composer::tools::math
 		resultReal_ = fftw_malloc(sizeof(double) * realCount);
 		fieldFreq_  = fftw_malloc(sizeof(fftw_complex) * freqCount);
 		kernelFreq_ = fftw_malloc(sizeof(fftw_complex) * freqCount);
-		if (!fieldReal_ || !resultReal_ || !fieldFreq_ || !kernelFreq_)
+		if (fieldReal_ == nullptr || resultReal_ == nullptr || fieldFreq_ == nullptr || kernelFreq_ == nullptr) {
 			throw std::bad_alloc();
+		}
 
 		// FFTW_ESTIMATE (a heuristic, no timing trials) rather than
 		// FFTW_MEASURE: every element's setParameters() re-runs init(), and the

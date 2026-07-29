@@ -11,10 +11,20 @@
 
 #include "tools/simd_dispatch.h"
 
+// cpuid (via <intrin.h>/<cpuid.h>) is x86/x64-only — e.g. Apple Silicon's
+// arm64 has no such instruction, and <cpuid.h> itself #errors on non-x86.
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || defined(_M_IX86)
+#define BENCH_ENV_X86 1
+#else
+#define BENCH_ENV_X86 0
+#endif
+
 #if defined(_WIN32)
 #include <intrin.h>
-#else
+#elif BENCH_ENV_X86
 #include <cpuid.h>
+#include <sys/utsname.h>
+#else
 #include <sys/utsname.h>
 #endif
 
@@ -46,7 +56,7 @@ namespace detail {
 
 	inline std::string cpu_brand()
 	{
-#if defined(_WIN32) || defined(__GNUC__) || defined(__clang__)
+#if defined(_WIN32) || BENCH_ENV_X86
 		int regs[4] = {0, 0, 0, 0};
 		char brand[49] = {};
 #if defined(_WIN32)

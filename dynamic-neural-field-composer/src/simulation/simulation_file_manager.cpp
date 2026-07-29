@@ -800,8 +800,9 @@ namespace dnf_composer
                     activationFunction = std::make_unique<element::AbsSigmoidFunction>(x_shift, beta);
                 }
             }
-            if (!activationFunction)
+            if (!activationFunction) {
                 activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0);
+            }
             auto nf = std::make_shared<element::NeuralField2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
                 element::NeuralField2DParameters(tau, restingLevel, *activationFunction)

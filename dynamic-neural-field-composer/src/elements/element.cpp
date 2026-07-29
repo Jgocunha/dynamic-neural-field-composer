@@ -187,8 +187,9 @@ namespace dnf_composer::element
 
 	void Element::updateInput()
 	{
-		if (inputPtr == nullptr)
+		if (inputPtr == nullptr) {
 			buildInputCache();
+		}
 
 		// Sum the input sources into the input buffer. Copy the first source
 		// instead of zero-filling then adding it — this elides a full zero-fill
@@ -203,16 +204,19 @@ namespace dnf_composer::element
 
 		const CachedInput& first = cachedInputs.front();
 		const std::size_t n0 = first.size < inputSize ? first.size : inputSize;
-		for (std::size_t i = 0; i < n0; ++i)
+		for (std::size_t i = 0; i < n0; ++i) {
 			inputPtr[i] = first.src[i];
-		for (std::size_t i = n0; i < inputSize; ++i)
+		}
+		for (std::size_t i = n0; i < inputSize; ++i) {
 			inputPtr[i] = 0.0;
+		}
 
 		for (std::size_t k = 1; k < cachedInputs.size(); ++k)
 		{
 			const CachedInput& in = cachedInputs[k];
-			for (std::size_t i = 0; i < in.size; ++i)
+			for (std::size_t i = 0; i < in.size; ++i) {
 				inputPtr[i] += in.src[i];
+			}
 		}
 	}
 

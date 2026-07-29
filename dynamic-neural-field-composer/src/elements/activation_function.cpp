@@ -41,7 +41,8 @@ namespace dnf_composer::element
 		for (std::size_t i = 0; i < n; ++i)
 		{
 			double e = -s * (input[i] - xs);
-			e = e < -88.0 ? -88.0 : (e > 88.0 ? 88.0 : e);
+			if (e < -88.0) e = -88.0;
+			else if (e > 88.0) e = 88.0;
 			out[i] = 1.0 / (1.0 + std::exp(e));
 		}
 	}

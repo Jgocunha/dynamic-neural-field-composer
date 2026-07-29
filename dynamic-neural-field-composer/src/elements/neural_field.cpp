@@ -104,8 +104,9 @@
 		{
 			const double dtOverTau = deltaT / parameters.tau;
 			const int sz = commonParameters.dimensionParameters.size;
-			for (int i = 0; i < sz; ++i)
+			for (int i = 0; i < sz; ++i) {
 				act_[i] += dtOverTau * (-act_[i] + restScalar_ + inp_[i]);
+			}
 		}
 
 		void NeuralField::calculateOutput()

@@ -98,24 +98,27 @@ namespace dnf_composer::element
 		}
 
 		// Reuse the member buffer (no per-step allocation) for the white noise.
-		if (static_cast<int>(whiteNoise_.size()) != totalSize)
+		if (static_cast<int>(whiteNoise_.size()) != totalSize) {
 			whiteNoise_.assign(totalSize, 0.0);
+		}
 		tools::math::fillNormal(whiteNoise_.data(), static_cast<std::size_t>(totalSize));
 		const std::vector<double>& whiteNoise = whiteNoise_;
 
-		if (useFFT_)
+		if (useFFT_) {
 			spectral_.apply(whiteNoise.data(), scratchConv_.data());
-		else
+		} else {
 			tools::math::conv2d_separable_into(
 				scratchConv_, scratchTmp_, scratch2d_,
 				whiteNoise, correlationKernel_x, correlationKernel_y,
 				size_x, size_y, extIndex_x, extIndex_y);
+		}
 
 		const double scale = parameters.amplitude / std::sqrt(deltaT);
 		// Hoist the output buffer out of the per-cell loop (unordered_map lookup).
 		double* __restrict out = components["output"].data();
-		for (int i = 0; i < totalSize; ++i)
+		for (int i = 0; i < totalSize; ++i) {
 			out[i] = scale * scratchConv_[i];
+		}
 	}
 
 	std::string CorrelatedNormalNoise2D::toString() const

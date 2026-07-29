@@ -42,8 +42,9 @@ namespace dnf_composer::element
 	{
 		const double dtOverTau = deltaT / parameters.tau;
 		const int sz = commonParameters.dimensionParameters.size;
-		for (int i = 0; i < sz; ++i)
+		for (int i = 0; i < sz; ++i) {
 			act_[i] += dtOverTau * (-act_[i] + restScalar_ + inp_[i]);
+		}
 	}
 
 	void NeuralField2D::calculateOutput()
@@ -97,14 +98,16 @@ namespace dnf_composer::element
 		prevBumps_.swap(state.bumps);
 		state.bumps.clear();
 
-		if (vmax <= threshold)
+		if (vmax <= threshold) {
 			return; // no cell exceeds threshold: no bumps possible, skip the flood-fill scan
+		}
 
 		const int n = size_x * size_y;
-		if (visited_.size() != static_cast<std::size_t>(n))
+		if (visited_.size() != static_cast<std::size_t>(n)) {
 			visited_.assign(n, 0);
-		else
+		} else {
 			std::fill(visited_.begin(), visited_.end(), 0);
+		}
 		std::vector<char>& visited = visited_;
 
 		for (int xi = 0; xi < size_x; ++xi)
@@ -112,9 +115,9 @@ namespace dnf_composer::element
 			for (int yi = 0; yi < size_y; ++yi)
 			{
 				const int idx = yi * size_x + xi;
-				if (act_[idx] <= threshold || visited[idx]) {
+				if (act_[idx] <= threshold || visited[idx] != 0) {
 					continue;
-}
+				}
 
 				NeuralField2DBump bump;
 				double sumX = 0.0;
@@ -124,7 +127,7 @@ namespace dnf_composer::element
 
 				stack_.clear();
 				stack_.push_back(idx);
-				visited[idx] = true;
+				visited[idx] = 1;
 
 				while (!stack_.empty())
 				{
@@ -147,9 +150,9 @@ namespace dnf_composer::element
 							continue;
 }
 						const int nIdx = ny[k] * size_x + nx[k];
-						if (!visited[nIdx] && act_[nIdx] > threshold)
+						if (visited[nIdx] == 0 && act_[nIdx] > threshold)
 						{
-							visited[nIdx] = true;
+							visited[nIdx] = 1;
 							stack_.push_back(nIdx);
 						}
 					}

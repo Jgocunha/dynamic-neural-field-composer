@@ -11,6 +11,7 @@
 
 #include "tools/simd_dispatch.h"
 #include <cmath>
+#include <numbers>
 
 // This file is only compiled with AVX2+FMA flags on x86/x64 (see CMakeLists.txt);
 // on other architectures (e.g. arm64) it is compiled at the default baseline
@@ -39,7 +40,8 @@ namespace dnf_composer::tools::math::detail
 		// general-purpose exp (no under/overflow saturation outside that range).
 		inline __m256d exp_pd(__m256d x)
 		{
-			const __m256d log2e = _mm256_set1_pd(1.4426950408889634073599);
+			const __m256d log2e = _mm256_set1_pd(std::numbers::log2e);
+			// NOLINTNEXTLINE(modernize-use-std-numbers) - deliberately the "hi" half of a Cephes-style hi/lo ln2 split (paired with c2 below), not the true ln2 value
 			const __m256d c1    = _mm256_set1_pd(6.93145751953125E-1);   // ln2 hi
 			const __m256d c2    = _mm256_set1_pd(1.42860682030941723212E-6); // ln2 lo
 			const __m256d half  = _mm256_set1_pd(0.5);
@@ -109,11 +111,13 @@ namespace dnf_composer::tools::math::detail
 		for (; i < n; ++i)
 		{
 			double e = -s * (in[i] - xs);
-			e = e < -88.0 ? -88.0 : (e > 88.0 ? 88.0 : e);
+			if (e < -88.0) e = -88.0;
+			else if (e > 88.0) e = 88.0;
 			out[i] = 1.0 / (1.0 + std::exp(e));
 		}
 	}
 
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - symmetric-kernel-folding dispatch with three width-tiers; splitting would obscure the shared accumulator pattern
 	void conv_valid_into_avx2_f64(const double* kr, int M, const double* mx, double* o, int n)
 	{
 		// Symmetric-kernel folding. For a symmetric kernel kr (Gauss / the
@@ -127,9 +131,11 @@ namespace dnf_composer::tools::math::detail
 		// 1e-4 as the unfolded path. Vectorized 4 outputs at a time; non-symmetric
 		// kernels (e.g. Oscillatory) fall through to the bit-identical path below.
 		bool symmetric = (M % 2 == 1);
-		if (symmetric)
-			for (int j = 0, c = M - 1; j < c; ++j, --c)
+		if (symmetric) {
+			for (int j = 0, c = M - 1; j < c; ++j, --c) {
 				if (kr[j] != kr[c]) { symmetric = false; break; }
+			}
+		}
 
 		// Four independent accumulator chains (16 outputs per iteration) hide
 		// the fmadd latency — a single-accumulator chain is latency-bound
@@ -182,8 +188,9 @@ namespace dnf_composer::tools::math::detail
 			{
 				const double* __restrict w = mx + i;
 				double acc = kr[c] * w[c];
-				for (int j = 0; j < c; ++j)
+				for (int j = 0; j < c; ++j) {
 					acc += kr[j] * (w[j] + w[2 * c - j]);
+				}
 				o[i] = acc;
 			}
 			return;
@@ -227,8 +234,9 @@ namespace dnf_composer::tools::math::detail
 		{
 			const double* __restrict w = mx + i;
 			double acc = 0.0;
-			for (int m = 0; m < M; ++m)
+			for (int m = 0; m < M; ++m) {
 				acc += kr[m] * w[m];
+			}
 			o[i] = acc;
 		}
 	}

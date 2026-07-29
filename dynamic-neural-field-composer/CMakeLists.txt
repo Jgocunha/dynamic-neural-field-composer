@@ -261,20 +261,6 @@ set(src
 add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
 
-# GCC/Clang default to -ffp-contract=fast, silently fusing scalar a*b+c into a
-# single FMA instruction; MSVC's default (/fp:precise) never does this without
-# explicit intrinsics. Several 2D field-dynamics validation sims (see the
-# conv2d_separable_into comment in include/tools/math.h) sit on a knife-edge
-# where ANY change to the per-element summation/rounding pattern flips a
-# self-sustained bump between surviving and decaying — so this default
-# divergence alone is enough to fail the cross-platform golden comparison on
-# Linux/macOS while passing on Windows. Disabling contraction here matches
-# MSVC's behaviour library-wide; the one deliberately-FMA'd file
-# (simd_dispatch_avx2.cpp) uses explicit _mm256_fmadd_pd intrinsics, which
-# this flag does not affect.
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-ffp-contract=off>)
-
 # AVX2+FMA is scoped to ONE translation unit (src/tools/simd_dispatch_avx2.cpp),
 # not the whole library: every other file, and every dnf-composer executable,
 # compiles at the toolchain's default baseline. Whether the AVX2 kernel actually

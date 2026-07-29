@@ -31,10 +31,11 @@
 			const double invDecay = 1.0 / parameters.tauDecay;
 			for (int i = 0; i < size; ++i)
 			{
-				if (in[i] > parameters.threshold)
+				if (in[i] > parameters.threshold) {
 					out[i] += deltaT * invBuild * (-out[i] + in[i]);
-				else
+				} else {
 					out[i] += deltaT * invDecay * (-out[i]);
+				}
 			}
 		}
 

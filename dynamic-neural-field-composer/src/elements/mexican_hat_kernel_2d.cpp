@@ -136,13 +136,15 @@
 				if (hasGlobal)
 				{
 					const double globalOffset = parameters.amplitudeGlobal * fullSum;
-					for (int i = 0; i < n; ++i)
+					for (int i = 0; i < n; ++i) {
 						output[i] = scratchExcConv_[i] + globalOffset;
+					}
 				}
 				else
 				{
-					for (int i = 0; i < n; ++i)
+					for (int i = 0; i < n; ++i) {
 						output[i] = scratchExcConv_[i];
+					}
 				}
 				return;
 			}
@@ -163,13 +165,15 @@
 			if (hasGlobal)
 			{
 				const double globalOffset = parameters.amplitudeGlobal * fullSum;
-				for (int i = 0; i < n; ++i)
+				for (int i = 0; i < n; ++i) {
 					output[i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
+				}
 			}
 			else
 			{
-				for (int i = 0; i < n; ++i)
+				for (int i = 0; i < n; ++i) {
 					output[i] = scratchExcConv_[i] - scratchInhConv_[i];
+				}
 			}
 		}
 

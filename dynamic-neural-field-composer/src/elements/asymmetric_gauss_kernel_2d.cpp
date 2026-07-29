@@ -133,25 +133,28 @@ namespace dnf_composer::element
 		const int size_x = commonParameters.dimensionParameters.size_x;
 		const int size_y = commonParameters.dimensionParameters.size_y;
 
-		if (useFFT_)
+		if (useFFT_) {
 			spectral_.apply(input.data(), scratchConvolution_.data());
-		else
+		} else {
 			tools::math::conv2d_separable_into(
 				scratchConvolution_, scratchTmp_, scratch2d_,
 				input, kernel_1d_x, kernel_1d_y,
 				size_x, size_y, extIndex_x, extIndex_y);
+		}
 
 		const int n = static_cast<int>(output.size());
 		if (hasGlobal)
 		{
 			const double globalOffset = parameters.amplitudeGlobal * fullSum;
-			for (int i = 0; i < n; ++i)
+			for (int i = 0; i < n; ++i) {
 				output[i] = scratchConvolution_[i] + globalOffset;
+			}
 		}
 		else
 		{
-			for (int i = 0; i < n; ++i)
+			for (int i = 0; i < n; ++i) {
 				output[i] = scratchConvolution_[i];
+			}
 		}
 	}
 

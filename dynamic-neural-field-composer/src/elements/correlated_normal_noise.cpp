@@ -61,8 +61,9 @@ namespace dnf_composer::element
 		}
 
 		// Reuse the member buffer (no per-step allocation) for the white noise.
-		if (static_cast<int>(whiteNoise_.size()) != fieldSize)
+		if (static_cast<int>(whiteNoise_.size()) != fieldSize) {
 			whiteNoise_.assign(fieldSize, 0.0);
+		}
 		tools::math::fillNormal(whiteNoise_.data(), static_cast<std::size_t>(fieldSize));
 		const std::vector<double>& whiteNoise = whiteNoise_;
 

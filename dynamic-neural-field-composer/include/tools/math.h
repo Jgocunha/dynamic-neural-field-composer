@@ -123,12 +123,15 @@ namespace dnf_composer::tools::math
 		// symmetric mirror taps — that reorders the summation and breaks sensitive
 		// abssigmoid attractors past 1e-4.)
 		static thread_local std::vector<T> krev;
-		if (static_cast<int>(krev.size()) != M) krev.resize(M);
+		if (static_cast<int>(krev.size()) != M) {
+			krev.resize(M);
+		}
 		{
 			const T* __restrict mn = min_v.data();
 			T* __restrict kr = krev.data();
-			for (int m = 0; m < M; ++m)
+			for (int m = 0; m < M; ++m) {
 				kr[m] = mn[M - 1 - m];
+			}
 		}
 		const T* __restrict kr = krev.data();
 		const T* __restrict mx = max_v.data();
@@ -149,8 +152,9 @@ namespace dnf_composer::tools::math
 		{
 			const T* __restrict w = mx + i;
 			T acc = T();
-			for (int m = 0; m < M; ++m)
+			for (int m = 0; m < M; ++m) {
 				acc += kr[m] * w[m];
+			}
 			out[i] = acc;
 		}
 	}
@@ -183,18 +187,23 @@ namespace dnf_composer::tools::math
 			out[i] = acc;
 		};
 
-		for (int i = 0; i < std::min(iLo, nf); ++i) edge(i);
+		for (int i = 0; i < std::min(iLo, nf); ++i) {
+			edge(i);
+		}
 
 		for (int i = iLo; i < iHi; ++i)
 		{
 			const T* __restrict w = ff + (i - pad);
 			T acc = T();
-			for (int j = 0; j < ng; ++j)
+			for (int j = 0; j < ng; ++j) {
 				acc += gg[j] * w[j];
+			}
 			out[i] = acc;
 		}
 
-		for (int i = std::max(iHi, iLo); i < nf; ++i) edge(i);
+		for (int i = std::max(iHi, iLo); i < nf; ++i) {
+			edge(i);
+		}
 	}
 
 	template<typename T>
@@ -825,15 +834,31 @@ namespace dnf_composer::tools::math
 
 		void ensure(int size_x, int size_y, std::size_t extX, std::size_t extY)
 		{
-			if (row.size()     != static_cast<std::size_t>(size_x)) row.assign(size_x, T());
-			if (convRow.size() != static_cast<std::size_t>(size_x)) convRow.assign(size_x, T());
-			if (col.size()     != static_cast<std::size_t>(size_y)) col.assign(size_y, T());
-			if (convCol.size() != static_cast<std::size_t>(size_y)) convCol.assign(size_y, T());
-			if (extRow.size()  != extX) extRow.assign(extX, T());
-			if (extCol.size()  != extY) extCol.assign(extY, T());
+			if (row.size()     != static_cast<std::size_t>(size_x)) {
+				row.assign(size_x, T());
+			}
+			if (convRow.size() != static_cast<std::size_t>(size_x)) {
+				convRow.assign(size_x, T());
+			}
+			if (col.size()     != static_cast<std::size_t>(size_y)) {
+				col.assign(size_y, T());
+			}
+			if (convCol.size() != static_cast<std::size_t>(size_y)) {
+				convCol.assign(size_y, T());
+			}
+			if (extRow.size()  != extX) {
+				extRow.assign(extX, T());
+			}
+			if (extCol.size()  != extY) {
+				extCol.assign(extY, T());
+			}
 			const std::size_t tile = static_cast<std::size_t>(std::min(64, size_x)) * size_y;
-			if (tileIn.size()  != tile) tileIn.assign(tile, T());
-			if (tileOut.size() != tile) tileOut.assign(tile, T());
+			if (tileIn.size()  != tile) {
+				tileIn.assign(tile, T());
+			}
+			if (tileOut.size() != tile) {
+				tileOut.assign(tile, T());
+			}
 		}
 	};
 
@@ -843,6 +868,7 @@ namespace dnf_composer::tools::math
 	// (the y-pass reads tmp rows while writing out rows); `scratch` must be
 	// ensure()'d for these dimensions and extension lengths. This is the
 	// hot-path overload.
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - x-pass + tiled y-pass convolution; splitting would obscure the single cache-blocking pass
 	template<typename T>
 	void conv2d_separable_into(
 		std::vector<T>& out,
@@ -869,14 +895,17 @@ namespace dnf_composer::tools::math
 		// widths sharing one scratch; sizing to the max would make the narrower
 		// kernel emit > size_x outputs and overflow convRow.) resize() keeps the
 		// capacity ensure() reserved, so no reallocation occurs.
-		if (circular_x) extRow.resize(extIndex_x.size());
+		if (circular_x) {
+			extRow.resize(extIndex_x.size());
+		}
 
 		// x-pass: convolve each row (fixed y) with kernel_x. The circular
 		// extension is three contiguous copies — createExtendedIndex lays the
 		// extended row out as [last kR1 elems | whole row | first kR0 elems]
 		// (1-based indices), so kR1 = size_x - extIndex_x[0] + 1.
 		const T* __restrict fld = field.data();
-		int kR0_x = 0, kR1_x = 0;
+		int kR0_x = 0;
+		int kR1_x = 0;
 		if (circular_x)
 		{
 			kR1_x = size_x - extIndex_x[0] + 1;
@@ -919,10 +948,13 @@ namespace dnf_composer::tools::math
 		std::vector<T>& convCol = scratch.convCol;
 		std::vector<T>& tileIn  = scratch.tileIn;
 		std::vector<T>& tileOut = scratch.tileOut;
-		if (circular_y) extCol.resize(extIndex_y.size());
+		if (circular_y) {
+			extCol.resize(extIndex_y.size());
+		}
 
 		// Circular extension layout, as for the x-pass: [last kR1 | col | first kR0].
-		int kR0_y = 0, kR1_y = 0;
+		int kR0_y = 0;
+		int kR1_y = 0;
 		if (circular_y)
 		{
 			kR1_y = size_y - extIndex_y[0] + 1;
@@ -940,8 +972,9 @@ namespace dnf_composer::tools::math
 			for (int y = 0; y < size_y; ++y)
 			{
 				const T* __restrict src = tp + static_cast<std::size_t>(y) * size_x + x0;
-				for (int c = 0; c < w; ++c)
+				for (int c = 0; c < w; ++c) {
 					tileIn[static_cast<std::size_t>(c) * size_y + y] = src[c];
+				}
 			}
 
 			for (int c = 0; c < w; ++c)
@@ -967,8 +1000,9 @@ namespace dnf_composer::tools::math
 			for (int y = 0; y < size_y; ++y)
 			{
 				T* __restrict dst = op + static_cast<std::size_t>(y) * size_x + x0;
-				for (int c = 0; c < w; ++c)
+				for (int c = 0; c < w; ++c) {
 					dst[c] = tileOut[static_cast<std::size_t>(c) * size_y + y];
+				}
 			}
 		}
 	}
