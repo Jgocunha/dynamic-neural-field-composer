@@ -4,7 +4,18 @@
 
 #include "tools/simd_dispatch.h"
 
-#if defined(_MSC_VER)
+// AVX2 is an x86/x64-only ISA extension. __builtin_cpu_supports("avx2") and
+// <intrin.h>'s cpuid intrinsics are unavailable/meaningless on other
+// architectures (e.g. Apple Silicon's arm64) — gate the whole detection on
+// the target architecture, not just the compiler, so this TU still compiles
+// (and correctly reports "unavailable") on ARM hosts.
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || defined(_M_IX86)
+	#define DNF_COMPOSER_X86 1
+#else
+	#define DNF_COMPOSER_X86 0
+#endif
+
+#if DNF_COMPOSER_X86 && defined(_MSC_VER)
 	#include <intrin.h>
 #endif
 
@@ -14,7 +25,7 @@ namespace dnf_composer::tools::math::detail
 	{
 		static const bool result = []() -> bool
 		{
-#if defined(_MSC_VER)
+#if DNF_COMPOSER_X86 && defined(_MSC_VER)
 			int regs[4] = { 0, 0, 0, 0 };
 			__cpuid(regs, 0);
 			const int maxLeaf = regs[0];
@@ -33,7 +44,7 @@ namespace dnf_composer::tools::math::detail
 			__cpuidex(regs, 7, 0);
 			const bool cpuHasAvx2 = (regs[1] & (1 << 5)) != 0; // EBX.AVX2
 			return cpuHasAvx2;
-#elif defined(__GNUC__) || defined(__clang__)
+#elif DNF_COMPOSER_X86 && (defined(__GNUC__) || defined(__clang__))
 			__builtin_cpu_init();
 			return __builtin_cpu_supports("avx2") && __builtin_cpu_supports("fma");
 #else

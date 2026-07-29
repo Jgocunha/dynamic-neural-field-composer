@@ -117,9 +117,13 @@ if(DNF_COMPOSER_BUILD_TESTS)
     # TU are COMDATs — without /arch:AVX2 the linker may keep this TU's scalar
     # copies for the whole exe, silently overriding the library's AVX2
     # instantiations (and the profiler must measure the code the library runs).
+    # x86-only, same as the library's own simd_dispatch_avx2.cpp flags (see
+    # CMakeLists.txt) — these flags are meaningless/invalid on ARM.
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i.86)$")
     target_compile_options(dnf_composer_profiler PRIVATE
             $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
             $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>)
+    endif()
     target_compile_definitions(dnf_composer_profiler PRIVATE
             PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md"
             BENCH_ENV_BUILD_TYPE="$<CONFIG>"

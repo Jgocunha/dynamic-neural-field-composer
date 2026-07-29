@@ -10,8 +10,22 @@
 // in tools/math.h, so its numerics are unchanged from before this split.
 
 #include "tools/simd_dispatch.h"
-#include <immintrin.h>
 #include <cmath>
+
+// This file is only compiled with AVX2+FMA flags on x86/x64 (see CMakeLists.txt);
+// on other architectures (e.g. arm64) it is compiled at the default baseline
+// with no such flags, <immintrin.h> is unavailable, and avx2_fma_available()
+// unconditionally returns false, so the functions below are never called —
+// they are stubbed out to keep this TU portable rather than excluded from the
+// build, so no separate per-architecture source list is needed in CMakeLists.
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || defined(_M_IX86)
+	#define DNF_COMPOSER_X86 1
+#else
+	#define DNF_COMPOSER_X86 0
+#endif
+
+#if DNF_COMPOSER_X86
+#include <immintrin.h>
 
 namespace dnf_composer::tools::math::detail
 {
@@ -219,3 +233,14 @@ namespace dnf_composer::tools::math::detail
 		}
 	}
 }
+
+#else // !DNF_COMPOSER_X86 — unreachable (avx2_fma_available() always returns
+      // false here), stubbed so this TU still links on non-x86 architectures.
+
+namespace dnf_composer::tools::math::detail
+{
+	void conv_valid_into_avx2_f64(const double*, int, const double*, double*, int) {}
+	void sigmoid_avx2_f64(const double*, double*, std::size_t, double, double) {}
+}
+
+#endif // DNF_COMPOSER_X86
