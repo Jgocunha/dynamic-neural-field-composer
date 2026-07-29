@@ -393,6 +393,45 @@ TEST(GenerateNormalVector, NotAllZero)
     EXPECT_TRUE(anyNonZero);
 }
 
+namespace {
+    // mean / variance / finiteness checks for a standard-normal sample.
+    void expectStandardNormal(const std::vector<double>& v)
+    {
+        ASSERT_FALSE(v.empty());
+        double sum = 0.0, sumSq = 0.0;
+        for (double x : v)
+        {
+            ASSERT_TRUE(std::isfinite(x)) << "non-finite sample";
+            sum += x;
+            sumSq += x * x;
+        }
+        const double n = static_cast<double>(v.size());
+        const double mean = sum / n;
+        const double var = sumSq / n - mean * mean;
+        EXPECT_NEAR(mean, 0.0, 0.02) << "sample mean too far from 0";
+        EXPECT_NEAR(var, 1.0, 0.05) << "sample variance too far from 1";
+    }
+}
+
+TEST(GenerateNormalVector, IsApproximatelyStandardNormal)
+{
+    expectStandardNormal(generateNormalVector(100000));
+}
+
+TEST(FillNormal, IsApproximatelyStandardNormal)
+{
+    std::vector<double> v(100000, -42.0);
+    fillNormal(v.data(), v.size());
+    expectStandardNormal(v);
+}
+
+TEST(FillNormal, ZeroCountIsNoOp)
+{
+    std::vector<double> v;          // empty
+    fillNormal(v.data(), 0);        // must not crash / write
+    EXPECT_TRUE(v.empty());
+}
+
 // ---------------------------------------------------------------------------
 // hebbLearningRule
 // ---------------------------------------------------------------------------
@@ -1093,4 +1132,284 @@ TEST(Conv2dSeparableInto, CircularModeMatchesAllocatingVersion)
 
     for (std::size_t i = 0; i < expected.size(); ++i)
         EXPECT_NEAR(out[i], expected[i], 1e-9);
+}
+
+// ---------------------------------------------------------------------------
+// conv2d_separable_into — optimized in-place path must match the original
+// allocating conv2d_separable bit-for-bit (covers AVX2 / branch-free interior /
+// symmetric-kernel folding refactors). Reference = the untouched
+// conv2d_separable (uses the original conv_valid / conv_same).
+// ---------------------------------------------------------------------------
+
+namespace {
+    // Build a normalized symmetric Gaussian tap vector of given half-range.
+    std::vector<double> gaussianTaps(int half, double sigma)
+    {
+        std::vector<int> r(2 * half + 1);
+        std::iota(r.begin(), r.end(), -half);
+        return gaussNorm(r, 0.0, sigma);
+    }
+
+    void expectConv2dMatchesReference(const std::vector<double>& field,
+        const std::vector<double>& kx, const std::vector<double>& ky,
+        int sx, int sy, bool circular)
+    {
+        std::vector<int> extX, extY;
+        if (circular)
+        {
+            // Symmetric kernel range: half = (size-1)/2 of the tap vector.
+            const std::array<int, 2> rx{ (static_cast<int>(kx.size()) - 1) / 2,
+                                         (static_cast<int>(kx.size()) - 1) / 2 };
+            const std::array<int, 2> ry{ (static_cast<int>(ky.size()) - 1) / 2,
+                                         (static_cast<int>(ky.size()) - 1) / 2 };
+            extX = createExtendedIndex(sx, rx);
+            extY = createExtendedIndex(sy, ry);
+        }
+
+        const auto reference = conv2d_separable(field, kx, ky, sx, sy, extX, extY);
+
+        std::vector<double> out(sx * sy), tmp(sx * sy);
+        conv2d_separable_into(out, tmp, field, kx, ky, sx, sy, extX, extY);
+
+        ASSERT_EQ(out.size(), reference.size());
+        for (size_t i = 0; i < out.size(); ++i)
+            EXPECT_NEAR(out[i], reference[i], 1e-12) << "mismatch at " << i;
+    }
+
+    std::vector<double> ramp(int n)
+    {
+        std::vector<double> v(n);
+        for (int i = 0; i < n; ++i) v[i] = std::sin(0.3 * i) + 0.1 * i;
+        return v;
+    }
+}
+
+TEST(Conv2dSeparableInto, CircularSymmetricGaussianMatchesReference)
+{
+    const int sx = 50, sy = 50;
+    const auto kx = gaussianTaps(9, 3.0); // 19 symmetric taps, like the benchmark kernel
+    expectConv2dMatchesReference(ramp(sx * sy), kx, kx, sx, sy, /*circular=*/true);
+}
+
+TEST(Conv2dSeparableInto, NonCircularSymmetricGaussianMatchesReference)
+{
+    const int sx = 40, sy = 30;
+    const auto kx = gaussianTaps(6, 2.0);
+    const auto ky = gaussianTaps(4, 1.5);
+    expectConv2dMatchesReference(ramp(sx * sy), kx, ky, sx, sy, /*circular=*/false);
+}
+
+TEST(Conv2dSeparableInto, AsymmetricKernelMatchesReference)
+{
+    // Non-symmetric kernel (exercises the non-folded path); odd length.
+    const std::vector<double> kx{ 0.1, 0.2, 0.4, 0.2, 0.05, 0.05, 0.0 };
+    const std::vector<double> ky{ 0.3, 0.5, 0.2 };
+    expectConv2dMatchesReference(ramp(20 * 16), kx, ky, 20, 16, /*circular=*/true);
+    expectConv2dMatchesReference(ramp(20 * 16), kx, ky, 20, 16, /*circular=*/false);
+}
+
+TEST(Conv2dSeparableInto, EvenLengthKernelMatchesReference)
+{
+    // Even tap count -> symmetric-folding fast path must be skipped.
+    const std::vector<double> kx{ 0.25, 0.25, 0.25, 0.25 };
+    expectConv2dMatchesReference(ramp(15 * 12), kx, kx, 15, 12, /*circular=*/false);
+}
+
+TEST(ConvValidInto, SymmetricFoldingMatchesNaive)
+{
+    // Direct check of the symmetric fold in conv_valid_into.
+    const std::vector<double> ext = ramp(30);
+    const auto k = gaussianTaps(5, 2.0); // 11 symmetric taps
+    const int n = static_cast<int>(ext.size()) - static_cast<int>(k.size()) + 1;
+    std::vector<double> got(n);
+    conv_valid_into(got, ext, k);
+    const auto ref = conv_valid(ext, k);
+    ASSERT_EQ(ref.size(), got.size());
+    for (size_t i = 0; i < got.size(); ++i)
+        EXPECT_NEAR(got[i], ref[i], 1e-12);
+}
+
+// ---------------------------------------------------------------------------
+// embedWrapped1D / buildWrappedSeparableKernel2D — the shared wrap-embedding
+// helpers behind SpectralConvolver2D's kernel spectrum (see
+// tests/tools/test_fft_convolution.cpp for the direct-vs-spectral pins that
+// exercise these through the actual FFT).
+// ---------------------------------------------------------------------------
+
+TEST(EmbedWrapped1D, PlacesZeroOffsetAtIndexZero)
+{
+    std::vector<double> out(5, 0.0);
+    const std::vector<double> window{ 7.0 }; // single tap, offset 0
+    embedWrapped1D(out, window, /*kR0=*/0);
+    EXPECT_DOUBLE_EQ(out[0], 7.0);
+    for (size_t i = 1; i < out.size(); ++i) EXPECT_DOUBLE_EQ(out[i], 0.0);
+}
+
+TEST(EmbedWrapped1D, WrapsNegativeOffsetsToTail)
+{
+    // window = {a,b,c} at kR0=1 -> offsets {-1,0,+1} -> out = {b,c,0,0,a} on N=5.
+    std::vector<double> out(5, 0.0);
+    const std::vector<double> window{ 1.0, 2.0, 3.0 }; // a=1,b=2,c=3
+    embedWrapped1D(out, window, /*kR0=*/1);
+    EXPECT_DOUBLE_EQ(out[0], 2.0); // b: offset 0
+    EXPECT_DOUBLE_EQ(out[1], 3.0); // c: offset +1
+    EXPECT_DOUBLE_EQ(out[2], 0.0);
+    EXPECT_DOUBLE_EQ(out[3], 0.0);
+    EXPECT_DOUBLE_EQ(out[4], 1.0); // a: offset -1 -> N-1
+}
+
+TEST(EmbedWrapped1D, AsymmetricRangeKR0NotEqualKR1)
+{
+    // computeKernelRange's even-N circular clamp can yield kR0=49, kR1=50 on
+    // N=100 (see ComputeKernelRange tests below) -- exercise that shape here:
+    // a full-support window (100 taps) with kR0=49 must place every offset at
+    // a distinct index with none dropped or aliased twice.
+    const int N = 100, kR0 = 49;
+    std::vector<double> window(100);
+    for (int j = 0; j < 100; ++j) window[j] = static_cast<double>(j + 1); // 1..100, all distinct
+    std::vector<double> out(N, 0.0);
+    embedWrapped1D(out, window, kR0);
+
+    double sum = 0.0;
+    for (double v : out)
+    {
+        EXPECT_GT(v, 0.0); // every index hit exactly once, no zeros left
+        sum += v;
+    }
+    double expectedSum = 0.0;
+    for (double v : window) expectedSum += v;
+    EXPECT_DOUBLE_EQ(sum, expectedSum);
+}
+
+TEST(EmbedWrapped1D, AccumulatesWhenWindowLongerThanField)
+{
+    // window longer than N: multiple taps alias onto the same index and must
+    // sum (+=), not overwrite.
+    const int N = 4;
+    std::vector<double> window(8, 1.0); // 8 taps of value 1, kR0=0 -> offsets 0..7 mod 4
+    std::vector<double> out(N, 0.0);
+    embedWrapped1D(out, window, /*kR0=*/0);
+    for (double v : out) EXPECT_DOUBLE_EQ(v, 2.0); // each index hit by exactly 2 taps
+}
+
+TEST(BuildWrappedSeparableKernel2D, SingleTermEqualsOuterProductOfEmbeddings)
+{
+    const int sx = 6, sy = 4;
+    const std::vector<double> taps_x{ 1.0, 2.0, 1.0 };
+    const std::vector<double> taps_y{ 0.5, 1.0 };
+
+    std::vector<double> wx(sx, 0.0), wy(sy, 0.0);
+    embedWrapped1D(wx, taps_x, 1);
+    embedWrapped1D(wy, taps_y, 0);
+
+    const SeparableKernelTerm2D term{ taps_x, 1, taps_y, 0, +1.0 };
+    const auto combined = buildWrappedSeparableKernel2D(sx, sy, { term });
+
+    ASSERT_EQ(combined.size(), static_cast<size_t>(sx * sy));
+    for (int y = 0; y < sy; ++y)
+        for (int x = 0; x < sx; ++x)
+            EXPECT_NEAR(combined[y * sx + x], wx[x] * wy[y], 1e-15)
+                << "mismatch at (" << x << "," << y << ")";
+}
+
+TEST(BuildWrappedSeparableKernel2D, TwoSignedTermsEqualDifference)
+{
+    const int sx = 8, sy = 8;
+    const std::vector<double> excX{ 3.0, 5.0, 3.0 }, excY{ 2.0, 4.0, 2.0 };
+    const std::vector<double> inhX{ 1.0, 1.0, 1.0, 1.0, 1.0 }, inhY{ 1.0, 1.0, 1.0, 1.0, 1.0 };
+
+    const auto combined = buildWrappedSeparableKernel2D(sx, sy,
+        { SeparableKernelTerm2D{ excX, 1, excY, 1, +1.0 },
+          SeparableKernelTerm2D{ inhX, 2, inhY, 2, -1.0 } });
+
+    std::vector<double> wxE(sx, 0.0), wyE(sy, 0.0), wxI(sx, 0.0), wyI(sy, 0.0);
+    embedWrapped1D(wxE, excX, 1); embedWrapped1D(wyE, excY, 1);
+    embedWrapped1D(wxI, inhX, 2); embedWrapped1D(wyI, inhY, 2);
+
+    ASSERT_EQ(combined.size(), static_cast<size_t>(sx * sy));
+    for (int y = 0; y < sy; ++y)
+        for (int x = 0; x < sx; ++x)
+        {
+            const double expected = wxE[x] * wyE[y] - wxI[x] * wyI[y];
+            EXPECT_NEAR(combined[y * sx + x], expected, 1e-14)
+                << "mismatch at (" << x << "," << y << ")";
+        }
+}
+
+TEST(BuildWrappedSeparableKernel2D, NonSquareFieldRowMajorLayout)
+{
+    // sx != sy: catches an x/y transpose bug that a square-field test cannot.
+    const int sx = 10, sy = 3;
+    const std::vector<double> taps_x{ 1.0, 2.0, 3.0 }; // len 3, kR0=1
+    const std::vector<double> taps_y{ 5.0 };           // len 1, kR0=0
+
+    const auto combined = buildWrappedSeparableKernel2D(sx, sy,
+        { SeparableKernelTerm2D{ taps_x, 1, taps_y, 0, +1.0 } });
+    ASSERT_EQ(combined.size(), static_cast<size_t>(sx * sy));
+
+    // taps_y is a single tap at offset 0 -> wy = {5,0,0} (length sy=3).
+    // taps_x embeds {1,2,3} at kR0=1 -> offsets {-1,0,+1} -> wx over length
+    // sx=10: index0=2 (offset0), index1=3 (offset+1), index9=1 (offset-1).
+    for (int y = 0; y < sy; ++y)
+        for (int x = 0; x < sx; ++x)
+        {
+            double expected = 0.0;
+            if (y == 0)
+            {
+                if (x == 0) expected = 2.0 * 5.0;
+                else if (x == 1) expected = 3.0 * 5.0;
+                else if (x == 9) expected = 1.0 * 5.0;
+            }
+            EXPECT_NEAR(combined[y * sx + x], expected, 1e-15)
+                << "mismatch at (" << x << "," << y << ")";
+        }
+}
+
+TEST(BuildWrappedSeparableKernel2D, EmptyTermListYieldsZeros)
+{
+    const auto combined = buildWrappedSeparableKernel2D(4, 4, std::span<const SeparableKernelTerm2D>{});
+    ASSERT_EQ(combined.size(), 16u);
+    for (double v : combined) EXPECT_DOUBLE_EQ(v, 0.0);
+}
+
+TEST(BuildWrappedSeparableKernel2D, NonPositiveDimensionsYieldEmpty)
+{
+    const std::vector<double> taps{ 1.0 };
+    EXPECT_TRUE(buildWrappedSeparableKernel2D(0, 4, { SeparableKernelTerm2D{ taps, 0, taps, 0, 1.0 } }).empty());
+    EXPECT_TRUE(buildWrappedSeparableKernel2D(4, -1, { SeparableKernelTerm2D{ taps, 0, taps, 0, 1.0 } }).empty());
+}
+
+// ---------------------------------------------------------------------------
+// seedNormal — deterministic re-seed of fillNormal's thread_local generator.
+// ---------------------------------------------------------------------------
+
+TEST(SeedNormal, SameSeedSameSequence)
+{
+    seedNormal(12345);
+    std::vector<double> a(20);
+    fillNormal(a.data(), a.size());
+
+    seedNormal(12345);
+    std::vector<double> b(20);
+    fillNormal(b.data(), b.size());
+
+    ASSERT_EQ(a.size(), b.size());
+    for (size_t i = 0; i < a.size(); ++i)
+        EXPECT_DOUBLE_EQ(a[i], b[i]);
+}
+
+TEST(SeedNormal, DifferentSeedDifferentSequence)
+{
+    seedNormal(1);
+    std::vector<double> a(20);
+    fillNormal(a.data(), a.size());
+
+    seedNormal(2);
+    std::vector<double> b(20);
+    fillNormal(b.data(), b.size());
+
+    bool anyDifferent = false;
+    for (size_t i = 0; i < a.size(); ++i)
+        if (a[i] != b[i]) { anyDifferent = true; break; }
+    EXPECT_TRUE(anyDifferent);
 }

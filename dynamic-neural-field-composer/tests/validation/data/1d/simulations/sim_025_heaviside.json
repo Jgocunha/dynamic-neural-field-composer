@@ -1,0 +1,85 @@
+{
+    "identifier": "sim-025-selection-heaviside",
+    "deltaT": 25.0,
+    "elements": [
+        {
+            "uniqueName": "neural field u",
+            "label": [
+                1,
+                "neural field"
+            ],
+            "tau": 25.0,
+            "restingLevel": -10.0,
+            "activationFunction": {
+                "type": "heaviside",
+                "x_shift": 0.0
+            },
+            "x_max": 100,
+            "d_x": 1.0,
+            "inputs": [
+                [
+                    "gauss kernel",
+                    "output"
+                ],
+                [
+                    "gauss stimulus 1",
+                    "output"
+                ],
+                [
+                    "gauss stimulus 2",
+                    "output"
+                ]
+            ]
+        },
+        {
+            "uniqueName": "gauss stimulus 1",
+            "label": [
+                2,
+                "gauss stimulus"
+            ],
+            "amplitude": 10.0,
+            "width": 5.0,
+            "position": 20.0,
+            "circular": true,
+            "normalized": false,
+            "x_max": 100,
+            "d_x": 1.0,
+            "inputs": null
+        },
+        {
+            "uniqueName": "gauss stimulus 2",
+            "label": [
+                2,
+                "gauss stimulus"
+            ],
+            "amplitude": 10.5,
+            "width": 5.0,
+            "position": 80.0,
+            "circular": true,
+            "normalized": false,
+            "x_max": 100,
+            "d_x": 1.0,
+            "inputs": null
+        },
+        {
+            "uniqueName": "gauss kernel",
+            "label": [
+                4,
+                "gauss kernel"
+            ],
+            "amplitude": 5.0,
+            "amplitudeGlobal": -0.15,
+            "width": 3.0,
+            "circular": true,
+            "normalized": true,
+            "x_max": 100,
+            "d_x": 1.0,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ]
+        }
+    ]
+}

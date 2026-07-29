@@ -10,16 +10,10 @@ namespace dnf_composer::element
 {
 	/// @brief Parameters for a spatially correlated Gaussian noise source.
 	///
-	/// Implements the spatially correlated noise available in cedar's NeuralField.
+	/// Implements the spatially correlated noise.
 	/// White Gaussian noise is convolved with a Gaussian kernel of the given @c width
 	/// to produce spatially smooth noise, then scaled by @f$ \text{amplitude} / \sqrt{\Delta t} @f$.
 	///
-	/// **Cross-framework equivalence:**
-	/// | Framework    | Equivalent feature                                              |
-	/// |--------------|------------------------------------------------------------------|
-	/// | dnf-composer | `CorrelatedNormalNoise(amplitude, width)` element               |
-	/// | cedar        | NeuralField `NoiseCorrelationKernel` (amplitude + sigma)        |
-	/// | cosivina     | no built-in equivalent                                          |
 	///
 	/// @note For uncorrelated noise (width → 0), use NormalNoise instead.
 	/// @ingroup elements
@@ -58,7 +52,7 @@ namespace dnf_composer::element
 		}
 	};
 
-	/// @brief Spatially correlated Gaussian noise source — cedar-compatible.
+	/// @brief Spatially correlated Gaussian noise source.
 	///
 	/// Each @c step() draws white Gaussian noise, convolves it with a normalised
 	/// Gaussian of the configured @c width, and scales by
@@ -74,6 +68,7 @@ namespace dnf_composer::element
 		CorrelatedNormalNoiseParameters parameters;
 		std::vector<double> correlationKernel; ///< Precomputed normalised Gaussian kernel.
 		std::vector<int> extIndex;             ///< Extended index for circular convolution.
+		std::vector<double> whiteNoise_;       ///< Reusable white-noise buffer (avoids per-step alloc).
 	public:
 		/// @brief Construct a CorrelatedNormalNoise element.
 		/// @param elementCommonParameters  Name, label, and spatial dimensions.

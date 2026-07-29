@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <queue>
 #include <sstream>
 #include <iomanip>
 #include <format>
@@ -129,9 +128,13 @@ namespace dnf_composer::element
 		NeuralField2DState             state;
 		double* act_  = nullptr;
 		double* inp_  = nullptr;
-		double* rest_ = nullptr;
+		// Homogeneous by construction (see NeuralField's restScalar_) — cached
+		// scalar instead of a third N-double array stream in calculateActivation.
+		double restScalar_ = 0.0;
 		bool    computeStateMetrics_ = true;
 		std::vector<NeuralField2DBump> prevBumps_;
+		std::vector<char> visited_; // reusable flood-fill scratch (avoids per-step alloc)
+		std::vector<int> stack_;    // reusable flood-fill frontier (avoids per-bump alloc)
 	public:
 		NeuralField2D(const ElementCommonParameters& elementCommonParameters,
 		              const NeuralField2DParameters& parameters);
@@ -157,6 +160,6 @@ namespace dnf_composer::element
 		void calculateActivation(double t, double deltaT);
 		void calculateOutput();
 		void updateState(double deltaT);
-		void updateBumps(double deltaT);
+		void updateBumps(double deltaT, double vmax);
 	};
 }

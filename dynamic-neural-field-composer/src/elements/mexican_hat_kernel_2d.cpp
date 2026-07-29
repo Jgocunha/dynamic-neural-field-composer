@@ -91,6 +91,21 @@
 			scratchTmp_.assign(totalSize, 0.0);
 			scratchExcConv_.assign(totalSize, 0.0);
 			scratchInhConv_.assign(totalSize, 0.0);
+			scratch2d_.ensure(size_x, size_y,
+				std::max(extIndexExc_x.size(), extIndexInh_x.size()),
+				std::max(extIndexExc_y.size(), extIndexInh_y.size()));
+
+			const int totalTaps =
+				(kernelRangeExc_x[0] + kernelRangeExc_x[1] + 1) + (kernelRangeExc_y[0] + kernelRangeExc_y[1] + 1) +
+				(kernelRangeInh_x[0] + kernelRangeInh_x[1] + 1) + (kernelRangeInh_y[0] + kernelRangeInh_y[1] + 1);
+			useFFT_ = tools::math::shouldUseSpectral2D(parameters.circular, totalTaps, size_x, size_y);
+			if (useFFT_)
+			{
+				spectral_.init(size_x, size_y);
+				spectral_.setKernel(tools::math::buildWrappedSeparableKernel2D(size_x, size_y,
+					{ tools::math::SeparableKernelTerm2D{ kernelExc_x, kernelRangeExc_x[0], kernelExc_y, kernelRangeExc_y[0], +1.0 },
+					  tools::math::SeparableKernelTerm2D{ kernelInh_x, kernelRangeInh_x[0], kernelInh_y, kernelRangeInh_y[0], -1.0 } }));
+			}
 
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
@@ -101,25 +116,65 @@
 		{
 			updateInput();
 
-			fullSum = std::accumulate(components["input"].begin(), components["input"].end(), 0.0);
+			const std::vector<double>& input = components["input"];
+			std::vector<double>& output = components["output"];
+
+			// Skip the O(N) accumulate when the global offset is disabled.
+			const bool hasGlobal = parameters.amplitudeGlobal != 0.0;
+			fullSum = hasGlobal ? std::accumulate(input.begin(), input.end(), 0.0) : 0.0;
+
+			const int n = static_cast<int>(output.size());
+
+			if (useFFT_)
+			{
+				// Fused spectral path: one forward transform of the field, one
+				// complex multiply against the precomputed (exc - inh) spectrum,
+				// one inverse transform — replacing the two separable convolutions
+				// below. scratchExcConv_ is reused as the generic "combined
+				// convolution result" buffer (scratchInhConv_ is unused on this path).
+				spectral_.apply(input.data(), scratchExcConv_.data());
+				if (hasGlobal)
+				{
+					const double globalOffset = parameters.amplitudeGlobal * fullSum;
+					for (int i = 0; i < n; ++i) {
+						output[i] = scratchExcConv_[i] + globalOffset;
+					}
+				}
+				else
+				{
+					for (int i = 0; i < n; ++i) {
+						output[i] = scratchExcConv_[i];
+					}
+				}
+				return;
+			}
 
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
 
 			tools::math::conv2d_separable_into(
-				scratchExcConv_, scratchTmp_,
-				components["input"], kernelExc_x, kernelExc_y,
+				scratchExcConv_, scratchTmp_, scratch2d_,
+				input, kernelExc_x, kernelExc_y,
 				size_x, size_y, extIndexExc_x, extIndexExc_y);
 
 			tools::math::conv2d_separable_into(
-				scratchInhConv_, scratchTmp_,
-				components["input"], kernelInh_x, kernelInh_y,
+				scratchInhConv_, scratchTmp_, scratch2d_,
+				input, kernelInh_x, kernelInh_y,
 				size_x, size_y, extIndexInh_x, extIndexInh_y);
 
-			const double globalOffset = parameters.amplitudeGlobal * fullSum;
-			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i) {
-				components["output"][i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
-}
+			if (hasGlobal)
+			{
+				const double globalOffset = parameters.amplitudeGlobal * fullSum;
+				for (int i = 0; i < n; ++i) {
+					output[i] = scratchExcConv_[i] - scratchInhConv_[i] + globalOffset;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < n; ++i) {
+					output[i] = scratchExcConv_[i] - scratchInhConv_[i];
+				}
+			}
 		}
 
 		std::string MexicanHatKernel2D::toString() const

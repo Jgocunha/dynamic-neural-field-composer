@@ -23,7 +23,7 @@ namespace dnf_composer::element
 
 		act_  = components["activation"].data();
 		inp_  = components["input"].data();
-		rest_ = components["resting level"].data();
+		restScalar_ = parameters.startingRestingLevel;
 
 		calculateOutput();
 	}
@@ -43,8 +43,8 @@ namespace dnf_composer::element
 		const double dtOverTau = deltaT / parameters.tau;
 		const int sz = commonParameters.dimensionParameters.size;
 		for (int i = 0; i < sz; ++i) {
-			act_[i] += dtOverTau * (-act_[i] + rest_[i] + inp_[i]);
-}
+			act_[i] += dtOverTau * (-act_[i] + restScalar_ + inp_[i]);
+		}
 	}
 
 	void NeuralField2D::calculateOutput()
@@ -83,11 +83,11 @@ namespace dnf_composer::element
 		state.previousActivationAvg  = avg;
 		state.previousActivationNorm = norm;
 
-		updateBumps(deltaT);
+		updateBumps(deltaT, vmax);
 	}
 
 	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - flood-fill bump extraction; splitting would obscure the single-pass algorithm
-	void NeuralField2D::updateBumps(double deltaT)
+	void NeuralField2D::updateBumps(double deltaT, double vmax)
 	{
 		const int    size_x = commonParameters.dimensionParameters.size_x;
 		const int    size_y = commonParameters.dimensionParameters.size_y;
@@ -98,16 +98,26 @@ namespace dnf_composer::element
 		prevBumps_.swap(state.bumps);
 		state.bumps.clear();
 
-		std::vector<bool> visited(static_cast<std::size_t>(size_x) * size_y, false);
+		if (vmax <= threshold) {
+			return; // no cell exceeds threshold: no bumps possible, skip the flood-fill scan
+		}
+
+		const int n = size_x * size_y;
+		if (visited_.size() != static_cast<std::size_t>(n)) {
+			visited_.assign(n, 0);
+		} else {
+			std::fill(visited_.begin(), visited_.end(), 0);
+		}
+		std::vector<char>& visited = visited_;
 
 		for (int xi = 0; xi < size_x; ++xi)
 		{
 			for (int yi = 0; yi < size_y; ++yi)
 			{
 				const int idx = yi * size_x + xi;
-				if (act_[idx] <= threshold || visited[idx]) {
+				if (act_[idx] <= threshold || visited[idx] != 0) {
 					continue;
-}
+				}
 
 				NeuralField2DBump bump;
 				double sumX = 0.0;
@@ -115,13 +125,13 @@ namespace dnf_composer::element
 				double sumAct = 0.0;
 				int cellCount = 0;
 
-				std::queue<int> q;
-				q.push(idx);
-				visited[idx] = true;
+				stack_.clear();
+				stack_.push_back(idx);
+				visited[idx] = 1;
 
-				while (!q.empty())
+				while (!stack_.empty())
 				{
-					const int curr = q.front(); q.pop();
+					const int curr = stack_.back(); stack_.pop_back();
 					const int cx = curr % size_x;
 					const int cy = curr / size_x;
 					const double a = act_[curr];
@@ -140,10 +150,10 @@ namespace dnf_composer::element
 							continue;
 }
 						const int nIdx = ny[k] * size_x + nx[k];
-						if (!visited[nIdx] && act_[nIdx] > threshold)
+						if (visited[nIdx] == 0 && act_[nIdx] > threshold)
 						{
-							visited[nIdx] = true;
-							q.push(nIdx);
+							visited[nIdx] = 1;
+							stack_.push_back(nIdx);
 						}
 					}
 				}

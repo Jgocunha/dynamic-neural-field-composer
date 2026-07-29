@@ -17,6 +17,41 @@ namespace dnf_composer::element
 		components["input"] = std::vector<double>(commonParameters.dimensionParameters.size);
 	}
 
+	Element::Element(const Element& other)
+		: std::enable_shared_from_this<Element>(other),
+		  commonParameters(other.commonParameters),
+		  components(other.components),
+		  inputs(other.inputs),
+		  outputs(other.outputs)
+	{
+		// inputPtr/cachedInputs/inputSize are deliberately left at their default
+		// member initializers (nullptr/empty/0), NOT copied from other. inputPtr
+		// is a raw pointer into THIS object's own components["input"].data();
+		// copying it by value (the implicit copy ctor's behaviour before this
+		// was added) would leave a stepped-then-cloned element aliasing the
+		// SOURCE's input buffer instead of its own freshly-copied one, so
+		// updateInput() would silently read the wrong (and, worse, write into
+		// the wrong) object's memory. Leaving it null forces updateInput() to
+		// call buildInputCache() and re-derive it correctly on first use, the
+		// same recovery path changeDimensions()/addInput()/removeInput() use.
+	}
+
+	Element& Element::operator=(const Element& other)
+	{
+		if (this != &other)
+		{
+			commonParameters = other.commonParameters;
+			components = other.components;
+			inputs = other.inputs;
+			outputs = other.outputs;
+			// See the copy constructor above for why these are reset, not copied.
+			inputPtr = nullptr;
+			inputSize = 0;
+			cachedInputs.clear();
+		}
+		return *this;
+	}
+
 	void Element::changeDimensions(const ElementDimensions& newDimensions)
 	{
 		commonParameters.dimensionParameters = newDimensions;
@@ -154,13 +189,35 @@ namespace dnf_composer::element
 	{
 		if (inputPtr == nullptr) {
 			buildInputCache();
-}
-		std::fill_n(inputPtr, inputSize, 0.0);
-		for (const auto&[src, size] : cachedInputs) {
-			for (std::size_t i = 0; i < size; ++i) {
-				inputPtr[i] += src[i];
-}
-}
+		}
+
+		// Sum the input sources into the input buffer. Copy the first source
+		// instead of zero-filling then adding it — this elides a full zero-fill
+		// pass over the buffer every step (updateInput runs for every element).
+		// Bit-identical to fill(0) + accumulate. Sources are same-sized as the
+		// input buffer (enforced at addInput); guard defensively all the same.
+		if (cachedInputs.empty())
+		{
+			std::fill_n(inputPtr, inputSize, 0.0);
+			return;
+		}
+
+		const CachedInput& first = cachedInputs.front();
+		const std::size_t n0 = first.size < inputSize ? first.size : inputSize;
+		for (std::size_t i = 0; i < n0; ++i) {
+			inputPtr[i] = first.src[i];
+		}
+		for (std::size_t i = n0; i < inputSize; ++i) {
+			inputPtr[i] = 0.0;
+		}
+
+		for (std::size_t k = 1; k < cachedInputs.size(); ++k)
+		{
+			const CachedInput& in = cachedInputs[k];
+			for (std::size_t i = 0; i < in.size; ++i) {
+				inputPtr[i] += in.src[i];
+			}
+		}
 	}
 
 	int Element::getMaxSpatialDimension() const

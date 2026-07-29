@@ -41,6 +41,14 @@ namespace dnf_composer::element
 		/// @param parameters  Name, label, and spatial dimensions.
 		explicit Element(const ElementCommonParameters& parameters);
 
+		/// @brief Copy commonParameters/components/inputs/outputs; deliberately
+		/// does NOT copy the input-cache (inputPtr/cachedInputs) -- see the .cpp
+		/// for why a raw-pointer-value copy of inputPtr would alias the wrong
+		/// object. Every clone() override that copy-constructs (`make_shared<T>(*this)`)
+		/// relies on this to produce a correctly-behaving copy.
+		Element(const Element& other);
+		Element& operator=(const Element& other);
+
 		/// @brief Initialize the element (called once before the simulation loop).
 		virtual void init() = 0;
 
