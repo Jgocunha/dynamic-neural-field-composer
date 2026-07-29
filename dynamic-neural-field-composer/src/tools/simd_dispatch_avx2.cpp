@@ -111,8 +111,11 @@ namespace dnf_composer::tools::math::detail
 		for (; i < n; ++i)
 		{
 			double e = -s * (in[i] - xs);
-			if (e < -88.0) e = -88.0;
-			else if (e > 88.0) e = 88.0;
+			if (e < -88.0) {
+				e = -88.0;
+			} else if (e > 88.0) {
+				e = 88.0;
+			}
 			out[i] = 1.0 / (1.0 + std::exp(e));
 		}
 	}

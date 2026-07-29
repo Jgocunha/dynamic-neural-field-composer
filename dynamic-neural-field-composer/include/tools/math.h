@@ -868,8 +868,8 @@ namespace dnf_composer::tools::math
 	// (the y-pass reads tmp rows while writing out rows); `scratch` must be
 	// ensure()'d for these dimensions and extension lengths. This is the
 	// hot-path overload.
-	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - x-pass + tiled y-pass convolution; splitting would obscure the single cache-blocking pass
 	template<typename T>
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - x-pass + tiled y-pass convolution; splitting would obscure the single cache-blocking pass
 	void conv2d_separable_into(
 		std::vector<T>& out,
 		std::vector<T>& tmp,
