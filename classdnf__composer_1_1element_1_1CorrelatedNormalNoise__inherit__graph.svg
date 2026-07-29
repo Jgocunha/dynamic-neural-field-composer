@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Spatially correlated Gaussian noise source — cedar&#45;compatible.">
+<g id="a_Node000001"><a xlink:title="Spatially correlated Gaussian noise source.">
 <polygon fill="#999999" stroke="transparent" points="144,-150 0,-150 0,0 144,0 144,-150"/>
 <text text-anchor="start" x="11.5" y="-138" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="start" x="11.5" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">::CorrelatedNormalNoise</text>
@@ -64,14 +64,14 @@
 <text text-anchor="start" x="14" y="-267.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="28" y="-267.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
 <text text-anchor="start" x="14" y="-252.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="28" y="-252.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
+<text text-anchor="start" x="28" y="-252.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
 <text text-anchor="start" x="14" y="-237.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="28" y="-237.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
+<text text-anchor="start" x="28" y="-237.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
 <text text-anchor="start" x="14" y="-222.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="28" y="-222.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
+<text text-anchor="start" x="28" y="-222.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
 <text text-anchor="start" x="14" y="-207.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="28" y="-207.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
-<text text-anchor="start" x="28" y="-192.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 29 more...</text>
+<text text-anchor="start" x="28" y="-207.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
+<text text-anchor="start" x="28" y="-192.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 31 more...</text>
 <polygon fill="#666666" stroke="#666666" points="9,-412.5 9,-412.5 135,-412.5 135,-412.5 9,-412.5"/>
 <polygon fill="#666666" stroke="#666666" points="9,-352.5 9,-352.5 26,-352.5 26,-352.5 9,-352.5"/>
 <polygon fill="#666666" stroke="#666666" points="26,-352.5 26,-352.5 135,-352.5 135,-352.5 26,-352.5"/>

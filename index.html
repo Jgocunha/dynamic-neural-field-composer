@@ -161,7 +161,7 @@ Quick start</h2>
 <div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> nf = std::make_shared&lt;element::NeuralField&gt;(</div>
 <div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">element::ElementCommonParameters</a>{ <span class="stringliteral">&quot;Neural field&quot;</span> },</div>
 <div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1NeuralFieldParameters.html">element::NeuralFieldParameters</a>{});</div>
-<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> k = std::make_shared&lt;element::MexicanHatKernel&gt;(</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="math_8cpp.html#af477d73a93fd6a25c0f3963f93855d2f">k</a> = std::make_shared&lt;element::MexicanHatKernel&gt;(</div>
 <div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">element::ElementCommonParameters</a>{ <span class="stringliteral">&quot;Mexican hat kernel&quot;</span> },</div>
 <div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html">element::MexicanHatKernelParameters</a>{});</div>
 <div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> gs = std::make_shared&lt;element::GaussStimulus&gt;(</div>
@@ -169,12 +169,12 @@ Quick start</h2>
 <div class="line">        <a class="code hl_struct" href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html">element::GaussStimulusParameters</a>{ 5.0, 4.0, 50.0 });</div>
 <div class="line"> </div>
 <div class="line">    simulation-&gt;addElement(nf);</div>
-<div class="line">    simulation-&gt;addElement(k);</div>
+<div class="line">    simulation-&gt;addElement(<a class="code hl_variable" href="math_8cpp.html#af477d73a93fd6a25c0f3963f93855d2f">k</a>);</div>
 <div class="line">    simulation-&gt;addElement(gs);</div>
 <div class="line"> </div>
 <div class="line">    nf-&gt;addInput(gs);</div>
-<div class="line">    nf-&gt;addInput(k);</div>
-<div class="line">    k-&gt;addInput(nf);</div>
+<div class="line">    nf-&gt;addInput(<a class="code hl_variable" href="math_8cpp.html#af477d73a93fd6a25c0f3963f93855d2f">k</a>);</div>
+<div class="line">    <a class="code hl_variable" href="math_8cpp.html#af477d73a93fd6a25c0f3963f93855d2f">k</a>-&gt;addInput(nf);</div>
 <div class="line"> </div>
 <div class="line">    visualization-&gt;plot({ {nf-&gt;getUniqueName(), <span class="stringliteral">&quot;activation&quot;</span>} });</div>
 <div class="line"> </div>
@@ -188,9 +188,10 @@ Quick start</h2>
 <div class="ttc" id="aclassdnf__composer_1_1Application_html_a481da8b1fe6014d57f91fc3f575a913d"><div class="ttname"><a href="classdnf__composer_1_1Application.html#a481da8b1fe6014d57f91fc3f575a913d">dnf_composer::Application::addWindow</a></div><div class="ttdeci">void addWindow(Args &amp;&amp;... args) const</div><div class="ttdoc">Register a window that needs no Simulation or Visualization pointer.</div><div class="ttdef"><b>Definition</b> application.h:87</div></div>
 <div class="ttc" id="aclassdnf__composer_1_1user__interface_1_1StaticLayoutWindow_html"><div class="ttname"><a href="classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html">dnf_composer::user_interface::StaticLayoutWindow</a></div><div class="ttdef"><b>Definition</b> static_layout.h:25</div></div>
 <div class="ttc" id="adynamic-neural-field-composer-dynamic_8cpp_html_ae66f6b31b5ad750f1fe042a706a4e3d4"><div class="ttname"><a href="dynamic-neural-field-composer-dynamic_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a></div><div class="ttdeci">int main()</div><div class="ttdef"><b>Definition</b> dynamic-neural-field-composer-dynamic.cpp:8</div></div>
+<div class="ttc" id="amath_8cpp_html_af477d73a93fd6a25c0f3963f93855d2f"><div class="ttname"><a href="math_8cpp.html#af477d73a93fd6a25c0f3963f93855d2f">k</a></div><div class="ttdeci">std::array&lt; std::uint32_t, 256 &gt; k</div><div class="ttdef"><b>Definition</b> math.cpp:111</div></div>
 <div class="ttc" id="anamespacednf__composer_html"><div class="ttname"><a href="namespacednf__composer.html">dnf_composer</a></div><div class="ttdef"><b>Definition</b> application.h:20</div></div>
 <div class="ttc" id="astatic__layout_8h_html"><div class="ttname"><a href="static__layout_8h.html">static_layout.h</a></div></div>
-<div class="ttc" id="astructdnf__composer_1_1element_1_1ElementCommonParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">dnf_composer::element::ElementCommonParameters</a></div><div class="ttdef"><b>Definition</b> element_parameters.h:189</div></div>
+<div class="ttc" id="astructdnf__composer_1_1element_1_1ElementCommonParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">dnf_composer::element::ElementCommonParameters</a></div><div class="ttdef"><b>Definition</b> element_parameters.h:192</div></div>
 <div class="ttc" id="astructdnf__composer_1_1element_1_1GaussStimulusParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1GaussStimulusParameters.html">dnf_composer::element::GaussStimulusParameters</a></div><div class="ttdoc">Parameters for a Gaussian-shaped external stimulus.</div><div class="ttdef"><b>Definition</b> gauss_stimulus.h:14</div></div>
 <div class="ttc" id="astructdnf__composer_1_1element_1_1MexicanHatKernelParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1MexicanHatKernelParameters.html">dnf_composer::element::MexicanHatKernelParameters</a></div><div class="ttdoc">Parameters for a Mexican-hat lateral interaction kernel.</div><div class="ttdef"><b>Definition</b> mexican_hat_kernel.h:30</div></div>
 <div class="ttc" id="astructdnf__composer_1_1element_1_1NeuralFieldParameters_html"><div class="ttname"><a href="structdnf__composer_1_1element_1_1NeuralFieldParameters.html">dnf_composer::element::NeuralFieldParameters</a></div><div class="ttdoc">Parameters that govern a NeuralField's dynamics.</div><div class="ttdef"><b>Definition</b> neural_field.h:13</div></div>

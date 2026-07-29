@@ -101,7 +101,7 @@ Collaboration diagram for dnf_composer::element::CorrelatedNormalNoiseParameters
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8fd9b648bc98850507ed293edd423ab2" id="r_a8fd9b648bc98850507ed293edd423ab2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html#a8fd9b648bc98850507ed293edd423ab2">CorrelatedNormalNoiseParameters</a> (double <a class="el" href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html#a36bd74137b85fb6607ed491ed92fec9d">amplitude</a>=0.05, double <a class="el" href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html#afa9ee82c7bcbd8149f63c68ae3671e6a">width</a>=1.0, bool <a class="el" href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html#acd558766c0c3689f67a2584e7a7fac6a">circular</a>=true)</td></tr>
-<tr class="memdesc:a8fd9b648bc98850507ed293edd423ab2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct <a class="el" href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html" title="Spatially correlated Gaussian noise source — cedar-compatible.">CorrelatedNormalNoise</a> parameters.  <br /></td></tr>
+<tr class="memdesc:a8fd9b648bc98850507ed293edd423ab2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct <a class="el" href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html" title="Spatially correlated Gaussian noise source.">CorrelatedNormalNoise</a> parameters.  <br /></td></tr>
 <tr class="separator:a8fd9b648bc98850507ed293edd423ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e6e4fc47b4de4dbf025f0ba98f87380" id="r_a0e6e4fc47b4de4dbf025f0ba98f87380"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html#a0e6e4fc47b4de4dbf025f0ba98f87380">operator==</a> (const <a class="el" href="structdnf__composer_1_1element_1_1CorrelatedNormalNoiseParameters.html">CorrelatedNormalNoiseParameters</a> &amp;other) const</td></tr>
 <tr class="separator:a0e6e4fc47b4de4dbf025f0ba98f87380"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,17 +129,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Parameters for a spatially correlated Gaussian noise source. </p>
-<p>Implements the spatially correlated noise available in cedar's <a class="el" href="classdnf__composer_1_1element_1_1NeuralField.html" title="Continuous attractor neural field — the core DFT building block.">NeuralField</a>. White Gaussian noise is convolved with a Gaussian kernel of the given <code>width</code> to produce spatially smooth noise, then scaled by <picture><source srcset="form_5_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$ \text{amplitude} / \sqrt{\Delta t} $" src="form_5.png"/></picture>.</p>
-<p><b>Cross-framework equivalence:</b> </p><table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Framework   </th><th class="markdownTableHeadNone">Equivalent feature    </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">dnf-composer   </td><td class="markdownTableBodyNone"><code>CorrelatedNormalNoise(amplitude, width)</code> element    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">cedar   </td><td class="markdownTableBodyNone"><a class="el" href="classdnf__composer_1_1element_1_1NeuralField.html" title="Continuous attractor neural field — the core DFT building block.">NeuralField</a> <code>NoiseCorrelationKernel</code> (amplitude + sigma)    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">cosivina   </td><td class="markdownTableBodyNone">no built-in equivalent   </td></tr>
-</table>
+<p>Implements the spatially correlated noise. White Gaussian noise is convolved with a Gaussian kernel of the given <code>width</code> to produce spatially smooth noise, then scaled by <picture><source srcset="form_4_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$ \text{amplitude} / \sqrt{\Delta t} $" src="form_4.png"/></picture>.</p>
 <dl class="section note"><dt>Note</dt><dd>For uncorrelated noise (width → 0), use <a class="el" href="classdnf__composer_1_1element_1_1NormalNoise.html" title="Additive Gaussian noise source for neural fields.">NormalNoise</a> instead. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8fd9b648bc98850507ed293edd423ab2" name="a8fd9b648bc98850507ed293edd423ab2"></a>
@@ -182,7 +172,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Construct <a class="el" href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html" title="Spatially correlated Gaussian noise source — cedar-compatible.">CorrelatedNormalNoise</a> parameters. </p>
+<p>Construct <a class="el" href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html" title="Spatially correlated Gaussian noise source.">CorrelatedNormalNoise</a> parameters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">amplitude</td><td>Noise amplitude. Default 0.05. </td></tr>

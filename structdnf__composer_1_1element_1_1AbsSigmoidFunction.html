@@ -83,7 +83,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Rational (absolute-value) sigmoid — cedar's default activation function.  
+<p>Rational (absolute-value) sigmoid.  
  <a href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="activation__function_8h_source.html">activation_function.h</a>&gt;</code></p>
@@ -138,10 +138,10 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae49f32af130378e2a3d856475dd8bd80" id="r_ae49f32af130378e2a3d856475dd8bd80"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#ae49f32af130378e2a3d856475dd8bd80">beta</a></td></tr>
-<tr class="memdesc:ae49f32af130378e2a3d856475dd8bd80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steepness parameter — cedar/cosivina naming (larger = steeper).  <br /></td></tr>
+<tr class="memdesc:ae49f32af130378e2a3d856475dd8bd80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steepness parameter.  <br /></td></tr>
 <tr class="separator:ae49f32af130378e2a3d856475dd8bd80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaff20eaaded1f9f380bb04d9c01bf182" id="r_aaff20eaaded1f9f380bb04d9c01bf182"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#aaff20eaaded1f9f380bb04d9c01bf182">x_shift</a></td></tr>
-<tr class="memdesc:aaff20eaaded1f9f380bb04d9c01bf182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inflection point / threshold (cedar: theta).  <br /></td></tr>
+<tr class="memdesc:aaff20eaaded1f9f380bb04d9c01bf182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inflection point / threshold.  <br /></td></tr>
 <tr class="separator:aaff20eaaded1f9f380bb04d9c01bf182"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html">dnf_composer::element::ActivationFunction</a></td></tr>
 <tr class="memitem:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction" id="r_aa79010e7864128b058cff51f453a74a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__activation__functions.html#gab356f7685737735093ddddf7baa05864">ActivationFunctionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1element_1_1ActivationFunction.html#aa79010e7864128b058cff51f453a74a9">type</a></td></tr>
@@ -149,21 +149,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:aa79010e7864128b058cff51f453a74a9 inherit pub_attribs_structdnf__composer_1_1element_1_1ActivationFunction"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Rational (absolute-value) sigmoid — cedar's default activation function. </p>
+<div class="textblock"><p>Rational (absolute-value) sigmoid. </p>
 <p>Formula: <picture><source srcset="form_2_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$ \sigma(x) = \frac{1}{2}\left(1 + \frac{\beta(x - x\_shift)}{1 + \beta|x - x\_shift|}\right) $" src="form_2.png"/></picture></p>
-<p>This is computationally cheaper than <a class="el" href="structdnf__composer_1_1element_1_1SigmoidFunction.html" title="Logistic (exponential) sigmoid.">SigmoidFunction</a> because it avoids <code>std::exp</code>. At <picture><source srcset="form_3_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$\beta \ge 20$" src="form_3.png"/></picture> the two functions are numerically indistinguishable (max pointwise error &lt; 0.001).</p>
-<p><b>Cross-framework equivalence:</b> </p><table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Framework   </th><th class="markdownTableHeadNone">Type / call   </th><th class="markdownTableHeadNone">Exact?    </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">dnf-composer   </td><td class="markdownTableBodyNone"><code>AbsSigmoidFunction(x_shift, beta)</code>   </td><td class="markdownTableBodyNone">✓    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">cedar   </td><td class="markdownTableBodyNone"><code>AbsSigmoid(beta=beta, theta=x_shift)</code>   </td><td class="markdownTableBodyNone">✓    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">cosivina   </td><td class="markdownTableBodyNone">no built-in equivalent   </td><td class="markdownTableBodyNone">—   </td></tr>
-</table>
-<p><b>Approximate equivalence to ExpSigmoid:</b> Use <code>SigmoidFunction(x_shift, beta)</code> or cosivina <code>sigmoid(beta=beta, x0=x_shift)</code> — identical for <picture><source srcset="form_3_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$\beta \ge 20$" src="form_3.png"/></picture>.</p>
-<dl class="section note"><dt>Note</dt><dd>Cedar uses AbsSigmoid with <picture><source srcset="form_4_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$\beta = 100$" src="form_4.png"/></picture> by default (near-Heaviside). Published cedar parameter sets assume this steep nonlinearity. </dd></dl>
+<p>This is computationally cheaper than <a class="el" href="structdnf__composer_1_1element_1_1SigmoidFunction.html" title="Logistic (exponential) sigmoid.">SigmoidFunction</a> because it avoids <code>std::exp</code>. At <picture><source srcset="form_3_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$\beta \ge 20$" src="form_3.png"/></picture> the two functions are numerically indistinguishable (max pointwise error &lt; 0.001). </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9a72652a4a367815fcdcff90c4453c0e" name="a9a72652a4a367815fcdcff90c4453c0e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9a72652a4a367815fcdcff90c4453c0e">&#9670;&#160;</a></span>AbsSigmoidFunction() <span class="overload">[1/2]</span></h2>
@@ -485,7 +473,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Steepness parameter — cedar/cosivina naming (larger = steeper). </p>
+<p>Steepness parameter. </p>
 
 </div>
 </div>
@@ -501,7 +489,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Inflection point / threshold (cedar: theta). </p>
+<p>Inflection point / threshold. </p>
 
 </div>
 </div>

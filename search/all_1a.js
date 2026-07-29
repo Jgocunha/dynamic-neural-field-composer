@@ -17,10 +17,12 @@ var searchData=
   ['_7enodegraphwindow_14',['~NodeGraphWindow',['../classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html#a8b0ec6bb771a9431f49fd42158d369d5',1,'dnf_composer::user_interface::NodeGraphWindow']]],
   ['_7eplot_15',['~Plot',['../classdnf__composer_1_1Plot.html#a1d26cb4faec420ff8f63bd76e867b544',1,'dnf_composer::Plot']]],
   ['_7eplotspecificparameters_16',['~PlotSpecificParameters',['../structdnf__composer_1_1PlotSpecificParameters.html#a6c47ba6e38140b3a6336bcc9c27394f1',1,'dnf_composer::PlotSpecificParameters']]],
-  ['_7esigmoidfunction_17',['~SigmoidFunction',['../structdnf__composer_1_1element_1_1SigmoidFunction.html#aa94a9f54cfa738e7712c51c4c19a66d1',1,'dnf_composer::element::SigmoidFunction']]],
-  ['_7esimulation_18',['~Simulation',['../classdnf__composer_1_1Simulation.html#a292ce6c2c11076b3fcb6e123a07ddf22',1,'dnf_composer::Simulation']]],
-  ['_7esimulationwindow_19',['~SimulationWindow',['../classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a92c00ef3da915fc3f52ce96c61c79278',1,'dnf_composer::user_interface::SimulationWindow']]],
-  ['_7estaticlayoutwindow_20',['~StaticLayoutWindow',['../classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html#a143257b99e3dce9362ba957df092486e',1,'dnf_composer::user_interface::StaticLayoutWindow']]],
-  ['_7estatusbarwindow_21',['~StatusBarWindow',['../classdnf__composer_1_1user__interface_1_1StatusBarWindow.html#a0164c33d1d080e7e61037b5cbb778140',1,'dnf_composer::user_interface::StatusBarWindow']]],
-  ['_7etimer_22',['~Timer',['../classdnf__composer_1_1tools_1_1profiling_1_1Timer.html#a9255b142007e335fdba01ee04436b2e5',1,'dnf_composer::tools::profiling::Timer']]]
+  ['_7escopedconvolutionmode_17',['~ScopedConvolutionMode',['../classdnf__composer_1_1tools_1_1math_1_1ScopedConvolutionMode.html#aba5519adee3b5134034d0da3f7b69a32',1,'dnf_composer::tools::math::ScopedConvolutionMode']]],
+  ['_7esigmoidfunction_18',['~SigmoidFunction',['../structdnf__composer_1_1element_1_1SigmoidFunction.html#aa94a9f54cfa738e7712c51c4c19a66d1',1,'dnf_composer::element::SigmoidFunction']]],
+  ['_7esimulation_19',['~Simulation',['../classdnf__composer_1_1Simulation.html#a292ce6c2c11076b3fcb6e123a07ddf22',1,'dnf_composer::Simulation']]],
+  ['_7esimulationwindow_20',['~SimulationWindow',['../classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a92c00ef3da915fc3f52ce96c61c79278',1,'dnf_composer::user_interface::SimulationWindow']]],
+  ['_7espectralconvolver2d_21',['~SpectralConvolver2D',['../classdnf__composer_1_1tools_1_1math_1_1SpectralConvolver2D.html#ab21df6654bbc53d81c97783b86f5b9af',1,'dnf_composer::tools::math::SpectralConvolver2D']]],
+  ['_7estaticlayoutwindow_22',['~StaticLayoutWindow',['../classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html#a143257b99e3dce9362ba957df092486e',1,'dnf_composer::user_interface::StaticLayoutWindow']]],
+  ['_7estatusbarwindow_23',['~StatusBarWindow',['../classdnf__composer_1_1user__interface_1_1StatusBarWindow.html#a0164c33d1d080e7e61037b5cbb778140',1,'dnf_composer::user_interface::StatusBarWindow']]],
+  ['_7etimer_24',['~Timer',['../classdnf__composer_1_1tools_1_1profiling_1_1Timer.html#a9255b142007e335fdba01ee04436b2e5',1,'dnf_composer::tools::profiling::Timer']]]
 ];

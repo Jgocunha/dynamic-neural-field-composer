@@ -1,13 +1,17 @@
 <map id="dnf_composer::element::CorrelatedNormalNoise2D::step" name="dnf_composer::element::CorrelatedNormalNoise2D::step">
-<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,101,243,141"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2" title=" " alt="" coords="291,69,513,109"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="243,105,277,101,277,106,243,110"/>
-<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1math.html#a733a35f7edec5d46ebf840b5c31181be" title=" " alt="" coords="293,133,511,173"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="243,132,279,137,279,142,243,138"/>
-<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e" title=" " alt="" coords="590,5,769,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="489,67,578,46,580,51,490,72"/>
-<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d" title=" " alt="" coords="592,69,767,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="513,87,578,87,578,92,513,92"/>
-<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title=" " alt="" coords="561,133,797,173"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="490,107,580,128,578,133,489,112"/>
+<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,85,243,125"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1tools_1_1math_1_1SpectralConvolver2D.html#a91be0d3bf623b362904a569ac6e1c160" title=" " alt="" coords="303,5,501,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,82,288,59,290,64,203,87"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#a07e1a4e6543ddec31ab3caa180773c2a" title=" " alt="" coords="291,85,513,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="243,102,277,102,277,107,243,107"/>
+<area shape="rect" id="Node000008" href="$namespacednf__composer_1_1tools_1_1math.html#a21953fa472672322904cd0bdb98ffd86" title=" " alt="" coords="325,149,479,189"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="212,122,312,145,310,150,211,127"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e" title=" " alt="" coords="561,53,740,93"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="513,88,548,83,548,89,514,93"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d" title=" " alt="" coords="563,117,738,157"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="514,116,550,121,549,126,513,122"/>
+<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1math_1_1detail.html#ac8dc7ef3bad470af9e384c9aa8aae846" title=" " alt="" coords="791,69,945,124"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="738,118,777,111,778,116,739,123"/>
+<area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1math_1_1detail.html#a7de913e60d3b646bcf05297d4aa7fb03" title=" " alt="" coords="788,148,948,203"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="739,150,775,156,774,161,738,155"/>
 </map>

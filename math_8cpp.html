@@ -82,10 +82,11 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="math_8h_source.html">tools/math.h</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for math.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="math_8cpp__incl.svg" width="859" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="math_8cpp__incl.svg" width="1334" height="256"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -99,13 +100,78 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ad3164be8d333a7f2f29414dd7c28056a" id="r_ad3164be8d333a7f2f29414dd7c28056a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ad3164be8d333a7f2f29414dd7c28056a">dnf_composer::tools::math::buildWrappedSeparableKernel2D</a> (int size_x, int size_y, std::span&lt; const <a class="el" href="structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html">SeparableKernelTerm2D</a> &gt; terms)</td></tr>
+<tr class="separator:ad3164be8d333a7f2f29414dd7c28056a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0ded32bda3fdcee5561849a0ef3785c" id="r_ae0ded32bda3fdcee5561849a0ef3785c"><td class="memItemLeft" align="right" valign="top">std::array&lt; int, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c">dnf_composer::tools::math::computeKernelRange</a> (double sigma, int cutOfFactor, int fieldSize, bool circular)</td></tr>
 <tr class="separator:ae0ded32bda3fdcee5561849a0ef3785c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67b836c5dd7641c0def85f572838361e" id="r_a67b836c5dd7641c0def85f572838361e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e">dnf_composer::tools::math::createExtendedIndex</a> (int fieldSize, const std::array&lt; int, 2 &gt; &amp;kernelRange)</td></tr>
 <tr class="separator:a67b836c5dd7641c0def85f572838361e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7736cef6d000a58dcce32e6b25b0ce39" id="r_a7736cef6d000a58dcce32e6b25b0ce39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a7736cef6d000a58dcce32e6b25b0ce39">dnf_composer::tools::math::embedWrapped1D</a> (std::vector&lt; double &gt; &amp;out, std::span&lt; const double &gt; window, int kR0)</td></tr>
+<tr class="separator:a7736cef6d000a58dcce32e6b25b0ce39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21953fa472672322904cd0bdb98ffd86" id="r_a21953fa472672322904cd0bdb98ffd86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a21953fa472672322904cd0bdb98ffd86">dnf_composer::tools::math::fillNormal</a> (double *dst, std::size_t n)</td></tr>
+<tr class="separator:a21953fa472672322904cd0bdb98ffd86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a733a35f7edec5d46ebf840b5c31181be" id="r_a733a35f7edec5d46ebf840b5c31181be"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a733a35f7edec5d46ebf840b5c31181be">dnf_composer::tools::math::generateNormalVector</a> (int size)</td></tr>
 <tr class="separator:a733a35f7edec5d46ebf840b5c31181be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1704a64ef73f270628111f5c29a9e6b" id="r_af1704a64ef73f270628111f5c29a9e6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#af1704a64ef73f270628111f5c29a9e6b">dnf_composer::tools::math::seedNormal</a> (std::uint64_t seed)</td></tr>
+<tr class="separator:af1704a64ef73f270628111f5c29a9e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="acc8409789a7a9616f4679753c74eb01a" name="acc8409789a7a9616f4679753c74eb01a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc8409789a7a9616f4679753c74eb01a">&#9670;&#160;</a></span>f</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;double, 256&gt; f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af477d73a93fd6a25c0f3963f93855d2f" name="af477d73a93fd6a25c0f3963f93855d2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af477d73a93fd6a25c0f3963f93855d2f">&#9670;&#160;</a></span>k</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;std::uint32_t, 256&gt; k</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aded435fc7ff83c532a599d3959dcb9ed" name="aded435fc7ff83c532a599d3959dcb9ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aded435fc7ff83c532a599d3959dcb9ed">&#9670;&#160;</a></span>s</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;std::uint64_t, 4&gt; s</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a69572f2e9553e4f8ceb6e9ed7b54030d" name="a69572f2e9553e4f8ceb6e9ed7b54030d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69572f2e9553e4f8ceb6e9ed7b54030d">&#9670;&#160;</a></span>w</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;double, 256&gt; w</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

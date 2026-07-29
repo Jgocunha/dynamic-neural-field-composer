@@ -76,6 +76,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
@@ -91,10 +92,14 @@ $(function() {
 <code>#include &lt;random&gt;</code><br />
 <code>#include &lt;numbers&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &quot;<a class="el" href="simd__dispatch_8h_source.html">tools/simd_dispatch.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for math.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="math_8h__incl.svg" width="859" height="110"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="math_8h__incl.svg" width="1332" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -104,6 +109,13 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="math_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html">dnf_composer::tools::math::Conv2dScratch&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html">dnf_composer::tools::math::SeparableKernelTerm2D</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacednf__composer" id="r_namespacednf__composer"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html">dnf_composer</a></td></tr>
@@ -131,6 +143,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a664e422125516c1dbc86e7adda106c47" id="r_a664e422125516c1dbc86e7adda106c47"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a664e422125516c1dbc86e7adda106c47"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a664e422125516c1dbc86e7adda106c47">dnf_composer::tools::math::broadcast1DTo2D_into</a> (std::vector&lt; T &gt; &amp;out, const std::vector&lt; T &gt; &amp;profile, int size_x, int size_y, bool alongX)</td></tr>
 <tr class="separator:a664e422125516c1dbc86e7adda106c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abda71b8032d78b1289a7c847de0e4054" id="r_abda71b8032d78b1289a7c847de0e4054"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#abda71b8032d78b1289a7c847de0e4054">dnf_composer::tools::math::buildWrappedSeparableKernel2D</a> (int size_x, int size_y, std::initializer_list&lt; <a class="el" href="structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html">SeparableKernelTerm2D</a> &gt; terms)</td></tr>
+<tr class="separator:abda71b8032d78b1289a7c847de0e4054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3164be8d333a7f2f29414dd7c28056a" id="r_ad3164be8d333a7f2f29414dd7c28056a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ad3164be8d333a7f2f29414dd7c28056a">dnf_composer::tools::math::buildWrappedSeparableKernel2D</a> (int size_x, int size_y, std::span&lt; const <a class="el" href="structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html">SeparableKernelTerm2D</a> &gt; terms)</td></tr>
+<tr class="separator:ad3164be8d333a7f2f29414dd7c28056a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35dcf8c3860cc1855d20c0ff0594a052" id="r_a35dcf8c3860cc1855d20c0ff0594a052"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a35dcf8c3860cc1855d20c0ff0594a052"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a35dcf8c3860cc1855d20c0ff0594a052">dnf_composer::tools::math::calculateVectorAvg</a> (const std::vector&lt; T &gt; &amp;vec)</td></tr>
 <tr class="separator:a35dcf8c3860cc1855d20c0ff0594a052"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,7 +167,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ae0ded32bda3fdcee5561849a0ef3785c" id="r_ae0ded32bda3fdcee5561849a0ef3785c"><td class="memItemLeft" align="right" valign="top">std::array&lt; int, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c">dnf_composer::tools::math::computeKernelRange</a> (double sigma, int cutOfFactor, int fieldSize, bool circular)</td></tr>
 <tr class="separator:ae0ded32bda3fdcee5561849a0ef3785c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad58743cb424cd5bf4aaf0e935a63f0c7" id="r_ad58743cb424cd5bf4aaf0e935a63f0c7"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ad58743cb424cd5bf4aaf0e935a63f0c7"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ad58743cb424cd5bf4aaf0e935a63f0c7">dnf_composer::tools::math::conv</a> (std::vector&lt; T &gt; const &amp;f, std::vector&lt; T &gt; const &amp;g)</td></tr>
+<tr class="memitem:ad58743cb424cd5bf4aaf0e935a63f0c7"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ad58743cb424cd5bf4aaf0e935a63f0c7">dnf_composer::tools::math::conv</a> (std::vector&lt; T &gt; const &amp;<a class="el" href="math_8cpp.html#acc8409789a7a9616f4679753c74eb01a">f</a>, std::vector&lt; T &gt; const &amp;g)</td></tr>
 <tr class="separator:ad58743cb424cd5bf4aaf0e935a63f0c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c6eaca8288f997303a0a4d010ada4f3" id="r_a6c6eaca8288f997303a0a4d010ada4f3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a6c6eaca8288f997303a0a4d010ada4f3"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a6c6eaca8288f997303a0a4d010ada4f3">dnf_composer::tools::math::conv2d_separable</a> (const std::vector&lt; T &gt; &amp;field, const std::vector&lt; T &gt; &amp;kernel_x, const std::vector&lt; T &gt; &amp;kernel_y, int size_x, int size_y, const std::vector&lt; int &gt; &amp;extIndex_x, const std::vector&lt; int &gt; &amp;extIndex_y)</td></tr>
@@ -159,17 +175,20 @@ Functions</h2></td></tr>
 <tr class="memitem:a2008b0db9b837585d0f7f90e269f7ad2" id="r_a2008b0db9b837585d0f7f90e269f7ad2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a2008b0db9b837585d0f7f90e269f7ad2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2">dnf_composer::tools::math::conv2d_separable_into</a> (std::vector&lt; T &gt; &amp;out, std::vector&lt; T &gt; &amp;tmp, const std::vector&lt; T &gt; &amp;field, const std::vector&lt; T &gt; &amp;kernel_x, const std::vector&lt; T &gt; &amp;kernel_y, int size_x, int size_y, const std::vector&lt; int &gt; &amp;extIndex_x, const std::vector&lt; int &gt; &amp;extIndex_y)</td></tr>
 <tr class="separator:a2008b0db9b837585d0f7f90e269f7ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07e1a4e6543ddec31ab3caa180773c2a" id="r_a07e1a4e6543ddec31ab3caa180773c2a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a07e1a4e6543ddec31ab3caa180773c2a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a07e1a4e6543ddec31ab3caa180773c2a">dnf_composer::tools::math::conv2d_separable_into</a> (std::vector&lt; T &gt; &amp;out, std::vector&lt; T &gt; &amp;tmp, <a class="el" href="structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html">Conv2dScratch</a>&lt; T &gt; &amp;scratch, const std::vector&lt; T &gt; &amp;field, const std::vector&lt; T &gt; &amp;kernel_x, const std::vector&lt; T &gt; &amp;kernel_y, int size_x, int size_y, const std::vector&lt; int &gt; &amp;extIndex_x, const std::vector&lt; int &gt; &amp;extIndex_y)</td></tr>
+<tr class="separator:a07e1a4e6543ddec31ab3caa180773c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a384e37867853468a2ab2f1ec45bf2e43" id="r_a384e37867853468a2ab2f1ec45bf2e43"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a384e37867853468a2ab2f1ec45bf2e43"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a384e37867853468a2ab2f1ec45bf2e43">dnf_composer::tools::math::conv_same</a> (std::vector&lt; T &gt; const &amp;f, std::vector&lt; T &gt; const &amp;g)</td></tr>
+<tr class="memitem:a384e37867853468a2ab2f1ec45bf2e43"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a384e37867853468a2ab2f1ec45bf2e43">dnf_composer::tools::math::conv_same</a> (std::vector&lt; T &gt; const &amp;<a class="el" href="math_8cpp.html#acc8409789a7a9616f4679753c74eb01a">f</a>, std::vector&lt; T &gt; const &amp;g)</td></tr>
 <tr class="separator:a384e37867853468a2ab2f1ec45bf2e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acaa6baa4408e4f22fdc63b4e0c86a21e" id="r_acaa6baa4408e4f22fdc63b4e0c86a21e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:acaa6baa4408e4f22fdc63b4e0c86a21e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e">dnf_composer::tools::math::conv_same_into</a> (std::vector&lt; T &gt; &amp;out, const std::vector&lt; T &gt; &amp;f, const std::vector&lt; T &gt; &amp;g)</td></tr>
+<tr class="memitem:acaa6baa4408e4f22fdc63b4e0c86a21e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e">dnf_composer::tools::math::conv_same_into</a> (std::vector&lt; T &gt; &amp;out, const std::vector&lt; T &gt; &amp;<a class="el" href="math_8cpp.html#acc8409789a7a9616f4679753c74eb01a">f</a>, const std::vector&lt; T &gt; &amp;g)</td></tr>
 <tr class="separator:acaa6baa4408e4f22fdc63b4e0c86a21e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab20d3ab488a94e0088c4bd53d8deac9c" id="r_ab20d3ab488a94e0088c4bd53d8deac9c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ab20d3ab488a94e0088c4bd53d8deac9c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ab20d3ab488a94e0088c4bd53d8deac9c">dnf_composer::tools::math::conv_valid</a> (std::vector&lt; T &gt; const &amp;f, std::vector&lt; T &gt; const &amp;g)</td></tr>
+<tr class="memitem:ab20d3ab488a94e0088c4bd53d8deac9c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ab20d3ab488a94e0088c4bd53d8deac9c">dnf_composer::tools::math::conv_valid</a> (std::vector&lt; T &gt; const &amp;<a class="el" href="math_8cpp.html#acc8409789a7a9616f4679753c74eb01a">f</a>, std::vector&lt; T &gt; const &amp;g)</td></tr>
 <tr class="separator:ab20d3ab488a94e0088c4bd53d8deac9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad862439d033f9f7a74671d9fd5916e6d" id="r_ad862439d033f9f7a74671d9fd5916e6d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ad862439d033f9f7a74671d9fd5916e6d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d">dnf_composer::tools::math::conv_valid_into</a> (std::vector&lt; T &gt; &amp;out, const std::vector&lt; T &gt; &amp;f, const std::vector&lt; T &gt; &amp;g)</td></tr>
+<tr class="memitem:ad862439d033f9f7a74671d9fd5916e6d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d">dnf_composer::tools::math::conv_valid_into</a> (std::vector&lt; T &gt; &amp;out, const std::vector&lt; T &gt; &amp;<a class="el" href="math_8cpp.html#acc8409789a7a9616f4679753c74eb01a">f</a>, const std::vector&lt; T &gt; &amp;g)</td></tr>
 <tr class="separator:ad862439d033f9f7a74671d9fd5916e6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67b836c5dd7641c0def85f572838361e" id="r_a67b836c5dd7641c0def85f572838361e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e">dnf_composer::tools::math::createExtendedIndex</a> (int fieldSize, const std::array&lt; int, 2 &gt; &amp;kernelRange)</td></tr>
 <tr class="separator:a67b836c5dd7641c0def85f572838361e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,6 +198,10 @@ Functions</h2></td></tr>
 <tr class="memitem:aa1a98f6f9a10e9a3fc46eb2447eb171d" id="r_aa1a98f6f9a10e9a3fc46eb2447eb171d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aa1a98f6f9a10e9a3fc46eb2447eb171d"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#aa1a98f6f9a10e9a3fc46eb2447eb171d">dnf_composer::tools::math::deltaLearningRuleWidrowHoff</a> (std::vector&lt; std::vector&lt; T &gt; &gt; &amp;weights, const std::vector&lt; T &gt; &amp;input, const std::vector&lt; T &gt; &amp;actualOutput, const std::vector&lt; T &gt; &amp;targetOutput, double learningRate)</td></tr>
 <tr class="separator:aa1a98f6f9a10e9a3fc46eb2447eb171d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7736cef6d000a58dcce32e6b25b0ce39" id="r_a7736cef6d000a58dcce32e6b25b0ce39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a7736cef6d000a58dcce32e6b25b0ce39">dnf_composer::tools::math::embedWrapped1D</a> (std::vector&lt; double &gt; &amp;out, std::span&lt; const double &gt; window, int kR0)</td></tr>
+<tr class="separator:a7736cef6d000a58dcce32e6b25b0ce39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21953fa472672322904cd0bdb98ffd86" id="r_a21953fa472672322904cd0bdb98ffd86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a21953fa472672322904cd0bdb98ffd86">dnf_composer::tools::math::fillNormal</a> (double *dst, std::size_t n)</td></tr>
+<tr class="separator:a21953fa472672322904cd0bdb98ffd86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab66ddf09c4a3250f707c20c97877bd35" id="r_ab66ddf09c4a3250f707c20c97877bd35"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ab66ddf09c4a3250f707c20c97877bd35"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ab66ddf09c4a3250f707c20c97877bd35">dnf_composer::tools::math::flattenMatrix</a> (const std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix)</td></tr>
 <tr class="separator:ab66ddf09c4a3250f707c20c97877bd35"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,6 +264,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a168368e3954cd337627b693b03f69688" id="r_a168368e3954cd337627b693b03f69688"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a168368e3954cd337627b693b03f69688"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a168368e3954cd337627b693b03f69688">dnf_composer::tools::math::resampleNearestInto</a> (const std::vector&lt; T &gt; &amp;input, std::vector&lt; T &gt; &amp;output)</td></tr>
 <tr class="separator:a168368e3954cd337627b693b03f69688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1704a64ef73f270628111f5c29a9e6b" id="r_af1704a64ef73f270628111f5c29a9e6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#af1704a64ef73f270628111f5c29a9e6b">dnf_composer::tools::math::seedNormal</a> (std::uint64_t seed)</td></tr>
+<tr class="separator:af1704a64ef73f270628111f5c29a9e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25382704956357df290cec3ddfc33c7c" id="r_a25382704956357df290cec3ddfc33c7c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a25382704956357df290cec3ddfc33c7c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a25382704956357df290cec3ddfc33c7c">dnf_composer::tools::math::sigmoid</a> (const std::vector&lt; T &gt; &amp;x, T beta, T x0)</td></tr>
 <tr class="separator:a25382704956357df290cec3ddfc33c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>

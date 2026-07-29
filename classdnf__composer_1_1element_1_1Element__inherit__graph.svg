@@ -36,14 +36,14 @@
 <text text-anchor="start" x="1584" y="-588.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="1598" y="-588.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
 <text text-anchor="start" x="1584" y="-573.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1598" y="-573.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
+<text text-anchor="start" x="1598" y="-573.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
 <text text-anchor="start" x="1584" y="-558.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1598" y="-558.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
+<text text-anchor="start" x="1598" y="-558.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
 <text text-anchor="start" x="1584" y="-543.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1598" y="-543.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
+<text text-anchor="start" x="1598" y="-543.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
 <text text-anchor="start" x="1584" y="-528.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1598" y="-528.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponents()</text>
-<text text-anchor="start" x="1598" y="-513.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 29 more...</text>
+<text text-anchor="start" x="1598" y="-528.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
+<text text-anchor="start" x="1598" y="-513.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 31 more...</text>
 <polygon fill="#666666" stroke="#666666" points="1579,-733.5 1579,-733.5 1705,-733.5 1705,-733.5 1579,-733.5"/>
 <polygon fill="#666666" stroke="#666666" points="1579,-673.5 1579,-673.5 1596,-673.5 1596,-673.5 1579,-673.5"/>
 <polygon fill="#666666" stroke="#666666" points="1596,-673.5 1596,-673.5 1705,-673.5 1705,-673.5 1596,-673.5"/>
@@ -169,7 +169,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html" target="_top" xlink:title="Spatially correlated Gaussian noise source — cedar&#45;compatible.">
+<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html" target="_top" xlink:title="Spatially correlated Gaussian noise source.">
 <polygon fill="white" stroke="transparent" points="598,-403.5 454,-403.5 454,-253.5 598,-253.5 598,-403.5"/>
 <text text-anchor="start" x="465.5" y="-391.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="start" x="465.5" y="-380.5" font-family="Helvetica,sans-Serif" font-size="10.00">::CorrelatedNormalNoise</text>

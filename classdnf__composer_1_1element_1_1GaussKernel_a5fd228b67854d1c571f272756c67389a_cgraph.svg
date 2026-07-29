@@ -56,58 +56,98 @@
 </a>
 </g>
 </g>
-<!-- Node4 -->
-<g id="Node000004" class="node">
-<title>Node4</title>
-<g id="a_Node000004"><a xlink:href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" target="_top" xlink:title=" ">
+<!-- Node6 -->
+<g id="Node000006" class="node">
+<title>Node6</title>
+<g id="a_Node000006"><a xlink:href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="345,-78 168,-78 168,-48 345,-48 345,-78"/>
 <text text-anchor="start" x="176" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="256.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::math::obtainCircularVector_into</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node4 -->
-<g id="edge3_Node000001_Node000004" class="edge">
-<title>Node1&#45;&gt;Node4</title>
-<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node6 -->
+<g id="edge5_Node000001_Node000006" class="edge">
+<title>Node1&#45;&gt;Node6</title>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M132.13,-78.71C140.4,-77.66 148.99,-76.56 157.62,-75.46"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="158.28,-78.91 167.75,-74.17 157.39,-71.96 158.28,-78.91"/>
 </a>
 </g>
 </g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" target="_top" xlink:title="Pull data from all registered input elements into this element&#39;s components.">
+<!-- Node7 -->
+<g id="Node000007" class="node">
+<title>Node7</title>
+<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" target="_top" xlink:title="Pull data from all registered input elements into this element&#39;s components.">
 <polygon fill="white" stroke="#666666" points="322.5,-30 190.5,-30 190.5,0 322.5,0 322.5,-30"/>
 <text text-anchor="start" x="198.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="256.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::updateInput</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node5 -->
-<g id="edge4_Node000001_Node000005" class="edge">
-<title>Node1&#45;&gt;Node5</title>
-<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node7 -->
+<g id="edge6_Node000001_Node000007" class="edge">
+<title>Node1&#45;&gt;Node7</title>
+<g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M95.15,-71.97C115.1,-61.74 142.7,-48.4 168,-39 173.58,-36.93 179.42,-34.94 185.32,-33.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="186.74,-36.29 195.28,-30.01 184.69,-29.6 186.74,-36.29"/>
 </a>
 </g>
 </g>
-<!-- Node6 -->
-<g id="Node000006" class="node">
-<title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" target="_top" xlink:title="Cache raw pointers to input component data. Call after all element init()s complete.">
+<!-- Node4 -->
+<g id="Node000004" class="node">
+<title>Node4</title>
+<g id="a_Node000004"><a xlink:href="namespacednf__composer_1_1tools_1_1math_1_1detail.html#ac8dc7ef3bad470af9e384c9aa8aae846" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="513,-169.5 397,-169.5 397,-128.5 513,-128.5 513,-169.5"/>
+<text text-anchor="start" x="405" y="-157.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
+<text text-anchor="start" x="405" y="-146.5" font-family="Helvetica,sans-Serif" font-size="10.00">::math::detail::avx2</text>
+<text text-anchor="middle" x="455" y="-135.5" font-family="Helvetica,sans-Serif" font-size="10.00">_fma_available</text>
+</a>
+</g>
+</g>
+<!-- Node3&#45;&gt;Node4 -->
+<g id="edge3_Node000003_Node000004" class="edge">
+<title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M322.11,-123.5C342.88,-127.51 365.92,-131.97 386.86,-136.02"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="386.47,-139.51 396.95,-137.97 387.8,-132.63 386.47,-139.51"/>
+</a>
+</g>
+</g>
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="namespacednf__composer_1_1tools_1_1math_1_1detail.html#a7de913e60d3b646bcf05297d4aa7fb03" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="515,-110.5 395,-110.5 395,-69.5 515,-69.5 515,-110.5"/>
+<text text-anchor="start" x="403" y="-98.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
+<text text-anchor="start" x="403" y="-87.5" font-family="Helvetica,sans-Serif" font-size="10.00">::math::detail::conv</text>
+<text text-anchor="middle" x="455" y="-76.5" font-family="Helvetica,sans-Serif" font-size="10.00">_valid_into_avx2_f64</text>
+</a>
+</g>
+</g>
+<!-- Node3&#45;&gt;Node5 -->
+<g id="edge4_Node000003_Node000005" class="edge">
+<title>Node3&#45;&gt;Node5</title>
+<g id="a_edge4_Node000003_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M322.11,-104.09C342.21,-101.95 364.44,-99.57 384.83,-97.39"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="385.42,-100.85 394.99,-96.31 384.68,-93.89 385.42,-100.85"/>
+</a>
+</g>
+</g>
+<!-- Node8 -->
+<g id="Node000008" class="node">
+<title>Node8</title>
+<g id="a_Node000008"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" target="_top" xlink:title="Cache raw pointers to input component data. Call after all element init()s complete.">
 <polygon fill="white" stroke="#666666" points="529,-30 381,-30 381,0 529,0 529,-30"/>
 <text text-anchor="start" x="389" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="455" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::buildInputCache</text>
 </a>
 </g>
 </g>
-<!-- Node5&#45;&gt;Node6 -->
-<g id="edge5_Node000005_Node000006" class="edge">
-<title>Node5&#45;&gt;Node6</title>
-<g id="a_edge5_Node000005_Node000006"><a xlink:title=" ">
+<!-- Node7&#45;&gt;Node8 -->
+<g id="edge7_Node000007_Node000008" class="edge">
+<title>Node7&#45;&gt;Node8</title>
+<g id="a_edge7_Node000007_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M322.66,-15C337.96,-15 354.48,-15 370.47,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="370.88,-18.5 380.88,-15 370.88,-11.5 370.88,-18.5"/>
 </a>

@@ -12,5 +12,6 @@ var searchData=
   ['booststimulus2dparameters_9',['BoostStimulus2DParameters',['../structdnf__composer_1_1element_1_1BoostStimulus2DParameters.html#a6d9ebdd053b0cb4a0ab537e03906720c',1,'dnf_composer::element::BoostStimulus2DParameters']]],
   ['booststimulusparameters_10',['BoostStimulusParameters',['../structdnf__composer_1_1element_1_1BoostStimulusParameters.html#a895db533315b0c247751313eaefe9ef9',1,'dnf_composer::element::BoostStimulusParameters']]],
   ['broadcast1dto2d_5finto_11',['broadcast1DTo2D_into',['../namespacednf__composer_1_1tools_1_1math.html#a664e422125516c1dbc86e7adda106c47',1,'dnf_composer::tools::math']]],
-  ['buildinputcache_12',['buildInputCache',['../classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e',1,'dnf_composer::element::Element']]]
+  ['buildinputcache_12',['buildInputCache',['../classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e',1,'dnf_composer::element::Element']]],
+  ['buildwrappedseparablekernel2d_13',['buildwrappedseparablekernel2d',['../namespacednf__composer_1_1tools_1_1math.html#ad3164be8d333a7f2f29414dd7c28056a',1,'dnf_composer::tools::math::buildWrappedSeparableKernel2D(int size_x, int size_y, std::span&lt; const SeparableKernelTerm2D &gt; terms)'],['../namespacednf__composer_1_1tools_1_1math.html#abda71b8032d78b1289a7c847de0e4054',1,'dnf_composer::tools::math::buildWrappedSeparableKernel2D(int size_x, int size_y, std::initializer_list&lt; SeparableKernelTerm2D &gt; terms)']]]
 ];

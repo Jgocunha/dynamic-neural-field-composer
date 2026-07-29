@@ -1,0 +1,29 @@
+<map id="dnf_composer::tools::math::detail::avx2_fma_available" name="dnf_composer::tools::math::detail::avx2_fma_available">
+<area shape="rect" id="Node000001" title=" " alt="" coords="803,254,957,309"/>
+<area shape="rect" id="Node000002" href="$structdnf__composer_1_1element_1_1SigmoidFunction.html#a55a116691cde4942a4918542e2d51e8a" title="Apply the activation function in&#45;place into a pre&#45;allocated out buffer. out must already be sized to ..." alt="" coords="572,229,755,269"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="789,271,754,265,755,260,790,265"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d" title=" " alt="" coords="576,293,751,333"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="790,297,751,303,750,298,789,292"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#a07e1a4e6543ddec31ab3caa180773c2a" title=" " alt="" coords="299,165,522,205"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="578,289,570,283,554,267,546,250,538,234,522,219,501,208,504,203,526,215,542,231,551,248,559,264,574,279,581,284"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#afa45a45ca8acb0432937de3b1563ba82" title="Advance the element by one time step." alt="" coords="297,229,524,269"/>
+<area shape="poly" id="edge10_Node000003_Node000011" title=" " alt="" coords="570,292,489,272,491,267,571,287"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a5fd228b67854d1c571f272756c67389a" title="Advance the element by one time step." alt="" coords="323,293,499,333"/>
+<area shape="poly" id="edge11_Node000003_Node000012" title=" " alt="" coords="562,316,499,316,499,311,562,311"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ac18abde56a67c7c1c127d38065d6f316" title="Advance the element by one time step." alt="" coords="318,357,503,397"/>
+<area shape="poly" id="edge12_Node000003_Node000013" title=" " alt="" coords="571,339,491,360,489,355,570,334"/>
+<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html#ab95458cda2baab4cbaf0e010e2cb86a8" title="Advance the element by one time step." alt="" coords="322,421,499,461"/>
+<area shape="poly" id="edge13_Node000003_Node000014" title=" " alt="" coords="629,344,581,379,525,412,496,424,494,419,523,407,578,375,626,340"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#a2008b0db9b837585d0f7f90e269f7ad2" title=" " alt="" coords="16,5,239,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="378,157,320,107,285,82,248,60,220,48,222,43,251,55,288,77,324,103,381,153"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#ab88efe9a35d4b8489448f12e6ab15509" title="Advance the element by one time step." alt="" coords="5,69,249,109"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="350,162,248,124,209,112,211,107,250,119,352,158"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise2D.html#a3b8fb5f809d6103a7dff54129d8301f5" title="Advance the element by one time step." alt="" coords="9,133,246,173"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="285,174,246,169,247,164,286,169"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#afe15b891a5a3bf3caba5213476d12edf" title="Advance the element by one time step." alt="" coords="39,197,215,237"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="286,202,216,210,215,205,285,197"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#a586a0dc4008c2456314a6254e9d9d0ee" title="Advance the element by one time step." alt="" coords="26,261,229,301"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="316,213,299,220,275,236,251,252,219,264,217,259,248,247,272,231,296,215,313,208"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html#a1a8e3064bedd9fd6d4a00818bc3ff271" title="Advance the element by one time step." alt="" coords="30,325,225,365"/>
+<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="305,215,299,219,288,231,282,242,276,266,270,291,263,303,251,315,227,330,224,326,248,311,258,300,265,289,271,265,277,240,284,227,296,215,302,210"/>
+</map>

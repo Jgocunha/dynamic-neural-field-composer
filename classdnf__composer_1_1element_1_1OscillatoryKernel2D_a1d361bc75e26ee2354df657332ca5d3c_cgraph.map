@@ -1,9 +1,23 @@
 <map id="dnf_composer::element::OscillatoryKernel2D::setParameters" name="dnf_composer::element::OscillatoryKernel2D::setParameters">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,30,181,85"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html#ab280029bb925d2eb1c0b2af7b6053f9c" title="Initialize the element (called once before the simulation loop)." alt="" coords="229,37,417,77"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="182,55,216,55,216,60,182,60"/>
-<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c" title=" " alt="" coords="465,5,676,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="417,43,451,38,452,43,418,48"/>
-<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e" title=" " alt="" coords="465,69,676,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="418,67,452,71,451,77,417,72"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,213,181,268"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html#ab280029bb925d2eb1c0b2af7b6053f9c" title="Initialize the element (called once before the simulation loop)." alt="" coords="229,221,417,261"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="182,238,216,238,216,243,182,243"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ad3164be8d333a7f2f29414dd7c28056a" title=" " alt="" coords="465,5,692,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="334,219,385,147,421,106,464,71,473,65,476,69,467,75,425,110,389,151,339,222"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c" title=" " alt="" coords="473,85,684,125"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="345,219,397,176,464,134,480,127,482,132,467,139,400,181,348,223"/>
+<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e" title=" " alt="" coords="473,149,684,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="394,218,493,190,495,195,396,223"/>
+<area shape="rect" id="Node000007" href="$structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html#a891437c23625f8cf1892f3e617a921d5" title=" " alt="" coords="494,213,663,268"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="418,238,480,238,480,243,418,243"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1tools_1_1math_1_1SpectralConvolver2D.html#ae8ac708313208d634e79737351f39351" title=" " alt="" coords="479,292,678,347"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="390,258,477,285,476,290,388,263"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1tools_1_1math_1_1SpectralConvolver2D.html#a615cd3e2cef66f2d720a518095adb829" title=" " alt="" coords="479,371,678,425"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="346,259,398,307,431,333,467,356,479,362,477,367,464,360,428,337,395,311,343,263"/>
+<area shape="rect" id="Node000010" href="$namespacednf__composer_1_1tools_1_1math.html#a461c19b31caf28c784f7cacaef822858" title=" " alt="" coords="473,450,684,490"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="336,260,355,298,383,345,421,394,467,436,476,441,473,446,464,440,417,398,379,348,350,300,331,262"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#a7736cef6d000a58dcce32e6b25b0ce39" title=" " alt="" coords="763,13,957,53"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="692,30,750,30,750,35,692,35"/>
+<area shape="rect" id="Node000011" href="$namespacednf__composer_1_1tools_1_1math.html#a460d2b3c2736c0fcff28caf69f87979a" title=" " alt="" coords="740,450,980,490"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="684,467,726,467,726,473,684,473"/>
 </map>

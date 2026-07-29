@@ -47,7 +47,7 @@ var searchData=
   ['resize_44',['resize',['../classdnf__composer_1_1element_1_1Resize.html',1,'dnf_composer::element::Resize'],['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea97d7e365d3222a3686d571f5541c82ea',1,'dnf_composer::element::RESIZE'],['../classdnf__composer_1_1element_1_1Resize.html#a9683d77100e886922673c5ec827f8dc2',1,'dnf_composer::element::Resize::Resize()']]],
   ['resize_2ecpp_45',['resize.cpp',['../resize_8cpp.html',1,'']]],
   ['resize_2eh_46',['resize.h',['../resize_8h.html',1,'']]],
-  ['resize2d_47',['resize2d',['../classdnf__composer_1_1element_1_1Resize2D.html',1,'dnf_composer::element::Resize2D'],['../classdnf__composer_1_1element_1_1Resize2D.html#aa8f8b151c3515bc8f89f72de332d89e9',1,'dnf_composer::element::Resize2D::Resize2D()']]],
+  ['resize2d_47',['resize2d',['../classdnf__composer_1_1element_1_1Resize2D.html#aa8f8b151c3515bc8f89f72de332d89e9',1,'dnf_composer::element::Resize2D::Resize2D()'],['../classdnf__composer_1_1element_1_1Resize2D.html',1,'dnf_composer::element::Resize2D']]],
   ['resize2dparameters_48',['resize2dparameters',['../structdnf__composer_1_1element_1_1Resize2DParameters.html',1,'dnf_composer::element::Resize2DParameters'],['../structdnf__composer_1_1element_1_1Resize2DParameters.html#ab41d1c2207ea3fc4d869fe5e0d3d94da',1,'dnf_composer::element::Resize2DParameters::Resize2DParameters()']]],
   ['resize_5f2d_49',['RESIZE_2D',['../namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea90e519628d393944dadf5e10f97cded8',1,'dnf_composer::element']]],
   ['resize_5f2d_2ecpp_50',['resize_2d.cpp',['../resize__2d_8cpp.html',1,'']]],
@@ -57,7 +57,8 @@ var searchData=
   ['resume_54',['resume',['../classdnf__composer_1_1Simulation.html#abf5a7a8ec783facebf82f8563c3424de',1,'dnf_composer::Simulation']]],
   ['rounding_55',['rounding',['../structdnf__composer_1_1user__interface_1_1PanelScope.html#a6d0f36a70ef4ba691b83e4d4f8af1bb8',1,'dnf_composer::user_interface::PanelScope']]],
   ['roundsquare_56',['RoundSquare',['../namespaceax_1_1Drawing.html#ab1df3a7263c0f5d36c706d066c90fe0aa8d0b97f599498054e5e7a84b1d5c2140',1,'ax::Drawing']]],
-  ['run_57',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
-  ['runforrealtime_58',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]],
-  ['runsegmentstart_59',['runSegmentStart',['../classdnf__composer_1_1Simulation.html#adf0f76a35f06a8c8d18bc1831ab0bffa',1,'dnf_composer::Simulation']]]
+  ['row_57',['row',['../structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html#a57dd1cc415b608282f776d98245ba492',1,'dnf_composer::tools::math::Conv2dScratch']]],
+  ['run_58',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
+  ['runforrealtime_59',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]],
+  ['runsegmentstart_60',['runSegmentStart',['../classdnf__composer_1_1Simulation.html#adf0f76a35f06a8c8d18bc1831ab0bffa',1,'dnf_composer::Simulation']]]
 ];

@@ -1,18 +1,32 @@
 <map id="dnf_composer::element::AsymmetricGaussKernel2D::setParameters" name="dnf_composer::element::AsymmetricGaussKernel2D::setParameters">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,155,213,210"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a8234958fc93042c32fa069831a7034c5" title="Initialize the element (called once before the simulation loop)." alt="" coords="261,163,499,203"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="214,180,248,180,248,185,214,185"/>
-<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c" title=" " alt="" coords="549,5,759,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="401,160,463,108,503,80,545,55,561,48,563,53,548,60,506,84,466,113,404,165"/>
-<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e" title=" " alt="" coords="549,69,759,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="432,160,546,119,570,111,572,116,548,124,434,165"/>
-<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#af1e4dc23150121f5d2c1ff789f3de9d3" title=" " alt="" coords="577,133,731,173"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="498,167,563,160,564,166,499,173"/>
-<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1math.html#a4bd4cb928b836aa87f5383f232ac4da3" title=" " alt="" coords="809,220,988,260"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="499,193,796,226,795,231,499,198"/>
-<area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1math.html#a6f23f713f1bfd818c93988f8e122281c" title=" " alt="" coords="547,248,761,288"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="446,200,577,241,575,246,444,205"/>
-<area shape="rect" id="Node000008" href="$namespacednf__composer_1_1tools_1_1math.html#ae679c020137ca5fab108caa79fa33a13" title=" " alt="" coords="577,312,731,352"/>
-<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="406,201,468,249,507,275,548,298,565,305,562,310,545,302,504,279,465,253,403,205"/>
-<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="761,253,795,249,796,254,762,258"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,343,213,397"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a8234958fc93042c32fa069831a7034c5" title="Initialize the element (called once before the simulation loop)." alt="" coords="261,350,499,390"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="214,367,248,367,248,373,214,373"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ad3164be8d333a7f2f29414dd7c28056a" title=" " alt="" coords="547,5,773,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="385,349,403,294,436,220,483,140,512,103,545,71,551,66,555,70,548,75,516,107,487,143,440,222,408,296,390,351"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c" title=" " alt="" coords="555,85,765,125"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="387,349,409,304,443,246,489,186,516,159,545,135,554,129,557,133,548,139,519,162,493,190,448,249,414,307,392,351"/>
+<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e" title=" " alt="" coords="555,149,765,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="394,348,454,275,497,234,545,198,557,192,560,197,548,203,500,238,458,278,398,351"/>
+<area shape="rect" id="Node000007" href="$structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html#a891437c23625f8cf1892f3e617a921d5" title=" " alt="" coords="575,213,745,268"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="413,348,474,314,546,278,564,271,566,275,548,283,477,318,416,352"/>
+<area shape="rect" id="Node000008" href="$namespacednf__composer_1_1tools_1_1math.html#af1e4dc23150121f5d2c1ff789f3de9d3" title=" " alt="" coords="583,293,737,333"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="478,347,569,329,570,334,479,353"/>
+<area shape="rect" id="Node000009" href="$namespacednf__composer_1_1tools_1_1math.html#a4bd4cb928b836aa87f5383f232ac4da3" title=" " alt="" coords="852,379,1031,419"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="499,374,838,391,838,397,499,379"/>
+<area shape="rect" id="Node000010" href="$namespacednf__composer_1_1tools_1_1math.html#a6f23f713f1bfd818c93988f8e122281c" title=" " alt="" coords="553,407,767,447"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="479,387,549,402,548,407,478,393"/>
+<area shape="rect" id="Node000011" href="$namespacednf__composer_1_1tools_1_1math.html#ae679c020137ca5fab108caa79fa33a13" title=" " alt="" coords="583,471,737,511"/>
+<area shape="poly" id="edge11_Node000002_Node000011" title=" " alt="" coords="415,388,476,423,548,457,570,465,569,470,546,462,473,427,413,393"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1tools_1_1math_1_1SpectralConvolver2D.html#ae8ac708313208d634e79737351f39351" title=" " alt="" coords="561,536,759,591"/>
+<area shape="poly" id="edge12_Node000002_Node000012" title=" " alt="" coords="400,388,461,453,503,489,548,521,560,528,557,532,545,526,500,493,458,457,396,392"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1tools_1_1math_1_1SpectralConvolver2D.html#a615cd3e2cef66f2d720a518095adb829" title=" " alt="" coords="561,615,759,669"/>
+<area shape="poly" id="edge13_Node000002_Node000013" title=" " alt="" coords="393,389,415,432,449,489,494,548,520,576,548,600,556,605,553,610,545,604,516,580,490,552,445,492,410,435,388,391"/>
+<area shape="rect" id="Node000014" href="$namespacednf__composer_1_1tools_1_1math.html#a461c19b31caf28c784f7cacaef822858" title=" " alt="" coords="555,694,765,734"/>
+<area shape="poly" id="edge14_Node000002_Node000014" title=" " alt="" coords="389,390,406,447,437,526,458,568,484,609,514,647,548,680,555,685,552,689,545,684,510,650,480,612,454,570,432,528,401,449,384,391"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math.html#a7736cef6d000a58dcce32e6b25b0ce39" title=" " alt="" coords="845,13,1038,53"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="773,30,831,30,831,35,773,35"/>
+<area shape="poly" id="edge10_Node000010_Node000009" title=" " alt="" coords="767,414,838,407,839,412,768,419"/>
+<area shape="rect" id="Node000015" href="$namespacednf__composer_1_1tools_1_1math.html#a460d2b3c2736c0fcff28caf69f87979a" title=" " alt="" coords="821,694,1061,734"/>
+<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="765,711,807,711,807,717,765,717"/>
 </map>

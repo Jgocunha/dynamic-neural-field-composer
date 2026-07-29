@@ -96,7 +96,7 @@ Inheritance diagram for dnf_composer::element::Element:</div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::Element:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__coll__graph.svg" width="728" height="1548"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__coll__graph.svg" width="635" height="1548"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -114,6 +114,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae3e54722d31878dabd8bccdd181109f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a135e752ac46936d2dad51d13d3ac3f20" id="r_a135e752ac46936d2dad51d13d3ac3f20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a135e752ac46936d2dad51d13d3ac3f20">close</a> ()</td></tr>
 <tr class="separator:a135e752ac46936d2dad51d13d3ac3f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848bbe0b389a2ecec3185fae87f937c4" id="r_a848bbe0b389a2ecec3185fae87f937c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a848bbe0b389a2ecec3185fae87f937c4">Element</a> (const <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &amp;other)</td></tr>
+<tr class="memdesc:a848bbe0b389a2ecec3185fae87f937c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy commonParameters/components/inputs/outputs; deliberately does NOT copy the input-cache (inputPtr/cachedInputs) &ndash; see the .cpp for why a raw-pointer-value copy of inputPtr would alias the wrong object. Every <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ae3e54722d31878dabd8bccdd181109f8">clone()</a> override that copy-constructs (<code>make_shared&lt;T&gt;(*this)</code>) relies on this to produce a correctly-behaving copy.  <br /></td></tr>
+<tr class="separator:a848bbe0b389a2ecec3185fae87f937c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b6bb1265bb1229b5ae34765008e9f4d" id="r_a7b6bb1265bb1229b5ae34765008e9f4d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7b6bb1265bb1229b5ae34765008e9f4d">Element</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementCommonParameters.html">ElementCommonParameters</a> &amp;parameters)</td></tr>
 <tr class="memdesc:a7b6bb1265bb1229b5ae34765008e9f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an element with the given common parameters.  <br /></td></tr>
 <tr class="separator:a7b6bb1265bb1229b5ae34765008e9f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,6 +168,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af09ce7373b714e18c46783bacf4add15" id="r_af09ce7373b714e18c46783bacf4add15"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#af09ce7373b714e18c46783bacf4add15">init</a> ()=0</td></tr>
 <tr class="memdesc:af09ce7373b714e18c46783bacf4add15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the element (called once before the simulation loop).  <br /></td></tr>
 <tr class="separator:af09ce7373b714e18c46783bacf4add15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1969335e7a768f53d9cf3d4abc2671" id="r_a2b1969335e7a768f53d9cf3d4abc2671"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a2b1969335e7a768f53d9cf3d4abc2671">operator=</a> (const <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &amp;other)</td></tr>
+<tr class="separator:a2b1969335e7a768f53d9cf3d4abc2671"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a006295ce616dea39b7ec7cabd573ca73" id="r_a006295ce616dea39b7ec7cabd573ca73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a006295ce616dea39b7ec7cabd573ca73">print</a> () const</td></tr>
 <tr class="separator:a006295ce616dea39b7ec7cabd573ca73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7508a9a8d72df33b553d7a75e5138d37" id="r_a7508a9a8d72df33b553d7a75e5138d37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37">removeInput</a> (const std::string &amp;inputElementId)</td></tr>
@@ -214,7 +219,7 @@ Protected Attributes</h2></td></tr>
 <p>Every element owns a set of named data components (e.g. "activation", "output"), a list of input elements, and a list of output elements. Concrete subclasses implement the <code>init</code> / <code>step</code> lifecycle and exchange data via <code><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element.">addInput()</a></code>. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7b6bb1265bb1229b5ae34765008e9f4d" name="a7b6bb1265bb1229b5ae34765008e9f4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b6bb1265bb1229b5ae34765008e9f4d">&#9670;&#160;</a></span>Element()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b6bb1265bb1229b5ae34765008e9f4d">&#9670;&#160;</a></span>Element() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -244,6 +249,26 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a848bbe0b389a2ecec3185fae87f937c4" name="a848bbe0b389a2ecec3185fae87f937c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a848bbe0b389a2ecec3185fae87f937c4">&#9670;&#160;</a></span>Element() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">dnf_composer::element::Element::Element </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy commonParameters/components/inputs/outputs; deliberately does NOT copy the input-cache (inputPtr/cachedInputs) &ndash; see the .cpp for why a raw-pointer-value copy of inputPtr would alias the wrong object. Every <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ae3e54722d31878dabd8bccdd181109f8">clone()</a> override that copy-constructs (<code>make_shared&lt;T&gt;(*this)</code>) relies on this to produce a correctly-behaving copy. </p>
 
 </div>
 </div>
@@ -878,6 +903,24 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_af09ce7373b714e18c46783bacf4add15_icgraph.svg" width="451" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a2b1969335e7a768f53d9cf3d4abc2671" name="a2b1969335e7a768f53d9cf3d4abc2671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b1969335e7a768f53d9cf3d4abc2671">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &amp; dnf_composer::element::Element::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
