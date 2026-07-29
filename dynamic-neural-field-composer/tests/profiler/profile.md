@@ -2,6 +2,12 @@
 
 Per-element step() timing (1D size 100, 2D 50x50). One section appended per run.
 
+Timings are machine-dependent (CPU, AVX2 dispatch, build type all affect them) --
+only compare sessions with matching **Env:** lines directly.
+
+Sessions before 2026-07-29 predate the **Env:** line; they all ran on the reference
+dev machine (AMD Ryzen 5 3600, MSVC 19.44, /O2 /arch:AVX2, Windows 11).
+
 ## 2026-06-25 09:51:41  (dnfc 2.9.3, 20000 iters)
 
 ### Per element-type step()
@@ -252,54 +258,6 @@ Per-element step() timing (1D size 100, 2D 50x50). One section appended per run.
 | gauss kernel 2d | GaussKernel2D | 73.46 | 56.93% |
 | normal noise 2d | NormalNoise2D | 0.25 | 0.19% |
 
-## 2026-06-25 10:49:50 — INTRA-STEP SAMPLING BREAKDOWN (Very Sleepy, RelWithDebInfo /O2+/Zi)
-
-Method: CPU sampling profiler (Very Sleepy CLI `/a:<pid> /t:170 /mbt`) attached to
-`dnf_composer_profiler 200000` (RelWithDebInfo: Release `/O2` codegen + PDB symbols). 170 s,
-85,142 samples. This measures *where inside* each step() the CPU time actually goes — by resolved
-function, not by assumption. Percentages are of total sampled CPU self-time across the whole
-profiler run (all element types swept sequentially), so they reflect each function's share of the
-combined workload.
-
-### Top self-time functions (exclusive)
-
-| % CPU | function | what it is |
-|------:|----------|------------|
-| 60.5% | `tools::math::conv_valid_into<double>` | circular-convolution inner loop (the separable x/y pass) |
-| 10.4% | `std::_Hash` (unordered_map<string,vector>) | `components["..."]` lookups |
-| 5.9%  | `MemoryTrace2D::step` | its per-cell elementwise loop (the work around the lookups) |
-| 5.8%  | `conv2d_separable_into` | separable driver (gather/scatter + pass orchestration) |
-| 3.6%  | `zigguratNormal` | noise Gaussian sampler |
-| 2.5%  | `SigmoidFunction::apply` + 1.1% `expf` | field output nonlinearity |
-| 1.9%  | `Element::updateInput` | input summation |
-| 0.4%  | `fillNormal` | noise fill driver |
-| 0.23% | `NeuralField2D::updateBumps` | bump flood-fill (**negligible**) |
-
-### `conv_valid_into` (60.5% of all CPU) attributed to the calling element
-
-| element | conv self-time | share of conv |
-|---------|---------------:|--------------:|
-| MexicanHatKernel2D | 40.6 s | 39.4% (two conv passes) |
-| OscillatoryKernel2D | 28.3 s | 27.5% (wide kernel) |
-| GaussKernel2D | 15.1 s | 14.7% |
-| AsymmetricGaussKernel2D | 14.1 s | 13.7% |
-| CorrelatedNormalNoise2D | 4.8 s | 4.7% |
-
-### `unordered_map` hash lookups (12.8% inclusive) attributed to the calling element
-
-| element | hash self-time | share |
-|---------|---------------:|------:|
-| MemoryTrace2D | 16.3 s | 75.3% (`components["input"]/["output"][i]` inside the 2500-cell loop) |
-| CorrelatedNormalNoise2D | 5.3 s | 24.4% (`components["output"][i]` inside the per-cell scale loop) |
-| all others | <0.1 s | ~0% (already hoist `components` to a local ref/ptr) |
-
-### Findings vs. prior assumptions
-- **Convolution IS the bottleneck** (60.5%), concentrated in `conv_valid_into`. The old "conv is
-  only ~11%" note is wrong at 50×50 with these kernels. Optimizing this one inner loop dominates everything.
-- **Two elements still pay the string-map tax in per-cell loops**: MemoryTrace2D and CorrelatedNormalNoise2D.
-  This is the same hoist already done for the kernels/NeuralField — a guaranteed bit-identical win (~12% of total CPU).
-- **Refuted**: the strided y-pass column gather (`obtainCircularVector_into`) is negligible — does not appear.
-  `NeuralField2D::updateBumps` is 0.23% — not worth optimizing. Sigmoid is minor (2.5%).
 ## 2026-06-25 11:11:30  (dnfc 2.9.3, 20000 iters)
 
 ### Per element-type step()
@@ -500,46 +458,6 @@ combined workload.
 | gauss kernel 2d | GaussKernel2D | 41.20 | 39.53% |
 | normal noise 2d | NormalNoise2D | 0.29 | 0.28% |
 
-## 2026-06-25 — AFTER conv AVX2 vectorization + map-lookup hoist (Very Sleepy, RelWithDebInfo)
-
-Same sampling method as the 10:49:50 baseline (Very Sleepy `/a:<pid> /t:120 /mbt` on
-`dnf_composer_profiler 200000`). Two changes landed since that baseline:
-- **A**: `conv_valid_into` inner loop vectorized with 4-wide `__m256d` FMA (4 outputs/iteration,
-  per-output summation order preserved -> bit-identical; golden conv tests pass at 1e-12,
-  FieldDynamics 1D/2D at 1e-4).
-- **B**: hoisted `components["input"]/["output"]` out of the per-cell loops in MemoryTrace2D,
-  MemoryTrace (1D), and CorrelatedNormalNoise2D (bit-identical).
-
-### Top self-time functions (exclusive) — total sweep self-time ~170s -> ~99s (~1.7x)
-
-| % CPU | function | vs baseline |
-|------:|----------|-------------|
-| 46.0% | `conv_valid_into<double>` | **102.9s -> 45.4s** (AVX2 ~2x) — still the top cost but halved |
-| 13.7% | `SigmoidFunction::apply` | ~unchanged (13.5s); rises in % as conv/hash shrank |
-| 11.7% | `conv2d_separable_into` | driver |
-| 6.4%  | `zigguratNormal` | noise RNG, ~unchanged |
-| 6.4%  | `expf` | sigmoid, ~unchanged |
-| 5.4%  | `Element::updateInput` | ~unchanged |
-| 1.6%  | `NeuralField2D::updateBumps` | still negligible |
-| —     | `std::_Hash` (`components[...]`) | **17.7s -> ~0** (hoisted out of per-cell loops) |
-
-### Per-element aggregate step() µs (from the profiler's own timing, 50x50)
-
-| element | baseline µs | after µs | speedup |
-|---------|------------:|---------:|--------:|
-| GaussKernel2D | 71.2 | 35.2 | 2.0x |
-| MexicanHatKernel2D | 189 | 84.3 | 2.2x |
-| OscillatoryKernel2D | 130 | 56.9 | 2.3x |
-| AsymmetricGaussKernel2D | 71 | 34.9 | 2.0x |
-| CorrelatedNormalNoise2D | 76 | 28.8 | 2.6x (conv + hoist) |
-| MemoryTrace2D | 102 | 3.1 | **33x** (was almost all map-lookup) |
-| MemoryTrace (1D) | 4.4 | 0.18 | 24x |
-
-### Remaining
-`conv_valid_into` is still the single largest cost (46%). Further single-thread gains would require
-reordering the FP reduction (multi-accumulator over taps), which risks the 1e-4 tolerance — deferred.
-`SigmoidFunction::apply`/`expf` (~20% combined) is now the next-largest block. Across-field
-threading remains the untouched lever.
 ## 2026-06-25 11:51:58  (dnfc 2.9.3, 20000 iters)
 
 ### Per element-type step()
@@ -740,44 +658,6 @@ threading remains the untouched lever.
 | gauss kernel 2d | GaussKernel2D | 40.33 | 62.04% |
 | normal noise 2d | NormalNoise2D | 0.26 | 0.40% |
 
-## 2026-06-25 — AFTER sigmoid AVX2 vectorization (Very Sleepy, RelWithDebInfo)
-
-Same sampling method. Change since the previous section: `SigmoidFunction::apply` vectorized with an
-AVX2 Cephes `exp256_ps` (8 cells/iter, ~1e-7 accurate), scalar fallback retained. Sigmoid is an
-elementwise MAP (no reduction), so it only needs to stay within 1e-4 — FieldDynamics 1D/2D (200+200
-sigmoid sims, b100) pass; all 801 unit tests pass.
-
-### Top self-time functions — total sweep self-time ~99s -> ~82s
-
-| % CPU | function | vs previous |
-|------:|----------|-------------|
-| 55.3% | `conv_valid_into<double>` | unchanged (45.6s); now larger share as sigmoid shrank |
-| 14.6% | `conv2d_separable_into` | driver |
-| 7.6%  | `zigguratNormal` | noise RNG |
-| 5.9%  | `Element::updateInput` | unchanged |
-| 4.2%  | `SigmoidFunction::apply` | **13.5s -> 3.5s** (AVX2 exp); `expf` dropped off the top list |
-| 2.0%  | `NeuralField2D::updateBumps` | still negligible |
-
-### Per-element aggregate step() µs (profiler's own timing, 50x50)
-
-| element | before sigmoid | after | speedup |
-|---------|---------------:|------:|--------:|
-| NeuralField2D | 50.0 | 14.4 | 3.5x |
-| NeuralField (1D) | 2.1 | 0.75 | 2.8x |
-
-### End-to-end benchmark (median steps/sec) vs the pre-optimization baseline
-
-| dim/N | baseline | now | gain |
-|-------|---------:|----:|-----:|
-| 2D N=10  | 791.7 | 1463.9 | 1.85x |
-| 2D N=50  | 142.6 | 315.3  | 2.21x |
-| 2D N=100 | 73.2  | 148.2  | 2.02x |
-| 1D N=100 | 2647  | 5438   | 2.06x |
-
-### Remaining
-`conv_valid_into` (55%) is the only large lever left and is gated by the FP-reduction reorder vs 1e-4
-tradeoff (deferred). After that, across-field threading. The circular-extension gather block-copy was
-tried and reverted (no net win — memmove offset the gather savings).
 ## 2026-06-25 13:45:32  (dnfc 2.9.3, 20000 iters)
 
 ### Per element-type step()
@@ -827,79 +707,6 @@ tried and reverted (no net win — memmove offset the gather savings).
 | neural field u | NeuralField2D | 22.84 | 45.23% |
 | gauss kernel 2d | GaussKernel2D | 27.40 | 54.27% |
 | normal noise 2d | NormalNoise2D | 0.22 | 0.45% |
-
-## 2026-06-25 — AFTER symmetric-kernel folding in conv_valid_into
-
-Symmetric kernels now fold the convolution: out[i] = kr[c]*w[c] + sum_{j<c} kr[j]*(w[j]+w[2c-j]),
-halving the multiplies (vectorized 4 outputs/iter). This reorders the per-output summation, so it is
-gated on the 1e-4 validation — NOT bit-identical. Margin probe (tolerance tightened to 1e-9): worst-case
-deviation across all 600 FieldDynamics sims stays at ~5.0e-5, the reference-CSV truncation floor — i.e.
-folding introduces no error beyond what's already in the stored references; same ~2x margin to 1e-4 as
-the unfolded path. (This passed where the prior session's scalar fold failed; the vectorized pair-first
-form is numerically tamer.) Non-symmetric kernels (Oscillatory) keep the bit-identical path. 801 tests pass.
-
-### Per-element aggregate step() µs (50x50)
-
-| element | before fold | after fold | gain | note |
-|---------|------------:|-----------:|-----:|------|
-| GaussKernel2D | 35.2 | 27.0 | 1.30x | symmetric |
-| AsymmetricGaussKernel2D | 34.9 | 27.2 | 1.28x | symmetric axis |
-| MexicanHatKernel2D | 84.3 | 78.0 | 1.08x | two kernels |
-| CorrelatedNormalNoise2D | 29.8 | 27.0 | 1.10x | |
-| OscillatoryKernel2D | 56.9 | 57.6 | ~flat | not symmetric (bit-identical path) |
-
-Cumulative this session: conv AVX2 (across outputs) + map-lookup hoist + sigmoid AVX2 exp + symmetric
-folding took 2D throughput from ~6x slower than the pre-optimization baseline to 12-30% faster.
-`conv_valid_into` is still the top cost; the remaining lever is across-field threading.
-## 2026-06-25 14:58:12  (dnfc 2.9.3, 200000 iters)
-
-### Per element-type step()
-
-| element | mean us | median us | min us | max us |
-|---------|--------:|----------:|-------:|-------:|
-| NeuralField | 0.77 | 0.80 | 0.70 | 41.10 |
-| GaussKernel | 0.66 | 0.60 | 0.60 | 51.30 |
-| MexicanHatKernel | 0.91 | 0.80 | 0.80 | 165.70 |
-| OscillatoryKernel | 3.04 | 2.60 | 2.50 | 597.30 |
-| AsymmetricGaussKernel | 0.77 | 0.60 | 0.60 | 487.80 |
-| NormalNoise | 0.78 | 0.60 | 0.50 | 430.90 |
-| CorrelatedNormalNoise | 3.77 | 3.10 | 2.80 | 496.60 |
-| MemoryTrace | 0.24 | 0.20 | 0.10 | 416.50 |
-| GaussStimulus | 0.03 | 0.00 | 0.00 | 318.10 |
-| TimedGaussStimulus | 0.06 | 0.10 | 0.00 | 369.00 |
-| BoostStimulus | 0.10 | 0.10 | 0.00 | 359.70 |
-| NeuralField2D | 17.35 | 14.40 | 14.00 | 839.20 |
-| GaussKernel2D | 32.18 | 26.50 | 25.70 | 1031.20 |
-| MexicanHatKernel2D | 92.16 | 76.80 | 73.70 | 4709.90 |
-| OscillatoryKernel2D | 59.79 | 56.70 | 54.40 | 1062.30 |
-| AsymmetricGaussKernel2D | 27.93 | 26.40 | 25.20 | 718.20 |
-| NormalNoise2D | 15.85 | 14.70 | 13.80 | 20391.20 |
-| CorrelatedNormalNoise2D | 27.95 | 26.50 | 25.00 | 717.80 |
-| MemoryTrace2D | 3.21 | 3.00 | 2.90 | 472.60 |
-| GaussStimulus2D | 0.02 | 0.00 | 0.00 | 0.50 |
-| TimedGaussStimulus2D | 0.20 | 0.20 | 0.10 | 371.50 |
-| BoostStimulus2D | 0.26 | 0.20 | 0.20 | 593.50 |
-| Collapse (2D->1D) | 5.39 | 5.00 | 4.80 | 988.10 |
-| Expand (1D->2D) | 2.18 | 2.10 | 2.00 | 435.30 |
-| Resize (1D) | 0.30 | 0.30 | 0.20 | 416.90 |
-
-### Representative 1D detection sim  (total 1.76 us/step)
-
-| element | type | mean us/step | % of step |
-|---------|------|-------------:|----------:|
-| gauss stimulus | GaussStimulus | 0.03 | 1.43% |
-| neural field u | NeuralField | 1.00 | 57.02% |
-| gauss kernel | GaussKernel | 0.68 | 38.70% |
-| normal noise | NormalNoise | 0.05 | 2.85% |
-
-### Representative 2D detection sim  (total 50.44 us/step)
-
-| element | type | mean us/step | % of step |
-|---------|------|-------------:|----------:|
-| gauss stimulus 2d | GaussStimulus2D | 0.03 | 0.05% |
-| neural field u | NeuralField2D | 22.20 | 44.01% |
-| gauss kernel 2d | GaussKernel2D | 27.98 | 55.47% |
-| normal noise 2d | NormalNoise2D | 0.24 | 0.47% |
 
 ## 2026-06-25 15:08:11  (dnfc 2.9.3, 20000 iters)
 
@@ -1001,29 +808,6 @@ folding took 2D throughput from ~6x slower than the pre-optimization baseline to
 | gauss kernel 2d | GaussKernel2D | 25.92 | 55.88% |
 | normal noise 2d | NormalNoise2D | 0.23 | 0.50% |
 
-## 2026-06-25 — AFTER updateInput zero-fill elision
-
-Element::updateInput (runs for every element every step) previously did fill(0) then accumulated each
-input source. Now it copies the first source and adds the rest — eliding a full zero-fill pass per
-element per step. Bit-identical (803 tests pass, FieldDynamics 1D/2D at 1e-4).
-
-Sampled: `Element::updateInput` dropped out of the top self-time list (was 4.4s / 6.3% of the sweep);
-total sweep self-time 69s -> 63.7s. Per-element aggregate (50x50): ~2us off EVERY element —
-NeuralField2D 14.4->12.7, GaussKernel2D 27.0->25.0, MexicanHat2D 78.0->75.3, Asymmetric 27.2->25.3.
-Representative 2D detection sim 51->46 us/step.
-
-### Remaining self-time (after this change)
-| % CPU | function | note |
-|------:|----------|------|
-| 51.8% | conv_valid_into | irreducible FMA (MexicanHat 2x-conv, Oscillatory wide/unfolded due to {24,25} clamp at 50x50) |
-| 17.6% | conv2d_separable_into | driver gather/scatter/transpose |
-| 8.7%  | zigguratNormal | scalar noise Gaussian (rejection branch; SIMD is a measure-and-maybe) |
-| 5.1%  | SigmoidFunction::apply | already AVX2 |
-| 2.2%  | NeuralField2D::updateBumps | flood-fill |
-
-Convolution is now FMA-bound; the structural wins (across-output SIMD + folding) are taken. Further
-single-thread conv gains need either math changes (rejected) or threading (deferred). Non-conv targets
-remaining: zigguratNormal (vectorize, measure-and-maybe), updateBumps (small).
 ## 2026-06-25 15:15:15  (dnfc 2.9.3, 20000 iters)
 
 ### Per element-type step()
@@ -1074,25 +858,7 @@ remaining: zigguratNormal (vectorize, measure-and-maybe), updateBumps (small).
 | gauss kernel 2d | GaussKernel2D | 23.43 | 51.15% |
 | normal noise 2d | NormalNoise2D | 0.22 | 0.48% |
 
-## 2026-06-25 — AFTER amplitudeGlobal==0 accumulate guard (kernels)
 
-The 4 2D kernels computed fullSum = accumulate(input) (O(N), ~0.3-0.7s/kernel in the sample, the
-dominant line of each kernel's own step body) then added amplitudeGlobal*fullSum to every cell — even
-when amplitudeGlobal==0. Guarded both behind mplitudeGlobal != 0.0: skip the accumulate and the
-per-cell offset add when the global term is disabled. Bit-identical (803 tests, FieldDynamics 1e-4).
-
-Effect (profiler default params — Oscillatory/Asymmetric default amplitudeGlobal=0; Gauss=-0.01,
-MexicanHat=-0.1 keep it):
-| element | before | after |
-|---------|-------:|------:|
-| AsymmetricGaussKernel2D | 25.3 | 23.4 |
-| OscillatoryKernel2D | 56.5 | 55.3 |
-| GaussKernel2D | 25.0 | 24.8 (default offset nonzero -> unchanged) |
-| MexicanHatKernel2D | 75.3 | 75.9 (default offset nonzero -> unchanged) |
-
-Users who set amplitudeGlobal=0 on Gauss/MexicanHat now get the same saving. Combined with the
-updateInput zero-fill elision, the canonical detection field is ~2x lighter than session start on the
-non-conv work.
 ## 2026-06-25 15:18:54  (dnfc 2.9.3, 20000 iters)
 
 ### Per element-type step()
@@ -1143,23 +909,6 @@ non-conv work.
 | gauss kernel 2d | GaussKernel2D | 23.42 | 52.38% |
 | normal noise 2d | NormalNoise2D | 0.22 | 0.48% |
 
-## 2026-06-25 — AFTER ziggurat table-accessor hoist (noise RNG)
-
-Line-level sampling of zigguratNormal showed its single biggest line (2.09s of 5.56s) was
-`const ZigguratTables& z = zigTables();` — the function-local static's thread-safe-init guard,
-re-checked on EVERY sample (2500/step). Hoisted the table fetch out of the per-sample call:
-zigguratNormal now takes `const ZigguratTables&`, fetched once per fillNormal batch. Bit-identical
-(same tables, same xoshiro stream, same algorithm; noise distribution tests + 803 suite pass).
-
-| element | before | after |
-|---------|-------:|------:|
-| NormalNoise2D | 14.8 | 12.7 (-14%) |
-| CorrelatedNormalNoise2D | 27.0 | 24.6 |
-| NormalNoise (1D) | 0.63 | 0.55 |
-
-(Considered vectorizing the Gaussian via Box-Muller, but the measured hotspot was the magic-static
-guard, not the arithmetic — this hoist is the real easy win, no math/stream change. Kernel
-component-pointer caching was evaluated and skipped: no per-cell map lookups remain, ~0.1us churn only.)
 ## 2026-07-08 21:50:06  (dnfc 2.9.3, 5000 iters)
 
 ### Per element-type step()
@@ -1927,3 +1676,134 @@ component-pointer caching was evaluated and skipped: no per-cell map lookups rem
 | full-field add | 4.07 |
 | full-field copy | 4.48 |
 | euler pass | 4.94 |
+
+
+## 2026-07-29 08:54:04  (dnfc 2.9.3, 20000 iters)
+
+**Env:** AMD Ryzen 5 3600 6-Core Processor (12T) | Windows | MSVC 19.44 | Release | AVX2: yes | FFTW 3.3.10 | git 071704af
+
+### Per element-type step()
+
+| element | mean us | median us | min us | max us |
+|---------|--------:|----------:|-------:|-------:|
+| NeuralField | 0.48 | 0.50 | 0.40 | 171.90 |
+| GaussKernel | 0.55 | 0.50 | 0.50 | 389.70 |
+| MexicanHatKernel | 0.67 | 0.60 | 0.50 | 397.20 |
+| OscillatoryKernel | 1.22 | 1.20 | 1.10 | 11.80 |
+| AsymmetricGaussKernel | 0.44 | 0.40 | 0.40 | 38.20 |
+| NormalNoise | 0.57 | 0.60 | 0.50 | 8.90 |
+| CorrelatedNormalNoise | 2.72 | 2.70 | 2.60 | 17.60 |
+| MemoryTrace | 0.13 | 0.10 | 0.10 | 0.70 |
+| GaussStimulus | 0.02 | 0.00 | 0.00 | 0.50 |
+| TimedGaussStimulus | 0.04 | 0.00 | 0.00 | 0.10 |
+| BoostStimulus | 0.09 | 0.10 | 0.00 | 0.20 |
+| NeuralField2D | 6.83 | 6.80 | 6.60 | 59.90 |
+| GaussKernel2D | 19.78 | 18.80 | 18.20 | 63.80 |
+| MexicanHatKernel2D | 47.81 | 45.60 | 44.70 | 577.20 |
+| OscillatoryKernel2D | 31.62 | 31.00 | 30.20 | 76.80 |
+| AsymmetricGaussKernel2D | 18.42 | 17.60 | 17.20 | 54.60 |
+| NormalNoise2D | 12.97 | 12.70 | 12.10 | 43.30 |
+| CorrelatedNormalNoise2D | 23.27 | 22.90 | 21.90 | 102.00 |
+| MemoryTrace2D | 2.77 | 3.00 | 2.00 | 88.70 |
+| GaussStimulus2D | 0.03 | 0.00 | 0.00 | 0.10 |
+| TimedGaussStimulus2D | 0.29 | 0.30 | 0.20 | 0.50 |
+| BoostStimulus2D | 0.32 | 0.30 | 0.20 | 13.20 |
+| Collapse (2D->1D) | 3.33 | 3.10 | 3.10 | 39.30 |
+| Expand (1D->2D) | 2.76 | 3.00 | 2.00 | 23.10 |
+| Resize (1D) | 0.24 | 0.20 | 0.10 | 0.40 |
+
+### Representative 1D detection sim  (total 1.40 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus | GaussStimulus | 0.02 | 1.73% |
+| neural field u | NeuralField | 0.77 | 55.24% |
+| gauss kernel | GaussKernel | 0.55 | 39.21% |
+| normal noise | NormalNoise | 0.05 | 3.82% |
+
+### Representative 2D detection sim  (total 35.37 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| gauss stimulus 2d | GaussStimulus2D | 0.03 | 0.08% |
+| neural field u | NeuralField2D | 16.07 | 45.42% |
+| gauss kernel 2d | GaussKernel2D | 19.02 | 53.78% |
+| normal noise 2d | NormalNoise2D | 0.25 | 0.71% |
+
+### Benchmark-condition detection sim @100  (total 176.68 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 51.88 | 29.36% |
+| stimulus | GaussStimulus2D | 0.13 | 0.07% |
+| noise | NormalNoise2D | 57.90 | 32.77% |
+| kernel | GaussKernel2D | 66.78 | 37.80% |
+
+### Benchmark-condition memory sim @100  (total 252.72 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 67.24 | 26.61% |
+| stimulus | GaussStimulus2D | 0.11 | 0.04% |
+| noise | NormalNoise2D | 55.13 | 21.82% |
+| kernel | Element | 130.24 | 51.53% |
+
+### Ablation field+stim only @100  (total 26.63 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 26.60 | 99.88% |
+| stimulus | GaussStimulus2D | 0.03 | 0.12% |
+
+### Method-level primitives @100
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 64.37 |
+| conv sigma=3.4 (35 taps) | 65.42 |
+| conv sigma=8.9 (91 taps) | 132.71 |
+| noise fill+scale | 54.45 |
+| sigmoid apply (mixed) | 16.26 |
+| sigmoid apply (resting -8) | 15.35 |
+| full-field add | 6.60 |
+| full-field copy | 7.09 |
+| euler pass | 6.67 |
+
+### Benchmark-condition detection sim @200  (total 795.89 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 246.80 | 31.01% |
+| stimulus | GaussStimulus2D | 0.05 | 0.01% |
+| noise | NormalNoise2D | 217.49 | 27.33% |
+| kernel | GaussKernel2D | 331.56 | 41.66% |
+
+### Benchmark-condition memory sim @200  (total 1109.62 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 295.09 | 26.59% |
+| stimulus | GaussStimulus2D | 0.06 | 0.01% |
+| noise | NormalNoise2D | 213.00 | 19.20% |
+| kernel | Element | 601.47 | 54.21% |
+
+### Ablation field+stim only @200  (total 109.61 us/step)
+
+| element | type | mean us/step | % of step |
+|---------|------|-------------:|----------:|
+| field | NeuralField2D | 109.56 | 99.95% |
+| stimulus | GaussStimulus2D | 0.05 | 0.05% |
+
+### Method-level primitives @200
+
+| primitive | mean us |
+|---|--:|
+| conv sigma=3.0 (31 taps) | 216.95 |
+| conv sigma=3.4 (35 taps) | 228.27 |
+| conv sigma=8.9 (91 taps) | 476.46 |
+| noise fill+scale | 217.94 |
+| sigmoid apply (mixed) | 60.24 |
+| sigmoid apply (resting -8) | 60.48 |
+| full-field add | 5.92 |
+| full-field copy | 6.09 |
+| euler pass | 5.94 |

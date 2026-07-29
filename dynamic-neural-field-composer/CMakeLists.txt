@@ -11,6 +11,25 @@ set(DNF_COMPOSER_VERSION_MINOR 9 CACHE STRING "minor version" FORCE)
 set(DNF_COMPOSER_VERSION_PATCH 4 CACHE STRING "patch version" FORCE)
 set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR}.${DNF_COMPOSER_VERSION_PATCH} CACHE STRING "version" FORCE)
 
+# Git commit at configure time, used to stamp perf-tool result logs (tests/benchmark,
+# tests/profiler) with the code version actually measured. Best-effort: falls back to
+# "nogit" outside a git checkout (e.g. a source tarball).
+find_package(Git QUIET)
+set(DNF_COMPOSER_GIT_SHA "nogit")
+if(Git_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE DNF_COMPOSER_GIT_SHA_OUT
+        RESULT_VARIABLE DNF_COMPOSER_GIT_SHA_RESULT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if(DNF_COMPOSER_GIT_SHA_RESULT EQUAL 0 AND NOT DNF_COMPOSER_GIT_SHA_OUT STREQUAL "")
+        set(DNF_COMPOSER_GIT_SHA ${DNF_COMPOSER_GIT_SHA_OUT})
+    endif()
+endif()
+
 set(DNF_COMPOSER_LIB_PREFIX "release")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(DNF_COMPOSER_LIB_PREFIX "debug")

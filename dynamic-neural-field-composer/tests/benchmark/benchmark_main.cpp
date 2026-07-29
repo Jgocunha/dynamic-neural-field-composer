@@ -26,6 +26,8 @@
 #include "simulation/simulation.h"
 #include "tools/logger.h"
 
+#include "bench_env.h"
+
 #include "elements/neural_field.h"
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_kernel.h"
@@ -147,7 +149,10 @@ double run_cell(const std::shared_ptr<Simulation>& sim, int timedSteps, int nRun
 		sps.push_back(timedSteps / elapsed);
 	}
 	std::sort(sps.begin(), sps.end());
-	return sps[sps.size() / 2];
+	const size_t mid = sps.size() / 2;
+	if (sps.size() % 2 == 0)
+		return (sps[mid - 1] + sps[mid]) / 2.0;
+	return sps[mid];
 }
 
 std::string timestamp()
@@ -190,6 +195,14 @@ int main(int argc, char* argv[])
 		std::printf("  2D  N=%-4d  %.1f steps/s\n", N, s);
 	}
 
+	// Calibration: single 1D field, same wiring as the table cells. Lets sessions
+	// from different machines be compared as a ratio when their absolute numbers
+	// (which depend on CPU/AVX2/build type) are not directly comparable.
+	const double calibration = run_cell(build_1d(1), timedSteps, nRuns);
+	std::printf("  calibration (1 field, 1D)  %.1f steps/s\n", calibration);
+
+	const auto env = bench_env::capture();
+
 	// Append a dated session block to results.md (create with a title if missing).
 	const std::string path = BENCHMARK_RESULTS_PATH;
 	const bool existed = std::ifstream(path).good();
@@ -202,18 +215,32 @@ int main(int argc, char* argv[])
 	if (!existed)
 		f << "# dnf-composer throughput benchmark\n\n"
 		     "Median steps/second for N independent fields (1D size " << FIELD_SIZE_1D
-		  << ", 2D " << GRID_2D << "x" << GRID_2D << "). One section appended per run.\n";
+		  << ", 2D " << GRID_2D << "x" << GRID_2D << "). One section appended per run.\n\n"
+		     "Steps/sec is machine-dependent (CPU, AVX2 dispatch, build type all affect it) --\n"
+		     "only compare sessions with matching **Env:** lines directly. The calibration\n"
+		     "figure and ratio table let you roughly compare sessions across machines.\n\n"
+		     "Sessions before 2026-07-29 predate the **Env:** line and calibration; they all\n"
+		     "ran on the reference dev machine (AMD Ryzen 5 3600, MSVC 19.44, /O2 /arch:AVX2,\n"
+		     "Windows 11).\n";
 
 	f << "\n## " << timestamp()
 	  << "   (dnfc " << DNF_COMPOSER_VERSION_MAJOR << "." << DNF_COMPOSER_VERSION_MINOR
 	  << "." << DNF_COMPOSER_VERSION_PATCH
 	  << ", " << timedSteps << " steps x " << nRuns << " runs)\n\n";
+	f << bench_env::to_markdown(env) << "\n\n";
 	f << "| dim | N=10 | N=50 | N=100 |\n";
 	f << "|-----|-----:|-----:|------:|\n";
 	f.setf(std::ios::fixed); f.precision(1);
 	f << "| 1D  | " << sps1d[0] << " | " << sps1d[1] << " | " << sps1d[2] << " |\n";
 	f << "| 2D  | " << sps2d[0] << " | " << sps2d[1] << " | " << sps2d[2] << " |\n";
-	f << "\n_(values = median steps/sec)_\n";
+
+	f << "\n**Calibration** (1 field, 1D size " << FIELD_SIZE_1D << "): " << calibration << " steps/s\n\n";
+	f << "| dim | N=10 | N=50 | N=100 |\n";
+	f << "|-----|-----:|-----:|------:|\n";
+	f.precision(4);
+	f << "| 1D  | " << sps1d[0] / calibration << " | " << sps1d[1] / calibration << " | " << sps1d[2] / calibration << " |\n";
+	f << "| 2D  | " << sps2d[0] / calibration << " | " << sps2d[1] / calibration << " | " << sps2d[2] / calibration << " |\n";
+	f << "\n_(values = median steps/sec; second table = ratio to calibration)_\n";
 
 	std::printf("Appended session to %s\n", path.c_str());
 	return 0;

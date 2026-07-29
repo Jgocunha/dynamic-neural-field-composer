@@ -27,6 +27,8 @@
 #include "simulation/simulation.h"
 #include "tools/logger.h"
 
+#include "bench_env.h"
+
 #include "elements/neural_field.h"
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_kernel.h"
@@ -501,12 +503,17 @@ int main(int argc, char* argv[])
 	if (!existed)
 		f << "# dnf-composer per-step profiler\n\n"
 		     "Per-element step() timing (1D size " << SIZE_1D << ", 2D " << GRID_2D << "x" << GRID_2D
-		  << "). One section appended per run.\n";
+		  << "). One section appended per run.\n\n"
+		     "Timings are machine-dependent (CPU, AVX2 dispatch, build type all affect them) --\n"
+		     "only compare sessions with matching **Env:** lines directly.\n\n"
+		     "Sessions before 2026-07-29 predate the **Env:** line; they all ran on the reference\n"
+		     "dev machine (AMD Ryzen 5 3600, MSVC 19.44, /O2 /arch:AVX2, Windows 11).\n";
 
 	f.setf(std::ios::fixed); f.precision(2);
 	f << "\n## " << timestamp()
 	  << "  (dnfc " << DNF_COMPOSER_VERSION_MAJOR << "." << DNF_COMPOSER_VERSION_MINOR
 	  << "." << DNF_COMPOSER_VERSION_PATCH << ", " << iters << " iters)\n\n";
+	f << bench_env::to_markdown(bench_env::capture()) << "\n\n";
 
 	f << "### Per element-type step()\n\n";
 	f << "| element | mean us | median us | min us | max us |\n";

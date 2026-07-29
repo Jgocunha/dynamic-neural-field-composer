@@ -92,10 +92,15 @@ if(DNF_COMPOSER_BUILD_TESTS)
     # Standalone throughput benchmark (manual perf run; not a unit test, so it is
     # NOT registered with gtest_discover_tests). Appends a dated session block to
     # tests/benchmark/results.md.
-    add_executable(dnf_composer_benchmark "benchmark/benchmark_main.cpp")
-    target_include_directories(dnf_composer_benchmark PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    add_executable(dnf_composer_benchmark "benchmark/benchmark_main.cpp" "common/bench_env.h")
+    target_include_directories(dnf_composer_benchmark PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common)
     target_compile_definitions(dnf_composer_benchmark PRIVATE
-            BENCHMARK_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results.md")
+            BENCHMARK_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results.md"
+            BENCH_ENV_BUILD_TYPE="$<CONFIG>"
+            BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}")
     target_link_libraries(dnf_composer_benchmark PRIVATE
             ${CMAKE_PROJECT_NAME}
             imgui::imgui
@@ -104,8 +109,10 @@ if(DNF_COMPOSER_BUILD_TESTS)
 
     # Per-step method profiler (manual perf run; not a unit test). Appends a dated
     # session block to tests/profiler/profile.md.
-    add_executable(dnf_composer_profiler "profiler/profiler_main.cpp")
-    target_include_directories(dnf_composer_profiler PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    add_executable(dnf_composer_profiler "profiler/profiler_main.cpp" "common/bench_env.h")
+    target_include_directories(dnf_composer_profiler PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common)
     # Match the library's SIMD flags: the math.h templates instantiated in this
     # TU are COMDATs — without /arch:AVX2 the linker may keep this TU's scalar
     # copies for the whole exe, silently overriding the library's AVX2
@@ -114,7 +121,10 @@ if(DNF_COMPOSER_BUILD_TESTS)
             $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
             $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>)
     target_compile_definitions(dnf_composer_profiler PRIVATE
-            PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md")
+            PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md"
+            BENCH_ENV_BUILD_TYPE="$<CONFIG>"
+            BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}")
     target_link_libraries(dnf_composer_profiler PRIVATE
             ${CMAKE_PROJECT_NAME}
             imgui::imgui
