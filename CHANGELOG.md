@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.9.5] - 2026-07-30
+
 ### Added
 - Extended the hybrid direct/FFT convolution path (previously `MexicanHatKernel2D`
   only) to `GaussKernel2D`, `AsymmetricGaussKernel2D`, `OscillatoryKernel2D`, and
@@ -47,6 +49,10 @@ All notable changes to this project will be documented in this file.
   left `kernel_1d_x/y`, `extIndex_x/y`, and the scratch buffers default-constructed empty,
   which is unsound whenever a clone is stepped without an intervening `init()` (e.g.
   `Simulation`'s copy constructor deep-copies elements via `clone()` without calling `init()`)
+- `Element::removeOutputs()` erased the receiver's `inputs` map entry but left the receiver's
+  `inputPtr`/`cachedInputs_` pointing at the removed element's `components["output"]` buffer;
+  once that element was destroyed, the receiver's next `step()` read freed memory. `inputPtr` is
+  now reset on the receiver so the cache rebuilds on the next `updateInput()`
 
 ## [2.9.4] - 2026-07-10
 
