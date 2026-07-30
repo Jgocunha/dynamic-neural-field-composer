@@ -130,6 +130,8 @@ set(tools_headers
         "include/tools/profiling.h"
         "include/tools/utils.h"
         "include/tools/file_dialog.h"
+        "include/tools/simd_dispatch.h"
+        "include/tools/fft_convolution.h"
 )
 set(exceptions_headers
         "include/exceptions/exception.h"

@@ -253,6 +253,41 @@ TEST(ElementOutputs, GetOutputsReturnsConnectedElements)
     EXPECT_EQ(outputs[0]->getUniqueName(), "field");
 }
 
+// Regression test: removeOutputs() erases the receiver's `inputs` map entry
+// but must also invalidate the receiver's input cache (inputPtr/cachedInputs).
+// Without that, the receiver keeps a raw pointer into the removed element's
+// components["output"] vector; once that element is destroyed, the next
+// step() reads freed memory. Reproduced by overwriting the freed stimulus's
+// former heap block with a new allocation carrying a recognizable value, then
+// asserting the field's cached input does NOT pick it up.
+TEST(ElementOutputs, RemoveOutputsInvalidatesReceiverInputCache)
+{
+    auto field = makeField("field");
+    field->init();
+    {
+        const auto stim = makeStimulus("stim");
+        stim->init();
+        field->addInput(stim, "output");
+        stim->step(0.0, 1.0);
+        field->step(0.0, 1.0); // builds field's input cache from stim's output
+
+        stim->removeOutputs();
+        // stim goes out of scope here and is destroyed (last shared_ptr).
+    }
+
+    // Allocate a same-sized vector of a recognizable sentinel value; a good
+    // chance it reuses the just-freed stimulus's heap block.
+    std::vector<double> sentinel(100, 12345.0);
+
+    field->step(0.0, 1.0); // must NOT read through the dangling cached pointer
+
+    const auto input = field->getComponent("input");
+    for (const double v : input)
+    {
+        EXPECT_NE(v, 12345.0);
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Component access
 // ---------------------------------------------------------------------------

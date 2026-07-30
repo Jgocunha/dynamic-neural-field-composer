@@ -260,6 +260,7 @@ namespace dnf_composer::element
 		{
 			const auto& outputElement = key;
 			outputElement->inputs.erase(this->shared_from_this());
+			outputElement->inputPtr = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
 		}
 		outputs.clear();
 	}
