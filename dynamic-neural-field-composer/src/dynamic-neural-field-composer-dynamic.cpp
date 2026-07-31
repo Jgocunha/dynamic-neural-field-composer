@@ -23,6 +23,7 @@ int main()
 		app.addWindow<user_interface::SimulationWindow>();
 		app.addWindow<user_interface::ElementWindow>();
 		app.addWindow<user_interface::FieldMetricsWindow>();
+		app.addWindow<user_interface::PlotControlWindow>();
 		app.addWindow<user_interface::PlotsWindow>();
 		app.addWindow<user_interface::NodeGraphWindow>();
 		app.addWindow<user_interface::LogWindow>();
