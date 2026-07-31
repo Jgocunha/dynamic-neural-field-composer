@@ -424,3 +424,74 @@ TEST(SimulationRecorderTicks, TicksMatchStepCount)
     EXPECT_EQ(lastTick, targetSteps);
     cleanSimDir(simId);
 }
+
+// ---------------------------------------------------------------------------
+// I/O failure surfacing (issue #43): startRecording() must report failure and
+// must not leave the recorder in the "recording" state when the directory
+// cannot be created or the file cannot be opened.
+// ---------------------------------------------------------------------------
+
+TEST(SimulationRecorderFailure, StartRecordingSucceedsAndReturnsTrueForValidPath)
+{
+    const std::string simId = "rec-return-true-happy-path";
+    cleanSimDir(simId);
+    auto sim = makeRunningSimulation(simId);
+
+    const bool started =
+        sim->getRecorder().startRecording(simId, "stim", "output", 1, RecordingIntervalUnit::Ticks);
+
+    EXPECT_TRUE(started);
+    EXPECT_TRUE(sim->getRecorder().isRecording("stim", "output"));
+    EXPECT_TRUE(sim->getRecorder().hasActiveRecordings());
+
+    sim->getRecorder().stopAll();
+    cleanSimDir(simId);
+}
+
+TEST(SimulationRecorderFailure, StartRecordingFailsWhenRecordingDirectoryIsBlockedByAFile)
+{
+    const std::string simId = "rec-dir-blocked-by-file";
+    cleanSimDir(simId);
+    auto sim = makeRunningSimulation(simId);
+
+    // Pre-create a regular file at the exact path the "recordings" directory would
+    // need to occupy, so std::filesystem::create_directories() cannot succeed.
+    const fs::path simDir = fs::path(tools::utils::getResourceRoot()) / "data" / simId;
+    fs::create_directories(simDir);
+    const fs::path blockedRecordingsPath = simDir / "recordings";
+    {
+        std::ofstream blocker(blockedRecordingsPath);
+        blocker << "not a directory";
+    }
+
+    const bool started =
+        sim->getRecorder().startRecording(simId, "stim", "output", 1, RecordingIntervalUnit::Ticks);
+
+    EXPECT_FALSE(started);
+    EXPECT_FALSE(sim->getRecorder().isRecording("stim", "output"));
+    EXPECT_FALSE(sim->getRecorder().hasActiveRecordings());
+
+    cleanSimDir(simId);
+}
+
+TEST(SimulationRecorderFailure, StartRecordingFailsWhenFileCannotBeOpened)
+{
+    const std::string simId = "rec-file-open-fails";
+    cleanSimDir(simId);
+
+    SimulationRecorder rec;
+
+    // Embedding a path separator in the element id makes the recorder target a
+    // filename inside a subdirectory ("recordings/missing/...") that was never
+    // created, so directory creation succeeds but std::ofstream::open() fails.
+    // This exercises the file-open failure path distinctly from the
+    // directory-creation failure path above.
+    const bool started =
+        rec.startRecording(simId, "missing/elem", "output", 1, RecordingIntervalUnit::Ticks);
+
+    EXPECT_FALSE(started);
+    EXPECT_FALSE(rec.isRecording("missing/elem", "output"));
+    EXPECT_FALSE(rec.hasActiveRecordings());
+
+    cleanSimDir(simId);
+}
