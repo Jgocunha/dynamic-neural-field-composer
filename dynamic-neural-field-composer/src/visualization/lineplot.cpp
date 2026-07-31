@@ -181,27 +181,6 @@ namespace dnf_composer
             );
         }
 
-		// --- Custom bold title (above the plot) ---
-		// ImGui::PushFont(g_BoldLargeFont);
-		// ImGui::TextUnformatted(commonParameters.annotations.title.c_str());
-		// ImGui::PopFont();
-		// ImGui::Spacing();
-
-		// // or centered:
-		// ImGui::PushFont(g_BoldLargeFont);
-		// const float textWidth = ImGui::CalcTextSize(commonParameters.annotations.title.c_str()).x;
-		// const float availWidth = ImGui::GetContentRegionAvail().x;
-		// ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (availWidth - textWidth) * 0.5f);
-		// ImGui::TextUnformatted(commonParameters.annotations.title.c_str());
-		// ImGui::PopFont();
-		// ImGui::Spacing();
-
-		// const std::string plotInternalID = "##" + uniquePlotID;
-  //
-  //       if (!ImPlot::BeginPlot(plotInternalID.c_str(), plotSize, flags)) {
-  //           return;
-  //       }
-
 		if (!ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, flags)) {
 			return;
 		}
@@ -218,10 +197,10 @@ namespace dnf_composer
             if (whereDimensionsChangedByUser) {
                 auto* currentPlot = ImPlot::GetCurrentPlot();
                 if (currentPlot != nullptr) {
-                    currentPlot->Axes[0].Range.Min = commonParameters.dimensions.xMin - safeMargin;
-                    currentPlot->Axes[0].Range.Max = commonParameters.dimensions.xMax + safeMargin;
-                    currentPlot->Axes[3].Range.Min = commonParameters.dimensions.yMin - safeMargin;
-                    currentPlot->Axes[3].Range.Max = commonParameters.dimensions.yMax + safeMargin;
+                    currentPlot->Axes[ImAxis_X1].Range.Min = commonParameters.dimensions.xMin - safeMargin;
+                    currentPlot->Axes[ImAxis_X1].Range.Max = commonParameters.dimensions.xMax + safeMargin;
+                    currentPlot->Axes[ImAxis_Y1].Range.Min = commonParameters.dimensions.yMin - safeMargin;
+                    currentPlot->Axes[ImAxis_Y1].Range.Max = commonParameters.dimensions.yMax + safeMargin;
                 }
             }
         }
