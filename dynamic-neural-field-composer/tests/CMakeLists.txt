@@ -61,6 +61,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
     )
     target_include_directories(dnf_composer_tests PRIVATE
             ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common
             ${CMAKE_CURRENT_SOURCE_DIR}/validation)
 
     # Path to the vendored field-dynamics reference data (sim JSONs + expected CSVs).

@@ -14,11 +14,19 @@ All notable changes to this project will be documented in this file.
   unconditionally, matching upstream's own examples. Found by the new headless UI
   suite (#127)
 
+- Two logger tests passed or failed purely on the order the suites happened to run in.
+  `Logger::minLogLevel` is process-wide state, and `tests/simulation/test_thread_safety.cpp`
+  and `tests/validation/validation_common.h` raised it to `FATAL` without ever restoring
+  it, silently suppressing the console output that later suites assert on. Both sites now
+  use an RAII guard that restores the previous level on scope exit
+
 ### Added
 - Headless ImGui test harness (`tests/user_interface/ui_test_harness.h`) that drives
   real `render()` calls with no window and no OpenGL context, plus ~190 tests across
   the user-interface and visualization layers, so those files are genuinely exercised
   rather than sitting at 0% in the coverage denominator (#127)
+- `Logger::getMinLogLevel()`, so callers that temporarily raise the log threshold can
+  restore the previous value instead of assuming the default
 
 ## [2.9.6] - 2026-07-31
 

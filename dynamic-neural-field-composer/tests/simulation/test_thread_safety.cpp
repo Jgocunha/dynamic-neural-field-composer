@@ -33,6 +33,7 @@
 #include "elements/activation_function.h"
 #include "tools/logger.h"
 #include "tools/utils.h"
+#include "scoped_min_log_level.h"
 
 using namespace dnf_composer;
 using namespace dnf_composer::element;
@@ -157,7 +158,9 @@ TEST(ThreadSafety, UniqueIdsUnderConcurrentConstruction)
 TEST(ThreadSafety, ConcurrentLoggingDoesNotCrash)
 {
     using namespace dnf_composer::tools::logger;
-    Logger::setMinLogLevel(LogLevel::FATAL); // keep the test quiet (FATAL still emits)
+    // Keep the test quiet (FATAL still emits) WITHOUT leaking the raised threshold
+    // into later suites -- the guard restores the previous value on scope exit.
+    const dnf_composer::test::ScopedMinLogLevel quiet{ LogLevel::FATAL };
 
     constexpr int kWriters = 6;
     constexpr int kIters = 2000;
@@ -180,7 +183,6 @@ TEST(ThreadSafety, ConcurrentLoggingDoesNotCrash)
     go.store(true);
     for (auto& th : threads) th.join();
 
-    Logger::setMinLogLevel(LogLevel::FATAL);
     SUCCEED(); // reaching here without a crash/sanitizer trip is the assertion
 }
 
