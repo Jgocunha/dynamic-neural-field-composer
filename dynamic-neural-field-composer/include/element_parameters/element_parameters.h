@@ -164,8 +164,19 @@ namespace dnf_composer::element
 		double d_x, d_y;
 		int size_x, size_y, size;  // size = size_x * size_y
 
+		/// @brief Selects the field dimensionality (1D/2D) with default 100-sample extents.
+		/// @param dimensionality Must be 1 or 2. NOTE: this is easy to confuse with
+		/// ElementDimensions(int x_max, double d_x) below -- {N} sets the dimensionality,
+		/// while {N, d_x} builds a 1D field of length N.
+		/// @throws dnf_composer::Exception if dimensionality is not 1 or 2.
 		explicit ElementDimensions(int dimensionality = 1);
+		/// @brief Builds a 1D field of length x_max with step d_x.
+		/// @throws dnf_composer::Exception if x_max/d_x are non-positive, non-finite,
+		/// or would produce a sample count outside the safe range.
 		explicit ElementDimensions(int x_max, double d_x); // 1D
+		/// @brief Builds a 2D field of size x_max by y_max with steps d_x/d_y.
+		/// @throws dnf_composer::Exception if any extent/step is non-positive, non-finite,
+		/// or would produce a sample count outside the safe range.
 		explicit ElementDimensions(int x_max, int y_max, double d_x, double d_y); // 2D
 		bool operator==(const ElementDimensions& other) const;
 		void print() const;
