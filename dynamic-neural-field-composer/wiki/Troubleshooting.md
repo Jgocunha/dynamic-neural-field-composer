@@ -54,20 +54,6 @@ Xcode CLT provides Clang and Git but **not** CMake. Install it separately: `brew
 
 ---
 
-## Startup / GUI issues
-
-### The application window opens but nothing seems to run
-
-Check **Simulation Controls** — the simulation may be paused (`sim.pause()` was called, or the GUI defaulted to a paused state). Use the play/step controls there, or programmatically:
-
-```cpp
-sim.resume();
-```
-
-Also confirm `app.init()` was called before the `app.step()` loop — per [Simulation → Lifecycle](Simulation#lifecycle), `init()` must run before the first `step()`, and `Application::init()` handles calling `Simulation::init()` for you if you're driving through `Application`.
-
----
-
 ## Simulation / element runtime errors
 
 These are the actual exceptions and log messages the library produces for common misconfigurations, from `include/exceptions/exception.h` / `src/exceptions/exception.cpp` and the element `.cpp` files under `src/elements/`.
@@ -121,12 +107,3 @@ Both logged from `Element::addInput()` (and the overridden `Resize`/`Collapse`/`
 `tryReadWeights()` logs `"No weights file found for '<name>' at: <path>. Starting with zero weights."` at **INFO** level (not an error) when `<coupling_name>_weights.txt` doesn't exist next to the `.dnf` file — this is expected when loading a `.dnf` whose coupling weights have not previously been saved or whose sidecar file is missing, and not itself a bug. If you expected existing weights to load and see this message instead, check that the `_weights.txt` file is in the **same directory as the `.dnf` file** — weight paths are resolved relative to the `.dnf` file's parent directory, not the working directory the executable was launched from.
 
 If the file exists but its size doesn't match the coupling's current input/output dimensions, `readWeights()` logs `"Weight matrix read from file has a different size than expected! Expected: <N>, Got: <M>"` and leaves the weight matrix untouched (zeros) rather than partially loading it — this usually means the field sizes changed since the weights were saved.
-
----
-
-## Where to look next
-
-- [.dnf File Schema](DNF-File-Schema) — full schema reference, useful when diagnosing a load problem field-by-field
-- [Element Reference](Element-Reference) / [Elements](Elements) — parameter constraints and construction requirements for every element
-- [Parameter Tuning Guide](Parameter-Tuning-Guide) — if the simulation *loads and runs* but the dynamics look wrong (no bump forms, activity spreads everywhere, nothing decays), this is almost always a parameter balance issue rather than a bug
-- [Simulation](Simulation) — lifecycle (`init()`/`step()`) ordering requirements

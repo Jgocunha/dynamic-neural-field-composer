@@ -164,13 +164,3 @@ simulation->read("data/my tutorial/my tutorial.dnf");
 ```
 
 Or from the GUI: **File → Save As...** / **File → Open**. The `.dnf` file is plain, pretty-printed JSON — see the [.dnf File Schema](DNF-File-Schema) reference for exactly what gets written and how to hand-edit it. You can also open any of the pre-built architectures under `data/` (e.g. `data/multi-peak/...`, `data/memory-trace/...`) the same way, as a starting point for your own experiments.
-
----
-
-## Next steps
-
-- [Elements](Elements) and [Element Reference](Element-Reference) — every element type and its constructor parameters
-- [Simulation](Simulation) — the full `Simulation` API (lifecycle, querying, recording)
-- [Examples](Examples) — a guided tour of all built-in example architectures
-- [Parameter Tuning Guide](Parameter-Tuning-Guide) — practical advice for tuning field, kernel, and stimulus parameters
-- [Troubleshooting](Troubleshooting) — fixes for common build and runtime errors
