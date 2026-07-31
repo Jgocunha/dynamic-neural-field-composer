@@ -146,6 +146,9 @@ Functions</h2></td></tr>
 <tr class="separator:a0b683f258ee7a3d3a6f142b08013fa92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af661a7756f2c08f85bb29e497f5639fd" id="r_af661a7756f2c08f85bb29e497f5639fd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#af661a7756f2c08f85bb29e497f5639fd">paramTableSetup</a> ()</td></tr>
 <tr class="separator:af661a7756f2c08f85bb29e497f5639fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff98fe422e79c1fe15eaaea696e67e05" id="r_aff98fe422e79c1fe15eaaea696e67e05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66">PlotType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#aff98fe422e79c1fe15eaaea696e67e05">quickPopulatePlotTypeFor</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt; &amp;element)</td></tr>
+<tr class="memdesc:aff98fe422e79c1fe15eaaea696e67e05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick the plot type quick-populate should use for a given element.  <br /></td></tr>
+<tr class="separator:aff98fe422e79c1fe15eaaea696e67e05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -481,6 +484,32 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="aff98fe422e79c1fe15eaaea696e67e05" name="aff98fe422e79c1fe15eaaea696e67e05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff98fe422e79c1fe15eaaea696e67e05">&#9670;&#160;</a></span>quickPopulatePlotTypeFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66">PlotType</a> dnf_composer::user_interface::quickPopulatePlotTypeFor </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>element</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pick the plot type quick-populate should use for a given element. </p>
+<p>A 2D neural field cannot be represented by a line plot, so it is shown as a heatmap instead; every other (1D) field keeps the classic line plot. Pure decision logic, kept free of ImGui so it can be unit-tested headlessly. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1user__interface_aff98fe422e79c1fe15eaaea696e67e05_icgraph.svg" width="756" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
