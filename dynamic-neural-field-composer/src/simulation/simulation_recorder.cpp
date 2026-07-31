@@ -71,7 +71,7 @@ namespace dnf_composer
 		{
 			tools::logger::log(tools::logger::LogLevel::WARNING,
 				std::format("Recording already active for '{}' / '{}'.", elementId, componentName));
-			return;
+			return false;
 		}
 
 		const std::filesystem::path dir = std::filesystem::path(tools::utils::getResourceRoot())
