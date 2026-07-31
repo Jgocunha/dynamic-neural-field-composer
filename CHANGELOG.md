@@ -4,6 +4,58 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.9.6] - 2026-07-31
+
+### Fixed
+- `Element`'s input cache stored a `{pointer, size}` snapshot of each connected source
+  taken once when the cache was built; if a source was resized via `changeDimensions()`
+  afterward, the size snapshot went stale and `updateInput()` could read past (or
+  under-read) the source's actual current buffer. The cache now stores a
+  `const vector<double>*` and re-reads `.size()` on every call, so it can never be
+  stale; a source that grows past what the receiver's buffer can hold is now
+  proactively disconnected with a warning instead of silently corrupting memory (#40)
+- `SimulationRecorder::startRecording` called the throwing `create_directories`
+  overload (result never checked) then opened the file; on failure it logged and
+  returned `void`, so the caller believed recording was active while nothing was
+  written. `startRecording` now returns `bool` and returns `false` on every failure
+  path (directory could not be created, or the file could not be opened) before a
+  session is created, so `isRecording()`/`hasActiveRecordings()` reflect reality by
+  construction; the GUI recomputes its recording-state flags accordingly (#43)
+- `gaussNorm` divided by the Gaussian sum with no guard; a degenerate width (σ→0) or
+  otherwise near-zero/non-finite sum produced NaN/Inf that silently propagated through
+  every connected field. Now guards the denominator and returns a safe zero vector
+  with a logged warning instead (#42)
+- `ElementDimensions{N}` (single int) selects the field dimensionality (must be 1 or
+  2), while `ElementDimensions{N, d_x}` builds a 1D field of length `N` — a one-argument
+  difference with opposite meaning. An invalid single-int value previously logged an
+  `ERROR` but still returned a usable 100-cell object, silently mislabeling the
+  requested size (and, at larger `N` in a separate downstream benchmark, tripping a
+  stack-buffer overrun). The single-int constructor now throws on an invalid
+  dimensionality, and all three constructors validate extent/spacing/sample-count
+  (non-positive, non-finite, or overflowing `size_x * size_y`) before it can reach a
+  buffer allocation (#86)
+- A malformed or truncated `.dnf` file crashed deserialization with an unhandled
+  `nlohmann::json` exception instead of failing cleanly, and could leave the
+  simulation half-loaded. `SimulationFileManager::jsonToElements` now validates every
+  element's required fields (`uniqueName`, `label`, `x_max`, `d_x`) in a pass over the
+  whole file before constructing anything, so a malformed entry anywhere aborts the
+  load with a descriptive error and no partial mutation (#39)
+- `PlotControlWindow`'s "quick populate" action added new 2D neural fields as line
+  plots instead of heatmaps (#57)
+
+### Changed
+- Converted ~71 log-message-building call sites across 19 `src/` files from manual
+  `+`/`std::to_string`/`ostringstream` concatenation to `std::format`; message text is
+  preserved verbatim, only the construction mechanism changed (#61)
+- Removed dead commented-out code from the line-plot renderer and replaced hardcoded
+  raw ImPlot axis indices (`Axes[0]`, `Axes[3]`) with the named `ImAxis_X1`/`ImAxis_Y1`
+  constants (#52)
+
+### Added
+- Unit tests for the plot parameter classes (`PlotDimensions`, `PlotAnnotations`,
+  `PlotCommonParameters`, `PlotType`), which previously had no direct coverage (#66)
+- Tutorial, Parameter Tuning Guide, `.dnf` File Schema, and Troubleshooting wiki pages (#56)
+
 ## [2.9.5] - 2026-07-30
 
 ### Added
