@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `Element`'s constructor logged an error and did a bare `return` when
+  `dimensionParameters.size` was non-positive, leaving `commonParameters` at its default
+  value and `components` completely empty instead of failing to construct. Callers then
+  hit a confusing `ELEM_COMP_NOT_FOUND` from `getComponentPtr("output")`, or saw
+  `getSize() == 0` and had downstream loops silently no-op, rather than learning at
+  construction time that the object was never valid. The constructor now throws
+  `Exception(ErrorCode::ELEM_INVALID_SIZE, ...)` instead, matching the validation
+  `GaussStimulus` already performs for its own parameters (#118)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed
