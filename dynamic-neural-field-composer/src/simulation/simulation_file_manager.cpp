@@ -543,6 +543,45 @@ namespace dnf_composer
     // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON deserialization; mirrors elementToJson's structure
     void SimulationFileManager::jsonToElements(const json& jsonElements) const
     {
+        // Validate every element's required common fields up front, before any element
+        // is constructed or added to the live simulation. A malformed entry anywhere in
+        // the file aborts the whole load with a descriptive error instead of throwing
+        // mid-loop and leaving the simulation half-loaded.
+        for (size_t i = 0; i < jsonElements.size(); ++i)
+        {
+            const json& elementJson = jsonElements[i];
+            const std::string elementRef = (elementJson.contains("uniqueName") && elementJson["uniqueName"].is_string())
+                ? "'" + elementJson["uniqueName"].get<std::string>() + "'"
+                : "at index " + std::to_string(i);
+
+            if (!elementJson.contains("uniqueName") || !elementJson["uniqueName"].is_string())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( is missing a valid "uniqueName": )" + filePath);
+                return;
+            }
+            if (!elementJson.contains("label") || !elementJson["label"].is_array()
+                || elementJson["label"].size() != 2 || !elementJson["label"][1].is_string())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( has a missing or malformed "label" (expected a 2-element array): )" + filePath);
+                return;
+            }
+            if (!elementJson.contains("x_max") || !elementJson["x_max"].is_number()
+                || !elementJson.contains("d_x") || !elementJson["d_x"].is_number())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( is missing a valid "x_max" or "d_x": )" + filePath);
+                return;
+            }
+            if (elementJson["x_max"].get<double>() <= 0.0 || elementJson["d_x"].get<double>() <= 0.0)
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( has a non-positive "x_max" or "d_x" (both must be > 0): )" + filePath);
+                return;
+            }
+        }
+
         // Track names already loaded so duplicate uniqueNames in the file are rejected
         // (mirrors the guard in Simulation::addElement). Used by both passes below.
         std::unordered_set<std::string> seenNames;
