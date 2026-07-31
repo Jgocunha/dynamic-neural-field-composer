@@ -102,9 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acea7256b89a989279f0fe26bdcd6ce6d" id="r_acea7256b89a989279f0fe26bdcd6ce6d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#acea7256b89a989279f0fe26bdcd6ce6d">isRecording</a> (const std::string &amp;elementId, const std::string &amp;componentName) const</td></tr>
 <tr class="memdesc:acea7256b89a989279f0fe26bdcd6ce6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if a recording is currently active for the given pair.  <br /></td></tr>
 <tr class="separator:acea7256b89a989279f0fe26bdcd6ce6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2130d98d72a3e3abb30bb024a4eac8b" id="r_ad2130d98d72a3e3abb30bb024a4eac8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#ad2130d98d72a3e3abb30bb024a4eac8b">startRecording</a> (const std::string &amp;simName, const std::string &amp;elementId, const std::string &amp;componentName, int sampleInterval, <a class="el" href="group__simulation__recorder.html#gac09110e1313fae486600cd050e42b2a3">RecordingIntervalUnit</a> unit)</td></tr>
-<tr class="memdesc:ad2130d98d72a3e3abb30bb024a4eac8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a new continuous recording for the given element/component pair. Creates <code>data/&lt;simName&gt;/recordings/&lt;elementId&gt;_&lt;componentName&gt;_&lt;timestamp&gt;.csv</code> and writes the header row. No-op if an identical recording is already active.  <br /></td></tr>
-<tr class="separator:ad2130d98d72a3e3abb30bb024a4eac8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a605030cc0ae46d17e261c4205bfb3374" id="r_a605030cc0ae46d17e261c4205bfb3374"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#a605030cc0ae46d17e261c4205bfb3374">startRecording</a> (const std::string &amp;simName, const std::string &amp;elementId, const std::string &amp;componentName, int sampleInterval, <a class="el" href="group__simulation__recorder.html#gac09110e1313fae486600cd050e42b2a3">RecordingIntervalUnit</a> unit)</td></tr>
+<tr class="memdesc:a605030cc0ae46d17e261c4205bfb3374"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a new continuous recording for the given element/component pair. Creates <code>data/&lt;simName&gt;/recordings/&lt;elementId&gt;_&lt;componentName&gt;_&lt;timestamp&gt;.csv</code> and writes the header row. No-op if an identical recording is already active.  <br /></td></tr>
+<tr class="separator:a605030cc0ae46d17e261c4205bfb3374"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a691afc08bae84b7b8d21a30801acd96b" id="r_a691afc08bae84b7b8d21a30801acd96b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationRecorder.html#a691afc08bae84b7b8d21a30801acd96b">stopAll</a> ()</td></tr>
 <tr class="memdesc:a691afc08bae84b7b8d21a30801acd96b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop all active recordings and close all open files.  <br /></td></tr>
 <tr class="separator:a691afc08bae84b7b8d21a30801acd96b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -180,14 +180,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ad2130d98d72a3e3abb30bb024a4eac8b" name="ad2130d98d72a3e3abb30bb024a4eac8b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2130d98d72a3e3abb30bb024a4eac8b">&#9670;&#160;</a></span>startRecording()</h2>
+<a id="a605030cc0ae46d17e261c4205bfb3374" name="a605030cc0ae46d17e261c4205bfb3374"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a605030cc0ae46d17e261c4205bfb3374">&#9670;&#160;</a></span>startRecording()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void dnf_composer::SimulationRecorder::startRecording </td>
+          <td class="memname">bool dnf_composer::SimulationRecorder::startRecording </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>simName</em>, </td>
@@ -225,7 +225,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Start a new continuous recording for the given element/component pair. Creates <code>data/&lt;simName&gt;/recordings/&lt;elementId&gt;_&lt;componentName&gt;_&lt;timestamp&gt;.csv</code> and writes the header row. No-op if an identical recording is already active. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>On failure (directory could not be created, or the file could not be opened) a distinct, descriptive error is logged and no session is created — the recorder does NOT enter the "recording" state, so <a class="el" href="classdnf__composer_1_1SimulationRecorder.html#acea7256b89a989279f0fe26bdcd6ce6d">isRecording</a> and <a class="el" href="classdnf__composer_1_1SimulationRecorder.html#a6eb0dbaaf5b8f624e600f54be8312447">hasActiveRecordings</a> continue to reflect reality. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">simName</td><td><a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> unique identifier (used as the sub-folder name). </td></tr>
     <tr><td class="paramname">elementId</td><td>Unique name of the element to record. </td></tr>
@@ -235,10 +235,11 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the recording session was started successfully, false otherwise. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1SimulationRecorder_ad2130d98d72a3e3abb30bb024a4eac8b_cgraph.svg" width="856" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1SimulationRecorder_a605030cc0ae46d17e261c4205bfb3374_cgraph.svg" width="856" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
