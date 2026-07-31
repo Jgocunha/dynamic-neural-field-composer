@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `Application::enableKeyboardShortcuts()` and `Application::appendFonts()` bound
+  `ImGui::GetIO()` — which returns `ImGuiIO&` — with `auto io = ...`, copying the
+  struct by value. Every write through `io` (`ConfigFlags |=
+  ImGuiConfigFlags_NavEnableKeyboard`, `FontDefault = ...`) landed on a discarded
+  temporary, so keyboard navigation never actually enabled and ImGui's default font
+  was never actually applied, even though the intended font/config values were
+  computed correctly. Both now bind `ImGuiIO&` by reference, so the changes persist
+  on the real global IO (#114)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed
