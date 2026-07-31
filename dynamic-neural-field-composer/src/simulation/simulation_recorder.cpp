@@ -79,11 +79,18 @@ namespace dnf_composer
 
 		std::error_code ec;
 		std::filesystem::create_directories(dir, ec);
-		if (ec || !std::filesystem::is_directory(dir))
+		if (ec)
 		{
 			tools::logger::log(tools::logger::LogLevel::ERROR,
 				R"(Recording not started: failed to create recording directory ")" + dir.string() +
 				R"(" ()" + ec.message() + ").");
+			return false;
+		}
+		if (!std::filesystem::is_directory(dir, ec))
+		{
+			tools::logger::log(tools::logger::LogLevel::ERROR,
+				R"(Recording not started: ")" + dir.string() + R"(" is not a directory)" +
+				(ec ? " (" + ec.message() + ")." : "."));
 			return false;
 		}
 
