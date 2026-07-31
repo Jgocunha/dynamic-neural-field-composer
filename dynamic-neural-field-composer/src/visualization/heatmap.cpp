@@ -1,10 +1,35 @@
 #include "visualization/heatmap.h"
+#include <algorithm>
 #include <array>
 #include <cmath>
+#include <string>
 #include <utility>
 
 namespace dnf_composer
 {
+	ManualHeatmapDimensions resolveManualHeatmapDimensions(int x_max, int y_max,
+		float x_step, float y_step, std::size_t dataSize)
+	{
+		int rows = (y_step > 0.0F) ? static_cast<int>(static_cast<float>(y_max) / y_step) : 0;
+		int cols = (x_step > 0.0F) ? static_cast<int>(static_cast<float>(x_max) / x_step) : 0;
+		if (rows < 0) { rows = 0; }
+		if (cols < 0) { cols = 0; }
+
+		if (dataSize == 0)
+		{
+			return { 0, 0, false };
+		}
+
+		// Compare via division, not rows*cols, to avoid a multiplication overflow
+		// for pathological inputs.
+		if (rows > 0 && static_cast<std::size_t>(cols) > dataSize / static_cast<std::size_t>(rows))
+		{
+			return { rows, static_cast<int>(dataSize / static_cast<std::size_t>(rows)), true };
+		}
+
+		return { rows, cols, false };
+	}
+
 	HeatmapParameters::HeatmapParameters()
 		: scaleMin(0), scaleMax(1), autoScale(true), autoDimensions(true)
 	{}
@@ -227,8 +252,27 @@ namespace dnf_composer
 		}
 		else
 		{
-			rows = static_cast<int>(static_cast<float>(y_max) / y_step);
-			cols = static_cast<int>(static_cast<float>(x_max) / x_step);
+			const auto manualDims = resolveManualHeatmapDimensions(
+				x_max, y_max, x_step, y_step, flattened_matrix->size());
+			rows = manualDims.rows;
+			cols = manualDims.cols;
+
+			// render() runs every frame, so warn only when the clamp changes.
+			if (manualDims.clamped)
+			{
+				if (cols != lastReportedClampedCols)
+				{
+					log(tools::logger::LogLevel::WARNING,
+						"Heatmap: manual dimensions exceed the available data (" +
+						std::to_string(flattened_matrix->size()) + " elements); clamping columns to " +
+						std::to_string(cols) + " to avoid an out-of-bounds read.");
+					lastReportedClampedCols = cols;
+				}
+			}
+			else
+			{
+				lastReportedClampedCols = -1;
+			}
 		}
 
 		static constexpr ImPlotFlags hm_flags = ImPlotFlags_Crosshairs | ImPlotFlags_NoLegend;

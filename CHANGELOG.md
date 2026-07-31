@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Two unguarded out-of-bounds reads (#121). A heatmap in manual-dimension mode
+  computed `rows = y_max / y_step`, `cols = x_max / x_step` from user-editable axis
+  fields and handed `rows * cols` to `ImPlot::PlotHeatmap` with no check against the
+  actual data size, so a mismatched setting read past the buffer; columns are now
+  clamped so `rows * cols` fits the data (rows, and the configured aspect ratio, are
+  preserved) and a warning is logged on change. `obtainCircularVector` /
+  `obtainCircularVector_into` indexed `contents[indices[i] - 1]` with no check, so an
+  index of `0` read `contents[-1]`; both now validate the whole index set once per
+  call — off the per-element copy loop, to keep the convolution hot path
+  vectorizable — and return zeros with a logged error instead of reading out of bounds
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed

@@ -1438,3 +1438,82 @@ TEST(SeedNormal, DifferentSeedDifferentSequence)
         if (a[i] != b[i]) { anyDifferent = true; break; }
     EXPECT_TRUE(anyDifferent);
 }
+
+// ---------------------------------------------------------------------------
+// obtainCircularVector / obtainCircularVector_into — issue #121
+//
+// Both do `contents[indices[i] - 1]` (1-based indices) with no bounds check.
+// An index of 0 reads contents[-1]; an index > contents.size() reads past the
+// end. Both are on the convolution hot path (conv2d_separable, and every
+// circular 1D kernel element's step()), so the fix validates the whole index
+// set once per call rather than branching per element inside the copy loop —
+// see the Doxygen on both functions in tools/math.h for the perf rationale.
+// ---------------------------------------------------------------------------
+
+TEST(ObtainCircularVector, InRangeIndicesGatherCorrectly)
+{
+    const std::vector<int> indices{ 1, 3, 2 };
+    const std::vector<double> contents{ 10.0, 20.0, 30.0 };
+    const auto result = obtainCircularVector(indices, contents);
+    ASSERT_EQ(result.size(), 3u);
+    EXPECT_DOUBLE_EQ(result[0], 10.0);
+    EXPECT_DOUBLE_EQ(result[1], 30.0);
+    EXPECT_DOUBLE_EQ(result[2], 20.0);
+}
+
+TEST(ObtainCircularVector, ZeroIndexDoesNotReadOutOfBounds)
+{
+    // index 0 is invalid for a 1-based scheme: contents[0 - 1] == contents[-1].
+    const std::vector<int> indices{ 0, 1, 2 };
+    const std::vector<double> contents{ 10.0, 20.0, 30.0 };
+    const auto result = obtainCircularVector(indices, contents);
+    ASSERT_EQ(result.size(), 3u);
+    EXPECT_DOUBLE_EQ(result[0], 0.0);
+    EXPECT_DOUBLE_EQ(result[1], 0.0);
+    EXPECT_DOUBLE_EQ(result[2], 0.0);
+}
+
+TEST(ObtainCircularVector, TooLargeIndexDoesNotReadOutOfBounds)
+{
+    // contents.size() == 3, so a 1-based index of 10 is out of range.
+    const std::vector<int> indices{ 1, 2, 10 };
+    const std::vector<double> contents{ 10.0, 20.0, 30.0 };
+    const auto result = obtainCircularVector(indices, contents);
+    ASSERT_EQ(result.size(), 3u);
+    EXPECT_DOUBLE_EQ(result[0], 0.0);
+    EXPECT_DOUBLE_EQ(result[1], 0.0);
+    EXPECT_DOUBLE_EQ(result[2], 0.0);
+}
+
+TEST(ObtainCircularVectorInto, InRangeIndicesGatherCorrectly)
+{
+    std::vector<double> out(3, -1.0);
+    const std::vector<int> indices{ 1, 3, 2 };
+    const std::vector<double> contents{ 10.0, 20.0, 30.0 };
+    obtainCircularVector_into(out, indices, contents);
+    EXPECT_DOUBLE_EQ(out[0], 10.0);
+    EXPECT_DOUBLE_EQ(out[1], 30.0);
+    EXPECT_DOUBLE_EQ(out[2], 20.0);
+}
+
+TEST(ObtainCircularVectorInto, ZeroIndexDoesNotReadOutOfBounds)
+{
+    std::vector<double> out(3, -1.0);
+    const std::vector<int> indices{ 0, 1, 2 };
+    const std::vector<double> contents{ 10.0, 20.0, 30.0 };
+    obtainCircularVector_into(out, indices, contents);
+    EXPECT_DOUBLE_EQ(out[0], 0.0);
+    EXPECT_DOUBLE_EQ(out[1], 0.0);
+    EXPECT_DOUBLE_EQ(out[2], 0.0);
+}
+
+TEST(ObtainCircularVectorInto, TooLargeIndexDoesNotReadOutOfBounds)
+{
+    std::vector<double> out(3, -1.0);
+    const std::vector<int> indices{ 1, 2, 10 };
+    const std::vector<double> contents{ 10.0, 20.0, 30.0 };
+    obtainCircularVector_into(out, indices, contents);
+    EXPECT_DOUBLE_EQ(out[0], 0.0);
+    EXPECT_DOUBLE_EQ(out[1], 0.0);
+    EXPECT_DOUBLE_EQ(out[2], 0.0);
+}

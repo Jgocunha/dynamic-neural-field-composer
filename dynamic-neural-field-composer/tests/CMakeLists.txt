@@ -58,6 +58,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "exceptions/test_exception.cpp"
             # visualization
             "visualization/test_visualization.cpp"
+            "visualization/test_heatmap_dimensions.cpp"
             # user_interface
             "user_interface/test_plot_control_window.cpp"
             "visualization/test_plot_parameters.cpp"
