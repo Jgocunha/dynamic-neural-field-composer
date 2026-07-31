@@ -6,6 +6,13 @@
 
 namespace dnf_composer::user_interface
 {
+	PlotType quickPopulatePlotTypeFor(const std::shared_ptr<element::Element>& element)
+	{
+		return element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D
+			? PlotType::HEATMAP
+			: PlotType::LINE_PLOT;
+	}
+
 	PlotControlWindow::PlotControlWindow(const std::shared_ptr<Visualization>& visualization)
 		:visualization(visualization), simulation(visualization->getSimulation())
 	{}
@@ -24,7 +31,8 @@ namespace dnf_composer::user_interface
 				visualization->plot(selectedPlotType);
 			}
 
-		// Quick-populate: one line plot per neural field with all its components
+		// Quick-populate: one line plot per 1D neural field (all its components),
+		// one heatmap per component for every 2D neural field.
 
 		ImGui::SameLine(0, 48);
 		ImGui::Text("Quick-populate:"); ImGui::SameLine();
@@ -33,7 +41,7 @@ namespace dnf_composer::user_interface
 		const bool clicked = ImGui::Button(ICON_FA_WAVE_SQUARE "##plotfields");
 		ImGui::PopFont();
 		if (ImGui::IsItemHovered()) {
-			ImGui::SetTooltip("Add one line plot per neural field,\nwith all its components plotted.");
+			ImGui::SetTooltip("Add one line plot per 1D neural field, with all its components plotted,\nand one heatmap per component for every 2D neural field.");
 }
 		if (clicked)
 		{
@@ -47,7 +55,9 @@ namespace dnf_composer::user_interface
 
 			for (const auto& element : simulation->getElements())
 			{
-				if (element->getLabel() != element::ElementLabel::NEURAL_FIELD) {
+				const bool isNeuralField = element->getLabel() == element::ElementLabel::NEURAL_FIELD ||
+					element->getLabel() == element::ElementLabel::NEURAL_FIELD_2D;
+				if (!isNeuralField) {
 					continue;
 }
 				if (alreadyPlotted.contains(element->getUniqueName())) {
@@ -57,6 +67,23 @@ namespace dnf_composer::user_interface
 				if ((comps == nullptr) || comps->empty()) {
 					continue;
 }
+
+				if (quickPopulatePlotTypeFor(element) == PlotType::HEATMAP)
+				{
+					// A single heatmap can only visualize one 2D component,
+					// so add one heatmap per component instead of combining them.
+					for (const auto& componentName : *comps | std::views::keys)
+					{
+						visualization->plot(
+							PlotCommonParameters{PlotType::HEATMAP,
+								PlotAnnotations{element->getUniqueName() + " - " + componentName,
+									"Spatial dimension (x)", "Spatial dimension (y)"}},
+							HeatmapParameters{},
+							element->getUniqueName(), componentName);
+					}
+					continue;
+				}
+
 				// Create the plot with the first component, then append the rest
 				auto it = comps->begin();
 				visualization->plot(element->getUniqueName(), it->first);
