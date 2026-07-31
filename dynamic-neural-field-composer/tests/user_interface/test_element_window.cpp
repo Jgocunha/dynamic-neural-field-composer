@@ -226,7 +226,9 @@ namespace
 
 		{
 			const element::ElementCommonParameters common{ std::string("osc2d"), element::ElementDimensions{ 20, 20, 1.0, 1.0 } };
-			const element::OscillatoryKernel2DParameters okp{ 3.0, 1.0, 1.0, 3.0, 1.0, 1.0 };
+			// The last two parameters are bools (circular, normalized) -- passing 1.0
+			// here is a narrowing conversion that MSVC accepts but clang/gcc reject.
+			const element::OscillatoryKernel2DParameters okp{ 3.0, 1.0, 1.0, 3.0, true, true };
 			simulation->addElement(std::make_shared<element::OscillatoryKernel2D>(common, okp));
 		}
 

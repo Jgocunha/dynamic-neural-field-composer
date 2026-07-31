@@ -158,6 +158,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "validation/tools/regenerate_spectral_golden.cpp")
     target_include_directories(dnf_composer_regen_spectral_golden PRIVATE
             ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common
             ${CMAKE_CURRENT_SOURCE_DIR}/validation)
     target_compile_definitions(dnf_composer_regen_spectral_golden PRIVATE
             VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data")
