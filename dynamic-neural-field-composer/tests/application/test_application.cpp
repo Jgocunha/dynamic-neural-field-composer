@@ -110,16 +110,19 @@ TEST_F(MainMenuBarQuitTest, RequestQuitEndsAnUnmodifiedMainLoop)
 {
     // The backwards-compatibility guarantee: a main loop written before this fix
     // -- `while (!app.hasGUIBeenClosed())` -- must still terminate when the user
-    // picks Quit. hasGUIBeenClosed() answers the quit request before touching the
-    // GUI, so this holds even for an Application that was never init()'d.
+    // picks Quit.
     const auto sim = makeSimulationWithOneField("quit-main-loop");
     const auto vis = std::make_shared<Visualization>(sim);
     const Application app{ sim, vis };
 
-    EXPECT_FALSE(app.hasGUIBeenClosed());
+    EXPECT_FALSE(Application::isQuitRequested());
 
     Application::requestQuit();
 
+    // hasGUIBeenClosed() answers the quit request before touching the GUI, so this
+    // is safe on an Application that was never init()'d -- the GLFW backend's
+    // isShutdownRequested() reads a window that does not exist until then. This
+    // line is exactly what an unmodified main loop evaluates.
     EXPECT_TRUE(app.hasGUIBeenClosed());
 }
 
