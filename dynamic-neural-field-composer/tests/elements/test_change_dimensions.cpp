@@ -324,3 +324,80 @@ TEST(ChangeDimensions, ResizeUpThenDown)
     EXPECT_EQ(el->getSize(), 50);
     EXPECT_EQ(el->getComponent("output").size(), 50u);
 }
+
+// ---------------------------------------------------------------------------
+// Resizing a connected SOURCE must not leave a stale/dangling input cache on
+// the downstream element (#40). Element::buildInputCache() caches a source
+// component for each input; changeDimensions() on the source reallocates that
+// component's buffer without the downstream element being touched at all.
+// ---------------------------------------------------------------------------
+
+TEST(ChangeDimensions, ConnectedSourceResizeIsSafelySevered)
+{
+    // sink (NeuralField) reads source's (GaussStimulus) "output" as its "input".
+    const auto source = makeGaussStimulus(100);
+    const auto sink = makeNeuralField(100);
+    sink->addInput(source, "output");
+
+    source->init();
+    sink->init();
+
+    // Step so Element::buildInputCache() runs and caches source's "output"
+    // component for sink.
+    EXPECT_NO_THROW(source->step(0.0, 1.0));
+    EXPECT_NO_THROW(sink->step(0.0, 1.0));
+    ASSERT_TRUE(sink->hasInput());
+
+    // Resize the SOURCE (not the sink) to a much larger size. GaussStimulus's
+    // "output" vector must reallocate to grow. With the old implementation,
+    // Element::updateInput() kept using a raw const double* + size snapshot
+    // taken before this resize: the pointer would dangle (freed buffer) and
+    // the cached size would no longer match sink's actual "input" buffer,
+    // producing an out-of-bounds/use-after-free read.
+    EXPECT_NO_THROW(source->changeDimensions(dim(5000)));
+
+    // Stepping again must not crash or corrupt memory. Because 5000 != 100,
+    // the connection can no longer be safely revalidated, so it must be
+    // severed (with a logged warning) instead of read out-of-bounds. This is
+    // the one assertion that reliably distinguishes old vs. new behavior:
+    // the old code never inspects/severs a downstream connection when the
+    // *source* (not the sink itself) is resized, so hasInput() would stay
+    // true forever and the stale cache would keep being dereferenced.
+    EXPECT_NO_THROW(source->step(0.0, 1.0));
+    EXPECT_NO_THROW(sink->step(0.0, 1.0));
+
+    EXPECT_FALSE(sink->hasInput());
+    EXPECT_FALSE(source->hasOutput());
+    EXPECT_EQ(sink->getComponent("input").size(), 100u);   // sink's own buffer untouched
+    EXPECT_EQ(sink->getComponent("output").size(), 100u);
+
+    // Further steps must keep behaving safely (cache stays rebuilt/empty).
+    EXPECT_NO_THROW(sink->step(0.0, 1.0));
+}
+
+TEST(ChangeDimensions, ConnectedSourceResizeBackToMatchingSizeStaysConnected)
+{
+    // Sanity check for the "false positive" direction: if the source is
+    // resized (forcing a cache rebuild) but ends up the same size as before,
+    // the connection must remain intact and keep delivering values.
+    const auto source = makeGaussStimulus(100);
+    const auto sink = makeNeuralField(100);
+    sink->addInput(source, "output");
+
+    source->init();
+    sink->init();
+
+    EXPECT_NO_THROW(source->step(0.0, 1.0));
+    EXPECT_NO_THROW(sink->step(0.0, 1.0));
+
+    // Resize down and back up to the original size: forces reallocation(s)
+    // of "output" without changing the final size, exercising the
+    // cache-rebuild path with a still-compatible connection.
+    source->changeDimensions(dim(50));
+    source->changeDimensions(dim(100));
+
+    EXPECT_NO_THROW(source->step(0.0, 1.0));
+    EXPECT_NO_THROW(sink->step(0.0, 1.0));
+    EXPECT_TRUE(sink->hasInput());
+    EXPECT_TRUE(source->hasOutput());
+}
