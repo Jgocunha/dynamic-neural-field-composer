@@ -1,5 +1,10 @@
 #pragma once
 
+// Included before the max/min undef guard below since it transitively drags in
+// <windows.h> (via imgui-platform-kit), which would otherwise redefine those
+// macros again right after the guard clears them.
+#include "tools/logger.h"
+
 //https://github.com/stevenlovegrove/Pangolin/issues/352
 #ifdef max
 #undef max
@@ -225,7 +230,16 @@ namespace dnf_composer::tools::math
 
 		if (!g.empty())
 		{
-			double sumOfG = std::reduce(g.begin(), g.end());
+			static constexpr double epsilon = 1e-12;
+			const double sumOfG = std::reduce(g.begin(), g.end());
+			if (!std::isfinite(sumOfG) || std::abs(sumOfG) < epsilon)
+			{
+				logger::log(logger::LogLevel::WARNING,
+					"gaussNorm: sum of Gaussian is near-zero or non-finite (degenerate sigma?); "
+					"returning un-normalized zero vector to avoid NaN/Inf propagation.");
+				std::fill(g.begin(), g.end(), T());
+				return g;
+			}
 			for (int i = 0; i < g.size(); i++) {
 				g[i] = g[i] / sumOfG;
 }

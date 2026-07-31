@@ -133,6 +133,31 @@ TEST(GaussNorm, ValuesAreNonNegative)
         EXPECT_GE(v, 0.0);
 }
 
+TEST(GaussNorm, DegenerateSigmaDoesNotProduceNanOrInf)
+{
+    // sigma -> 0 makes pow(sigma,2) == 0, so the unnormalized Gaussian contains
+    // 0/0 (NaN) and/or divide-by-zero (Inf) terms; the sum-of-Gaussian guard
+    // must catch this and return a finite (zero) vector instead of propagating
+    // NaN/Inf network-wide (issue #42).
+    const std::vector<int> rangeX{ -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5 };
+    const auto g = gaussNorm(rangeX, 0.0, 0.0);
+    ASSERT_EQ(g.size(), rangeX.size());
+    for (double v : g)
+        EXPECT_TRUE(std::isfinite(v));
+}
+
+TEST(GaussNorm, NormalCaseStillSumsToOneAfterGuardAdded)
+{
+    // Regression guard: a well-conditioned sigma must be unaffected by the
+    // near-zero/non-finite denominator guard and still normalize to 1.
+    const std::vector<int> rangeX{ -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    const auto g = gaussNorm(rangeX, 0.0, 2.0);
+    for (double v : g)
+        EXPECT_TRUE(std::isfinite(v));
+    const double sum = std::accumulate(g.begin(), g.end(), 0.0);
+    EXPECT_NEAR(sum, 1.0, 1e-9);
+}
+
 // ---------------------------------------------------------------------------
 // sigmoid (template)
 // ---------------------------------------------------------------------------
