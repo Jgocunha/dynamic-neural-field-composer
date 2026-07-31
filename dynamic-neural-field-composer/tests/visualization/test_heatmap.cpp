@@ -281,3 +281,27 @@ TEST(HeatmapParameters, ToStringContainsValues)
 	const auto str = params.toString();
 	EXPECT_NE(str.find("3"), std::string::npos);
 }
+
+// ---------------------------------------------------------------------------
+// PlotType handling: Heatmap and LinePlot are NOT symmetric.
+//
+// LinePlot's constructor throws std::invalid_argument when
+// commonParameters.type != PlotType::LINE_PLOT (see lineplot.cpp), but Heatmap
+// performs no such check and accepts whatever type it is handed. These tests pin
+// the CURRENT behaviour so it cannot change silently; whether Heatmap *should*
+// validate its type the way LinePlot does is a product decision tracked
+// separately, and deliberately not changed here in a test-focused PR.
+// ---------------------------------------------------------------------------
+
+TEST(Heatmap, AcceptsMismatchedPlotTypeWithoutThrowing)
+{
+	const PlotCommonParameters common(PlotType::LINE_PLOT);
+	EXPECT_NO_THROW({ const Heatmap heatmap(common); });
+}
+
+TEST(Heatmap, ReportsTheTypeItWasGivenEvenWhenMismatched)
+{
+	const PlotCommonParameters common(PlotType::LINE_PLOT);
+	const Heatmap heatmap(common);
+	EXPECT_EQ(heatmap.getType(), PlotType::LINE_PLOT);
+}

@@ -34,7 +34,7 @@ namespace
 
 		// Add a 2D neural field
 		const element::NeuralField2DParameters nfp2d{ 25.0, -5.0, sigmoid };
-		const element::ElementCommonParameters common2d{ std::string("field2d"), 50 };
+		const element::ElementCommonParameters common2d{ std::string("field2d"), element::ElementDimensions{ 50, 50, 1.0, 1.0 } };
 		simulation->addElement(std::make_shared<element::NeuralField2D>(common2d, nfp2d));
 
 		// Add a 1D stimulus
@@ -44,7 +44,7 @@ namespace
 
 		// Add a 2D stimulus
 		const element::GaussStimulus2DParameters stimParams2d{ 10.0, 0.5, 0.5, 0.5, false, false };
-		const element::ElementCommonParameters commonStim2d{ std::string("stim2d"), 50 };
+		const element::ElementCommonParameters commonStim2d{ std::string("stim2d"), element::ElementDimensions{ 50, 50, 1.0, 1.0 } };
 		simulation->addElement(std::make_shared<element::GaussStimulus2D>(commonStim2d, stimParams2d));
 
 		return simulation;

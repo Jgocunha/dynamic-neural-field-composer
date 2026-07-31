@@ -194,7 +194,9 @@ TEST(PlotControlWindow, RenderWithComplexVisualization)
 	int id2 = -1;
 	for (const auto& [plot, _] : vis->getPlots())
 		id2 = std::max(id2, plot->getUniqueIdentifier());
-	vis->plot(id2, "field", "weights");
+	// NeuralField exposes "activation"/"resting level" (+ base "input"/"output");
+	// plotting a non-existent component would exercise the removal path instead.
+	vis->plot(id2, "field", "resting level");
 
 	PlotControlWindow window{ vis };
 

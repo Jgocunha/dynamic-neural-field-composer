@@ -114,6 +114,9 @@ TEST(LoggerTest, FreeFunctionLogProducesOutput)
 
 TEST(LoggerTest, ScopedMinLogLevelRestoresPreviousLevel)
 {
+    // Restore whatever the threshold was on entry -- these tests must not leak
+    // their own DEBUG setting either, which is the very bug they guard against.
+    const dnf_composer::test::ScopedMinLogLevel restoreOnExit{ Logger::getMinLogLevel() };
     Logger::setMinLogLevel(LogLevel::DEBUG);
     {
         const dnf_composer::test::ScopedMinLogLevel quiet{ LogLevel::FATAL };
@@ -124,6 +127,7 @@ TEST(LoggerTest, ScopedMinLogLevelRestoresPreviousLevel)
 
 TEST(LoggerTest, ScopedMinLogLevelRestoresOnException)
 {
+    const dnf_composer::test::ScopedMinLogLevel restoreOnExit{ Logger::getMinLogLevel() };
     Logger::setMinLogLevel(LogLevel::DEBUG);
     try
     {
@@ -138,6 +142,7 @@ TEST(LoggerTest, ScopedMinLogLevelRestoresOnException)
 // This is the exact assertion that order-dependent leakage used to break.
 TEST(LoggerTest, LogOutputSurvivesAQuietScope)
 {
+    const dnf_composer::test::ScopedMinLogLevel restoreOnExit{ Logger::getMinLogLevel() };
     Logger::setMinLogLevel(LogLevel::DEBUG);
     {
         const dnf_composer::test::ScopedMinLogLevel quiet{ LogLevel::FATAL };

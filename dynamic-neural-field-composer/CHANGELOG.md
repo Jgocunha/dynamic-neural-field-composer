@@ -1,5 +1,11 @@
 # Changelog
 
+> **The repository-root [`CHANGELOG.md`](../CHANGELOG.md) is the single source of
+> truth.** It carries the complete released history (currently through 2.9.6) and is
+> the file every merged PR updates. This package-level file is kept only for the
+> entry below and is not maintained per-release — add new entries to the root file,
+> not here.
+
 All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
