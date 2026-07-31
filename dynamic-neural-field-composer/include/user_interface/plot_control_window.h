@@ -17,6 +17,13 @@
 
 namespace dnf_composer::user_interface
 {
+	/// @brief Pick the plot type quick-populate should use for a given element.
+	///
+	/// A 2D neural field cannot be represented by a line plot, so it is shown
+	/// as a heatmap instead; every other (1D) field keeps the classic line plot.
+	/// Pure decision logic, kept free of ImGui so it can be unit-tested headlessly.
+	[[nodiscard]] PlotType quickPopulatePlotTypeFor(const std::shared_ptr<element::Element>& element);
+
 	class PlotControlWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:

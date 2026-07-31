@@ -1,6 +1,7 @@
 ﻿#include "simulation/simulation.h"
 #include "simulation/simulation_file_manager.h"
 #include "tools/utils.h"
+#include <format>
 
 
 
@@ -26,11 +27,9 @@ namespace dnf_composer
 		initialized = false;
 		paused = false;
 		elements = {};
-		std::ostringstream oss;
-		oss << "Simulation '" << uniqueIdentifier << "' created. "
-			<< "With parameters [dt:" << std::fixed << std::setprecision(2) << deltaT
-			<< "s, t0:" << tZero << "s].";
-		tools::logger::log(tools::logger::LogLevel::INFO, oss.str());
+		tools::logger::log(tools::logger::LogLevel::INFO,
+			std::format("Simulation '{}' created. With parameters [dt:{:.2f}s, t0:{:.2f}s].",
+				uniqueIdentifier, deltaT, tZero));
 	}
 
 	Simulation::Simulation(const Simulation& other)
@@ -288,7 +287,7 @@ namespace dnf_composer
 		for (const auto& existingElement : elements) {
 			if (existingElement->getUniqueName() == newElementName)
 			{
-				const std::string logMessage = "An element with the same unique name already exists '" + newElementName + "'! New element was not added.";
+				const std::string logMessage = std::format("An element with the same unique name already exists '{}'! New element was not added.", newElementName);
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}
@@ -297,7 +296,7 @@ namespace dnf_composer
 		elements.emplace_back(element);
 		element->init();
 
-		const std::string logMessage = "Element '" + newElementName + "' was added to the simulation.";
+		const std::string logMessage = std::format("Element '{}' was added to the simulation.", newElementName);
 		log(tools::logger::LogLevel::INFO, logMessage);
 	}
 
@@ -313,12 +312,12 @@ namespace dnf_composer
 			if (elements[i]->getUniqueName() == elementId)
 			{
 				elements.erase(elements.begin() + i);
-				const std::string logMessage = "Element '" + elementId + "' was removed from the simulation.";
+				const std::string logMessage = std::format("Element '{}' was removed from the simulation.", elementId);
 				log(tools::logger::LogLevel::INFO, logMessage);
 				return;
 			}
 		}
-		const std::string logMessage = "Element '" + elementId + "' was not found and consequently not removed from the simulation.";
+		const std::string logMessage = std::format("Element '{}' was not found and consequently not removed from the simulation.", elementId);
 		log(tools::logger::LogLevel::FATAL, logMessage);
 	}
 
@@ -332,7 +331,7 @@ namespace dnf_composer
 			{
 				element = newElement;
 				element->init();
-				const std::string logMessage = "Element '" + idOfElementToReset + "' was reset in the simulation.";
+				const std::string logMessage = std::format("Element '{}' was reset in the simulation.", idOfElementToReset);
 				log(tools::logger::LogLevel::INFO, logMessage);
 				elementFound = true;
 				break;
@@ -341,7 +340,7 @@ namespace dnf_composer
 
 		if (!elementFound)
 		{
-			const std::string logMessage = "Element '" + idOfElementToReset + "' was not found and consequently not reset.";
+			const std::string logMessage = std::format("Element '{}' was not found and consequently not reset.", idOfElementToReset);
 			log(tools::logger::LogLevel::FATAL, logMessage);
 		}
 	}
@@ -354,7 +353,7 @@ namespace dnf_composer
 		element->removeOutputs();
 		element->changeDimensions(newDimensions);
 
-		const std::string logMessage = "Element '" + elementId + "' resized to " + newDimensions.toString() + ".";
+		const std::string logMessage = std::format("Element '{}' resized to {}.", elementId, newDimensions.toString());
 		log(tools::logger::LogLevel::INFO, logMessage);
 	}
 
@@ -366,16 +365,16 @@ namespace dnf_composer
 		const auto elem = getElement(oldName);
 		if (!elem)
 		{
-			log(tools::logger::LogLevel::WARNING, "Element '" + oldName + "' was not found and consequently not renamed.");
+			log(tools::logger::LogLevel::WARNING, std::format("Element '{}' was not found and consequently not renamed.", oldName));
 			return;
 		}
 		if (getElement(newName))
 		{
-			log(tools::logger::LogLevel::WARNING, "Element '" + newName + "' already exists; '" + oldName + "' was not renamed.");
+			log(tools::logger::LogLevel::WARNING, std::format("Element '{}' already exists; '{}' was not renamed.", newName, oldName));
 			return;
 		}
 		elem->setUniqueName(newName);
-		log(tools::logger::LogLevel::INFO, "Element '" + oldName + "' renamed to '" + newName + "'.");
+		log(tools::logger::LogLevel::INFO, std::format("Element '{}' renamed to '{}'.", oldName, newName));
 	}
 
 	void Simulation::createInteraction(const std::string& stimulusElementId,
@@ -386,21 +385,21 @@ namespace dnf_composer
 
 		if (!stimulusElement)
 		{
-			const std::string logMessage = "Element '" + stimulusElementId + "' was not found and consequently no interaction was created.";
+			const std::string logMessage = std::format("Element '{}' was not found and consequently no interaction was created.", stimulusElementId);
 			log(tools::logger::LogLevel::FATAL, logMessage);
 			return;
 		}
 
 		if (!receivingElement)
 		{
-			const std::string logMessage = "Element '" + receivingElementId + "' was not found and consequently no interaction was created.";
+			const std::string logMessage = std::format("Element '{}' was not found and consequently no interaction was created.", receivingElementId);
 			log(tools::logger::LogLevel::FATAL, logMessage);
 			return;
 		}
 
 		receivingElement->addInput(stimulusElement, stimulusComponent);
 
-		const std::string logMessage = "Interaction created: " + stimulusElementId + " -> " + receivingElementId + '.';
+		const std::string logMessage = std::format("Interaction created: {} -> {}.", stimulusElementId, receivingElementId);
 		log(tools::logger::LogLevel::INFO, logMessage);
 
 	}
@@ -455,7 +454,7 @@ namespace dnf_composer
 		const std::shared_ptr<element::Element> foundElement = getElement(id);
 		if (!foundElement)
 		{
-			log(tools::logger::LogLevel::FATAL, "Element '" + id + "' was not found and consequently no component was returned.");
+			log(tools::logger::LogLevel::FATAL, std::format("Element '{}' was not found and consequently no component was returned.", id));
 			return {};
 		}
 		return foundElement->getComponent(componentName);
@@ -466,7 +465,7 @@ namespace dnf_composer
 		const std::shared_ptr<element::Element> foundElement = getElement(id);
 		if (!foundElement)
 		{
-			log(tools::logger::LogLevel::FATAL, "Element '" + id + "' was not found and consequently no component was returned.");
+			log(tools::logger::LogLevel::FATAL, std::format("Element '{}' was not found and consequently no component was returned.", id));
 			return nullptr;
 		}
 		return foundElement->getComponentPtr(componentName);
