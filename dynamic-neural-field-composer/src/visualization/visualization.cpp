@@ -1,5 +1,7 @@
 ﻿#include "visualization/visualization.h"
 
+#include <format>
+
 namespace dnf_composer
 {
 	extern ImFont* g_BlackLargeFont;
@@ -27,13 +29,13 @@ namespace dnf_composer
 				plots[std::make_shared<Heatmap>()] = {};
 				break;
 		}
-		log(tools::logger::LogLevel::INFO, "Plot " + std::to_string(plots.size() - 1) + " added to visualization.");
+		log(tools::logger::LogLevel::INFO, std::format("Plot {} added to visualization.", plots.size() - 1));
 	}
 
 	void Visualization::plot(const std::vector<std::pair<std::string, std::string>>& data)
 	{
 		plots[std::make_shared<LinePlot>()] = data;
-		log(tools::logger::LogLevel::INFO, "Plot " + std::to_string(plots.size() - 1) + " added to visualization.");
+		log(tools::logger::LogLevel::INFO, std::format("Plot {} added to visualization.", plots.size() - 1));
 	}
 
 	void Visualization::plot(const std::string& name, const std::string& component)
@@ -71,7 +73,7 @@ namespace dnf_composer
 				break;
 			}
 		}
-		log(tools::logger::LogLevel::INFO, "Plot " + std::to_string(plots.size() - 1) + " added to visualization.");
+		log(tools::logger::LogLevel::INFO, std::format("Plot {} added to visualization.", plots.size() - 1));
 	}
 
 	void Visualization::plot(const PlotCommonParameters& parameters, const PlotSpecificParameters& specificParameters, const std::string& name, const std::string& component)
@@ -92,13 +94,13 @@ namespace dnf_composer
 		// Check if the plot was found
 		if (it == plots.end())
 		{
-			log(tools::logger::LogLevel::ERROR, "Plot with ID " + std::to_string(plotId) + " not found.");
+			log(tools::logger::LogLevel::ERROR, std::format("Plot with ID {} not found.", plotId));
 			return;
 		}
 
 		// Add data to the found plot
 		plots[it->first].insert(plots[it->first].end(), data.begin(), data.end());
-		log(tools::logger::LogLevel::INFO, "Data plotted on plot with ID " + std::to_string(plotId) + ".");
+		log(tools::logger::LogLevel::INFO, std::format("Data plotted on plot with ID {}.", plotId));
 	}
 
 	void Visualization::plot(const int plotId, const std::string& name, const std::string& component)
@@ -119,11 +121,11 @@ namespace dnf_composer
 		if (it != plots.end())
 		{
 			plots.erase(it);
-			log(tools::logger::LogLevel::INFO, "Plot with ID " + std::to_string(plotId) + " removed from visualization.");
+			log(tools::logger::LogLevel::INFO, std::format("Plot with ID {} removed from visualization.", plotId));
 		}
 		else
 		{
-			log(tools::logger::LogLevel::ERROR, "Plot with ID " + std::to_string(plotId) + " not found.");
+			log(tools::logger::LogLevel::ERROR, std::format("Plot with ID {} not found.", plotId));
 		}
 	}
 
@@ -145,19 +147,19 @@ namespace dnf_composer
 		// Check if the plot was found
 		if (it == plots.end())
 		{
-			log(tools::logger::LogLevel::ERROR, "Plot with ID " + std::to_string(plotId) + " not found.");
+			log(tools::logger::LogLevel::ERROR, std::format("Plot with ID {} not found.", plotId));
 			return;
 		}
 
 		// Check if the data is in the plot
 		if (std::ranges::find(plots[it->first].begin(), plots[it->first].end(), data) == plots[it->first].end())
 		{
-			log(tools::logger::LogLevel::WARNING, "Data '" + data.first + " - " + data.second + "' not found in plot " + std::to_string(plotId) + ".");
+			log(tools::logger::LogLevel::WARNING, std::format("Data '{} - {}' not found in plot {}.", data.first, data.second, plotId));
 			return;
 		}
 
 		plots[it->first].erase(std::ranges::find(plots[it->first].begin(), plots[it->first].end(), data));
-		log(tools::logger::LogLevel::INFO, "Data '" + data.first + " - " + data.second + "' removed from plot " + std::to_string(plotId) + ".");
+		log(tools::logger::LogLevel::INFO, std::format("Data '{} - {}' removed from plot {}.", data.first, data.second, plotId));
 	}
 
 	// If `plot` is a Heatmap and the data contains a "weights" component,

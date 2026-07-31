@@ -1,5 +1,6 @@
 #include "elements/resize.h"
 
+#include <format>
 
 	namespace dnf_composer::element
 	{
@@ -53,8 +54,8 @@
 			// past the resized "input" buffer. Reject any additional input.
 			if (!inputs.empty())
 			{
-				log(tools::logger::LogLevel::ERROR, "Resize '" + this->getUniqueName()
-					+ "' already has an input; only one input is allowed.");
+				log(tools::logger::LogLevel::ERROR, std::format("Resize '{}' already has an input; only one input is allowed.",
+					this->getUniqueName()));
 				return;
 			}
 

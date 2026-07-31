@@ -1,5 +1,6 @@
 ﻿#include "elements/gauss_stimulus.h"
 
+#include <format>
 
 	namespace dnf_composer::element
 	{
@@ -41,9 +42,9 @@
 }
 				} else
 				{
-					const std::string message = "Tried to initialize a normalized Gaussian stimulus '"
-						+ this->getUniqueName() + "'. With the sum of the output vector equal "
-								"to zero that is impossible! ";
+					const std::string message = std::format(
+						"Tried to initialize a normalized Gaussian stimulus '{}'. With the sum of the output vector equal to zero that is impossible! ",
+						this->getUniqueName());
 					log(tools::logger::LogLevel::ERROR, message);
 				}
 			}

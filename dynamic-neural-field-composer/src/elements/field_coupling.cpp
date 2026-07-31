@@ -1,6 +1,7 @@
 ﻿#include "elements/field_coupling.h"
 #include "tools/utils.h"
 #include <filesystem>
+#include <format>
 
 
 	namespace dnf_composer::element
@@ -131,16 +132,18 @@
 		{
 			if (inputs.size() != 1)
 			{
-				const std::string logMessage = "Incorrect number of inputs for field coupling '"
-					+ commonParameters.identifiers.uniqueName + "'. Should be 1, is " + std::to_string(inputs.size()) + ".";
+				const std::string logMessage = std::format(
+					"Incorrect number of inputs for field coupling '{}'. Should be 1, is {}.",
+					commonParameters.identifiers.uniqueName, inputs.size());
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}
 
 			if (inputs.begin()->first->getLabel() != ElementLabel::NEURAL_FIELD)
 			{
-				const std::string logMessage = "Incorrect input type for field coupling '"
-					+ commonParameters.identifiers.uniqueName + "'. Should be a neural field, is " + ElementLabelToString.at(inputs.begin()->first->getLabel()) + ".";
+				const std::string logMessage = std::format(
+					"Incorrect input type for field coupling '{}'. Should be a neural field, is {}.",
+					commonParameters.identifiers.uniqueName, ElementLabelToString.at(inputs.begin()->first->getLabel()));
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}	
@@ -152,16 +155,18 @@
 		{
 			if (outputs.size() != 1)
 			{
-				const std::string logMessage = "Incorrect number of outputs for field coupling '"
-					+ commonParameters.identifiers.uniqueName + "'. Should be 1, is " + std::to_string(outputs.size()) + ".";
+				const std::string logMessage = std::format(
+					"Incorrect number of outputs for field coupling '{}'. Should be 1, is {}.",
+					commonParameters.identifiers.uniqueName, outputs.size());
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}
 
 			if (outputs.begin()->first->getLabel() != ElementLabel::NEURAL_FIELD)
 			{
-				const std::string logMessage = "Incorrect output type for field coupling '"
-					+ commonParameters.identifiers.uniqueName + "'. Should be a neural field, is " + ElementLabelToString.at(outputs.begin()->first->getLabel()) + ".";
+				const std::string logMessage = std::format(
+					"Incorrect output type for field coupling '{}'. Should be a neural field, is {}.",
+					commonParameters.identifiers.uniqueName, ElementLabelToString.at(outputs.begin()->first->getLabel()));
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}
@@ -216,22 +221,19 @@
 				// Check if the total number of weights matches the expected size
 				if (weights.size() != expectedSize)
 				{
-					log(tools::logger::LogLevel::ERROR,
-						"Weight matrix read from file has a different size than expected! "
-						"Expected: " + std::to_string(expectedSize) +
-						", Got: " + std::to_string(weights.size()));
+					log(tools::logger::LogLevel::ERROR, std::format(
+						"Weight matrix read from file has a different size than expected! Expected: {}, Got: {}",
+						expectedSize, weights.size()));
 					return;
 				}
 
 				components["weights"] = weights;
 
-				const std::string message = "Weights '" + this->getUniqueName() + "' read successfully from: " +
-					filename + ".";
+				const std::string message = std::format("Weights '{}' read successfully from: {}.", this->getUniqueName(), filename);
 				log(tools::logger::LogLevel::INFO, message);
 			}
 			else {
-				const std::string message = "Failed to read weights '" + this->getUniqueName() + "' from: " +
-					filename + ".";
+				const std::string message = std::format("Failed to read weights '{}' from: {}.", this->getUniqueName(), filename);
 				log(tools::logger::LogLevel::ERROR, message);
 			}
 		}
@@ -245,9 +247,9 @@
 			}
 			else
 			{
-				log(tools::logger::LogLevel::INFO,
-					"No weights file found for '" + commonParameters.identifiers.uniqueName
-					+ "' at: " + filename + ". Starting with zero weights.");
+				log(tools::logger::LogLevel::INFO, std::format(
+					"No weights file found for '{}' at: {}. Starting with zero weights.",
+					commonParameters.identifiers.uniqueName, filename));
 			}
 		}
 
@@ -273,11 +275,11 @@
 
 				file.close();
 
-				const std::string message = "Saved weights '" + this->getUniqueName() + "' to: " + filename + ".";
+				const std::string message = std::format("Saved weights '{}' to: {}.", this->getUniqueName(), filename);
 				log(tools::logger::LogLevel::INFO, message);
 			}
 			else {
-				const std::string message = "Failed to save weights '" + this->getUniqueName() + "' to: " + filename + ".";
+				const std::string message = std::format("Failed to save weights '{}' to: {}.", this->getUniqueName(), filename);
 				log(tools::logger::LogLevel::ERROR, message);
 			}
 		}
@@ -291,8 +293,8 @@
 		{
 			if (!input)
 			{
-				const std::string logMessage = "Field coupling '" + commonParameters.identifiers.uniqueName +
-					"' has no input field. Learning is disabled.";
+				const std::string logMessage = std::format(
+					"Field coupling '{}' has no input field. Learning is disabled.", commonParameters.identifiers.uniqueName);
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				parameters.isLearningActive = false;
 				return false;
@@ -300,8 +302,8 @@
 
 			if (!output)
 			{
-				const std::string logMessage = "Field coupling '" + commonParameters.identifiers.uniqueName +
-					"' has no output field. Learning is disabled.";
+				const std::string logMessage = std::format(
+					"Field coupling '{}' has no output field. Learning is disabled.", commonParameters.identifiers.uniqueName);
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				parameters.isLearningActive = false;
 				return false;

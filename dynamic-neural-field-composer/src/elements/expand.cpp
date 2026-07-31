@@ -1,5 +1,6 @@
 #include "elements/expand.h"
 
+#include <format>
 
 	namespace dnf_composer::element
 	{
@@ -22,10 +23,10 @@
 			                                   : commonParameters.dimensionParameters.size_y;
 			if (parameters.inputDimensions.size != profileAxisSize)
 			{
-				log(tools::logger::LogLevel::ERROR, "Expand '" + this->getUniqueName()
-					+ "': input size (" + std::to_string(parameters.inputDimensions.size)
-					+ ") must equal the output's " + ProjectionAxisToString.at(parameters.broadcastProfileAxis)
-					+ "-axis size (" + std::to_string(profileAxisSize) + ").");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Expand '{}': input size ({}) must equal the output's {}-axis size ({}).",
+					this->getUniqueName(), parameters.inputDimensions.size,
+					ProjectionAxisToString.at(parameters.broadcastProfileAxis), profileAxisSize));
 				throw Exception(ErrorCode::ELEM_INVALID_SIZE, this->getUniqueName());
 			}
 
@@ -61,8 +62,8 @@
 			// past the resized "input" buffer. Reject any additional input.
 			if (!inputs.empty())
 			{
-				log(tools::logger::LogLevel::ERROR, "Expand '" + this->getUniqueName()
-					+ "' already has an input; only one input is allowed.");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Expand '{}' already has an input; only one input is allowed.", this->getUniqueName()));
 				return;
 			}
 
@@ -71,9 +72,9 @@
 			const auto& srcDims = inputElement->getElementCommonParameters().dimensionParameters;
 			if (srcDims.dimensionality != 1)
 			{
-				log(tools::logger::LogLevel::ERROR, "Expand '" + this->getUniqueName()
-					+ "': input must be a 1D element (got dimensionality "
-					+ std::to_string(srcDims.dimensionality) + ").");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Expand '{}': input must be a 1D element (got dimensionality {}).",
+					this->getUniqueName(), srcDims.dimensionality));
 				return;
 			}
 
@@ -84,10 +85,10 @@
 			                                   : commonParameters.dimensionParameters.size_y;
 			if (srcDims.size != profileAxisSize)
 			{
-				log(tools::logger::LogLevel::ERROR, "Expand '" + this->getUniqueName()
-					+ "': cannot connect input; source size (" + std::to_string(srcDims.size)
-					+ ") must equal the output's " + ProjectionAxisToString.at(parameters.broadcastProfileAxis)
-					+ "-axis size (" + std::to_string(profileAxisSize) + ").");
+				log(tools::logger::LogLevel::ERROR, std::format(
+					"Expand '{}': cannot connect input; source size ({}) must equal the output's {}-axis size ({}).",
+					this->getUniqueName(), srcDims.size,
+					ProjectionAxisToString.at(parameters.broadcastProfileAxis), profileAxisSize));
 				return;
 			}
 
