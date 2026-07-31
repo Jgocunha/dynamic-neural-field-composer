@@ -8,35 +8,33 @@
 namespace dnf_composer::element
 {
 	/// @brief Parameters that govern a NeuralField's dynamics.
+	///
+	/// ### Copy / move semantics (rule of five)
+	/// `activationFunction` is a `unique_ptr<ActivationFunction>`, so this type owns a
+	/// polymorphic value and cannot rely on compiler-generated copy/move:
+	///  - **Copy** (constructor and assignment) deep-clones the source's activation
+	///    function via `ActivationFunction::clone()`. **Null policy:** if the source's
+	///    `activationFunction` is null, the copy materializes a default
+	///    `SigmoidFunction(0, 10)` rather than propagating null. This is required for
+	///    correctness, not just consistency: `NeuralField::calculateOutput()`
+	///    dereferences `parameters.activationFunction` unconditionally (no null check),
+	///    and `ElementFactory::createElement(NEURAL_FIELD)` constructs a default,
+	///    null-activation `NeuralFieldParameters` that reaches a `NeuralField` only
+	///    through this copy path -- so "null copies to null" would leave a
+	///    `NeuralField` with a dangling dereference on the very next `init()`/`step()`.
+	///    Copy constructor and copy assignment intentionally agree on this policy
+	///    (previously they did not: the constructor substituted a default sigmoid while
+	///    assignment reset to null -- see issue #119).
+	///  - **Move** (constructor and assignment) transfers ownership of the source's
+	///    `activationFunction` pointer directly -- no clone, no allocation. The
+	///    moved-from source is left with `activationFunction == nullptr`, the same
+	///    valid "unconfigured" state as a default-constructed instance.
 	/// @ingroup elements
 	struct NeuralFieldParameters final : ElementSpecificParameters
 	{
 		double tau;                                             ///< Time constant of the field's relaxation dynamics.
 		double startingRestingLevel;                            ///< Homogeneous resting level (h); sub-threshold when negative.
 		std::unique_ptr<ActivationFunction> activationFunction; ///< Nonlinearity applied to activation to produce output.
-
-		NeuralFieldParameters& operator=(const NeuralFieldParameters& other)
-		{
-			if (this != &other)
-			{
-				tau = other.tau;
-				startingRestingLevel = other.startingRestingLevel;
-				if (other.activationFunction) {
-					activationFunction = other.activationFunction->clone();
-				} else {
-					activationFunction.reset();
-}
-			}
-			return *this;
-		}
-
-		bool operator==(const NeuralFieldParameters& other) const
-		{
-			constexpr double epsilon = 1e-6;
-			return std::abs(tau - other.tau) < epsilon &&
-				std::abs(startingRestingLevel - other.startingRestingLevel) < epsilon &&
-				activationFunction == other.activationFunction;
-		}
 
 		/// @brief Default constructor: tau=25, restingLevel=-5, sigmoid(0, 10).
 		NeuralFieldParameters()
@@ -53,15 +51,59 @@ namespace dnf_composer::element
 			  activationFunction(activationFunction.clone())
 		{ }
 
+		/// @brief Copy constructor. Deep-clones @p other's activation function.
+		/// See the class-level doc comment for the null-source policy (materializes
+		/// a default `SigmoidFunction(0, 10)`, matching copy assignment).
 		NeuralFieldParameters(const NeuralFieldParameters& other)
+			: tau(other.tau), startingRestingLevel(other.startingRestingLevel),
+			  activationFunction(other.activationFunction
+				  ? other.activationFunction->clone()
+				  : std::make_unique<SigmoidFunction>(0.0, 10.0))
+		{}
+
+		/// @brief Copy assignment. Deep-clones @p other's activation function.
+		/// Same null-source policy as the copy constructor -- see the class-level
+		/// doc comment.
+		NeuralFieldParameters& operator=(const NeuralFieldParameters& other)
 		{
-			tau = other.tau;
-			startingRestingLevel = other.startingRestingLevel;
-			if (other.activationFunction == nullptr) {
-				activationFunction = std::make_unique<SigmoidFunction>(0.0, 10.0);
-			} else {
-				activationFunction = other.activationFunction->clone();
-}
+			if (this != &other)
+			{
+				tau = other.tau;
+				startingRestingLevel = other.startingRestingLevel;
+				activationFunction = other.activationFunction
+					? other.activationFunction->clone()
+					: std::make_unique<SigmoidFunction>(0.0, 10.0);
+			}
+			return *this;
+		}
+
+		/// @brief Move constructor. Transfers @p other's activation function
+		/// (no clone). @p other is left with `activationFunction == nullptr`.
+		NeuralFieldParameters(NeuralFieldParameters&& other) noexcept = default;
+
+		/// @brief Move assignment. Transfers @p other's activation function
+		/// (no clone). @p other is left with `activationFunction == nullptr`.
+		NeuralFieldParameters& operator=(NeuralFieldParameters&& other) noexcept = default;
+
+		~NeuralFieldParameters() override = default;
+
+		/// @brief Value equality.
+		///
+		/// Compares @c tau and @c startingRestingLevel within an epsilon tolerance, and
+		/// compares @c activationFunction *by value* (concrete type and parameters) --
+		/// never by pointer identity. Two null activation functions compare equal; a
+		/// null and a non-null one never do; two non-null functions of different
+		/// concrete types never compare equal even when their numeric fields coincide
+		/// (e.g. a `SigmoidFunction(0, 10)` and an `AbsSigmoidFunction(0, 10)`).
+		bool operator==(const NeuralFieldParameters& other) const
+		{
+			constexpr double epsilon = 1e-6;
+			if (std::abs(tau - other.tau) >= epsilon ||
+				std::abs(startingRestingLevel - other.startingRestingLevel) >= epsilon)
+			{
+				return false;
+			}
+			return activationFunctionsEqual(activationFunction, other.activationFunction);
 		}
 
 		[[nodiscard]] std::string toString() const override
@@ -75,6 +117,49 @@ namespace dnf_composer::element
 			return result.str();
 		}
 
+	private:
+		/// @brief Value-compare two possibly-null activation functions.
+		///
+		/// Both null compares equal; exactly one null never compares equal. When both
+		/// are non-null, the concrete type is checked (via `dynamic_cast`, mirroring the
+		/// dispatch pattern already used in `simulation_file_manager.cpp`) before
+		/// delegating to that type's own value `operator==` -- this guards against two
+		/// different activation-function types with numerically-coincidental fields
+		/// wrongly comparing equal.
+		[[nodiscard]] static bool activationFunctionsEqual(
+			const std::unique_ptr<ActivationFunction>& lhs,
+			const std::unique_ptr<ActivationFunction>& rhs)
+		{
+			if (!lhs || !rhs) {
+				return !lhs && !rhs;
+			}
+			if (lhs->type != rhs->type) {
+				return false;
+			}
+			switch (lhs->type)
+			{
+			case ActivationFunctionType::SIGMOID:
+			{
+				const auto* l = dynamic_cast<const SigmoidFunction*>(lhs.get());
+				const auto* r = dynamic_cast<const SigmoidFunction*>(rhs.get());
+				return l && r && (*l == *r);
+			}
+			case ActivationFunctionType::HEAVISIDE:
+			{
+				const auto* l = dynamic_cast<const HeavisideFunction*>(lhs.get());
+				const auto* r = dynamic_cast<const HeavisideFunction*>(rhs.get());
+				return l && r && (*l == *r);
+			}
+			case ActivationFunctionType::ABSSIGMOID:
+			{
+				const auto* l = dynamic_cast<const AbsSigmoidFunction*>(lhs.get());
+				const auto* r = dynamic_cast<const AbsSigmoidFunction*>(rhs.get());
+				return l && r && (*l == *r);
+			}
+			default:
+				return false;
+			}
+		}
 	};
 
 	/// @brief Describes a single activation bump (peak) in a neural field.

@@ -561,3 +561,154 @@ TEST(NeuralFieldStability, HugeThresholdIsStableQuickly)
     f->step(1.0, 1.0);
     EXPECT_TRUE(f->isStable());
 }
+
+// ---------------------------------------------------------------------------
+// Regression tests for issue #119: NeuralFieldParameters::operator== compared
+// the activationFunction unique_ptr by address instead of by value, and the
+// type had a rule-of-five violation (copy ctor and copy assignment disagreed
+// on null handling; no move operations were declared, so moves silently
+// degraded to (deep-cloning) copies).
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldParametersEquality, IdenticallyParameterizedSigmoidsCompareEqual)
+{
+    // Two independently-constructed parameter sets with numerically identical
+    // sigmoid activation functions must compare equal -- value equality, not
+    // pointer identity.
+    const NeuralFieldParameters a{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } };
+    const NeuralFieldParameters b{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } };
+    EXPECT_TRUE(a == b);
+}
+
+TEST(NeuralFieldParametersEquality, DifferentSigmoidParametersCompareNotEqual)
+{
+    const NeuralFieldParameters a{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } };
+    const NeuralFieldParameters b{ 25.0, -5.0, SigmoidFunction{ 0.0, 20.0 } };
+    EXPECT_FALSE(a == b);
+}
+
+TEST(NeuralFieldParametersEquality, SameNumericFieldsDifferentActivationTypeCompareNotEqual)
+{
+    // AbsSigmoidFunction(x_shift, beta) and SigmoidFunction(x_shift, steepness) can
+    // hold numerically-coincidental fields (0.0 and 10.0 here). Comparing polymorphic
+    // activation functions purely by field value (without a type check) would wrongly
+    // report these as equal.
+    const NeuralFieldParameters sigmoid{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } };
+    const NeuralFieldParameters absSigmoid{ 25.0, -5.0, AbsSigmoidFunction{ 0.0, 10.0 } };
+    EXPECT_FALSE(sigmoid == absSigmoid);
+}
+
+TEST(NeuralFieldParametersEquality, BothNullActivationFunctionsCompareEqual)
+{
+    const NeuralFieldParameters a; // default ctor: activationFunction == nullptr
+    const NeuralFieldParameters b;
+    EXPECT_TRUE(a == b);
+}
+
+TEST(NeuralFieldParametersEquality, NullVsNonNullActivationFunctionCompareNotEqual)
+{
+    const NeuralFieldParameters withNull;
+    const NeuralFieldParameters withSigmoid{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } };
+    EXPECT_FALSE(withNull == withSigmoid);
+    EXPECT_FALSE(withSigmoid == withNull);
+}
+
+TEST(NeuralFieldParametersEquality, DifferentTauStillCompareNotEqualWithSameActivation)
+{
+    const NeuralFieldParameters a{ 25.0, -5.0, SigmoidFunction{ 0.0, 10.0 } };
+    const NeuralFieldParameters b{ 30.0, -5.0, SigmoidFunction{ 0.0, 10.0 } };
+    EXPECT_FALSE(a == b);
+}
+
+// ---------------------------------------------------------------------------
+// Copy constructor / copy assignment: must produce equal results and agree on
+// null-source handling.
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldParametersCopy, CopyConstructorPreservesActivationFunctionValue)
+{
+    const NeuralFieldParameters source{ 25.0, -5.0, SigmoidFunction{ 1.0, 12.0 } };
+    const NeuralFieldParameters copy(source); // NOLINT(performance-unnecessary-copy-initialization)
+    EXPECT_TRUE(copy == source);
+    ASSERT_NE(copy.activationFunction, nullptr);
+    const auto* sig = dynamic_cast<const SigmoidFunction*>(copy.activationFunction.get());
+    ASSERT_NE(sig, nullptr);
+    EXPECT_DOUBLE_EQ(sig->getXShift(), 1.0);
+    EXPECT_DOUBLE_EQ(sig->getSteepness(), 12.0);
+}
+
+TEST(NeuralFieldParametersCopy, CopyAssignmentPreservesActivationFunctionValue)
+{
+    const NeuralFieldParameters source{ 25.0, -5.0, SigmoidFunction{ 1.0, 12.0 } };
+    NeuralFieldParameters dest{ 0.0, 0.0, HeavisideFunction{ 3.0 } };
+    dest = source;
+    EXPECT_TRUE(dest == source);
+    ASSERT_NE(dest.activationFunction, nullptr);
+    const auto* sig = dynamic_cast<const SigmoidFunction*>(dest.activationFunction.get());
+    ASSERT_NE(sig, nullptr);
+    EXPECT_DOUBLE_EQ(sig->getXShift(), 1.0);
+    EXPECT_DOUBLE_EQ(sig->getSteepness(), 12.0);
+}
+
+TEST(NeuralFieldParametersCopy, CopyConstructorAndCopyAssignmentAgreeOnNullSource)
+{
+    // Regression for the core rule-of-five bug: the copy constructor used to
+    // substitute a default SigmoidFunction(0, 10) for a null source, while copy
+    // assignment reset() the destination to null instead. Both paths must now
+    // produce the exact same, equal result from the same null source.
+    const NeuralFieldParameters nullSource; // activationFunction == nullptr
+
+    const NeuralFieldParameters viaCtor(nullSource);
+
+    NeuralFieldParameters viaAssign{ 1.0, 1.0, HeavisideFunction{ 9.0 } };
+    viaAssign = nullSource;
+
+    EXPECT_TRUE(viaCtor == viaAssign)
+        << "copy ctor: " << viaCtor.toString() << " vs copy assign: " << viaAssign.toString();
+    // Both must leave the copy able to compute output (never null), since
+    // NeuralField::calculateOutput() dereferences activationFunction unconditionally.
+    EXPECT_NE(viaCtor.activationFunction, nullptr);
+    EXPECT_NE(viaAssign.activationFunction, nullptr);
+}
+
+// ---------------------------------------------------------------------------
+// Move constructor / move assignment: must be true transfers, not clones.
+// ---------------------------------------------------------------------------
+
+TEST(NeuralFieldParametersMove, MoveConstructorTransfersOwnershipWithoutCloning)
+{
+    NeuralFieldParameters source{ 25.0, -5.0, SigmoidFunction{ 2.0, 15.0 } };
+    const ActivationFunction* rawBeforeMove = source.activationFunction.get();
+
+    const NeuralFieldParameters moved(std::move(source));
+
+    // A real move transfers the same pointee -- a clone-based "fake move" would
+    // allocate a new object at a different address.
+    EXPECT_EQ(moved.activationFunction.get(), rawBeforeMove);
+    EXPECT_DOUBLE_EQ(moved.tau, 25.0);
+    EXPECT_DOUBLE_EQ(moved.startingRestingLevel, -5.0);
+    // Moved-from source is left in the same valid "unconfigured" state as a
+    // default-constructed NeuralFieldParameters.
+    EXPECT_EQ(source.activationFunction, nullptr); // NOLINT(bugprone-use-after-move)
+}
+
+TEST(NeuralFieldParametersMove, MoveAssignmentTransfersOwnershipWithoutCloning)
+{
+    NeuralFieldParameters source{ 25.0, -5.0, SigmoidFunction{ 2.0, 15.0 } };
+    const ActivationFunction* rawBeforeMove = source.activationFunction.get();
+
+    NeuralFieldParameters dest{ 0.0, 0.0, HeavisideFunction{ 9.0 } };
+    dest = std::move(source);
+
+    EXPECT_EQ(dest.activationFunction.get(), rawBeforeMove);
+    EXPECT_DOUBLE_EQ(dest.tau, 25.0);
+    EXPECT_DOUBLE_EQ(dest.startingRestingLevel, -5.0);
+    EXPECT_EQ(source.activationFunction, nullptr); // NOLINT(bugprone-use-after-move)
+}
+
+TEST(NeuralFieldParametersMove, TypeIsMoveConstructibleAndMoveAssignable)
+{
+    // Guards against a silent regression back to copy-only semantics.
+    EXPECT_TRUE(std::is_move_constructible_v<NeuralFieldParameters>);
+    EXPECT_TRUE(std::is_move_assignable_v<NeuralFieldParameters>);
+}
