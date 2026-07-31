@@ -148,7 +148,7 @@ A static-layout ImGui window opens with the Node Graph, Element Inspector, Simul
 
 With the GUI open:
 
-- Select **field** in the **Element Inspector** and try lowering `restingLevel` (more sub-threshold) or raising `tau` (slower response).
+- Select **field** in the **Element Inspector** and try lowering `startingRestingLevel` (more sub-threshold) or raising `tau` (slower response).
 - Select **kernel** and increase `amplitude` — at some point the bump becomes self-sustaining even after you remove the stimulus (this crosses into the **memory instability** regime — compare with `examples/memory_instability.cpp`, which uses a `MexicanHatKernel` instead).
 - See the [Parameter Tuning Guide](Parameter-Tuning-Guide) for a systematic walkthrough of what each parameter does and typical value ranges.
 

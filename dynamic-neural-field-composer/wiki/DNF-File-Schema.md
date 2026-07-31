@@ -32,7 +32,7 @@ Any other root JSON type (string, number, object without a valid `elements` arra
 
 ## Element object — common fields
 
-Every entry in `elements` has these fields, written by `elementToJson()`:
+Every entry in `elements` has these common fields when applicable; 2D-only fields may be omitted from 1D files:
 
 | Key | Type | Description |
 |---|---|---|
@@ -40,8 +40,8 @@ Every entry in `elements` has these fields, written by `elementToJson()`:
 | `label` | `[int, string]` pair | The `ElementLabel` enum value and its string form, e.g. `[1, "neural field"]`. Only the **string** is used on load (via a reverse lookup in `element::ElementLabelToString`); the integer is informational. |
 | `x_max` | int | Field size (`ElementDimensions::x_max`). |
 | `d_x` | number | Spatial step size (`ElementDimensions::d_x`). |
-| `y_max` | int | 2D field size along y. Only meaningful for `*_2D` elements; present on every element (defaults to `1` on read if absent, for backward compatibility with 1D-only files). |
-| `d_y` | number | 2D step size along y (defaults to `1.0` on read if absent). |
+| `y_max` | int | 2D field size along y. Present for `*_2D` elements; defaults to `1` on read when absent (e.g. in 1D-only files). |
+| `d_y` | number | 2D step size along y. Present for `*_2D` elements; defaults to `1.0` on read when absent. |
 | `inputs` | array of `[uniqueName, component]` pairs, or `[]`/`null` | One entry per connected input: the source element's `uniqueName` and which of its components (e.g. `"output"`, `"activation"`) to read. Empty when the element has no inputs. |
 
 Element-specific fields (below) are added directly alongside these common fields — there's no separate "parameters" sub-object.
@@ -84,7 +84,7 @@ From `data/memory-trace/memory-trace.dnf` (trimmed to one element):
 
 ## Element-specific fields, by label
 
-These are the exact keys `elementToJson()` writes (and `jsonToElements()` requires) for each supported `ElementLabel`. Field names match the corresponding `*Parameters` struct members 1:1 (see [Element Reference](Element-Reference) for what each means).
+These are the keys `elementToJson()` writes for each supported `ElementLabel`; some are optional or fall back to a documented default on load (as noted per field). Field names match the corresponding `*Parameters` struct members 1:1 (see [Element Reference](Element-Reference) for what each means).
 
 ### `neural field` / `neural field 2d`
 

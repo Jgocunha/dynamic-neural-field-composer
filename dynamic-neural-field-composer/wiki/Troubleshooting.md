@@ -10,7 +10,7 @@ Common problems building and running dnf-composer, and how to fix them. Entries 
 
 This is a `FATAL_ERROR` raised directly in the top-level `CMakeLists.txt` when the `VCPKG_ROOT` environment variable is not set. The project's CMake configuration unconditionally includes `${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake` as its toolchain file, so `VCPKG_ROOT` must exist before you invoke CMake at all.
 
-**Fix:** run the setup script for your platform first — it clones and bootstraps vcpkg and persists `VCPKG_ROOT` for you (see [Getting Started → Quick setup](Getting-Started#quick-setup-recommended)):
+**Fix:** run the setup script for your platform first — it clones and bootstraps vcpkg and prints the `VCPKG_ROOT` export needed by your shell (see [Getting Started → Quick setup](Getting-Started#quick-setup-recommended)):
 
 ```bash
 # Windows
@@ -82,9 +82,9 @@ Thrown from the `GaussStimulus`/`GaussStimulus2D`/`TimedGaussStimulus`/`TimedGau
 
 `ErrorCode::ELEM_INVALID_SIZE`, thrown e.g. from `Collapse`/`Expand` when the configured dimensions are inconsistent with the axis being kept/broadcast. Double-check that a `Collapse`'s own (1D) output size matches the kept axis of its `inputDimensions`, and that an `Expand`'s profile-axis size matches its 1D input's size — see [Element Reference → Collapse](Element-Reference#collapse) and [→ Expand](Element-Reference#expand).
 
-### Log error: "Input '...' has a different size than '...'."
+### `ERROR`: "Input '...' has a different size than '...'."
 
-Logged (not thrown) from `Element::addInput()` when you connect two elements whose component sizes don't match — the connection is silently rejected (a warning is logged, but `addInput` returns without throwing, so check your console/log output if a wire-up seems to have no effect).
+Logged (not thrown) from `Element::addInput()` at `ERROR` level when you connect two elements whose component sizes don't match — the connection is silently rejected (`addInput` returns without throwing, so check your console/log output if a wire-up seems to have no effect).
 
 **Fix:** either resize one side to match, or insert a `Resize`/`Resize2D`/`Collapse`/`Expand` element between them (see [Element Reference](Element-Reference) for each).
 
@@ -118,7 +118,7 @@ Both logged from `Element::addInput()` (and the overridden `Resize`/`Collapse`/`
 
 ### `FieldCoupling` weights didn't load
 
-`tryReadWeights()` logs `"No weights file found for '<name>' at: <path>. Starting with zero weights."` at **INFO** level (not an error) when `<coupling_name>_weights.txt` doesn't exist next to the `.dnf` file — this is expected the first time you save a fresh coupling, and not itself a bug. If you expected existing weights to load and see this message instead, check that the `_weights.txt` file is in the **same directory as the `.dnf` file** — weight paths are resolved relative to the `.dnf` file's parent directory, not the working directory the executable was launched from.
+`tryReadWeights()` logs `"No weights file found for '<name>' at: <path>. Starting with zero weights."` at **INFO** level (not an error) when `<coupling_name>_weights.txt` doesn't exist next to the `.dnf` file — this is expected when loading a `.dnf` whose coupling weights have not previously been saved or whose sidecar file is missing, and not itself a bug. If you expected existing weights to load and see this message instead, check that the `_weights.txt` file is in the **same directory as the `.dnf` file** — weight paths are resolved relative to the `.dnf` file's parent directory, not the working directory the executable was launched from.
 
 If the file exists but its size doesn't match the coupling's current input/output dimensions, `readWeights()` logs `"Weight matrix read from file has a different size than expected! Expected: <N>, Got: <M>"` and leaves the weight matrix untouched (zeros) rather than partially loading it — this usually means the field sizes changed since the weights were saved.
 

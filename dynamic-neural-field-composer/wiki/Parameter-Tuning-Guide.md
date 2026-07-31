@@ -12,7 +12,7 @@ All parameter names below are the actual member names of the `*Parameters` struc
 
 The field follows Amari-type dynamics:
 
-```
+```text
 tau * du/dt = -u + h + s(x, t) + (w * f(u))(x)
 ```
 
@@ -122,7 +122,7 @@ White noise convolved with a Gaussian of the given `width`, then scaled by `ampl
 
 The trace builds slowly wherever the connected field's supra-threshold (`"output"`, i.e. post-sigmoid) signal exceeds `threshold`, and decays slowly everywhere else:
 
-```
+```text
 if input[i] > threshold:  output[i] += deltaT * (1/tauBuild)  * (-output[i] + input[i])
 else:                      output[i] += deltaT * (1/tauDecay) * (-output[i])
 ```
@@ -148,7 +148,7 @@ else:                      output[i] += deltaT * (1/tauDecay) * (-output[i])
 
 `x_max` (field size) and `d_x` (step size) aren't tuning parameters in the dynamical sense, but they interact with several of the above:
 
-- Kernel/stimulus `width` and `position` values are in the same units as `d_x * x_max` — doubling `d_x` while keeping `width` fixed effectively narrows the kernel relative to the field.
+- Kernel/stimulus `width` and `position` are index-space values bounded by `x_max` (see [GaussStimulus](#gaussstimulus--static-localized-input) above), but internally divided by `d_x` before being applied to the profile — doubling `d_x` while keeping `width`/`position` fixed effectively narrows the kernel and shifts its peak relative to the field's physical extent.
 - Changing `x_max` on an element that already has inputs of a different size will not resize automatically for arbitrary reconnection — see `Resize`/`Resize2D` in [Element Reference](Element-Reference#resize) for bridging fields of different sizes, and [Troubleshooting](Troubleshooting) for the `ELEM_INPUT_SIZE_MISMATCH` / `ELEM_INVALID_SIZE` errors this can trigger.
 
 ---
