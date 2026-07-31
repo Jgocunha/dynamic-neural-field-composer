@@ -59,10 +59,27 @@ namespace dnf_composer
 		std::shared_ptr<imgui_kit::UserInterface> gui;
 		bool guiActive = true;
 		static float uiScalePct; ///< User-controlled UI scale percentage (50–200%).
+		static inline bool quitRequested = false; ///< Set by requestQuit(); see hasGUIBeenClosed().
 
 	public:
 		static float  getUiScalePct()          { return uiScalePct; }
 		static void   setUiScalePct(float pct) { uiScalePct = pct; }
+
+		/// @brief Ask the application to shut down at the end of the current frame.
+		///
+		/// The UI calls this instead of terminating the process directly (issue #122):
+		/// a request makes @c hasGUIBeenClosed() return true, so the ordinary main loop
+		/// falls through to @c close() and every destructor runs normally.
+		/// Existing loops need no change.
+		static void requestQuit();
+
+		/// @brief Return true once @c requestQuit() has been called.
+		[[nodiscard]] static bool isQuitRequested();
+
+		/// @brief Clear the quit request. For tests only: a real process exits shortly
+		/// after requesting a quit, but the flag is process-wide, so a test that sets it
+		/// must restore it to avoid bleeding state into unrelated tests.
+		static void resetQuitRequestForTesting();
 
 		/// @brief Construct an Application.
 		/// @param simulation    Shared simulation to drive (may be nullptr).
@@ -105,7 +122,8 @@ namespace dnf_composer
 		/// @brief Toggle the GUI on or off at runtime.
 		void toggleGUI();
 
-		/// @brief Return true if the user has closed the main window.
+		/// @brief Return true if the user has closed the main window or requested a quit.
+		/// @see requestQuit()
 		[[nodiscard]] bool hasGUIBeenClosed() const;
 
 		/// @brief Return true if the GUI overlay is currently active.

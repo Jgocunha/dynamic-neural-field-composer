@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **File → Quit** and **Ctrl+Q** called `std::exit(0)` from inside the ImGui render
+  callback, terminating the process without unwinding the stack: `Application::close()`
+  never ran and no destructor fired. Both now call the new `Application::requestQuit()`,
+  which `hasGUIBeenClosed()` reports, so the ordinary main loop falls through to
+  `close()` and shuts down normally. Existing main loops need no change (#122)
+
+### Added
+- `Application::requestQuit()` / `isQuitRequested()` — ask the application to shut down
+  at the end of the current frame, and query whether a shutdown was requested (#122)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed

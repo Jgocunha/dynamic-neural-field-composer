@@ -90,6 +90,23 @@ app.close();                   // tear down GUI and simulation
 1. Calls `simulation->step()`
 2. Calls `gui->render()`, which renders all registered ImGui windows and presents the frame (skipped if GUI is inactive)
 
+### Quitting
+
+`hasGUIBeenClosed()` returns true both when the user closes the main window and when
+a quit has been requested — **File → Quit** and **Ctrl+Q** both call
+`Application::requestQuit()`. The loop above therefore exits on either, and `close()`
+plus every destructor runs normally. No change is needed to an existing main loop.
+
+To end the application from your own code, call:
+
+```cpp
+Application::requestQuit();       // loop exits at the end of the current frame
+bool quitting = Application::isQuitRequested();
+```
+
+The request is deliberately not a process exit: earlier versions called `std::exit(0)`
+from inside the menu callback, which skipped `close()` and every destructor.
+
 ---
 
 ## GUI control
