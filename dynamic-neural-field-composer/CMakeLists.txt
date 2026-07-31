@@ -8,8 +8,27 @@ project(dynamic-neural-field-composer
 # Define library version
 set(DNF_COMPOSER_VERSION_MAJOR 2 CACHE STRING "major version" FORCE)
 set(DNF_COMPOSER_VERSION_MINOR 9 CACHE STRING "minor version" FORCE)
-set(DNF_COMPOSER_VERSION_PATCH 4 CACHE STRING "patch version" FORCE)
+set(DNF_COMPOSER_VERSION_PATCH 6 CACHE STRING "patch version" FORCE)
 set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR}.${DNF_COMPOSER_VERSION_PATCH} CACHE STRING "version" FORCE)
+
+# Git commit at configure time, used to stamp perf-tool result logs (tests/benchmark,
+# tests/profiler) with the code version actually measured. Best-effort: falls back to
+# "nogit" outside a git checkout (e.g. a source tarball).
+find_package(Git QUIET)
+set(DNF_COMPOSER_GIT_SHA "nogit")
+if(Git_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE DNF_COMPOSER_GIT_SHA_OUT
+        RESULT_VARIABLE DNF_COMPOSER_GIT_SHA_RESULT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if(DNF_COMPOSER_GIT_SHA_RESULT EQUAL 0 AND NOT DNF_COMPOSER_GIT_SHA_OUT STREQUAL "")
+        set(DNF_COMPOSER_GIT_SHA ${DNF_COMPOSER_GIT_SHA_OUT})
+    endif()
+endif()
 
 set(DNF_COMPOSER_LIB_PREFIX "release")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -111,6 +130,8 @@ set(tools_headers
         "include/tools/profiling.h"
         "include/tools/utils.h"
         "include/tools/file_dialog.h"
+        "include/tools/simd_dispatch.h"
+        "include/tools/fft_convolution.h"
 )
 set(exceptions_headers
         "include/exceptions/exception.h"
@@ -210,6 +231,9 @@ set(src
         "src/element_parameters/element_parameters.cpp"
 
         "src/tools/math.cpp"
+        "src/tools/simd_dispatch.cpp"
+        "src/tools/simd_dispatch_avx2.cpp"
+        "src/tools/fft_convolution.cpp"
         "src/tools/profiling.cpp"
         "src/tools/utils.cpp"
         "src/tools/logger.cpp"
@@ -238,7 +262,29 @@ set(src
 # Define library target
 add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
-target_include_directories(${CMAKE_PROJECT_NAME} 
+
+# AVX2+FMA is scoped to ONE translation unit (src/tools/simd_dispatch_avx2.cpp),
+# not the whole library: every other file, and every dnf-composer executable,
+# compiles at the toolchain's default baseline. Whether the AVX2 kernel actually
+# runs is decided at RUNTIME by a cpuid check (tools/simd_dispatch.cpp/.h) — the
+# same mechanism OpenCV/FFTW use to dispatch their own AVX2 code paths — so this
+# is a portability fix, not a fairness reduction: an ablation showed AVX2 is
+# worth ~4x on the convolution hot path and required for dnf-composer's 2D
+# throughput to stay ahead of the other DFT frameworks (see .claude reports in
+# the benchmarking repo), so the kernel is still used whenever the host CPU
+# supports it — it just no longer requires the CPU to support it to run at all.
+# GCC/Clang's -mavx2 does not imply FMA the way MSVC's /arch:AVX2 does, so -mfma
+# is required alongside it for the _mm256_fmadd_pd calls in that one file.
+# These flags (and the <immintrin.h>/cpuid intrinsics they enable) are x86-only;
+# on ARM (e.g. Apple Silicon macOS runners) simd_dispatch.cpp/.h guard themselves
+# out to a portable "AVX2 never available" fallback instead, so no AVX2 flags
+# are applied there.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i.86)$")
+set_source_files_properties(src/tools/simd_dispatch_avx2.cpp PROPERTIES
+    COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>;$<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>;$<$<CXX_COMPILER_ID:GNU,Clang>:-mfma>"
+)
+endif()
+target_include_directories(${CMAKE_PROJECT_NAME}
     PUBLIC $<INSTALL_INTERFACE:include> 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include 
 )
@@ -255,6 +301,12 @@ find_package(unofficial-imgui-node-editor CONFIG REQUIRED)
 # Setup nlohmann-json
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+
+# FFTW3 — spectral (circular) convolution for kernels wide enough that the
+# direct/separable path is no longer cheaper (tools/fft_convolution.h). GPL
+# licensed; compatible with this project's GPL-3.0 license (see LICENSE).
+find_package(FFTW3 CONFIG REQUIRED)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE FFTW3::fftw3)
 
 # OpenGL must be found before importing imgui-platform-kit so that the
 # OpenGL::GL target exists when CMake resolves its exported link interface.

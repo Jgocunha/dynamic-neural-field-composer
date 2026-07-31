@@ -8,19 +8,14 @@
 //  This file deliberately does NOT include the production element headers for
 //  the maths — it re-expresses each definition from first principles.
 //
-//  IMPORTANT PRODUCTION QUIRK (flagged to god — see report):
 //  SigmoidFunction::apply() — the path actually used by NeuralField::calculateOutput()
-//  every step — computes the logistic sigmoid in **float32** (it casts steepness,
-//  x_shift and the activation value to `float` before calling std::exp), while
-//  SigmoidFunction::operator() (unused by the field dynamics) computes it in
-//  float64 via tools::math::sigmoid(). The two code paths of the SAME class are
-//  numerically inconsistent by ~1e-7 relative. HeavisideFunction::apply() and
-//  AbsSigmoidFunction::apply() have no such split — both are plain float64 and
-//  match their respective operator() exactly.
-//
-//  To keep this an ANALYTIC-EQUIVALENCE test (not a loosened tolerance), we
-//  mirror the float32 computation bit-for-bit here rather than silently
-//  widening kTol.
+//  every step — computes the logistic sigmoid in full float64 (previously float32;
+//  the float32/float64 split with operator() was a production inconsistency, fixed
+//  by moving apply() to float64 end-to-end), with the exponent clamped to [-88, 88]
+//  to avoid a denormal-producing overflow path in std::exp — see the comment on
+//  SigmoidFunction::apply() for why. HeavisideFunction::apply() and
+//  AbsSigmoidFunction::apply() are plain float64 and match their respective
+//  operator() exactly.
 // ----------------------------------------------------------------------------
 #include <vector>
 #include <cmath>
@@ -36,13 +31,14 @@
 
 namespace dnf_composer::golden::ref
 {
-    // Mirrors SigmoidFunction::apply() — float32 internal precision (see note above).
+    // Mirrors SigmoidFunction::apply() — full float64, exponent clamped to [-88, 88].
     inline double sigmoidApply(double x, double x_shift, double steepness)
     {
-        const float s  = static_cast<float>(steepness);
-        const float xs = static_cast<float>(x_shift);
-        const float xv = static_cast<float>(x);
-        return static_cast<double>(1.0f / (1.0f + std::exp(-s * (xv - xs))));
+        const double s  = steepness;
+        const double xs = x_shift;
+        double e = -s * (x - xs);
+        e = e < -88.0 ? -88.0 : (e > 88.0 ? 88.0 : e);
+        return 1.0 / (1.0 + std::exp(e));
     }
 
     inline std::vector<double> sigmoidApply(const std::vector<double>& x, double x_shift, double steepness)

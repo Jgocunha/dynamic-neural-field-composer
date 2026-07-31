@@ -4,6 +4,124 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `NodeGraphWindow` called `ImNodeEditor::EndCreate()` only on the
+  `BeginCreate() == true` path. `BeginCreate()` marks the creator action active
+  *before* it can return false, and only `EndCreate()` clears that flag, so any
+  frame without a create action left the action stuck active — tripping
+  `IM_ASSERT(false == m_InActive)` on the next frame, and silently breaking
+  drag-to-connect in builds with asserts compiled out. `EndCreate()` is now called
+  unconditionally, matching upstream's own examples. Found by the new headless UI
+  suite (#127)
+
+### Added
+- Headless ImGui test harness (`tests/user_interface/ui_test_harness.h`) that drives
+  real `render()` calls with no window and no OpenGL context, plus ~190 tests across
+  the user-interface and visualization layers, so those files are genuinely exercised
+  rather than sitting at 0% in the coverage denominator (#127)
+
+## [2.9.6] - 2026-07-31
+
+### Fixed
+- `Element`'s input cache stored a `{pointer, size}` snapshot of each connected source
+  taken once when the cache was built; if a source was resized via `changeDimensions()`
+  afterward, the size snapshot went stale and `updateInput()` could read past (or
+  under-read) the source's actual current buffer. The cache now stores a
+  `const vector<double>*` and re-reads `.size()` on every call, so it can never be
+  stale; a source that grows past what the receiver's buffer can hold is now
+  proactively disconnected with a warning instead of silently corrupting memory (#40)
+- `SimulationRecorder::startRecording` called the throwing `create_directories`
+  overload (result never checked) then opened the file; on failure it logged and
+  returned `void`, so the caller believed recording was active while nothing was
+  written. `startRecording` now returns `bool` and returns `false` on every failure
+  path (directory could not be created, or the file could not be opened) before a
+  session is created, so `isRecording()`/`hasActiveRecordings()` reflect reality by
+  construction; the GUI recomputes its recording-state flags accordingly (#43)
+- `gaussNorm` divided by the Gaussian sum with no guard; a degenerate width (σ→0) or
+  otherwise near-zero/non-finite sum produced NaN/Inf that silently propagated through
+  every connected field. Now guards the denominator and returns a safe zero vector
+  with a logged warning instead (#42)
+- `ElementDimensions{N}` (single int) selects the field dimensionality (must be 1 or
+  2), while `ElementDimensions{N, d_x}` builds a 1D field of length `N` — a one-argument
+  difference with opposite meaning. An invalid single-int value previously logged an
+  `ERROR` but still returned a usable 100-cell object, silently mislabeling the
+  requested size (and, at larger `N` in a separate downstream benchmark, tripping a
+  stack-buffer overrun). The single-int constructor now throws on an invalid
+  dimensionality, and all three constructors validate extent/spacing/sample-count
+  (non-positive, non-finite, or overflowing `size_x * size_y`) before it can reach a
+  buffer allocation (#86)
+- A malformed or truncated `.dnf` file crashed deserialization with an unhandled
+  `nlohmann::json` exception instead of failing cleanly, and could leave the
+  simulation half-loaded. `SimulationFileManager::jsonToElements` now validates every
+  element's required fields (`uniqueName`, `label`, `x_max`, `d_x`) in a pass over the
+  whole file before constructing anything, so a malformed entry anywhere aborts the
+  load with a descriptive error and no partial mutation (#39)
+- `PlotControlWindow`'s "quick populate" action added new 2D neural fields as line
+  plots instead of heatmaps (#57)
+
+### Changed
+- Converted ~71 log-message-building call sites across 19 `src/` files from manual
+  `+`/`std::to_string`/`ostringstream` concatenation to `std::format`; message text is
+  preserved verbatim, only the construction mechanism changed (#61)
+- Removed dead commented-out code from the line-plot renderer and replaced hardcoded
+  raw ImPlot axis indices (`Axes[0]`, `Axes[3]`) with the named `ImAxis_X1`/`ImAxis_Y1`
+  constants (#52)
+
+### Added
+- Unit tests for the plot parameter classes (`PlotDimensions`, `PlotAnnotations`,
+  `PlotCommonParameters`, `PlotType`), which previously had no direct coverage (#66)
+- Tutorial, Parameter Tuning Guide, `.dnf` File Schema, and Troubleshooting wiki pages (#56)
+
+## [2.9.5] - 2026-07-30
+
+### Added
+- Extended the hybrid direct/FFT convolution path (previously `MexicanHatKernel2D`
+  only) to `GaussKernel2D`, `AsymmetricGaussKernel2D`, `OscillatoryKernel2D`, and
+  `CorrelatedNormalNoise2D`, via a shared dispatch rule (`tools::math::shouldUseSpectral2D`)
+  and wrap-embedding helpers (`embedWrapped1D`, `buildWrappedSeparableKernel2D`) hoisted
+  out of `mexican_hat_kernel_2d.cpp` into `tools/math.h` and `tools/fft_convolution.h`
+- Added a process-global `tools::math::ConvolutionMode` override
+  (`Auto`/`ForceDirect`/`ForceSpectral`, via `ScopedConvolutionMode`) as a test seam for
+  building direct/spectral twins of the same element configuration
+- `SpectralConvolver2D::init()` now no-ops when re-initialized at an unchanged size
+  (only `setKernel()` re-runs), and plans with `FFTW_ESTIMATE` instead of `FFTW_MEASURE`,
+  so `setParameters()` — called on every frame while a width slider is dragged — no longer
+  triggers FFTW timing trials on the UI thread
+- `tools::math::seedNormal()`: deterministic re-seed of the thread-local normal generator
+  behind `fillNormal`, enabling reproducible direct-vs-spectral comparisons for elements
+  whose input is itself randomly generated (`CorrelatedNormalNoise2D`)
+- 128x128 golden fixtures under `tests/validation/data/2d_spectral/`, chosen to straddle
+  the spectral dispatch threshold, plus a regeneration tool
+  (`dnf_composer_regen_spectral_golden`) and `SpectralGolden2D` regression tests pinning
+  both the direct and spectral paths against numerical/qualitative drift
+- `fftw3` added to `scripts/setup.bat`/`setup.sh` vcpkg package lists (previously missing
+  despite being a hard `find_package(... REQUIRED)` dependency, so a fresh clone could not
+  configure)
+
+### Fixed
+- `CorrelatedNormalNoise2D::init()` now clamps kernel support to the field size per axis via
+  `computeKernelRange` (matching every other 2D kernel element), instead of the previous
+  unclamped `halfWidth = 5*width`: a wide `width` on a small field (e.g. `width=3.0` on a
+  10x10 field) produced a negative starting index from `createExtendedIndex`, which
+  `conv2d_separable_into`'s circular x-pass then read as an out-of-bounds offset before the
+  row buffer — a real, reachable heap OOB read (the UI allows `width` up to 30)
+- `Element`'s implicit copy constructor/assignment copied `inputPtr` (a raw pointer into the
+  object's own `components["input"]`) by value, so any element cloned via the
+  `make_shared<T>(*this)` pattern after it had already stepped once would alias the
+  *source's* input buffer instead of its own, silently dropping input on the clone. `Element`
+  now has an explicit copy constructor/assignment that resets the input cache, forcing a
+  correct rebuild on first `updateInput()` — the same recovery path `changeDimensions()` /
+  `addInput()` / `removeInput()` already use
+- `OscillatoryKernel2D::clone()` now copy-constructs (`make_shared<OscillatoryKernel2D>(*this)`)
+  instead of using the parameter constructor, matching every other element: the previous form
+  left `kernel_1d_x/y`, `extIndex_x/y`, and the scratch buffers default-constructed empty,
+  which is unsound whenever a clone is stepped without an intervening `init()` (e.g.
+  `Simulation`'s copy constructor deep-copies elements via `clone()` without calling `init()`)
+- `Element::removeOutputs()` erased the receiver's `inputs` map entry but left the receiver's
+  `inputPtr`/`cachedInputs_` pointing at the removed element's `components["output"]` buffer;
+  once that element was destroyed, the receiver's next `step()` read freed memory. `inputPtr` is
+  now reset on the receiver so the cache rebuilds on the next `updateInput()`
+
 ## [2.9.4] - 2026-07-10
 
 ### Fixed
@@ -339,12 +457,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - `CorrelatedNormalNoise` element: spatially correlated Gaussian noise via convolution of white
-  noise with a normalized Gaussian kernel (parameters: `amplitude`, `width`, `circular`);
-  cedar-equivalent to `NeuralField::NoiseCorrelationKernel`
-- `AbsSigmoidFunction` activation function: rational sigmoid `σ(u) = 0.5·(1 + β·u / (1 + β·|u|))`,
-  algebraically equivalent to cedar's default `AbsSigmoid`; enables cedar-exact simulations
-- Cross-framework Doxygen equivalence tables in `activation_function.h` documenting the
-  correspondence between dnf-composer, cedar, and cosivina activation functions
+  noise with a normalized Gaussian kernel (parameters: `amplitude`, `width`, `circular`)
+- `AbsSigmoidFunction` activation function: rational sigmoid `σ(u) = 0.5·(1 + β·u / (1 + β·|u|))`
 - `circular` checkbox exposed in the Element Control UI for `CorrelatedNormalNoise`
 
 ### Fixed

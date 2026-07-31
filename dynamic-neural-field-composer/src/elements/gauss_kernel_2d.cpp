@@ -70,6 +70,17 @@
 			const int totalSize = size_x * size_y;
 			scratchTmp_.assign(totalSize, 0.0);
 			scratchConvolution_.assign(totalSize, 0.0);
+			scratch2d_.ensure(size_x, size_y, extIndex_x.size(), extIndex_y.size());
+
+			const int totalTaps = (kernelRange_x[0] + kernelRange_x[1] + 1)
+			                    + (kernelRange_y[0] + kernelRange_y[1] + 1);
+			useFFT_ = tools::math::shouldUseSpectral2D(parameters.circular, totalTaps, size_x, size_y);
+			if (useFFT_)
+			{
+				spectral_.init(size_x, size_y);
+				spectral_.setKernel(tools::math::buildWrappedSeparableKernel2D(size_x, size_y,
+					{ tools::math::SeparableKernelTerm2D{ kernel_1d_x, kernelRange_x[0], kernel_1d_y, kernelRange_y[0], +1.0 } }));
+			}
 
 			fullSum = 0.0;
 			std::ranges::fill(components["input"], 0.0);
@@ -80,20 +91,41 @@
 		{
 			updateInput();
 
-			fullSum = std::accumulate(components["input"].begin(), components["input"].end(), 0.0);
+			const std::vector<double>& input = components["input"];
+			std::vector<double>& output = components["output"];
+
+			// The global offset (amplitudeGlobal * sum-of-input) is only needed when
+			// amplitudeGlobal != 0. Skip the O(N) accumulate and the per-cell add when
+			// it's disabled (bit-identical: globalOffset would be 0).
+			const bool hasGlobal = parameters.amplitudeGlobal != 0.0;
+			fullSum = hasGlobal ? std::accumulate(input.begin(), input.end(), 0.0) : 0.0;
 
 			const int size_x = commonParameters.dimensionParameters.size_x;
 			const int size_y = commonParameters.dimensionParameters.size_y;
 
-			tools::math::conv2d_separable_into(
-				scratchConvolution_, scratchTmp_,
-				components["input"], kernel_1d_x, kernel_1d_y,
-				size_x, size_y, extIndex_x, extIndex_y);
+			if (useFFT_) {
+				spectral_.apply(input.data(), scratchConvolution_.data());
+			} else {
+				tools::math::conv2d_separable_into(
+					scratchConvolution_, scratchTmp_, scratch2d_,
+					input, kernel_1d_x, kernel_1d_y,
+					size_x, size_y, extIndex_x, extIndex_y);
+			}
 
-			const double globalOffset = parameters.amplitudeGlobal * fullSum;
-			for (int i = 0; i < static_cast<int>(components["output"].size()); ++i) {
-				components["output"][i] = scratchConvolution_[i] + globalOffset;
-}
+			const int n = static_cast<int>(output.size());
+			if (hasGlobal)
+			{
+				const double globalOffset = parameters.amplitudeGlobal * fullSum;
+				for (int i = 0; i < n; ++i) {
+					output[i] = scratchConvolution_[i] + globalOffset;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < n; ++i) {
+					output[i] = scratchConvolution_[i];
+				}
+			}
 		}
 
 		std::string GaussKernel2D::toString() const

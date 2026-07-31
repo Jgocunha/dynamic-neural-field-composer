@@ -1,4 +1,4 @@
-﻿#include "elements/neural_field.h"
+#include "elements/neural_field.h"
 
 
 
@@ -35,7 +35,7 @@
 
 			act_  = components["activation"].data();
 			inp_  = components["input"].data();
-			rest_ = components["resting level"].data();
+			restScalar_ = parameters.startingRestingLevel;
 
 			calculateOutput();
 		}
@@ -105,8 +105,8 @@
 			const double dtOverTau = deltaT / parameters.tau;
 			const int sz = commonParameters.dimensionParameters.size;
 			for (int i = 0; i < sz; ++i) {
-				act_[i] += dtOverTau * (-act_[i] + rest_[i] + inp_[i]);
-}
+				act_[i] += dtOverTau * (-act_[i] + restScalar_ + inp_[i]);
+			}
 		}
 
 		void NeuralField::calculateOutput()

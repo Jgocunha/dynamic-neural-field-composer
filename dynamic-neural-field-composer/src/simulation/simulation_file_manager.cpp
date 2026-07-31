@@ -1,5 +1,6 @@
 #include "simulation/simulation_file_manager.h"
 
+#include <format>
 #include <unordered_set>
 
 
@@ -44,10 +45,10 @@ namespace dnf_composer
         std::ofstream file(path);
         if (file.is_open()) {
             file << root.dump(4);
-            log(tools::logger::INFO, "Simulation saved to: " + path);
+            log(tools::logger::INFO, std::format("Simulation saved to: {}", path));
         }
         else {
-            log(tools::logger::ERROR, "Unable to open file to save simulation: " + path);
+            log(tools::logger::ERROR, std::format("Unable to open file to save simulation: {}", path));
         }
 	}
 
@@ -55,7 +56,7 @@ namespace dnf_composer
     {
         std::ifstream file(filePath);
         if (!file.is_open()) {
-            log(tools::logger::ERROR, "Unable to open file to load simulation: " + filePath + ".");
+            log(tools::logger::ERROR, std::format("Unable to open file to load simulation: {}.", filePath));
             return;
         }
 
@@ -64,7 +65,7 @@ namespace dnf_composer
             file >> root;
         }
         catch (const std::exception& e) {
-            log(tools::logger::ERROR, "Error reading JSON file: " + std::string(e.what()));
+            log(tools::logger::ERROR, std::format("Error reading JSON file: {}", e.what()));
             return;
         }
 
@@ -80,7 +81,7 @@ namespace dnf_composer
             const json& elems = root.contains("elements") ? root["elements"] : json::array();
             if (!elems.is_array())
             {
-                log(tools::logger::ERROR, "Invalid simulation file: \"elements\" is not an array: " + filePath);
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"elements\" is not an array: {}", filePath));
                 return;
             }
             elementsJson = elems;
@@ -88,7 +89,7 @@ namespace dnf_composer
             if (root.contains("identifier") && root["identifier"].is_string()) {
                 simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
             } else if (root.contains("identifier")) {
-                log(tools::logger::ERROR, "Invalid simulation file: \"identifier\" is not a string: " + filePath);
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"identifier\" is not a string: {}", filePath));
 }
 
             if (root.contains("deltaT") && root["deltaT"].is_number())
@@ -97,20 +98,20 @@ namespace dnf_composer
                 if (std::isfinite(dt) && dt > 0.0) {
                     simulation->setDeltaT(dt);
                 } else {
-                    log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a valid positive number: " + filePath);
+                    log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a valid positive number: {}", filePath));
 }
             }
             else if (root.contains("deltaT")) {
-                log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a number: " + filePath);
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a number: {}", filePath));
 }
         }
         else
         {
-            log(tools::logger::ERROR, "Invalid simulation file: unexpected JSON root type: " + filePath);
+            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
             return;
         }
 
-        log(tools::logger::INFO, "Simulation loaded from: " + filePath);
+        log(tools::logger::INFO, std::format("Simulation loaded from: {}", filePath));
         jsonToElements(elementsJson);
 
         // Point FieldCoupling elements to their weights in the same directory as the JSON file.
@@ -543,6 +544,45 @@ namespace dnf_composer
     // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON deserialization; mirrors elementToJson's structure
     void SimulationFileManager::jsonToElements(const json& jsonElements) const
     {
+        // Validate every element's required common fields up front, before any element
+        // is constructed or added to the live simulation. A malformed entry anywhere in
+        // the file aborts the whole load with a descriptive error instead of throwing
+        // mid-loop and leaving the simulation half-loaded.
+        for (size_t i = 0; i < jsonElements.size(); ++i)
+        {
+            const json& elementJson = jsonElements[i];
+            const std::string elementRef = (elementJson.contains("uniqueName") && elementJson["uniqueName"].is_string())
+                ? "'" + elementJson["uniqueName"].get<std::string>() + "'"
+                : "at index " + std::to_string(i);
+
+            if (!elementJson.contains("uniqueName") || !elementJson["uniqueName"].is_string())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( is missing a valid "uniqueName": )" + filePath);
+                return;
+            }
+            if (!elementJson.contains("label") || !elementJson["label"].is_array()
+                || elementJson["label"].size() != 2 || !elementJson["label"][1].is_string())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( has a missing or malformed "label" (expected a 2-element array): )" + filePath);
+                return;
+            }
+            if (!elementJson.contains("x_max") || !elementJson["x_max"].is_number()
+                || !elementJson.contains("d_x") || !elementJson["d_x"].is_number())
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( is missing a valid "x_max" or "d_x": )" + filePath);
+                return;
+            }
+            if (elementJson["x_max"].get<double>() <= 0.0 || elementJson["d_x"].get<double>() <= 0.0)
+            {
+                log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                    + R"( has a non-positive "x_max" or "d_x" (both must be > 0): )" + filePath);
+                return;
+            }
+        }
+
         // Track names already loaded so duplicate uniqueNames in the file are rejected
         // (mirrors the guard in Simulation::addElement). Used by both passes below.
         std::unordered_set<std::string> seenNames;
@@ -557,8 +597,7 @@ namespace dnf_composer
 	        // (and their interactions in the second pass) with a clear error.
 	        if (!seenNames.insert(uniqueName).second)
 	        {
-	            log(tools::logger::LogLevel::ERROR, "Duplicate element name '" + uniqueName
-	                + "' in file - skipping this element.");
+	            log(tools::logger::LogLevel::ERROR, std::format("Duplicate element name '{}' in file - skipping this element.", uniqueName));
 	            continue;
 	        }
 
@@ -794,6 +833,14 @@ namespace dnf_composer
                     double steepness = activationFunctionJson["steepness"];
                     activationFunction = std::make_unique<element::SigmoidFunction>(x_shift, steepness);
                 }
+                else if (activationFunctionType == "abs_sigmoid") {
+                    const double x_shift = activationFunctionJson["x_shift"];
+                    const double beta = activationFunctionJson["beta"];
+                    activationFunction = std::make_unique<element::AbsSigmoidFunction>(x_shift, beta);
+                }
+            }
+            if (!activationFunction) {
+                activationFunction = std::make_unique<element::SigmoidFunction>(0.0, 10.0);
             }
             auto nf = std::make_shared<element::NeuralField2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1076,11 +1123,8 @@ namespace dnf_composer
                     // Wiring to a missing element would corrupt the loaded graph.
                     if (!simulation->getElement(keyUniqueName) || !simulation->getElement(uniqueName))
                     {
-                        std::string message = "Skipping interaction '";
-                        message += keyUniqueName;
-                        message += "' -> '";
-                        message += uniqueName;
-                        message += "': one or both elements were not loaded.";
+                        const std::string message = std::format("Skipping interaction '{}' -> '{}': one or both elements were not loaded.",
+                            keyUniqueName, uniqueName);
                         log(tools::logger::WARNING, message);
                         continue;
                     }

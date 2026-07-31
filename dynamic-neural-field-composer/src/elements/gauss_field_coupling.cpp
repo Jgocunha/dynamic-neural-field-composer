@@ -1,4 +1,5 @@
-﻿#include <utility>
+﻿#include <format>
+#include <utility>
 
 #include "elements/gauss_field_coupling.h"
 
@@ -133,16 +134,18 @@
 		{
 			if (inputs.size() != 1)
 			{
-				const std::string logMessage = "Incorrect number of inputs for gauss field coupling '"
-					+ commonParameters.identifiers.uniqueName + "'. Should be 1, is " + std::to_string(inputs.size()) + ".";
+				const std::string logMessage = std::format(
+					"Incorrect number of inputs for gauss field coupling '{}'. Should be 1, is {}.",
+					commonParameters.identifiers.uniqueName, inputs.size());
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}
 
 			if (inputs.begin()->first->getLabel() != ElementLabel::NEURAL_FIELD)
 			{
-				const std::string logMessage = "Incorrect input type for field coupling '"
-					+ commonParameters.identifiers.uniqueName + "'. Should be a neural field, is " + ElementLabelToString.at(inputs.begin()->first->getLabel()) + ".";
+				const std::string logMessage = std::format(
+					"Incorrect input type for field coupling '{}'. Should be a neural field, is {}.",
+					commonParameters.identifiers.uniqueName, ElementLabelToString.at(inputs.begin()->first->getLabel()));
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}

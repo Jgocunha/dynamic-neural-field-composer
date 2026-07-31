@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
+#include <limits>
 #include "element_parameters/element_parameters.h"
+#include "exceptions/exception.h"
 
 using namespace dnf_composer::element;
 
@@ -55,6 +57,106 @@ TEST(ElementDimensions, ToStringIsNonEmpty)
 {
     const ElementDimensions d;
     EXPECT_FALSE(d.toString().empty());
+}
+
+// ---------------------------------------------------------------------------
+// Regression tests for issue #86: ElementDimensions{N} (single int) selects
+// the dimensionality (1 or 2) constructor. Historically, an out-of-range
+// value logged an ERROR but still returned a usable 100-cell object instead
+// of failing -- silently mislabeling the requested size and, at larger N,
+// tripping a stack-buffer overrun downstream. It must now throw instead of
+// silently defaulting, while 1 and 2 keep working exactly as before.
+// ---------------------------------------------------------------------------
+
+TEST(ElementDimensions, SingleIntDimensionalityOneConstructsDefault1DField)
+{
+    const ElementDimensions d{ 1 };
+    EXPECT_EQ(d.dimensionality, 1);
+    EXPECT_EQ(d.x_max, 100);
+    EXPECT_EQ(d.y_max, 1);
+    EXPECT_EQ(d.size, 100);
+}
+
+TEST(ElementDimensions, SingleIntDimensionalityTwoConstructsDefault2DField)
+{
+    const ElementDimensions d{ 2 };
+    EXPECT_EQ(d.dimensionality, 2);
+    EXPECT_EQ(d.x_max, 100);
+    EXPECT_EQ(d.y_max, 100);
+    EXPECT_EQ(d.size, 10000);
+}
+
+TEST(ElementDimensions, SingleIntDefaultParameterIsDimensionalityOne)
+{
+    const ElementDimensions d;
+    EXPECT_EQ(d.dimensionality, 1);
+}
+
+TEST(ElementDimensions, SingleIntInvalidDimensionalityThrowsInsteadOfDefaulting)
+{
+    EXPECT_THROW(ElementDimensions{ 150 }, dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions{ 0 }, dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions{ -1 }, dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions{ 200 }, dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions{ 3 }, dnf_composer::Exception);
+}
+
+TEST(ElementDimensions, SingleIntInvalidDimensionalityMessageNamesBadValueAndBothCtors)
+{
+    try
+    {
+        const ElementDimensions d{ 150 };
+        FAIL() << "Expected dnf_composer::Exception to be thrown, but construction succeeded "
+                  "with size " << d.size << '.';
+    }
+    catch (const dnf_composer::Exception& e)
+    {
+        const std::string message = e.what();
+        EXPECT_NE(message.find("150"), std::string::npos);
+        EXPECT_NE(message.find("ElementDimensions{N}"), std::string::npos);
+        EXPECT_NE(message.find("ElementDimensions{N, d_x}"), std::string::npos);
+    }
+}
+
+TEST(ElementDimensions, TwoArgConstructorBuildsFieldOfRequestedLength)
+{
+    // The disambiguated overload: ElementDimensions{N, d_x} always means a 1D
+    // field of length N, for any N -- including values that would be invalid
+    // dimensionalities under the single-int overload above.
+    const ElementDimensions d{ 150, 1.0 };
+    EXPECT_EQ(d.dimensionality, 1);
+    EXPECT_EQ(d.x_max, 150);
+    EXPECT_EQ(d.size, 150);
+
+    const ElementDimensions d2{ 200, 1.0 };
+    EXPECT_EQ(d2.x_max, 200);
+    EXPECT_EQ(d2.size, 200);
+}
+
+TEST(ElementDimensions, TwoArgConstructorRejectsNonPositiveExtentOrStep)
+{
+    EXPECT_THROW(ElementDimensions(0, 1.0), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(-10, 1.0), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(100, 0.0), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(100, -1.0), dnf_composer::Exception);
+}
+
+TEST(ElementDimensions, FourArgConstructorRejectsNonPositiveExtentOrStep)
+{
+    EXPECT_THROW(ElementDimensions(0, 100, 1.0, 1.0), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(100, -5, 1.0, 1.0), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(100, 100, 0.0, 1.0), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(100, 100, 1.0, -2.0), dnf_composer::Exception);
+}
+
+TEST(ElementDimensions, RejectsTinyPositiveStepThatOverflowsSampleCount)
+{
+    // A finite, positive-but-tiny step makes extent/step non-finite or exceed the
+    // safe sample range; the quotient must be rejected BEFORE std::llround (whose
+    // out-of-range result is implementation-defined and could bypass the range check).
+    EXPECT_THROW(ElementDimensions(200, 1e-310), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(200, std::numeric_limits<double>::denorm_min()), dnf_composer::Exception);
+    EXPECT_THROW(ElementDimensions(200, 200, 1e-310, 1.0), dnf_composer::Exception);
 }
 
 // ---------------------------------------------------------------------------

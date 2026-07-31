@@ -68,8 +68,11 @@
             updateInput();
 
             const auto& inp = components["input"];
-            fullSum = std::accumulate(inp.begin(), inp.begin() + commonParameters.dimensionParameters.size,
-                0.0);
+            // Skip the O(N) accumulate when amplitudeGlobal == 0 (globalOffset would
+            // be 0 either way) — mirrors the same guard in GaussKernel2D::step.
+            const bool hasGlobal = parameters.amplitudeGlobal != 0.0;
+            fullSum = hasGlobal ? std::accumulate(inp.begin(), inp.begin() + commonParameters.dimensionParameters.size,
+                0.0) : 0.0;
 
             if (parameters.circular) {
                 tools::math::obtainCircularVector_into(scratchExtended, extIndex, inp);

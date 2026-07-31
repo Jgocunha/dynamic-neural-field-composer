@@ -1,5 +1,6 @@
 ﻿#include "elements/element.h"
 
+#include <format>
 
 namespace dnf_composer::element
 {
@@ -7,14 +8,48 @@ namespace dnf_composer::element
 	{
 		if(parameters.dimensionParameters.size <= 0)
 		{
-			const std::string logMessage = "Element '" + parameters.identifiers.uniqueName +
-			                               "' has an invalid size.";
+			const std::string logMessage = std::format("Element '{}' has an invalid size.", parameters.identifiers.uniqueName);
 			log(tools::logger::LogLevel::ERROR, logMessage);
 			return;
 		}
 		commonParameters = parameters;
 		components["output"] = std::vector<double>(commonParameters.dimensionParameters.size);
 		components["input"] = std::vector<double>(commonParameters.dimensionParameters.size);
+	}
+
+	Element::Element(const Element& other)
+		: std::enable_shared_from_this<Element>(other),
+		  commonParameters(other.commonParameters),
+		  components(other.components),
+		  inputs(other.inputs),
+		  outputs(other.outputs)
+	{
+		// inputPtr/cachedInputs/inputSize are deliberately left at their default
+		// member initializers (nullptr/empty/0), NOT copied from other. inputPtr
+		// is a raw pointer into THIS object's own components["input"].data();
+		// copying it by value (the implicit copy ctor's behaviour before this
+		// was added) would leave a stepped-then-cloned element aliasing the
+		// SOURCE's input buffer instead of its own freshly-copied one, so
+		// updateInput() would silently read the wrong (and, worse, write into
+		// the wrong) object's memory. Leaving it null forces updateInput() to
+		// call buildInputCache() and re-derive it correctly on first use, the
+		// same recovery path changeDimensions()/addInput()/removeInput() use.
+	}
+
+	Element& Element::operator=(const Element& other)
+	{
+		if (this != &other)
+		{
+			commonParameters = other.commonParameters;
+			components = other.components;
+			inputs = other.inputs;
+			outputs = other.outputs;
+			// See the copy constructor above for why these are reset, not copied.
+			inputPtr = nullptr;
+			inputSize = 0;
+			cachedInputs.clear();
+		}
+		return *this;
 	}
 
 	void Element::changeDimensions(const ElementDimensions& newDimensions)
@@ -53,7 +88,7 @@ namespace dnf_composer::element
 		const auto existingInput = inputs.find(inputElement);
 		if (existingInput != inputs.end())
 		{
-			const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' already exists. ";
+			const std::string logMessage = std::format("Input '{}' already exists. ", inputElement->getUniqueName());
 			log(tools::logger::LogLevel::ERROR, logMessage);
 			return;
 		}
@@ -62,8 +97,8 @@ namespace dnf_composer::element
 		{
 			if (inputElement->getComponentPtr("output")->size() != this->getSize())
 			{
-				const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' has a different size than '"
-				                               + this->getUniqueName() + "'.";
+				const std::string logMessage = std::format("Input '{}' has a different size than '{}'.",
+				                               inputElement->getUniqueName(), this->getUniqueName());
 				log(tools::logger::LogLevel::ERROR, logMessage);
 				return;
 			}
@@ -73,7 +108,7 @@ namespace dnf_composer::element
 		inputElement->outputs[this->shared_from_this()] = inputComponent;
 		inputPtr = nullptr;
 
-		const std::string logMessage = "Input '" + inputElement->getUniqueName() +"' added successfully to '" +  this->getUniqueName() + ".";
+		const std::string logMessage = std::format("Input '{}' added successfully to '{}.", inputElement->getUniqueName(), this->getUniqueName());
 		log(tools::logger::LogLevel::INFO, logMessage);
 	}
 
@@ -84,8 +119,8 @@ namespace dnf_composer::element
 			if (key->commonParameters.identifiers.uniqueName == inputElementId) {
 				inputs.erase(key);
 				inputPtr = nullptr;
-				log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '"
-				                                   + this->getUniqueName() + ". ");
+				log(tools::logger::LogLevel::INFO, std::format("Input '{}' removed successfully from '{}. ",
+				                                   inputElementId, this->getUniqueName()));
 				return;
 			}
 		}
@@ -98,8 +133,8 @@ namespace dnf_composer::element
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 				inputs.erase(key);
 				inputPtr = nullptr;
-				log(tools::logger::LogLevel::INFO, "Input '" + std::to_string(uniqueId) + "' removed successfully from '"
-				                                   + this->getUniqueName() + ".");
+				log(tools::logger::LogLevel::INFO, std::format("Input '{}' removed successfully from '{}.",
+				                                   uniqueId, this->getUniqueName()));
 				return;
 			}
 		}
@@ -145,8 +180,7 @@ namespace dnf_composer::element
 		cachedInputs.reserve(inputs.size());
 		for (const auto& [elem, compName] : inputs)
 		{
-			const auto& compVec = elem->components.at(compName);
-			cachedInputs.push_back({compVec.data(), compVec.size()});
+			cachedInputs.push_back(&elem->components.at(compName));
 		}
 	}
 
@@ -154,13 +188,92 @@ namespace dnf_composer::element
 	{
 		if (inputPtr == nullptr) {
 			buildInputCache();
+		}
+
+		// Sum the input sources into the input buffer. Copy the first source
+		// instead of zero-filling then adding it — this elides a full zero-fill
+		// pass over the buffer every step (updateInput runs for every element).
+		// Bit-identical to fill(0) + accumulate. Re-derive size/data from each
+		// cached vector *object* on every call rather than trusting a size
+		// snapshot taken when the cache was built: if the source was resized via
+		// changeDimensions() since then, its buffer may have been reallocated,
+		// but the vector object itself is stable, so this can never read a
+		// dangling pointer -- only ever the source's current data. Some elements
+		// (e.g. a circular GaussKernel) legitimately keep an "input" buffer
+		// larger than the connected source's component -- that extra room is
+		// padding, not a mismatch -- so only a source that grew *past* inputSize
+		// is unsafe to accumulate in full; anything else fits.
+		if (cachedInputs.empty())
+		{
+			std::fill_n(inputPtr, inputSize, 0.0);
+			return;
+		}
+
+		bool incompatibleSourceFound = false;
+		std::size_t firstIndex = 0;
+		for (; firstIndex < cachedInputs.size(); ++firstIndex)
+		{
+			if (cachedInputs[firstIndex]->size() <= inputSize) {
+				break;
 }
-		std::fill_n(inputPtr, inputSize, 0.0);
-		for (const auto&[src, size] : cachedInputs) {
-			for (std::size_t i = 0; i < size; ++i) {
-				inputPtr[i] += src[i];
+			incompatibleSourceFound = true;
+		}
+
+		if (firstIndex == cachedInputs.size())
+		{
+			std::fill_n(inputPtr, inputSize, 0.0);
+		}
+		else
+		{
+			const std::vector<double>& first = *cachedInputs[firstIndex];
+			const std::size_t n0 = first.size() < inputSize ? first.size() : inputSize;
+			for (std::size_t i = 0; i < n0; ++i) {
+				inputPtr[i] = first[i];
+			}
+			for (std::size_t i = n0; i < inputSize; ++i) {
+				inputPtr[i] = 0.0;
+			}
+
+			for (std::size_t k = firstIndex + 1; k < cachedInputs.size(); ++k)
+			{
+				const std::vector<double>& srcVec = *cachedInputs[k];
+				if (srcVec.size() > inputSize)
+				{
+					incompatibleSourceFound = true;
+					continue;
+				}
+				for (std::size_t i = 0; i < srcVec.size(); ++i) {
+					inputPtr[i] += srcVec[i];
+				}
+			}
+		}
+
+		if (incompatibleSourceFound) {
+			severIncompatibleInputs();
 }
+	}
+
+	void Element::severIncompatibleInputs()
+	{
+		std::vector<std::shared_ptr<Element>> toSever;
+		for (const auto& [elem, compName] : inputs)
+		{
+			if (elem->components.at(compName).size() > inputSize) {
+				toSever.push_back(elem);
 }
+		}
+
+		for (const auto& elem : toSever)
+		{
+			const std::string logMessage = R"(Input ")" + elem->getUniqueName() +
+				R"(" no longer matches the size of ")" + getUniqueName() +
+				R"(" after being resized; severing the connection.)";
+			log(tools::logger::LogLevel::WARNING, logMessage);
+			elem->outputs.erase(this->shared_from_this());
+			inputs.erase(elem);
+		}
+
+		inputPtr = nullptr; // inputs changed; rebuild cache on next updateInput()
 	}
 
 	int Element::getMaxSpatialDimension() const
@@ -203,6 +316,7 @@ namespace dnf_composer::element
 		{
 			const auto& outputElement = key;
 			outputElement->inputs.erase(this->shared_from_this());
+			outputElement->inputPtr = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
 		}
 		outputs.clear();
 	}
@@ -218,8 +332,8 @@ namespace dnf_composer::element
 		{
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 				outputs.erase(key);
-				log(tools::logger::LogLevel::INFO, "Output '" + std::to_string(uniqueId) + "' removed successfully from '"
-				                                   + this->getUniqueName() + ".");
+				log(tools::logger::LogLevel::INFO, std::format("Output '{}' removed successfully from '{}.",
+				                                   uniqueId, this->getUniqueName()));
 				return;
 			}
 		}
@@ -231,8 +345,8 @@ namespace dnf_composer::element
 		{
 			if (key->commonParameters.identifiers.uniqueName == outputElementId) {
 				outputs.erase(key);
-				log(tools::logger::LogLevel::INFO, "Output '" + outputElementId + "' removed successfully from '"
-				                                   + this->getUniqueName() + ".");
+				log(tools::logger::LogLevel::INFO, std::format("Output '{}' removed successfully from '{}.",
+				                                   outputElementId, this->getUniqueName()));
 				return;
 			}
 		}

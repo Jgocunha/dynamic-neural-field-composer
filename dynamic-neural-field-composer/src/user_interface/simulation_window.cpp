@@ -2117,6 +2117,11 @@ namespace dnf_composer::user_interface
 				}
 
 				if (startPressed) {
+					// startRecording() returns false and logs a distinct error (visible in the
+					// log window) when the directory could not be created or the file could not
+					// be opened; it does not enter the "recording" state in that case, so
+					// currentlyRecording/canStart above will correctly reflect the failure on
+					// the next frame — no extra UI bookkeeping is needed here.
 					simulation->getRecorder().startRecording(
 						simulation->getUniqueIdentifier(),
 						selectedElementId, selectedComponent,

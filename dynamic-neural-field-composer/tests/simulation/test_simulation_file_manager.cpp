@@ -1431,3 +1431,147 @@ TEST_F(SimulationFileManagerTest, LoadRejectsDuplicateElementNames)
     // the kept "nf 1": the kept field has no inputs.
     EXPECT_TRUE(sim->getElement("nf 1")->getInputs().empty());
 }
+
+// ---------------------------------------------------------------------------
+// Malformed .dnf files fail cleanly instead of crashing (issue #39)
+// ---------------------------------------------------------------------------
+
+TEST_F(SimulationFileManagerTest, LoadRejectsElementMissingUniqueName)
+{
+    // Hand-edited / truncated file: the element object has no "uniqueName" at all.
+    const std::string dir = tempDir + "missing-name/";
+    fs::create_directories(dir);
+    const std::string path = dir + "missing-name.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "missing-name",
+            "deltaT": 1.0,
+            "elements": [
+                { "label": [0, "neural field"],
+                  "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("missing-name-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadRejectsMalformedLabelArray)
+{
+    // "label" must be a 2-element array [enumValue, name]; here it's a bare string.
+    const std::string dir = tempDir + "bad-label/";
+    fs::create_directories(dir);
+    const std::string path = dir + "bad-label.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "bad-label",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 1", "label": "neural field",
+                  "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("bad-label-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadRejectsNonPositiveDimensions)
+{
+    // d_x <= 0 must be rejected rather than propagating into a division (size_x = x_max/d_x).
+    const std::string dir = tempDir + "bad-dims/";
+    fs::create_directories(dir);
+    const std::string path = dir + "bad-dims.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "bad-dims",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 1", "label": [0, "neural field"],
+                  "x_max": 100, "d_x": 0.0, "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("bad-dims-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadOfMalformedFileDoesNotPartiallyLoadEarlierElements)
+{
+    // Two well-formed elements are listed BEFORE a malformed third one. If the file
+    // were validated element-by-element while constructing (the old behaviour), the
+    // first two would already be added to the simulation by the time the third one
+    // throws, leaving a half-loaded simulation. The fix validates every element up
+    // front, so a malformed entry anywhere aborts the load before anything is added.
+    const std::string dir = tempDir + "partial-load/";
+    fs::create_directories(dir);
+    const std::string path = dir + "partial-load.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "partial-load",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 1", "label": [0, "neural field"],
+                  "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] },
+                { "uniqueName": "gk 1", "label": [3, "gauss kernel"],
+                  "x_max": 100, "d_x": 1.0, "amplitude": 10.0, "width": 5.0,
+                  "circular": true, "normalized": true, "amplitudeGlobal": 0.0,
+                  "inputs": [] },
+                { "label": [0, "neural field"],
+                  "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("partial-load-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+    EXPECT_EQ(sim->getElement("nf 1"), nullptr);
+    EXPECT_EQ(sim->getElement("gk 1"), nullptr);
+}
+
+TEST_F(SimulationFileManagerTest, LoadWellFormedFileStillSucceedsAfterValidationGuards)
+{
+    // Sanity check: the new up-front validation must not reject a normal, well-formed file.
+    const std::string dir = tempDir + "well-formed/";
+    fs::create_directories(dir);
+    const std::string path = dir + "well-formed.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "well-formed",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 1", "label": [0, "neural field"],
+                  "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "activationFunction": { "type": "sigmoid", "x_shift": 0.0, "steepness": 10.0 },
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("well-formed-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+    EXPECT_NE(sim->getElement("nf 1"), nullptr);
+}

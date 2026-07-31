@@ -182,7 +182,13 @@ namespace dnf_composer::element
 		// Cached raw pointers into component vectors — valid between init() calls, never resized during step().
 		double* act_  = nullptr; ///< components["activation"].data()
 		double* inp_  = nullptr; ///< components["input"].data()
-		double* rest_ = nullptr; ///< components["resting level"].data()
+		// The resting level is homogeneous by construction (init() fills
+		// components["resting level"] uniformly with startingRestingLevel, and
+		// nothing ever writes to it per-cell afterward), so the integration loop
+		// reads it as a cached scalar instead of a third N-double array stream.
+		// The component vector itself is kept (and still filled in init()) so
+		// external readers/serializers see the expected per-cell representation.
+		double restScalar_ = 0.0;
 
 		bool computeStateMetrics_ = true; ///< When false, skip stability/bump/min-max updates.
 		std::vector<NeuralFieldBump> prevBumps_; ///< Scratch buffer for updateBumps — avoids per-step allocation.

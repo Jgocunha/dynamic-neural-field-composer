@@ -1,0 +1,118 @@
+{
+    "identifier": "sim-087-multi_peak-abssigmoid_b100-2d",
+    "deltaT": 25.0,
+    "elements": [
+        {
+            "uniqueName": "neural field u",
+            "label": [
+                13,
+                "neural field 2d"
+            ],
+            "tau": 25.0,
+            "restingLevel": -8.0,
+            "activationFunction": {
+                "type": "abs_sigmoid",
+                "beta": 100.0,
+                "x_shift": 0.0
+            },
+            "x_max": 50,
+            "y_max": 50,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "gauss kernel 2d",
+                    "output"
+                ],
+                [
+                    "gauss stimulus 2d 1",
+                    "output"
+                ],
+                [
+                    "gauss stimulus 2d 2",
+                    "output"
+                ],
+                [
+                    "gauss stimulus 2d 3",
+                    "output"
+                ]
+            ]
+        },
+        {
+            "uniqueName": "gauss stimulus 2d 1",
+            "label": [
+                14,
+                "gauss stimulus 2d"
+            ],
+            "width": 5.0,
+            "amplitude": 10.0,
+            "position_x": 10.0,
+            "position_y": 10.0,
+            "circular": true,
+            "normalized": false,
+            "x_max": 50,
+            "y_max": 50,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null
+        },
+        {
+            "uniqueName": "gauss stimulus 2d 2",
+            "label": [
+                14,
+                "gauss stimulus 2d"
+            ],
+            "width": 5.0,
+            "amplitude": 12.0,
+            "position_x": 25.0,
+            "position_y": 25.0,
+            "circular": true,
+            "normalized": false,
+            "x_max": 50,
+            "y_max": 50,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null
+        },
+        {
+            "uniqueName": "gauss stimulus 2d 3",
+            "label": [
+                14,
+                "gauss stimulus 2d"
+            ],
+            "width": 5.0,
+            "amplitude": 10.0,
+            "position_x": 40.0,
+            "position_y": 40.0,
+            "circular": true,
+            "normalized": false,
+            "x_max": 50,
+            "y_max": 50,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": null
+        },
+        {
+            "uniqueName": "gauss kernel 2d",
+            "label": [
+                15,
+                "gauss kernel 2d"
+            ],
+            "width": 2.0,
+            "amplitude": 4.0,
+            "amplitudeGlobal": 0.0,
+            "circular": true,
+            "normalized": true,
+            "x_max": 50,
+            "y_max": 50,
+            "d_x": 1.0,
+            "d_y": 1.0,
+            "inputs": [
+                [
+                    "neural field u",
+                    "output"
+                ]
+            ]
+        }
+    ]
+}

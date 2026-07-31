@@ -1,4 +1,5 @@
-﻿#include "elements/activation_function.h"
+#include "elements/activation_function.h"
+#include "tools/simd_dispatch.h"
 
 
 namespace dnf_composer::element
@@ -16,13 +17,36 @@ namespace dnf_composer::element
 
 	void SigmoidFunction::apply(const std::vector<double>& input, std::vector<double>& out) const
 	{
-		const auto s  = static_cast<float>(steepness);
-		const auto xs = static_cast<float>(x_shift);
+		// Full double-precision logistic sigmoid: 1/(1+exp(-s(x-xs))). The exponent is
+		// clamped to [-88, 88] — not the wider [-708, 708] double-exp range. At the
+		// saturated tail the sigmoid is already 0/1 to ~1e-38, so the clamp is a numeric
+		// no-op, but it keeps the smallest output near 1e-38 (a normal double) instead of
+		// ~1e-308: the latter underflows to a DENORMAL when multiplied by the kernel
+		// weights in the downstream convolution, and each denormal costs a microcode
+		// assist (measured: >50x slower on resting-cell-dominated fields). Clamping to
+		// [-88,88] keeps every value a normal double, no FTZ flush needed.
+		const double s  = steepness;
+		const double xs = x_shift;
 		const std::size_t n = input.size();
+
+		// Runtime-dispatched AVX2+FMA path (see simd_dispatch.h) — same clamp,
+		// same formula, ~1e-15-accurate vectorized exp; falls back to the scalar
+		// loop below on pre-AVX2 hosts.
+		if (tools::math::detail::avx2_fma_available())
+		{
+			tools::math::detail::sigmoid_avx2_f64(input.data(), out.data(), n, s, xs);
+			return;
+		}
+
 		for (std::size_t i = 0; i < n; ++i)
 		{
-			const auto x = static_cast<float>(input[i]);
-			out[i] = static_cast<double>(1.0F / (1.0F + std::exp(-s * (x - xs))));
+			double e = -s * (input[i] - xs);
+			if (e < -88.0) {
+				e = -88.0;
+			} else if (e > 88.0) {
+				e = 88.0;
+			}
+			out[i] = 1.0 / (1.0 + std::exp(e));
 		}
 	}
 

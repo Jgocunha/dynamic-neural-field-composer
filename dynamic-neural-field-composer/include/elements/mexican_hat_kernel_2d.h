@@ -5,6 +5,7 @@
 #include <iomanip>
 
 #include "tools/math.h"
+#include "tools/fft_convolution.h"
 #include "kernel.h"
 
 //https://github.com/stevenlovegrove/Pangolin/issues/352
@@ -79,6 +80,17 @@ namespace dnf_composer::element
 		std::vector<double> scratchTmp_;
 		std::vector<double> scratchExcConv_;
 		std::vector<double> scratchInhConv_;
+		tools::math::Conv2dScratch<double> scratch2d_;
+
+		// Spectral (FFTW) path — used instead of the direct separable path above
+		// when shouldUseSpectral2D (tools/fft_convolution.h) says the combined
+		// exc+inh kernel is wide enough and circular=true (an FFT of the full
+		// field is inherently periodic, so it only computes what circular
+		// convolution means; a non-circular kernel keeps the direct path
+		// unconditionally). This dispatch rule and member pair is shared,
+		// unchanged in shape, by every other 2D convolution element.
+		bool useFFT_ = false;
+		tools::math::SpectralConvolver2D spectral_;
 	public:
 		MexicanHatKernel2D(const ElementCommonParameters& elementCommonParameters,
 		                   MexicanHatKernel2DParameters  parameters);

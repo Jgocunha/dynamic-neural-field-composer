@@ -6,6 +6,7 @@
 #include <numeric>
 
 #include "tools/math.h"
+#include "tools/fft_convolution.h"
 #include "element.h"
 
 namespace dnf_composer::element
@@ -45,12 +46,29 @@ namespace dnf_composer::element
 	{
 	private:
 		CorrelatedNormalNoise2DParameters parameters;
+		// This element derives from Element, not Kernel, so it has no
+		// cutOfFactor member; match Kernel::Kernel's default (kernel.cpp:14).
+		static constexpr int kCutOfFactor = 5;
+		std::array<int, 2> kernelRange_x{};
+		std::array<int, 2> kernelRange_y{};
 		std::vector<double> correlationKernel_x;
 		std::vector<double> correlationKernel_y;
 		std::vector<int>    extIndex_x;
 		std::vector<int>    extIndex_y;
 		std::vector<double> scratchTmp_;
 		std::vector<double> scratchConv_;
+		std::vector<double> whiteNoise_;       ///< Reusable white-noise buffer (avoids per-step alloc).
+		tools::math::Conv2dScratch<double> scratch2d_;
+
+		// Spectral (FFTW) path — used instead of the direct separable path above
+		// when shouldUseSpectral2D (tools/fft_convolution.h) says the kernel is
+		// wide enough and circular=true. Shared dispatch rule/member pair with
+		// every other 2D convolution element (see MexicanHatKernel2D). The
+		// convolution input (fresh white noise every step) is itself random, so
+		// direct-vs-spectral comparisons must re-seed tools::math::seedNormal
+		// before each run rather than compare live stochastic output.
+		bool useFFT_ = false;
+		tools::math::SpectralConvolver2D spectral_;
 	public:
 		CorrelatedNormalNoise2D(const ElementCommonParameters& elementCommonParameters,
 		                        CorrelatedNormalNoise2DParameters  parameters);

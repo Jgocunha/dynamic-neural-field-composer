@@ -1,5 +1,10 @@
 #pragma once
 
+// Included before the max/min undef guard below since it transitively drags in
+// <windows.h> (via imgui-platform-kit), which would otherwise redefine those
+// macros again right after the guard clears them.
+#include "tools/logger.h"
+
 //https://github.com/stevenlovegrove/Pangolin/issues/352
 #ifdef max
 #undef max
@@ -19,6 +24,15 @@
 #include <random>
 #include <numbers>
 #include <fstream>
+#include <type_traits>
+#include <span>
+#include <cstdint>
+
+// Runtime-dispatched AVX2+FMA convolution kernel (see simd_dispatch.h): the
+// decision to use it is a runtime cpuid check, not a compile-time macro, so this
+// header compiles and the resulting binary runs correctly whether or not the
+// host CPU has AVX2.
+#include "tools/simd_dispatch.h"
 
 namespace dnf_composer::tools::math
 {
@@ -100,12 +114,52 @@ namespace dnf_composer::tools::math
 		const int ng = static_cast<int>(g.size());
 		const std::vector<T>& min_v = (nf < ng) ? f : g;
 		const std::vector<T>& max_v = (nf < ng) ? g : f;
+		const int M = static_cast<int>(min_v.size());
 		const int n = std::max(nf, ng) - std::min(nf, ng) + 1;
-		for (int i = 0; i < n; ++i) {
+
+		// out[i] = sum_{m=0..M-1} min_v[M-1-m] * max_v[i+m]
+		// The kernel (min_v) is read BACKWARDS, which blocks AVX2 vectorization: a
+		// reverse-stride load against the forward max_v stream. Pre-reverse min_v
+		// once into a small scratch buffer so the inner loop becomes two contiguous
+		// forward streams (a plain dot product the compiler vectorizes). The m-order
+		// of the summation is UNCHANGED (m = 0..M-1), so the result is bit-identical
+		// to the reversed-index form — verified by the golden test_math conv tests
+		// and the 1e-4 field-dynamics validation suite. (We still do NOT fold
+		// symmetric mirror taps — that reorders the summation and breaks sensitive
+		// abssigmoid attractors past 1e-4.)
+		static thread_local std::vector<T> krev;
+		if (static_cast<int>(krev.size()) != M) {
+			krev.resize(M);
+		}
+		{
+			const T* __restrict mn = min_v.data();
+			T* __restrict kr = krev.data();
+			for (int m = 0; m < M; ++m) {
+				kr[m] = mn[M - 1 - m];
+			}
+		}
+		const T* __restrict kr = krev.data();
+		const T* __restrict mx = max_v.data();
+
+		if constexpr (std::is_same_v<T, double>)
+		{
+			// Runtime dispatch (checked once, cached): use the AVX2+FMA kernel only
+			// if the host CPU actually supports it. See simd_dispatch.h/.cpp — this
+			// replaces what used to be a compile-time #if on the caller's own build
+			// flags, so this same binary is correct on pre-AVX2 x86-64 CPUs too.
+			if (detail::avx2_fma_available())
+			{
+				detail::conv_valid_into_avx2_f64(kr, M, mx, out.data(), n);
+				return;
+			}
+		}
+		for (int i = 0; i < n; ++i)
+		{
+			const T* __restrict w = mx + i;
 			T acc = T();
-			for (int j = static_cast<int>(min_v.size()) - 1, k = i; j >= 0; --j, ++k) {
-				acc += min_v[j] * max_v[k];
-}
+			for (int m = 0; m < M; ++m) {
+				acc += kr[m] * w[m];
+			}
 			out[i] = acc;
 		}
 	}
@@ -116,15 +170,44 @@ namespace dnf_composer::tools::math
 		const int nf = static_cast<int>(f.size());
 		const int ng = static_cast<int>(g.size());
 		const int pad = (ng - 1) / 2;
-		for (int i = 0; i < nf; ++i) {
+		const T* __restrict ff = f.data();
+		const T* __restrict gg = g.data();
+
+		// Interior cells [iLo, iHi) have their whole window in-bounds, so they need
+		// no per-tap bounds check — split them out into a branch-free loop the
+		// compiler can vectorize. Edge cells keep the guarded loop. (No symmetric
+		// mirror-folding: it reorders the summation and breaks the 1e-4 field-
+		// dynamics tolerance on sensitive attractors — see conv_valid_into note.)
+		const int iLo = pad;
+		const int iHi = nf - (ng - 1 - pad); // first i whose window exceeds nf
+
+		auto edge = [&](int i) {
 			T acc = T();
 			for (int j = 0; j < ng; ++j) {
 				const int fIndex = i + j - pad;
 				if (fIndex >= 0 && fIndex < nf) {
-					acc += f[fIndex] * g[j];
-}
+					acc += ff[fIndex] * gg[j];
+				}
 			}
 			out[i] = acc;
+		};
+
+		for (int i = 0; i < std::min(iLo, nf); ++i) {
+			edge(i);
+		}
+
+		for (int i = iLo; i < iHi; ++i)
+		{
+			const T* __restrict w = ff + (i - pad);
+			T acc = T();
+			for (int j = 0; j < ng; ++j) {
+				acc += gg[j] * w[j];
+			}
+			out[i] = acc;
+		}
+
+		for (int i = std::max(iHi, iLo); i < nf; ++i) {
+			edge(i);
 		}
 	}
 
@@ -147,7 +230,16 @@ namespace dnf_composer::tools::math
 
 		if (!g.empty())
 		{
-			double sumOfG = std::reduce(g.begin(), g.end());
+			static constexpr double epsilon = 1e-12;
+			const double sumOfG = std::reduce(g.begin(), g.end());
+			if (!std::isfinite(sumOfG) || std::abs(sumOfG) < epsilon)
+			{
+				logger::log(logger::LogLevel::WARNING,
+					"gaussNorm: sum of Gaussian is near-zero or non-finite (degenerate sigma?); "
+					"returning un-normalized zero vector to avoid NaN/Inf propagation.");
+				std::fill(g.begin(), g.end(), T());
+				return g;
+			}
 			for (int i = 0; i < g.size(); i++) {
 				g[i] = g[i] / sumOfG;
 }
@@ -281,8 +373,6 @@ namespace dnf_composer::tools::math
 	///
 	/// Formula: s(x) = 0.5 * (1 + beta * (x - x0) / (1 + beta * |x - x0|))
 	///
-	/// Equivalent to cedar's AbsSigmoid(beta, theta=x0). At beta >= 20 virtually
-	/// indistinguishable from the ExpSigmoid but avoids std::exp() entirely.
 	template <typename T>
 	std::vector<T> absSigmoid(const std::vector<T>& x, T beta, T x0)
 	{
@@ -317,7 +407,64 @@ namespace dnf_composer::tools::math
 	std::array<int, 2> computeKernelRange(double sigma, int cutOfFactor, int fieldSize, bool circular);
 	std::vector<int> createExtendedIndex(int fieldSize, const std::array<int, 2>& kernelRange);
 
+	// Fill dst[0..n) with standard-normal (mean 0, variance 1) samples. No
+	// allocation. Backed by a fast xoshiro256+ PRNG + ziggurat Gaussian.
+	void fillNormal(double* dst, std::size_t n);
+
 	std::vector<double> generateNormalVector(int size);
+
+	// Deterministically re-seed the thread_local normal generator fillNormal
+	// draws from. Same seed => same subsequent sequence, on the calling thread.
+	// Used to make convolution inputs reproducible when a step's input is itself
+	// randomly generated (e.g. CorrelatedNormalNoise2D), so its direct and
+	// spectral convolution paths can be compared against identical input.
+	void seedNormal(std::uint64_t seed);
+
+	// One separable term of a wrapped 2D kernel: sign * outer(taps_x, taps_y).
+	// taps_x/taps_y are ordered ascending offset -kR0..+kR1 (the layout every 2D
+	// kernel element's std::iota(-kernelRange[0]) already produces).
+	struct SeparableKernelTerm2D
+	{
+		std::span<const double> taps_x;
+		int kR0_x = 0;
+		std::span<const double> taps_y;
+		int kR0_y = 0;
+		double sign = 1.0; // +1 excitatory, -1 inhibitory
+	};
+
+	// Embeds a 1D kernel window (ordered ascending offset -kR0..+kR1, length
+	// window.size()) into out via circular wraparound: out[0] holds the
+	// zero-offset tap, out[j] the +j offset, out[N-j] the -j offset. Accumulates
+	// (+=) so a window longer than out.size() aliases correctly. `out` must
+	// already be sized to the target length and zeroed by the caller.
+	//
+	// This is the spatial-domain placement whose FFT equals what the direct
+	// circular convolution (conv_valid_into against the same window, via the
+	// wraparound createExtendedIndex builds) computes. Derivation: the extended
+	// row conv2d_separable_into builds satisfies extRow[t] = field[(t-kR1) mod N]
+	// (see conv2d_separable_into below), and conv_valid_into reads the kernel
+	// backwards (out[i] = sum_m k[M-1-m]*ext[i+m]). Substituting o = j-kR0 gives
+	// out[i] = sum_o w[o]*field[(i-o) mod N] -- a true circular convolution,
+	// exactly what multiplying by DFT(h) computes when h[o mod N] = w[o], i.e.
+	// exactly this embedding. No index flip is needed, including when the
+	// window is not palindromic (e.g. AsymmetricGaussKernel2D's shifted taps).
+	void embedWrapped1D(std::vector<double>& out, std::span<const double> window, int kR0);
+
+	// Builds the fused, wrap-embedded size_x*size_y real kernel (row-major,
+	// y-major: index y*size_x+x) whose forward FFT is the spectrum
+	// SpectralConvolver2D::setKernel expects: sum over terms of
+	// sign * outer(embed(taps_x), embed(taps_y)). Terms with an empty taps_x or
+	// taps_y are skipped. Returns {} for non-positive dimensions.
+	std::vector<double> buildWrappedSeparableKernel2D(
+		int size_x, int size_y, std::span<const SeparableKernelTerm2D> terms);
+
+	// Convenience overload so 1- and 2-term call sites read as one line.
+	inline std::vector<double> buildWrappedSeparableKernel2D(
+		int size_x, int size_y, std::initializer_list<SeparableKernelTerm2D> terms)
+	{
+		return buildWrappedSeparableKernel2D(size_x, size_y,
+			std::span<const SeparableKernelTerm2D>(terms.begin(), terms.size()));
+	}
 
 	template <typename T>
 	std::vector<T> normalize(const std::vector<T>& vector)
@@ -689,8 +836,194 @@ namespace dnf_composer::tools::math
 		return result;
 	}
 
-	// In-place 2D separable convolution — writes into caller-supplied buffers.
-	// `out` and `tmp` must be pre-sized to size_x * size_y before calling.
+	// Reusable scratch for conv2d_separable_into — lets callers avoid the six
+	// per-call heap allocations the temporaries would otherwise require. Size it
+	// once (e.g. in an element's init()) via ensure(); reuse across steps.
+	template<typename T>
+	struct Conv2dScratch
+	{
+		std::vector<T> row, col, convRow, convCol, extRow, extCol;
+		// Column-major tiles for the cache-blocked y-pass (up to 64 columns).
+		std::vector<T> tileIn, tileOut;
+
+		void ensure(int size_x, int size_y, std::size_t extX, std::size_t extY)
+		{
+			if (row.size()     != static_cast<std::size_t>(size_x)) {
+				row.assign(size_x, T());
+			}
+			if (convRow.size() != static_cast<std::size_t>(size_x)) {
+				convRow.assign(size_x, T());
+			}
+			if (col.size()     != static_cast<std::size_t>(size_y)) {
+				col.assign(size_y, T());
+			}
+			if (convCol.size() != static_cast<std::size_t>(size_y)) {
+				convCol.assign(size_y, T());
+			}
+			if (extRow.size()  != extX) {
+				extRow.assign(extX, T());
+			}
+			if (extCol.size()  != extY) {
+				extCol.assign(extY, T());
+			}
+			const std::size_t tile = static_cast<std::size_t>(std::min(64, size_x)) * size_y;
+			if (tileIn.size()  != tile) {
+				tileIn.assign(tile, T());
+			}
+			if (tileOut.size() != tile) {
+				tileOut.assign(tile, T());
+			}
+		}
+	};
+
+	// In-place 2D separable convolution into caller-supplied buffers, reusing the
+	// temporaries held in `scratch` (no per-call heap allocation). `out` and
+	// `tmp` must be pre-sized to size_x * size_y and must be DISTINCT buffers
+	// (the y-pass reads tmp rows while writing out rows); `scratch` must be
+	// ensure()'d for these dimensions and extension lengths. This is the
+	// hot-path overload.
+	template<typename T>
+	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - x-pass + tiled y-pass convolution; splitting would obscure the single cache-blocking pass
+	void conv2d_separable_into(
+		std::vector<T>& out,
+		std::vector<T>& tmp,
+		Conv2dScratch<T>& scratch,
+		const std::vector<T>& field,
+		const std::vector<T>& kernel_x,
+		const std::vector<T>& kernel_y,
+		int size_x, int size_y,
+		const std::vector<int>& extIndex_x,
+		const std::vector<int>& extIndex_y)
+	{
+		const bool circular_x = !extIndex_x.empty();
+		const bool circular_y = !extIndex_y.empty();
+
+		std::vector<T>& row     = scratch.row;
+		std::vector<T>& col     = scratch.col;
+		std::vector<T>& convRow = scratch.convRow;
+		std::vector<T>& extRow  = scratch.extRow;
+
+		// conv_valid_into derives its output length from extRow .size(), so it
+		// must match THIS call's extension length exactly — not the scratch's
+		// high-water capacity. (MexicanHat calls this twice with different kernel
+		// widths sharing one scratch; sizing to the max would make the narrower
+		// kernel emit > size_x outputs and overflow convRow.) resize() keeps the
+		// capacity ensure() reserved, so no reallocation occurs.
+		if (circular_x) {
+			extRow.resize(extIndex_x.size());
+		}
+
+		// x-pass: convolve each row (fixed y) with kernel_x. The circular
+		// extension is three contiguous copies — createExtendedIndex lays the
+		// extended row out as [last kR1 elems | whole row | first kR0 elems]
+		// (1-based indices), so kR1 = size_x - extIndex_x[0] + 1.
+		const T* __restrict fld = field.data();
+		int kR0_x = 0;
+		int kR1_x = 0;
+		if (circular_x)
+		{
+			kR1_x = size_x - extIndex_x[0] + 1;
+			kR0_x = static_cast<int>(extIndex_x.size()) - size_x - kR1_x;
+		}
+		for (int y = 0; y < size_y; ++y)
+		{
+			if (circular_x)
+			{
+				const T* rowBase = fld + static_cast<std::size_t>(y) * size_x;
+				std::copy(rowBase + size_x - kR1_x, rowBase + size_x, extRow.begin());
+				std::copy(rowBase, rowBase + size_x, extRow.begin() + kR1_x);
+				std::copy(rowBase, rowBase + kR0_x, extRow.begin() + kR1_x + size_x);
+				conv_valid_into(convRow, extRow, kernel_x);
+			}
+			else
+			{
+				std::copy(fld + y * size_x, fld + y * size_x + size_x, row.begin());
+				conv_same_into(convRow, row, kernel_x);
+			}
+			for (int x = 0; x < size_x; ++x) {
+				tmp[y * size_x + x] = convRow[x];
+}
+		}
+
+		// y-pass: per-column convolution with the SAME conv_valid_into /
+		// conv_same_into calls as before — the per-element arithmetic is
+		// bit-identical (a faster row-streamed accumulation was tried first,
+		// but ANY change to the per-element summation/FMA pattern flips the
+		// knife-edge 2D memory attractors — validation sims 049/050 — past the
+		// 1e-4 golden-reference gate). What changes is only the MEMORY ACCESS
+		// PATTERN: the old pass gathered and scattered every column element at
+		// stride size_x straight from/to the full-size buffers, which thrashes
+		// the cache at grid >= 100 and dominated 2D cost. Columns are now
+		// processed in tiles of up to 64: one row-streamed gather turns them
+		// into a column-major tile (contiguous reads of tmp), the per-column
+		// convs run on contiguous L1/L2-resident columns, and one row-streamed
+		// scatter writes the results back (contiguous writes of out).
+		std::vector<T>& extCol  = scratch.extCol;
+		std::vector<T>& convCol = scratch.convCol;
+		std::vector<T>& tileIn  = scratch.tileIn;
+		std::vector<T>& tileOut = scratch.tileOut;
+		if (circular_y) {
+			extCol.resize(extIndex_y.size());
+		}
+
+		// Circular extension layout, as for the x-pass: [last kR1 | col | first kR0].
+		int kR0_y = 0;
+		int kR1_y = 0;
+		if (circular_y)
+		{
+			kR1_y = size_y - extIndex_y[0] + 1;
+			kR0_y = static_cast<int>(extIndex_y.size()) - size_y - kR1_y;
+		}
+
+		const T* __restrict tp = tmp.data();
+		T* __restrict op = out.data();
+		const int W = std::min(64, size_x);
+		for (int x0 = 0; x0 < size_x; x0 += W)
+		{
+			const int w = std::min(W, size_x - x0);
+
+			// gather: contiguous reads of tmp rows into the column-major tile
+			for (int y = 0; y < size_y; ++y)
+			{
+				const T* __restrict src = tp + static_cast<std::size_t>(y) * size_x + x0;
+				for (int c = 0; c < w; ++c) {
+					tileIn[static_cast<std::size_t>(c) * size_y + y] = src[c];
+				}
+			}
+
+			for (int c = 0; c < w; ++c)
+			{
+				const T* colBase = tileIn.data() + static_cast<std::size_t>(c) * size_y;
+				if (circular_y)
+				{
+					std::copy(colBase + size_y - kR1_y, colBase + size_y, extCol.begin());
+					std::copy(colBase, colBase + size_y, extCol.begin() + kR1_y);
+					std::copy(colBase, colBase + kR0_y, extCol.begin() + kR1_y + size_y);
+					conv_valid_into(convCol, extCol, kernel_y);
+				}
+				else
+				{
+					std::copy(colBase, colBase + size_y, col.begin());
+					conv_same_into(convCol, col, kernel_y);
+				}
+				std::copy(convCol.begin(), convCol.end(),
+				          tileOut.begin() + static_cast<std::size_t>(c) * size_y);
+			}
+
+			// scatter: contiguous writes of out rows from the tile
+			for (int y = 0; y < size_y; ++y)
+			{
+				T* __restrict dst = op + static_cast<std::size_t>(y) * size_x + x0;
+				for (int c = 0; c < w; ++c) {
+					dst[c] = tileOut[static_cast<std::size_t>(c) * size_y + y];
+				}
+			}
+		}
+	}
+
+	// In-place 2D separable convolution — owns its temporaries (allocates six
+	// vectors per call). Convenience wrapper; prefer the Conv2dScratch overload in
+	// hot paths. `out` and `tmp` must be pre-sized to size_x * size_y.
 	template<typename T>
 	void conv2d_separable_into(
 		std::vector<T>& out,
@@ -702,57 +1035,10 @@ namespace dnf_composer::tools::math
 		const std::vector<int>& extIndex_x,
 		const std::vector<int>& extIndex_y)
 	{
-		const bool circular_x = !extIndex_x.empty();
-		const bool circular_y = !extIndex_y.empty();
-
-		std::vector<T> row(size_x);
-		std::vector<T> col(size_y);
-		std::vector<T> convRow(size_x);
-		std::vector<T> extRow(circular_x ? extIndex_x.size() : 0);
-		std::vector<T> convCol(size_y);
-		std::vector<T> extCol(circular_y ? extIndex_y.size() : 0);
-
-		// x-pass: convolve each row (fixed y) with kernel_x
-		for (int y = 0; y < size_y; ++y)
-		{
-			for (int x = 0; x < size_x; ++x) {
-				row[x] = field[y * size_x + x];
-}
-
-			if (circular_x)
-			{
-				obtainCircularVector_into(extRow, extIndex_x, row);
-				conv_valid_into(convRow, extRow, kernel_x);
-			}
-			else
-			{
-				conv_same_into(convRow, row, kernel_x);
-			}
-			for (int x = 0; x < size_x; ++x) {
-				tmp[y * size_x + x] = convRow[x];
-}
-		}
-
-		// y-pass: convolve each column (fixed x) with kernel_y
-		for (int x = 0; x < size_x; ++x)
-		{
-			for (int y = 0; y < size_y; ++y) {
-				col[y] = tmp[y * size_x + x];
-}
-
-			if (circular_y)
-			{
-				obtainCircularVector_into(extCol, extIndex_y, col);
-				conv_valid_into(convCol, extCol, kernel_y);
-			}
-			else
-			{
-				conv_same_into(convCol, col, kernel_y);
-			}
-			for (int y = 0; y < size_y; ++y) {
-				out[y * size_x + x] = convCol[y];
-}
-		}
+		Conv2dScratch<T> scratch;
+		scratch.ensure(size_x, size_y, extIndex_x.size(), extIndex_y.size());
+		conv2d_separable_into(out, tmp, scratch, field, kernel_x, kernel_y,
+		                      size_x, size_y, extIndex_x, extIndex_y);
 	}
 
 	// Reduction operation used when collapsing one axis of a 2D buffer.
