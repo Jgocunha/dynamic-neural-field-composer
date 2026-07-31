@@ -1,5 +1,6 @@
 ﻿#include "elements/element.h"
 
+#include <format>
 
 namespace dnf_composer::element
 {
@@ -7,8 +8,7 @@ namespace dnf_composer::element
 	{
 		if(parameters.dimensionParameters.size <= 0)
 		{
-			const std::string logMessage = "Element '" + parameters.identifiers.uniqueName +
-			                               "' has an invalid size.";
+			const std::string logMessage = std::format("Element '{}' has an invalid size.", parameters.identifiers.uniqueName);
 			log(tools::logger::LogLevel::ERROR, logMessage);
 			return;
 		}
@@ -88,7 +88,7 @@ namespace dnf_composer::element
 		const auto existingInput = inputs.find(inputElement);
 		if (existingInput != inputs.end())
 		{
-			const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' already exists. ";
+			const std::string logMessage = std::format("Input '{}' already exists. ", inputElement->getUniqueName());
 			log(tools::logger::LogLevel::ERROR, logMessage);
 			return;
 		}
@@ -97,8 +97,8 @@ namespace dnf_composer::element
 		{
 			if (inputElement->getComponentPtr("output")->size() != this->getSize())
 			{
-				const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' has a different size than '"
-				                               + this->getUniqueName() + "'.";
+				const std::string logMessage = std::format("Input '{}' has a different size than '{}'.",
+				                               inputElement->getUniqueName(), this->getUniqueName());
 				log(tools::logger::LogLevel::ERROR, logMessage);
 				return;
 			}
@@ -108,7 +108,7 @@ namespace dnf_composer::element
 		inputElement->outputs[this->shared_from_this()] = inputComponent;
 		inputPtr = nullptr;
 
-		const std::string logMessage = "Input '" + inputElement->getUniqueName() +"' added successfully to '" +  this->getUniqueName() + ".";
+		const std::string logMessage = std::format("Input '{}' added successfully to '{}.", inputElement->getUniqueName(), this->getUniqueName());
 		log(tools::logger::LogLevel::INFO, logMessage);
 	}
 
@@ -119,8 +119,8 @@ namespace dnf_composer::element
 			if (key->commonParameters.identifiers.uniqueName == inputElementId) {
 				inputs.erase(key);
 				inputPtr = nullptr;
-				log(tools::logger::LogLevel::INFO, "Input '" + inputElementId + "' removed successfully from '"
-				                                   + this->getUniqueName() + ". ");
+				log(tools::logger::LogLevel::INFO, std::format("Input '{}' removed successfully from '{}. ",
+				                                   inputElementId, this->getUniqueName()));
 				return;
 			}
 		}
@@ -133,8 +133,8 @@ namespace dnf_composer::element
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 				inputs.erase(key);
 				inputPtr = nullptr;
-				log(tools::logger::LogLevel::INFO, "Input '" + std::to_string(uniqueId) + "' removed successfully from '"
-				                                   + this->getUniqueName() + ".");
+				log(tools::logger::LogLevel::INFO, std::format("Input '{}' removed successfully from '{}.",
+				                                   uniqueId, this->getUniqueName()));
 				return;
 			}
 		}
@@ -276,8 +276,8 @@ namespace dnf_composer::element
 		{
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
 				outputs.erase(key);
-				log(tools::logger::LogLevel::INFO, "Output '" + std::to_string(uniqueId) + "' removed successfully from '"
-				                                   + this->getUniqueName() + ".");
+				log(tools::logger::LogLevel::INFO, std::format("Output '{}' removed successfully from '{}.",
+				                                   uniqueId, this->getUniqueName()));
 				return;
 			}
 		}
@@ -289,8 +289,8 @@ namespace dnf_composer::element
 		{
 			if (key->commonParameters.identifiers.uniqueName == outputElementId) {
 				outputs.erase(key);
-				log(tools::logger::LogLevel::INFO, "Output '" + outputElementId + "' removed successfully from '"
-				                                   + this->getUniqueName() + ".");
+				log(tools::logger::LogLevel::INFO, std::format("Output '{}' removed successfully from '{}.",
+				                                   outputElementId, this->getUniqueName()));
 				return;
 			}
 		}

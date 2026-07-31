@@ -1,5 +1,6 @@
 #include "simulation/simulation_file_manager.h"
 
+#include <format>
 #include <unordered_set>
 
 
@@ -44,10 +45,10 @@ namespace dnf_composer
         std::ofstream file(path);
         if (file.is_open()) {
             file << root.dump(4);
-            log(tools::logger::INFO, "Simulation saved to: " + path);
+            log(tools::logger::INFO, std::format("Simulation saved to: {}", path));
         }
         else {
-            log(tools::logger::ERROR, "Unable to open file to save simulation: " + path);
+            log(tools::logger::ERROR, std::format("Unable to open file to save simulation: {}", path));
         }
 	}
 
@@ -55,7 +56,7 @@ namespace dnf_composer
     {
         std::ifstream file(filePath);
         if (!file.is_open()) {
-            log(tools::logger::ERROR, "Unable to open file to load simulation: " + filePath + ".");
+            log(tools::logger::ERROR, std::format("Unable to open file to load simulation: {}.", filePath));
             return;
         }
 
@@ -64,7 +65,7 @@ namespace dnf_composer
             file >> root;
         }
         catch (const std::exception& e) {
-            log(tools::logger::ERROR, "Error reading JSON file: " + std::string(e.what()));
+            log(tools::logger::ERROR, std::format("Error reading JSON file: {}", e.what()));
             return;
         }
 
@@ -80,7 +81,7 @@ namespace dnf_composer
             const json& elems = root.contains("elements") ? root["elements"] : json::array();
             if (!elems.is_array())
             {
-                log(tools::logger::ERROR, "Invalid simulation file: \"elements\" is not an array: " + filePath);
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"elements\" is not an array: {}", filePath));
                 return;
             }
             elementsJson = elems;
@@ -88,7 +89,7 @@ namespace dnf_composer
             if (root.contains("identifier") && root["identifier"].is_string()) {
                 simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
             } else if (root.contains("identifier")) {
-                log(tools::logger::ERROR, "Invalid simulation file: \"identifier\" is not a string: " + filePath);
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"identifier\" is not a string: {}", filePath));
 }
 
             if (root.contains("deltaT") && root["deltaT"].is_number())
@@ -97,20 +98,20 @@ namespace dnf_composer
                 if (std::isfinite(dt) && dt > 0.0) {
                     simulation->setDeltaT(dt);
                 } else {
-                    log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a valid positive number: " + filePath);
+                    log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a valid positive number: {}", filePath));
 }
             }
             else if (root.contains("deltaT")) {
-                log(tools::logger::ERROR, "Invalid simulation file: \"deltaT\" is not a number: " + filePath);
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a number: {}", filePath));
 }
         }
         else
         {
-            log(tools::logger::ERROR, "Invalid simulation file: unexpected JSON root type: " + filePath);
+            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
             return;
         }
 
-        log(tools::logger::INFO, "Simulation loaded from: " + filePath);
+        log(tools::logger::INFO, std::format("Simulation loaded from: {}", filePath));
         jsonToElements(elementsJson);
 
         // Point FieldCoupling elements to their weights in the same directory as the JSON file.
@@ -596,8 +597,7 @@ namespace dnf_composer
 	        // (and their interactions in the second pass) with a clear error.
 	        if (!seenNames.insert(uniqueName).second)
 	        {
-	            log(tools::logger::LogLevel::ERROR, "Duplicate element name '" + uniqueName
-	                + "' in file - skipping this element.");
+	            log(tools::logger::LogLevel::ERROR, std::format("Duplicate element name '{}' in file - skipping this element.", uniqueName));
 	            continue;
 	        }
 
@@ -1123,11 +1123,8 @@ namespace dnf_composer
                     // Wiring to a missing element would corrupt the loaded graph.
                     if (!simulation->getElement(keyUniqueName) || !simulation->getElement(uniqueName))
                     {
-                        std::string message = "Skipping interaction '";
-                        message += keyUniqueName;
-                        message += "' -> '";
-                        message += uniqueName;
-                        message += "': one or both elements were not loaded.";
+                        const std::string message = std::format("Skipping interaction '{}' -> '{}': one or both elements were not loaded.",
+                            keyUniqueName, uniqueName);
                         log(tools::logger::WARNING, message);
                         continue;
                     }

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <chrono>
+#include <format>
 #include <ranges>
 #include <sstream>
 #include <iomanip>
@@ -68,7 +69,7 @@ namespace dnf_composer
 		if (isRecording(elementId, componentName))
 		{
 			tools::logger::log(tools::logger::LogLevel::WARNING,
-				"Recording already active for '" + elementId + "' / '" + componentName + "'.");
+				std::format("Recording already active for '{}' / '{}'.", elementId, componentName));
 			return;
 		}
 
@@ -89,12 +90,12 @@ namespace dnf_composer
 		if (!session.file.is_open())
 		{
 			tools::logger::log(tools::logger::LogLevel::ERROR,
-				"Failed to open recording file: " + filename);
+				std::format("Failed to open recording file: {}", filename));
 			return;
 		}
 
 		tools::logger::log(tools::logger::LogLevel::INFO,
-			"Recording started: " + filename);
+			std::format("Recording started: {}", filename));
 
 		sessions.push_back(std::move(session));
 	}
@@ -116,7 +117,7 @@ namespace dnf_composer
 }
 
 		tools::logger::log(tools::logger::LogLevel::INFO,
-			"Recording stopped for '" + elementId + "' / '" + componentName + "'.");
+			std::format("Recording stopped for '{}' / '{}'.", elementId, componentName));
 
 		sessions.erase(it);
 	}
@@ -150,7 +151,7 @@ namespace dnf_composer
 			if (!element)
 			{
 				tools::logger::log(tools::logger::LogLevel::WARNING,
-					"Stopping recording for '" + s.elementId + "': element no longer exists.");
+					std::format("Stopping recording for '{}': element no longer exists.", s.elementId));
 				toStop.push_back(i);
 				continue;
 			}
@@ -159,7 +160,7 @@ namespace dnf_composer
 			if (component == nullptr)
 			{
 				tools::logger::log(tools::logger::LogLevel::WARNING,
-					"Stopping recording for '" + s.elementId + "' / '" + s.componentName + "': component unavailable.");
+					std::format("Stopping recording for '{}' / '{}': component unavailable.", s.elementId, s.componentName));
 				toStop.push_back(i);
 				continue;
 			}
@@ -201,7 +202,7 @@ namespace dnf_composer
 		if (!element)
 		{
 			tools::logger::log(tools::logger::LogLevel::ERROR,
-				"Snapshot failed: element '" + elementId + "' not found.");
+				std::format("Snapshot failed: element '{}' not found.", elementId));
 			return;
 		}
 
@@ -209,7 +210,7 @@ namespace dnf_composer
 		if (component == nullptr)
 		{
 			tools::logger::log(tools::logger::LogLevel::ERROR,
-				"Snapshot failed: component '" + componentName + "' not found on '" + elementId + "'.");
+				std::format("Snapshot failed: component '{}' not found on '{}'.", componentName, elementId));
 			return;
 		}
 
@@ -223,7 +224,7 @@ namespace dnf_composer
 		if (!file.is_open())
 		{
 			tools::logger::log(tools::logger::LogLevel::ERROR,
-				"Failed to open snapshot file: " + filename);
+				std::format("Failed to open snapshot file: {}", filename));
 			return;
 		}
 
@@ -235,7 +236,7 @@ namespace dnf_composer
 		writeRow(file, ticks, ms, *component);
 
 		tools::logger::log(tools::logger::LogLevel::INFO,
-			"Snapshot exported to: " + filename);
+			std::format("Snapshot exported to: {}", filename));
 	}
 
 	bool SimulationRecorder::isRecording(const std::string& elementId,

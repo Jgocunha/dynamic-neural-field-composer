@@ -1,4 +1,5 @@
 ﻿#include <array>
+#include <format>
 #include <utility>
 
 #include "application/application.h"
@@ -94,7 +95,7 @@ namespace dnf_composer
 	void Application::toggleGUI()
 	{
 		guiActive = !guiActive;
-		log(tools::logger::LogLevel::INFO,std::string("GUI is ") + (guiActive ? "enabled." : "disabled."));
+		log(tools::logger::LogLevel::INFO, std::format("GUI is {}", guiActive ? "enabled." : "disabled."));
 	}
 
 	bool Application::hasGUIBeenClosed() const
