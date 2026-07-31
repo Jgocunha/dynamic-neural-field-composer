@@ -142,19 +142,19 @@ namespace dnf_composer::element
 			{
 				const auto* l = dynamic_cast<const SigmoidFunction*>(lhs.get());
 				const auto* r = dynamic_cast<const SigmoidFunction*>(rhs.get());
-				return l && r && (*l == *r);
+				return l != nullptr && r != nullptr && (*l == *r);
 			}
 			case ActivationFunctionType::HEAVISIDE:
 			{
 				const auto* l = dynamic_cast<const HeavisideFunction*>(lhs.get());
 				const auto* r = dynamic_cast<const HeavisideFunction*>(rhs.get());
-				return l && r && (*l == *r);
+				return l != nullptr && r != nullptr && (*l == *r);
 			}
 			case ActivationFunctionType::ABSSIGMOID:
 			{
 				const auto* l = dynamic_cast<const AbsSigmoidFunction*>(lhs.get());
 				const auto* r = dynamic_cast<const AbsSigmoidFunction*>(rhs.get());
-				return l && r && (*l == *r);
+				return l != nullptr && r != nullptr && (*l == *r);
 			}
 			default:
 				return false;
