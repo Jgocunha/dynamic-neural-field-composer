@@ -64,15 +64,20 @@ namespace dnf_composer::element
 		/// @brief Copy assignment. Deep-clones @p other's activation function.
 		/// Same null-source policy as the copy constructor -- see the class-level
 		/// doc comment.
+		///
+		/// Offers the strong exception guarantee: the clone is completed before any
+		/// member is touched, so a throwing `clone()` leaves `*this` unchanged
+		/// rather than holding @p other's scalars beside its own old function.
 		NeuralFieldParameters& operator=(const NeuralFieldParameters& other)
 		{
 			if (this != &other)
 			{
-				tau = other.tau;
-				startingRestingLevel = other.startingRestingLevel;
-				activationFunction = other.activationFunction
+				auto clonedActivationFunction = other.activationFunction
 					? other.activationFunction->clone()
 					: std::make_unique<SigmoidFunction>(0.0, 10.0);
+				tau = other.tau;
+				startingRestingLevel = other.startingRestingLevel;
+				activationFunction = std::move(clonedActivationFunction);
 			}
 			return *this;
 		}

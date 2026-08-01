@@ -2,6 +2,7 @@
 #include <memory>
 #include <algorithm>
 #include <numeric>
+#include <stdexcept>
 
 #include "elements/neural_field.h"
 #include "elements/activation_function.h"
@@ -711,4 +712,47 @@ TEST(NeuralFieldParametersMove, TypeIsMoveConstructibleAndMoveAssignable)
     // Guards against a silent regression back to copy-only semantics.
     EXPECT_TRUE(std::is_move_constructible_v<NeuralFieldParameters>);
     EXPECT_TRUE(std::is_move_assignable_v<NeuralFieldParameters>);
+}
+
+// ---------------------------------------------------------------------------
+// Copy assignment: strong exception guarantee.
+// ---------------------------------------------------------------------------
+
+namespace
+{
+    /// Activation function whose clone() always throws, so a failed copy can be
+    /// observed. Everything else is a no-op -- it is never evaluated.
+    struct ThrowingCloneFunction final : ActivationFunction
+    {
+        ThrowingCloneFunction() { type = SIGMOID; }
+
+        std::vector<double> operator()(const std::vector<double>& input) override { return input; }
+        void apply(const std::vector<double>& input, std::vector<double>& out) const override { out = input; }
+        [[nodiscard]] std::unique_ptr<ActivationFunction> clone() const override
+        {
+            throw std::runtime_error("clone failed");
+        }
+        [[nodiscard]] std::string toString() const override { return "throwing"; }
+        void print() const override {}
+    };
+}
+
+TEST(NeuralFieldParametersCopy, FailedCopyAssignmentLeavesDestinationUnchanged)
+{
+    // Copy assignment must give the strong guarantee: if cloning the source's
+    // activation function throws, the destination must be exactly as it was --
+    // not a hybrid holding the source's scalars and its own old function.
+    NeuralFieldParameters source;
+    source.tau = 99.0;
+    source.startingRestingLevel = 42.0;
+    source.activationFunction = std::make_unique<ThrowingCloneFunction>();
+
+    NeuralFieldParameters dest{ 1.0, -2.0, HeavisideFunction{ 9.0 } };
+    const ActivationFunction* destFunctionBefore = dest.activationFunction.get();
+
+    EXPECT_THROW(dest = source, std::runtime_error);
+
+    EXPECT_DOUBLE_EQ(dest.tau, 1.0);
+    EXPECT_DOUBLE_EQ(dest.startingRestingLevel, -2.0);
+    EXPECT_EQ(dest.activationFunction.get(), destFunctionBefore);
 }

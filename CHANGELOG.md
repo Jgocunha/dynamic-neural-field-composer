@@ -16,7 +16,8 @@ All notable changes to this project will be documented in this file.
   function on the next `init()`/`step()`); both now agree on the constructor's
   default-substitution policy. Move constructor and move assignment were also missing
   entirely, so moves silently degraded into deep-cloning copies; both are now declared
-  and transfer ownership directly (#119)
+  and transfer ownership directly. Copy assignment now clones before assigning any
+  member, so a throwing `clone()` leaves the destination unchanged (#119)
 
 ## [2.9.6] - 2026-07-31
 
