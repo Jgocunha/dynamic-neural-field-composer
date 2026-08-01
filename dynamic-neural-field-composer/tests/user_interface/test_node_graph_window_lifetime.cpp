@@ -11,8 +11,13 @@ using namespace dnf_composer;
 //
 // NodeGraphWindow's constructor calls ImNodeEditor::CreateEditor(&config), but
 // the destructor was `= default` and nothing in the codebase ever called
-// DestroyEditor(), so the editor context and its settings-file handle leaked for
-// the lifetime of the process.
+// DestroyEditor(), so the editor context leaked for the lifetime of the process.
+// What leaks is memory, not a file handle: EditorContext::~EditorContext is what
+// deletes the context's node/pin/link objects and frees its splitter memory, so
+// skipping it leaks the whole graph. (config.SettingsFile is only a path string;
+// the library opens a local ifstream/ofstream inside Load/SaveSettings and closes
+// it there, and SaveSettings also runs during normal operation, so settings
+// persistence was never affected -- verified in imgui-node-editor v0.9.3.)
 //
 // What these tests do NOT do: prove the leak is gone. The CI asan-ubsan job runs
 // with ASAN_OPTIONS=detect_leaks=0 (see .github/workflows/ci.yml -- disabled
