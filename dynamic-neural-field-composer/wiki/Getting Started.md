@@ -59,7 +59,7 @@ You do **not** need to install any of the following — the setup scripts handle
 
 The two dependencies that are cloned rather than downloaded — vcpkg itself and
 `imgui-platform-kit` — are pinned to exact commits in
-[`dependencies.env`](dependencies.env). CI checks out those commits, so a build
+[`dependencies.env`](../dependencies.env). CI checks out those commits, so a build
 today resolves the same package versions as a build six months from now, and an
 upstream change cannot break the build overnight.
 
