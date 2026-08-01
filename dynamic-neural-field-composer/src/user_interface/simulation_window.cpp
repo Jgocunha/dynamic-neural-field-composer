@@ -305,8 +305,10 @@ namespace dnf_composer::user_interface
 
 		// The element constructors throw on invalid input (issue #146), and this runs
 		// inside the ImGui frame -- an escaping exception would unwind out of the
-		// render loop and take the application with it. Only the add path is guarded,
-		// so a genuine rendering fault still surfaces as itself.
+		// render loop and take the application with it. Construction is reached through
+		// renderElementParameters(), so on the frame Add is pressed the guard covers the
+		// whole render-and-construct step, not construction alone. Every other frame
+		// renders unguarded, so a genuine rendering fault still surfaces as itself.
 		if (addRequested)
 		{
 			lastAddElementError = describeElementCreationFailure(

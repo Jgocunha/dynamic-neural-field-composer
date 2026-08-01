@@ -321,8 +321,10 @@ const std::string error = user_interface::describeElementCreationFailure([&]
 ```
 
 The message is shown inline under the **Add element** button and cleared by the next
-successful add. Only the creation path is wrapped, so a genuine rendering fault is still
-allowed to propagate rather than being mislabelled as a failed add.
+successful add. In the **Add element** card the guard is placed around the parameter form
+as a whole, so on the frame the button is pressed it covers rendering the widgets *and*
+constructing the element. Every other frame renders unguarded, so a genuine rendering
+fault is still allowed to propagate rather than being mislabelled as a failed add.
 
 `describeElementCreationFailure()` has no ImGui dependency, so it can be used — and unit
 tested — outside the GUI.

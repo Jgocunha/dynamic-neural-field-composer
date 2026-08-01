@@ -1,12 +1,46 @@
 #include "simulation/simulation_file_manager.h"
 
+#include <cmath>
 #include <format>
+#include <limits>
 #include <unordered_set>
+#include <vector>
 
 
 namespace dnf_composer
 {
     using json = nlohmann::json;
+
+    namespace
+    {
+        // True when `value` can size an axis: a positive, finite, whole number small
+        // enough to survive the get<int>() the loader performs a few lines later. That
+        // last part is not pedantry -- converting an out-of-range double to int is
+        // undefined behaviour, so the range has to be checked BEFORE the conversion,
+        // not by catching something afterwards.
+        // Mirrors the ElementDimensions extent contract (element_parameters.cpp).
+        [[nodiscard]] bool isValidAxisExtent(const json& value)
+        {
+            if (!value.is_number()) {
+                return false;
+}
+            const double extent = value.get<double>();
+            return std::isfinite(extent)
+                && extent > 0.0
+                && extent <= static_cast<double>(std::numeric_limits<int>::max())
+                && extent == std::floor(extent);
+        }
+
+        // True when `value` can be an axis step: a positive, finite number.
+        [[nodiscard]] bool isValidAxisSpacing(const json& value)
+        {
+            if (!value.is_number()) {
+                return false;
+}
+            const double spacing = value.get<double>();
+            return std::isfinite(spacing) && spacing > 0.0;
+        }
+    }
 
 	SimulationFileManager::SimulationFileManager(const std::shared_ptr<Simulation>& simulation, const std::string& filePath)
 		: simulation(simulation), filePath(filePath)
@@ -111,8 +145,42 @@ namespace dnf_composer
             return;
         }
 
+        // Last-resort guard around element construction. The pre-check above rejects the
+        // malformed inputs it can name, but the element constructors enforce contracts it
+        // deliberately does not re-derive -- notably the samples-per-axis ceiling that
+        // ElementDimensions applies to x_max/d_x. jsonToElements() sits outside the JSON
+        // parse try block above, so without this an Exception from any constructor would
+        // unwind straight out of loadElementsFromJson() and, in the GUI, out of the render
+        // loop (issue #146). On failure, drop whatever this load managed to add so a bad
+        // file never leaves a half-built simulation behind; anything the caller already
+        // had is left alone, since loadElementsFromJson() appends rather than replaces.
+        std::unordered_set<std::string> preExistingNames;
+        for (const auto& el : simulation->getElements()) {
+            preExistingNames.insert(el->getUniqueName());
+}
+        try
+        {
+            jsonToElements(elementsJson);
+        }
+        catch (const std::exception& e)
+        {
+            std::vector<std::string> addedNames;
+            for (const auto& el : simulation->getElements())
+            {
+                if (!preExistingNames.contains(el->getUniqueName())) {
+                    addedNames.push_back(el->getUniqueName());
+}
+            }
+            for (const auto& name : addedNames) {
+                simulation->removeElement(name);
+}
+            log(tools::logger::ERROR, std::format(
+                "Invalid simulation file: could not build the elements of {} ({}) - load aborted.",
+                filePath, e.what()));
+            return;
+        }
+
         log(tools::logger::INFO, std::format("Simulation loaded from: {}", filePath));
-        jsonToElements(elementsJson);
 
         // Point FieldCoupling elements to their weights in the same directory as the JSON file.
         const std::string simDir = std::filesystem::path(filePath).parent_path().string();
@@ -575,10 +643,11 @@ namespace dnf_composer
                     + R"( is missing a valid "x_max" or "d_x": )" + filePath);
                 return;
             }
-            if (elementJson["x_max"].get<double>() <= 0.0 || elementJson["d_x"].get<double>() <= 0.0)
+            if (!isValidAxisExtent(elementJson["x_max"]) || !isValidAxisSpacing(elementJson["d_x"]))
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
-                    + R"( has a non-positive "x_max" or "d_x" (both must be > 0): )" + filePath);
+                    + R"( has an invalid "x_max" or "d_x" ("x_max" must be a whole number > 0 that )"
+                    + R"(fits in an int, "d_x" a finite number > 0): )" + filePath);
                 return;
             }
             // The y axis gets the same treatment as the x axis (issue #146). Both keys
@@ -588,13 +657,14 @@ namespace dnf_composer
             if (elementJson.contains("y_max") || elementJson.contains("d_y"))
             {
                 const bool yMaxValid = !elementJson.contains("y_max")
-                    || (elementJson["y_max"].is_number() && elementJson["y_max"].get<double>() > 0.0);
+                    || isValidAxisExtent(elementJson["y_max"]);
                 const bool dYValid = !elementJson.contains("d_y")
-                    || (elementJson["d_y"].is_number() && elementJson["d_y"].get<double>() > 0.0);
+                    || isValidAxisSpacing(elementJson["d_y"]);
                 if (!yMaxValid || !dYValid)
                 {
                     log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
-                        + R"( has an invalid or non-positive "y_max" or "d_y" (both must be numbers > 0): )" + filePath);
+                        + R"( has an invalid "y_max" or "d_y" ("y_max" must be a whole number > 0 that )"
+                        + R"(fits in an int, "d_y" a finite number > 0): )" + filePath);
                     return;
                 }
             }
