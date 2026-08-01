@@ -34,8 +34,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
+          # The issue being triaged is already in the list, and Gemini has marked a
+          # new issue as a duplicate of itself. Drop it before asking.
           gh issue list --state all --limit 100 --json number,title,state \
+            --jq "map(select(.number != ${ISSUE_NUMBER}))" \
             > /tmp/existing_issues.json
           {
             echo "fetched<<EOF"
@@ -111,7 +115,6 @@ jobs:
         run: |
           TYPE_LABEL=$(echo "$TRIAGE"    | jq -r '.type_label')
           PRIORITY=$(echo "$TRIAGE"      | jq -r '.priority_label')
-          SECONDARY=$(echo "$TRIAGE"     | jq -r '.secondary_labels[]' 2>/dev/null || true)
           DUPLICATE_OF=$(echo "$TRIAGE"  | jq -r '.duplicate_of // empty')
           COMMENT=$(echo "$TRIAGE"       | jq -r '.comment')
 
@@ -129,21 +132,34 @@ jobs:
             PRIORITY="priority: medium"
           fi
 
-          # Build comma-separated label list, validating secondary labels
-          ALLOWED_SECONDARY="help wanted good first issue duplicate"
-          LABELS="$TYPE_LABEL,$PRIORITY"
-          for lbl in $SECONDARY; do
-            if echo "$ALLOWED_SECONDARY" | grep -qw "$lbl"; then
-              LABELS="$LABELS,$lbl"
-            else
-              echo "Skipping unexpected secondary label: '$lbl'"
-            fi
-          done
+          # One --add-label per label. Two of the allowed secondary labels contain
+          # spaces, so an unquoted loop over a word-split list turned "good first
+          # issue" into the three labels good, first and issue, none of which exist,
+          # and the whole step failed before it could comment.
+          LABEL_ARGS=(--add-label "$TYPE_LABEL" --add-label "$PRIORITY")
+          while IFS= read -r lbl; do
+            [ -n "$lbl" ] || continue
+            case "$lbl" in
+              "help wanted"|"good first issue"|"duplicate")
+                LABEL_ARGS+=(--add-label "$lbl") ;;
+              *)
+                echo "Skipping unexpected secondary label: '$lbl'" ;;
+            esac
+          done < <(echo "$TRIAGE" | jq -r '.secondary_labels[]' 2>/dev/null || true)
 
-          gh issue edit "$ISSUE_NUMBER" --add-label "$LABELS"
+          gh issue edit "$ISSUE_NUMBER" "${LABEL_ARGS[@]}"
           gh issue comment "$ISSUE_NUMBER" --body "$COMMENT"
 
+          # Close only against a real, different issue. Gemini has returned this
+          # issue's own number, which closed a freshly filed issue as a duplicate of
+          # itself, and a non-numeric answer would produce a nonsense close comment.
           if [ -n "$DUPLICATE_OF" ]; then
-            gh issue close "$ISSUE_NUMBER" --reason "not planned" \
-              --comment "Closing as duplicate of #${DUPLICATE_OF}."
+            if ! echo "$DUPLICATE_OF" | grep -qE '^[0-9]+$'; then
+              echo "Ignoring non-numeric duplicate_of '$DUPLICATE_OF'"
+            elif [ "$DUPLICATE_OF" = "$ISSUE_NUMBER" ]; then
+              echo "Ignoring self-referential duplicate_of #${DUPLICATE_OF}"
+            else
+              gh issue close "$ISSUE_NUMBER" --reason "not planned" \
+                --comment "Closing as duplicate of #${DUPLICATE_OF}."
+            fi
           fi

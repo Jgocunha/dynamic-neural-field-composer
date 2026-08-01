@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- The issue-triage workflow closed newly filed issues as duplicates of themselves —
+  the issue list handed to Gemini for duplicate detection was fetched after the issue
+  was opened, so it contained the issue being triaged, and nothing rejected a
+  self-referential `duplicate_of` before closing. The triaged issue is now filtered out
+  of that list, and a close only happens when `duplicate_of` is numeric and refers to a
+  different issue. Secondary labels are also no longer word-split, so `good first issue`
+  and `help wanted` are applied as single labels instead of failing the step (#159)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed
