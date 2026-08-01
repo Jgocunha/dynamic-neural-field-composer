@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- `SigmoidFunction.ApplyAgreesWithOperatorCallAcrossRegimes`: pins `apply()` (the path
+  `NeuralField::calculateOutput()` takes every step) to `operator()` within 1e-12 across
+  five steepness/shift regimes. The two once disagreed — `apply()` computed in float32
+  while `operator()` used float64, so the same field gave different results depending on
+  which ran, a reproducibility hazard for threshold-driven stability detection. Both have
+  been float64 since "Sigmoid to float64 end-to-end"; this closes the acceptance criterion
+  that was never covered. The old split shows up as a ~2e-7 discrepancy here, five orders
+  of magnitude above the tolerance (#120)
+
+### Documentation
+- `tests/golden/test_golden_activation.cpp` still described `SigmoidFunction::apply()` as
+  computing in float32 and the reference as mirroring that; both have been float64 for
+  some time and `reference/ref_activation.h` already said so
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed

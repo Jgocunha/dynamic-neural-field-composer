@@ -94,6 +94,43 @@ TEST(SigmoidFunction, ToStringIsNonEmpty)
     EXPECT_FALSE(s.toString().empty());
 }
 
+// apply() is the path NeuralField::calculateOutput() takes every step; operator()
+// is the path callers reach for. They once disagreed: apply() computed in float32
+// while operator() used float64, so the same field gave different results
+// depending on which one ran, and threshold-driven stability detection could flip.
+// Both are float64 now. This pins them together — the old split showed up here as
+// a ~2e-7 discrepancy, five orders of magnitude above this tolerance.
+TEST(SigmoidFunction, ApplyAgreesWithOperatorCallAcrossRegimes)
+{
+    struct Regime { double x_shift; double steepness; };
+    const std::vector<Regime> regimes{
+        { 0.0, 10.0 }, { 5.0, 4.0 }, { -3.0, 20.0 },
+        { 0.0, 100.0 },  // steep, near-Heaviside
+        { 0.0, 0.5 },    // very shallow
+    };
+
+    std::vector<double> input(401);
+    for (size_t i = 0; i < input.size(); ++i)
+        input[i] = -20.0 + 40.0 * static_cast<double>(i) / 400.0;
+
+    for (const auto& [x_shift, steepness] : regimes)
+    {
+        SigmoidFunction s{ x_shift, steepness };
+
+        const auto viaOperator = s(input);
+        std::vector<double> viaApply(input.size());
+        s.apply(input, viaApply);
+
+        ASSERT_EQ(viaApply.size(), viaOperator.size());
+        for (size_t i = 0; i < input.size(); ++i)
+        {
+            EXPECT_NEAR(viaApply[i], viaOperator[i], 1e-12)
+                << "x_shift=" << x_shift << " steepness=" << steepness
+                << " x=" << input[i];
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // HeavisideFunction
 // ---------------------------------------------------------------------------
