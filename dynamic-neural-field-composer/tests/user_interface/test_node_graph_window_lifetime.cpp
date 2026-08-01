@@ -14,10 +14,19 @@ using namespace dnf_composer;
 // DestroyEditor(), so the editor context and its settings-file handle leaked for
 // the lifetime of the process.
 //
-// A leak is not directly observable from inside the test, so this test's job is
-// to exercise the construct/destroy cycle repeatedly and let the Linux CI
-// asan-ubsan job report the leak. Before the fix that job reports a definite
-// leak of the editor context; after it, nothing.
+// What these tests do NOT do: prove the leak is gone. The CI asan-ubsan job runs
+// with ASAN_OPTIONS=detect_leaks=0 (see .github/workflows/ci.yml -- disabled
+// because connected elements form a shared_ptr ownership cycle that LeakSanitizer
+// flags on every connection test), so no job in this repo can currently observe a
+// leak. Confirmed empirically: this file was pushed before the fix and asan-ubsan
+// passed. Re-enabling leak detection is tracked separately; only then do these
+// become true regression tests for the leak itself.
+//
+// What they DO cover: the construct/destroy cycle is now RAII-managed, and member
+// destruction order matters -- `config` must outlive `context`, because
+// CreateEditor() retains the pointer it is handed and DestroyEditor() reads it
+// back. Get that ordering wrong and this is a use-after-free, which ASan reports
+// regardless of detect_leaks. That is the hazard these tests actually guard.
 //
 // These construct the window but never render it, so no ImGui frame, window, or
 // GL context is required.

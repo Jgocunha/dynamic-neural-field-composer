@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `NodeGraphWindow` created an imgui-node-editor context in its constructor but never
+  destroyed it — the destructor was `= default` and nothing in the codebase called
+  `ImNodeEditor::DestroyEditor()`, so the context and its settings-file handle leaked
+  for the lifetime of the process, once per window built. Because every File→Open
+  rebuilds the window set, the leak grew with each reopened simulation. The context is
+  now held in a `unique_ptr` with a `DestroyEditor` deleter, so it is released on every
+  exit path rather than depending on a destructor body remembering to do it (#115)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed
