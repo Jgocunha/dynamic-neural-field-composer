@@ -37,9 +37,11 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           # The issue being triaged is already in the list, and Gemini has marked a
-          # new issue as a duplicate of itself. Drop it before asking.
-          gh issue list --state all --limit 100 --json number,title,state \
-            --jq "map(select(.number != ${ISSUE_NUMBER}))" \
+          # new issue as a duplicate of itself. Drop it before asking. Fetch 101 so
+          # that removing this issue still leaves a full 100 candidates, then trim
+          # back to 100 for the case where it was not in the window at all.
+          gh issue list --state all --limit 101 --json number,title,state \
+            --jq "map(select(.number != ${ISSUE_NUMBER}))[0:100]" \
             > /tmp/existing_issues.json
           {
             echo "fetched<<EOF"
@@ -156,10 +158,18 @@ jobs:
           if [ -n "$DUPLICATE_OF" ]; then
             if ! echo "$DUPLICATE_OF" | grep -qE '^[0-9]+$'; then
               echo "Ignoring non-numeric duplicate_of '$DUPLICATE_OF'"
-            elif [ "$DUPLICATE_OF" = "$ISSUE_NUMBER" ]; then
-              echo "Ignoring self-referential duplicate_of #${DUPLICATE_OF}"
             else
-              gh issue close "$ISSUE_NUMBER" --reason "not planned" \
-                --comment "Closing as duplicate of #${DUPLICATE_OF}."
+              # Normalise before comparing and before quoting the number back. "00158"
+              # passes the digit check but is not string-equal to "158", so a padded
+              # answer would slip past the self-reference guard and close the issue
+              # against itself anyway. 10# forces base 10, or 08/09 would be read as
+              # invalid octal.
+              DUP_NUM=$((10#$DUPLICATE_OF))
+              if [ "$DUP_NUM" -eq "$ISSUE_NUMBER" ]; then
+                echo "Ignoring self-referential duplicate_of #${DUP_NUM}"
+              else
+                gh issue close "$ISSUE_NUMBER" --reason "not planned" \
+                  --comment "Closing as duplicate of #${DUP_NUM}."
+              fi
             fi
           fi
