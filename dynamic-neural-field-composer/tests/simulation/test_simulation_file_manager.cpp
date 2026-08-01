@@ -1761,6 +1761,96 @@ TEST_F(SimulationFileManagerTest, FailedLoadLeavesPreExistingElementsUntouched)
     EXPECT_EQ(sim->getElement("rz ok"), nullptr);
 }
 
+TEST_F(SimulationFileManagerTest, FailedLoadRestoresIdentifierAndDeltaT)
+{
+    // The identifier and deltaT are applied while the file is being read, but the load
+    // is not committed until every element is built. If the build then fails, rolling
+    // back only the elements would leave the simulation renamed and re-timed while
+    // holding none of that file's elements -- a state that came from no file at all.
+    const std::string dir = tempDir + "metadata-rollback/";
+    fs::create_directories(dir);
+    const std::string path = dir + "metadata-rollback.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "from-the-bad-file",
+            "deltaT": 0.25,
+            "elements": [
+                { "uniqueName": "rz bad", "label": [30, "resize"],
+                  "x_max": 1000, "d_x": 1e-9,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("original-identifier", 2.0, 0.0, 0.0);
+
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    EXPECT_EQ(sim->getUniqueIdentifier(), "original-identifier");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 2.0);
+}
+
+TEST_F(SimulationFileManagerTest, RejectedFileDoesNotRestoreMetadataItNeverApplied)
+{
+    // A file rejected by the up-front validation must leave the metadata alone -- both
+    // the file's values (never committed) and the simulation's own (never clobbered).
+    // This is the same abort path as a failed build, so it must not report success
+    // either; the assertion that matters is that nothing moved.
+    const std::string dir = tempDir + "rejected-metadata/";
+    fs::create_directories(dir);
+    const std::string path = dir + "rejected-metadata.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "from-the-rejected-file",
+            "deltaT": 0.25,
+            "elements": [
+                { "label": [30, "resize"], "x_max": 100, "d_x": 1.0, "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("original-identifier", 2.0, 0.0, 0.0);
+
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+    EXPECT_EQ(sim->getUniqueIdentifier(), "original-identifier");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 2.0);
+}
+
+TEST_F(SimulationFileManagerTest, SuccessfulLoadStillAppliesIdentifierAndDeltaT)
+{
+    // The other half of the contract: restoring metadata on failure must not weaken the
+    // successful path, which has always taken both values from the file.
+    const std::string dir = tempDir + "metadata-applied/";
+    fs::create_directories(dir);
+    const std::string path = dir + "metadata-applied.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "from-the-good-file",
+            "deltaT": 0.25,
+            "elements": [
+                { "uniqueName": "rz ok", "label": [30, "resize"],
+                  "x_max": 100, "d_x": 1.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("original-identifier", 2.0, 0.0, 0.0);
+
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    EXPECT_EQ(sim->getUniqueIdentifier(), "from-the-good-file");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 0.25);
+}
+
 TEST_F(SimulationFileManagerTest, LoadOfMalformedFileDoesNotPartiallyLoadEarlierElements)
 {
     // Two well-formed elements are listed BEFORE a malformed third one. If the file

@@ -148,7 +148,12 @@ namespace dnf_composer
 
         try
         {
-            jsonToElements(elementsJson);
+            // A false return means the up-front validation rejected the file. That happens
+            // before any element is added, so there is nothing to roll back -- but the load
+            // still failed, and the caller must not go on to report success.
+            if (!jsonToElements(elementsJson)) {
+                return false;
+            }
         }
         catch (const std::exception& e)
         {
@@ -191,12 +196,23 @@ namespace dnf_composer
             return;
         }
 
+        // extractElementsAndMetadata() applies "identifier" and "deltaT" as a side effect,
+        // but the load is not committed until every element is built. Capture them first
+        // so a failed build can put them back: rolling back only the elements would leave
+        // the simulation renamed and re-timed while holding none of that file's elements,
+        // a combination that came from no file at all. Only this scope sees both steps,
+        // so the restore belongs here rather than inside either one.
+        const std::string previousIdentifier = simulation->getUniqueIdentifier();
+        const double previousDeltaT = simulation->getDeltaT();
+
         json elementsJson;
         if (!extractElementsAndMetadata(root, elementsJson)) {
             return;
         }
 
         if (!buildElementsOrRollBack(elementsJson)) {
+            simulation->setUniqueIdentifier(previousIdentifier);
+            simulation->setDeltaT(previousDeltaT);
             return;
         }
 
@@ -630,7 +646,7 @@ namespace dnf_composer
     }
 
     // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON deserialization; mirrors elementToJson's structure
-    void SimulationFileManager::jsonToElements(const json& jsonElements) const
+    bool SimulationFileManager::jsonToElements(const json& jsonElements) const
     {
         // Validate every element's required common fields up front, before any element
         // is constructed or added to the live simulation. A malformed entry anywhere in
@@ -647,28 +663,28 @@ namespace dnf_composer
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                     + R"( is missing a valid "uniqueName": )" + filePath);
-                return;
+                return false;
             }
             if (!elementJson.contains("label") || !elementJson["label"].is_array()
                 || elementJson["label"].size() != 2 || !elementJson["label"][1].is_string())
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                     + R"( has a missing or malformed "label" (expected a 2-element array): )" + filePath);
-                return;
+                return false;
             }
             if (!elementJson.contains("x_max") || !elementJson["x_max"].is_number()
                 || !elementJson.contains("d_x") || !elementJson["d_x"].is_number())
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                     + R"( is missing a valid "x_max" or "d_x": )" + filePath);
-                return;
+                return false;
             }
             if (!isValidAxisExtent(elementJson["x_max"]) || !isValidAxisSpacing(elementJson["d_x"]))
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                     + R"( has an invalid "x_max" or "d_x" ("x_max" must be a whole number > 0 that )"
                     + R"(fits in an int, "d_x" a finite number > 0): )" + filePath);
-                return;
+                return false;
             }
             // The y axis gets the same treatment as the x axis (issue #146). Both keys
             // are optional -- an older or 1D-only file omits them and defaults to 1 --
@@ -685,7 +701,7 @@ namespace dnf_composer
                     log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                         + R"( has an invalid "y_max" or "d_y" ("y_max" must be a whole number > 0 that )"
                         + R"(fits in an int, "d_y" a finite number > 0): )" + filePath);
-                    return;
+                    return false;
                 }
             }
         }
@@ -1242,6 +1258,7 @@ namespace dnf_composer
 
 	    }
 
+        return true;
     }
 
 }

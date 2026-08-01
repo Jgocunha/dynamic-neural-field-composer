@@ -36,6 +36,16 @@ All notable changes to this project will be documented in this file.
   failure is reported as a malformed file; anything the aborted load had already added is
   rolled back, leaving elements the caller held beforehand untouched (#146)
 
+- A failed load rolled back the elements it had added but kept the `identifier` and
+  `deltaT` it had already read from the same file, leaving the simulation renamed and
+  re-timed while holding none of that file's elements. Both are now restored when the
+  load aborts (#146)
+
+- A file rejected by the up-front element validation was still followed by
+  `Simulation loaded from: <path>` at INFO level, so the log reported success directly
+  after reporting the file as invalid. That path now aborts the load like any other
+  failure (#146)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed

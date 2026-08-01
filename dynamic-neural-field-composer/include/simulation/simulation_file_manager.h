@@ -97,7 +97,19 @@ namespace dnf_composer
 
 	private:
 		static json elementToJson(const std::shared_ptr<element::Element>& element);
-		void jsonToElements(const json& jsonElements) const;
+
+		/// @brief Validate every element up front, then construct and wire them.
+		///
+		/// Validation of the common fields runs over the whole array before anything is
+		/// added, so a malformed entry anywhere aborts the load without leaving the
+		/// simulation half-filled. Recoverable problems (a duplicate `uniqueName`, an
+		/// unrecognised label, an interaction naming an element that was not loaded) are
+		/// logged and skipped rather than failing the load, which is what lets a file
+		/// written by a newer version still load here.
+		///
+		/// @param jsonElements  The element array to build from.
+		/// @return @c false if validation rejected the file, @c true otherwise.
+		[[nodiscard]] bool jsonToElements(const json& jsonElements) const;
 
 		/// @brief Pull the element array out of a parsed `.dnf` root and apply its metadata.
 		///
@@ -105,6 +117,10 @@ namespace dnf_composer
 		/// current object carrying `identifier` / `deltaT` alongside an `elements` array.
 		/// Metadata is applied to the simulation as a side effect; malformed metadata is
 		/// logged and skipped rather than failing the load.
+		///
+		/// @note The metadata side effect is not undone by this function. A caller that
+		///       goes on to fail the load is responsible for restoring the previous
+		///       identifier and deltaT -- see loadElementsFromJson().
 		///
 		/// @param root          The parsed root of the `.dnf` document.
 		/// @param elementsJson  Receives the element array on success.
