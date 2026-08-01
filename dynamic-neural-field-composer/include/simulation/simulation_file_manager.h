@@ -120,6 +120,6 @@ namespace dnf_composer
 		///
 		/// @param elementsJson  The element array to build from.
 		/// @return @c true if every element was built, @c false if the load was aborted.
-		bool buildElementsOrRollBack(const json& elementsJson) const;
+		[[nodiscard]] bool buildElementsOrRollBack(const json& elementsJson) const;
 	};
 }
