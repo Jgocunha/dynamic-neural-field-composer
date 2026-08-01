@@ -1511,6 +1511,85 @@ TEST_F(SimulationFileManagerTest, LoadRejectsNonPositiveDimensions)
     EXPECT_EQ(sim->getNumberOfElements(), 0);
 }
 
+TEST_F(SimulationFileManagerTest, LoadRejectsNonPositiveYDimensions)
+{
+    // Issue #146: the up-front pre-check validated x_max/d_x but not y_max/d_y, so a
+    // bad y axis skipped the clean rejection and instead threw out of ElementDimensions
+    // deeper in the load. Both axes must be reported the same way.
+    const std::string dir = tempDir + "bad-ydims/";
+    fs::create_directories(dir);
+    const std::string path = dir + "bad-ydims.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "bad-ydims",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 2d 1", "label": [13, "neural field 2d"],
+                  "x_max": 10, "d_x": 1.0, "y_max": 0, "d_y": 1.0,
+                  "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("bad-ydims-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadRejectsNonPositiveDY)
+{
+    const std::string dir = tempDir + "bad-dy/";
+    fs::create_directories(dir);
+    const std::string path = dir + "bad-dy.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "bad-dy",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 2d 1", "label": [13, "neural field 2d"],
+                  "x_max": 10, "d_x": 1.0, "y_max": 10, "d_y": -1.0,
+                  "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("bad-dy-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadStillAcceptsFilesWithoutYDimensions)
+{
+    // Backwards compatibility: y_max/d_y are optional and default to 1 / 1.0.
+    // The new checks must not reject an older 1D-only file that omits them.
+    const std::string dir = tempDir + "no-ydims/";
+    fs::create_directories(dir);
+    const std::string path = dir + "no-ydims.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "no-ydims",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "rz 1", "label": [30, "resize"],
+                  "x_max": 50, "d_x": 1.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("no-ydims-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+}
+
 TEST_F(SimulationFileManagerTest, LoadOfMalformedFileDoesNotPartiallyLoadEarlierElements)
 {
     // Two well-formed elements are listed BEFORE a malformed third one. If the file

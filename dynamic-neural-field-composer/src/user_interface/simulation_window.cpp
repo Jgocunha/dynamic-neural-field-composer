@@ -300,43 +300,67 @@ namespace dnf_composer::user_interface
 		ImGui::Spacing();
 
 		// ── Parameters ──────────────────────────────────────────────────────
-		static bool s_addRequested = false;
-		const bool addRequested = s_addRequested;
-		s_addRequested = false;
+		const bool addRequested = addRequestedNextFrame;
+		addRequestedNextFrame = false;
 
-		switch (selected)
+		// The element constructors throw on invalid input (issue #146), and this runs
+		// inside the ImGui frame -- an escaping exception would unwind out of the
+		// render loop and take the application with it. Only the add path is guarded,
+		// so a genuine rendering fault still surfaces as itself.
+		if (addRequested)
 		{
-			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id.data(), addRequested);              break;
-			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id.data(), addRequested);            break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id.data(), addRequested);      break;
-			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id.data(), addRequested);   break;
-			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id.data(), addRequested);              break;
-			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id.data(), addRequested);        break;
-			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id.data(), addRequested);       break;
-			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id.data(), addRequested);  break;
-			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id.data(), addRequested);              break;
-			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id.data(), addRequested);  break;
-			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id.data(), addRequested);           break;
-			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id.data(), addRequested);     break;
-			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id.data(), addRequested);           break;
-			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id.data(), addRequested);             break;
-			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id.data(), addRequested);           break;
-			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id.data(), addRequested);        break;
-			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id.data(), addRequested);          break;
-			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id.data(), addRequested);    break;
-			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id.data(), addRequested);          break;
-			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id.data(), addRequested);   break;
-			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id.data(), addRequested); break;
-			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id.data(), addRequested);        break;
-			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id.data(), addRequested); break;
-			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id.data(), addRequested);          break;
-			case element::ElementLabel::RESIZE:                     addElementResize(id.data(), addRequested);                  break;
-			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id.data(), addRequested);                break;
-			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id.data(), addRequested);                break;
-			case element::ElementLabel::EXPAND:                     addElementExpand(id.data(), addRequested);                  break;
-			default: break;
+			lastAddElementError = describeElementCreationFailure(
+				[this, selected] { renderElementParameters(selected, id.data(), true); });
+		}
+		else
+		{
+			renderElementParameters(selected, id.data(), false);
 		}
 
+		renderAddElementButton();
+
+		ImGui::PopID();
+	}
+
+	void SimulationWindow::renderElementParameters(const element::ElementLabel selected,
+		char* id, const bool addRequested) const
+	{
+		switch (selected)
+		{
+			case element::ElementLabel::NEURAL_FIELD:               addElementNeuralField(id, addRequested);              break;
+			case element::ElementLabel::GAUSS_STIMULUS:             addElementGaussStimulus(id, addRequested);            break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS:       addElementTimedGaussStimulus(id, addRequested);      break;
+			case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:    addElementTimedGaussStimulus2D(id, addRequested);   break;
+			case element::ElementLabel::GAUSS_KERNEL:               addElementGaussKernel(id, addRequested);              break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL:         addElementMexicanHatKernel(id, addRequested);        break;
+			case element::ElementLabel::OSCILLATORY_KERNEL:         addElementOscillatoryKernel(id, addRequested);       break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:    addElementAsymmetricGaussKernel(id, addRequested);  break;
+			case element::ElementLabel::NORMAL_NOISE:               addElementNormalNoise(id, addRequested);              break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE:    addElementCorrelatedNormalNoise(id, addRequested);  break;
+			case element::ElementLabel::FIELD_COUPLING:             addElementFieldCoupling(id, addRequested);           break;
+			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id, addRequested);     break;
+			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id, addRequested);           break;
+			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id, addRequested);             break;
+			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id, addRequested);           break;
+			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id, addRequested);        break;
+			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id, addRequested);          break;
+			case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:      addElementMexicanHatKernel2D(id, addRequested);    break;
+			case element::ElementLabel::NORMAL_NOISE_2D:            addElementNormalNoise2D(id, addRequested);          break;
+			case element::ElementLabel::OSCILLATORY_KERNEL_2D:      addElementOscillatoryKernel2D(id, addRequested);   break;
+			case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D: addElementAsymmetricGaussKernel2D(id, addRequested); break;
+			case element::ElementLabel::BOOST_STIMULUS_2D:          addElementBoostStimulus2D(id, addRequested);        break;
+			case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D: addElementCorrelatedNormalNoise2D(id, addRequested); break;
+			case element::ElementLabel::MEMORY_TRACE_2D:            addElementMemoryTrace2D(id, addRequested);          break;
+			case element::ElementLabel::RESIZE:                     addElementResize(id, addRequested);                  break;
+			case element::ElementLabel::RESIZE_2D:                  addElementResize2D(id, addRequested);                break;
+			case element::ElementLabel::COLLAPSE:                   addElementCollapse(id, addRequested);                break;
+			case element::ElementLabel::EXPAND:                     addElementExpand(id, addRequested);                  break;
+			default: break;
+		}
+	}
+
+	void SimulationWindow::renderAddElementButton() const
+	{
 		ImGui::Spacing();
 		{
 			const float addBtnH = ImGui::GetFrameHeight() * 1.5F;
@@ -346,7 +370,7 @@ namespace dnf_composer::user_interface
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
 			if (ImGui::Button("     Add element", {-FLT_MIN, addBtnH})) {
-				s_addRequested = true;
+				addRequestedNextFrame = true;
 }
 			ImGui::PopStyleColor(4);
 
@@ -362,7 +386,15 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 		}
 
-		ImGui::PopID();
+		// Validation feedback for the last add attempt (issue #146). Cleared by the
+		// next successful add, so it never lingers after the user fixes the input.
+		if (!lastAddElementError.empty())
+		{
+			ImGui::Spacing();
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90F, 0.35F, 0.35F, 1.0F));
+			ImGui::TextWrapped("%s", lastAddElementError.c_str());
+			ImGui::PopStyleColor();
+		}
 	}
 
 	// ── helpers ─────────────────────────────────────────────────────────────

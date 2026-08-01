@@ -581,6 +581,23 @@ namespace dnf_composer
                     + R"( has a non-positive "x_max" or "d_x" (both must be > 0): )" + filePath);
                 return;
             }
+            // The y axis gets the same treatment as the x axis (issue #146). Both keys
+            // are optional -- an older or 1D-only file omits them and defaults to 1 --
+            // but when present they must be valid, or ElementDimensions throws from
+            // deeper inside the load instead of reporting the file as malformed here.
+            if (elementJson.contains("y_max") || elementJson.contains("d_y"))
+            {
+                const bool yMaxValid = !elementJson.contains("y_max")
+                    || (elementJson["y_max"].is_number() && elementJson["y_max"].get<double>() > 0.0);
+                const bool dYValid = !elementJson.contains("d_y")
+                    || (elementJson["d_y"].is_number() && elementJson["d_y"].get<double>() > 0.0);
+                if (!yMaxValid || !dYValid)
+                {
+                    log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                        + R"( has an invalid or non-positive "y_max" or "d_y" (both must be numbers > 0): )" + filePath);
+                    return;
+                }
+            }
         }
 
         // Track names already loaded so duplicate uniqueNames in the file are rejected

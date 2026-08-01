@@ -60,6 +60,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "visualization/test_visualization.cpp"
             # user_interface
             "user_interface/test_plot_control_window.cpp"
+            "user_interface/test_element_creation_error.cpp"
             "visualization/test_plot_parameters.cpp"
     )
     target_include_directories(dnf_composer_tests PRIVATE

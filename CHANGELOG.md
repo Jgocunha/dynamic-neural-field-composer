@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- The element-creation forms in the GUI caught nothing, while the library has been
+  deliberately moving toward failing loudly (`ElementDimensions`, the `Element` base
+  constructor, `ElementFactory` all throw on invalid input). Those forms run inside the
+  ImGui render loop, so a user typing a bad size or dimension could send an exception
+  straight out of the frame and terminate the application. All 28 creation call sites
+  now funnel through `describeElementCreationFailure()`, which reports the failure as
+  an inline message under the **Add element** button instead. Only the add path is
+  guarded, so a genuine rendering fault still surfaces as itself (#146)
+
+- `SimulationFileManager` pre-checked `x_max`/`d_x` for non-positive values before
+  constructing an element but never checked `y_max`/`d_y`, so a malformed `.dnf` was
+  reported cleanly on one axis and thrown from deep inside the load on the other. Both
+  axes now report the same way. `y_max`/`d_y` remain optional, so files that omit them
+  still load (#146)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed
