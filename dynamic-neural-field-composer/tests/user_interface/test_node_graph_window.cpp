@@ -170,6 +170,14 @@ namespace
 class NodeGraphWindowTest : public ::testing::Test
 {
 protected:
+	// HeadlessImGui gives each test a fresh ImGui/ImPlot context, but the window's
+	// own cross-frame caches (hover timers, EMA-smoothed colormap ranges, pending
+	// pin) live outside it and are keyed by node id / element name -- and the
+	// factories below deliberately reuse names like "field1" and "coupling". Clear
+	// them too, or a test inherits smoothed state from whichever test ran first.
+	void SetUp() override { user_interface::NodeGraphWindow::resetTransientStateForTesting(); }
+	void TearDown() override { user_interface::NodeGraphWindow::resetTransientStateForTesting(); }
+
 	test::HeadlessImGui gui;
 };
 

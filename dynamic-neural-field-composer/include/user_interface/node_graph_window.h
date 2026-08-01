@@ -158,6 +158,17 @@ namespace dnf_composer::user_interface
 
 		void render() override;
 		void renderEmbedded() const;
+
+		/// @brief Clear the window's cross-frame UI caches (hover timers, EMA-smoothed
+		/// colormap ranges, and any half-finished click-to-click connection).
+		///
+		/// These caches are keyed by node id and element name and intentionally
+		/// outlive a single frame, so in a test process two tests that reuse an
+		/// element name would otherwise share smoothed state and become
+		/// order-dependent. Call this between tests; it has no use in application
+		/// code, where the caches are meant to persist.
+		static void resetTransientStateForTesting();
+
 		~NodeGraphWindow() override = default;
 	private:
 		void renderGraphContent() const;

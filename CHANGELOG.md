@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file.
   it, silently suppressing the console output that later suites assert on. Both sites now
   use an RAII guard that restores the previous level on scope exit
 
+- The same class of shared-state problem inside `NodeGraphWindow`: its hover timers,
+  EMA-smoothed colormap ranges, and pending click-to-click pin were function-local
+  statics keyed by node id and element name, so two tests reusing an element name
+  shared cache entries and results depended on test order. They now live in one
+  place with a `NodeGraphWindow::resetTransientStateForTesting()` entry point that
+  the UI test fixture calls between tests
+
 ### Added
 - Headless ImGui test harness (`tests/user_interface/ui_test_harness.h`) that drives
   real `render()` calls with no window and no OpenGL context, plus ~190 tests across
