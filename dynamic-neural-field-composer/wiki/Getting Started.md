@@ -55,6 +55,24 @@ You do **not** need to install any of the following — the setup scripts handle
 | `catch2` | vcpkg | Unit testing framework |
 | `imgui-platform-kit` | Built from source (cloned to `deps/`) | Platform/window abstraction |
 
+### Pinned revisions
+
+The two dependencies that are cloned rather than downloaded — vcpkg itself and
+`imgui-platform-kit` — are pinned to exact commits in
+[`dependencies.env`](dependencies.env). CI checks out those commits, so a build
+today resolves the same package versions as a build six months from now, and an
+upstream change cannot break the build overnight.
+
+The setup scripts check out the pin for a clone they create themselves. If
+`VCPKG_ROOT` already points at a vcpkg you installed for other projects, they
+leave it alone and print a warning when it sits at a different commit — your
+local build may then differ from CI, which is usually fine but is worth knowing
+when a failure reproduces on one and not the other.
+
+To move a pin, edit `dependencies.env` and let CI confirm all four platforms
+still build. The monthly *vcpkg Maintenance Check* workflow keeps reading
+upstream HEAD and opens an issue reporting how far the pin has fallen behind.
+
 ---
 
 ## Quick setup (recommended)
