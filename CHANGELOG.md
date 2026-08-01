@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- The `doc-sync` check went red on every open PR once the Gemini free tier's 20
+  requests a day were spent, reporting a quota error that said nothing about the PR
+  under review. Quota exhaustion is now tolerated with a warning. The gate fails
+  closed: an error that is not positively identified as a quota or rate limit — and
+  an empty one — still fails the job (#148)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed
