@@ -98,5 +98,28 @@ namespace dnf_composer
 	private:
 		static json elementToJson(const std::shared_ptr<element::Element>& element);
 		void jsonToElements(const json& jsonElements) const;
+
+		/// @brief Pull the element array out of a parsed `.dnf` root and apply its metadata.
+		///
+		/// Handles both accepted layouts: the legacy bare array of elements, and the
+		/// current object carrying `identifier` / `deltaT` alongside an `elements` array.
+		/// Metadata is applied to the simulation as a side effect; malformed metadata is
+		/// logged and skipped rather than failing the load.
+		///
+		/// @param root          The parsed root of the `.dnf` document.
+		/// @param elementsJson  Receives the element array on success.
+		/// @return @c true if the root was a recognised layout, @c false otherwise.
+		bool extractElementsAndMetadata(const json& root, json& elementsJson) const;
+
+		/// @brief Build every element in @p elementsJson, or none of them.
+		///
+		/// Wraps jsonToElements() so that a throwing element constructor is reported as a
+		/// malformed file instead of escaping the load. On failure, elements this call
+		/// added are removed again; elements the simulation already held are left alone,
+		/// since loading appends rather than replaces.
+		///
+		/// @param elementsJson  The element array to build from.
+		/// @return @c true if every element was built, @c false if the load was aborted.
+		bool buildElementsOrRollBack(const json& elementsJson) const;
 	};
 }

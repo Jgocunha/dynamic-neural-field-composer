@@ -86,6 +86,94 @@ namespace dnf_composer
         }
 	}
 
+    bool SimulationFileManager::extractElementsAndMetadata(const json& root, json& elementsJson) const
+    {
+        // Backwards-compatible: old format is a bare array of elements.
+        // New format is an object with metadata + "elements" array.
+        if (root.is_array())
+        {
+            elementsJson = root;
+            return true;
+        }
+        if (!root.is_object())
+        {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
+            return false;
+        }
+
+        const json& elems = root.contains("elements") ? root["elements"] : json::array();
+        if (!elems.is_array())
+        {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: \"elements\" is not an array: {}", filePath));
+            return false;
+        }
+        elementsJson = elems;
+
+        // Metadata is best-effort: a bad "identifier" or "deltaT" is reported and skipped,
+        // leaving the simulation's own value in place, rather than failing the whole load.
+        if (root.contains("identifier") && root["identifier"].is_string()) {
+            simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
+        } else if (root.contains("identifier")) {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: \"identifier\" is not a string: {}", filePath));
+}
+
+        if (root.contains("deltaT") && root["deltaT"].is_number())
+        {
+            const double dt = root["deltaT"].get<double>();
+            if (std::isfinite(dt) && dt > 0.0) {
+                simulation->setDeltaT(dt);
+            } else {
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a valid positive number: {}", filePath));
+}
+        }
+        else if (root.contains("deltaT")) {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a number: {}", filePath));
+}
+
+        return true;
+    }
+
+    bool SimulationFileManager::buildElementsOrRollBack(const json& elementsJson) const
+    {
+        // Last-resort guard around element construction. The pre-check in jsonToElements()
+        // rejects the malformed inputs it can name, but the element constructors enforce
+        // contracts it deliberately does not re-derive -- notably the samples-per-axis
+        // ceiling that ElementDimensions applies to x_max/d_x. Without this guard an
+        // Exception from any constructor would unwind straight out of
+        // loadElementsFromJson() and, in the GUI, out of the render loop (issue #146).
+        std::unordered_set<std::string> preExistingNames;
+        for (const auto& el : simulation->getElements()) {
+            preExistingNames.insert(el->getUniqueName());
+}
+
+        try
+        {
+            jsonToElements(elementsJson);
+        }
+        catch (const std::exception& e)
+        {
+            // Drop what this load added so a bad file never leaves a half-built
+            // simulation behind. Anything the caller already held is left alone,
+            // since loading appends rather than replaces.
+            std::vector<std::string> addedNames;
+            for (const auto& el : simulation->getElements())
+            {
+                if (!preExistingNames.contains(el->getUniqueName())) {
+                    addedNames.push_back(el->getUniqueName());
+}
+            }
+            for (const auto& name : addedNames) {
+                simulation->removeElement(name);
+}
+            log(tools::logger::ERROR, std::format(
+                "Invalid simulation file: could not build the elements of {} ({}) - load aborted.",
+                filePath, e.what()));
+            return false;
+        }
+
+        return true;
+    }
+
     void SimulationFileManager::loadElementsFromJson() const
     {
         std::ifstream file(filePath);
@@ -103,80 +191,12 @@ namespace dnf_composer
             return;
         }
 
-        // Backwards-compatible: old format is a bare array of elements.
-        // New format is an object with metadata + "elements" array.
         json elementsJson;
-        if (root.is_array())
-        {
-            elementsJson = root;
-        }
-        else if (root.is_object())
-        {
-            const json& elems = root.contains("elements") ? root["elements"] : json::array();
-            if (!elems.is_array())
-            {
-                log(tools::logger::ERROR, std::format("Invalid simulation file: \"elements\" is not an array: {}", filePath));
-                return;
-            }
-            elementsJson = elems;
-
-            if (root.contains("identifier") && root["identifier"].is_string()) {
-                simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
-            } else if (root.contains("identifier")) {
-                log(tools::logger::ERROR, std::format("Invalid simulation file: \"identifier\" is not a string: {}", filePath));
-}
-
-            if (root.contains("deltaT") && root["deltaT"].is_number())
-            {
-                const double dt = root["deltaT"].get<double>();
-                if (std::isfinite(dt) && dt > 0.0) {
-                    simulation->setDeltaT(dt);
-                } else {
-                    log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a valid positive number: {}", filePath));
-}
-            }
-            else if (root.contains("deltaT")) {
-                log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a number: {}", filePath));
-}
-        }
-        else
-        {
-            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
+        if (!extractElementsAndMetadata(root, elementsJson)) {
             return;
         }
 
-        // Last-resort guard around element construction. The pre-check above rejects the
-        // malformed inputs it can name, but the element constructors enforce contracts it
-        // deliberately does not re-derive -- notably the samples-per-axis ceiling that
-        // ElementDimensions applies to x_max/d_x. jsonToElements() sits outside the JSON
-        // parse try block above, so without this an Exception from any constructor would
-        // unwind straight out of loadElementsFromJson() and, in the GUI, out of the render
-        // loop (issue #146). On failure, drop whatever this load managed to add so a bad
-        // file never leaves a half-built simulation behind; anything the caller already
-        // had is left alone, since loadElementsFromJson() appends rather than replaces.
-        std::unordered_set<std::string> preExistingNames;
-        for (const auto& el : simulation->getElements()) {
-            preExistingNames.insert(el->getUniqueName());
-}
-        try
-        {
-            jsonToElements(elementsJson);
-        }
-        catch (const std::exception& e)
-        {
-            std::vector<std::string> addedNames;
-            for (const auto& el : simulation->getElements())
-            {
-                if (!preExistingNames.contains(el->getUniqueName())) {
-                    addedNames.push_back(el->getUniqueName());
-}
-            }
-            for (const auto& name : addedNames) {
-                simulation->removeElement(name);
-}
-            log(tools::logger::ERROR, std::format(
-                "Invalid simulation file: could not build the elements of {} ({}) - load aborted.",
-                filePath, e.what()));
+        if (!buildElementsOrRollBack(elementsJson)) {
             return;
         }
 
