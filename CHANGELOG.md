@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Connected elements were never destroyed. `addInput()` records a connection on both
+  endpoints — the consumer keeps its source in `inputs`, the source keeps the consumer
+  in `outputs` — so any two connected elements held `shared_ptr`s to each other. Neither
+  `Simulation::clean()` (which only cleared its own vector) nor destroying the
+  `Simulation` broke that cycle, so every connected element in every simulation leaked;
+  the canonical field↔self-kernel architecture leaked doubly. `clean()` and
+  `~Simulation()` now sever all connections before releasing the elements (#112)
+
 ## [2.9.6] - 2026-07-31
 
 ### Fixed

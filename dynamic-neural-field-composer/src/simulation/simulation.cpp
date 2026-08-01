@@ -209,9 +209,26 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, "Simulation resumed.");
 	}
 
+	void Simulation::disconnectAllElements()
+	{
+		for (const auto& element : elements)
+		{
+			// Each of these erases the connection from both endpoints, so after
+			// the loop no element holds a shared_ptr to any other.
+			element->removeInputs();
+			element->removeOutputs();
+		}
+	}
+
+	Simulation::~Simulation()
+	{
+		disconnectAllElements();
+	}
+
 	void Simulation::clean()
 	{
 		recorder.stopAll();
+		disconnectAllElements();
 		elements.clear();
 		initialized = false;
 		paused = false;

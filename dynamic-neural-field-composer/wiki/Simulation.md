@@ -42,6 +42,14 @@ sim.clean();         // removes all elements without closing
 
 `init()` must be called before the first `step()`. When using `Application`, `app.init()` handles this automatically.
 
+`clean()` and the destructor both sever every connection between the simulation's
+elements before releasing them. This matters because `addInput()` records the
+connection on both endpoints — the consumer holds its source, and the source holds
+the consumer — so two connected elements own each other. Dropping only the
+simulation's own references would leave that pair alive indefinitely. If you hold
+elements outside a simulation and wire them together directly, call `removeInputs()`
+/ `removeOutputs()` yourself before letting them go.
+
 ---
 
 ## Element management
