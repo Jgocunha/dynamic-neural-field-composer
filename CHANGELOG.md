@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `NodeGraphWindow` created an imgui-node-editor context in its constructor but never
+  destroyed it — the destructor was `= default` and nothing in the codebase called
+  `ImNodeEditor::DestroyEditor()`. `EditorContext::~EditorContext` is what deletes every
+  node, pin and link object the context owns and frees its splitter memory, so skipping
+  it leaked the whole graph, once per window built. Because every File→Open rebuilds the
+  window set, the leak grew with each reopened simulation. The context is now held in a
+  `unique_ptr` with a `DestroyEditor` deleter, so it is released on every exit path
+  rather than depending on a destructor body remembering to do it (#115)
 ### Added
 - `SigmoidFunction.ApplyAgreesWithOperatorCallAcrossRegimes`: pins `apply()` (the path
   `NeuralField::calculateOutput()` takes every step) to `operator()` within 1e-12 across
