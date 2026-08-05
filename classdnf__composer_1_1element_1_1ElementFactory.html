@@ -149,6 +149,12 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Shared pointer to the new element. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classdnf__composer_1_1Exception.html">Exception</a></td><td>if <code>type</code> has no registered creator (e.g. <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438">ElementLabel::UNINITIALIZED</a> or a value outside the defined enumerators) (#113 - previously returned nullptr). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -189,11 +195,17 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">type</td><td>Which element to create. </td></tr>
     <tr><td class="paramname">elementCommonParameters</td><td>Name, label, and spatial dimensions. </td></tr>
-    <tr><td class="paramname">elementSpecificParameters</td><td>Type-specific parameter struct (cast internally). </td></tr>
+    <tr><td class="paramname">elementSpecificParameters</td><td>Type-specific parameter struct (downcast internally to the concrete type <code>type</code> expects). </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Shared pointer to the new element. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classdnf__composer_1_1Exception.html">Exception</a></td><td>if <code>type</code> has no registered creator (e.g. <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233becea459b2bf3fff0d0db74c4683f0014a438">ElementLabel::UNINITIALIZED</a> or a value outside the defined enumerators), or if <code>elementSpecificParameters</code> is not actually the concrete <a class="el" href="structdnf__composer_1_1element_1_1ElementSpecificParameters.html">ElementSpecificParameters</a> subtype that <code>type</code> requires (#113 - previously undefined behavior via an unchecked dynamic_cast). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
