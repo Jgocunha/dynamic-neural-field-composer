@@ -105,12 +105,22 @@ TEST(SimulationRunForRealTime, ZeroDurationThrows)
     EXPECT_THROW(sim->runForRealTime(0.0), Exception);
 }
 
-TEST(SimulationRunForRealTime, PositiveDurationAdvancesTAndCloses)
+TEST(SimulationRunForRealTime, PositiveDurationAdvancesTAndStaysOpen)
 {
+    // Regression test for #124: runForRealTime() must not wipe data by
+    // default; closeOnFinish defaults to false.
     const auto sim = createSimulation("rrt-ok", 1.0, 0.0, 0.0);
     sim->addElement(makeField("nf 1"));
     EXPECT_NO_THROW(sim->runForRealTime(20.0)); // 20 ms
     EXPECT_GT(sim->getT(), 0.0);
+    EXPECT_TRUE(sim->isInitialized());
+}
+
+TEST(SimulationRunForRealTime, CloseOnFinishClosesWhenRequested)
+{
+    const auto sim = createSimulation("rrt-close", 1.0, 0.0, 0.0);
+    sim->addElement(makeField("nf 1"));
+    sim->runForRealTime(10.0, true);
     EXPECT_FALSE(sim->isInitialized());
 }
 
@@ -120,8 +130,8 @@ TEST(SimulationRunForRealTime, AutoInitializesIfNotAlreadyInitialized)
     sim->addElement(makeField("nf 1"));
     EXPECT_FALSE(sim->isInitialized());
     sim->runForRealTime(10.0);
-    // runForRealTime calls close() at the end, so initialized is false again
-    EXPECT_FALSE(sim->isInitialized());
+    // Default no longer closes, so the simulation stays initialized.
+    EXPECT_TRUE(sim->isInitialized());
     EXPECT_GT(sim->getT(), 0.0);
 }
 
