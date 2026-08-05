@@ -1,5 +1,6 @@
 #pragma once
 
+#include "exceptions/exception.h"
 #include "elements/element.h"
 #include "elements/gauss_kernel.h"
 #include "elements/gauss_stimulus.h"
@@ -53,8 +54,13 @@ namespace dnf_composer::element
 		/// @brief Create and return an element of the given type.
 		/// @param type                       Which element to create.
 		/// @param elementCommonParameters    Name, label, and spatial dimensions.
-		/// @param elementSpecificParameters  Type-specific parameter struct (cast internally).
+		/// @param elementSpecificParameters  Type-specific parameter struct (downcast internally
+		///                                   to the concrete type @p type expects).
 		/// @return Shared pointer to the new element.
+		/// @throws Exception if @p type has no registered creator (e.g. ElementLabel::UNINITIALIZED
+		///         or a value outside the defined enumerators), or if @p elementSpecificParameters
+		///         is not actually the concrete ElementSpecificParameters subtype that @p type
+		///         requires (#113 - previously undefined behavior via an unchecked dynamic_cast).
 		std::shared_ptr<Element> createElement(ElementLabel type,
 		                                       const ElementCommonParameters& elementCommonParameters,
 		                                       const ElementSpecificParameters& elementSpecificParameters);
@@ -62,6 +68,8 @@ namespace dnf_composer::element
 		/// @brief Create an element with default parameters.
 		/// @param type  Which element to create.
 		/// @return Shared pointer to the new element.
+		/// @throws Exception if @p type has no registered creator (e.g. ElementLabel::UNINITIALIZED
+		///         or a value outside the defined enumerators) (#113 - previously returned nullptr).
 		std::shared_ptr<Element> createElement(ElementLabel type);
 	private:
 		void setupElementCreators();

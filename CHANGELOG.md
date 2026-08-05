@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Every `ElementFactory` creator lambda (~30 of them) did
+  `dynamic_cast<const XParameters*>(&elementSpecificParameters)` and immediately
+  dereferenced the result without a null check; passing the wrong
+  `ElementSpecificParameters` subtype for a given `ElementLabel` was undefined
+  behavior in the public element-creation API. `createElement` also returned
+  `nullptr` for an unregistered/unknown `ElementLabel` instead of throwing,
+  pushing a null check onto every caller. Both `createElement` overloads now
+  throw a descriptive `Exception` on a parameter-type mismatch or an unknown
+  `ElementLabel`, in place of the dynamic_cast dereference and the nullptr
+  returns (#113)
 - `NeuralFieldParameters::operator==` compared the `activationFunction` `unique_ptr` by
   address instead of by value, so two independently-constructed parameter sets with
   identical activation functions compared unequal. It now dispatches to the concrete
