@@ -11,6 +11,33 @@
 
 namespace dnf_composer::user_interface
 {
+	namespace
+	{
+		// Transient per-frame UI state that outlives a single render call: hover
+		// timers and EMA-smoothed colormap ranges, keyed by node id / element name,
+		// plus the half-finished click-to-click connection.
+		//
+		// These deliberately survive across frames -- that is what makes the scroll
+		// delay and the colormap damping work. They used to be function-local
+		// statics, which meant a test process could never get them back to a known
+		// state: two tests using the same element name would share a cache entry and
+		// results would depend on test order. Gathering them here keeps that
+		// cross-frame behaviour but makes it resettable; see
+		// NodeGraphWindow::resetTransientStateForTesting().
+		std::unordered_map<size_t, double> g_hoverStart;
+		std::unordered_map<std::string, std::pair<double, double>> g_wmRangeCache;
+		std::unordered_map<std::string, std::pair<double, double>> g_rangeCache;
+		ImNodeEditor::PinId g_pendingOutputPin = 0;
+	}
+
+	void NodeGraphWindow::resetTransientStateForTesting()
+	{
+		g_hoverStart.clear();
+		g_wmRangeCache.clear();
+		g_rangeCache.clear();
+		g_pendingOutputPin = 0;
+	}
+
 	NodeGraphWindow::NodeGraphWindow(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
 	{
@@ -320,7 +347,6 @@ namespace dnf_composer::user_interface
 		static constexpr float scrollSpeed = 50.0F;
 		static constexpr float scrollDelay = 0.5F;
 		static constexpr float scrollPause = 1.0F;
-		static std::unordered_map<size_t, double> s_hoverStart;
 
 		ImGui::PushFont(g_BlackLargeFont);
 		const std::string& name  = element->getUniqueName();
@@ -345,10 +371,10 @@ namespace dnf_composer::user_interface
 
 			if (ImGui::IsItemHovered())
 			{
-				if (!s_hoverStart.contains(id)) {
-					s_hoverStart[id] = now;
+				if (!g_hoverStart.contains(id)) {
+					g_hoverStart[id] = now;
 }
-				if (const auto elapsed = static_cast<float>(now - s_hoverStart.at(id)); elapsed > scrollDelay)
+				if (const auto elapsed = static_cast<float>(now - g_hoverStart.at(id)); elapsed > scrollDelay)
 				{
 					const float scrollTime = elapsed - scrollDelay;
 					const float cycleDur   = (overflow / scrollSpeed) + scrollPause;
@@ -358,7 +384,7 @@ namespace dnf_composer::user_interface
 			}
 			else
 			{
-				s_hoverStart.erase(id);
+				g_hoverStart.erase(id);
 			}
 
 			ImGui::PushClipRect(origin, ImVec2(origin.x + availW, origin.y + lineH), true);
@@ -403,17 +429,16 @@ namespace dnf_composer::user_interface
 				const double frameMax = *std::ranges::max_element(weights);
 				if (std::isfinite(frameMin) && std::isfinite(frameMax))
 				{
-					static std::unordered_map<std::string, std::pair<double, double>> s_wmRangeCache;
 					const std::string key = element->getUniqueName();
-					if (const auto it = s_wmRangeCache.find(key); it == s_wmRangeCache.end()) {
-						s_wmRangeCache[key] = { frameMin, frameMax };
+					if (const auto it = g_wmRangeCache.find(key); it == g_wmRangeCache.end()) {
+						g_wmRangeCache[key] = { frameMin, frameMax };
 					} else
 					{
 						constexpr double alpha = 0.05;
 						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
 						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
 					}
-					auto& [stableMin, stableMax] = s_wmRangeCache[key];
+					auto& [stableMin, stableMax] = g_wmRangeCache[key];
 					if (stableMax - stableMin < 1e-9) { stableMax = stableMin + 1.0;
 }
 
@@ -438,22 +463,21 @@ namespace dnf_composer::user_interface
 				{
 					// EMA-smoothed range: adapts to data changes while dampening
 					// per-frame jitter that causes colormap band flashing.
-					static std::unordered_map<std::string, std::pair<double,double>> s_rangeCache;
 					const double frameMin = *std::ranges::min_element(data);
 					const double frameMax = *std::ranges::max_element(data);
 					if (!std::isfinite(frameMin) || !std::isfinite(frameMax)) {
 						return;
 }
 					const std::string key = element->getUniqueName();
-					if (const auto it = s_rangeCache.find(key); it == s_rangeCache.end()) {
-						s_rangeCache[key] = { frameMin, frameMax };
+					if (const auto it = g_rangeCache.find(key); it == g_rangeCache.end()) {
+						g_rangeCache[key] = { frameMin, frameMax };
 					} else
 					{
 						constexpr double alpha = 0.05;
 						it->second.first  = it->second.first  * (1.0 - alpha) + frameMin * alpha;
 						it->second.second = it->second.second * (1.0 - alpha) + frameMax * alpha;
 					}
-					auto& [stableMin, stableMax] = s_rangeCache[key];
+					auto& [stableMin, stableMax] = g_rangeCache[key];
 					if (stableMax - stableMin < 1e-9) { stableMax = stableMin + 1.0;
 }
 
@@ -587,16 +611,15 @@ namespace dnf_composer::user_interface
 	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - flat state machine over drag/hover/release pin events; splitting would obscure the transitions
 	void NodeGraphWindow::handlePinInteractions() const
 	{
-		// pendingOutputPin: set when user clicks an output pin; cleared when they click an input
+		// g_pendingOutputPin: set when user clicks an output pin; cleared when they click an input
 		// pin (completing the connection), click elsewhere, or start a successful drag.
-		static ImNodeEditor::PinId pendingOutputPin = 0;
 
 		const int maxIdx = simulation->getHighestElementIndex();
 
 		// Cancel with Escape or right-click.
-		if (pendingOutputPin &&
+		if (g_pendingOutputPin &&
 			(ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))) {
-			pendingOutputPin = 0;
+			g_pendingOutputPin = 0;
 }
 
 		// Click-to-click: handle every left-click directly via GetHoveredPin().
@@ -611,29 +634,29 @@ namespace dnf_composer::user_interface
 				const bool isValidOutput = asOutput >= 0 && asOutput <= maxIdx;
 				const bool isValidInput  = asInput  >= 0 && asInput  <= maxIdx;
 
-				if (pendingOutputPin && isValidInput)
+				if (g_pendingOutputPin && isValidInput)
 				{
 					// Second click on an input pin: complete the connection.
-					const int srcId = static_cast<int>(pendingOutputPin.Get()) - startingOutputPinId;
+					const int srcId = static_cast<int>(g_pendingOutputPin.Get()) - startingOutputPinId;
 					simulation->createInteraction(
 						simulation->getElement(srcId)->getUniqueName(), "output",
 						simulation->getElement(asInput)->getUniqueName());
-					pendingOutputPin = 0;
+					g_pendingOutputPin = 0;
 				}
 				else if (isValidOutput)
 				{
 					// First click (or change of mind): record this output pin.
-					pendingOutputPin = hovered;
+					g_pendingOutputPin = hovered;
 				}
 				else
 				{
-					pendingOutputPin = 0;
+					g_pendingOutputPin = 0;
 				}
 			}
 			else
 			{
 				// Clicked empty space: cancel any pending connection.
-				pendingOutputPin = 0;
+				g_pendingOutputPin = 0;
 			}
 		}
 
@@ -654,7 +677,7 @@ namespace dnf_composer::user_interface
 						simulation->createInteraction(
 							simulation->getElement(srcId)->getUniqueName(), "output",
 							simulation->getElement(dstId)->getUniqueName());
-						pendingOutputPin = 0;
+						g_pendingOutputPin = 0;
 					}
 				}
 				else
@@ -668,9 +691,15 @@ namespace dnf_composer::user_interface
 			if (ImNodeEditor::QueryNewNode(&newNodePin)) {
 				ImNodeEditor::RejectNewItem();
 }
-
-			ImNodeEditor::EndCreate();
 		}
+
+		// EndCreate() must be called unconditionally: BeginCreate() marks the creator
+		// action active *before* it can return false, and only EndCreate() clears that
+		// flag. Skipping it on the false path leaves the action stuck active, so the
+		// next frame trips IM_ASSERT(false == m_InActive) (and silently breaks
+		// drag-to-connect in builds where asserts are compiled out). Upstream's own
+		// examples call EndCreate() outside the if for this reason.
+		ImNodeEditor::EndCreate();
 	}
 
 	void NodeGraphWindow::handleLinkInteractions() const

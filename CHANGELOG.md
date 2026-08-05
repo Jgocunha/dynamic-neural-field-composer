@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- `NodeGraphWindow` called `ImNodeEditor::EndCreate()` only on the
+  `BeginCreate() == true` path. `BeginCreate()` marks the creator action active
+  *before* it can return false, and only `EndCreate()` clears that flag, so any
+  frame without a create action left the action stuck active — tripping
+  `IM_ASSERT(false == m_InActive)` on the next frame, and silently breaking
+  drag-to-connect in builds with asserts compiled out. `EndCreate()` is now called
+  unconditionally, matching upstream's own examples. Found by the new headless UI
+  suite (#127)
+
+- Two logger tests passed or failed purely on the order the suites happened to run in.
+  `Logger::minLogLevel` is process-wide state, and `tests/simulation/test_thread_safety.cpp`
+  and `tests/validation/validation_common.h` raised it to `FATAL` without ever restoring
+  it, silently suppressing the console output that later suites assert on. Both sites now
+  use an RAII guard that restores the previous level on scope exit
+
+- The same class of shared-state problem inside `NodeGraphWindow`: its hover timers,
+  EMA-smoothed colormap ranges, and pending click-to-click pin were function-local
+  statics keyed by node id and element name, so two tests reusing an element name
+  shared cache entries and results depended on test order. They now live in one
+  place with a `NodeGraphWindow::resetTransientStateForTesting()` entry point that
+  the UI test fixture calls between tests
+
+### Added
+- Headless ImGui test harness (`tests/user_interface/ui_test_harness.h`) that drives
+  real `render()` calls with no window and no OpenGL context, plus ~190 tests across
+  the user-interface and visualization layers, so those files are genuinely exercised
+  rather than sitting at 0% in the coverage denominator (#127)
+- `Logger::getMinLogLevel()`, so callers that temporarily raise the log threshold can
+  restore the previous value instead of assuming the default
 - `NodeGraphWindow` created an imgui-node-editor context in its constructor but never
   destroyed it — the destructor was `= default` and nothing in the codebase called
   `ImNodeEditor::DestroyEditor()`. `EditorContext::~EditorContext` is what deletes every
