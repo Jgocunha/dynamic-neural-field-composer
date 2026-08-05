@@ -20,7 +20,7 @@ var searchData=
   ['_7eplotspecificparameters_17',['~PlotSpecificParameters',['../structdnf__composer_1_1PlotSpecificParameters.html#a6c47ba6e38140b3a6336bcc9c27394f1',1,'dnf_composer::PlotSpecificParameters']]],
   ['_7escopedconvolutionmode_18',['~ScopedConvolutionMode',['../classdnf__composer_1_1tools_1_1math_1_1ScopedConvolutionMode.html#aba5519adee3b5134034d0da3f7b69a32',1,'dnf_composer::tools::math::ScopedConvolutionMode']]],
   ['_7esigmoidfunction_19',['~SigmoidFunction',['../structdnf__composer_1_1element_1_1SigmoidFunction.html#aa94a9f54cfa738e7712c51c4c19a66d1',1,'dnf_composer::element::SigmoidFunction']]],
-  ['_7esimulation_20',['~Simulation',['../classdnf__composer_1_1Simulation.html#a292ce6c2c11076b3fcb6e123a07ddf22',1,'dnf_composer::Simulation']]],
+  ['_7esimulation_20',['~Simulation',['../classdnf__composer_1_1Simulation.html#a5396d5d2b8f7460984a196d2f165d4e0',1,'dnf_composer::Simulation']]],
   ['_7esimulationwindow_21',['~SimulationWindow',['../classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a92c00ef3da915fc3f52ce96c61c79278',1,'dnf_composer::user_interface::SimulationWindow']]],
   ['_7espectralconvolver2d_22',['~SpectralConvolver2D',['../classdnf__composer_1_1tools_1_1math_1_1SpectralConvolver2D.html#ab21df6654bbc53d81c97783b86f5b9af',1,'dnf_composer::tools::math::SpectralConvolver2D']]],
   ['_7estaticlayoutwindow_23',['~StaticLayoutWindow',['../classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html#a143257b99e3dce9362ba957df092486e',1,'dnf_composer::user_interface::StaticLayoutWindow']]],
