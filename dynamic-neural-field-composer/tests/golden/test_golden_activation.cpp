@@ -5,10 +5,12 @@
 //  by NeuralField::calculateOutput() every step) vs an independent reference
 //  re-derivation in reference/ref_activation.h.
 //
-//  NOTE on SigmoidFunction: apply() computes internally in float32, a precision
-//  inconsistency vs. its own operator() (float64) — see the ref_activation.h
-//  header comment. We mirror that float32 computation bit-for-bit so this stays
-//  a genuine 1e-9 analytic equivalence test, not a loosened tolerance.
+//  NOTE on SigmoidFunction: apply() computes in float64, matching its own
+//  operator() — the float32/float64 split between the two is gone. The reference
+//  mirrors the float64 computation, including the [-88, 88] exponent clamp, so
+//  this stays a genuine 1e-9 analytic equivalence test, not a loosened tolerance.
+//  The two production paths are pinned to each other by
+//  SigmoidFunction.ApplyAgreesWithOperatorCallAcrossRegimes.
 // ----------------------------------------------------------------------------
 #include <gtest/gtest.h>
 #include <string>

@@ -26,6 +26,8 @@
 #include "elements/gauss_stimulus_2d.h"
 #include "tools/logger.h"
 
+#include "scoped_min_log_level.h"
+
 namespace dnf_composer::test_validation
 {
 	namespace fs = std::filesystem;
@@ -44,9 +46,15 @@ namespace dnf_composer::test_validation
 
 	// Silence the per-element INFO logging so it does not drown the test output
 	// (each sim load logs several lines; 300 sims => thousands of lines).
-	inline void silenceLogging()
+	/// @brief Silence per-element INFO logging for the caller's scope.
+	/// @return An RAII guard that restores the previous global log level.
+	/// @note Returns the guard (rather than setting the level and forgetting)
+	///       so the raised threshold cannot leak into later test suites and
+	///       suppress their output. Keep the returned object alive:
+	///       `const auto quiet = silenceLogging();`
+	[[nodiscard]] inline dnf_composer::test::ScopedMinLogLevel silenceLogging()
 	{
-		tools::logger::Logger::setMinLogLevel(tools::logger::LogLevel::FATAL);
+		return dnf_composer::test::ScopedMinLogLevel{ tools::logger::LogLevel::FATAL };
 	}
 
 	struct ProtocolResult

@@ -59,10 +59,27 @@ namespace dnf_composer
 		std::shared_ptr<imgui_kit::UserInterface> gui;
 		bool guiActive = true;
 		static float uiScalePct; ///< User-controlled UI scale percentage (50–200%).
+		static inline bool quitRequested = false; ///< Set by requestQuit(); see hasGUIBeenClosed().
 
 	public:
 		static float  getUiScalePct()          { return uiScalePct; }
 		static void   setUiScalePct(float pct) { uiScalePct = pct; }
+
+		/// @brief Ask the application to shut down at the end of the current frame.
+		///
+		/// The UI calls this instead of terminating the process directly (issue #122):
+		/// a request makes @c hasGUIBeenClosed() return true, so the ordinary main loop
+		/// falls through to @c close() and every destructor runs normally.
+		/// Existing loops need no change.
+		static void requestQuit();
+
+		/// @brief Return true once @c requestQuit() has been called.
+		[[nodiscard]] static bool isQuitRequested();
+
+		/// @brief Clear the quit request. For tests only: a real process exits shortly
+		/// after requesting a quit, but the flag is process-wide, so a test that sets it
+		/// must restore it to avoid bleeding state into unrelated tests.
+		static void resetQuitRequestForTesting();
 
 		/// @brief Construct an Application.
 		/// @param simulation    Shared simulation to drive (may be nullptr).
@@ -105,17 +122,40 @@ namespace dnf_composer
 		/// @brief Toggle the GUI on or off at runtime.
 		void toggleGUI();
 
-		/// @brief Return true if the user has closed the main window.
+		/// @brief Return true if the user has closed the main window or requested a quit.
+		/// @see requestQuit()
 		[[nodiscard]] bool hasGUIBeenClosed() const;
 
 		/// @brief Return true if the GUI overlay is currently active.
 		[[nodiscard]] bool isGUIActive() const;
 
+		/// @brief Enable ImGui keyboard navigation for the current ImGui context.
+		///
+		/// Sets @c ImGuiConfigFlags_NavEnableKeyboard on the IO struct returned by
+		/// @c ImGui::GetIO(). Must bind the IO **by reference** (`ImGuiIO&`): binding
+		/// by value (`auto io = ImGui::GetIO();`) copies the struct, so the flag would
+		/// be written to a discarded temporary and keyboard navigation would silently
+		/// never activate (#114). Requires a current ImGui context (created by
+		/// @c ImGui::CreateContext()); safe to call from a headless test that never
+		/// calls @c NewFrame()/@c Render().
+		static void enableKeyboardShortcuts();
+
+		/// @brief Assign the font-registry globals and the ImGui default font.
+		///
+		/// Reads the fonts already present in @c ImGui::GetIO().Fonts (populated by
+		/// @c setGUIParameters()/imgui_kit before this runs), assigns each
+		/// `g_*Font` global declared below, sets @c io.FontDefault, adds the
+		/// Font Awesome icon fonts, and builds the atlas. As with
+		/// @c enableKeyboardShortcuts(), the IO struct must be bound **by reference**
+		/// (`ImGuiIO&`): a by-value `auto io` copy would let @c io.FontDefault
+		/// assignment vanish with the temporary, leaving ImGui's real default font
+		/// unset (#114). Requires at least @c g_FontCount fonts already registered in
+		/// the atlas, or it throws @c ErrorCode::APP_INIT.
+		static void appendFonts();
+
 		~Application() = default;
 	private:
 		void setGUIParameters();
-		static void enableKeyboardShortcuts();
-		static void appendFonts();
 		static void defineImGuiStyle();
 	};
 
