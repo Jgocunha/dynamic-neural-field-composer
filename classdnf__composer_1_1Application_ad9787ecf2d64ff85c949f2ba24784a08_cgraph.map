@@ -1,11 +1,21 @@
 <map id="dnf_composer::Application::init" name="dnf_composer::Application::init">
-<area shape="rect" id="Node000001" title="Initialize the GUI and all registered windows. Call once before step()." alt="" coords="5,37,200,77"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title=" " alt="" coords="257,5,434,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,42,243,36,243,41,201,47"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1Application.html#a24c2fd485519f3eb60859afcca994d72" title="Register the application&#39;s ImGui settings handler (for persistence)." alt="" coords="248,69,443,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="201,68,235,72,234,77,200,73"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Application.html#a5d44fa04caa6256d1abaca0398ece286" title=" " alt="" coords="491,37,685,77"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="443,74,477,69,477,75,443,79"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Application.html#a527c4e705f610b5efeee26a26e05a655" title=" " alt="" coords="491,101,685,141"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="443,100,477,104,477,109,443,105"/>
+<area shape="rect" id="Node000001" title="Initialize the GUI and all registered windows. Call once before step()." alt="" coords="5,101,200,141"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Application.html#a3e426d76437b319e14939a3cefb5e92f" title="Assign the font&#45;registry globals and the ImGui default font." alt="" coords="249,5,443,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,99,247,55,267,47,269,52,249,60,147,104"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Application.html#aae9db732b74d6028781bb63fbdfc43dc" title="Enable ImGui keyboard navigation for the current ImGui context." alt="" coords="248,69,444,109"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="200,106,234,101,235,107,201,111"/>
+<area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title=" " alt="" coords="257,133,435,173"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="201,131,244,137,243,143,200,137"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1Application.html#a24c2fd485519f3eb60859afcca994d72" title="Register the application&#39;s ImGui settings handler (for persistence)." alt="" coords="249,197,443,237"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="147,139,249,183,269,190,267,195,247,188,145,144"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="512,5,667,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="443,23,499,23,499,28,443,28"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="735,5,889,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="667,23,721,23,721,28,667,28"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" title=" " alt="" coords="937,5,1100,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="890,23,924,23,924,28,890,28"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1Application.html#a5d44fa04caa6256d1abaca0398ece286" title=" " alt="" coords="492,165,687,205"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="443,202,478,197,479,203,444,207"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1Application.html#a527c4e705f610b5efeee26a26e05a655" title=" " alt="" coords="492,229,687,269"/>
+<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="444,227,479,232,478,237,443,233"/>
 </map>

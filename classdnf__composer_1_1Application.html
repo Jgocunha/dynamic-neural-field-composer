@@ -90,7 +90,7 @@ $(function() {
 <div class="dynheader">
 Collaboration diagram for dnf_composer::Application:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application__coll__graph.svg" width="204" height="316"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application__coll__graph.svg" width="216" height="356"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -131,6 +131,12 @@ requires <a class="el" href="structdnf__composer_1_1has__simulation__constructor
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a3e426d76437b319e14939a3cefb5e92f" id="r_a3e426d76437b319e14939a3cefb5e92f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a3e426d76437b319e14939a3cefb5e92f">appendFonts</a> ()</td></tr>
+<tr class="memdesc:a3e426d76437b319e14939a3cefb5e92f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign the font-registry globals and the ImGui default font.  <br /></td></tr>
+<tr class="separator:a3e426d76437b319e14939a3cefb5e92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae9db732b74d6028781bb63fbdfc43dc" id="r_aae9db732b74d6028781bb63fbdfc43dc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#aae9db732b74d6028781bb63fbdfc43dc">enableKeyboardShortcuts</a> ()</td></tr>
+<tr class="memdesc:aae9db732b74d6028781bb63fbdfc43dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable ImGui keyboard navigation for the current ImGui context.  <br /></td></tr>
+<tr class="separator:aae9db732b74d6028781bb63fbdfc43dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d44fa04caa6256d1abaca0398ece286" id="r_a5d44fa04caa6256d1abaca0398ece286"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a5d44fa04caa6256d1abaca0398ece286">getUiScalePct</a> ()</td></tr>
 <tr class="separator:a5d44fa04caa6256d1abaca0398ece286"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24c2fd485519f3eb60859afcca994d72" id="r_a24c2fd485519f3eb60859afcca994d72"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a24c2fd485519f3eb60859afcca994d72">registerSettingsHandler</a> ()</td></tr>
@@ -285,6 +291,44 @@ requires <a class="el" href="structdnf__composer_1_1has__simulation__constructor
 
 </div>
 </div>
+<a id="a3e426d76437b319e14939a3cefb5e92f" name="a3e426d76437b319e14939a3cefb5e92f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e426d76437b319e14939a3cefb5e92f">&#9670;&#160;</a></span>appendFonts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::Application::appendFonts </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Assign the font-registry globals and the ImGui default font. </p>
+<p>Reads the fonts already present in <code>ImGui::GetIO()</code>.Fonts (populated by <code>setGUIParameters()/imgui_kit</code> before this runs), assigns each <code>g_*Font</code> global declared below, sets <code>io.FontDefault</code>, adds the Font Awesome icon fonts, and builds the atlas. As with <code><a class="el" href="classdnf__composer_1_1Application.html#aae9db732b74d6028781bb63fbdfc43dc" title="Enable ImGui keyboard navigation for the current ImGui context.">enableKeyboardShortcuts()</a></code>, the IO struct must be bound <b>by reference</b> (<code>ImGuiIO&amp;</code>): a by-value <code>auto io</code> copy would let <code>io.FontDefault</code> assignment vanish with the temporary, leaving ImGui's real default font unset (#114). Requires at least <code>g_FontCount</code> fonts already registered in the atlas, or it throws <code><a class="el" href="namespacednf__composer.html#a8fa187c612acb1ee0d0de3165127fb7cae280540a3740af4bf918297b835f7bc6">ErrorCode::APP_INIT</a></code>. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a3e426d76437b319e14939a3cefb5e92f_cgraph.svg" width="822" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a3e426d76437b319e14939a3cefb5e92f_icgraph.svg" width="448" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="aed697a3cf19ba9a0735b29edd67e96f1" name="aed697a3cf19ba9a0735b29edd67e96f1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aed697a3cf19ba9a0735b29edd67e96f1">&#9670;&#160;</a></span>close()</h2>
 
@@ -301,6 +345,39 @@ requires <a class="el" href="structdnf__composer_1_1has__simulation__constructor
 </div><div class="memdoc">
 
 <p>Tear down the GUI and close the simulation. Call once after the main loop. </p>
+
+</div>
+</div>
+<a id="aae9db732b74d6028781bb63fbdfc43dc" name="aae9db732b74d6028781bb63fbdfc43dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae9db732b74d6028781bb63fbdfc43dc">&#9670;&#160;</a></span>enableKeyboardShortcuts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::Application::enableKeyboardShortcuts </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable ImGui keyboard navigation for the current ImGui context. </p>
+<p>Sets <code>ImGuiConfigFlags_NavEnableKeyboard</code> on the IO struct returned by <code>ImGui::GetIO()</code>. Must bind the IO <b>by reference</b> (<code>ImGuiIO&amp;</code>): binding by value (<code>auto io = ImGui::GetIO();</code>) copies the struct, so the flag would be written to a discarded temporary and keyboard navigation would silently never activate (#114). Requires a current ImGui context (created by <code>ImGui::CreateContext()</code>); safe to call from a headless test that never calls <code>NewFrame()/<code>Render()</code>.</code> </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_aae9db732b74d6028781bb63fbdfc43dc_icgraph.svg" width="450" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -372,7 +449,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_ad9787ecf2d64ff85c949f2ba24784a08_cgraph.svg" width="691" height="147"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_ad9787ecf2d64ff85c949f2ba24784a08_cgraph.svg" width="1106" height="275"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
