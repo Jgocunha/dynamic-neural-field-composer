@@ -98,8 +98,28 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, std::format("GUI is {}", guiActive ? "enabled." : "disabled."));
 	}
 
+	void Application::requestQuit()
+	{
+		quitRequested = true;
+	}
+
+	bool Application::isQuitRequested()
+	{
+		return quitRequested;
+	}
+
+	void Application::resetQuitRequestForTesting()
+	{
+		quitRequested = false;
+	}
+
 	bool Application::hasGUIBeenClosed() const
 	{
+		// Checked before touching the GUI so a quit request is honoured even when
+		// the GUI is disabled or not yet initialized.
+		if (quitRequested) {
+			return true;
+		}
 		if (guiActive) {
 			return gui->isShutdownRequested();
 		}
