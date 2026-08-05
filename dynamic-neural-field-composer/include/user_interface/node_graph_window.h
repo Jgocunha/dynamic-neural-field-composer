@@ -116,12 +116,27 @@ namespace dnf_composer::user_interface
 		std::array<char, 64>  autoTitleComponent = {""};
 	};
 
+	/// @brief Deleter that returns an imgui-node-editor context to the library.
+	///
+	/// Lets the context be held in a unique_ptr so it is released on every exit
+	/// path, rather than relying on a destructor body remembering to do it (#115).
+	struct EditorContextDeleter
+	{
+		void operator()(ImNodeEditor::EditorContext* ctx) const noexcept
+		{
+			if (ctx != nullptr) { ImNodeEditor::DestroyEditor(ctx); }
+		}
+	};
+
 	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
+		// config must outlive context: CreateEditor() keeps the pointer we hand it,
+		// and members are destroyed in reverse declaration order, so config must be
+		// declared first.
 		ImNodeEditor::Config config;
-		ImNodeEditor::EditorContext* context;
+		std::unique_ptr<ImNodeEditor::EditorContext, EditorContextDeleter> context;
 		static constexpr uint16_t startingInputPinId = 1000;
 		static constexpr uint16_t startingOutputPinId = 2000;
 		static constexpr uint16_t startingLinkId = 3000;

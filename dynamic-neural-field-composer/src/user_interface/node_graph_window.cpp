@@ -42,7 +42,7 @@ namespace dnf_composer::user_interface
 		: simulation(simulation)
 	{
 		config.SettingsFile = "imnode-window.json";
-		context = ImNodeEditor::CreateEditor(&config);
+		context.reset(ImNodeEditor::CreateEditor(&config));
 	}
 
 	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
@@ -55,7 +55,7 @@ namespace dnf_composer::user_interface
 			"Double-click a link to remove it.\n"
 			"Double-click a node to open/close its plot card.");
 
-		ImNodeEditor::SetCurrentEditor(context);
+		ImNodeEditor::SetCurrentEditor(context.get());
 		applyCanvasStyle();
 		ImNodeEditor::Begin("dnf-composer-graph");
 		renderElementNodes();
@@ -1529,13 +1529,13 @@ namespace dnf_composer::user_interface
 
 			if (fitAll)
 			{
-				ImNodeEditor::SetCurrentEditor(context);
+				ImNodeEditor::SetCurrentEditor(context.get());
 				ImNodeEditor::NavigateToContent(0.3F);
 				ImNodeEditor::SetCurrentEditor(nullptr);
 			}
 			if (fitSel)
 			{
-				ImNodeEditor::SetCurrentEditor(context);
+				ImNodeEditor::SetCurrentEditor(context.get());
 				ImNodeEditor::NavigateToSelection(false, 0.3F);
 				ImNodeEditor::SetCurrentEditor(nullptr);
 			}
