@@ -1,9 +1,13 @@
 #include <gtest/gtest.h>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <stdexcept>
+#include <vector>
 
 #include "tools/logger.h"
 #include "scoped_min_log_level.h"
+#include "scoped_ui_sink.h"
 
 using namespace dnf_composer::tools::logger;
 
@@ -152,4 +156,105 @@ TEST(LoggerTest, LogOutputSurvivesAQuietScope)
     Logger(LogLevel::INFO, LogOutputMode::CONSOLE).log("visible-after-scope");
     const std::string out = ::testing::internal::GetCapturedStdout();
     EXPECT_NE(out.find("visible-after-scope"), std::string::npos);
+}
+
+// ---------------------------------------------------------------------------
+// Dependency direction (issue #123): tools/logger.h must compile without any
+// GUI/application include. Logger::log_ui() reaches the UI through a
+// registered sink (below) instead of calling into user_interface/log_window.h
+// or application/application.h directly -- tools/ is a low-level layer and
+// must not depend on the GUI layer that sits above it. The strongest proof of
+// this is that this whole binary links (test_logger.cpp itself never includes
+// anything GUI-related); this also asserts it directly against the header
+// source, so a regression fails loudly instead of only showing up as a build
+// break days later.
+// ---------------------------------------------------------------------------
+
+TEST(LoggerTest, HeaderHasNoGuiOrApplicationInclude)
+{
+    std::ifstream header(LOGGER_HEADER_PATH);
+    ASSERT_TRUE(header.is_open()) << "Could not open " << LOGGER_HEADER_PATH;
+
+    std::ostringstream contents;
+    contents << header.rdbuf();
+    const std::string text = contents.str();
+
+    EXPECT_EQ(text.find("application/application.h"), std::string::npos);
+    EXPECT_EQ(text.find("user_interface/log_window.h"), std::string::npos);
+    EXPECT_EQ(text.find("imgui-platform-kit"), std::string::npos);
+    EXPECT_EQ(text.find("imgui.h"), std::string::npos);
+}
+
+// ---------------------------------------------------------------------------
+// UI sink registration (issue #123) -- the mechanism that replaces the direct
+// call into user_interface::LogWindow. Guarded by ScopedUiSink so a fake sink
+// registered here cannot leak into a later test (see scoped_ui_sink.h).
+// ---------------------------------------------------------------------------
+
+TEST(LoggerTest, NoUiSinkRegisteredIsNoop)
+{
+    // Default state for this headless test binary: nothing has registered a
+    // sink (that only happens in Application::init(), which tests never call).
+    // GUI-mode logging must be a silent no-op, not a crash or a GUI call.
+    EXPECT_NO_THROW(Logger(LogLevel::INFO, LogOutputMode::GUI).log("no sink registered"));
+}
+
+TEST(LoggerTest, UiSinkReceivesGuiModeMessage)
+{
+    std::vector<std::string> received;
+    const dnf_composer::test::ScopedUiSink guard{
+        [&received](LogLevel, const std::string& message) { received.push_back(message); } };
+
+    Logger(LogLevel::INFO, LogOutputMode::GUI).log("sink-marker");
+
+    ASSERT_EQ(received.size(), 1u);
+    EXPECT_NE(received.front().find("sink-marker"), std::string::npos);
+}
+
+TEST(LoggerTest, UiSinkReceivesAllModeMessage)
+{
+    std::vector<std::string> received;
+    const dnf_composer::test::ScopedUiSink guard{
+        [&received](LogLevel, const std::string& message) { received.push_back(message); } };
+
+    Logger(LogLevel::INFO, LogOutputMode::ALL).log("all-mode-marker");
+
+    ASSERT_EQ(received.size(), 1u);
+    EXPECT_NE(received.front().find("all-mode-marker"), std::string::npos);
+}
+
+TEST(LoggerTest, UiSinkDoesNotReceiveConsoleOnlyMessage)
+{
+    std::vector<std::string> received;
+    const dnf_composer::test::ScopedUiSink guard{
+        [&received](LogLevel, const std::string& message) { received.push_back(message); } };
+
+    Logger(LogLevel::INFO, LogOutputMode::CONSOLE).log("console-only-marker");
+
+    EXPECT_TRUE(received.empty());
+}
+
+TEST(LoggerTest, UiSinkReceivesTheReportedLevel)
+{
+    LogLevel receivedLevel = LogLevel::DEBUG;
+    const dnf_composer::test::ScopedUiSink guard{
+        [&receivedLevel](const LogLevel level, const std::string&) { receivedLevel = level; } };
+
+    Logger(LogLevel::WARNING, LogOutputMode::GUI).log("level-check");
+
+    EXPECT_EQ(receivedLevel, LogLevel::WARNING);
+}
+
+TEST(LoggerTest, UiSinkClearedAfterScopeReturnsToNoop)
+{
+    std::vector<std::string> received;
+    {
+        const dnf_composer::test::ScopedUiSink guard{
+            [&received](LogLevel, const std::string& message) { received.push_back(message); } };
+        Logger(LogLevel::INFO, LogOutputMode::GUI).log("inside-scope");
+    }
+
+    EXPECT_NO_THROW(Logger(LogLevel::INFO, LogOutputMode::GUI).log("after-scope"));
+    ASSERT_EQ(received.size(), 1u);
+    EXPECT_NE(received.front().find("inside-scope"), std::string::npos);
 }
