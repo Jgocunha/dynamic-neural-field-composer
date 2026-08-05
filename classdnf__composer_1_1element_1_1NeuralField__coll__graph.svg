@@ -12,42 +12,42 @@
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title="Continuous attractor neural field — the core DFT building block.">
-<polygon fill="#999999" stroke="transparent" points="971,-399 820,-399 820,-129 971,-129 971,-399"/>
-<text text-anchor="start" x="838" y="-387" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="start" x="865" y="-376" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralField</text>
-<text text-anchor="start" x="894" y="-361" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text text-anchor="start" x="824.5" y="-346" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-346" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
-<text text-anchor="start" x="824.5" y="-331" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-331" font-family="Helvetica,sans-Serif" font-size="10.00">getBumps()</text>
-<text text-anchor="start" x="824.5" y="-316" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-316" font-family="Helvetica,sans-Serif" font-size="10.00">getComputeStateMetrics()</text>
-<text text-anchor="start" x="824.5" y="-301" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-301" font-family="Helvetica,sans-Serif" font-size="10.00">getHighestActivation()</text>
-<text text-anchor="start" x="824.5" y="-286" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-286" font-family="Helvetica,sans-Serif" font-size="10.00">getLowestActivation()</text>
-<text text-anchor="start" x="824.5" y="-271" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-271" font-family="Helvetica,sans-Serif" font-size="10.00">getParameters()</text>
-<text text-anchor="start" x="824.5" y="-256" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-256" font-family="Helvetica,sans-Serif" font-size="10.00">getSelfExcitationKernel()</text>
-<text text-anchor="start" x="824.5" y="-241" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-241" font-family="Helvetica,sans-Serif" font-size="10.00">getStabilityThreshold()</text>
-<text text-anchor="start" x="824.5" y="-226" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-226" font-family="Helvetica,sans-Serif" font-size="10.00">init()</text>
-<text text-anchor="start" x="824.5" y="-211" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="837.5" y="-211" font-family="Helvetica,sans-Serif" font-size="10.00">isStable()</text>
-<text text-anchor="start" x="837.5" y="-196" font-family="Helvetica,sans-Serif" font-size="10.00">and 6 more...</text>
-<text text-anchor="start" x="824.5" y="-181" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="837.5" y="-181" font-family="Helvetica,sans-Serif" font-size="10.00">calculateActivation()</text>
-<text text-anchor="start" x="824.5" y="-166" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="837.5" y="-166" font-family="Helvetica,sans-Serif" font-size="10.00">calculateOutput()</text>
-<text text-anchor="start" x="824.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="837.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">updateBumps()</text>
-<text text-anchor="start" x="824.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="837.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">updateState()</text>
-<polygon fill="#666666" stroke="#666666" points="820.5,-371 820.5,-371 971.5,-371 971.5,-371 820.5,-371"/>
-<polygon fill="#666666" stroke="#666666" points="820.5,-356 820.5,-356 971.5,-356 971.5,-356 820.5,-356"/>
-<polygon fill="none" stroke="#666666" points="820,-129 820,-399 971,-399 971,-129 820,-129"/>
+<polygon fill="#999999" stroke="transparent" points="970,-399 819,-399 819,-129 970,-129 970,-399"/>
+<text text-anchor="start" x="837" y="-387" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="start" x="864" y="-376" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralField</text>
+<text text-anchor="start" x="893" y="-361" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text text-anchor="start" x="823.5" y="-346" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-346" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text text-anchor="start" x="823.5" y="-331" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-331" font-family="Helvetica,sans-Serif" font-size="10.00">getBumps()</text>
+<text text-anchor="start" x="823.5" y="-316" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-316" font-family="Helvetica,sans-Serif" font-size="10.00">getComputeStateMetrics()</text>
+<text text-anchor="start" x="823.5" y="-301" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-301" font-family="Helvetica,sans-Serif" font-size="10.00">getHighestActivation()</text>
+<text text-anchor="start" x="823.5" y="-286" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-286" font-family="Helvetica,sans-Serif" font-size="10.00">getLowestActivation()</text>
+<text text-anchor="start" x="823.5" y="-271" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-271" font-family="Helvetica,sans-Serif" font-size="10.00">getParameters()</text>
+<text text-anchor="start" x="823.5" y="-256" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-256" font-family="Helvetica,sans-Serif" font-size="10.00">getSelfExcitationKernel()</text>
+<text text-anchor="start" x="823.5" y="-241" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-241" font-family="Helvetica,sans-Serif" font-size="10.00">getStabilityThreshold()</text>
+<text text-anchor="start" x="823.5" y="-226" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-226" font-family="Helvetica,sans-Serif" font-size="10.00">init()</text>
+<text text-anchor="start" x="823.5" y="-211" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="836.5" y="-211" font-family="Helvetica,sans-Serif" font-size="10.00">isStable()</text>
+<text text-anchor="start" x="836.5" y="-196" font-family="Helvetica,sans-Serif" font-size="10.00">and 6 more...</text>
+<text text-anchor="start" x="823.5" y="-181" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text text-anchor="start" x="836.5" y="-181" font-family="Helvetica,sans-Serif" font-size="10.00">calculateActivation()</text>
+<text text-anchor="start" x="823.5" y="-166" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text text-anchor="start" x="836.5" y="-166" font-family="Helvetica,sans-Serif" font-size="10.00">calculateOutput()</text>
+<text text-anchor="start" x="823.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text text-anchor="start" x="836.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">updateBumps()</text>
+<text text-anchor="start" x="823.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text text-anchor="start" x="836.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">updateState()</text>
+<polygon fill="#666666" stroke="#666666" points="819.5,-371 819.5,-371 970.5,-371 970.5,-371 819.5,-371"/>
+<polygon fill="#666666" stroke="#666666" points="819.5,-356 819.5,-356 970.5,-356 970.5,-356 819.5,-356"/>
+<polygon fill="none" stroke="#666666" points="819,-129 819,-399 970,-399 970,-129 819,-129"/>
 </a>
 </g>
 </g>
@@ -90,8 +90,8 @@
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M598.74,-494.82C662.24,-445.65 754.88,-373.9 819.72,-323.69"/>
-<polygon fill="none" stroke="#63b8ff" points="596.52,-492.12 590.76,-501.01 600.81,-497.65 596.52,-492.12"/>
+<path fill="none" stroke="#63b8ff" d="M598.55,-494.82C661.87,-445.65 754.27,-373.9 818.92,-323.69"/>
+<polygon fill="none" stroke="#63b8ff" points="596.34,-492.11 590.59,-501.01 600.63,-497.64 596.34,-492.11"/>
 </a>
 </g>
 </g>
@@ -465,29 +465,35 @@
 <g id="Node000014" class="node">
 <title>Node14</title>
 <g id="a_Node000014"><a xlink:href="structdnf__composer_1_1element_1_1NeuralFieldParameters.html" target="_top" xlink:title="Parameters that govern a NeuralField&#39;s dynamics.">
-<polygon fill="white" stroke="transparent" points="965.5,-626 825.5,-626 825.5,-476 965.5,-476 965.5,-626"/>
-<text text-anchor="start" x="836.5" y="-614" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="start" x="836.5" y="-603" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralFieldParameters</text>
-<text text-anchor="start" x="829.5" y="-588" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-588" font-family="Helvetica,sans-Serif" font-size="10.00">startingRestingLevel</text>
-<text text-anchor="start" x="829.5" y="-573" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-573" font-family="Helvetica,sans-Serif" font-size="10.00">tau</text>
-<text text-anchor="start" x="829.5" y="-558" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-558" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldParameters()</text>
-<text text-anchor="start" x="829.5" y="-543" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-543" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldParameters()</text>
-<text text-anchor="start" x="829.5" y="-528" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-528" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldParameters()</text>
-<text text-anchor="start" x="829.5" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">operator=()</text>
-<text text-anchor="start" x="829.5" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00">operator==()</text>
-<text text-anchor="start" x="829.5" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="842.5" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
-<polygon fill="#666666" stroke="#666666" points="825.5,-598 825.5,-598 965.5,-598 965.5,-598 825.5,-598"/>
-<polygon fill="#666666" stroke="#666666" points="825.5,-568 825.5,-568 840.5,-568 840.5,-568 825.5,-568"/>
-<polygon fill="#666666" stroke="#666666" points="840.5,-568 840.5,-568 965.5,-568 965.5,-568 840.5,-568"/>
-<polygon fill="none" stroke="#666666" points="825.5,-476 825.5,-626 965.5,-626 965.5,-476 825.5,-476"/>
+<polygon fill="white" stroke="transparent" points="968.5,-648.5 820.5,-648.5 820.5,-453.5 968.5,-453.5 968.5,-648.5"/>
+<text text-anchor="start" x="835.5" y="-636" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="start" x="835.5" y="-625" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralFieldParameters</text>
+<text text-anchor="start" x="824.5" y="-610" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-610" font-family="Helvetica,sans-Serif" font-size="10.00">startingRestingLevel</text>
+<text text-anchor="start" x="824.5" y="-595" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-595" font-family="Helvetica,sans-Serif" font-size="10.00">tau</text>
+<text text-anchor="start" x="824.5" y="-580" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-580" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldParameters()</text>
+<text text-anchor="start" x="824.5" y="-565" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-565" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldParameters()</text>
+<text text-anchor="start" x="824.5" y="-550" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-550" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldParameters()</text>
+<text text-anchor="start" x="824.5" y="-535" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-535" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldParameters()</text>
+<text text-anchor="start" x="824.5" y="-520" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-520" font-family="Helvetica,sans-Serif" font-size="10.00">operator=()</text>
+<text text-anchor="start" x="824.5" y="-505" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-505" font-family="Helvetica,sans-Serif" font-size="10.00">operator=()</text>
+<text text-anchor="start" x="824.5" y="-490" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-490" font-family="Helvetica,sans-Serif" font-size="10.00">operator==()</text>
+<text text-anchor="start" x="824.5" y="-475" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-475" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
+<text text-anchor="start" x="824.5" y="-460" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="837.5" y="-460" font-family="Helvetica,sans-Serif" font-size="10.00">~NeuralFieldParameters()</text>
+<polygon fill="#666666" stroke="#666666" points="820.5,-620 820.5,-620 968.5,-620 968.5,-620 820.5,-620"/>
+<polygon fill="#666666" stroke="#666666" points="820.5,-590 820.5,-590 835.5,-590 835.5,-590 820.5,-590"/>
+<polygon fill="#666666" stroke="#666666" points="835.5,-590 835.5,-590 968.5,-590 968.5,-590 835.5,-590"/>
+<polygon fill="none" stroke="#666666" points="820.5,-453.5 820.5,-648.5 968.5,-648.5 968.5,-453.5 820.5,-453.5"/>
 </a>
 </g>
 </g>
@@ -495,11 +501,11 @@
 <g id="edge16_Node000001_Node000014" class="edge">
 <title>Node14&#45;&gt;Node1</title>
 <g id="a_edge16_Node000001_Node000014"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M895.5,-475.86C895.5,-455.94 895.5,-433.68 895.5,-411.3"/>
-<polygon fill="none" stroke="#63b8ff" points="895.5,-411.23 891.5,-405.23 895.5,-399.23 899.5,-405.23 895.5,-411.23"/>
+<path fill="none" stroke="#63b8ff" d="M894.5,-453.11C894.5,-439.7 894.5,-425.68 894.5,-411.6"/>
+<polygon fill="none" stroke="#63b8ff" points="894.5,-411.24 890.5,-405.24 894.5,-399.24 898.5,-405.24 894.5,-411.24"/>
 </a>
 </g>
-<text text-anchor="middle" x="929.5" y="-420" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> #parameters</text>
+<text text-anchor="middle" x="928.5" y="-420" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> #parameters</text>
 </g>
 <!-- Node15 -->
 <g id="Node000015" class="node">
@@ -527,8 +533,8 @@
 <g id="edge17_Node000014_Node000015" class="edge">
 <title>Node15&#45;&gt;Node14</title>
 <g id="a_edge17_Node000014_Node000015"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1003.92,-731.2C995,-712.6 984.76,-692.24 974.5,-674 965.66,-658.27 955.59,-641.82 945.67,-626.26"/>
-<polygon fill="none" stroke="#63b8ff" points="1000.86,-732.94 1008.31,-740.47 1007.19,-729.93 1000.86,-732.94"/>
+<path fill="none" stroke="#63b8ff" d="M1003.98,-731.17C995.07,-712.56 984.81,-692.21 974.5,-674 969.76,-665.62 964.66,-657.05 959.42,-648.51"/>
+<polygon fill="none" stroke="#63b8ff" points="1000.93,-732.9 1008.38,-740.43 1007.25,-729.9 1000.93,-732.9"/>
 </a>
 </g>
 </g>
@@ -553,8 +559,8 @@
 <g id="edge18_Node000014_Node000016" class="edge">
 <title>Node16&#45;&gt;Node14</title>
 <g id="a_edge18_Node000014_Node000016"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M851.86,-757.36C858.46,-726.29 868.43,-679.38 877.17,-638.24"/>
-<polygon fill="none" stroke="#63b8ff" points="877.23,-637.98 874.56,-631.28 879.72,-626.24 882.39,-632.95 877.23,-637.98"/>
+<path fill="none" stroke="#63b8ff" d="M851.72,-757.36C857.05,-731.76 864.62,-695.41 871.92,-660.4"/>
+<polygon fill="none" stroke="#63b8ff" points="871.93,-660.34 869.24,-653.65 874.38,-648.59 877.07,-655.28 871.93,-660.34"/>
 </a>
 </g>
 <text text-anchor="middle" x="919.5" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> +activationFunction</text>
@@ -607,33 +613,33 @@
 <g id="Node000018" class="node">
 <title>Node18</title>
 <g id="a_Node000018"><a xlink:href="structdnf__composer_1_1element_1_1NeuralFieldState.html" target="_top" xlink:title="Snapshot of a neural field&#39;s observable state.">
-<polygon fill="white" stroke="transparent" points="1191.5,-641 1051.5,-641 1051.5,-461 1191.5,-461 1191.5,-641"/>
-<text text-anchor="start" x="1063.5" y="-629" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="start" x="1077.5" y="-618" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralFieldState</text>
-<text text-anchor="start" x="1055.5" y="-603" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-603" font-family="Helvetica,sans-Serif" font-size="10.00">highestActivation</text>
-<text text-anchor="start" x="1055.5" y="-588" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-588" font-family="Helvetica,sans-Serif" font-size="10.00">lowestActivation</text>
-<text text-anchor="start" x="1055.5" y="-573" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-573" font-family="Helvetica,sans-Serif" font-size="10.00">previousActivationAvg</text>
-<text text-anchor="start" x="1055.5" y="-558" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-558" font-family="Helvetica,sans-Serif" font-size="10.00">previousActivationNorm</text>
-<text text-anchor="start" x="1055.5" y="-543" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-543" font-family="Helvetica,sans-Serif" font-size="10.00">previousActivationSum</text>
-<text text-anchor="start" x="1055.5" y="-528" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-528" font-family="Helvetica,sans-Serif" font-size="10.00">stable</text>
-<text text-anchor="start" x="1055.5" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">thresholdForStability</text>
-<text text-anchor="start" x="1055.5" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldState()</text>
-<text text-anchor="start" x="1055.5" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">print()</text>
-<text text-anchor="start" x="1055.5" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1068.5" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
-<polygon fill="#666666" stroke="#666666" points="1051.5,-613 1051.5,-613 1191.5,-613 1191.5,-613 1051.5,-613"/>
-<polygon fill="#666666" stroke="#666666" points="1051.5,-508 1051.5,-508 1066.5,-508 1066.5,-508 1051.5,-508"/>
-<polygon fill="#666666" stroke="#666666" points="1066.5,-508 1066.5,-508 1191.5,-508 1191.5,-508 1066.5,-508"/>
-<polygon fill="none" stroke="#666666" points="1051.5,-461 1051.5,-641 1191.5,-641 1191.5,-461 1051.5,-461"/>
+<polygon fill="white" stroke="transparent" points="1192.5,-641 1052.5,-641 1052.5,-461 1192.5,-461 1192.5,-641"/>
+<text text-anchor="start" x="1064.5" y="-629" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="start" x="1078.5" y="-618" font-family="Helvetica,sans-Serif" font-size="10.00">::NeuralFieldState</text>
+<text text-anchor="start" x="1056.5" y="-603" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-603" font-family="Helvetica,sans-Serif" font-size="10.00">highestActivation</text>
+<text text-anchor="start" x="1056.5" y="-588" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-588" font-family="Helvetica,sans-Serif" font-size="10.00">lowestActivation</text>
+<text text-anchor="start" x="1056.5" y="-573" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-573" font-family="Helvetica,sans-Serif" font-size="10.00">previousActivationAvg</text>
+<text text-anchor="start" x="1056.5" y="-558" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-558" font-family="Helvetica,sans-Serif" font-size="10.00">previousActivationNorm</text>
+<text text-anchor="start" x="1056.5" y="-543" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-543" font-family="Helvetica,sans-Serif" font-size="10.00">previousActivationSum</text>
+<text text-anchor="start" x="1056.5" y="-528" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-528" font-family="Helvetica,sans-Serif" font-size="10.00">stable</text>
+<text text-anchor="start" x="1056.5" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-513" font-family="Helvetica,sans-Serif" font-size="10.00">thresholdForStability</text>
+<text text-anchor="start" x="1056.5" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00">NeuralFieldState()</text>
+<text text-anchor="start" x="1056.5" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-483" font-family="Helvetica,sans-Serif" font-size="10.00">print()</text>
+<text text-anchor="start" x="1056.5" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1069.5" y="-468" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
+<polygon fill="#666666" stroke="#666666" points="1052.5,-613 1052.5,-613 1192.5,-613 1192.5,-613 1052.5,-613"/>
+<polygon fill="#666666" stroke="#666666" points="1052.5,-508 1052.5,-508 1067.5,-508 1067.5,-508 1052.5,-508"/>
+<polygon fill="#666666" stroke="#666666" points="1067.5,-508 1067.5,-508 1192.5,-508 1192.5,-508 1067.5,-508"/>
+<polygon fill="none" stroke="#666666" points="1052.5,-461 1052.5,-641 1192.5,-641 1192.5,-461 1052.5,-461"/>
 </a>
 </g>
 </g>
@@ -641,8 +647,8 @@
 <g id="edge20_Node000001_Node000018" class="edge">
 <title>Node18&#45;&gt;Node1</title>
 <g id="a_edge20_Node000001_Node000018"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1051.23,-461.39C1028.31,-432.49 1002.65,-400.12 978.87,-370.13"/>
-<polygon fill="none" stroke="#63b8ff" points="978.67,-369.89 971.81,-367.67 971.22,-360.48 978.08,-362.7 978.67,-369.89"/>
+<path fill="none" stroke="#63b8ff" d="M1052.23,-462.17C1028.64,-432.67 1002.09,-399.49 977.61,-368.88"/>
+<polygon fill="none" stroke="#63b8ff" points="977.57,-368.84 970.7,-366.66 970.08,-359.47 976.95,-361.66 977.57,-368.84"/>
 </a>
 </g>
 <text text-anchor="middle" x="1041" y="-420" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> #state</text>
@@ -666,8 +672,8 @@
 <g id="edge21_Node000018_Node000019" class="edge">
 <title>Node19&#45;&gt;Node18</title>
 <g id="a_edge21_Node000018_Node000019"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1203.1,-762.57C1192.43,-735.06 1175.89,-692.35 1160.47,-652.58"/>
-<polygon fill="none" stroke="#63b8ff" points="1160.39,-652.36 1154.49,-648.22 1156.06,-641.18 1161.95,-645.32 1160.39,-652.36"/>
+<path fill="none" stroke="#63b8ff" d="M1203.22,-762.57C1192.67,-735.06 1176.3,-692.35 1161.05,-652.58"/>
+<polygon fill="none" stroke="#63b8ff" points="1160.98,-652.38 1155.1,-648.21 1156.68,-641.18 1162.57,-645.35 1160.98,-652.38"/>
 </a>
 </g>
 <text text-anchor="middle" x="1194" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> +bumps</text>
