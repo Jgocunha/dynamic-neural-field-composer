@@ -11,7 +11,7 @@ using namespace dnf_composer::test_validation;
 
 TEST(FieldDynamics1D, AllSimsMatchReference)
 {
-	silenceLogging();
+	const auto quiet = silenceLogging();
 	const auto stems = collectSimStems("1d");
 	if (stems.empty())
 		GTEST_SKIP() << "No 1D validation sims found under " << VALIDATION_DATA_DIR

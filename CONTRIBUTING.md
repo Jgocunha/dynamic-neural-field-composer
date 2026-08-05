@@ -19,26 +19,44 @@ Open an issue on GitHub using the appropriate template:
 
 | Requirement | Minimum |
 |---|---|
-| C++ compiler | C++20 (MSVC 2022, GCC 11+, Clang 13+, Apple Clang 13+) |
+| C++ compiler | C++20 (MSVC 2022, GCC 13+, Apple Clang via Xcode Command Line Tools) |
 | CMake | 3.20 |
 | vcpkg | Any recent — set `VCPKG_ROOT` |
 
-**Build**
+CI builds on Windows (MSVC 2022), Linux (GCC 13) and macOS. Other C++20 compilers may work but are not covered by CI.
+
+**Setup**
+
+The setup script installs the dependencies and sets `VCPKG_ROOT`. Run it once, from the repository root:
 
 ```bat
-# Windows
-build.bat
+:: Windows
+dynamic-neural-field-composer\scripts\setup.bat
+```
+
+```bash
+# Linux and macOS
+./dynamic-neural-field-composer/scripts/setup.sh
+```
+
+**Build**
+
+The build scripts live in `dynamic-neural-field-composer/scripts/`. They resolve their own paths, so you can invoke them from anywhere — the commands below assume the repository root:
+
+```bat
+:: Windows — configures and builds both x64-release and x64-debug
+dynamic-neural-field-composer\scripts\build.bat
 ```
 
 ```bash
 # Linux
-./build.sh
+./dynamic-neural-field-composer/scripts/build.sh
 
 # macOS
-./build_macos.sh
+./dynamic-neural-field-composer/scripts/build_macos.sh
 ```
 
-See [Getting Started](dynamic-neural-field-composer/wiki/Getting-Started.md) for full instructions and manual CMake options.
+See [Getting Started](dynamic-neural-field-composer/wiki/Getting%20Started.md) for full instructions and manual CMake options.
 
 ---
 
@@ -61,11 +79,22 @@ The existing codebase does not perfectly meet these standards everywhere — tes
 
 **Tests**
 
-Every change to element behaviour, simulation logic, or utilities must be covered by a test in `tests/`. The test executable is `dnf_composer_tests` (Google Test).
+Every change to element behaviour, simulation logic, or utilities must be covered by a test in `tests/`. The test executable is `dnf_composer_tests` (Google Test), registered with CTest via `gtest_discover_tests`.
+
+The build scripts produce a single-config build tree per platform, so point CTest at the one the script created:
 
 ```bash
-ctest --build-config Release --output-on-failure
+# Windows
+ctest --test-dir dynamic-neural-field-composer/build/x64-release --output-on-failure
+
+# Linux
+ctest --test-dir dynamic-neural-field-composer/build/linux-release --output-on-failure
+
+# macOS
+ctest --test-dir dynamic-neural-field-composer/build/macos-release --output-on-failure
 ```
+
+New test source files must be added to the explicit source list in `dynamic-neural-field-composer/tests/CMakeLists.txt` — the build does not glob, so an unlisted file is silently never compiled.
 
 **Doxygen**
 

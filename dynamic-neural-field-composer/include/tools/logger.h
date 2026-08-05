@@ -45,7 +45,14 @@ namespace dnf_composer::tools::logger
 	public:
 		Logger(LogLevel level, LogOutputMode mode = ALL);
 		void log(const std::string& message) const;
+		/// @brief Set the global minimum level; messages below it are dropped.
+		/// @param level New global threshold.
 		static void setMinLogLevel(LogLevel level) { minLogLevel.store(level, std::memory_order_relaxed); }
+		/// @brief Read the global minimum level.
+		/// @return The current global threshold.
+		/// @note Provided so callers that temporarily raise the threshold can
+		///       restore the previous value instead of guessing the default.
+		static LogLevel getMinLogLevel() { return minLogLevel.load(std::memory_order_relaxed); }
 	private:
 		static std::string getLogLevelColorCodeCmd(LogLevel level);
 		static ImVec4 getLogLevelColorCodeGui(LogLevel level);
