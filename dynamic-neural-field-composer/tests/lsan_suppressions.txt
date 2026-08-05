@@ -1,0 +1,34 @@
+# LeakSanitizer suppressions for the asan-ubsan CI job (see #155).
+#
+# detect_leaks was disabled outright until now because connected elements
+# hold shared_ptr to each other in both directions (Element::inputs and
+# Element::outputs, src/elements/element.h) -- a genuine ownership cycle.
+# PR #151 severs that cycle on Simulation teardown, but elements connected
+# directly via addInput() without ever being owned by a Simulation are still
+# never freed. That is exactly how most of tests/elements/*.cpp (and several
+# suites elsewhere) build their fixtures, so the cycle still fires there --
+# it just was never visible with detect_leaks=0.
+#
+# Every allocation reached only through that still-unreachable Element graph
+# -- the object itself, its inputs/outputs hashtable storage, its input
+# cache, its data vectors -- shows up as its own "indirect leak" with its own
+# allocation-site stack trace, so there is no single frame to suppress; the
+# common thread across all of them is that the top of the stack is somewhere
+# inside dnf_composer::element::. Suppressing the whole namespace is broader
+# than suppressing each site individually, and it will also hide a genuinely
+# new leak introduced inside an Element/Kernel/Field constructor or step()
+# that has nothing to do with this cycle -- an accepted, disclosed trade-off
+# versus the prior blanket detect_leaks=0, which hid leaks everywhere in the
+# entire binary, not just here. See the follow-up issue for the real fix
+# (breaking the cycle at the root, e.g. Element::outputs as weak_ptr), after
+# which this rule can be deleted and replaced with nothing.
+leak:dnf_composer::element::
+
+# FFTW3 caches plan-cache ("wisdom") allocations in its own process-global
+# state for reuse across calls; LeakSanitizer's conservative scan does not
+# always recognize that state as reachable at exit. This is a well-known,
+# library-level false positive when running FFTW3 under LSan, unrelated to
+# dnf-composer's own code -- suppress by its C symbol prefix rather than by
+# call site, since the false positive can originate from any FFTW3 planner
+# entry point.
+leak:fftw_
