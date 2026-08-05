@@ -40,7 +40,8 @@ jobs:
             libxcursor-dev \
             libxi-dev \
             libxext-dev \
-            gcovr
+            gcovr \
+            xvfb
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
@@ -100,6 +101,42 @@ jobs:
         if: ${{ matrix.coverage }}
         working-directory: ./dynamic-neural-field-composer/build/linux-debug
         run: ctest --output-on-failure --parallel $(nproc)
+
+      # ── Example smoke-run (#129) ────────────────────────────────────────────
+      # The example_*.cpp GUI examples are compiled but never executed, so a
+      # broken example only surfaces when a human happens to run it by hand.
+      # Each example's main loop now honors DNFC_EXAMPLE_MAX_STEPS
+      # (examples/example_common.h): set, it requests its own shutdown after
+      # that many app.step() calls instead of waiting for a window close.
+      # xvfb-run supplies the virtual display GLFW/OpenGL need to initialize
+      # at all on a headless runner; LIBGL_ALWAYS_SOFTWARE forces Mesa's
+      # software (llvmpipe) rasterizer since the runner has no real GPU.
+      - name: Smoke-run examples (headless)
+        if: ${{ !matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer/build/linux-release/examples
+        env:
+          DNFC_EXAMPLE_MAX_STEPS: "200"
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          shopt -s nullglob
+          binaries=(example_*)
+          if [ ${#binaries[@]} -eq 0 ]; then
+            echo "No example_* binaries found in $(pwd) -- examples/CMakeLists.txt or the build may have changed."
+            exit 1
+          fi
+          fail=0
+          for bin in "${binaries[@]}"; do
+            [ -x "$bin" ] || continue
+            echo "::group::$bin"
+            if xvfb-run -a --server-args="-screen 0 1280x1024x24" "./$bin"; then
+              echo "OK: $bin"
+            else
+              echo "FAILED: $bin (exit $?)"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $fail
 
       # ── Coverage report (Debug matrix entry only) ──────────────────────────
       - name: Generate coverage report
