@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- `NeuralFieldParameters::operator==` compared the `activationFunction` `unique_ptr` by
+  address instead of by value, so two independently-constructed parameter sets with
+  identical activation functions compared unequal. It now dispatches to the concrete
+  activation function's own value `operator==` (guarding against two different
+  activation-function types with numerically-coincidental fields wrongly comparing
+  equal). Separately, the copy constructor and copy assignment disagreed on null-source
+  handling (the constructor substituted a default `SigmoidFunction(0, 10)`; assignment
+  reset to `nullptr`, which could leave a `NeuralField` dereferencing a null activation
+  function on the next `init()`/`step()`); both now agree on the constructor's
+  default-substitution policy. Move constructor and move assignment were also missing
+  entirely, so moves silently degraded into deep-cloning copies; both are now declared
+  and transfer ownership directly. Copy assignment now clones before assigning any
+  member, so a throwing `clone()` leaves the destination unchanged (#119)
 - The element-creation forms in the GUI caught nothing, while the library has been
   deliberately moving toward failing loudly (`ElementDimensions`, the `Element` base
   constructor, `ElementFactory` all throw on invalid input). Those forms run inside the
