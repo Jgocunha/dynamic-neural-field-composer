@@ -21,7 +21,7 @@ using namespace dnf_composer::tools::math;
 
 TEST(SpectralGolden2D, AutoPathMatchesReference)
 {
-    silenceLogging();
+    const auto quiet = silenceLogging();
     const ScopedConvolutionMode mode(ConvolutionMode::Auto);
 
     const auto stems = collectSimStems("2d_spectral");
@@ -39,7 +39,7 @@ TEST(SpectralGolden2D, AutoPathMatchesReference)
 
 TEST(SpectralGolden2D, ForceDirectPathMatchesReference)
 {
-    silenceLogging();
+    const auto quiet = silenceLogging();
     const ScopedConvolutionMode mode(ConvolutionMode::ForceDirect);
 
     const auto stems = collectSimStems("2d_spectral");

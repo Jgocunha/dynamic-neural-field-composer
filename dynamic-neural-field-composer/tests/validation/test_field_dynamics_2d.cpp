@@ -32,7 +32,7 @@ namespace
 
 TEST(FieldDynamics2D, AllSimsMatchReference)
 {
-	silenceLogging();
+	const auto quiet = silenceLogging();
 	const auto stems = collectSimStems("2d");
 	if (stems.empty())
 		GTEST_SKIP() << "No 2D validation sims found under " << VALIDATION_DATA_DIR
