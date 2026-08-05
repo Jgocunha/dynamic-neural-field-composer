@@ -96,6 +96,19 @@ jobs:
         working-directory: ./dynamic-neural-field-composer/build/linux-release
         run: ctest --output-on-failure --parallel $(nproc)
 
+      # ctest (above) runs every gtest case as its own CTest test via
+      # gtest_discover_tests, each in a separate process -- so a case that
+      # leaks process-global state (e.g. Logger's minimum level) can never
+      # affect a later case and this can never fail here. Run the whole
+      # binary once in a single process, the way a contributor running
+      # `dnf_composer_tests` directly would, so that kind of order
+      # dependence has a real chance to fail CI (#161). --gtest_shuffle
+      # randomizes case order each run to widen what a single run can catch.
+      - name: Run full test suite in a single process (order-dependence check)
+        if: ${{ !matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer/build/linux-release
+        run: ./tests/dnf_composer_tests --gtest_shuffle
+
       - name: Run tests (coverage)
         if: ${{ matrix.coverage }}
         working-directory: ./dynamic-neural-field-composer/build/linux-debug
