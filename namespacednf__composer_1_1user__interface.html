@@ -148,6 +148,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ad0c1a4c286bfd471264bb1f26024ef07" id="r_ad0c1a4c286bfd471264bb1f26024ef07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ad0c1a4c286bfd471264bb1f26024ef07">decideQuitAction</a> (bool quitMenuItemClicked, bool ctrlQPressed) noexcept</td></tr>
 <tr class="memdesc:ad0c1a4c286bfd471264bb1f26024ef07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure decision function: given which quit trigger(s) fired this frame, decide what should happen. No ImGui, no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a>, no OS calls &ndash; so unlike <code><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">MainMenuBar::render()</a></code>/<code>handleShortcuts()</code>, it can be unit-tested headlessly (same pattern as <code><a class="el" href="namespacednf__composer_1_1user__interface.html#aff98fe422e79c1fe15eaaea696e67e05" title="Pick the plot type quick-populate should use for a given element.">quickPopulatePlotTypeFor()</a></code> in <a class="el" href="plot__control__window_8h.html">plot_control_window.h</a>). If both triggers somehow fire in the same frame, the menu item's save-before-closing behavior takes precedence (the safer of the two).  <br /></td></tr>
 <tr class="separator:ad0c1a4c286bfd471264bb1f26024ef07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab42c898e40981214ddea65c88b1faa38" id="r_ab42c898e40981214ddea65c88b1faa38"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ab42c898e40981214ddea65c88b1faa38">describeElementCreationFailure</a> (const std::function&lt; void()&gt; &amp;createAndAdd)</td></tr>
+<tr class="memdesc:ab42c898e40981214ddea65c88b1faa38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run an element-creation step and turn any failure into a message.  <br /></td></tr>
+<tr class="separator:ab42c898e40981214ddea65c88b1faa38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6d342e4cc010fb3c1806665622d8dc2" id="r_af6d342e4cc010fb3c1806665622d8dc2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#af6d342e4cc010fb3c1806665622d8dc2">endPanel</a> ()</td></tr>
 <tr class="separator:af6d342e4cc010fb3c1806665622d8dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a349d611944459f237b8e4f65697714f8" id="r_a349d611944459f237b8e4f65697714f8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a349d611944459f237b8e4f65697714f8">endParamTable</a> ()</td></tr>
@@ -340,6 +343,45 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Pure decision function: given which quit trigger(s) fired this frame, decide what should happen. No ImGui, no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a>, no OS calls &ndash; so unlike <code><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">MainMenuBar::render()</a></code>/<code>handleShortcuts()</code>, it can be unit-tested headlessly (same pattern as <code><a class="el" href="namespacednf__composer_1_1user__interface.html#aff98fe422e79c1fe15eaaea696e67e05" title="Pick the plot type quick-populate should use for a given element.">quickPopulatePlotTypeFor()</a></code> in <a class="el" href="plot__control__window_8h.html">plot_control_window.h</a>). If both triggers somehow fire in the same frame, the menu item's save-before-closing behavior takes precedence (the safer of the two). </p>
+
+</div>
+</div>
+<a id="ab42c898e40981214ddea65c88b1faa38" name="ab42c898e40981214ddea65c88b1faa38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab42c898e40981214ddea65c88b1faa38">&#9670;&#160;</a></span>describeElementCreationFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string dnf_composer::user_interface::describeElementCreationFailure </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; void()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>createAndAdd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run an element-creation step and turn any failure into a message. </p>
+<p>The element-creation forms run inside the ImGui render loop, and the library now reports invalid input by throwing (<code>ElementDimensions</code>, the <code>Element</code> base constructor, <code>ElementFactory</code>). An exception thrown from inside a frame unwinds straight out of the render loop and terminates the application, so every creation call site funnels through here instead.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">createAndAdd</td><td>Builds the element and adds it to the simulation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An empty string if <code>createAndAdd</code> completed; otherwise a message describing the failure, suitable for display in the creation form. <code><a class="el" href="classdnf__composer_1_1Exception.html">dnf_composer::Exception</a></code> messages already name the element and the error code, so they are passed through as-is.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This is intentionally free of any ImGui dependency so it can be unit tested without a window or a render loop. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1user__interface_ab42c898e40981214ddea65c88b1faa38_cgraph.svg" width="863" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1user__interface_ab42c898e40981214ddea65c88b1faa38_icgraph.svg" width="1011" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
