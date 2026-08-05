@@ -248,6 +248,12 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">Exception(ErrorCode::ELEM_INVALID_SIZE)</td><td>if parameters.dimensionParameters.size is not positive (#118). In normal use <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a>'s own constructors already reject a non-positive size before it ever reaches here; this guards the invariant should dimensionParameters ever be mutated afterward (its fields are public) into an invalid state. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
