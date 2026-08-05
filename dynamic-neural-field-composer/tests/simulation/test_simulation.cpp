@@ -397,3 +397,91 @@ TEST(SimulationChangeDimensions, UnconnectedElementResizesWithoutError)
     EXPECT_NO_THROW(sim.changeDimensions("field", ElementDimensions{ 75, 1.0 }));
     EXPECT_EQ(sim.getElement("field")->getSize(), 75);
 }
+
+// ---------------------------------------------------------------------------
+// Element lifetime - issue #112
+//
+// addInput() stores a shared_ptr on BOTH sides: the consumer keeps its source in
+// `inputs`, and the source keeps the consumer in `outputs`. That is a reference
+// cycle for *every* connection, so dropping the simulation's own references (via
+// clean(), or by destroying the Simulation) left every connected element alive
+// forever. The canonical DNF architecture - a field and its self-kernel wired
+// both ways - is the worst case: two cycles at once.
+//
+// These tests observe the elements through weak_ptr, which is the only way to
+// see a leak: expired() is false exactly when something still owns the element.
+// ---------------------------------------------------------------------------
+
+TEST(ElementLifetime, CleanReleasesConnectedElements)
+{
+    std::weak_ptr<Element> stimObserver;
+    std::weak_ptr<Element> fieldObserver;
+    {
+        Simulation sim("lifetime-clean", 1.0, 0.0, 0.0);
+        const auto stim = makeStimulus("stim");
+        const auto field = makeField("field");
+        sim.addElement(stim);
+        sim.addElement(field);
+        sim.createInteraction("stim", "output", "field");
+        sim.init();
+
+        stimObserver = stim;
+        fieldObserver = field;
+
+        sim.clean();
+        // The local shared_ptrs above still hold them; the point is what happens
+        // once those go out of scope with the simulation's references dropped.
+    }
+
+    EXPECT_TRUE(stimObserver.expired()) << "connected input element outlived every owner";
+    EXPECT_TRUE(fieldObserver.expired()) << "connected output element outlived every owner";
+}
+
+TEST(ElementLifetime, DestroyingSimulationReleasesConnectedElements)
+{
+    std::weak_ptr<Element> stimObserver;
+    std::weak_ptr<Element> fieldObserver;
+    {
+        const auto sim = std::make_shared<Simulation>("lifetime-dtor", 1.0, 0.0, 0.0);
+        const auto stim = makeStimulus("stim");
+        const auto field = makeField("field");
+        sim->addElement(stim);
+        sim->addElement(field);
+        sim->createInteraction("stim", "output", "field");
+        sim->init();
+
+        stimObserver = stim;
+        fieldObserver = field;
+    }
+
+    EXPECT_TRUE(stimObserver.expired());
+    EXPECT_TRUE(fieldObserver.expired());
+}
+
+TEST(ElementLifetime, RecurrentFieldAndKernelAreReleased)
+{
+    // field -> kernel -> field: the standard DNF self-excitation loop, and a
+    // cycle through `inputs` on both sides as well as through `outputs`.
+    std::weak_ptr<Element> fieldObserver;
+    std::weak_ptr<Element> kernelObserver;
+    {
+        Simulation sim("lifetime-recurrent", 1.0, 0.0, 0.0);
+        const auto field = makeField("field");
+        const ElementCommonParameters kcp{ "kernel", 100 };
+        const GaussKernelParameters kp{ 5.0, 10.0, 0.0 };
+        const auto kernel = std::make_shared<GaussKernel>(kcp, kp);
+        sim.addElement(field);
+        sim.addElement(kernel);
+        sim.createInteraction("field", "output", "kernel");
+        sim.createInteraction("kernel", "output", "field");
+        sim.init();
+
+        fieldObserver = field;
+        kernelObserver = kernel;
+
+        sim.clean();
+    }
+
+    EXPECT_TRUE(fieldObserver.expired()) << "recurrent field outlived every owner";
+    EXPECT_TRUE(kernelObserver.expired()) << "recurrent kernel outlived every owner";
+}

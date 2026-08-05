@@ -82,6 +82,11 @@ namespace dnf_composer
 		void resume();
 
 		/// @brief Remove all elements and reset the simulation to its initial state.
+		///
+		/// Connections are severed first: `addInput()` stores a `shared_ptr` on both
+		/// sides (the consumer keeps its source in `inputs`, the source keeps the
+		/// consumer in `outputs`), so simply dropping this simulation's references
+		/// would leave every connected element owning its peer and never freed (#112).
 		void clean();
 
 		/// @brief Serialize the simulation and its elements to a JSON file.
@@ -166,7 +171,10 @@ namespace dnf_composer
 		/// @brief Return true if the simulation is currently paused.
 		bool isPaused() const;
 
-		~Simulation() = default;
+		/// @brief Severs every element connection before releasing the elements, so
+		/// that connected elements are actually destroyed rather than kept alive by
+		/// each other. @see clean()
+		~Simulation();
 		std::chrono::nanoseconds lastStepDuration{ 0 };
 		std::chrono::nanoseconds accumulatedRunDuration{ 0 };
 		std::chrono::steady_clock::time_point runSegmentStart;
@@ -185,5 +193,10 @@ namespace dnf_composer
 		bool measureStepDuration = true;
 		SimulationRecorder recorder;
 		void generateUniqueIdentifier();
+
+		/// @brief Break every input/output connection between this simulation's
+		/// elements, so no element is left owning a peer. Safe to call more than
+		/// once and on an empty simulation.
+		void disconnectAllElements();
 	};
 }

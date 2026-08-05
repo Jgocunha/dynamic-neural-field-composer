@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Connected elements were never destroyed. `addInput()` records a connection on both
+  endpoints — the consumer keeps its source in `inputs`, the source keeps the consumer
+  in `outputs` — so any two connected elements held `shared_ptr`s to each other. Neither
+  `Simulation::clean()` (which only cleared its own vector) nor destroying the
+  `Simulation` broke that cycle, so every connected element in every simulation leaked;
+  the canonical field↔self-kernel architecture leaked doubly. `clean()` and
+  `~Simulation()` now sever all connections before releasing the elements (#112)
 - Two unguarded out-of-bounds reads (#121). A heatmap in manual-dimension mode
   computed `rows = y_max / y_step`, `cols = x_max / x_step` from user-editable axis
   fields and handed `rows * cols` to `ImPlot::PlotHeatmap` with no check against the
