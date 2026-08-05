@@ -98,8 +98,28 @@ namespace dnf_composer
 		log(tools::logger::LogLevel::INFO, std::format("GUI is {}", guiActive ? "enabled." : "disabled."));
 	}
 
+	void Application::requestQuit()
+	{
+		quitRequested = true;
+	}
+
+	bool Application::isQuitRequested()
+	{
+		return quitRequested;
+	}
+
+	void Application::resetQuitRequestForTesting()
+	{
+		quitRequested = false;
+	}
+
 	bool Application::hasGUIBeenClosed() const
 	{
+		// Checked before touching the GUI so a quit request is honoured even when
+		// the GUI is disabled or not yet initialized.
+		if (quitRequested) {
+			return true;
+		}
 		if (guiActive) {
 			return gui->isShutdownRequested();
 		}
@@ -150,13 +170,18 @@ namespace dnf_composer
 
 	void Application::enableKeyboardShortcuts()
 	{
-		auto io = ImGui::GetIO();
+		// ImGui::GetIO() returns ImGuiIO&; binding it by value here would copy the
+		// struct and write the flag to a discarded temporary instead of the real
+		// IO object (#114) — must bind by reference.
+		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	}
 
 	void Application::appendFonts()
 	{
-		auto io = ImGui::GetIO();
+		// Same reference-vs-copy pitfall as enableKeyboardShortcuts() above: binding
+		// by value would silently drop the io.FontDefault assignment below (#114).
+		ImGuiIO& io = ImGui::GetIO();
 
 		ImFontConfig cfg{};
 		cfg.OversampleH = 2;          // 2 is often crisper than 3 at small sizes

@@ -34,6 +34,24 @@ NeuralFieldParameters{
 | `HeavisideFunction(x_shift)` | `x_shift=0.0` | Binary threshold function |
 | `AbsSigmoidFunction(x_shift, beta)` | `x_shift=0.0`, `beta=10.0` | Algebraic sigmoid — avoids `exp`; smoother than Heaviside, faster than the exponential sigmoid at very high steepness |
 
+### `NeuralFieldParameters` value semantics
+
+`NeuralFieldParameters` owns its `activationFunction` through a `unique_ptr`, so it defines its
+own copy/move/equality instead of relying on the compiler-generated defaults:
+
+- **`operator==`** compares `tau` and `startingRestingLevel` within a small epsilon, and compares
+  `activationFunction` *by value* — same concrete type (`SigmoidFunction`, `HeavisideFunction`,
+  `AbsSigmoidFunction`) and same parameters — not by pointer identity. Two independently built
+  `NeuralFieldParameters` with equivalent activation functions compare equal.
+- **Copy** (constructor and assignment) deep-clones the source's activation function. If the
+  source's `activationFunction` is `nullptr` (e.g. a default-constructed
+  `NeuralFieldParameters{}`), the copy materializes the default `SigmoidFunction(0, 10)` rather
+  than staying null — a `NeuralField`'s output computation always dereferences its activation
+  function, so a copy can never end up unusable.
+- **Move** (constructor and assignment) transfers the activation function pointer directly (no
+  clone/allocation). The moved-from object is left with `activationFunction == nullptr`, the same
+  valid "unconfigured" state as a default-constructed instance.
+
 ### Components
 
 | Name | Description |

@@ -37,6 +37,65 @@ static std::shared_ptr<GaussKernel> makeKernel(const std::string& name, int size
 }
 
 // ---------------------------------------------------------------------------
+// Construction with an invalid size (#118)
+// ---------------------------------------------------------------------------
+//
+// ElementDimensions's own constructors already validate extent/spacing and can never
+// themselves produce size <= 0 (see tests/element_parameters/test_element_parameters.cpp).
+// The only way an Element subclass constructor can still observe an invalid size today is
+// if an already-validated ElementDimensions is mutated afterward (its fields are public)
+// before being wrapped in ElementCommonParameters - reproducing the scenario Element's own
+// defense-in-depth check guards against.
+
+TEST(ElementConstruction, InvalidZeroSizeThrows)
+{
+    ElementDimensions dims{ 100, 1.0 };
+    dims.size = 0;
+    const ElementCommonParameters cp{ "bad", dims };
+    const SigmoidFunction sig{ 0.0, 10.0 };
+    const NeuralFieldParameters nfp{ 25.0, -5.0, sig };
+    EXPECT_THROW(NeuralField(cp, nfp), dnf_composer::Exception);
+}
+
+TEST(ElementConstruction, InvalidNegativeSizeThrows)
+{
+    ElementDimensions dims{ 100, 1.0 };
+    dims.size = -5;
+    const ElementCommonParameters cp{ "bad", dims };
+    EXPECT_THROW(GaussKernel(cp, GaussKernelParameters{}), dnf_composer::Exception);
+}
+
+TEST(ElementConstruction, InvalidSizeThrowsElemInvalidSizeWithElementName)
+{
+    ElementDimensions dims{ 100, 1.0 };
+    dims.size = 0;
+    const ElementCommonParameters cp{ "bad-element", dims };
+    try
+    {
+        NeuralField nf(cp, NeuralFieldParameters{});
+        FAIL() << "Expected Exception to be thrown";
+    }
+    catch (const dnf_composer::Exception& e)
+    {
+        EXPECT_EQ(e.getErrorCode(), ErrorCode::ELEM_INVALID_SIZE);
+        EXPECT_NE(std::string(e.what()).find("bad-element"), std::string::npos);
+    }
+}
+
+TEST(ElementConstruction, InvalidSizeNeverProducesAConstructedObject)
+{
+    // Acceptance criterion: "No code path can observe an Element without its
+    // components." A throwing constructor guarantees this (no object is ever
+    // produced/assigned), verified here through a factory-style call site.
+    ElementDimensions dims{ 100, 1.0 };
+    dims.size = 0;
+    const ElementCommonParameters cp{ "bad", dims };
+    std::shared_ptr<NeuralField> nf;
+    EXPECT_THROW(nf = std::make_shared<NeuralField>(cp, NeuralFieldParameters{}), dnf_composer::Exception);
+    EXPECT_EQ(nf, nullptr);
+}
+
+// ---------------------------------------------------------------------------
 // Identity / metadata
 // ---------------------------------------------------------------------------
 

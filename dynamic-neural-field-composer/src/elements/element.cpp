@@ -6,11 +6,17 @@ namespace dnf_composer::element
 {
 	Element::Element(const ElementCommonParameters& parameters)
 	{
-		if(parameters.dimensionParameters.size <= 0)
+		// A constructor that cannot establish its invariants must not return a live,
+		// half-built object: components would stay empty and commonParameters would
+		// stay default-constructed, so every caller (getComponentPtr(), getSize(), the
+		// derived-class constructor body that runs right after this one, ...) would
+		// have to defensively re-check something the type is supposed to guarantee.
+		// Throw instead (#118), matching GaussStimulus's own parameter validation.
+		if (parameters.dimensionParameters.size <= 0)
 		{
 			const std::string logMessage = std::format("Element '{}' has an invalid size.", parameters.identifiers.uniqueName);
 			log(tools::logger::LogLevel::ERROR, logMessage);
-			return;
+			throw Exception(ErrorCode::ELEM_INVALID_SIZE, parameters.identifiers.uniqueName);
 		}
 		commonParameters = parameters;
 		components["output"] = std::vector<double>(commonParameters.dimensionParameters.size);

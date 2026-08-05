@@ -12,6 +12,10 @@
 #include "elements/oscillatory_kernel.h"
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/activation_function.h"
+#include "elements/resize.h"
+#include "elements/collapse.h"
+#include "elements/expand.h"
+#include "exceptions/exception.h"
 
 using namespace dnf_composer;
 using namespace dnf_composer::element;
@@ -113,13 +117,15 @@ TEST(ElementFactoryTest, CreateAsymmetricGaussKernelWithParams)
     EXPECT_EQ(el->getLabel(), ElementLabel::ASYMMETRIC_GAUSS_KERNEL);
 }
 
-TEST(ElementFactoryTest, CreateUninitializedWithParamsReturnsNullptr)
+TEST(ElementFactoryTest, CreateUninitializedWithParamsThrows)
 {
+    // ElementLabel::UNINITIALIZED has no registered creator. The factory must throw
+    // a descriptive Exception rather than silently returning nullptr (#113), so this
+    // failure can't be missed by a caller that forgets to null-check.
     ElementFactory factory;
     ElementCommonParameters cp{ "x", 100 };
     NeuralFieldParameters nfp{};
-    const auto el = factory.createElement(ElementLabel::UNINITIALIZED, cp, nfp);
-    EXPECT_EQ(el, nullptr);
+    EXPECT_THROW(factory.createElement(ElementLabel::UNINITIALIZED, cp, nfp), dnf_composer::Exception);
 }
 
 // ---------------------------------------------------------------------------
@@ -198,11 +204,24 @@ TEST(ElementFactoryTest, CreateAsymmetricGaussKernelDefault)
     EXPECT_EQ(el->getLabel(), ElementLabel::ASYMMETRIC_GAUSS_KERNEL);
 }
 
-TEST(ElementFactoryTest, CreateUninitializedDefaultReturnsNullptr)
+TEST(ElementFactoryTest, CreateUninitializedDefaultThrows)
 {
+    // Same as above but through the default-parameter overload.
     ElementFactory factory;
-    const auto el = factory.createElement(ElementLabel::UNINITIALIZED);
-    EXPECT_EQ(el, nullptr);
+    EXPECT_THROW(factory.createElement(ElementLabel::UNINITIALIZED), dnf_composer::Exception);
+}
+
+TEST(ElementFactoryTest, CreateWithOutOfRangeLabelThrows)
+{
+    // ElementLabel is a plain (non-class) enum backed by int, so a caller can construct
+    // a value entirely outside the defined enumerators (e.g. via static_cast). This must
+    // also throw rather than fall through to nullptr or UB.
+    ElementFactory factory;
+    ElementCommonParameters cp{ "x", 100 };
+    NeuralFieldParameters nfp{};
+    const auto bogus = static_cast<ElementLabel>(9999);
+    EXPECT_THROW(factory.createElement(bogus, cp, nfp), dnf_composer::Exception);
+    EXPECT_THROW(factory.createElement(bogus), dnf_composer::Exception);
 }
 
 // ---------------------------------------------------------------------------
@@ -218,4 +237,107 @@ TEST(ElementFactoryTest, TwoCreatedElementsHaveDistinctIdentifiers)
     ASSERT_NE(el2, nullptr);
     EXPECT_NE(el1.get(), el2.get());
     EXPECT_NE(el1->getUniqueIdentifier(), el2->getUniqueIdentifier());
+}
+
+// ---------------------------------------------------------------------------
+// Wrong ElementSpecificParameters subtype (#113) — must throw, never dereference
+// a failed dynamic_cast.
+// ---------------------------------------------------------------------------
+
+TEST(ElementFactoryTest, CreateNeuralFieldWithWrongParameterTypeThrows)
+{
+    ElementFactory factory;
+    ElementCommonParameters cp{ "nf", 100 };
+    const GaussStimulusParameters wrongParams{ 5.0, 15.0, 50.0, true, false };
+    EXPECT_THROW(factory.createElement(ElementLabel::NEURAL_FIELD, cp, wrongParams), dnf_composer::Exception);
+}
+
+TEST(ElementFactoryTest, CreateGaussStimulusWithWrongParameterTypeThrows)
+{
+    ElementFactory factory;
+    ElementCommonParameters cp{ "gs", 100 };
+    const NeuralFieldParameters wrongParams{};
+    EXPECT_THROW(factory.createElement(ElementLabel::GAUSS_STIMULUS, cp, wrongParams), dnf_composer::Exception);
+}
+
+TEST(ElementFactoryTest, CreateResizeWithWrongParameterTypeThrows)
+{
+    ElementFactory factory;
+    ElementCommonParameters cp{ "rs", 100 };
+    const ExpandParameters wrongParams{};
+    EXPECT_THROW(factory.createElement(ElementLabel::RESIZE, cp, wrongParams), dnf_composer::Exception);
+}
+
+TEST(ElementFactoryTest, CreateCollapseWithWrongParameterTypeThrows)
+{
+    ElementFactory factory;
+    ElementCommonParameters cp{ "cl", 100 };
+    const ExpandParameters wrongParams{};
+    EXPECT_THROW(factory.createElement(ElementLabel::COLLAPSE, cp, wrongParams), dnf_composer::Exception);
+}
+
+TEST(ElementFactoryTest, CreateExpandWithWrongParameterTypeThrows)
+{
+    ElementFactory factory;
+    ElementCommonParameters cp{ "ex", 100 };
+    const CollapseParameters wrongParams{};
+    EXPECT_THROW(factory.createElement(ElementLabel::EXPAND, cp, wrongParams), dnf_composer::Exception);
+}
+
+TEST(ElementFactoryTest, WrongParameterTypeThrowExceptionHasDescriptiveMessage)
+{
+    ElementFactory factory;
+    ElementCommonParameters cp{ "nf", 100 };
+    const GaussStimulusParameters wrongParams{ 5.0, 15.0, 50.0, true, false };
+    try
+    {
+        factory.createElement(ElementLabel::NEURAL_FIELD, cp, wrongParams);
+        FAIL() << "Expected Exception to be thrown";
+    }
+    catch (const dnf_composer::Exception& e)
+    {
+        const std::string msg = e.what();
+        EXPECT_NE(msg.find("NeuralField"), std::string::npos) << "message was: " << msg;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Wrong parameter subtype, swept over every registered ElementLabel.
+// ---------------------------------------------------------------------------
+
+class ElementFactoryWrongParameterTypeSweep : public ::testing::TestWithParam<ElementLabel> {};
+
+INSTANTIATE_TEST_SUITE_P(AllRegisteredLabels, ElementFactoryWrongParameterTypeSweep, ::testing::Values(
+    ElementLabel::NEURAL_FIELD, ElementLabel::GAUSS_STIMULUS, ElementLabel::BOOST_STIMULUS,
+    ElementLabel::GAUSS_KERNEL, ElementLabel::MEXICAN_HAT_KERNEL, ElementLabel::OSCILLATORY_KERNEL,
+    ElementLabel::ASYMMETRIC_GAUSS_KERNEL, ElementLabel::NORMAL_NOISE, ElementLabel::CORRELATED_NORMAL_NOISE,
+    ElementLabel::FIELD_COUPLING, ElementLabel::GAUSS_FIELD_COUPLING, ElementLabel::MEMORY_TRACE,
+    ElementLabel::NEURAL_FIELD_2D, ElementLabel::GAUSS_STIMULUS_2D, ElementLabel::GAUSS_KERNEL_2D,
+    ElementLabel::MEXICAN_HAT_KERNEL_2D, ElementLabel::NORMAL_NOISE_2D, ElementLabel::OSCILLATORY_KERNEL_2D,
+    ElementLabel::TIMED_GAUSS_STIMULUS, ElementLabel::TIMED_GAUSS_STIMULUS_2D, ElementLabel::BOOST_STIMULUS_2D,
+    ElementLabel::CORRELATED_NORMAL_NOISE_2D, ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D, ElementLabel::MEMORY_TRACE_2D,
+    ElementLabel::RESIZE, ElementLabel::RESIZE_2D, ElementLabel::COLLAPSE, ElementLabel::EXPAND
+));
+
+TEST_P(ElementFactoryWrongParameterTypeSweep, ThrowsInsteadOfDereferencingFailedCast)
+{
+    ElementFactory factory;
+    ElementCommonParameters cp{ "x", 100 };
+    const ElementLabel label = GetParam();
+
+    // Every registered creator expects its own concrete ElementSpecificParameters
+    // subtype. ExpandParameters is a mismatch for every label except EXPAND itself,
+    // for which CollapseParameters is used instead - both are unrelated sibling
+    // types (each derives directly and solely from ElementSpecificParameters), so
+    // dynamic_cast to the expected type always fails here.
+    if (label == ElementLabel::EXPAND)
+    {
+        const CollapseParameters wrongParams{};
+        EXPECT_THROW(factory.createElement(label, cp, wrongParams), dnf_composer::Exception);
+    }
+    else
+    {
+        const ExpandParameters wrongParams{};
+        EXPECT_THROW(factory.createElement(label, cp, wrongParams), dnf_composer::Exception);
+    }
 }
