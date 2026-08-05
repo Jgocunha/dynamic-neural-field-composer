@@ -21,7 +21,13 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # The free tier allows 20 requests a day. Once it is spent, every subsequent
+      # PR shows a red doc-sync that says nothing about the PR. The failure is
+      # swallowed here and re-raised by the next step unless it was the quota, so
+      # a genuine failure still fails the job.
       - name: Check documentation completeness with Gemini
+        id: doc_sync
+        continue-on-error: true
         uses: google-github-actions/run-gemini-cli@055c24c9f565debe282e4adf1f7ca1715040ebe2 # v0 (2026-06-19)
         with:
           gemini_cli_version: latest
@@ -87,3 +93,18 @@ jobs:
         env:
           GEMINI_CLI_TRUST_WORKSPACE: 'true'
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Fails closed: only an error positively identified as quota exhaustion is
+      # tolerated. An unrecognised or empty error still fails the job.
+      - name: Tolerate quota exhaustion, fail on anything else
+        if: steps.doc_sync.outcome == 'failure'
+        env:
+          DOC_SYNC_ERROR: ${{ steps.doc_sync.outputs.error }}
+        run: |
+          if printf '%s' "$DOC_SYNC_ERROR" | grep -qiE 'exhausted your daily quota|RESOURCE_EXHAUSTED|rate limit|\b429\b|quota exceeded'; then
+            echo "::warning title=doc-sync skipped::Gemini quota exhausted; documentation sync check did not run."
+            exit 0
+          fi
+          echo "::error title=doc-sync failed::Gemini CLI failed for a reason other than quota exhaustion."
+          printf '%s\n' "$DOC_SYNC_ERROR"
+          exit 1

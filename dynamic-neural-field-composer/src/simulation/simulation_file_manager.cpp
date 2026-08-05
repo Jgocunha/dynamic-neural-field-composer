@@ -1,12 +1,46 @@
 #include "simulation/simulation_file_manager.h"
 
+#include <cmath>
 #include <format>
+#include <limits>
 #include <unordered_set>
+#include <vector>
 
 
 namespace dnf_composer
 {
     using json = nlohmann::json;
+
+    namespace
+    {
+        // True when `value` can size an axis: a positive, finite, whole number small
+        // enough to survive the get<int>() the loader performs a few lines later. That
+        // last part is not pedantry -- converting an out-of-range double to int is
+        // undefined behaviour, so the range has to be checked BEFORE the conversion,
+        // not by catching something afterwards.
+        // Mirrors the ElementDimensions extent contract (element_parameters.cpp).
+        [[nodiscard]] bool isValidAxisExtent(const json& value)
+        {
+            if (!value.is_number()) {
+                return false;
+}
+            const double extent = value.get<double>();
+            return std::isfinite(extent)
+                && extent > 0.0
+                && extent <= static_cast<double>(std::numeric_limits<int>::max())
+                && extent == std::floor(extent);
+        }
+
+        // True when `value` can be an axis step: a positive, finite number.
+        [[nodiscard]] bool isValidAxisSpacing(const json& value)
+        {
+            if (!value.is_number()) {
+                return false;
+}
+            const double spacing = value.get<double>();
+            return std::isfinite(spacing) && spacing > 0.0;
+        }
+    }
 
 	SimulationFileManager::SimulationFileManager(const std::shared_ptr<Simulation>& simulation, const std::string& filePath)
 		: simulation(simulation), filePath(filePath)
@@ -52,6 +86,99 @@ namespace dnf_composer
         }
 	}
 
+    bool SimulationFileManager::extractElementsAndMetadata(const json& root, json& elementsJson) const
+    {
+        // Backwards-compatible: old format is a bare array of elements.
+        // New format is an object with metadata + "elements" array.
+        if (root.is_array())
+        {
+            elementsJson = root;
+            return true;
+        }
+        if (!root.is_object())
+        {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
+            return false;
+        }
+
+        const json& elems = root.contains("elements") ? root["elements"] : json::array();
+        if (!elems.is_array())
+        {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: \"elements\" is not an array: {}", filePath));
+            return false;
+        }
+        elementsJson = elems;
+
+        // Metadata is best-effort: a bad "identifier" or "deltaT" is reported and skipped,
+        // leaving the simulation's own value in place, rather than failing the whole load.
+        if (root.contains("identifier") && root["identifier"].is_string()) {
+            simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
+        } else if (root.contains("identifier")) {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: \"identifier\" is not a string: {}", filePath));
+}
+
+        if (root.contains("deltaT") && root["deltaT"].is_number())
+        {
+            const double dt = root["deltaT"].get<double>();
+            if (std::isfinite(dt) && dt > 0.0) {
+                simulation->setDeltaT(dt);
+            } else {
+                log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a valid positive number: {}", filePath));
+}
+        }
+        else if (root.contains("deltaT")) {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a number: {}", filePath));
+}
+
+        return true;
+    }
+
+    bool SimulationFileManager::buildElementsOrRollBack(const json& elementsJson) const
+    {
+        // Last-resort guard around element construction. The pre-check in jsonToElements()
+        // rejects the malformed inputs it can name, but the element constructors enforce
+        // contracts it deliberately does not re-derive -- notably the samples-per-axis
+        // ceiling that ElementDimensions applies to x_max/d_x. Without this guard an
+        // Exception from any constructor would unwind straight out of
+        // loadElementsFromJson() and, in the GUI, out of the render loop (issue #146).
+        std::unordered_set<std::string> preExistingNames;
+        for (const auto& el : simulation->getElements()) {
+            preExistingNames.insert(el->getUniqueName());
+}
+
+        try
+        {
+            // A false return means the up-front validation rejected the file. That happens
+            // before any element is added, so there is nothing to roll back -- but the load
+            // still failed, and the caller must not go on to report success.
+            if (!jsonToElements(elementsJson)) {
+                return false;
+            }
+        }
+        catch (const std::exception& e)
+        {
+            // Drop what this load added so a bad file never leaves a half-built
+            // simulation behind. Anything the caller already held is left alone,
+            // since loading appends rather than replaces.
+            std::vector<std::string> addedNames;
+            for (const auto& el : simulation->getElements())
+            {
+                if (!preExistingNames.contains(el->getUniqueName())) {
+                    addedNames.push_back(el->getUniqueName());
+}
+            }
+            for (const auto& name : addedNames) {
+                simulation->removeElement(name);
+}
+            log(tools::logger::ERROR, std::format(
+                "Invalid simulation file: could not build the elements of {} ({}) - load aborted.",
+                filePath, e.what()));
+            return false;
+        }
+
+        return true;
+    }
+
     void SimulationFileManager::loadElementsFromJson() const
     {
         std::ifstream file(filePath);
@@ -69,50 +196,27 @@ namespace dnf_composer
             return;
         }
 
-        // Backwards-compatible: old format is a bare array of elements.
-        // New format is an object with metadata + "elements" array.
+        // extractElementsAndMetadata() applies "identifier" and "deltaT" as a side effect,
+        // but the load is not committed until every element is built. Capture them first
+        // so a failed build can put them back: rolling back only the elements would leave
+        // the simulation renamed and re-timed while holding none of that file's elements,
+        // a combination that came from no file at all. Only this scope sees both steps,
+        // so the restore belongs here rather than inside either one.
+        const std::string previousIdentifier = simulation->getUniqueIdentifier();
+        const double previousDeltaT = simulation->getDeltaT();
+
         json elementsJson;
-        if (root.is_array())
-        {
-            elementsJson = root;
+        if (!extractElementsAndMetadata(root, elementsJson)) {
+            return;
         }
-        else if (root.is_object())
-        {
-            const json& elems = root.contains("elements") ? root["elements"] : json::array();
-            if (!elems.is_array())
-            {
-                log(tools::logger::ERROR, std::format("Invalid simulation file: \"elements\" is not an array: {}", filePath));
-                return;
-            }
-            elementsJson = elems;
 
-            if (root.contains("identifier") && root["identifier"].is_string()) {
-                simulation->setUniqueIdentifier(root["identifier"].get<std::string>());
-            } else if (root.contains("identifier")) {
-                log(tools::logger::ERROR, std::format("Invalid simulation file: \"identifier\" is not a string: {}", filePath));
-}
-
-            if (root.contains("deltaT") && root["deltaT"].is_number())
-            {
-                const double dt = root["deltaT"].get<double>();
-                if (std::isfinite(dt) && dt > 0.0) {
-                    simulation->setDeltaT(dt);
-                } else {
-                    log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a valid positive number: {}", filePath));
-}
-            }
-            else if (root.contains("deltaT")) {
-                log(tools::logger::ERROR, std::format("Invalid simulation file: \"deltaT\" is not a number: {}", filePath));
-}
-        }
-        else
-        {
-            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
+        if (!buildElementsOrRollBack(elementsJson)) {
+            simulation->setUniqueIdentifier(previousIdentifier);
+            simulation->setDeltaT(previousDeltaT);
             return;
         }
 
         log(tools::logger::INFO, std::format("Simulation loaded from: {}", filePath));
-        jsonToElements(elementsJson);
 
         // Point FieldCoupling elements to their weights in the same directory as the JSON file.
         const std::string simDir = std::filesystem::path(filePath).parent_path().string();
@@ -542,7 +646,7 @@ namespace dnf_composer
     }
 
     // NOLINTNEXTLINE(readability-function-cognitive-complexity) - one branch per element type for JSON deserialization; mirrors elementToJson's structure
-    void SimulationFileManager::jsonToElements(const json& jsonElements) const
+    bool SimulationFileManager::jsonToElements(const json& jsonElements) const
     {
         // Validate every element's required common fields up front, before any element
         // is constructed or added to the live simulation. A malformed entry anywhere in
@@ -559,27 +663,46 @@ namespace dnf_composer
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                     + R"( is missing a valid "uniqueName": )" + filePath);
-                return;
+                return false;
             }
             if (!elementJson.contains("label") || !elementJson["label"].is_array()
                 || elementJson["label"].size() != 2 || !elementJson["label"][1].is_string())
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                     + R"( has a missing or malformed "label" (expected a 2-element array): )" + filePath);
-                return;
+                return false;
             }
             if (!elementJson.contains("x_max") || !elementJson["x_max"].is_number()
                 || !elementJson.contains("d_x") || !elementJson["d_x"].is_number())
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
                     + R"( is missing a valid "x_max" or "d_x": )" + filePath);
-                return;
+                return false;
             }
-            if (elementJson["x_max"].get<double>() <= 0.0 || elementJson["d_x"].get<double>() <= 0.0)
+            if (!isValidAxisExtent(elementJson["x_max"]) || !isValidAxisSpacing(elementJson["d_x"]))
             {
                 log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
-                    + R"( has a non-positive "x_max" or "d_x" (both must be > 0): )" + filePath);
-                return;
+                    + R"( has an invalid "x_max" or "d_x" ("x_max" must be a whole number > 0 that )"
+                    + R"(fits in an int, "d_x" a finite number > 0): )" + filePath);
+                return false;
+            }
+            // The y axis gets the same treatment as the x axis (issue #146). Both keys
+            // are optional -- an older or 1D-only file omits them and defaults to 1 --
+            // but when present they must be valid, or ElementDimensions throws from
+            // deeper inside the load instead of reporting the file as malformed here.
+            if (elementJson.contains("y_max") || elementJson.contains("d_y"))
+            {
+                const bool yMaxValid = !elementJson.contains("y_max")
+                    || isValidAxisExtent(elementJson["y_max"]);
+                const bool dYValid = !elementJson.contains("d_y")
+                    || isValidAxisSpacing(elementJson["d_y"]);
+                if (!yMaxValid || !dYValid)
+                {
+                    log(tools::logger::ERROR, "Invalid simulation file: element " + elementRef
+                        + R"( has an invalid "y_max" or "d_y" ("y_max" must be a whole number > 0 that )"
+                        + R"(fits in an int, "d_y" a finite number > 0): )" + filePath);
+                    return false;
+                }
             }
         }
 
@@ -1135,6 +1258,7 @@ namespace dnf_composer
 
 	    }
 
+        return true;
     }
 
 }

@@ -17,8 +17,8 @@
 		}
 		
 
-		NeuralField::NeuralField(const ElementCommonParameters& elementCommonParameters, 
-			const NeuralFieldParameters& parameters)
+		NeuralField::NeuralField(const ElementCommonParameters& elementCommonParameters,
+			const NeuralFieldParameters& parameters) // NOLINT(modernize-pass-by-value) - every element constructor takes its parameters by const reference; changing only this one would break that uniform public signature
 			: Element(elementCommonParameters), parameters(parameters)
 		{
 			commonParameters.identifiers.label = ElementLabel::NEURAL_FIELD;
