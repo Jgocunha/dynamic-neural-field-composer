@@ -211,11 +211,12 @@ jobs:
         if: matrix.name == 'asan-ubsan'
         working-directory: ./dynamic-neural-field-composer/${{ matrix.build_dir }}
         env:
-          # detect_leaks=0: connected elements hold shared_ptr to each other in
-          # both directions (Element::inputs/outputs), a known ownership cycle
-          # that LeakSanitizer reports on every connection test. Re-enable when
-          # the input-cache/ownership redesign breaks the cycle.
-          ASAN_OPTIONS: halt_on_error=1:detect_leaks=0
+          # detect_leaks=1: PR #151 severed the Element::inputs/outputs shared_ptr
+          # ownership cycle on simulation teardown (the precondition #155 named for
+          # re-enabling), and PR #153 fixed the last known unconditional leak
+          # (ImNodeEditor context). Leak detection is back on so a new leak can
+          # fail this job instead of passing silently.
+          ASAN_OPTIONS: halt_on_error=1:detect_leaks=1
           UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
         run: ctest --output-on-failure --parallel $(nproc)
 
