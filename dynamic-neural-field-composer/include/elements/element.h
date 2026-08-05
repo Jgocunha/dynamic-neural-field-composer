@@ -51,6 +51,11 @@ namespace dnf_composer::element
 	public:
 		/// @brief Construct an element with the given common parameters.
 		/// @param parameters  Name, label, and spatial dimensions.
+		/// @throws Exception(ErrorCode::ELEM_INVALID_SIZE) if parameters.dimensionParameters.size
+		///         is not positive (#118). In normal use ElementDimensions's own constructors
+		///         already reject a non-positive size before it ever reaches here; this guards
+		///         the invariant should dimensionParameters ever be mutated afterward (its
+		///         fields are public) into an invalid state.
 		explicit Element(const ElementCommonParameters& parameters);
 
 		/// @brief Copy commonParameters/components/inputs/outputs; deliberately

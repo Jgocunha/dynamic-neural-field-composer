@@ -159,10 +159,16 @@ Add the include near the end of the existing list:
 elementCreators[ElementLabel::YOUR_ELEMENT_NAME] =
     [](const ElementCommonParameters& cp, const ElementSpecificParameters& sp)
     {
-        const auto params = dynamic_cast<const YourElementParameters*>(&sp);
-        return std::make_shared<YourElement>(cp, *params);
+        const auto& params = requireParams<YourElementParameters>(sp, ElementLabel::YOUR_ELEMENT_NAME, "YourElementParameters");
+        return std::make_shared<YourElement>(cp, params);
     };
 ```
+
+> Do **not** `dynamic_cast` and dereference the result directly — if a caller passes the
+> wrong `ElementSpecificParameters` subtype, the cast returns `nullptr` and dereferencing
+> it is undefined behavior (this was issue #113). `requireParams<>()` is a small helper
+> local to `element_factory.cpp` that does the same `dynamic_cast` but throws a
+> descriptive `Exception` instead of returning nullptr/UB when the cast fails.
 
 **4b.** In `ElementFactory::createElement(ElementLabel type)` switch, add before `case ElementLabel::UNINITIALIZED`:
 

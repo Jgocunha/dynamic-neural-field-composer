@@ -1511,6 +1511,346 @@ TEST_F(SimulationFileManagerTest, LoadRejectsNonPositiveDimensions)
     EXPECT_EQ(sim->getNumberOfElements(), 0);
 }
 
+TEST_F(SimulationFileManagerTest, LoadRejectsNonPositiveYDimensions)
+{
+    // Issue #146: the up-front pre-check validated x_max/d_x but not y_max/d_y, so a
+    // bad y axis skipped the clean rejection and instead threw out of ElementDimensions
+    // deeper in the load. Both axes must be reported the same way.
+    const std::string dir = tempDir + "bad-ydims/";
+    fs::create_directories(dir);
+    const std::string path = dir + "bad-ydims.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "bad-ydims",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 2d 1", "label": [13, "neural field 2d"],
+                  "x_max": 10, "d_x": 1.0, "y_max": 0, "d_y": 1.0,
+                  "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("bad-ydims-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadRejectsNonPositiveDY)
+{
+    const std::string dir = tempDir + "bad-dy/";
+    fs::create_directories(dir);
+    const std::string path = dir + "bad-dy.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "bad-dy",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 2d 1", "label": [13, "neural field 2d"],
+                  "x_max": 10, "d_x": 1.0, "y_max": 10, "d_y": -1.0,
+                  "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("bad-dy-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadStillAcceptsFilesWithoutYDimensions)
+{
+    // Backwards compatibility: y_max/d_y are optional and default to 1 / 1.0.
+    // The new checks must not reject an older 1D-only file that omits them.
+    const std::string dir = tempDir + "no-ydims/";
+    fs::create_directories(dir);
+    const std::string path = dir + "no-ydims.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "no-ydims",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "rz 1", "label": [30, "resize"],
+                  "x_max": 50, "d_x": 1.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("no-ydims-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+}
+
+// The pre-check must enforce the whole ElementDimensions extent contract, not just
+// positivity: the extent is converted with get<int>() a few lines later, so a value
+// that does not fit in an int would be an out-of-range floating-to-integer cast
+// (undefined behaviour, and a UBSan failure on the sanitizer CI leg).
+
+TEST_F(SimulationFileManagerTest, LoadRejectsOutOfIntRangeXMax)
+{
+    const std::string dir = tempDir + "huge-xmax/";
+    fs::create_directories(dir);
+    const std::string path = dir + "huge-xmax.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "huge-xmax",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 1", "label": [0, "neural field"],
+                  "x_max": 1e300, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("huge-xmax-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadRejectsOutOfIntRangeYMax)
+{
+    const std::string dir = tempDir + "huge-ymax/";
+    fs::create_directories(dir);
+    const std::string path = dir + "huge-ymax.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "huge-ymax",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 2d 1", "label": [13, "neural field 2d"],
+                  "x_max": 10, "d_x": 1.0, "y_max": 1e300, "d_y": 1.0,
+                  "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("huge-ymax-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadRejectsNonIntegralYMax)
+{
+    // A fractional extent would be silently truncated by get<int>(); reject it instead
+    // of loading a field of a size the file never asked for.
+    const std::string dir = tempDir + "frac-ymax/";
+    fs::create_directories(dir);
+    const std::string path = dir + "frac-ymax.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "frac-ymax",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "nf 2d 1", "label": [13, "neural field 2d"],
+                  "x_max": 10, "d_x": 1.0, "y_max": 2.5, "d_y": 1.0,
+                  "tau": 25.0, "restingLevel": -5.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("frac-ymax-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadStillAcceptsIntegerValuedFloatDimensions)
+{
+    // Backwards compatibility: a hand-written file may spell an integral extent as a
+    // JSON float ("x_max": 50.0). That still describes a whole number of samples and
+    // must keep loading.
+    const std::string dir = tempDir + "float-dims/";
+    fs::create_directories(dir);
+    const std::string path = dir + "float-dims.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "float-dims",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "rz 1", "label": [30, "resize"],
+                  "x_max": 50.0, "d_x": 1.0, "y_max": 1.0, "d_y": 1.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("float-dims-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+}
+
+TEST_F(SimulationFileManagerTest, LoadRejectsDimensionsExceedingTheSafeSampleCount)
+{
+    // x_max and d_x are individually valid, but their quotient asks for ~1e12 samples,
+    // which ElementDimensions refuses. The pre-check deliberately does not re-derive
+    // that limit, so this is the case the guard around element construction has to
+    // absorb -- without it the exception escapes loadElementsFromJson() entirely.
+    const std::string dir = tempDir + "huge-samples/";
+    fs::create_directories(dir);
+    const std::string path = dir + "huge-samples.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "huge-samples",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "rz 1", "label": [30, "resize"],
+                  "x_max": 1000, "d_x": 1e-9,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("huge-samples-load", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, FailedLoadLeavesPreExistingElementsUntouched)
+{
+    // loadElementsFromJson() adds to whatever the simulation already holds (unlike
+    // Simulation::read(), which cleans first). When element construction throws part
+    // way through, the rollback must drop only what this load added.
+    const std::string dir = tempDir + "rollback/";
+    fs::create_directories(dir);
+    const std::string path = dir + "rollback.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "rollback",
+            "deltaT": 1.0,
+            "elements": [
+                { "uniqueName": "rz ok", "label": [30, "resize"],
+                  "x_max": 100, "d_x": 1.0,
+                  "inputs": [] },
+                { "uniqueName": "rz bad", "label": [30, "resize"],
+                  "x_max": 1000, "d_x": 1e-9,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("rollback-load", 1.0, 0.0, 0.0);
+    sim->addElement(makeField("pre-existing"));
+
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+    EXPECT_NE(sim->getElement("pre-existing"), nullptr);
+    EXPECT_EQ(sim->getElement("rz ok"), nullptr);
+}
+
+TEST_F(SimulationFileManagerTest, FailedLoadRestoresIdentifierAndDeltaT)
+{
+    // The identifier and deltaT are applied while the file is being read, but the load
+    // is not committed until every element is built. If the build then fails, rolling
+    // back only the elements would leave the simulation renamed and re-timed while
+    // holding none of that file's elements -- a state that came from no file at all.
+    const std::string dir = tempDir + "metadata-rollback/";
+    fs::create_directories(dir);
+    const std::string path = dir + "metadata-rollback.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "from-the-bad-file",
+            "deltaT": 0.25,
+            "elements": [
+                { "uniqueName": "rz bad", "label": [30, "resize"],
+                  "x_max": 1000, "d_x": 1e-9,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("original-identifier", 2.0, 0.0, 0.0);
+
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    EXPECT_EQ(sim->getUniqueIdentifier(), "original-identifier");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 2.0);
+}
+
+TEST_F(SimulationFileManagerTest, RejectedFileDoesNotRestoreMetadataItNeverApplied)
+{
+    // A file rejected by the up-front validation must leave the metadata alone -- both
+    // the file's values (never committed) and the simulation's own (never clobbered).
+    // This is the same abort path as a failed build, so it must not report success
+    // either; the assertion that matters is that nothing moved.
+    const std::string dir = tempDir + "rejected-metadata/";
+    fs::create_directories(dir);
+    const std::string path = dir + "rejected-metadata.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "from-the-rejected-file",
+            "deltaT": 0.25,
+            "elements": [
+                { "label": [30, "resize"], "x_max": 100, "d_x": 1.0, "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("original-identifier", 2.0, 0.0, 0.0);
+
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+    EXPECT_EQ(sim->getUniqueIdentifier(), "original-identifier");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 2.0);
+}
+
+TEST_F(SimulationFileManagerTest, SuccessfulLoadStillAppliesIdentifierAndDeltaT)
+{
+    // The other half of the contract: restoring metadata on failure must not weaken the
+    // successful path, which has always taken both values from the file.
+    const std::string dir = tempDir + "metadata-applied/";
+    fs::create_directories(dir);
+    const std::string path = dir + "metadata-applied.dnf";
+    {
+        std::ofstream f(path);
+        f << R"({
+            "identifier": "from-the-good-file",
+            "deltaT": 0.25,
+            "elements": [
+                { "uniqueName": "rz ok", "label": [30, "resize"],
+                  "x_max": 100, "d_x": 1.0,
+                  "inputs": [] }
+            ]
+        })";
+    }
+
+    const auto sim = createSimulation("original-identifier", 2.0, 0.0, 0.0);
+
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    EXPECT_EQ(sim->getUniqueIdentifier(), "from-the-good-file");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 0.25);
+}
+
 TEST_F(SimulationFileManagerTest, LoadOfMalformedFileDoesNotPartiallyLoadEarlierElements)
 {
     // Two well-formed elements are listed BEFORE a malformed third one. If the file

@@ -56,14 +56,20 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "element_parameters/test_element_parameters.cpp"
             # exceptions
             "exceptions/test_exception.cpp"
+            # user_interface/ and visualization/ are auto-discovered below
+            # (see the headless UI tests block for the rationale)
             # visualization
             "visualization/test_visualization.cpp"
+            "visualization/test_heatmap_dimensions.cpp"
             # user_interface
             "user_interface/test_plot_control_window.cpp"
+            "user_interface/test_element_creation_error.cpp"
+            "user_interface/test_node_graph_window_lifetime.cpp"
             "visualization/test_plot_parameters.cpp"
     )
     target_include_directories(dnf_composer_tests PRIVATE
             ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common
             ${CMAKE_CURRENT_SOURCE_DIR}/validation)
 
     # Path to the vendored field-dynamics reference data (sim JSONs + expected CSVs).
@@ -88,6 +94,18 @@ if(DNF_COMPOSER_BUILD_TESTS)
     # so the harness can locate/refresh the frozen CSV fixtures.
     target_compile_definitions(dnf_composer_tests PRIVATE
             GOLDEN_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden/data")
+
+    # --- Headless UI tests ------------------------------------------------
+    # Same auto-discovery rationale as the golden suite: contributors drop
+    # tests/user_interface/*.cpp and tests/visualization/*.cpp in without
+    # touching this file. The harness in tests/user_interface/ui_test_harness.h
+    # drives real render() calls against a headless ImGui context (no window,
+    # no GL), so user_interface/ stops being a permanent 0%-covered block in
+    # the coverage denominator.
+    file(GLOB ui_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/user_interface/*.cpp")
+    file(GLOB visualization_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/visualization/*.cpp")
+    target_sources(dnf_composer_tests PRIVATE ${ui_sources} ${visualization_sources})
+    target_include_directories(dnf_composer_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/user_interface")
 
     include(GoogleTest)
     gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)
@@ -148,6 +166,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "validation/tools/regenerate_spectral_golden.cpp")
     target_include_directories(dnf_composer_regen_spectral_golden PRIVATE
             ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common
             ${CMAKE_CURRENT_SOURCE_DIR}/validation)
     target_compile_definitions(dnf_composer_regen_spectral_golden PRIVATE
             VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data")

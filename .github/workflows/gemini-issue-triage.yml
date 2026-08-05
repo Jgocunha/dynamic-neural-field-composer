@@ -34,8 +34,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          gh issue list --state all --limit 100 --json number,title,state \
+          # The issue being triaged is already in the list, and Gemini has marked a
+          # new issue as a duplicate of itself. Drop it before asking. Fetch 101 so
+          # that removing this issue still leaves a full 100 candidates, then trim
+          # back to 100 for the case where it was not in the window at all.
+          gh issue list --state all --limit 101 --json number,title,state \
+            --jq "map(select(.number != ${ISSUE_NUMBER}))[0:100]" \
             > /tmp/existing_issues.json
           {
             echo "fetched<<EOF"
@@ -111,7 +117,6 @@ jobs:
         run: |
           TYPE_LABEL=$(echo "$TRIAGE"    | jq -r '.type_label')
           PRIORITY=$(echo "$TRIAGE"      | jq -r '.priority_label')
-          SECONDARY=$(echo "$TRIAGE"     | jq -r '.secondary_labels[]' 2>/dev/null || true)
           DUPLICATE_OF=$(echo "$TRIAGE"  | jq -r '.duplicate_of // empty')
           COMMENT=$(echo "$TRIAGE"       | jq -r '.comment')
 
@@ -129,21 +134,42 @@ jobs:
             PRIORITY="priority: medium"
           fi
 
-          # Build comma-separated label list, validating secondary labels
-          ALLOWED_SECONDARY="help wanted good first issue duplicate"
-          LABELS="$TYPE_LABEL,$PRIORITY"
-          for lbl in $SECONDARY; do
-            if echo "$ALLOWED_SECONDARY" | grep -qw "$lbl"; then
-              LABELS="$LABELS,$lbl"
-            else
-              echo "Skipping unexpected secondary label: '$lbl'"
-            fi
-          done
+          # One --add-label per label. Two of the allowed secondary labels contain
+          # spaces, so an unquoted loop over a word-split list turned "good first
+          # issue" into the three labels good, first and issue, none of which exist,
+          # and the whole step failed before it could comment.
+          LABEL_ARGS=(--add-label "$TYPE_LABEL" --add-label "$PRIORITY")
+          while IFS= read -r lbl; do
+            [ -n "$lbl" ] || continue
+            case "$lbl" in
+              "help wanted"|"good first issue"|"duplicate")
+                LABEL_ARGS+=(--add-label "$lbl") ;;
+              *)
+                echo "Skipping unexpected secondary label: '$lbl'" ;;
+            esac
+          done < <(echo "$TRIAGE" | jq -r '.secondary_labels[]' 2>/dev/null || true)
 
-          gh issue edit "$ISSUE_NUMBER" --add-label "$LABELS"
+          gh issue edit "$ISSUE_NUMBER" "${LABEL_ARGS[@]}"
           gh issue comment "$ISSUE_NUMBER" --body "$COMMENT"
 
+          # Close only against a real, different issue. Gemini has returned this
+          # issue's own number, which closed a freshly filed issue as a duplicate of
+          # itself, and a non-numeric answer would produce a nonsense close comment.
           if [ -n "$DUPLICATE_OF" ]; then
-            gh issue close "$ISSUE_NUMBER" --reason "not planned" \
-              --comment "Closing as duplicate of #${DUPLICATE_OF}."
+            if ! echo "$DUPLICATE_OF" | grep -qE '^[0-9]+$'; then
+              echo "Ignoring non-numeric duplicate_of '$DUPLICATE_OF'"
+            else
+              # Normalise before comparing and before quoting the number back. "00158"
+              # passes the digit check but is not string-equal to "158", so a padded
+              # answer would slip past the self-reference guard and close the issue
+              # against itself anyway. 10# forces base 10, or 08/09 would be read as
+              # invalid octal.
+              DUP_NUM=$((10#$DUPLICATE_OF))
+              if [ "$DUP_NUM" -eq "$ISSUE_NUMBER" ]; then
+                echo "Ignoring self-referential duplicate_of #${DUP_NUM}"
+              else
+                gh issue close "$ISSUE_NUMBER" --reason "not planned" \
+                  --comment "Closing as duplicate of #${DUP_NUM}."
+              fi
+            fi
           fi

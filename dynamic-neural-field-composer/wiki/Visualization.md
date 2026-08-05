@@ -65,6 +65,14 @@ visualization->plot(
 );
 ```
 
+`HeatmapParameters::autoDimensions` is on by default and derives the grid from the
+plotted element. Turning it off makes the grid come from the axis extents and steps
+in `PlotDimensions` instead — those are user-editable and have no built-in
+relationship to the data, so a combination implying more cells than the element holds
+would read past the buffer. Columns are now clamped so `rows * cols` never exceeds
+the available data (rows, and therefore the configured aspect ratio, are preserved),
+and a warning is logged when the clamp kicks in.
+
 ### Shorthand overloads
 
 ```cpp

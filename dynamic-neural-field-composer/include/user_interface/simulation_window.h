@@ -9,6 +9,7 @@
 #include "elements/element_factory.h"
 #include "application/application.h"
 #include "user_interface/widgets.h"
+#include "user_interface/element_creation_error.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_BlackMediumFont;
@@ -25,6 +26,14 @@ namespace dnf_composer::user_interface
 	private:
 		std::shared_ptr<Simulation> simulation;
 		static int activePane;
+
+		// Set when the Add button is pressed; consumed on the next frame, because
+		// the parameter forms are rendered before the button that triggers them.
+		mutable bool addRequestedNextFrame = false;
+
+		// Message from the last failed add attempt, shown under the Add button.
+		// Empty when the last attempt succeeded. See issue #146.
+		mutable std::string lastAddElementError;
 	public:
 		explicit SimulationWindow(const std::shared_ptr<Simulation>& simulation);
 
@@ -45,6 +54,15 @@ namespace dnf_composer::user_interface
 	private:
 		static void drawIconStrip();
 		static void renderContentPaneTitle();
+
+		/// @brief Render the parameter form for @p selected, and create the element
+		/// when @p addRequested. Split out of renderAddElementCard() so the creation
+		/// path can be funnelled through describeElementCreationFailure().
+		void renderElementParameters(element::ElementLabel selected, char* id, bool addRequested) const;
+
+		/// @brief Render the Add button and any validation message from the last attempt.
+		void renderAddElementButton() const;
+
 		void addElementNeuralField(const char* id, bool addRequested) const;
 		void addElementGaussStimulus(char* id, bool addRequested) const;
 		void addElementTimedGaussStimulus(char* id, bool addRequested) const;
