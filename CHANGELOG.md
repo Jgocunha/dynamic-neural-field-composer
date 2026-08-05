@@ -113,6 +113,18 @@ All notable changes to this project will be documented in this file.
   non-contiguous after deletion, so a bounds check on the highest uid alone doesn't rule
   out a stale id) — a possible uncaught exception mid-frame. Both paths now go through a
   non-throwing lookup helper.
+- `Element::addInput()` inferred whether an element manages its own input-shape
+  validation from a buffer-length heuristic (`getComponentPtr("input")->size() ==
+  getSize()`), which wrongly rejected valid dimension-bridging connections whenever
+  the source's flattened size coincided with the target's own size — e.g. a
+  degenerate 2D `5x1` source collapsing into a 1D size-5 `Collapse` output, or a 1D
+  size-5 source broadcast into a degenerate 2D `5x1` `Expand` output. Elements that
+  size their own "input" component from their own parameters (`Collapse`, `Expand`,
+  `Resize`, `Resize2D`, `FieldCoupling`, `GaussFieldCoupling`) now declare that
+  explicitly via a new `Element::bridgesDimensions()` virtual instead, so the
+  dimensionality/shape check is skipped only when the element positively opts in,
+  never inferred from a coincidental buffer size
+
 ## [2.10.1] - 2026-08-06
 
 ### Fixed
@@ -172,7 +184,6 @@ All notable changes to this project will be documented in this file.
   before), to catch order-dependent failures that only reproduce when every suite shares
   one process's global state
 - Added a headless smoke-run of the example programs to CI
-
 ## [2.10.0] - 2026-08-05
 
 ### Fixed
