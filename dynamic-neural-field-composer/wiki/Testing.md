@@ -195,3 +195,23 @@ TEST(MySuite, StaysQuietWithoutLeaking)
 
 For the validation suite, `silenceLogging()` returns the guard — keep it alive:
 `const auto quiet = silenceLogging();`
+
+The registered UI sink is the other one: `Logger::setUiSink()` is process-wide
+state too, and this test binary never calls `Application::init()` (constructing
+`Application` throws without a display), so no sink is registered by default.
+Use the RAII guard in `tests/common/scoped_ui_sink.h` if a test needs to assert
+on GUI-destined messages:
+
+```cpp
+#include "scoped_ui_sink.h"
+
+TEST(MySuite, GuiMessageReachesTheSink)
+{
+    std::vector<std::string> received;
+    const dnf_composer::test::ScopedUiSink guard{
+        [&received](LogLevel, const std::string& message) { received.push_back(message); } };
+
+    log(LogLevel::INFO, "hello", LogOutputMode::GUI);
+    // received == { "...hello" }
+}   // sink cleared here
+```

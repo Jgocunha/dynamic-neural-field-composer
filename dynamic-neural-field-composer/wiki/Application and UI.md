@@ -295,6 +295,27 @@ log(LogLevel::INFO, "Both",         LogOutputMode::ALL);   // default
 Logger::setMinLogLevel(LogLevel::WARNING);
 ```
 
+### GUI sink
+
+`tools/logger` has no dependency on the GUI: it never includes `application/` or
+`user_interface/`. Instead, the UI registers a callback once at startup, and
+`log()` calls it for any message whose `LogOutputMode` includes `GUI`. Until a
+sink is registered, GUI-destined messages are simply dropped — the mechanism
+that lets `tools/` (and headless/test builds) link without the GUI stack.
+
+`Application::init()` registers the sink that routes messages into `LogWindow`:
+
+```cpp
+Logger::setUiSink([](LogLevel level, const std::string& message)
+{
+    LogWindow::addLog(getLogLevelColorCodeGui(level), "%s", message.c_str());
+});
+```
+
+`getLogLevelColorCodeGui()` (in `user_interface/log_window.h`) maps a `LogLevel`
+to the ImGui text color shown in the log window — color is a rendering concern,
+so it lives on the UI side rather than in `tools/logger`.
+
 ---
 
 ## Error handling
