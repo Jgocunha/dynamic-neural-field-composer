@@ -77,7 +77,9 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">main_menu_bar.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -116,6 +118,21 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacednf__composer_1_1user__interface" id="r_namespacednf__composer_1_1user__interface"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html">dnf_composer::user_interface</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a6417eb3f1829939cda3d09e733751247" id="r_a6417eb3f1829939cda3d09e733751247"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">dnf_composer::user_interface::QuitAction</a> { <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754">dnf_composer::user_interface::None</a>
+, <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a86ca3050f739d1c40ab74378cc0e9351">dnf_composer::user_interface::SaveAndQuit</a>
+, <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247aed332b96121d34087a4eea2499858721">dnf_composer::user_interface::QuitOnly</a>
+ }</td></tr>
+<tr class="memdesc:a6417eb3f1829939cda3d09e733751247"><td class="mdescLeft">&#160;</td><td class="mdescRight">What a quit trigger (Quit menu item or Ctrl+Q shortcut) should do to the simulation before the application is signalled to close.  <a href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">More...</a><br /></td></tr>
+<tr class="separator:a6417eb3f1829939cda3d09e733751247"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad0c1a4c286bfd471264bb1f26024ef07" id="r_ad0c1a4c286bfd471264bb1f26024ef07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ad0c1a4c286bfd471264bb1f26024ef07">dnf_composer::user_interface::decideQuitAction</a> (bool quitMenuItemClicked, bool ctrlQPressed) noexcept</td></tr>
+<tr class="memdesc:ad0c1a4c286bfd471264bb1f26024ef07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure decision function: given which quit trigger(s) fired this frame, decide what should happen. No ImGui, no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a>, no OS calls &ndash; so unlike <code><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">MainMenuBar::render()</a></code>/<code>handleShortcuts()</code>, it can be unit-tested headlessly (same pattern as <code><a class="el" href="namespacednf__composer_1_1user__interface.html#aff98fe422e79c1fe15eaaea696e67e05" title="Pick the plot type quick-populate should use for a given element.">quickPopulatePlotTypeFor()</a></code> in <a class="el" href="plot__control__window_8h.html">plot_control_window.h</a>). If both triggers somehow fire in the same frame, the menu item's save-before-closing behavior takes precedence (the safer of the two).  <br /></td></tr>
+<tr class="separator:ad0c1a4c286bfd471264bb1f26024ef07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

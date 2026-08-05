@@ -90,7 +90,7 @@ $(function() {
 <div class="dynheader">
 Collaboration diagram for dnf_composer::Application:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application__coll__graph.svg" width="216" height="356"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application__coll__graph.svg" width="228" height="416"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -112,7 +112,7 @@ requires <a class="el" href="structdnf__composer_1_1has__simulation__constructor
 <tr class="memdesc:aed697a3cf19ba9a0735b29edd67e96f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tear down the GUI and close the simulation. Call once after the main loop.  <br /></td></tr>
 <tr class="separator:aed697a3cf19ba9a0735b29edd67e96f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45edefc4959f4002d68856b1cb171178" id="r_a45edefc4959f4002d68856b1cb171178"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a45edefc4959f4002d68856b1cb171178">hasGUIBeenClosed</a> () const</td></tr>
-<tr class="memdesc:a45edefc4959f4002d68856b1cb171178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the user has closed the main window.  <br /></td></tr>
+<tr class="memdesc:a45edefc4959f4002d68856b1cb171178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the user has closed the main window or requested a quit.  <br /></td></tr>
 <tr class="separator:a45edefc4959f4002d68856b1cb171178"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9787ecf2d64ff85c949f2ba24784a08" id="r_ad9787ecf2d64ff85c949f2ba24784a08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#ad9787ecf2d64ff85c949f2ba24784a08">init</a> () const</td></tr>
 <tr class="memdesc:ad9787ecf2d64ff85c949f2ba24784a08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the GUI and all registered windows. Call once before <code><a class="el" href="classdnf__composer_1_1Application.html#a0cafecfad7e6418c678c5196ae9e8fbd" title="Advance the simulation by one step and render all windows.">step()</a></code>.  <br /></td></tr>
@@ -139,9 +139,18 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:aae9db732b74d6028781bb63fbdfc43dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d44fa04caa6256d1abaca0398ece286" id="r_a5d44fa04caa6256d1abaca0398ece286"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a5d44fa04caa6256d1abaca0398ece286">getUiScalePct</a> ()</td></tr>
 <tr class="separator:a5d44fa04caa6256d1abaca0398ece286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a14de8c4ed8f99f2849553dac75128" id="r_a88a14de8c4ed8f99f2849553dac75128"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a88a14de8c4ed8f99f2849553dac75128">isQuitRequested</a> ()</td></tr>
+<tr class="memdesc:a88a14de8c4ed8f99f2849553dac75128"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true once <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">requestQuit()</a></code> has been called.  <br /></td></tr>
+<tr class="separator:a88a14de8c4ed8f99f2849553dac75128"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24c2fd485519f3eb60859afcca994d72" id="r_a24c2fd485519f3eb60859afcca994d72"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a24c2fd485519f3eb60859afcca994d72">registerSettingsHandler</a> ()</td></tr>
 <tr class="memdesc:a24c2fd485519f3eb60859afcca994d72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the application's ImGui settings handler (for persistence).  <br /></td></tr>
 <tr class="separator:a24c2fd485519f3eb60859afcca994d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad7bffe2ab56d73eb8e3f5065fd55ced" id="r_aad7bffe2ab56d73eb8e3f5065fd55ced"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced">requestQuit</a> ()</td></tr>
+<tr class="memdesc:aad7bffe2ab56d73eb8e3f5065fd55ced"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask the application to shut down at the end of the current frame.  <br /></td></tr>
+<tr class="separator:aad7bffe2ab56d73eb8e3f5065fd55ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ad3aeef619b535eb365f24c8df2ea45" id="r_a8ad3aeef619b535eb365f24c8df2ea45"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a8ad3aeef619b535eb365f24c8df2ea45">resetQuitRequestForTesting</a> ()</td></tr>
+<tr class="memdesc:a8ad3aeef619b535eb365f24c8df2ea45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the quit request. For tests only: a real process exits shortly after requesting a quit, but the flag is process-wide, so a test that sets it must restore it to avoid bleeding state into unrelated tests.  <br /></td></tr>
+<tr class="separator:a8ad3aeef619b535eb365f24c8df2ea45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a527c4e705f610b5efeee26a26e05a655" id="r_a527c4e705f610b5efeee26a26e05a655"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Application.html#a527c4e705f610b5efeee26a26e05a655">setUiScalePct</a> (float pct)</td></tr>
 <tr class="separator:a527c4e705f610b5efeee26a26e05a655"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -426,7 +435,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Return true if the user has closed the main window. </p>
+<p>Return true if the user has closed the main window or requested a quit. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">requestQuit()</a> </dd></dl>
 
 </div>
 </div>
@@ -473,6 +483,33 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a88a14de8c4ed8f99f2849553dac75128" name="a88a14de8c4ed8f99f2849553dac75128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88a14de8c4ed8f99f2849553dac75128">&#9670;&#160;</a></span>isQuitRequested()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dnf_composer::Application::isQuitRequested </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return true once <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">requestQuit()</a></code> has been called. </p>
+
+</div>
+</div>
 <a id="a24c2fd485519f3eb60859afcca994d72" name="a24c2fd485519f3eb60859afcca994d72"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a24c2fd485519f3eb60859afcca994d72">&#9670;&#160;</a></span>registerSettingsHandler()</h2>
 
@@ -507,6 +544,66 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_a24c2fd485519f3eb60859afcca994d72_icgraph.svg" width="448" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="aad7bffe2ab56d73eb8e3f5065fd55ced" name="aad7bffe2ab56d73eb8e3f5065fd55ced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad7bffe2ab56d73eb8e3f5065fd55ced">&#9670;&#160;</a></span>requestQuit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::Application::requestQuit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ask the application to shut down at the end of the current frame. </p>
+<p>The UI calls this instead of terminating the process directly (issue #122): a request makes <code><a class="el" href="classdnf__composer_1_1Application.html#a45edefc4959f4002d68856b1cb171178" title="Return true if the user has closed the main window or requested a quit.">hasGUIBeenClosed()</a></code> return true, so the ordinary main loop falls through to <code><a class="el" href="classdnf__composer_1_1Application.html#aed697a3cf19ba9a0735b29edd67e96f1" title="Tear down the GUI and close the simulation. Call once after the main loop.">close()</a></code> and every destructor runs normally. Existing loops need no change. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Application_aad7bffe2ab56d73eb8e3f5065fd55ced_icgraph.svg" width="439" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a8ad3aeef619b535eb365f24c8df2ea45" name="a8ad3aeef619b535eb365f24c8df2ea45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ad3aeef619b535eb365f24c8df2ea45">&#9670;&#160;</a></span>resetQuitRequestForTesting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::Application::resetQuitRequestForTesting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear the quit request. For tests only: a real process exits shortly after requesting a quit, but the flag is process-wide, so a test that sets it must restore it to avoid bleeding state into unrelated tests. </p>
 
 </div>
 </div>

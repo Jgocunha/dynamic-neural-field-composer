@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['x_0',['X',['../group__elements.html#gga2e0515a41d6b55d8c4f4d47e9d30cddfa02129bb861061d1a052c592e2dc6b383',1,'dnf_composer::element']]]
+  ['warning_0',['WARNING',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda32006df00ffc389221671e52a11132a9',1,'dnf_composer::tools::logger']]]
 ];

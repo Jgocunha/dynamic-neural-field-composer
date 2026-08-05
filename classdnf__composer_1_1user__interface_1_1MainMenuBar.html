@@ -86,16 +86,19 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::MainMenuBar:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1MainMenuBar__inherit__graph.svg" width="188" height="339"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1MainMenuBar__inherit__graph.svg" width="188" height="359"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::user_interface::MainMenuBar:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1MainMenuBar__coll__graph.svg" width="188" height="339"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1MainMenuBar__coll__graph.svg" width="188" height="359"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a202c68ca3b04416ee69b13a5068b24fd" id="r_a202c68ca3b04416ee69b13a5068b24fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a202c68ca3b04416ee69b13a5068b24fd">executeQuitAction</a> (<a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a> action)</td></tr>
+<tr class="memdesc:a202c68ca3b04416ee69b13a5068b24fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carry out the simulation-side effects of <code>action</code> (if any) and, unless <code>action</code> is <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754" title="Neither trigger fired this frame – no action.">QuitAction::None</a>, call <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">Application::requestQuit()</a></code>. Public (rather than an implementation detail of <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">render()</a>/handleShortcuts()) specifically so it can be driven directly from tests without a live ImGui context &ndash; it touches only <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> and the quit request, never ImGui.  <br /></td></tr>
+<tr class="separator:a202c68ca3b04416ee69b13a5068b24fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbf3a32e7cdbfb7d4afbc6b4f46ca872" id="r_acbf3a32e7cdbfb7d4afbc6b4f46ca872"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#acbf3a32e7cdbfb7d4afbc6b4f46ca872">MainMenuBar</a> (const <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html">MainMenuBar</a> &amp;)=delete</td></tr>
 <tr class="separator:acbf3a32e7cdbfb7d4afbc6b4f46ca872"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2144b104a3c36e6ec95ef8f633b15b46" id="r_a2144b104a3c36e6ec95ef8f633b15b46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a2144b104a3c36e6ec95ef8f633b15b46">MainMenuBar</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation)</td></tr>
@@ -216,6 +219,31 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a202c68ca3b04416ee69b13a5068b24fd" name="a202c68ca3b04416ee69b13a5068b24fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a202c68ca3b04416ee69b13a5068b24fd">&#9670;&#160;</a></span>executeQuitAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::user_interface::MainMenuBar::executeQuitAction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a>&#160;</td>
+          <td class="paramname"><em>action</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Carry out the simulation-side effects of <code>action</code> (if any) and, unless <code>action</code> is <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754" title="Neither trigger fired this frame – no action.">QuitAction::None</a>, call <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">Application::requestQuit()</a></code>. Public (rather than an implementation detail of <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">render()</a>/handleShortcuts()) specifically so it can be driven directly from tests without a live ImGui context &ndash; it touches only <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> and the quit request, never ImGui. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1MainMenuBar_a202c68ca3b04416ee69b13a5068b24fd_cgraph.svg" width="439" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="af94c2ac6c0b0af7506af0d1bdeab1fe3" name="af94c2ac6c0b0af7506af0d1bdeab1fe3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af94c2ac6c0b0af7506af0d1bdeab1fe3">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 

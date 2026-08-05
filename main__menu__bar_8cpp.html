@@ -77,16 +77,18 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">main_menu_bar.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="main__menu__bar_8h_source.html">user_interface/main_menu_bar.h</a>&quot;</code><br />
 <code>#include &lt;array&gt;</code><br />
+<code>#include &quot;<a class="el" href="application_8h_source.html">application/application.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for main_menu_bar.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="main__menu__bar_8cpp__incl.svg" width="2342" height="799"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="main__menu__bar_8cpp__incl.svg" width="2283" height="799"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -100,6 +102,12 @@ Namespaces</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:ac522925f4f9764870ea28a7fa5a5f36a" id="r_ac522925f4f9764870ea28a7fa5a5f36a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__menu__bar_8cpp.html#ac522925f4f9764870ea28a7fa5a5f36a">CTRL_KEY</a>&#160;&#160;&#160;&quot;Ctrl&quot;</td></tr>
 <tr class="separator:ac522925f4f9764870ea28a7fa5a5f36a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad0c1a4c286bfd471264bb1f26024ef07" id="r_ad0c1a4c286bfd471264bb1f26024ef07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ad0c1a4c286bfd471264bb1f26024ef07">dnf_composer::user_interface::decideQuitAction</a> (bool quitMenuItemClicked, bool ctrlQPressed) noexcept</td></tr>
+<tr class="memdesc:ad0c1a4c286bfd471264bb1f26024ef07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure decision function: given which quit trigger(s) fired this frame, decide what should happen. No ImGui, no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a>, no OS calls &ndash; so unlike <code><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">MainMenuBar::render()</a></code>/<code>handleShortcuts()</code>, it can be unit-tested headlessly (same pattern as <code><a class="el" href="namespacednf__composer_1_1user__interface.html#aff98fe422e79c1fe15eaaea696e67e05" title="Pick the plot type quick-populate should use for a given element.">quickPopulatePlotTypeFor()</a></code> in <a class="el" href="plot__control__window_8h.html">plot_control_window.h</a>). If both triggers somehow fire in the same frame, the menu item's save-before-closing behavior takes precedence (the safer of the two).  <br /></td></tr>
+<tr class="separator:ad0c1a4c286bfd471264bb1f26024ef07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ac522925f4f9764870ea28a7fa5a5f36a" name="ac522925f4f9764870ea28a7fa5a5f36a"></a>

@@ -78,6 +78,7 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">dnf_composer::user_interface Namespace Reference</div></div>
@@ -129,12 +130,24 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1StatusBarWindow.html">StatusBarWindow</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a6417eb3f1829939cda3d09e733751247" id="r_a6417eb3f1829939cda3d09e733751247"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a> { <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a86ca3050f739d1c40ab74378cc0e9351">SaveAndQuit</a>
+, <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247aed332b96121d34087a4eea2499858721">QuitOnly</a>
+ }</td></tr>
+<tr class="memdesc:a6417eb3f1829939cda3d09e733751247"><td class="mdescLeft">&#160;</td><td class="mdescRight">What a quit trigger (Quit menu item or Ctrl+Q shortcut) should do to the simulation before the application is signalled to close.  <a href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">More...</a><br /></td></tr>
+<tr class="separator:a6417eb3f1829939cda3d09e733751247"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ab340a065fe086aaed2dd6ae8f42069f0" id="r_ab340a065fe086aaed2dd6ae8f42069f0"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ab340a065fe086aaed2dd6ae8f42069f0">beginPanelFixed</a> (const char *id, const ImVec2 pos, const ImVec2 size)</td></tr>
 <tr class="separator:ab340a065fe086aaed2dd6ae8f42069f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47895935f5cf2f900c46e67c0dc33162" id="r_a47895935f5cf2f900c46e67c0dc33162"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a47895935f5cf2f900c46e67c0dc33162">beginParamTable</a> (const char *id)</td></tr>
 <tr class="separator:a47895935f5cf2f900c46e67c0dc33162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0c1a4c286bfd471264bb1f26024ef07" id="r_ad0c1a4c286bfd471264bb1f26024ef07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#ad0c1a4c286bfd471264bb1f26024ef07">decideQuitAction</a> (bool quitMenuItemClicked, bool ctrlQPressed) noexcept</td></tr>
+<tr class="memdesc:ad0c1a4c286bfd471264bb1f26024ef07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure decision function: given which quit trigger(s) fired this frame, decide what should happen. No ImGui, no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a>, no OS calls &ndash; so unlike <code><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">MainMenuBar::render()</a></code>/<code>handleShortcuts()</code>, it can be unit-tested headlessly (same pattern as <code><a class="el" href="namespacednf__composer_1_1user__interface.html#aff98fe422e79c1fe15eaaea696e67e05" title="Pick the plot type quick-populate should use for a given element.">quickPopulatePlotTypeFor()</a></code> in <a class="el" href="plot__control__window_8h.html">plot_control_window.h</a>). If both triggers somehow fire in the same frame, the menu item's save-before-closing behavior takes precedence (the safer of the two).  <br /></td></tr>
+<tr class="separator:ad0c1a4c286bfd471264bb1f26024ef07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6d342e4cc010fb3c1806665622d8dc2" id="r_af6d342e4cc010fb3c1806665622d8dc2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#af6d342e4cc010fb3c1806665622d8dc2">endPanel</a> ()</td></tr>
 <tr class="separator:af6d342e4cc010fb3c1806665622d8dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a349d611944459f237b8e4f65697714f8" id="r_a349d611944459f237b8e4f65697714f8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a349d611944459f237b8e4f65697714f8">endParamTable</a> ()</td></tr>
@@ -188,6 +201,41 @@ Variables</h2></td></tr>
 <tr class="memitem:acb9071b0e80f434141479b4543dd466a" id="r_acb9071b0e80f434141479b4543dd466a"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#acb9071b0e80f434141479b4543dd466a">s_pendingRenameOld</a></td></tr>
 <tr class="separator:acb9071b0e80f434141479b4543dd466a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a6417eb3f1829939cda3d09e733751247" name="a6417eb3f1829939cda3d09e733751247"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6417eb3f1829939cda3d09e733751247">&#9670;&#160;</a></span>QuitAction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">dnf_composer::user_interface::QuitAction</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What a quit trigger (Quit menu item or Ctrl+Q shortcut) should do to the simulation before the application is signalled to close. </p>
+<p>Background (issue #122): the menu used to call <code>std::exit(0)</code> directly from inside the render callback. That terminates the process without unwinding the stack &ndash; no destructors run, <code><a class="el" href="classdnf__composer_1_1Application.html#aed697a3cf19ba9a0735b29edd67e96f1" title="Tear down the GUI and close the simulation. Call once after the main loop.">Application::close()</a></code> never executes, and there is no way to unit-test it (you cannot assert on a dead process). The fix instead has the menu call <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">Application::requestQuit()</a></code>, which makes <code><a class="el" href="classdnf__composer_1_1Application.html#a45edefc4959f4002d68856b1cb171178" title="Return true if the user has closed the main window or requested a quit.">Application::hasGUIBeenClosed()</a></code> return true, so the ordinary main loop shuts down through its normal, already-correct path (<code><a class="el" href="classdnf__composer_1_1Application.html#aed697a3cf19ba9a0735b29edd67e96f1" title="Tear down the GUI and close the simulation. Call once after the main loop.">Application::close()</a></code>, then every local's destructor as <code><a class="el" href="dynamic-neural-field-composer-dynamic_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a></code> returns). Existing main loops keep working unchanged.</p>
+<p>This enum captures the two triggers' pre-existing (and deliberately different) behavior: the Quit menu item saves before closing; the Ctrl+Q shortcut does not. That asymmetry predates this fix and is preserved as-is &ndash; it is a pre-existing product decision, not part of issue #122's scope. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754" name="a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>Neither trigger fired this frame &ndash; no action. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6417eb3f1829939cda3d09e733751247a86ca3050f739d1c40ab74378cc0e9351" name="a6417eb3f1829939cda3d09e733751247a86ca3050f739d1c40ab74378cc0e9351"></a>SaveAndQuit&#160;</td><td class="fielddoc"><p>Quit menu item: save, close, and clean the simulation, then quit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6417eb3f1829939cda3d09e733751247aed332b96121d34087a4eea2499858721" name="a6417eb3f1829939cda3d09e733751247aed332b96121d34087a4eea2499858721"></a>QuitOnly&#160;</td><td class="fielddoc"><p>Ctrl+Q shortcut: quit without touching the simulation. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ab340a065fe086aaed2dd6ae8f42069f0" name="ab340a065fe086aaed2dd6ae8f42069f0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab340a065fe086aaed2dd6ae8f42069f0">&#9670;&#160;</a></span>beginPanelFixed()</h2>
@@ -254,6 +302,44 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad0c1a4c286bfd471264bb1f26024ef07" name="ad0c1a4c286bfd471264bb1f26024ef07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0c1a4c286bfd471264bb1f26024ef07">&#9670;&#160;</a></span>decideQuitAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a> dnf_composer::user_interface::decideQuitAction </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>quitMenuItemClicked</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ctrlQPressed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pure decision function: given which quit trigger(s) fired this frame, decide what should happen. No ImGui, no <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a>, no OS calls &ndash; so unlike <code><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">MainMenuBar::render()</a></code>/<code>handleShortcuts()</code>, it can be unit-tested headlessly (same pattern as <code><a class="el" href="namespacednf__composer_1_1user__interface.html#aff98fe422e79c1fe15eaaea696e67e05" title="Pick the plot type quick-populate should use for a given element.">quickPopulatePlotTypeFor()</a></code> in <a class="el" href="plot__control__window_8h.html">plot_control_window.h</a>). If both triggers somehow fire in the same frame, the menu item's save-before-closing behavior takes precedence (the safer of the two). </p>
 
 </div>
 </div>
