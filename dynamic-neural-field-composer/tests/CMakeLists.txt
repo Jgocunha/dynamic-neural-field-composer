@@ -60,6 +60,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             # (see the headless UI tests block for the rationale)
             # visualization
             "visualization/test_visualization.cpp"
+            "visualization/test_heatmap_dimensions.cpp"
             # user_interface
             "user_interface/test_plot_control_window.cpp"
             "user_interface/test_element_creation_error.cpp"

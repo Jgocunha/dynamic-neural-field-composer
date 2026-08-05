@@ -211,10 +211,41 @@ namespace dnf_composer::tools::math
 		}
 	}
 
+	/// @brief Gather @p contents at 1-based @p indices into @p out (circular extension helper).
+	///
+	/// @p indices are 1-based (a value of 1 selects `contents[0]`), as produced by
+	/// `createExtendedIndex()`. @p out must already be sized to `indices.size()`
+	/// (all current call sites pre-size a scratch buffer once in `init()`).
+	///
+	/// This sits on the convolution hot path (see the separable 2D pass around
+	/// `conv2d_separable`, and the per-step kernel elements that call it every
+	/// simulation tick), tuned for SIMD/auto-vectorization by #107. To avoid
+	/// putting a branch inside that tight copy loop, the whole index set is
+	/// validated **once, up front** (a single O(n) pass) instead of per element.
+	/// In intended usage `indices` come from `createExtendedIndex()` /
+	/// `computeKernelRange()` (which clamps the kernel range to at most half the
+	/// field size), so they are within `[1, contents.size()]` by construction;
+	/// this guard defends that invariant — e.g. against a stale `extIndex_x/y`
+	/// reused after the field was resized — instead of silently reading
+	/// `contents[-1]` or past the end (#121). On violation, logs an error and
+	/// fills @p out with `T()` rather than touching out-of-bounds memory.
 	template<typename T>
 	void obtainCircularVector_into(std::vector<T>& out, const std::vector<int>& indices,
 	                               const std::vector<T>& contents)
 	{
+		const std::size_t size = contents.size();
+		const bool allInRange = std::ranges::all_of(indices,
+			[size](int idx) { return idx >= 1 && static_cast<std::size_t>(idx) <= size; });
+
+		if (!allInRange) [[unlikely]]
+		{
+			logger::log(logger::LogLevel::ERROR,
+				"obtainCircularVector_into: index outside the valid 1.." + std::to_string(size) +
+				" range for contents; returning zeros to avoid an out-of-bounds read.");
+			std::ranges::fill(out, T());
+			return;
+		}
+
 		for (int i = 0; i < static_cast<int>(indices.size()); ++i) {
 			out[i] = contents[indices[i] - 1];
 }
@@ -349,10 +380,31 @@ namespace dnf_composer::tools::math
 		return derivative;
 	}
 
+	/// @brief Gather @p contents at 1-based @p indices into a newly-allocated vector.
+	///
+	/// Same circular-extension gather as obtainCircularVector_into(), returning a
+	/// fresh vector instead of writing into a caller-owned scratch buffer. See
+	/// obtainCircularVector_into() for the indexing convention, the hot-path
+	/// perf rationale for validating @p indices once up front rather than per
+	/// element, and the (#121) bounds-check background. On an out-of-range
+	/// index, logs an error and returns a zero-filled vector instead of reading
+	/// out of bounds.
 	template<typename T>
 	std::vector<T> obtainCircularVector(const std::vector<int>& indices, const std::vector<T>& contents)
 	{
 		std::vector<T> newContents(indices.size());
+		const std::size_t size = contents.size();
+		const bool allInRange = std::ranges::all_of(indices,
+			[size](int idx) { return idx >= 1 && static_cast<std::size_t>(idx) <= size; });
+
+		if (!allInRange) [[unlikely]]
+		{
+			logger::log(logger::LogLevel::ERROR,
+				"obtainCircularVector: index outside the valid 1.." + std::to_string(size) +
+				" range for contents; returning zeros to avoid an out-of-bounds read.");
+			return newContents; // value-initialized to T() already
+		}
+
 		for (int i = 0; i < indices.size(); i++) {
 			newContents[i] = contents[indices[i] - 1];
 }
