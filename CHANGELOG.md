@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- `Element`'s constructor logged an error and did a bare `return` when
+  `dimensionParameters.size` was non-positive, leaving `commonParameters` at its default
+  value and `components` completely empty instead of failing to construct. Callers then
+  hit a confusing `ELEM_COMP_NOT_FOUND` from `getComponentPtr("output")`, or saw
+  `getSize() == 0` and had downstream loops silently no-op, rather than learning at
+  construction time that the object was never valid. The constructor now throws
+  `Exception(ErrorCode::ELEM_INVALID_SIZE, ...)` instead, matching the validation
+  `GaussStimulus` already performs for its own parameters (#118)
 - `Application::enableKeyboardShortcuts()` and `Application::appendFonts()` bound
   `ImGui::GetIO()` — which returns `ImGuiIO&` — with `auto io = ...`, copying the
   struct by value. Every write through `io` (`ConfigFlags |=
@@ -21,19 +29,29 @@ All notable changes to this project will be documented in this file.
   drag-to-connect in builds with asserts compiled out. `EndCreate()` is now called
   unconditionally, matching upstream's own examples. Found by the new headless UI
   suite (#127)
-
 - Two logger tests passed or failed purely on the order the suites happened to run in.
   `Logger::minLogLevel` is process-wide state, and `tests/simulation/test_thread_safety.cpp`
   and `tests/validation/validation_common.h` raised it to `FATAL` without ever restoring
   it, silently suppressing the console output that later suites assert on. Both sites now
   use an RAII guard that restores the previous level on scope exit
-
 - The same class of shared-state problem inside `NodeGraphWindow`: its hover timers,
   EMA-smoothed colormap ranges, and pending click-to-click pin were function-local
   statics keyed by node id and element name, so two tests reusing an element name
   shared cache entries and results depended on test order. They now live in one
   place with a `NodeGraphWindow::resetTransientStateForTesting()` entry point that
   the UI test fixture calls between tests
+  - The issue-triage workflow closed newly filed issues as duplicates of themselves —
+  the issue list handed to Gemini for duplicate detection was fetched after the issue
+  was opened, so it contained the issue being triaged, and nothing rejected a
+  self-referential `duplicate_of` before closing. The triaged issue is now filtered out
+  of that list, and a close only happens when `duplicate_of` is numeric and refers to a
+  different issue. Secondary labels are also no longer word-split, so `good first issue`
+  and `help wanted` are applied as single labels instead of failing the step (#159)
+  - The `doc-sync` check went red on every open PR once the Gemini free tier's 20
+  requests a day were spent, reporting a quota error that said nothing about the PR
+  under review. Quota exhaustion is now tolerated with a warning. The gate fails
+  closed: an error that is not positively identified as a quota or rate limit — and
+  an empty one — still fails the job (#148)
 
 ### Added
 - Headless ImGui test harness (`tests/user_interface/ui_test_harness.h`) that drives
@@ -50,7 +68,6 @@ All notable changes to this project will be documented in this file.
   window set, the leak grew with each reopened simulation. The context is now held in a
   `unique_ptr` with a `DestroyEditor` deleter, so it is released on every exit path
   rather than depending on a destructor body remembering to do it (#115)
-### Added
 - `SigmoidFunction.ApplyAgreesWithOperatorCallAcrossRegimes`: pins `apply()` (the path
   `NeuralField::calculateOutput()` takes every step) to `operator()` within 1e-12 across
   five steepness/shift regimes. The two once disagreed — `apply()` computed in float32
@@ -64,20 +81,6 @@ All notable changes to this project will be documented in this file.
 - `tests/golden/test_golden_activation.cpp` still described `SigmoidFunction::apply()` as
   computing in float32 and the reference as mirroring that; both have been float64 for
   some time and `reference/ref_activation.h` already said so
-### Fixed
-- The issue-triage workflow closed newly filed issues as duplicates of themselves —
-  the issue list handed to Gemini for duplicate detection was fetched after the issue
-  was opened, so it contained the issue being triaged, and nothing rejected a
-  self-referential `duplicate_of` before closing. The triaged issue is now filtered out
-  of that list, and a close only happens when `duplicate_of` is numeric and refers to a
-  different issue. Secondary labels are also no longer word-split, so `good first issue`
-  and `help wanted` are applied as single labels instead of failing the step (#159)
-- The `doc-sync` check went red on every open PR once the Gemini free tier's 20
-  requests a day were spent, reporting a quota error that said nothing about the PR
-  under review. Quota exhaustion is now tolerated with a warning. The gate fails
-  closed: an error that is not positively identified as a quota or rate limit — and
-  an empty one — still fails the job (#148)
-### Documentation
 - `CONTRIBUTING.md` told contributors to run `build.bat` / `./build.sh` / `./build_macos.sh`
   from the repository root, but those scripts live in `dynamic-neural-field-composer/scripts/`,
   so every build command failed on a fresh clone. It also listed a GCC 11+ minimum while the
