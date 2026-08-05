@@ -77,6 +77,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classdnf__composer_1_1user__interface_1_1NodeGraphWindow-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">dnf_composer::user_interface::NodeGraphWindow Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
@@ -86,12 +87,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::NodeGraphWindow:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__inherit__graph.svg" width="223" height="359"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__inherit__graph.svg" width="242" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::user_interface::NodeGraphWindow:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__coll__graph.svg" width="223" height="359"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__coll__graph.svg" width="242" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -112,6 +113,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3cd44c7a9cc548d344477a8636797520"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b0ec6bb771a9431f49fd42158d369d5" id="r_a8b0ec6bb771a9431f49fd42158d369d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html#a8b0ec6bb771a9431f49fd42158d369d5">~NodeGraphWindow</a> () override=default</td></tr>
 <tr class="separator:a8b0ec6bb771a9431f49fd42158d369d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ae451ff068be9f4dcadb277be79811ab0" id="r_ae451ff068be9f4dcadb277be79811ab0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html#ae451ff068be9f4dcadb277be79811ab0">resetTransientStateForTesting</a> ()</td></tr>
+<tr class="memdesc:ae451ff068be9f4dcadb277be79811ab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the window's cross-frame UI caches (hover timers, EMA-smoothed colormap ranges, and any half-finished click-to-click connection).  <br /></td></tr>
+<tr class="separator:ae451ff068be9f4dcadb277be79811ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a49c53296e1eaceae9a631d3d5f85dff4" name="a49c53296e1eaceae9a631d3d5f85dff4"></a>
@@ -309,6 +316,34 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae451ff068be9f4dcadb277be79811ab0" name="ae451ff068be9f4dcadb277be79811ab0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae451ff068be9f4dcadb277be79811ab0">&#9670;&#160;</a></span>resetTransientStateForTesting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::user_interface::NodeGraphWindow::resetTransientStateForTesting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear the window's cross-frame UI caches (hover timers, EMA-smoothed colormap ranges, and any half-finished click-to-click connection). </p>
+<p>These caches are keyed by node id and element name and intentionally outlive a single frame, so in a test process two tests that reuse an element name would otherwise share smoothed state and become order-dependent. Call this between tests; it has no use in application code, where the caches are meant to persist. </p>
 
 </div>
 </div>
