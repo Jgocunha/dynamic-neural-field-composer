@@ -4,9 +4,12 @@
 
 #include "application/application.h"
 
+#include <imgui-platform-kit/colour_palette.h>
+
 #include "application/style.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 #include "user_interface/fonts/fa.h"
+#include "user_interface/log_window.h"
 #include "tools/utils.h"
 
 namespace dnf_composer
@@ -27,6 +30,16 @@ namespace dnf_composer
 
 	void Application::init() const
 	{
+		// Wire the logger to the GUI (issue #123): tools/logger has no dependency on
+		// the UI, so the UI hands it a callback here instead. Registering before any
+		// other init step means every log() call from this point on (including the
+		// "initialized successfully" message below) also reaches the log window,
+		// matching the previous direct-call behavior exactly.
+		tools::logger::Logger::setUiSink([](const tools::logger::LogLevel level, const std::string& message)
+		{
+			user_interface::LogWindow::addLog(user_interface::getLogLevelColorCodeGui(level), "%s", message.c_str());
+		});
+
 		simulation->init();
 		gui->initialize();
 

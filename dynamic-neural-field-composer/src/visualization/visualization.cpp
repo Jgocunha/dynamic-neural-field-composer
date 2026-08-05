@@ -2,6 +2,22 @@
 
 #include <format>
 
+// ImGui used directly below (SetNextWindowPos/Size, GetMainViewport, ...).
+// Previously reached transitively through tools/logger.h -> imgui-platform-kit/
+// log_window.h; that path is gone now that tools/ no longer depends on the GUI
+// stack (#123), so this file pulls in what it actually uses, same as
+// lineplot.cpp already does.
+#include "application/application.h"
+
+// application.h drags in <Windows.h> (via imgui-platform-kit), which #defines
+// the ERROR macro -- it shadows LogLevel::ERROR used below. tools/logger.h
+// undefines it too, but only for includes already processed by the time it
+// runs; application.h is included after it here, so redo the undef locally
+// (same guard as logger.h).
+#ifdef ERROR
+#undef ERROR
+#endif
+
 namespace dnf_composer
 {
 	extern ImFont* g_BlackLargeFont;

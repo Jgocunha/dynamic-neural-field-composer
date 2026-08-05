@@ -2,9 +2,6 @@
 
 #include <mutex>
 
-#include "application/application.h"
-#include "user_interface/log_window.h"
-
 namespace dnf_composer::tools::logger
 {
     std::atomic<LogLevel> Logger::minLogLevel = LogLevel::DEBUG;
@@ -13,11 +10,23 @@ namespace dnf_composer::tools::logger
     {
         // Serializes the actual emit (console write / GUI push_back) so concurrent
         // log() calls from worker threads don't interleave or corrupt the sinks.
-        // Formatting happens outside the lock; only the write is guarded.
+        // Formatting happens outside the lock; only the write is guarded. Also
+        // guards writes/reads of uiSink() below, since setUiSink() and log_ui()
+        // can race the same way.
         std::mutex& logSinkMutex()
         {
             static std::mutex m;
             return m;
+        }
+
+        // The UI-registered callback for GUI-destined messages. Empty until the UI
+        // layer calls Logger::setUiSink() (normally once, at startup) -- log_ui()
+        // is a no-op until then, which is exactly what keeps tools/ (and headless
+        // test builds) free of any GUI/application dependency.
+        UiLogSink& uiSink()
+        {
+            static UiLogSink sink;
+            return sink;
         }
     }
 
@@ -42,7 +51,6 @@ namespace dnf_composer::tools::logger
 
         const std::string levelStr = getLogLevelText(logLevel);
         const std::string prefixStr = "<dnf-composer> " + levelStr;
-        const ImVec4 color = getLogLevelColorCodeGui(logLevel);
 
         switch (outputMode)
         {
@@ -59,7 +67,7 @@ namespace dnf_composer::tools::logger
 
                 std::lock_guard<std::mutex> lock(logSinkMutex());
                 log_cmd(consoleOss.str());
-                log_ui(color, guiOss.str());
+                log_ui(logLevel, guiOss.str());
             }
             break;
         case LogOutputMode::CONSOLE:
@@ -78,7 +86,7 @@ namespace dnf_composer::tools::logger
                 oss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
 
                 std::lock_guard<std::mutex> lock(logSinkMutex());
-                log_ui(color, oss.str());
+                log_ui(logLevel, oss.str());
             }
             break;
         default:
@@ -92,9 +100,17 @@ namespace dnf_composer::tools::logger
         std::cout << finalMessage_cmd << '\n';
     }
 
-    void Logger::log_ui(const ImVec4 color, const std::string& message)
+    void Logger::log_ui(const LogLevel level, const std::string& message)
     {
-        user_interface::LogWindow::addLog(color, "%s", message.c_str());
+        if (uiSink()) {
+            uiSink()(level, message);
+        }
+    }
+
+    void Logger::setUiSink(UiLogSink sink)
+    {
+        std::lock_guard<std::mutex> lock(logSinkMutex());
+        uiSink() = std::move(sink);
     }
 
     void log(const LogLevel level, const std::string& message, const LogOutputMode mode)
@@ -121,26 +137,6 @@ namespace dnf_composer::tools::logger
         case ERROR:
         case FATAL:     return"\033[91m";  // Red
         default:        return "\033[0m";
-        }
-    }
-
-    ImVec4 Logger::getLogLevelColorCodeGui(const LogLevel level)
-    {
-        ImVec4 currentTextColor = imgui_kit::colours::Gray;
-        if (ImGui::GetCurrentContext() != nullptr)
-        {
-            const ImGuiStyle& style = ImGui::GetStyle();
-            currentTextColor = style.Colors[ImGuiCol_Text];
-        }
-
-        switch (level)
-        {
-        case DEBUG:     return imgui_kit::colours::Green;
-        case INFO:      return imgui_kit::colours::White;
-        case WARNING:   return imgui_kit::colours::Yellow;
-        case ERROR:
-        case FATAL:     return imgui_kit::colours::Red;
-        default:        return currentTextColor;
         }
     }
 

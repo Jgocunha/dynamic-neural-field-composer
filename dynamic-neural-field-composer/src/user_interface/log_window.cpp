@@ -1,9 +1,31 @@
 #include "user_interface/log_window.h"
 
 #include <array>
+#include <imgui-platform-kit/colour_palette.h>
 
 namespace dnf_composer::user_interface
 {
+	ImVec4 getLogLevelColorCodeGui(const tools::logger::LogLevel level)
+	{
+		ImVec4 currentTextColor = imgui_kit::colours::Gray;
+		if (ImGui::GetCurrentContext() != nullptr)
+		{
+			const ImGuiStyle& style = ImGui::GetStyle();
+			currentTextColor = style.Colors[ImGuiCol_Text];
+		}
+
+		using tools::logger::LogLevel;
+		switch (level)
+		{
+		case LogLevel::DEBUG:     return imgui_kit::colours::Green;
+		case LogLevel::INFO:      return imgui_kit::colours::White;
+		case LogLevel::WARNING:   return imgui_kit::colours::Yellow;
+		case LogLevel::ERROR:
+		case LogLevel::FATAL:     return imgui_kit::colours::Red;
+		default:                  return currentTextColor;
+		}
+	}
+
 	LogWindow::LogWindow()
 	{
    		isWindowActive = false;

@@ -8,6 +8,7 @@
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "application/application.h"
+#include "tools/logger.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_MonoMediumFont;
@@ -19,6 +20,16 @@ namespace dnf_composer::user_interface
         std::string message;
         ImVec4 color;
     };
+
+    /// @brief Map a logger severity to the ImGui text color used in the log window.
+    ///
+    /// Color is a rendering concern, so it lives here rather than in tools/logger —
+    /// the logger only ever hands the UI a @c LogLevel; the UI decides how to
+    /// draw it (issue #123).
+    /// @param level Severity to look up.
+    /// @return An accent color for DEBUG/WARNING/ERROR/FATAL; for INFO, the
+    ///         current ImGui text color if a context exists, otherwise gray.
+    ImVec4 getLogLevelColorCodeGui(tools::logger::LogLevel level);
 
     class LogWindow final : public imgui_kit::UserInterfaceWindow
 	{
