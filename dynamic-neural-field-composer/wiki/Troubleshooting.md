@@ -68,6 +68,8 @@ Thrown from the `GaussStimulus`/`GaussStimulus2D`/`TimedGaussStimulus`/`TimedGau
 
 `ErrorCode::ELEM_INVALID_SIZE`, thrown e.g. from `Collapse`/`Expand` when the configured dimensions are inconsistent with the axis being kept/broadcast. Double-check that a `Collapse`'s own (1D) output size matches the kept axis of its `inputDimensions`, and that an `Expand`'s profile-axis size matches its 1D input's size — see [Element Reference → Collapse](Element-Reference#collapse) and [→ Expand](Element-Reference#expand).
 
+It is also thrown directly from the base `Element` constructor (so from **any** element type, not just `Collapse`/`Expand`) if `ElementCommonParameters.dimensionParameters.size` is not positive. In practice this can only happen if an `ElementDimensions` that was already validated at construction is mutated afterward (its fields are public) into an invalid state before being handed to an element's constructor — `ElementDimensions`'s own constructors already reject a non-positive extent/step/sample-count, so a size `<= 0` can no longer be produced through them. Previously this path logged an `ERROR` and silently produced a broken element (empty `components`, so `getComponentPtr("output")` failed with a confusing `ELEM_COMP_NOT_FOUND` later, or `getSize()` returned `0` and downstream loops silently no-op); the constructor now fails loudly at the point of construction instead.
+
 ### `ERROR`: "Input '...' has a different size than '...'."
 
 Logged (not thrown) from `Element::addInput()` at `ERROR` level when you connect two elements whose component sizes don't match — the connection is silently rejected (`addInput` returns without throwing, so check your console/log output if a wire-up seems to have no effect).

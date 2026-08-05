@@ -131,3 +131,67 @@ To add a new test file:
 1. Create `tests/test_my_module.cpp`
 2. Add it to the `add_executable(dnf_composer_tests ...)` list in `tests/CMakeLists.txt`
 3. Rebuild — `gtest_discover_tests` will pick it up automatically
+
+**Exception — auto-discovered directories.** Files dropped into `tests/golden/`,
+`tests/user_interface/` and `tests/visualization/` do **not** need a `CMakeLists.txt`
+edit: those directories are globbed with `CONFIGURE_DEPENDS`, so a new `.cpp` is picked
+up on the next build. (This keeps contributors working in parallel from all editing the
+same list.) You still need to re-run `cmake` for the glob to be re-evaluated.
+
+---
+
+## Headless UI tests
+
+`user_interface/` and `visualization/` code is exercised *for real* — the tests call the
+actual `render()` methods, with no window and no OpenGL context — via the harness in
+`tests/user_interface/ui_test_harness.h`:
+
+```cpp
+#include "ui_test_harness.h"
+#include "user_interface/log_window.h"
+
+TEST(LogWindowTest, RendersWithoutAWindow)
+{
+    test::HeadlessImGui gui;                   // headless ImGui context (RAII)
+    user_interface::LogWindow window;
+    gui.frame([&] { window.render(); });       // one real render call
+
+    gui.frames(2, [&] { window.render(); });   // or several — catches state
+                                               // that only appears after frame 1
+}
+```
+
+Notes:
+
+- `HeadlessImGui` sets `io.DisplaySize`, enables
+  `ImGuiBackendFlags_RendererHasTextures`, and assigns the font globals — ImGui
+  asserts without these. It creates and destroys the context itself, so just declare
+  one per test.
+- Anything drawing ImGui commands must run **inside** a frame.
+- ImGui uses 16-bit vertex indices, so keep test fields small (a 20×20 2D field can
+  exceed the 64k index limit when rendered as a heatmap; 10×10 is safe).
+
+---
+
+## Global state in tests
+
+A few pieces of process-wide state outlive an individual test, so a test that changes
+one and does not put it back changes the behaviour of every test that runs after it —
+which makes suites pass or fail depending only on the order they happen to run in.
+
+The logger threshold is the main one. Do **not** call `Logger::setMinLogLevel()` bare;
+use the RAII guard in `tests/common/scoped_min_log_level.h`, which restores the previous
+value on scope exit (including when a test fails or throws):
+
+```cpp
+#include "scoped_min_log_level.h"
+
+TEST(MySuite, StaysQuietWithoutLeaking)
+{
+    const dnf_composer::test::ScopedMinLogLevel quiet{ LogLevel::FATAL };
+    // ... noisy work ...
+}   // previous level restored here
+```
+
+For the validation suite, `silenceLogging()` returns the guard — keep it alive:
+`const auto quiet = silenceLogging();`

@@ -1,6 +1,8 @@
 #include "user_interface/main_menu_bar.h"
 #include <array>
 
+#include "application/application.h"
+
 #ifdef __APPLE__
     #define CTRL_KEY "Cmd"
 #else
@@ -10,9 +12,41 @@
 
 namespace dnf_composer::user_interface
 {
+	QuitAction decideQuitAction(const bool quitMenuItemClicked, const bool ctrlQPressed) noexcept
+	{
+		if (quitMenuItemClicked)
+		{
+			return QuitAction::SaveAndQuit;
+		}
+		if (ctrlQPressed)
+		{
+			return QuitAction::QuitOnly;
+		}
+		return QuitAction::None;
+	}
+
 	MainMenuBar::MainMenuBar(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
 	{}
+
+	void MainMenuBar::executeQuitAction(const QuitAction action)
+	{
+		switch (action)
+		{
+		case QuitAction::SaveAndQuit:
+			simulation->save();
+			simulation->close();
+			simulation->clean();
+			Application::requestQuit();
+			break;
+		case QuitAction::QuitOnly:
+			Application::requestQuit();
+			break;
+		case QuitAction::None:
+		default:
+			break;
+		}
+	}
 
 	void MainMenuBar::render()
 	{
@@ -52,10 +86,7 @@ namespace dnf_composer::user_interface
                 }
                 if (ImGui::MenuItem("Quit", CTRL_KEY "+Q"))
                 {
-                    simulation->save();
-	                simulation->close();
-					simulation->clean();
-                    std::exit(0);
+                    executeQuitAction(decideQuitAction(true, false));
                 }
                 ImGui::EndMenu();
             }
@@ -330,7 +361,7 @@ namespace dnf_composer::user_interface
 	    }
 	    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Q))
 	    {
-	        std::exit(0);
+	        executeQuitAction(decideQuitAction(false, true));
 	    }
 
 	    // Zoom in/out through presets
