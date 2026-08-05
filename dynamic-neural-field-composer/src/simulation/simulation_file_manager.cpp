@@ -735,25 +735,29 @@ namespace dnf_composer
 	    	{
 	        case element::NEURAL_FIELD:
 	            {
-		            const double tau = elementJson["tau"];
-		            const double restingLevel = elementJson["restingLevel"];
+		            const double tau = elementJson.at("tau");
+		            const double restingLevel = elementJson.at("restingLevel");
 
-		            auto activationFunctionJson = elementJson["activationFunction"];
+		            // "activationFunction" is genuinely optional -- a file that omits it
+		            // falls back to the default SigmoidFunction(0.0, 10.0) below. Every
+		            // other key in this switch is required, so it is the only branch
+		            // guarded with contains() instead of at().
 		            std::unique_ptr<element::ActivationFunction> activationFunction;
-		            if (!activationFunctionJson.is_null()) {
-		                std::string activationFunctionType = activationFunctionJson["type"];
+		            if (elementJson.contains("activationFunction") && !elementJson["activationFunction"].is_null()) {
+		                const auto& activationFunctionJson = elementJson["activationFunction"];
+		                const std::string activationFunctionType = activationFunctionJson.at("type");
 		                if (activationFunctionType == "heaviside") {
-		                    const double x_shift = activationFunctionJson["x_shift"];
+		                    const double x_shift = activationFunctionJson.at("x_shift");
 		                    activationFunction = std::make_unique<element::HeavisideFunction>(x_shift);
 		                }
 		                else if (activationFunctionType == "sigmoid") {
-		                    const double x_shift = activationFunctionJson["x_shift"];
-		                    const double steepness = activationFunctionJson["steepness"];
+		                    const double x_shift = activationFunctionJson.at("x_shift");
+		                    const double steepness = activationFunctionJson.at("steepness");
 		                    activationFunction = std::make_unique<element::SigmoidFunction>(x_shift, steepness);
 		                }
 		                else if (activationFunctionType == "abs_sigmoid") {
-		                    const double x_shift = activationFunctionJson["x_shift"];
-		                    const double beta = activationFunctionJson["beta"];
+		                    const double x_shift = activationFunctionJson.at("x_shift");
+		                    const double beta = activationFunctionJson.at("beta");
 		                    activationFunction = std::make_unique<element::AbsSigmoidFunction>(x_shift, beta);
 		                }
 		            }
@@ -770,7 +774,7 @@ namespace dnf_composer
 	        	break;
             case element::NORMAL_NOISE:
             {
-                const double amplitude = elementJson["amplitude"];
+                const double amplitude = elementJson.at("amplitude");
 
                 auto normalNoise = std::make_shared<element::NormalNoise>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -781,9 +785,9 @@ namespace dnf_composer
             break;
             case element::CORRELATED_NORMAL_NOISE:
             {
-                const double amplitude = elementJson["amplitude"];
-                const double width = elementJson["width"];
-                const bool circular = elementJson["circular"];
+                const double amplitude = elementJson.at("amplitude");
+                const double width = elementJson.at("width");
+                const bool circular = elementJson.at("circular");
 
                 auto cnn = std::make_shared<element::CorrelatedNormalNoise>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -794,11 +798,11 @@ namespace dnf_composer
             break;
 	        case element::GAUSS_KERNEL:
             {
-                const double amplitude = elementJson["amplitude"];
-                const double width = elementJson["width"];
-                const bool circular = elementJson["circular"];
-                const bool normalized = elementJson["normalized"];
-                const double amplitudeGlobal = elementJson["amplitudeGlobal"];
+                const double amplitude = elementJson.at("amplitude");
+                const double width = elementJson.at("width");
+                const bool circular = elementJson.at("circular");
+                const bool normalized = elementJson.at("normalized");
+                const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
 
                 auto kernel = std::make_shared<element::GaussKernel>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -809,13 +813,13 @@ namespace dnf_composer
             break;
 	        case element::MEXICAN_HAT_KERNEL:
             {
-                const double amplitudeExc = elementJson["amplitudeExc"];
-                const double widthExc = elementJson["widthExc"];
-                const double amplitudeInh = elementJson["amplitudeInh"];
-                const double widthInh = elementJson["widthInh"];
-                const double amplitudeGlobal = elementJson["amplitudeGlobal"];
-                const bool circular = elementJson["circular"];
-                const bool normalized = elementJson["normalized"];
+                const double amplitudeExc = elementJson.at("amplitudeExc");
+                const double widthExc = elementJson.at("widthExc");
+                const double amplitudeInh = elementJson.at("amplitudeInh");
+                const double widthInh = elementJson.at("widthInh");
+                const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
+                const bool circular = elementJson.at("circular");
+                const bool normalized = elementJson.at("normalized");
 
                 auto kernel = std::make_shared<element::MexicanHatKernel>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -826,11 +830,11 @@ namespace dnf_composer
             break;
 	        case element::GAUSS_STIMULUS:
             {
-                const double amplitude = elementJson["amplitude"];
-                const double width = elementJson["width"];
-                const double position = elementJson["position"];
-                const bool circular = elementJson["circular"];
-                const bool normalized = elementJson["normalized"];
+                const double amplitude = elementJson.at("amplitude");
+                const double width = elementJson.at("width");
+                const double position = elementJson.at("position");
+                const bool circular = elementJson.at("circular");
+                const bool normalized = elementJson.at("normalized");
 
                 auto stimulus = std::make_shared<element::GaussStimulus>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -841,11 +845,19 @@ namespace dnf_composer
             break;
 	        case element::FIELD_COUPLING:
             {
-                const double learningRate = elementJson["learningRate"];
-                const LearningRule learningRule = elementJson["learningRule"];
-                const double scalar = elementJson["scalar"];
-                const int input_x_max = elementJson["input_x_max"];
-                const double input_d_x = elementJson["input_d_x"];
+                const double learningRate = elementJson.at("learningRate");
+                const LearningRule learningRule = elementJson.at("learningRule");
+                const double scalar = elementJson.at("scalar");
+                // Unlike the keys above, the input field's own dimensions have a genuine
+                // default: FieldCouplingParameters defaults inputFieldDimensions to
+                // ElementDimensions{} (x_max 100, d_x 1.0) when none is supplied, so an
+                // older file that omits these two keys still loads with that default
+                // rather than being rejected as malformed.
+                const element::ElementDimensions defaultInputDimensions{};
+                const int input_x_max = elementJson.contains("input_x_max")
+                    ? elementJson["input_x_max"].get<int>() : defaultInputDimensions.x_max;
+                const double input_d_x = elementJson.contains("input_d_x")
+                    ? elementJson["input_d_x"].get<double>() : defaultInputDimensions.d_x;
                 auto coupling = std::make_shared<element::FieldCoupling>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
                     element::FieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), learningRule, scalar, learningRate)
@@ -855,10 +867,15 @@ namespace dnf_composer
             break;
 	        case element::GAUSS_FIELD_COUPLING:
             {
-				const bool circular = elementJson["circular"];
-                const bool normalized = elementJson["normalized"];
-                const int input_x_max = elementJson["input_x_max"];
-                const double input_d_x = elementJson["input_d_x"];
+				const bool circular = elementJson.at("circular");
+                const bool normalized = elementJson.at("normalized");
+                // Same genuine default as FIELD_COUPLING above: GaussFieldCouplingParameters
+                // defaults inputFieldDimensions to ElementDimensions{} (x_max 100, d_x 1.0).
+                const element::ElementDimensions defaultInputDimensions{};
+                const int input_x_max = elementJson.contains("input_x_max")
+                    ? elementJson["input_x_max"].get<int>() : defaultInputDimensions.x_max;
+                const double input_d_x = elementJson.contains("input_d_x")
+                    ? elementJson["input_d_x"].get<double>() : defaultInputDimensions.d_x;
 
                 std::vector<element::GaussCoupling> couplings;
                 if (elementJson.contains("couplings") && elementJson["couplings"].is_array())
@@ -883,12 +900,12 @@ namespace dnf_composer
             break;
 	        case element::OSCILLATORY_KERNEL:
 		        {
-			        const double decay = elementJson["decay"];
-			        const double zeroCrossings = elementJson["zeroCrossings"];
-			        const double amplitude = elementJson["amplitude"];
-                    const double amplitudeGlobal = elementJson["amplitudeGlobal"];
-			        const bool circular = elementJson["circular"];
-			        const bool normalized = elementJson["normalized"];
+			        const double decay = elementJson.at("decay");
+			        const double zeroCrossings = elementJson.at("zeroCrossings");
+			        const double amplitude = elementJson.at("amplitude");
+                    const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
+			        const bool circular = elementJson.at("circular");
+			        const bool normalized = elementJson.at("normalized");
 
                     auto kernel = std::make_shared<element::OscillatoryKernel>(
 				        element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -899,12 +916,12 @@ namespace dnf_composer
             break;
         case element::ASYMMETRIC_GAUSS_KERNEL:
         {
-            const double width           = elementJson["width"];
-            const double amplitude       = elementJson["amplitude"];
-            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
-            const double timeShift       = elementJson["timeShift"];
-            const bool   circular        = elementJson["circular"];
-            const bool   normalized      = elementJson["normalized"];
+            const double width           = elementJson.at("width");
+            const double amplitude       = elementJson.at("amplitude");
+            const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
+            const double timeShift       = elementJson.at("timeShift");
+            const bool   circular        = elementJson.at("circular");
+            const bool   normalized      = elementJson.at("normalized");
 
             auto kernel = std::make_shared<element::AsymmetricGaussKernel>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -915,8 +932,8 @@ namespace dnf_composer
         break;
         case element::BOOST_STIMULUS:
         {
-            const double amplitude = elementJson["amplitude"];
-            const bool isActive = elementJson["isActive"];
+            const double amplitude = elementJson.at("amplitude");
+            const bool isActive = elementJson.at("isActive");
 
             auto boostStimulus = std::make_shared<element::BoostStimulus>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -927,9 +944,9 @@ namespace dnf_composer
         break;
         case element::MEMORY_TRACE:
         {
-            const double tauBuild  = elementJson["tauBuild"];
-            const double tauDecay  = elementJson["tauDecay"];
-            const double threshold = elementJson["threshold"];
+            const double tauBuild  = elementJson.at("tauBuild");
+            const double tauDecay  = elementJson.at("tauDecay");
+            const double threshold = elementJson.at("threshold");
 
             auto memoryTrace = std::make_shared<element::MemoryTrace>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -940,25 +957,26 @@ namespace dnf_composer
         break;
         case element::NEURAL_FIELD_2D:
         {
-            const double tau = elementJson["tau"];
-            const double restingLevel = elementJson["restingLevel"];
+            const double tau = elementJson.at("tau");
+            const double restingLevel = elementJson.at("restingLevel");
 
-            auto activationFunctionJson = elementJson["activationFunction"];
+            // Same optional-with-default treatment as NEURAL_FIELD above.
             std::unique_ptr<element::ActivationFunction> activationFunction;
-            if (!activationFunctionJson.is_null()) {
-                std::string activationFunctionType = activationFunctionJson["type"];
+            if (elementJson.contains("activationFunction") && !elementJson["activationFunction"].is_null()) {
+                const auto& activationFunctionJson = elementJson["activationFunction"];
+                const std::string activationFunctionType = activationFunctionJson.at("type");
                 if (activationFunctionType == "heaviside") {
-                    double x_shift = activationFunctionJson["x_shift"];
+                    const double x_shift = activationFunctionJson.at("x_shift");
                     activationFunction = std::make_unique<element::HeavisideFunction>(x_shift);
                 }
                 else if (activationFunctionType == "sigmoid") {
-                    double x_shift = activationFunctionJson["x_shift"];
-                    double steepness = activationFunctionJson["steepness"];
+                    const double x_shift = activationFunctionJson.at("x_shift");
+                    const double steepness = activationFunctionJson.at("steepness");
                     activationFunction = std::make_unique<element::SigmoidFunction>(x_shift, steepness);
                 }
                 else if (activationFunctionType == "abs_sigmoid") {
-                    const double x_shift = activationFunctionJson["x_shift"];
-                    const double beta = activationFunctionJson["beta"];
+                    const double x_shift = activationFunctionJson.at("x_shift");
+                    const double beta = activationFunctionJson.at("beta");
                     activationFunction = std::make_unique<element::AbsSigmoidFunction>(x_shift, beta);
                 }
             }
@@ -974,12 +992,12 @@ namespace dnf_composer
         break;
         case element::GAUSS_STIMULUS_2D:
         {
-            const double width      = elementJson["width"];
-            const double amplitude  = elementJson["amplitude"];
-            const double position_x = elementJson["position_x"];
-            const double position_y = elementJson["position_y"];
-            const bool circular     = elementJson["circular"];
-            const bool normalized   = elementJson["normalized"];
+            const double width      = elementJson.at("width");
+            const double amplitude  = elementJson.at("amplitude");
+            const double position_x = elementJson.at("position_x");
+            const double position_y = elementJson.at("position_y");
+            const bool circular     = elementJson.at("circular");
+            const bool normalized   = elementJson.at("normalized");
 
             auto gs = std::make_shared<element::GaussStimulus2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -990,11 +1008,11 @@ namespace dnf_composer
         break;
         case element::GAUSS_KERNEL_2D:
         {
-            const double width           = elementJson["width"];
-            const double amplitude       = elementJson["amplitude"];
-            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
-            const bool circular          = elementJson["circular"];
-            const bool normalized        = elementJson["normalized"];
+            const double width           = elementJson.at("width");
+            const double amplitude       = elementJson.at("amplitude");
+            const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
+            const bool circular          = elementJson.at("circular");
+            const bool normalized        = elementJson.at("normalized");
 
             auto gk = std::make_shared<element::GaussKernel2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1005,13 +1023,13 @@ namespace dnf_composer
         break;
         case element::MEXICAN_HAT_KERNEL_2D:
         {
-            const double widthExc        = elementJson["widthExc"];
-            const double amplitudeExc    = elementJson["amplitudeExc"];
-            const double widthInh        = elementJson["widthInh"];
-            const double amplitudeInh    = elementJson["amplitudeInh"];
-            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
-            const bool circular          = elementJson["circular"];
-            const bool normalized        = elementJson["normalized"];
+            const double widthExc        = elementJson.at("widthExc");
+            const double amplitudeExc    = elementJson.at("amplitudeExc");
+            const double widthInh        = elementJson.at("widthInh");
+            const double amplitudeInh    = elementJson.at("amplitudeInh");
+            const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
+            const bool circular          = elementJson.at("circular");
+            const bool normalized        = elementJson.at("normalized");
 
             auto mh = std::make_shared<element::MexicanHatKernel2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1022,7 +1040,7 @@ namespace dnf_composer
         break;
         case element::NORMAL_NOISE_2D:
         {
-            const double amplitude = elementJson["amplitude"];
+            const double amplitude = elementJson.at("amplitude");
 
             auto nn = std::make_shared<element::NormalNoise2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1033,12 +1051,12 @@ namespace dnf_composer
         break;
         case element::OSCILLATORY_KERNEL_2D:
         {
-            const double amplitude       = elementJson["amplitude"];
-            const double decay           = elementJson["decay"];
-            const double zeroCrossings   = elementJson["zeroCrossings"];
-            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
-            const bool circular          = elementJson["circular"];
-            const bool normalized        = elementJson["normalized"];
+            const double amplitude       = elementJson.at("amplitude");
+            const double decay           = elementJson.at("decay");
+            const double zeroCrossings   = elementJson.at("zeroCrossings");
+            const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
+            const bool circular          = elementJson.at("circular");
+            const bool normalized        = elementJson.at("normalized");
 
             auto ok = std::make_shared<element::OscillatoryKernel2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1049,11 +1067,11 @@ namespace dnf_composer
         break;
         case element::TIMED_GAUSS_STIMULUS:
         {
-            const double width     = elementJson["width"];
-            const double amplitude = elementJson["amplitude"];
-            const double position  = elementJson["position"];
-            const bool circular    = elementJson["circular"];
-            const bool normalized  = elementJson["normalized"];
+            const double width     = elementJson.at("width");
+            const double amplitude = elementJson.at("amplitude");
+            const double position  = elementJson.at("position");
+            const bool circular    = elementJson.at("circular");
+            const bool normalized  = elementJson.at("normalized");
             std::vector<std::pair<double, double>> onTimes;
             if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array()) {
                 for (const auto& pair : elementJson["onTimes"]) {
@@ -1070,12 +1088,12 @@ namespace dnf_composer
         break;
         case element::TIMED_GAUSS_STIMULUS_2D:
         {
-            const double width      = elementJson["width"];
-            const double amplitude  = elementJson["amplitude"];
-            const double position_x = elementJson["position_x"];
-            const double position_y = elementJson["position_y"];
-            const bool circular     = elementJson["circular"];
-            const bool normalized   = elementJson["normalized"];
+            const double width      = elementJson.at("width");
+            const double amplitude  = elementJson.at("amplitude");
+            const double position_x = elementJson.at("position_x");
+            const double position_y = elementJson.at("position_y");
+            const bool circular     = elementJson.at("circular");
+            const bool normalized   = elementJson.at("normalized");
             std::vector<std::pair<double, double>> onTimes;
             if (elementJson.contains("onTimes") && elementJson["onTimes"].is_array()) {
                 for (const auto& pair : elementJson["onTimes"]) {
@@ -1092,8 +1110,8 @@ namespace dnf_composer
         break;
         case element::BOOST_STIMULUS_2D:
         {
-            const double amplitude = elementJson["amplitude"];
-            const bool isActive    = elementJson["isActive"];
+            const double amplitude = elementJson.at("amplitude");
+            const bool isActive    = elementJson.at("isActive");
 
             auto bs = std::make_shared<element::BoostStimulus2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1104,9 +1122,9 @@ namespace dnf_composer
         break;
         case element::CORRELATED_NORMAL_NOISE_2D:
         {
-            const double amplitude = elementJson["amplitude"];
-            const double width     = elementJson["width"];
-            const bool circular    = elementJson["circular"];
+            const double amplitude = elementJson.at("amplitude");
+            const double width     = elementJson.at("width");
+            const bool circular    = elementJson.at("circular");
 
             auto cnn = std::make_shared<element::CorrelatedNormalNoise2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1117,13 +1135,13 @@ namespace dnf_composer
         break;
         case element::ASYMMETRIC_GAUSS_KERNEL_2D:
         {
-            const double width           = elementJson["width"];
-            const double amplitude       = elementJson["amplitude"];
-            const double amplitudeGlobal = elementJson["amplitudeGlobal"];
-            const double timeShift_x     = elementJson["timeShift_x"];
-            const double timeShift_y     = elementJson["timeShift_y"];
-            const bool circular          = elementJson["circular"];
-            const bool normalized        = elementJson["normalized"];
+            const double width           = elementJson.at("width");
+            const double amplitude       = elementJson.at("amplitude");
+            const double amplitudeGlobal = elementJson.at("amplitudeGlobal");
+            const double timeShift_x     = elementJson.at("timeShift_x");
+            const double timeShift_y     = elementJson.at("timeShift_y");
+            const bool circular          = elementJson.at("circular");
+            const bool normalized        = elementJson.at("normalized");
 
             auto agk = std::make_shared<element::AsymmetricGaussKernel2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),
@@ -1134,9 +1152,9 @@ namespace dnf_composer
         break;
         case element::MEMORY_TRACE_2D:
         {
-            const double tauBuild  = elementJson["tauBuild"];
-            const double tauDecay  = elementJson["tauDecay"];
-            const double threshold = elementJson["threshold"];
+            const double tauBuild  = elementJson.at("tauBuild");
+            const double tauDecay  = elementJson.at("tauDecay");
+            const double threshold = elementJson.at("threshold");
 
             auto mt = std::make_shared<element::MemoryTrace2D>(
                 element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, y_max, d_x, d_y)),

@@ -107,8 +107,19 @@ namespace dnf_composer
 		/// logged and skipped rather than failing the load, which is what lets a file
 		/// written by a newer version still load here.
 		///
+		/// Every element-specific field read inside the per-label switch (e.g. `tau`,
+		/// `amplitude`, `width`) is required and read with `json::at()`, which throws
+		/// `json::out_of_range` if the key is missing -- the caller (buildElementsOrRollBack())
+		/// catches that and reports the file as malformed. The only element-specific fields
+		/// that are genuinely optional, with a documented fallback, are `activationFunction`
+		/// (defaults to `SigmoidFunction(0.0, 10.0)`) and `input_x_max`/`input_d_x` on
+		/// `field coupling`/`gauss field coupling` (default to `ElementDimensions{}`, i.e.
+		/// x_max 100, d_x 1.0 -- see FieldCouplingParameters/GaussFieldCouplingParameters).
+		///
 		/// @param jsonElements  The element array to build from.
 		/// @return @c false if validation rejected the file, @c true otherwise.
+		/// @throws nlohmann::json::out_of_range if an element object is missing a required,
+		///         type-specific field for its label.
 		[[nodiscard]] bool jsonToElements(const json& jsonElements) const;
 
 		/// @brief Pull the element array out of a parsed `.dnf` root and apply its metadata.
