@@ -186,6 +186,9 @@ TEST_F(MainMenuBarQuitTest, SaveAndQuitRequestsQuitAndClosesAndCleansSimulation)
     const std::string savedFile = std::string(OUTPUT_DIRECTORY) + "/menu-quit-save/menu-quit-save.dnf";
     EXPECT_TRUE(fs::exists(savedFile)) << "save() should still have written the .dnf file, same as before this fix";
     fs::remove_all(std::string(OUTPUT_DIRECTORY) + "/menu-quit-save");
+}
+
+// ---------------------------------------------------------------------------
 // enableKeyboardShortcuts()/appendFonts() must mutate the *real* ImGui IO
 // (issue #114) — see .claude/tests/05-gui-headless.md for the project's usual
 // "never touch ImGui::*" boundary. This is a deliberate, narrow exception:
