@@ -101,6 +101,25 @@ TEST(ExpandTest, AddInputRejectedWhenSizeMismatchesProfileAxis)
     EXPECT_TRUE(ex->getInputs().empty());
 }
 
+// Regression (CodeRabbit review on #97): a degenerate 2D output (size_y == 1)
+// has the same flattened size as its 1D source, which used to coincide with
+// the old buffer-length heuristic in Element::addInput and get the connection
+// wrongly rejected as an incompatible shape. Expand legitimately bridges
+// 1D -> 2D and must be accepted regardless of that coincidence.
+TEST(ExpandTest, DegenerateHeightOutputConnects)
+{
+    // 1D size-5 source broadcast into a 2D 5x1 output -- same flattened count,
+    // which is exactly what used to trip the old heuristic.
+    const auto ex = makeExpand("ex", 5, 5, 1, ProjectionAxis::X);
+    const auto source = makeSource("src", 5);
+    source->init();
+
+    ex->addInput(source);
+
+    EXPECT_TRUE(ex->hasInput(source->getUniqueName(), "output"));
+    ASSERT_EQ(ex->getInputs().size(), 1u);
+}
+
 // ---------------------------------------------------------------------------
 // Numerical correctness
 // ---------------------------------------------------------------------------
