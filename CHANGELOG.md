@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `Element::addInput()` inferred whether an element manages its own input-shape
+  validation from a buffer-length heuristic (`getComponentPtr("input")->size() ==
+  getSize()`), which wrongly rejected valid dimension-bridging connections whenever
+  the source's flattened size coincided with the target's own size — e.g. a
+  degenerate 2D `5x1` source collapsing into a 1D size-5 `Collapse` output, or a 1D
+  size-5 source broadcast into a degenerate 2D `5x1` `Expand` output. Elements that
+  size their own "input" component from their own parameters (`Collapse`, `Expand`,
+  `Resize`, `Resize2D`, `FieldCoupling`, `GaussFieldCoupling`) now declare that
+  explicitly via a new `Element::bridgesDimensions()` virtual instead, so the
+  dimensionality/shape check is skipped only when the element positively opts in,
+  never inferred from a coincidental buffer size
+
 ## [2.10.0] - 2026-08-05
 
 ### Fixed
