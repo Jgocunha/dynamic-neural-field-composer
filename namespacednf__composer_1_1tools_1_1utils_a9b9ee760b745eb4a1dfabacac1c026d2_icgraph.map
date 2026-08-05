@@ -1,105 +1,105 @@
 <map id="dnf_composer::tools::utils::safe_localtime" name="dnf_composer::tools::utils::safe_localtime">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1636,861,1799,901"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="1413,832,1568,872"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1622,872,1568,865,1569,859,1623,866"/>
-<area shape="rect" id="Node000049" href="$namespaceFileDialog.html#a665aae6a75d9f9635f4bf7e8135b48c0" title=" " alt="" coords="1393,897,1588,922"/>
-<area shape="poly" id="edge52_Node000001_Node000049" title=" " alt="" coords="1623,896,1588,900,1588,895,1622,890"/>
-<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="1163,832,1318,872"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1399,855,1318,855,1318,849,1399,849"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Application.html#a3e426d76437b319e14939a3cefb5e92f" title="Assign the font&#45;registry globals and the ImGui default font." alt="" coords="882,5,1077,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1235,819,1221,660,1194,435,1174,319,1150,213,1120,125,1104,92,1086,66,1063,48,1066,43,1090,62,1108,89,1125,123,1155,211,1179,318,1199,434,1227,660,1240,818"/>
-<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1user__interface.html#ab42c898e40981214ddea65c88b1faa38" title="Run an element&#45;creation step and turn any failure into a message." alt="" coords="877,77,1081,131"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="1233,819,1215,681,1183,488,1162,389,1139,299,1114,223,1086,170,1067,150,1044,134,1047,129,1071,146,1090,166,1118,221,1144,297,1168,388,1188,487,1220,680,1238,818"/>
-<area shape="rect" id="Node000010" href="$namespacednf__composer_1_1tools_1_1math.html#ae679c020137ca5fab108caa79fa33a13" title=" " alt="" coords="902,467,1057,507"/>
-<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="1230,819,1214,757,1186,679,1167,638,1144,598,1117,560,1086,527,1056,508,1059,503,1090,523,1121,557,1149,595,1172,636,1191,677,1219,756,1235,818"/>
-<area shape="rect" id="Node000027" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="600,837,792,877"/>
-<area shape="poly" id="edge26_Node000003_Node000027" title=" " alt="" coords="1230,819,1215,762,1187,692,1168,657,1145,624,1118,595,1087,572,1029,542,1002,534,976,530,951,532,925,539,899,552,872,571,849,599,839,628,840,659,845,691,851,724,853,758,846,792,825,824,810,837,794,846,791,841,807,833,821,821,841,790,848,758,846,725,840,692,835,660,834,628,844,596,869,567,897,547,923,534,950,527,976,525,1003,529,1031,537,1089,567,1122,591,1150,621,1173,655,1192,690,1220,760,1236,818"/>
-<area shape="rect" id="Node000031" href="$structdnf__composer_1_1element_1_1ElementDimensions.html#a61dc48a63bf6451065883ea37f0228fa" title=" " alt="" coords="880,645,1079,685"/>
-<area shape="poly" id="edge30_Node000003_Node000031" title=" " alt="" coords="1215,823,1160,761,1125,729,1087,701,1060,688,1062,683,1089,696,1129,725,1164,757,1219,819"/>
-<area shape="rect" id="Node000032" href="$structdnf__composer_1_1element_1_1ElementIdentifiers.html#a6c590a127035df69718210304ad9ccb6" title=" " alt="" coords="891,710,1067,765"/>
-<area shape="poly" id="edge31_Node000003_Node000032" title=" " alt="" coords="1188,828,1087,780,1056,767,1058,762,1089,775,1190,823"/>
-<area shape="rect" id="Node000033" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html#a446472a2d6a83b41ae55e42c024357f3" title=" " alt="" coords="871,789,1088,843"/>
-<area shape="poly" id="edge32_Node000003_Node000033" title=" " alt="" coords="1149,842,1088,834,1089,828,1150,837"/>
-<area shape="rect" id="Node000034" href="$structdnf__composer_1_1element_1_1NeuralFieldBump.html#abc35ced45da1398ddb34ba9bdeaf0da4" title=" " alt="" coords="889,868,1069,908"/>
-<area shape="poly" id="edge33_Node000003_Node000034" title=" " alt="" coords="1150,867,1070,878,1069,873,1149,862"/>
-<area shape="rect" id="Node000035" href="$structdnf__composer_1_1element_1_1NeuralFieldState.html#a9b0422c8ee94d56d397b290576b493ce" title=" " alt="" coords="891,932,1067,972"/>
-<area shape="poly" id="edge34_Node000003_Node000035" title=" " alt="" coords="1155,880,1137,888,1114,905,1089,922,1060,934,1058,929,1087,918,1110,901,1135,883,1153,875"/>
-<area shape="rect" id="Node000036" href="$structdnf__composer_1_1element_1_1NeuralField2DBump.html#a5fd238b40ad52cb3b6a8811ca05ab324" title=" " alt="" coords="880,996,1079,1036"/>
-<area shape="poly" id="edge35_Node000003_Node000036" title=" " alt="" coords="1153,877,1138,887,1127,899,1121,911,1115,935,1108,961,1101,974,1090,986,1072,998,1069,994,1086,982,1097,970,1104,959,1110,934,1116,909,1123,896,1134,883,1150,873"/>
-<area shape="rect" id="Node000037" href="$structdnf__composer_1_1element_1_1NeuralField2DState.html#a518fe0ae122172b909ea8c695492dc23" title=" " alt="" coords="891,1061,1067,1115"/>
-<area shape="poly" id="edge36_Node000003_Node000037" title=" " alt="" coords="1153,875,1138,887,1123,907,1116,926,1114,966,1112,1007,1105,1029,1090,1050,1069,1066,1066,1062,1086,1046,1100,1026,1107,1006,1109,966,1111,925,1119,904,1134,883,1150,871"/>
-<area shape="rect" id="Node000038" href="$structdnf__composer_1_1element_1_1SigmoidFunction.html#a646bef07506d8f43bda54004704c7fbc" title=" " alt="" coords="891,1140,1067,1180"/>
-<area shape="poly" id="edge37_Node000003_Node000038" title=" " alt="" coords="1153,875,1138,887,1118,917,1111,947,1111,977,1115,1007,1119,1037,1119,1068,1111,1099,1090,1130,1069,1146,1066,1141,1086,1126,1106,1096,1114,1067,1114,1037,1110,1007,1106,977,1105,946,1114,915,1134,884,1149,871"/>
-<area shape="rect" id="Node000039" href="$structdnf__composer_1_1element_1_1HeavisideFunction.html#a6405c8367c96aeb06f4c011d824d4a18" title=" " alt="" coords="885,1204,1073,1244"/>
-<area shape="poly" id="edge38_Node000003_Node000039" title=" " alt="" coords="1153,874,1138,887,1114,925,1106,963,1108,1001,1115,1039,1122,1077,1124,1115,1115,1154,1090,1194,1075,1206,1072,1202,1086,1190,1110,1152,1119,1115,1117,1077,1110,1040,1103,1001,1101,963,1109,923,1134,884,1149,870"/>
-<area shape="rect" id="Node000040" href="$structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#ae8f7c574cc79cbe9ca82b7a7efe80abd" title=" " alt="" coords="891,1269,1067,1323"/>
-<area shape="poly" id="edge39_Node000003_Node000040" title=" " alt="" coords="1153,874,1138,887,1121,910,1110,934,1104,956,1101,979,1104,1024,1114,1069,1123,1115,1127,1161,1124,1185,1118,1209,1107,1233,1090,1258,1069,1276,1066,1272,1086,1254,1102,1230,1113,1207,1119,1184,1121,1161,1118,1116,1108,1070,1099,1025,1096,979,1098,955,1105,932,1117,908,1134,884,1149,870"/>
-<area shape="rect" id="Node000041" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" title=" " alt="" coords="569,149,823,203"/>
-<area shape="poly" id="edge40_Node000003_Node000041" title=" " alt="" coords="1232,819,1213,701,1181,543,1161,464,1138,391,1113,332,1086,292,1059,268,1028,248,961,216,890,196,823,184,824,179,892,191,963,211,1031,243,1062,264,1090,289,1118,330,1143,390,1166,462,1186,542,1218,700,1237,818"/>
-<area shape="rect" id="Node000042" href="$classdnf__composer_1_1Simulation.html#a8d0fb7b320ba77daf90d6cceafd93815" title="Construct a simulation." alt="" coords="883,1348,1075,1388"/>
-<area shape="poly" id="edge42_Node000003_Node000042" title=" " alt="" coords="1153,874,1138,887,1118,916,1105,944,1098,972,1096,1000,1102,1055,1115,1111,1129,1166,1135,1222,1132,1251,1124,1279,1111,1308,1090,1338,1077,1350,1073,1346,1086,1334,1106,1306,1119,1278,1127,1250,1129,1222,1124,1167,1110,1112,1096,1056,1090,1000,1093,971,1100,942,1114,913,1134,884,1149,870"/>
-<area shape="rect" id="Node000043" href="$classdnf__composer_1_1SimulationRecorder.html#a605030cc0ae46d17e261c4205bfb3374" title="Start a new continuous recording for the given element/component pair. Creates data/&lt;simName&gt;/recordi..." alt="" coords="883,1412,1075,1452"/>
-<area shape="poly" id="edge43_Node000003_Node000043" title=" " alt="" coords="1153,873,1138,887,1127,906,1119,930,1111,991,1111,1064,1115,1143,1119,1222,1119,1295,1111,1357,1102,1382,1090,1402,1077,1414,1073,1410,1086,1398,1097,1379,1105,1355,1113,1295,1114,1222,1110,1143,1106,1064,1106,991,1114,929,1122,904,1134,884,1150,869"/>
-<area shape="rect" id="Node000044" href="$classdnf__composer_1_1SimulationRecorder.html#a65d78b751a8d4c936091162e649fd427" title="Stop the recording for a specific element/component pair. The CSV file is closed and the session is r..." alt="" coords="883,1476,1075,1516"/>
-<area shape="poly" id="edge44_Node000003_Node000044" title=" " alt="" coords="1153,873,1138,887,1126,908,1117,936,1109,1004,1110,1086,1115,1175,1120,1263,1121,1346,1113,1415,1103,1443,1090,1466,1077,1478,1074,1474,1086,1462,1099,1441,1108,1414,1116,1345,1115,1264,1110,1175,1104,1087,1103,1004,1112,935,1121,906,1134,884,1150,869"/>
-<area shape="rect" id="Node000045" href="$classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/..." alt="" coords="883,303,1075,343"/>
-<area shape="poly" id="edge45_Node000003_Node000045" title=" " alt="" coords="1228,820,1208,751,1177,659,1136,556,1086,456,1042,394,999,345,1003,341,1046,390,1090,453,1141,554,1182,657,1213,749,1233,818"/>
-<area shape="rect" id="Node000047" href="$classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" title="Called each simulation step to append rows to active recordings. Ticks are derived from sim...." alt="" coords="883,581,1075,621"/>
-<area shape="poly" id="edge48_Node000003_Node000047" title=" " alt="" coords="1223,821,1202,778,1172,728,1133,678,1086,635,1066,624,1069,619,1090,631,1137,675,1176,725,1206,776,1228,818"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Application.html#ad9787ecf2d64ff85c949f2ba24784a08" title="Initialize the GUI and all registered windows. Call once before step()." alt="" coords="599,5,793,45"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="868,28,793,28,793,23,868,23"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#affb52c7f20aea6a3f5b1c62285bf6438" title=" " alt="" coords="587,70,805,125"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="863,104,805,103,805,97,863,99"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" title=" " alt="" coords="287,149,505,203"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="579,131,502,151,500,146,577,126"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" title=" " alt="" coords="5,149,223,203"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="274,179,223,179,223,173,274,173"/>
-<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="587,435,805,475"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="888,479,805,470,806,464,889,474"/>
-<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a8234958fc93042c32fa069831a7034c5" title="Initialize the element (called once before the simulation loop)." alt="" coords="577,499,815,539"/>
-<area shape="poly" id="edge12_Node000010_Node000013" title=" " alt="" coords="889,500,815,508,814,503,888,494"/>
-<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#af15a4f2f22980b9bd2f843d3a7ec77c7" title="Initialize the element (called once before the simulation loop)." alt="" coords="590,563,802,603"/>
-<area shape="poly" id="edge14_Node000010_Node000015" title=" " alt="" coords="906,514,872,528,848,541,824,553,788,565,786,560,822,548,846,536,870,523,904,509"/>
-<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise2D.html#af47d2a942186c3cb7bfcf1052a5341c2" title="Initialize the element (called once before the simulation loop)." alt="" coords="581,633,811,673"/>
-<area shape="poly" id="edge16_Node000010_Node000017" title=" " alt="" coords="892,514,873,527,856,549,849,571,842,594,824,617,793,635,790,631,821,613,838,592,844,570,851,546,869,523,889,510"/>
-<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a287d7d8ff2d471d38fc915b73c0422bd" title="Initialize the element (called once before the simulation loop)." alt="" coords="608,704,784,744"/>
-<area shape="poly" id="edge18_Node000010_Node000019" title=" " alt="" coords="891,512,873,527,858,547,852,566,850,606,848,646,840,667,825,687,806,701,786,712,783,707,803,697,821,683,835,664,842,645,844,606,846,565,854,544,869,523,888,508"/>
-<area shape="rect" id="Node000021" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#a039b5f0baaeb7e4a47195a7b4806df19" title="Initialize the element (called once before the simulation loop)." alt="" coords="608,771,784,811"/>
-<area shape="poly" id="edge20_Node000010_Node000021" title=" " alt="" coords="891,512,873,527,854,556,847,584,847,613,850,641,854,670,853,699,845,729,825,758,806,772,786,782,783,778,804,768,821,754,840,726,848,698,849,670,845,642,842,613,842,584,849,554,869,524,888,508"/>
-<area shape="rect" id="Node000023" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ad80d75e45cea14a7d222559ae88d0c48" title="Initialize the element (called once before the simulation loop)." alt="" coords="607,307,785,347"/>
-<area shape="poly" id="edge22_Node000010_Node000023" title=" " alt="" coords="948,459,892,408,858,383,821,361,784,346,786,341,824,356,861,378,896,404,952,455"/>
-<area shape="rect" id="Node000025" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#aee7c3a1257606ea3a13a3436a17e0a61" title="Initialize the element (called once before the simulation loop)." alt="" coords="598,371,794,411"/>
-<area shape="poly" id="edge24_Node000010_Node000025" title=" " alt="" coords="920,464,822,425,782,413,784,408,824,420,922,459"/>
-<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#aa692c282d0b5b78e54d15664166a06eb" title=" " alt="" coords="301,394,491,449"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="573,444,491,435,492,429,573,438"/>
-<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#afbef9cba9917c5548463b4e8a7cec7fd" title=" " alt="" coords="292,473,500,527"/>
-<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="563,513,500,509,500,504,563,508"/>
-<area shape="rect" id="Node000016" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#a78311915d5aafe88d29c65a834482c89" title=" " alt="" coords="305,551,487,606"/>
-<area shape="poly" id="edge15_Node000015_Node000016" title=" " alt="" coords="576,584,487,583,487,577,576,578"/>
-<area shape="rect" id="Node000018" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise2D.html#af30ec1b833c31764733d434ebffd268c" title=" " alt="" coords="295,630,497,685"/>
-<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="567,658,497,659,497,653,567,652"/>
-<area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a36639a54ade8b0154ed3419f2b0e1650" title=" " alt="" coords="289,709,503,749"/>
-<area shape="poly" id="edge19_Node000019_Node000020" title=" " alt="" coords="595,728,503,730,503,725,594,723"/>
-<area shape="rect" id="Node000022" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#a8206313c9478fa50f995e397e4dd9738" title=" " alt="" coords="281,773,511,813"/>
-<area shape="poly" id="edge21_Node000021_Node000022" title=" " alt="" coords="594,794,511,795,511,790,594,789"/>
-<area shape="rect" id="Node000024" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#a4aa49909a155682d613a1f6284c90601" title=" " alt="" coords="271,251,521,291"/>
-<area shape="poly" id="edge23_Node000023_Node000024" title=" " alt="" coords="593,310,504,293,505,288,594,305"/>
-<area shape="rect" id="Node000026" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#a5f4f3aeeccf58debe0e57e786f1bf57e" title=" " alt="" coords="308,315,484,370"/>
-<area shape="poly" id="edge25_Node000025_Node000026" title=" " alt="" coords="584,375,484,359,485,354,585,370"/>
-<area shape="rect" id="Node000028" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="300,837,492,877"/>
-<area shape="poly" id="edge27_Node000027_Node000028" title=" " alt="" coords="586,860,492,860,492,855,586,855"/>
-<area shape="rect" id="Node000029" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="285,902,507,927"/>
-<area shape="poly" id="edge28_Node000027_Node000029" title=" " alt="" coords="587,881,464,905,463,899,586,876"/>
-<area shape="rect" id="Node000030" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="300,952,492,992"/>
-<area shape="poly" id="edge29_Node000027_Node000030" title=" " alt="" coords="588,883,571,892,556,903,548,916,538,929,523,942,493,956,491,951,520,938,534,926,543,913,552,900,568,887,586,878"/>
-<area shape="poly" id="edge41_Node000041_Node000008" title=" " alt="" coords="555,179,505,179,505,173,555,173"/>
-<area shape="rect" id="Node000046" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" title=" " alt="" coords="587,227,805,282"/>
-<area shape="poly" id="edge46_Node000045_Node000046" title=" " alt="" coords="882,302,804,283,806,278,883,297"/>
-<area shape="poly" id="edge47_Node000046_Node000008" title=" " alt="" coords="577,226,500,206,502,201,579,221"/>
-<area shape="rect" id="Node000048" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="600,901,792,941"/>
-<area shape="poly" id="edge49_Node000047_Node000048" title=" " alt="" coords="876,631,873,635,852,667,844,698,845,730,850,762,855,794,855,826,847,859,825,891,810,903,793,912,791,907,807,899,821,888,842,857,850,825,850,794,845,762,840,730,839,697,847,664,869,632,872,628"/>
-<area shape="poly" id="edge50_Node000048_Node000029" title=" " alt="" coords="586,922,507,920,507,914,586,916"/>
-<area shape="poly" id="edge51_Node000048_Node000030" title=" " alt="" coords="587,942,493,958,492,953,586,937"/>
-<area shape="rect" id="Node000050" href="$namespaceFileDialog.html#ad9d1c40a19c4dac5851a6534c505914b" title=" " alt="" coords="1136,897,1345,922"/>
-<area shape="poly" id="edge53_Node000049_Node000050" title=" " alt="" coords="1379,912,1345,912,1345,907,1379,907"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1360,1216,1523,1256"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="1137,1187,1292,1227"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1346,1226,1292,1219,1293,1214,1347,1221"/>
+<area shape="rect" id="Node000057" href="$namespaceFileDialog.html#a665aae6a75d9f9635f4bf7e8135b48c0" title=" " alt="" coords="1117,1251,1312,1277"/>
+<area shape="poly" id="edge52_Node000001_Node000057" title=" " alt="" coords="1347,1250,1312,1255,1312,1249,1346,1245"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="887,1187,1042,1227"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1123,1209,1042,1209,1042,1204,1123,1204"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1Application.html#a3e426d76437b319e14939a3cefb5e92f" title="Assign the font&#45;registry globals and the ImGui default font." alt="" coords="597,5,791,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="961,1173,958,952,951,793,939,620,921,447,894,287,877,217,858,156,835,105,810,66,788,47,791,43,814,62,840,102,863,154,882,216,899,286,926,446,945,619,957,793,963,952,966,1172"/>
+<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1user__interface.html#ab42c898e40981214ddea65c88b1faa38" title="Run an element&#45;creation step and turn any failure into a message." alt="" coords="592,77,796,131"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="960,1173,951,973,941,830,927,674,907,519,882,374,849,254,831,206,810,170,791,150,768,134,772,129,795,146,814,166,835,204,854,252,887,373,912,518,932,674,946,829,956,972,965,1173"/>
+<area shape="rect" id="Node000010" href="$namespacednf__composer_1_1tools_1_1math.html#ae679c020137ca5fab108caa79fa33a13" title=" " alt="" coords="617,563,771,603"/>
+<area shape="poly" id="edge8_Node000003_Node000010" title=" " alt="" coords="949,1175,891,1022,810,824,751,698,703,604,708,602,756,696,814,822,896,1020,954,1173"/>
+<area shape="rect" id="Node000027" href="$classdnf__composer_1_1Simulation.html#aa3419352b0706f0ba4c85781b8aa32ae" title="Initialize all registered elements. Must be called before step()." alt="" coords="305,819,497,859"/>
+<area shape="poly" id="edge18_Node000003_Node000027" title=" " alt="" coords="957,1173,944,1107,918,1024,899,981,875,940,846,903,810,873,775,852,736,837,695,826,654,820,571,817,498,823,497,818,571,812,654,814,696,821,738,831,777,847,814,869,849,900,879,937,904,979,923,1022,949,1106,962,1172"/>
+<area shape="rect" id="Node000031" href="$namespacednf__composer_1_1tools_1_1math.html#a82c852ff9a51203bb51445e709dd22e1" title="Gather contents at 1&#45;based indices into a newly&#45;allocated vector." alt="" coords="592,947,796,987"/>
+<area shape="poly" id="edge22_Node000003_Node000031" title=" " alt="" coords="946,1175,925,1135,894,1088,856,1041,810,1001,789,989,792,985,814,996,860,1037,899,1085,929,1132,951,1173"/>
+<area shape="rect" id="Node000034" href="$namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title="Gather contents at 1&#45;based indices into out (circular extension helper)." alt="" coords="576,1011,812,1051"/>
+<area shape="poly" id="edge25_Node000003_Node000034" title=" " alt="" coords="937,1178,883,1120,848,1090,811,1065,785,1053,787,1048,813,1060,852,1086,887,1116,941,1174"/>
+<area shape="rect" id="Node000039" href="$structdnf__composer_1_1element_1_1ElementDimensions.html#a61dc48a63bf6451065883ea37f0228fa" title=" " alt="" coords="595,1075,793,1115"/>
+<area shape="poly" id="edge30_Node000003_Node000039" title=" " alt="" coords="917,1182,867,1155,811,1129,777,1117,779,1112,813,1124,869,1150,920,1177"/>
+<area shape="rect" id="Node000040" href="$structdnf__composer_1_1element_1_1ElementIdentifiers.html#a6c590a127035df69718210304ad9ccb6" title=" " alt="" coords="606,1139,782,1194"/>
+<area shape="poly" id="edge31_Node000003_Node000040" title=" " alt="" coords="874,1196,782,1182,783,1177,874,1191"/>
+<area shape="rect" id="Node000041" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html#a446472a2d6a83b41ae55e42c024357f3" title=" " alt="" coords="585,1218,803,1273"/>
+<area shape="poly" id="edge32_Node000003_Node000041" title=" " alt="" coords="874,1222,803,1232,803,1227,873,1217"/>
+<area shape="rect" id="Node000042" href="$structdnf__composer_1_1element_1_1NeuralFieldBump.html#abc35ced45da1398ddb34ba9bdeaf0da4" title=" " alt="" coords="604,1297,784,1337"/>
+<area shape="poly" id="edge33_Node000003_Node000042" title=" " alt="" coords="876,1234,861,1242,847,1253,838,1265,829,1276,813,1288,786,1300,783,1295,811,1283,825,1272,834,1261,844,1249,859,1238,874,1230"/>
+<area shape="rect" id="Node000043" href="$structdnf__composer_1_1element_1_1NeuralFieldState.html#a9b0422c8ee94d56d397b290576b493ce" title=" " alt="" coords="606,1361,782,1401"/>
+<area shape="poly" id="edge34_Node000003_Node000043" title=" " alt="" coords="876,1231,862,1242,850,1255,844,1268,839,1295,833,1323,826,1338,814,1351,784,1369,781,1365,810,1347,822,1335,828,1322,834,1294,839,1266,846,1252,858,1238,873,1227"/>
+<area shape="rect" id="Node000044" href="$structdnf__composer_1_1element_1_1NeuralField2DBump.html#a5fd238b40ad52cb3b6a8811ca05ab324" title=" " alt="" coords="595,1425,793,1465"/>
+<area shape="poly" id="edge35_Node000003_Node000044" title=" " alt="" coords="877,1230,862,1242,847,1263,840,1284,839,1327,838,1371,830,1393,814,1415,795,1429,792,1425,810,1411,826,1391,833,1370,834,1327,834,1283,842,1260,858,1238,874,1226"/>
+<area shape="rect" id="Node000045" href="$structdnf__composer_1_1element_1_1NeuralField2DState.html#a518fe0ae122172b909ea8c695492dc23" title=" " alt="" coords="606,1490,782,1545"/>
+<area shape="poly" id="edge36_Node000003_Node000045" title=" " alt="" coords="877,1229,862,1242,843,1271,835,1300,835,1329,838,1358,842,1388,842,1418,834,1448,814,1479,800,1492,783,1502,781,1497,797,1488,810,1476,829,1446,837,1417,837,1388,833,1359,829,1329,830,1299,838,1269,858,1238,873,1225"/>
+<area shape="rect" id="Node000046" href="$structdnf__composer_1_1element_1_1SigmoidFunction.html#a646bef07506d8f43bda54004704c7fbc" title=" " alt="" coords="606,1569,782,1609"/>
+<area shape="poly" id="edge37_Node000003_Node000046" title=" " alt="" coords="877,1229,862,1242,848,1262,838,1281,830,1321,832,1360,840,1399,847,1438,849,1478,840,1518,829,1539,814,1559,800,1571,783,1580,781,1576,797,1567,810,1556,825,1536,835,1517,844,1478,842,1439,834,1400,827,1360,824,1320,833,1280,843,1259,858,1238,873,1225"/>
+<area shape="rect" id="Node000047" href="$structdnf__composer_1_1element_1_1HeavisideFunction.html#a6405c8367c96aeb06f4c011d824d4a18" title=" " alt="" coords="600,1633,788,1673"/>
+<area shape="poly" id="edge38_Node000003_Node000047" title=" " alt="" coords="877,1229,862,1242,845,1266,834,1290,827,1313,825,1337,829,1384,840,1431,850,1478,854,1526,851,1550,844,1574,832,1599,814,1623,790,1642,787,1637,810,1619,828,1596,839,1572,846,1549,849,1526,845,1479,834,1432,824,1385,820,1337,822,1312,829,1288,840,1263,858,1238,873,1225"/>
+<area shape="rect" id="Node000048" href="$structdnf__composer_1_1element_1_1AbsSigmoidFunction.html#ae8f7c574cc79cbe9ca82b7a7efe80abd" title=" " alt="" coords="606,1698,782,1753"/>
+<area shape="poly" id="edge39_Node000003_Node000048" title=" " alt="" coords="877,1229,862,1242,842,1270,829,1298,822,1326,820,1353,825,1407,838,1462,851,1516,857,1572,854,1600,847,1629,834,1658,814,1687,800,1701,784,1711,781,1706,797,1696,810,1684,829,1655,842,1627,849,1599,852,1572,846,1517,833,1463,820,1408,814,1353,817,1325,824,1296,838,1267,858,1238,873,1225"/>
+<area shape="rect" id="Node000049" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" title=" " alt="" coords="275,149,528,203"/>
+<area shape="poly" id="edge40_Node000003_Node000049" title=" " alt="" coords="959,1173,946,1004,918,761,898,635,874,520,844,423,828,386,810,356,782,325,751,297,716,273,679,253,602,221,527,199,529,194,603,216,681,248,719,269,754,293,786,321,814,353,832,383,849,421,879,518,904,634,924,760,951,1004,964,1173"/>
+<area shape="rect" id="Node000050" href="$classdnf__composer_1_1Simulation.html#a8d0fb7b320ba77daf90d6cceafd93815" title="Construct a simulation." alt="" coords="598,1777,790,1817"/>
+<area shape="poly" id="edge42_Node000003_Node000050" title=" " alt="" coords="877,1228,862,1242,851,1261,843,1286,835,1348,835,1423,839,1503,844,1584,844,1658,835,1721,827,1747,814,1767,792,1785,788,1781,810,1764,822,1744,830,1720,838,1658,838,1584,834,1503,830,1423,830,1348,837,1285,846,1259,858,1238,874,1224"/>
+<area shape="rect" id="Node000051" href="$classdnf__composer_1_1SimulationRecorder.html#a605030cc0ae46d17e261c4205bfb3374" title="Start a new continuous recording for the given element/component pair. Creates data/&lt;simName&gt;/recordi..." alt="" coords="598,1841,790,1881"/>
+<area shape="poly" id="edge43_Node000003_Node000051" title=" " alt="" coords="877,1228,862,1242,849,1264,841,1291,833,1361,834,1445,840,1535,845,1625,846,1709,837,1780,828,1808,814,1831,792,1849,788,1845,810,1828,823,1806,832,1779,841,1709,840,1626,834,1536,828,1445,827,1361,835,1290,844,1261,858,1238,874,1224"/>
+<area shape="rect" id="Node000052" href="$classdnf__composer_1_1SimulationRecorder.html#a65d78b751a8d4c936091162e649fd427" title="Stop the recording for a specific element/component pair. The CSV file is closed and the session is r..." alt="" coords="598,1905,790,1945"/>
+<area shape="poly" id="edge44_Node000003_Node000052" title=" " alt="" coords="877,1228,862,1242,848,1266,839,1297,830,1375,832,1467,840,1567,847,1667,849,1760,846,1801,840,1838,829,1870,814,1895,792,1913,789,1909,810,1892,824,1868,834,1837,840,1801,843,1760,841,1668,834,1568,827,1467,825,1374,833,1296,843,1264,858,1238,874,1224"/>
+<area shape="rect" id="Node000053" href="$classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/..." alt="" coords="598,367,790,407"/>
+<area shape="poly" id="edge45_Node000003_Node000053" title=" " alt="" coords="958,1173,944,1065,917,909,898,820,874,729,844,639,810,552,787,510,761,470,712,408,716,405,765,467,792,507,814,550,849,637,879,728,903,819,923,908,950,1065,963,1172"/>
+<area shape="rect" id="Node000055" href="$classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" title="Called each simulation step to append rows to active recordings. Ticks are derived from sim...." alt="" coords="598,883,790,923"/>
+<area shape="poly" id="edge48_Node000003_Node000055" title=" " alt="" coords="952,1174,933,1122,904,1057,863,992,839,963,810,937,789,924,792,919,814,933,842,959,868,989,909,1055,938,1120,957,1173"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1Application.html#ad9787ecf2d64ff85c949f2ba24784a08" title="Initialize the GUI and all registered windows. Call once before step()." alt="" coords="304,5,499,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="583,28,499,28,499,23,583,23"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#affb52c7f20aea6a3f5b1c62285bf6438" title=" " alt="" coords="293,70,510,125"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="578,104,510,102,510,97,578,99"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" title=" " alt="" coords="7,149,225,203"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="289,131,217,151,215,146,288,126"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#a96e938df35bc5c5b9944201750e5ff83" title="Initialize the element (called once before the simulation loop)." alt="" coords="292,563,511,603"/>
+<area shape="poly" id="edge9_Node000010_Node000011" title=" " alt="" coords="603,585,511,585,511,580,603,580"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a8234958fc93042c32fa069831a7034c5" title="Initialize the element (called once before the simulation loop)." alt="" coords="283,627,520,667"/>
+<area shape="poly" id="edge11_Node000010_Node000013" title=" " alt="" coords="604,605,494,629,493,624,603,600"/>
+<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#af15a4f2f22980b9bd2f843d3a7ec77c7" title="Initialize the element (called once before the simulation loop)." alt="" coords="295,691,507,731"/>
+<area shape="poly" id="edge12_Node000010_Node000015" title=" " alt="" coords="654,613,596,648,529,681,495,693,493,688,527,676,594,643,651,608"/>
+<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise2D.html#af47d2a942186c3cb7bfcf1052a5341c2" title="Initialize the element (called once before the simulation loop)." alt="" coords="286,755,517,795"/>
+<area shape="poly" id="edge13_Node000010_Node000017" title=" " alt="" coords="671,616,612,681,572,716,529,745,503,757,501,752,527,740,569,712,608,678,667,612"/>
+<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a287d7d8ff2d471d38fc915b73c0422bd" title="Initialize the element (called once before the simulation loop)." alt="" coords="313,307,489,347"/>
+<area shape="poly" id="edge14_Node000010_Node000019" title=" " alt="" coords="668,553,585,436,526,361,488,343,491,338,530,357,589,433,673,550"/>
+<area shape="rect" id="Node000021" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#a039b5f0baaeb7e4a47195a7b4806df19" title="Initialize the element (called once before the simulation loop)." alt="" coords="313,371,489,411"/>
+<area shape="poly" id="edge15_Node000010_Node000021" title=" " alt="" coords="667,553,608,488,569,454,527,425,489,409,491,404,529,420,572,450,612,484,671,550"/>
+<area shape="rect" id="Node000023" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ad80d75e45cea14a7d222559ae88d0c48" title="Initialize the element (called once before the simulation loop)." alt="" coords="312,435,491,475"/>
+<area shape="poly" id="edge16_Node000010_Node000023" title=" " alt="" coords="651,557,594,522,527,489,490,476,492,471,529,484,596,517,654,553"/>
+<area shape="rect" id="Node000025" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#aee7c3a1257606ea3a13a3436a17e0a61" title="Initialize the element (called once before the simulation loop)." alt="" coords="303,499,499,539"/>
+<area shape="poly" id="edge17_Node000010_Node000025" title=" " alt="" coords="603,566,493,541,494,536,604,560"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#aa692c282d0b5b78e54d15664166a06eb" title=" " alt="" coords="21,555,211,610"/>
+<area shape="poly" id="edge10_Node000011_Node000012" title=" " alt="" coords="278,585,211,585,211,580,278,580"/>
+<area shape="rect" id="Node000028" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="20,761,212,801"/>
+<area shape="poly" id="edge19_Node000027_Node000028" title=" " alt="" coords="291,819,212,803,213,798,293,814"/>
+<area shape="rect" id="Node000029" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="5,890,227,915"/>
+<area shape="poly" id="edge20_Node000027_Node000029" title=" " alt="" coords="299,864,174,893,173,887,297,859"/>
+<area shape="rect" id="Node000030" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="20,825,212,865"/>
+<area shape="poly" id="edge21_Node000027_Node000030" title=" " alt="" coords="292,844,213,846,212,840,292,839"/>
+<area shape="rect" id="Node000032" href="$namespacednf__composer_1_1tools_1_1math.html#a6c6eaca8288f997303a0a4d010ada4f3" title=" " alt="" coords="306,947,497,987"/>
+<area shape="poly" id="edge23_Node000031_Node000032" title=" " alt="" coords="578,969,497,969,497,964,578,964"/>
+<area shape="rect" id="Node000033" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#a4d7c18564ba06a8bfc776f98f4ca0f7a" title="Advance the element by one time step." alt="" coords="292,1011,511,1051"/>
+<area shape="poly" id="edge24_Node000031_Node000033" title=" " alt="" coords="589,992,494,1013,493,1008,588,987"/>
+<area shape="rect" id="Node000035" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#afa45a45ca8acb0432937de3b1563ba82" title="Advance the element by one time step." alt="" coords="288,1075,515,1115"/>
+<area shape="poly" id="edge26_Node000034_Node000035" title=" " alt="" coords="589,1056,494,1077,493,1072,588,1051"/>
+<area shape="rect" id="Node000036" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a5fd228b67854d1c571f272756c67389a" title="Advance the element by one time step." alt="" coords="313,1139,489,1179"/>
+<area shape="poly" id="edge27_Node000034_Node000036" title=" " alt="" coords="587,1059,578,1065,562,1080,554,1096,546,1113,530,1129,491,1147,488,1142,526,1124,542,1110,550,1094,558,1077,574,1061,585,1054"/>
+<area shape="rect" id="Node000037" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ac18abde56a67c7c1c127d38065d6f316" title="Advance the element by one time step." alt="" coords="309,1203,494,1243"/>
+<area shape="poly" id="edge28_Node000034_Node000037" title=" " alt="" coords="583,1061,578,1065,565,1080,559,1095,555,1127,551,1160,543,1177,530,1193,496,1213,493,1208,526,1189,539,1174,546,1159,549,1127,553,1094,561,1077,574,1061,579,1057"/>
+<area shape="rect" id="Node000038" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html#ab95458cda2baab4cbaf0e010e2cb86a8" title="Advance the element by one time step." alt="" coords="313,1267,490,1307"/>
+<area shape="poly" id="edge29_Node000034_Node000038" title=" " alt="" coords="582,1061,578,1064,561,1088,554,1111,553,1135,555,1159,557,1183,556,1208,548,1232,530,1257,512,1270,491,1280,489,1275,509,1266,526,1253,543,1230,550,1207,552,1183,550,1159,547,1135,549,1110,556,1085,574,1061,578,1057"/>
+<area shape="poly" id="edge41_Node000049_Node000008" title=" " alt="" coords="261,179,225,179,225,173,261,173"/>
+<area shape="rect" id="Node000054" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" title=" " alt="" coords="293,227,510,282"/>
+<area shape="poly" id="edge46_Node000053_Node000054" title=" " alt="" coords="648,361,591,329,527,297,495,285,497,280,529,292,594,324,650,357"/>
+<area shape="poly" id="edge47_Node000054_Node000008" title=" " alt="" coords="288,226,215,206,217,201,289,221"/>
+<area shape="rect" id="Node000056" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="305,883,497,923"/>
+<area shape="poly" id="edge49_Node000055_Node000056" title=" " alt="" coords="584,905,497,905,497,900,584,900"/>
+<area shape="poly" id="edge50_Node000056_Node000029" title=" " alt="" coords="291,905,227,905,227,900,291,900"/>
+<area shape="poly" id="edge51_Node000056_Node000030" title=" " alt="" coords="291,883,212,867,213,862,293,878"/>
+<area shape="rect" id="Node000058" href="$namespaceFileDialog.html#ad9d1c40a19c4dac5851a6534c505914b" title=" " alt="" coords="860,1251,1069,1277"/>
+<area shape="poly" id="edge53_Node000057_Node000058" title=" " alt="" coords="1103,1267,1069,1267,1069,1261,1103,1261"/>
 </map>

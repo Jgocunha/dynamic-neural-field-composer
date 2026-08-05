@@ -1,17 +1,23 @@
 <map id="dnf_composer::element::MexicanHatKernel::step" name="dnf_composer::element::MexicanHatKernel::step">
-<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,101,191,141"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e" title=" " alt="" coords="267,5,446,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,99,238,55,261,47,263,52,240,60,140,104"/>
-<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d" title=" " alt="" coords="269,69,444,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="190,107,255,99,256,104,191,113"/>
-<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title=" " alt="" coords="239,133,475,173"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="191,130,225,134,225,140,190,135"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="269,197,445,237"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="140,139,240,183,263,191,261,196,238,188,138,144"/>
-<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math_1_1detail.html#ac8dc7ef3bad470af9e384c9aa8aae846" title=" " alt="" coords="544,11,699,66"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="444,70,530,53,531,59,445,75"/>
-<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math_1_1detail.html#a7de913e60d3b646bcf05297d4aa7fb03" title=" " alt="" coords="541,90,701,145"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="444,96,528,105,527,110,444,101"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" title="Cache raw pointers to input component data. Call after all element init()s complete." alt="" coords="523,197,720,237"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="445,215,509,215,509,220,445,220"/>
+<area shape="rect" id="Node000001" title="Advance the element by one time step." alt="" coords="5,130,191,170"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1math.html#acaa6baa4408e4f22fdc63b4e0c86a21e" title=" " alt="" coords="267,30,446,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,128,183,103,238,80,260,72,262,77,240,84,185,108,137,132"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1math.html#ad862439d033f9f7a74671d9fd5916e6d" title=" " alt="" coords="269,94,444,134"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="190,135,256,125,256,131,191,140"/>
+<area shape="rect" id="Node000006" href="$namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title="Gather contents at 1&#45;based indices into out (circular extension helper)." alt="" coords="239,162,475,202"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="191,159,225,163,225,168,190,164"/>
+<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components." alt="" coords="269,226,445,266"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="140,168,240,212,263,219,261,224,238,216,138,173"/>
+<area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1math_1_1detail.html#ac8dc7ef3bad470af9e384c9aa8aae846" title=" " alt="" coords="544,5,699,60"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="433,91,474,79,530,61,532,66,475,85,434,97"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1math_1_1detail.html#a7de913e60d3b646bcf05297d4aa7fb03" title=" " alt="" coords="541,84,701,139"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="444,110,528,110,528,115,444,116"/>
+<area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="544,163,699,203"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="475,180,530,180,530,186,475,185"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="768,163,923,203"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="699,181,754,181,754,186,699,186"/>
+<area shape="rect" id="Node000009" href="$namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" title=" " alt="" coords="971,163,1133,203"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="923,181,957,181,957,186,923,186"/>
+<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" title="Cache raw pointers to input component data. Call after all element init()s complete." alt="" coords="523,227,720,267"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="445,244,509,244,509,249,445,249"/>
 </map>

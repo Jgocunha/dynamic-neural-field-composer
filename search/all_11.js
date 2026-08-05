@@ -57,12 +57,14 @@ var searchData=
   ['resize_5f2d_2eh_54',['resize_2d.h',['../resize__2d_8h.html',1,'']]],
   ['resizematrix_55',['resizeMatrix',['../namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7',1,'dnf_composer::tools::utils']]],
   ['resizeparameters_56',['resizeparameters',['../structdnf__composer_1_1element_1_1ResizeParameters.html',1,'dnf_composer::element::ResizeParameters'],['../structdnf__composer_1_1element_1_1ResizeParameters.html#afa4af5abfa22ab86fac0d4e461fb78b1',1,'dnf_composer::element::ResizeParameters::ResizeParameters()']]],
-  ['resume_57',['resume',['../classdnf__composer_1_1Simulation.html#abf5a7a8ec783facebf82f8563c3424de',1,'dnf_composer::Simulation']]],
-  ['rounding_58',['rounding',['../structdnf__composer_1_1user__interface_1_1PanelScope.html#a6d0f36a70ef4ba691b83e4d4f8af1bb8',1,'dnf_composer::user_interface::PanelScope']]],
-  ['roundsquare_59',['RoundSquare',['../namespaceax_1_1Drawing.html#ab1df3a7263c0f5d36c706d066c90fe0aa8d0b97f599498054e5e7a84b1d5c2140',1,'ax::Drawing']]],
-  ['row_60',['row',['../structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html#a57dd1cc415b608282f776d98245ba492',1,'dnf_composer::tools::math::Conv2dScratch']]],
-  ['rule_20of_20five_61',['Copy / move semantics (rule of five)',['../structdnf__composer_1_1element_1_1NeuralFieldParameters.html#autotoc_md20',1,'']]],
-  ['run_62',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
-  ['runforrealtime_63',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]],
-  ['runsegmentstart_64',['runSegmentStart',['../classdnf__composer_1_1Simulation.html#adf0f76a35f06a8c8d18bc1831ab0bffa',1,'dnf_composer::Simulation']]]
+  ['resolvemanualheatmapdimensions_57',['resolveManualHeatmapDimensions',['../namespacednf__composer.html#ab3541a00b0ecfcc65863eef4c45a11aa',1,'dnf_composer']]],
+  ['resume_58',['resume',['../classdnf__composer_1_1Simulation.html#abf5a7a8ec783facebf82f8563c3424de',1,'dnf_composer::Simulation']]],
+  ['rounding_59',['rounding',['../structdnf__composer_1_1user__interface_1_1PanelScope.html#a6d0f36a70ef4ba691b83e4d4f8af1bb8',1,'dnf_composer::user_interface::PanelScope']]],
+  ['roundsquare_60',['RoundSquare',['../namespaceax_1_1Drawing.html#ab1df3a7263c0f5d36c706d066c90fe0aa8d0b97f599498054e5e7a84b1d5c2140',1,'ax::Drawing']]],
+  ['row_61',['row',['../structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html#a57dd1cc415b608282f776d98245ba492',1,'dnf_composer::tools::math::Conv2dScratch']]],
+  ['rows_62',['rows',['../structdnf__composer_1_1ManualHeatmapDimensions.html#a11e16318bfffe67d7bc18e79e1c17d9a',1,'dnf_composer::ManualHeatmapDimensions']]],
+  ['rule_20of_20five_63',['Copy / move semantics (rule of five)',['../structdnf__composer_1_1element_1_1NeuralFieldParameters.html#autotoc_md20',1,'']]],
+  ['run_64',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
+  ['runforrealtime_65',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]],
+  ['runsegmentstart_66',['runSegmentStart',['../classdnf__composer_1_1Simulation.html#adf0f76a35f06a8c8d18bc1831ab0bffa',1,'dnf_composer::Simulation']]]
 ];

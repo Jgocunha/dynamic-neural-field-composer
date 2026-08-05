@@ -44,7 +44,8 @@ var searchData=
   ['resize2dparameters_41',['Resize2DParameters',['../structdnf__composer_1_1element_1_1Resize2DParameters.html#ab41d1c2207ea3fc4d869fe5e0d3d94da',1,'dnf_composer::element::Resize2DParameters']]],
   ['resizematrix_42',['resizeMatrix',['../namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7',1,'dnf_composer::tools::utils']]],
   ['resizeparameters_43',['ResizeParameters',['../structdnf__composer_1_1element_1_1ResizeParameters.html#afa4af5abfa22ab86fac0d4e461fb78b1',1,'dnf_composer::element::ResizeParameters']]],
-  ['resume_44',['resume',['../classdnf__composer_1_1Simulation.html#abf5a7a8ec783facebf82f8563c3424de',1,'dnf_composer::Simulation']]],
-  ['run_45',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
-  ['runforrealtime_46',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]]
+  ['resolvemanualheatmapdimensions_44',['resolveManualHeatmapDimensions',['../namespacednf__composer.html#ab3541a00b0ecfcc65863eef4c45a11aa',1,'dnf_composer']]],
+  ['resume_45',['resume',['../classdnf__composer_1_1Simulation.html#abf5a7a8ec783facebf82f8563c3424de',1,'dnf_composer::Simulation']]],
+  ['run_46',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
+  ['runforrealtime_47',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]]
 ];

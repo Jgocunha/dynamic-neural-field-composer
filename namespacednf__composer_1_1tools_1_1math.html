@@ -225,9 +225,11 @@ Functions</h2></td></tr>
 <tr class="separator:a8ec5a685cd59263f4084c652149e4b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82c852ff9a51203bb51445e709dd22e1" id="r_a82c852ff9a51203bb51445e709dd22e1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a82c852ff9a51203bb51445e709dd22e1"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a82c852ff9a51203bb51445e709dd22e1">obtainCircularVector</a> (const std::vector&lt; int &gt; &amp;indices, const std::vector&lt; T &gt; &amp;contents)</td></tr>
+<tr class="memdesc:a82c852ff9a51203bb51445e709dd22e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gather <code>contents</code> at 1-based <code>indices</code> into a newly-allocated vector.  <br /></td></tr>
 <tr class="separator:a82c852ff9a51203bb51445e709dd22e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec1f39db13636109a1de5b032117e7ad" id="r_aec1f39db13636109a1de5b032117e7ad"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aec1f39db13636109a1de5b032117e7ad"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad">obtainCircularVector_into</a> (std::vector&lt; T &gt; &amp;out, const std::vector&lt; int &gt; &amp;indices, const std::vector&lt; T &gt; &amp;contents)</td></tr>
+<tr class="memdesc:aec1f39db13636109a1de5b032117e7ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gather <code>contents</code> at 1-based <code>indices</code> into <code>out</code> (circular extension helper).  <br /></td></tr>
 <tr class="separator:aec1f39db13636109a1de5b032117e7ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a83034f08320ea25a0feb6fe8f84c36" id="r_a3a83034f08320ea25a0feb6fe8f84c36"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a3a83034f08320ea25a0feb6fe8f84c36"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a3a83034f08320ea25a0feb6fe8f84c36">ojaLearningRule</a> (std::vector&lt; T &gt; &amp;weights, const std::vector&lt; T &gt; &amp;input, const std::vector&lt; T &gt; &amp;output, double learningRate)</td></tr>
@@ -851,7 +853,7 @@ template&lt;typename T &gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a6c6eaca8288f997303a0a4d010ada4f3_cgraph.svg" width="454" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a6c6eaca8288f997303a0a4d010ada4f3_cgraph.svg" width="1070" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -2021,6 +2023,14 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Gather <code>contents</code> at 1-based <code>indices</code> into a newly-allocated vector. </p>
+<p>Same circular-extension gather as <a class="el" href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title="Gather contents at 1-based indices into out (circular extension helper).">obtainCircularVector_into()</a>, returning a fresh vector instead of writing into a caller-owned scratch buffer. See <a class="el" href="namespacednf__composer_1_1tools_1_1math.html#aec1f39db13636109a1de5b032117e7ad" title="Gather contents at 1-based indices into out (circular extension helper).">obtainCircularVector_into()</a> for the indexing convention, the hot-path perf rationale for validating <code>indices</code> once up front rather than per element, and the (#121) bounds-check background. On an out-of-range index, logs an error and returns a zero-filled vector instead of reading out of bounds. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_a82c852ff9a51203bb51445e709dd22e1_cgraph.svg" width="831" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2062,6 +2072,15 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Gather <code>contents</code> at 1-based <code>indices</code> into <code>out</code> (circular extension helper). </p>
+<p><code>indices</code> are 1-based (a value of 1 selects <code>contents[0]</code>), as produced by <code><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e">createExtendedIndex()</a></code>. <code>out</code> must already be sized to <code>indices.size()</code> (all current call sites pre-size a scratch buffer once in <code>init()</code>).</p>
+<p>This sits on the convolution hot path (see the separable 2D pass around <code>conv2d_separable</code>, and the per-step kernel elements that call it every simulation tick), tuned for SIMD/auto-vectorization by #107. To avoid putting a branch inside that tight copy loop, the whole index set is validated <b>once, up front</b> (a single O(n) pass) instead of per element. In intended usage <code>indices</code> come from <code><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e">createExtendedIndex()</a></code> / <code><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#ae0ded32bda3fdcee5561849a0ef3785c">computeKernelRange()</a></code> (which clamps the kernel range to at most half the field size), so they are within <code>[1, contents.size()]</code> by construction; this guard defends that invariant — e.g. against a stale <code>extIndex_x/y</code> reused after the field was resized — instead of silently reading <code>contents[-1]</code> or past the end (#121). On violation, logs an error and fills <code>out</code> with <code>T()</code> rather than touching out-of-bounds memory. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1math_aec1f39db13636109a1de5b032117e7ad_cgraph.svg" width="863" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
