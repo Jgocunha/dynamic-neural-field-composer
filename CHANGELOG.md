@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- `Application::enableKeyboardShortcuts()` and `Application::appendFonts()` bound
+  `ImGui::GetIO()` — which returns `ImGuiIO&` — with `auto io = ...`, copying the
+  struct by value. Every write through `io` (`ConfigFlags |=
+  ImGuiConfigFlags_NavEnableKeyboard`, `FontDefault = ...`) landed on a discarded
+  temporary, so keyboard navigation never actually enabled and ImGui's default font
+  was never actually applied, even though the intended font/config values were
+  computed correctly. Both now bind `ImGuiIO&` by reference, so the changes persist
+  on the real global IO (#114)
 - `NodeGraphWindow` called `ImNodeEditor::EndCreate()` only on the
   `BeginCreate() == true` path. `BeginCreate()` marks the creator action active
   *before* it can return false, and only `EndCreate()` clears that flag, so any
