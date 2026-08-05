@@ -316,3 +316,32 @@ catch (const std::exception& ex) {
     return 1;
 }
 ```
+
+### Errors raised while adding an element from the GUI
+
+Element construction validates its input and throws — `ElementDimensions` rejects a
+non-positive extent or step, the `Element` base constructor rejects an invalid size, and
+`ElementFactory` rejects a parameter-type mismatch or an unknown label. The element-creation
+forms run inside the ImGui frame, so an exception escaping one of them would unwind out of
+the render loop and end the application.
+
+`SimulationWindow` therefore routes every creation call site through:
+
+```cpp
+#include "user_interface/element_creation_error.h"
+
+// Empty string on success; otherwise a message describing the failure.
+const std::string error = user_interface::describeElementCreationFailure([&]
+{
+    simulation->addElement(std::make_shared<element::NeuralField>(common, params));
+});
+```
+
+The message is shown inline under the **Add element** button and cleared by the next
+successful add. In the **Add element** card the guard is placed around the parameter form
+as a whole, so on the frame the button is pressed it covers rendering the widgets *and*
+constructing the element. Every other frame renders unguarded, so a genuine rendering
+fault is still allowed to propagate rather than being mislabelled as a failed add.
+
+`describeElementCreationFailure()` has no ImGui dependency, so it can be used — and unit
+tested — outside the GUI.

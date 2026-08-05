@@ -62,6 +62,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "visualization/test_visualization.cpp"
             # user_interface
             "user_interface/test_plot_control_window.cpp"
+            "user_interface/test_element_creation_error.cpp"
             "user_interface/test_node_graph_window_lifetime.cpp"
             "visualization/test_plot_parameters.cpp"
     )

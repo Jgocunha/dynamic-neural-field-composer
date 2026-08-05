@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- The element-creation forms in the GUI caught nothing, while the library has been
+  deliberately moving toward failing loudly (`ElementDimensions`, the `Element` base
+  constructor, `ElementFactory` all throw on invalid input). Those forms run inside the
+  ImGui render loop, so a user typing a bad size or dimension could send an exception
+  straight out of the frame and terminate the application. All 28 creation call sites
+  now funnel through `describeElementCreationFailure()`, which reports the failure as
+  an inline message under the **Add element** button instead. On the frame **Add** is
+  pressed the guard covers the whole render-and-construct step for the parameter form;
+  every other frame renders unguarded, so a genuine rendering fault still surfaces as
+  itself (#146)
+
+- `SimulationFileManager` pre-checked `x_max`/`d_x` for non-positive values before
+  constructing an element but never checked `y_max`/`d_y`, so a malformed `.dnf` was
+  reported cleanly on one axis and thrown from deep inside the load on the other. Both
+  axes now report the same way. `y_max`/`d_y` remain optional, so files that omit them
+  still load (#146)
+
+- Both axis pre-checks only tested for a positive value, but the loader converts
+  `x_max`/`y_max` with `get<int>()`. An extent that does not fit in an `int` was
+  therefore an out-of-range floating-to-integer cast — undefined behaviour, which in a
+  debug build aborted the process outright rather than reporting a malformed file. Both
+  extents must now be whole numbers in `int` range, and both step sizes finite. An
+  integer-valued float (`"x_max": 50.0`) still loads (#146)
+
+- `loadElementsFromJson()` called `jsonToElements()` outside any `try`, so a contract the
+  pre-check does not re-derive — such as `ElementDimensions`' samples-per-axis ceiling,
+  reachable from a valid `x_max` with a tiny `d_x` — escaped the loader entirely and, in
+  the GUI, unwound out of the render loop. Element construction is now guarded and a
+  failure is reported as a malformed file; anything the aborted load had already added is
+  rolled back, leaving elements the caller held beforehand untouched (#146)
+
+- A failed load rolled back the elements it had added but kept the `identifier` and
+  `deltaT` it had already read from the same file, leaving the simulation renamed and
+  re-timed while holding none of that file's elements. Both are now restored when the
+  load aborts (#146)
+
+- A file rejected by the up-front element validation was still followed by
+  `Simulation loaded from: <path>` at INFO level, so the log reported success directly
+  after reporting the file as invalid. That path now aborts the load like any other
+  failure (#146)
 - **File → Quit** and **Ctrl+Q** called `std::exit(0)` from inside the ImGui render
   callback, terminating the process without unwinding the stack: `Application::close()`
   never ran and no destructor fired. Both now call the new `Application::requestQuit()`,
