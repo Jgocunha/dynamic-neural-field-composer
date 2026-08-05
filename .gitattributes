@@ -1,0 +1,8 @@
+# dependencies.env is sourced by `shell: bash` steps on the Windows CI runners,
+# which check out with core.autocrlf=true by default. A CRLF checkout would put a
+# trailing carriage return in $VCPKG_COMMIT and $IPK_COMMIT, and `git checkout` would
+# reject the revision. Force LF so the file reads the same on every platform.
+dynamic-neural-field-composer/dependencies.env text eol=lf
+
+# Same reasoning for the shell scripts.
+*.sh text eol=lf

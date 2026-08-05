@@ -4,12 +4,31 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# ── pinned revisions ──────────────────────────────────────────────────────────
+# shellcheck source=../dependencies.env
+. "$PROJECT_ROOT/dependencies.env"
+
+# Report a drifted checkout instead of moving it. VCPKG_ROOT is usually a shared
+# tool other projects also build against, so the only copy we check out to the
+# pin is one we cloned ourselves.
+check_pin() {
+    local dir="$1" want="$2" name="$3"
+    local have
+    have="$(git -C "$dir" rev-parse HEAD 2>/dev/null)" || return 0
+    if [ "$have" != "$want" ]; then
+        echo "WARNING: $name at $dir is at $have,"
+        echo "         but dependencies.env pins $want."
+        echo "         CI builds against the pin, so local results may differ."
+    fi
+}
+
 # ── vcpkg ─────────────────────────────────────────────────────────────────────
 if [ -z "$VCPKG_ROOT" ]; then
     export VCPKG_ROOT="$HOME/vcpkg"
     echo "VCPKG_ROOT not set. Installing vcpkg to $VCPKG_ROOT..."
     if [ ! -d "$VCPKG_ROOT" ]; then
         git clone https://github.com/microsoft/vcpkg.git "$VCPKG_ROOT"
+        git -C "$VCPKG_ROOT" checkout --quiet "$VCPKG_COMMIT"
         "$VCPKG_ROOT/bootstrap-vcpkg.sh" -disableMetrics
     fi
     echo ""
@@ -17,6 +36,8 @@ if [ -z "$VCPKG_ROOT" ]; then
     echo "  export VCPKG_ROOT=$VCPKG_ROOT"
     echo ""
 fi
+
+check_pin "$VCPKG_ROOT" "$VCPKG_COMMIT" vcpkg
 
 # ── triplet detection ─────────────────────────────────────────────────────────
 OS=$(uname -s)
@@ -46,7 +67,9 @@ IPK_INSTALL="$PROJECT_ROOT/deps/ipk-install"
 if [ ! -d "$IPK_SRC" ]; then
     echo "Cloning imgui-platform-kit..."
     git clone https://github.com/Jgocunha/imgui-platform-kit.git "$IPK_SRC"
+    git -C "$IPK_SRC" checkout --quiet "$IPK_COMMIT"
 fi
+check_pin "$IPK_SRC" "$IPK_COMMIT" imgui-platform-kit
 
 if [ ! -d "$IPK_INSTALL" ]; then
     echo "Building imgui-platform-kit..."

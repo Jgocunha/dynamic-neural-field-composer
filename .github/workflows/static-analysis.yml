@@ -21,7 +21,9 @@ jobs:
 
       - name: Set up vcpkg
         run: |
+          . dynamic-neural-field-composer/dependencies.env
           git clone https://github.com/microsoft/vcpkg.git $HOME/vcpkg
+          git -C $HOME/vcpkg checkout --quiet $VCPKG_COMMIT
           $HOME/vcpkg/bootstrap-vcpkg.sh -disableMetrics
           echo "VCPKG_ROOT=$HOME/vcpkg" >> $GITHUB_ENV
 
@@ -29,7 +31,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/vcpkg/installed
-          key: vcpkg-clang-tidy-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/build.sh') }}
+          # Keyed on what actually decides the contents of installed/: the pinned
+          # vcpkg revision and this file, which carries the package list inline.
+          # (It used to hash dynamic-neural-field-composer/build.sh, a path that
+          # does not exist -- the real script is under scripts/. hashFiles returns
+          # an empty string for a pattern that matches nothing, so the key was the
+          # constant "vcpkg-clang-tidy-Linux-" and this cache never invalidated.)
+          key: vcpkg-clang-tidy-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/dependencies.env', '.github/workflows/static-analysis.yml') }}
           restore-keys: vcpkg-clang-tidy-${{ runner.os }}-
 
       - name: Install vcpkg packages
@@ -47,7 +55,9 @@ jobs:
         run: |
           IPK_SRC=$HOME/imgui-platform-kit-src
           IPK_INSTALL=$HOME/imgui-platform-kit-install
+          . dynamic-neural-field-composer/dependencies.env
           git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
+          git -C $IPK_SRC checkout --quiet $IPK_COMMIT
           cmake -S $IPK_SRC/imgui-platform-kit -B $IPK_SRC/build \
             -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
             -DVCPKG_TARGET_TRIPLET=x64-linux \

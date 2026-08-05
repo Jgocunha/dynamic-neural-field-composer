@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Every job cloned `microsoft/vcpkg` and `Jgocunha/imgui-platform-kit` at upstream
+  `HEAD`, so which dependency versions a build resolved depended on the day it ran
+  and an upstream change nobody here made could break CI overnight. Both are now
+  pinned to exact commits in a single `dependencies.env`, read by the four CI jobs,
+  the release and static-analysis workflows, and the local setup scripts. A vcpkg
+  the developer already has is warned about rather than checked out, since
+  `VCPKG_ROOT` is normally shared with their other projects. The monthly *vcpkg
+  Maintenance Check* keeps reading upstream `HEAD` on purpose — that is what now
+  reports how far the pin has drifted (#69, #117)
+
+### Fixed
+- The clang-tidy job's vcpkg cache key hashed `dynamic-neural-field-composer/build.sh`,
+  a path that does not exist — the script is under `scripts/`. `hashFiles()` returns an
+  empty string when a pattern matches nothing, so the key was the constant
+  `vcpkg-clang-tidy-Linux-` and the cache was never invalidated. It is now keyed on the
+  pinned revisions and the workflow file that carries the package list (#125)
+
 ## [2.10.0] - 2026-08-05
 
 ### Fixed

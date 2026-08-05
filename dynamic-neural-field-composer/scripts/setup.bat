@@ -4,6 +4,11 @@ setlocal EnableDelayedExpansion
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..
 
+:: ── pinned revisions ──────────────────────────────────────────────────────────
+set DEPS_ENV=%PROJECT_ROOT%\dependencies.env
+if not exist "%DEPS_ENV%" ( echo ERROR: %DEPS_ENV% not found. & exit /b 1 )
+for /f "usebackq eol=# tokens=1,* delims==" %%a in ("%DEPS_ENV%") do set "%%a=%%b"
+
 :: ── vcpkg ─────────────────────────────────────────────────────────────────────
 if not defined VCPKG_ROOT (
     set VCPKG_ROOT=C:\tools\vcpkg
@@ -11,6 +16,8 @@ if not defined VCPKG_ROOT (
     if not exist "!VCPKG_ROOT!" (
         git clone https://github.com/microsoft/vcpkg.git "!VCPKG_ROOT!"
         if errorlevel 1 ( echo ERROR: Failed to clone vcpkg. & exit /b 1 )
+        git -C "!VCPKG_ROOT!" checkout --quiet %VCPKG_COMMIT%
+        if errorlevel 1 ( echo ERROR: Failed to check out pinned vcpkg revision. & exit /b 1 )
         call "!VCPKG_ROOT!\bootstrap-vcpkg.bat" -disableMetrics
         if errorlevel 1 ( echo ERROR: Failed to bootstrap vcpkg. & exit /b 1 )
     )
@@ -18,6 +25,8 @@ if not defined VCPKG_ROOT (
     echo VCPKG_ROOT set permanently to !VCPKG_ROOT!
     echo NOTE: Open a new terminal for VCPKG_ROOT to be visible to other tools.
 )
+
+call :check_pin "%VCPKG_ROOT%" "%VCPKG_COMMIT%" vcpkg
 
 :: ── vcpkg packages ────────────────────────────────────────────────────────────
 echo Installing vcpkg packages...
@@ -39,7 +48,10 @@ if not exist "%IPK_SRC%" (
     echo Cloning imgui-platform-kit...
     git clone https://github.com/Jgocunha/imgui-platform-kit.git "%IPK_SRC%"
     if errorlevel 1 ( echo ERROR: Failed to clone imgui-platform-kit. & exit /b 1 )
+    git -C "%IPK_SRC%" checkout --quiet %IPK_COMMIT%
+    if errorlevel 1 ( echo ERROR: Failed to check out pinned imgui-platform-kit revision. & exit /b 1 )
 )
+call :check_pin "%IPK_SRC%" "%IPK_COMMIT%" imgui-platform-kit
 
 if not exist "%IPK_INSTALL%\release" (
     echo Building imgui-platform-kit Release...
@@ -71,3 +83,19 @@ if not exist "%IPK_INSTALL%\debug" (
 
 echo.
 echo Setup complete. Run scripts\build.bat to build the project.
+exit /b 0
+
+:: ── helpers ───────────────────────────────────────────────────────────────────
+:: Report a drifted checkout instead of moving it. VCPKG_ROOT is usually a shared
+:: tool other projects also build against, so the only copy we check out to the
+:: pin is one we cloned ourselves.
+:check_pin
+set "HAVE="
+for /f "delims=" %%h in ('git -C "%~1" rev-parse HEAD 2^>nul') do set "HAVE=%%h"
+if not defined HAVE goto :eof
+if /i not "!HAVE!"=="%~2" (
+    echo WARNING: %~3 at %~1 is at !HAVE!,
+    echo          but dependencies.env pins %~2.
+    echo          CI builds against the pin, so local results may differ.
+)
+goto :eof
