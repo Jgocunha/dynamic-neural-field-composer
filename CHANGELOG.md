@@ -4,7 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-08-05
+
 ### Fixed
+- `NodeGraphWindow` created an imgui-node-editor context in its constructor but never
+  destroyed it — the destructor was `= default` and nothing in the codebase called
+  `ImNodeEditor::DestroyEditor()`. `EditorContext::~EditorContext` is what deletes every
+  node, pin and link object the context owns and frees its splitter memory, so skipping
+  it leaked the whole graph, once per window built. Because every File→Open rebuilds the
+  window set, the leak grew with each reopened simulation. The context is now held in a
+  `unique_ptr` with a `DestroyEditor` deleter, so it is released on every exit path
+  rather than depending on a destructor body remembering to do it (#115)
 - Connected elements were never destroyed. `addInput()` records a connection on both
   endpoints — the consumer keeps its source in `inputs`, the source keeps the consumer
   in `outputs` — so any two connected elements held `shared_ptr`s to each other. Neither
@@ -90,8 +100,6 @@ All notable changes to this project will be documented in this file.
   never ran and no destructor fired. Both now call the new `Application::requestQuit()`,
   which `hasGUIBeenClosed()` reports, so the ordinary main loop falls through to
   `close()` and shuts down normally. Existing main loops need no change (#122)
-- `Application::requestQuit()` / `isQuitRequested()` — ask the application to shut down
-  at the end of the current frame, and query whether a shutdown was requested (#122)
 - `Element`'s constructor logged an error and did a bare `return` when
   `dimensionParameters.size` was non-positive, leaving `commonParameters` at its default
   value and `components` completely empty instead of failing to construct. Callers then
@@ -141,20 +149,14 @@ All notable changes to this project will be documented in this file.
   an empty one — still fails the job (#148)
 
 ### Added
+- `Application::requestQuit()` / `isQuitRequested()` — ask the application to shut down
+  at the end of the current frame, and query whether a shutdown was requested (#122)
 - Headless ImGui test harness (`tests/user_interface/ui_test_harness.h`) that drives
   real `render()` calls with no window and no OpenGL context, plus ~190 tests across
   the user-interface and visualization layers, so those files are genuinely exercised
   rather than sitting at 0% in the coverage denominator (#127)
 - `Logger::getMinLogLevel()`, so callers that temporarily raise the log threshold can
   restore the previous value instead of assuming the default
-- `NodeGraphWindow` created an imgui-node-editor context in its constructor but never
-  destroyed it — the destructor was `= default` and nothing in the codebase called
-  `ImNodeEditor::DestroyEditor()`. `EditorContext::~EditorContext` is what deletes every
-  node, pin and link object the context owns and frees its splitter memory, so skipping
-  it leaked the whole graph, once per window built. Because every File→Open rebuilds the
-  window set, the leak grew with each reopened simulation. The context is now held in a
-  `unique_ptr` with a `DestroyEditor` deleter, so it is released on every exit path
-  rather than depending on a destructor body remembering to do it (#115)
 - `SigmoidFunction.ApplyAgreesWithOperatorCallAcrossRegimes`: pins `apply()` (the path
   `NeuralField::calculateOutput()` takes every step) to `operator()` within 1e-12 across
   five steepness/shift regimes. The two once disagreed — `apply()` computed in float32
