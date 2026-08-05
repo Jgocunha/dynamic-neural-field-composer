@@ -251,7 +251,7 @@ namespace dnf_composer
 		init();
 	}
 
-	void Simulation::run(double runTime)
+	void Simulation::run(double runTime, bool closeOnFinish)
 	{
 		if (runTime <= 0)
 		{
@@ -270,10 +270,13 @@ namespace dnf_composer
 			step();
 		}
 
-		close();
+		if (closeOnFinish)
+		{
+			close();
+		}
 	}
 
-	void Simulation::runForRealTime(double milliseconds)
+	void Simulation::runForRealTime(double milliseconds, bool closeOnFinish)
 	{
 		if (milliseconds <= 0)
 		{
@@ -294,7 +297,10 @@ namespace dnf_composer
 			step();
 		}
 
-		close();
+		if (closeOnFinish)
+		{
+			close();
+		}
 	}
 
 	void Simulation::addElement(const std::shared_ptr<element::Element>& element)
@@ -453,7 +459,7 @@ namespace dnf_composer
 		return nullptr;
 	}
 
-	std::shared_ptr<element::Element> Simulation::getElement(const int index) const 
+	std::shared_ptr<element::Element> Simulation::getElement(const int index) const
 	{
 		for (const auto& element : elements)
 		{
@@ -463,7 +469,7 @@ namespace dnf_composer
 			}
 		}
 
-		throw Exception(ErrorCode::SIM_ELEM_INDEX, index);
+		return nullptr;
 	}
 
 	std::vector<double> Simulation::getComponent(const std::string& id, const std::string& componentName) const
