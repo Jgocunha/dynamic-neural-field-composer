@@ -10,10 +10,92 @@ All notable changes to this project will be documented in this file.
   never ran and no destructor fired. Both now call the new `Application::requestQuit()`,
   which `hasGUIBeenClosed()` reports, so the ordinary main loop falls through to
   `close()` and shuts down normally. Existing main loops need no change (#122)
-
-### Added
 - `Application::requestQuit()` / `isQuitRequested()` — ask the application to shut down
   at the end of the current frame, and query whether a shutdown was requested (#122)
+- `Element`'s constructor logged an error and did a bare `return` when
+  `dimensionParameters.size` was non-positive, leaving `commonParameters` at its default
+  value and `components` completely empty instead of failing to construct. Callers then
+  hit a confusing `ELEM_COMP_NOT_FOUND` from `getComponentPtr("output")`, or saw
+  `getSize() == 0` and had downstream loops silently no-op, rather than learning at
+  construction time that the object was never valid. The constructor now throws
+  `Exception(ErrorCode::ELEM_INVALID_SIZE, ...)` instead, matching the validation
+  `GaussStimulus` already performs for its own parameters (#118)
+- `Application::enableKeyboardShortcuts()` and `Application::appendFonts()` bound
+  `ImGui::GetIO()` — which returns `ImGuiIO&` — with `auto io = ...`, copying the
+  struct by value. Every write through `io` (`ConfigFlags |=
+  ImGuiConfigFlags_NavEnableKeyboard`, `FontDefault = ...`) landed on a discarded
+  temporary, so keyboard navigation never actually enabled and ImGui's default font
+  was never actually applied, even though the intended font/config values were
+  computed correctly. Both now bind `ImGuiIO&` by reference, so the changes persist
+  on the real global IO (#114)
+- `NodeGraphWindow` called `ImNodeEditor::EndCreate()` only on the
+  `BeginCreate() == true` path. `BeginCreate()` marks the creator action active
+  *before* it can return false, and only `EndCreate()` clears that flag, so any
+  frame without a create action left the action stuck active — tripping
+  `IM_ASSERT(false == m_InActive)` on the next frame, and silently breaking
+  drag-to-connect in builds with asserts compiled out. `EndCreate()` is now called
+  unconditionally, matching upstream's own examples. Found by the new headless UI
+  suite (#127)
+- Two logger tests passed or failed purely on the order the suites happened to run in.
+  `Logger::minLogLevel` is process-wide state, and `tests/simulation/test_thread_safety.cpp`
+  and `tests/validation/validation_common.h` raised it to `FATAL` without ever restoring
+  it, silently suppressing the console output that later suites assert on. Both sites now
+  use an RAII guard that restores the previous level on scope exit
+- The same class of shared-state problem inside `NodeGraphWindow`: its hover timers,
+  EMA-smoothed colormap ranges, and pending click-to-click pin were function-local
+  statics keyed by node id and element name, so two tests reusing an element name
+  shared cache entries and results depended on test order. They now live in one
+  place with a `NodeGraphWindow::resetTransientStateForTesting()` entry point that
+  the UI test fixture calls between tests
+  - The issue-triage workflow closed newly filed issues as duplicates of themselves —
+  the issue list handed to Gemini for duplicate detection was fetched after the issue
+  was opened, so it contained the issue being triaged, and nothing rejected a
+  self-referential `duplicate_of` before closing. The triaged issue is now filtered out
+  of that list, and a close only happens when `duplicate_of` is numeric and refers to a
+  different issue. Secondary labels are also no longer word-split, so `good first issue`
+  and `help wanted` are applied as single labels instead of failing the step (#159)
+  - The `doc-sync` check went red on every open PR once the Gemini free tier's 20
+  requests a day were spent, reporting a quota error that said nothing about the PR
+  under review. Quota exhaustion is now tolerated with a warning. The gate fails
+  closed: an error that is not positively identified as a quota or rate limit — and
+  an empty one — still fails the job (#148)
+
+### Added
+- Headless ImGui test harness (`tests/user_interface/ui_test_harness.h`) that drives
+  real `render()` calls with no window and no OpenGL context, plus ~190 tests across
+  the user-interface and visualization layers, so those files are genuinely exercised
+  rather than sitting at 0% in the coverage denominator (#127)
+- `Logger::getMinLogLevel()`, so callers that temporarily raise the log threshold can
+  restore the previous value instead of assuming the default
+- `NodeGraphWindow` created an imgui-node-editor context in its constructor but never
+  destroyed it — the destructor was `= default` and nothing in the codebase called
+  `ImNodeEditor::DestroyEditor()`. `EditorContext::~EditorContext` is what deletes every
+  node, pin and link object the context owns and frees its splitter memory, so skipping
+  it leaked the whole graph, once per window built. Because every File→Open rebuilds the
+  window set, the leak grew with each reopened simulation. The context is now held in a
+  `unique_ptr` with a `DestroyEditor` deleter, so it is released on every exit path
+  rather than depending on a destructor body remembering to do it (#115)
+- `SigmoidFunction.ApplyAgreesWithOperatorCallAcrossRegimes`: pins `apply()` (the path
+  `NeuralField::calculateOutput()` takes every step) to `operator()` within 1e-12 across
+  five steepness/shift regimes. The two once disagreed — `apply()` computed in float32
+  while `operator()` used float64, so the same field gave different results depending on
+  which ran, a reproducibility hazard for threshold-driven stability detection. Both have
+  been float64 since "Sigmoid to float64 end-to-end"; this closes the acceptance criterion
+  that was never covered. The old split shows up as a ~2e-7 discrepancy here, five orders
+  of magnitude above the tolerance (#120)
+
+### Documentation
+- `tests/golden/test_golden_activation.cpp` still described `SigmoidFunction::apply()` as
+  computing in float32 and the reference as mirroring that; both have been float64 for
+  some time and `reference/ref_activation.h` already said so
+- `CONTRIBUTING.md` told contributors to run `build.bat` / `./build.sh` / `./build_macos.sh`
+  from the repository root, but those scripts live in `dynamic-neural-field-composer/scripts/`,
+  so every build command failed on a fresh clone. It also listed a GCC 11+ minimum while the
+  README and CI both require GCC 13+, gave a `ctest --build-config Release` invocation that
+  cannot work against the single-config build trees the scripts produce (and was run from a
+  directory with no test configuration), and linked to `wiki/Getting-Started.md` when the page
+  is `wiki/Getting Started.md`. All corrected, with the setup step and the per-platform CTest
+  directories documented (#132)
 
 ## [2.9.6] - 2026-07-31
 

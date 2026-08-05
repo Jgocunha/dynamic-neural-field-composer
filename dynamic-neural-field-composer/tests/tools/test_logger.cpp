@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include <string>
+#include <stdexcept>
 
 #include "tools/logger.h"
+#include "scoped_min_log_level.h"
 
 using namespace dnf_composer::tools::logger;
 
@@ -101,4 +103,53 @@ TEST(LoggerTest, FreeFunctionLogProducesOutput)
     log(LogLevel::INFO, "free-fn-marker", LogOutputMode::CONSOLE);
     const std::string out = ::testing::internal::GetCapturedStdout();
     EXPECT_NE(out.find("free-fn-marker"), std::string::npos);
+}
+
+// ---------------------------------------------------------------------------
+// ScopedMinLogLevel — the global threshold must not leak out of a scope.
+// Regression guard: tests that raise the level to stay quiet previously left it
+// raised, silently suppressing the output every later suite asserted on, so the
+// suite passed or failed purely on registration order.
+// ---------------------------------------------------------------------------
+
+TEST(LoggerTest, ScopedMinLogLevelRestoresPreviousLevel)
+{
+    // Restore whatever the threshold was on entry -- these tests must not leak
+    // their own DEBUG setting either, which is the very bug they guard against.
+    const dnf_composer::test::ScopedMinLogLevel restoreOnExit{ Logger::getMinLogLevel() };
+    Logger::setMinLogLevel(LogLevel::DEBUG);
+    {
+        const dnf_composer::test::ScopedMinLogLevel quiet{ LogLevel::FATAL };
+        EXPECT_EQ(Logger::getMinLogLevel(), LogLevel::FATAL);
+    }
+    EXPECT_EQ(Logger::getMinLogLevel(), LogLevel::DEBUG);
+}
+
+TEST(LoggerTest, ScopedMinLogLevelRestoresOnException)
+{
+    const dnf_composer::test::ScopedMinLogLevel restoreOnExit{ Logger::getMinLogLevel() };
+    Logger::setMinLogLevel(LogLevel::DEBUG);
+    try
+    {
+        const dnf_composer::test::ScopedMinLogLevel quiet{ LogLevel::FATAL };
+        throw std::runtime_error("boom");
+    }
+    catch (const std::runtime_error&) { /* expected */ }
+    EXPECT_EQ(Logger::getMinLogLevel(), LogLevel::DEBUG);
+}
+
+// A message at INFO must still reach the console after a "quiet" scope ends.
+// This is the exact assertion that order-dependent leakage used to break.
+TEST(LoggerTest, LogOutputSurvivesAQuietScope)
+{
+    const dnf_composer::test::ScopedMinLogLevel restoreOnExit{ Logger::getMinLogLevel() };
+    Logger::setMinLogLevel(LogLevel::DEBUG);
+    {
+        const dnf_composer::test::ScopedMinLogLevel quiet{ LogLevel::FATAL };
+        Logger(LogLevel::INFO, LogOutputMode::CONSOLE).log("suppressed");
+    }
+    ::testing::internal::CaptureStdout();
+    Logger(LogLevel::INFO, LogOutputMode::CONSOLE).log("visible-after-scope");
+    const std::string out = ::testing::internal::GetCapturedStdout();
+    EXPECT_NE(out.find("visible-after-scope"), std::string::npos);
 }

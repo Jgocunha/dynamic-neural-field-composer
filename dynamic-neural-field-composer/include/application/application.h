@@ -129,11 +129,33 @@ namespace dnf_composer
 		/// @brief Return true if the GUI overlay is currently active.
 		[[nodiscard]] bool isGUIActive() const;
 
+		/// @brief Enable ImGui keyboard navigation for the current ImGui context.
+		///
+		/// Sets @c ImGuiConfigFlags_NavEnableKeyboard on the IO struct returned by
+		/// @c ImGui::GetIO(). Must bind the IO **by reference** (`ImGuiIO&`): binding
+		/// by value (`auto io = ImGui::GetIO();`) copies the struct, so the flag would
+		/// be written to a discarded temporary and keyboard navigation would silently
+		/// never activate (#114). Requires a current ImGui context (created by
+		/// @c ImGui::CreateContext()); safe to call from a headless test that never
+		/// calls @c NewFrame()/@c Render().
+		static void enableKeyboardShortcuts();
+
+		/// @brief Assign the font-registry globals and the ImGui default font.
+		///
+		/// Reads the fonts already present in @c ImGui::GetIO().Fonts (populated by
+		/// @c setGUIParameters()/imgui_kit before this runs), assigns each
+		/// `g_*Font` global declared below, sets @c io.FontDefault, adds the
+		/// Font Awesome icon fonts, and builds the atlas. As with
+		/// @c enableKeyboardShortcuts(), the IO struct must be bound **by reference**
+		/// (`ImGuiIO&`): a by-value `auto io` copy would let @c io.FontDefault
+		/// assignment vanish with the temporary, leaving ImGui's real default font
+		/// unset (#114). Requires at least @c g_FontCount fonts already registered in
+		/// the atlas, or it throws @c ErrorCode::APP_INIT.
+		static void appendFonts();
+
 		~Application() = default;
 	private:
 		void setGUIParameters();
-		static void enableKeyboardShortcuts();
-		static void appendFonts();
 		static void defineImGuiStyle();
 	};
 

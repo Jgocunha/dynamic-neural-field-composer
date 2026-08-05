@@ -44,7 +44,7 @@ namespace
 
 int main(int argc, char* argv[])
 {
-    silenceLogging();
+    const auto quiet = silenceLogging();
 
     const fs::path simDir = (argc > 1) ? fs::path(argv[1])
                                         : fs::path(VALIDATION_DATA_DIR) / "2d_spectral" / "simulations";
