@@ -5,6 +5,12 @@
 #include <string>
 #include <utility>
 
+// ImGui/ImPlot used directly below (BeginMenuBar, PlotHeatmap, ...). Previously
+// reached transitively through tools/logger.h -> imgui-platform-kit/log_window.h;
+// that path is gone now that tools/ no longer depends on the GUI stack (#123), so
+// this file pulls in what it actually uses, same as lineplot.cpp already does.
+#include "application/application.h"
+
 namespace dnf_composer
 {
 	ManualHeatmapDimensions resolveManualHeatmapDimensions(int x_max, int y_max,

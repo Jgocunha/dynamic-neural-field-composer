@@ -4,9 +4,12 @@
 
 #include "application/application.h"
 
+#include <imgui-platform-kit/colour_palette.h>
+
 #include "application/style.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 #include "user_interface/fonts/fa.h"
+#include "user_interface/log_window.h"
 #include "tools/utils.h"
 
 namespace dnf_composer
@@ -22,6 +25,20 @@ namespace dnf_composer
 		if (this->visualization->getSimulation() != this->simulation) {
 			throw Exception(ErrorCode::APP_VIS_SIM_MISMATCH);
 		}
+
+		// Wire the logger to the GUI (issue #123): tools/logger has no dependency on
+		// the UI, so the UI hands it a callback here instead. Registering before
+		// setGUIParameters() means its "GUI parameters set successfully" log (and
+		// every log() call from this point on) also reaches the log window,
+		// matching the previous direct-call behavior exactly.
+		// The callback stores the level rather than resolving a color here, since
+		// log() can be reached from off the UI thread and getLogLevelColorCodeGui()
+		// calls ImGui; LogWindow resolves the color on the UI thread at render time.
+		tools::logger::Logger::setUiSink([](const tools::logger::LogLevel level, const std::string& message)
+		{
+			user_interface::LogWindow::addLog(level, "%s", message.c_str());
+		});
+
 		setGUIParameters();
 	}
 
