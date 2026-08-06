@@ -77,6 +77,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">dnf_composer::tools::logger Namespace Reference</div></div>
@@ -87,6 +88,12 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html">Logger</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:aa19c4f19d502fd9a7149cb9500d061ac" id="r_aa19c4f19d502fd9a7149cb9500d061ac"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#aa19c4f19d502fd9a7149cb9500d061ac">UiLogSink</a> = std::function&lt; void(<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd">LogLevel</a> level, const std::string &amp;message)&gt;</td></tr>
+<tr class="memdesc:aa19c4f19d502fd9a7149cb9500d061ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback the UI layer registers to receive GUI-destined log messages.  <br /></td></tr>
+<tr class="separator:aa19c4f19d502fd9a7149cb9500d061ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -111,6 +118,24 @@ Functions</h2></td></tr>
 <tr class="memitem:af64ef64b3026606a73972fdcae2ca87a" id="r_af64ef64b3026606a73972fdcae2ca87a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a">log</a> (<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd">LogLevel</a> level, const std::string &amp;message, <a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#a140699a0bf2e738ec68ba603bc082b6a">LogOutputMode</a> mode=<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#a140699a0bf2e738ec68ba603bc082b6aa7e4785a2c3b0ebfe820639306f449f0b">ALL</a>)</td></tr>
 <tr class="separator:af64ef64b3026606a73972fdcae2ca87a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="aa19c4f19d502fd9a7149cb9500d061ac" name="aa19c4f19d502fd9a7149cb9500d061ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa19c4f19d502fd9a7149cb9500d061ac">&#9670;&#160;</a></span>UiLogSink</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#aa19c4f19d502fd9a7149cb9500d061ac">dnf_composer::tools::logger::UiLogSink</a> = typedef std::function&lt;void(<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd">LogLevel</a> level, const std::string&amp; message)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Callback the UI layer registers to receive GUI-destined log messages. </p>
+<p>Decouples tools/ from the GUI: instead of the logger calling into a concrete UI type directly, the UI hands the logger a callback at startup and the logger just invokes it. <code>message</code> is the fully formatted log line (timestamp + level prefix + text); <code>level</code> lets the callback choose a color/style without tools/ having to know anything about ImGui. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="add2bdd240ecd619a8d65d88ce271ebdd" name="add2bdd240ecd619a8d65d88ce271ebdd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#add2bdd240ecd619a8d65d88ce271ebdd">&#9670;&#160;</a></span>LogLevel</h2>

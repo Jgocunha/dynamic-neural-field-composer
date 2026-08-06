@@ -157,6 +157,9 @@ Functions</h2></td></tr>
 <tr class="separator:a349d611944459f237b8e4f65697714f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a5b5144f3ff17a0481fe4c539ce1607" id="r_a5a5b5144f3ff17a0481fe4c539ce1607"><td class="memItemLeft" align="right" valign="top">ImU32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a5a5b5144f3ff17a0481fe4c539ce1607">getHeaderColorForElementType</a> (const <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233bece">element::ElementLabel</a> label)</td></tr>
 <tr class="separator:a5a5b5144f3ff17a0481fe4c539ce1607"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b82c4825bab95fdde03bad16581a1c7" id="r_a3b82c4825bab95fdde03bad16581a1c7"><td class="memItemLeft" align="right" valign="top">ImVec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a3b82c4825bab95fdde03bad16581a1c7">getLogLevelColorCodeGui</a> (<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd">tools::logger::LogLevel</a> level)</td></tr>
+<tr class="memdesc:a3b82c4825bab95fdde03bad16581a1c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map a logger severity to the ImGui text color used in the log window.  <br /></td></tr>
+<tr class="separator:a3b82c4825bab95fdde03bad16581a1c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe75962d64deea93c9a097002c017d15" id="r_abe75962d64deea93c9a097002c017d15"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#abe75962d64deea93c9a097002c017d15">paramRowBool</a> (const char *label, const char *wid, bool *v)</td></tr>
 <tr class="separator:abe75962d64deea93c9a097002c017d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cc14d23b1b1051c1457f6b514e9aa60" id="r_a5cc14d23b1b1051c1457f6b514e9aa60"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1user__interface.html#a5cc14d23b1b1051c1457f6b514e9aa60">paramRowDouble</a> (const char *label, const char *wid, double *v, const char *fmt)</td></tr>
@@ -458,6 +461,33 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3b82c4825bab95fdde03bad16581a1c7" name="a3b82c4825bab95fdde03bad16581a1c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b82c4825bab95fdde03bad16581a1c7">&#9670;&#160;</a></span>getLogLevelColorCodeGui()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImVec4 dnf_composer::user_interface::getLogLevelColorCodeGui </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd">tools::logger::LogLevel</a>&#160;</td>
+          <td class="paramname"><em>level</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Map a logger severity to the ImGui text color used in the log window. </p>
+<p>Color is a rendering concern, so it lives here rather than in tools/logger — the logger only ever hands the UI a <code>LogLevel</code>; the UI decides how to draw it (issue #123). </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">level</td><td>Severity to look up. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An accent color for DEBUG/INFO/WARNING/ERROR/FATAL; for any other value, the current ImGui text color if a context exists, otherwise gray. </dd></dl>
 
 </div>
 </div>
