@@ -20,8 +20,6 @@
 
 namespace dnf_composer
 {
-	extern ImFont* g_BlackLargeFont;
-
 	Visualization::Visualization(const std::shared_ptr<Simulation>& simulation)
 	{
 		if (simulation == nullptr) {
