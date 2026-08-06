@@ -713,8 +713,15 @@ namespace dnf_composer
          //Iterate over elements in the JSON and reconstruct them
 	    for (const auto& elementJson : jsonElements)
         {
-	        // Parse common parameters
-	        const std::string uniqueName = elementJson["uniqueName"];
+	        // Parse common parameters. uniqueName/label/x_max/d_x are all read with at()
+	        // rather than the const operator[] used elsewhere before this PR -- the
+	        // up-front pre-check above already guarantees these four are present and
+	        // well-formed for every element in jsonElements, so at() never actually
+	        // throws here in practice, but it keeps this read locally self-evidently
+	        // safe instead of relying on that cross-function invariant continuing to
+	        // hold (see #163: the same const operator[] pattern on the type-specific
+	        // fields below was undefined behavior on a missing key).
+	        const std::string uniqueName = elementJson.at("uniqueName");
 
 	        // Reject duplicate element names: keep the first occurrence, skip the rest
 	        // (and their interactions in the second pass) with a clear error.
@@ -724,10 +731,10 @@ namespace dnf_composer
 	            continue;
 	        }
 
-	        const std::string labelStr = elementJson["label"][1].get<std::string>();
+	        const std::string labelStr = elementJson.at("label").at(1).get<std::string>();
 	        const element::ElementLabel elementLabel = elementLabelFromString(labelStr);
-	        const int x_max = elementJson["x_max"];
-	        const double d_x = elementJson["d_x"];
+	        const int x_max = elementJson.at("x_max");
+	        const double d_x = elementJson.at("d_x");
 	        const int y_max = elementJson.contains("y_max") ? elementJson["y_max"].get<int>() : 1;
 	        const double d_y = elementJson.contains("d_y") ? elementJson["d_y"].get<double>() : 1.0;
 
@@ -1239,7 +1246,7 @@ namespace dnf_composer
 	    std::unordered_set<std::string> wiredNames;
 	    for (const auto& elementJson : jsonElements)
 	    {
-	        const std::string uniqueName = elementJson["uniqueName"];
+	        const std::string uniqueName = elementJson.at("uniqueName");
 
 	        // Skip the interactions of a duplicate entry: only the first occurrence of a
 	        // name was loaded, so wiring a later duplicate's inputs would attach them to
@@ -1248,7 +1255,11 @@ namespace dnf_composer
 	            continue;
 }
 
-	        const auto& inputsJson = elementJson["inputs"];
+	        // "inputs" is not covered by the pre-check above (only uniqueName/label/
+	        // x_max/d_x/y_max/d_y are), so this one is a genuine required-key check,
+	        // not just a defensive at() -- a hand-edited file that omits "inputs"
+	        // entirely is rejected here instead of reading past the end of the object.
+	        const auto& inputsJson = elementJson.at("inputs");
 
             if(!inputsJson.empty())
             {

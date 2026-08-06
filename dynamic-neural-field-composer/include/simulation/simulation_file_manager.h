@@ -116,6 +116,13 @@ namespace dnf_composer
 		/// `field coupling`/`gauss field coupling` (default to `ElementDimensions{}`, i.e.
 		/// x_max 100, d_x 1.0 -- see FieldCouplingParameters/GaussFieldCouplingParameters).
 		///
+		/// The four fields common to every element (`uniqueName`, `label`, `x_max`, `d_x`)
+		/// and `inputs` are also read with `at()`, for the same reason. `uniqueName`/`label`/
+		/// `x_max`/`d_x` are already guaranteed present by the up-front pre-check this
+		/// function runs before either loop, so `at()` here is a local-safety guarantee
+		/// rather than the primary defense; `inputs` is not covered by that pre-check, so
+		/// its `at()` is the only thing rejecting a file that omits it.
+		///
 		/// @param jsonElements  The element array to build from.
 		/// @return @c false if validation rejected the file, @c true otherwise.
 		/// @throws nlohmann::json::out_of_range if an element object is missing a required,

@@ -2161,6 +2161,62 @@ TEST_F(SimulationFileManagerTest, LoadMemoryTrace2DMissingTauBuildFailsCleanly)
 }
 
 // ---------------------------------------------------------------------------
+// SimulationFileManagerMissingCommonKey (issue #163 follow-up)
+// ---------------------------------------------------------------------------
+// uniqueName/label/x_max/d_x are common to every element and were still read
+// with the const operator[] this PR eliminates from the type-specific fields
+// above. jsonToElements()'s up-front pre-check already checks contains() for
+// all four and returns false with a specific error message on a miss -- e.g.
+// LoadElementMissingUniqueNameFailsCleanly below is actually rejected by that
+// pre-check (`is missing a valid "uniqueName"`), never reaching the at() added
+// below it. That at() is defense-in-depth: it keeps the read itself locally
+// safe rather than depending on the pre-check continuing to cover exactly
+// these keys, the same way #163 found the type-specific fields' safety had
+// silently drifted from "validated" to "not validated" over time. "inputs" is
+// different: it has no pre-check at all, so its at() is the only thing
+// rejecting a file that omits it, and this is a genuinely new rejection.
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingUniqueNameFailsCleanly)
+{
+    // Rejected by the pre-check's own contains("uniqueName") test, before
+    // either loop (and its at()) is reached.
+    const std::string body = R"({ "label": [8, "normal noise"],
+        "x_max": 100, "d_x": 1.0, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-uniquename", writeSingleElementFile(tempDir, "elem-missing-uniquename", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingLabelFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn 1",
+        "x_max": 100, "d_x": 1.0, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-label", writeSingleElementFile(tempDir, "elem-missing-label", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingXMaxFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn 1", "label": [8, "normal noise"],
+        "d_x": 1.0, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-xmax", writeSingleElementFile(tempDir, "elem-missing-xmax", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingDXFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn 1", "label": [8, "normal noise"],
+        "x_max": 100, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-dx", writeSingleElementFile(tempDir, "elem-missing-dx", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingInputsFailsCleanly)
+{
+    // Unlike uniqueName/label/x_max/d_x, "inputs" has no up-front pre-check at
+    // all -- this is the one case where at() is the sole guard, not a
+    // belt-and-suspenders addition on top of an existing rejection.
+    const std::string body = R"({ "uniqueName": "nn 1", "label": [8, "normal noise"],
+        "x_max": 100, "d_x": 1.0, "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-inputs", writeSingleElementFile(tempDir, "elem-missing-inputs", body));
+}
+
+// ---------------------------------------------------------------------------
 // SimulationFileManagerGenuineDefaults (issue #163: keys that stay optional)
 // ---------------------------------------------------------------------------
 // Unlike every key above, "activationFunction" and the FIELD_COUPLING /
