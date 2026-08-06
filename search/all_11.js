@@ -64,7 +64,7 @@ var searchData=
   ['row_61',['row',['../structdnf__composer_1_1tools_1_1math_1_1Conv2dScratch.html#a57dd1cc415b608282f776d98245ba492',1,'dnf_composer::tools::math::Conv2dScratch']]],
   ['rows_62',['rows',['../structdnf__composer_1_1ManualHeatmapDimensions.html#a11e16318bfffe67d7bc18e79e1c17d9a',1,'dnf_composer::ManualHeatmapDimensions']]],
   ['rule_20of_20five_63',['Copy / move semantics (rule of five)',['../structdnf__composer_1_1element_1_1NeuralFieldParameters.html#autotoc_md20',1,'']]],
-  ['run_64',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
-  ['runforrealtime_65',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]],
+  ['run_64',['run',['../classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d',1,'dnf_composer::Simulation']]],
+  ['runforrealtime_65',['runForRealTime',['../classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae',1,'dnf_composer::Simulation']]],
   ['runsegmentstart_66',['runSegmentStart',['../classdnf__composer_1_1Simulation.html#adf0f76a35f06a8c8d18bc1831ab0bffa',1,'dnf_composer::Simulation']]]
 ];

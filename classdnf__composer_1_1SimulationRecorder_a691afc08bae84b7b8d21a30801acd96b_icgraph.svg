@@ -78,7 +78,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" target="_top" xlink:title="Run the simulation for runTime milliseconds (blocking).">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d" target="_top" xlink:title="Run the simulation for runTime simulation&#45;time units (blocking).">
 <polygon fill="white" stroke="#666666" points="166,-67.5 0,-67.5 0,-48.5 166,-48.5 166,-67.5"/>
 <text text-anchor="middle" x="83" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation::run</text>
 </a>
@@ -96,7 +96,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" target="_top" xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms.">
+<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae" target="_top" xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms (blocking).">
 <polygon fill="white" stroke="#666666" points="155,-30 11,-30 11,0 155,0 155,-30"/>
 <text text-anchor="start" x="19" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="83" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::runForRealTime</text>

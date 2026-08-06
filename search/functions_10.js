@@ -46,6 +46,6 @@ var searchData=
   ['resizeparameters_43',['ResizeParameters',['../structdnf__composer_1_1element_1_1ResizeParameters.html#afa4af5abfa22ab86fac0d4e461fb78b1',1,'dnf_composer::element::ResizeParameters']]],
   ['resolvemanualheatmapdimensions_44',['resolveManualHeatmapDimensions',['../namespacednf__composer.html#ab3541a00b0ecfcc65863eef4c45a11aa',1,'dnf_composer']]],
   ['resume_45',['resume',['../classdnf__composer_1_1Simulation.html#abf5a7a8ec783facebf82f8563c3424de',1,'dnf_composer::Simulation']]],
-  ['run_46',['run',['../classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b',1,'dnf_composer::Simulation']]],
-  ['runforrealtime_47',['runForRealTime',['../classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c',1,'dnf_composer::Simulation']]]
+  ['run_46',['run',['../classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d',1,'dnf_composer::Simulation']]],
+  ['runforrealtime_47',['runForRealTime',['../classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae',1,'dnf_composer::Simulation']]]
 ];

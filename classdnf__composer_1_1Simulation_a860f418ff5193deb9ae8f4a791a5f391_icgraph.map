@@ -1,5 +1,5 @@
 <map id="dnf_composer::Simulation::getElement" name="dnf_composer::Simulation::getElement">
-<area shape="rect" id="Node000001" title="Retrieve an element by its unique name. Throws if not found." alt="" coords="1045,229,1237,269"/>
+<area shape="rect" id="Node000001" title="Retrieve an element by its unique name." alt="" coords="1045,229,1237,269"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0" title="Disconnect all connections from elementId and resize it to newDimensions." alt="" coords="805,5,997,45"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1121,218,1100,181,1072,139,1037,96,996,59,975,48,978,43,999,55,1041,92,1076,135,1105,178,1126,215"/>
 <area shape="rect" id="Node000003" href="$classdnf__composer_1_1Simulation.html#af2cbdd9d53809ca631ccb66c2fe615f0" title=" " alt="" coords="805,69,997,109"/>
@@ -24,8 +24,8 @@
 <area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="259,409,223,409,223,404,259,404"/>
 <area shape="rect" id="Node000013" href="$classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" title="Advance all elements by one deltaT." alt="" coords="553,459,745,499"/>
 <area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="792,479,745,480,745,474,792,474"/>
-<area shape="rect" id="Node000014" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="271,462,492,487"/>
+<area shape="rect" id="Node000014" href="$classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d" title="Run the simulation for runTime simulation&#45;time units (blocking)." alt="" coords="271,462,492,487"/>
 <area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="539,480,492,479,492,474,539,474"/>
-<area shape="rect" id="Node000015" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="285,512,477,552"/>
+<area shape="rect" id="Node000015" href="$classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms (blocking)." alt="" coords="285,512,477,552"/>
 <area shape="poly" id="edge14_Node000013_Node000015" title=" " alt="" coords="540,503,478,515,477,510,539,498"/>
 </map>

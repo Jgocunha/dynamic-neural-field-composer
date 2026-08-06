@@ -78,9 +78,9 @@
 <area shape="poly" id="edge15_Node000016_Node000017" title=" " alt="" coords="272,777,217,776,217,771,272,771"/>
 <area shape="rect" id="Node000027" href="$classdnf__composer_1_1Simulation.html#a487ef819fe0e501707580714b92b80ca" title="Deserialize the simulation state from a JSON file." alt="" coords="20,825,212,865"/>
 <area shape="poly" id="edge21_Node000026_Node000027" title=" " alt="" coords="292,844,213,846,212,840,292,839"/>
-<area shape="rect" id="Node000028" href="$classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" title="Run the simulation for runTime milliseconds (blocking)." alt="" coords="5,890,227,915"/>
+<area shape="rect" id="Node000028" href="$classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d" title="Run the simulation for runTime simulation&#45;time units (blocking)." alt="" coords="5,890,227,915"/>
 <area shape="poly" id="edge22_Node000026_Node000028" title=" " alt="" coords="299,864,174,893,173,887,297,859"/>
-<area shape="rect" id="Node000029" href="$classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms." alt="" coords="20,940,212,980"/>
+<area shape="rect" id="Node000029" href="$classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae" title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms (blocking)." alt="" coords="20,940,212,980"/>
 <area shape="poly" id="edge23_Node000026_Node000029" title=" " alt="" coords="293,864,276,873,261,886,253,900,244,914,228,929,203,942,200,937,225,924,240,911,248,897,257,882,273,868,291,859"/>
 <area shape="rect" id="Node000031" href="$namespacednf__composer_1_1tools_1_1math.html#a6c6eaca8288f997303a0a4d010ada4f3" title=" " alt="" coords="306,947,497,987"/>
 <area shape="poly" id="edge25_Node000030_Node000031" title=" " alt="" coords="578,969,497,969,497,964,578,964"/>

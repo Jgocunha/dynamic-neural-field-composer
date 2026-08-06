@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Retrieve an element by its unique name. Throws if not found.">
+<g id="a_Node000001"><a xlink:title="Retrieve an element by its unique name.">
 <polygon fill="#999999" stroke="#666666" points="924,-242 780,-242 780,-212 924,-212 924,-242"/>
 <text text-anchor="start" x="788" y="-230" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="852" y="-219" font-family="Helvetica,sans-Serif" font-size="10.00">::getElement</text>
@@ -252,7 +252,7 @@
 <!-- Node14 -->
 <g id="Node000014" class="node">
 <title>Node14</title>
-<g id="a_Node000014"><a xlink:href="classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b" target="_top" xlink:title="Run the simulation for runTime milliseconds (blocking).">
+<g id="a_Node000014"><a xlink:href="classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d" target="_top" xlink:title="Run the simulation for runTime simulation&#45;time units (blocking).">
 <polygon fill="white" stroke="#666666" points="365,-67.5 199,-67.5 199,-48.5 365,-48.5 365,-67.5"/>
 <text text-anchor="middle" x="282" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation::run</text>
 </a>
@@ -270,7 +270,7 @@
 <!-- Node15 -->
 <g id="Node000015" class="node">
 <title>Node15</title>
-<g id="a_Node000015"><a xlink:href="classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c" target="_top" xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms.">
+<g id="a_Node000015"><a xlink:href="classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae" target="_top" xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms (blocking).">
 <polygon fill="white" stroke="#666666" points="354,-30 210,-30 210,0 354,0 354,-30"/>
 <text text-anchor="start" x="218" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="282" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::runForRealTime</text>

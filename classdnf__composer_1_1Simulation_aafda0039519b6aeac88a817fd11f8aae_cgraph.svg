@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms.">
+<g id="a_Node000001"><a xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms (blocking).">
 <polygon fill="#999999" stroke="#666666" points="144,-112 0,-112 0,-82 144,-82 144,-112"/>
 <text text-anchor="start" x="8" y="-100" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="72" y="-89" font-family="Helvetica,sans-Serif" font-size="10.00">::runForRealTime</text>
@@ -220,7 +220,7 @@
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" target="_top" xlink:title="Retrieve an element by its unique name. Throws if not found.">
+<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" target="_top" xlink:title="Retrieve an element by its unique name.">
 <polygon fill="white" stroke="#666666" points="684,-30 540,-30 540,0 684,0 684,-30"/>
 <text text-anchor="start" x="548" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="612" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::getElement</text>

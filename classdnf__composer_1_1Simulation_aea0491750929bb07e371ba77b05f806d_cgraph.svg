@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Run the simulation for runTime milliseconds (blocking).">
+<g id="a_Node000001"><a xlink:title="Run the simulation for runTime simulation&#45;time units (blocking).">
 <polygon fill="#999999" stroke="#666666" points="166,-106.5 0,-106.5 0,-87.5 166,-87.5 166,-106.5"/>
 <text text-anchor="middle" x="83" y="-94.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation::run</text>
 </a>
@@ -219,7 +219,7 @@
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" target="_top" xlink:title="Retrieve an element by its unique name. Throws if not found.">
+<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391" target="_top" xlink:title="Retrieve an element by its unique name.">
 <polygon fill="white" stroke="#666666" points="706,-30 562,-30 562,0 706,0 706,-30"/>
 <text text-anchor="start" x="570" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="634" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::getElement</text>

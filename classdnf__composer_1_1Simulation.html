@@ -124,10 +124,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afe94d1759701759e4bee8440fd6905c8" id="r_afe94d1759701759e4bee8440fd6905c8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#afe94d1759701759e4bee8440fd6905c8">getDeltaT</a> () const</td></tr>
 <tr class="separator:afe94d1759701759e4bee8440fd6905c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a860f418ff5193deb9ae8f4a791a5f391" id="r_a860f418ff5193deb9ae8f4a791a5f391"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a860f418ff5193deb9ae8f4a791a5f391">getElement</a> (const std::string &amp;id) const</td></tr>
-<tr class="memdesc:a860f418ff5193deb9ae8f4a791a5f391"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an element by its unique name. Throws if not found.  <br /></td></tr>
+<tr class="memdesc:a860f418ff5193deb9ae8f4a791a5f391"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an element by its unique name.  <br /></td></tr>
 <tr class="separator:a860f418ff5193deb9ae8f4a791a5f391"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ba8a30e5e304b8b38be104f44b6ae4c" id="r_a9ba8a30e5e304b8b38be104f44b6ae4c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a9ba8a30e5e304b8b38be104f44b6ae4c">getElement</a> (int index) const</td></tr>
-<tr class="memdesc:a9ba8a30e5e304b8b38be104f44b6ae4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an element by its registry index.  <br /></td></tr>
+<tr class="memdesc:a9ba8a30e5e304b8b38be104f44b6ae4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an element by its registry index (its <code><a class="el" href="classdnf__composer_1_1Simulation.html#a0ba9bdc50a4b18b5eeda8763edf2a496">getUniqueIdentifier()</a></code>).  <br /></td></tr>
 <tr class="separator:a9ba8a30e5e304b8b38be104f44b6ae4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e75f49423a19f2df09f78d5b693e5a1" id="r_a7e75f49423a19f2df09f78d5b693e5a1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a7e75f49423a19f2df09f78d5b693e5a1">getElements</a> () const</td></tr>
 <tr class="separator:a7e75f49423a19f2df09f78d5b693e5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,12 +188,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2b818d8a60277b85be255312902bbbd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf5a7a8ec783facebf82f8563c3424de" id="r_abf5a7a8ec783facebf82f8563c3424de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#abf5a7a8ec783facebf82f8563c3424de">resume</a> ()</td></tr>
 <tr class="separator:abf5a7a8ec783facebf82f8563c3424de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc98d900b0ed2e9f901ee9bf0170d93b" id="r_adc98d900b0ed2e9f901ee9bf0170d93b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#adc98d900b0ed2e9f901ee9bf0170d93b">run</a> (double runTime)</td></tr>
-<tr class="memdesc:adc98d900b0ed2e9f901ee9bf0170d93b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the simulation for <code>runTime</code> milliseconds (blocking).  <br /></td></tr>
-<tr class="separator:adc98d900b0ed2e9f901ee9bf0170d93b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02cc12769e196f46a1ca4eb4f360fc3c" id="r_a02cc12769e196f46a1ca4eb4f360fc3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#a02cc12769e196f46a1ca4eb4f360fc3c">runForRealTime</a> (double milliseconds)</td></tr>
-<tr class="memdesc:a02cc12769e196f46a1ca4eb4f360fc3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the simulation in real-time for <code>milliseconds</code> wall-clock ms.  <br /></td></tr>
-<tr class="separator:a02cc12769e196f46a1ca4eb4f360fc3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea0491750929bb07e371ba77b05f806d" id="r_aea0491750929bb07e371ba77b05f806d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d">run</a> (double runTime, bool closeOnFinish=false)</td></tr>
+<tr class="memdesc:aea0491750929bb07e371ba77b05f806d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the simulation for <code>runTime</code> simulation-time units (blocking).  <br /></td></tr>
+<tr class="separator:aea0491750929bb07e371ba77b05f806d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafda0039519b6aeac88a817fd11f8aae" id="r_aafda0039519b6aeac88a817fd11f8aae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae">runForRealTime</a> (double milliseconds, bool closeOnFinish=false)</td></tr>
+<tr class="memdesc:aafda0039519b6aeac88a817fd11f8aae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the simulation in real-time for <code>milliseconds</code> wall-clock ms (blocking).  <br /></td></tr>
+<tr class="separator:aafda0039519b6aeac88a817fd11f8aae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8401b97acf0d77ac89115a9eaf72fc1" id="r_ac8401b97acf0d77ac89115a9eaf72fc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Simulation.html#ac8401b97acf0d77ac89115a9eaf72fc1">save</a> (const std::string &amp;savePath={})</td></tr>
 <tr class="memdesc:ac8401b97acf0d77ac89115a9eaf72fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize the simulation and its elements to a JSON file.  <br /></td></tr>
 <tr class="separator:ac8401b97acf0d77ac89115a9eaf72fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -684,13 +684,14 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieve an element by its unique name. Throws if not found. </p>
+<p>Retrieve an element by its unique name. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">id</td><td>Unique name of the element. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The element, or <code>nullptr</code> if no element with that name exists. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -715,13 +716,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieve an element by its registry index. </p>
+<p>Retrieve an element by its registry index (its <code><a class="el" href="classdnf__composer_1_1Simulation.html#a0ba9bdc50a4b18b5eeda8763edf2a496">getUniqueIdentifier()</a></code>). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">index</td><td>Zero-based index into the element list. </td></tr>
+    <tr><td class="paramname">index</td><td>Identifier index to look up. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The element, or <code>nullptr</code> if no element with that index exists. </dd></dl>
 
 </div>
 </div>
@@ -1256,8 +1258,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="adc98d900b0ed2e9f901ee9bf0170d93b" name="adc98d900b0ed2e9f901ee9bf0170d93b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc98d900b0ed2e9f901ee9bf0170d93b">&#9670;&#160;</a></span>run()</h2>
+<a id="aea0491750929bb07e371ba77b05f806d" name="aea0491750929bb07e371ba77b05f806d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea0491750929bb07e371ba77b05f806d">&#9670;&#160;</a></span>run()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1266,29 +1268,41 @@ Here is the call graph for this function:</div>
           <td class="memname">void dnf_composer::Simulation::run </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>runTime</em></td><td>)</td>
+          <td class="paramname"><em>runTime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>closeOnFinish</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Run the simulation for <code>runTime</code> milliseconds (blocking). </p>
+<p>Run the simulation for <code>runTime</code> simulation-time units (blocking). </p>
+<p>This advances <code>t</code> by <code>deltaT</code> per step until <code>t</code> reaches <code>t</code> + runTime; <code>runTime</code> is measured in simulation-time units (the same units as <code>deltaT</code> and <code>t</code>), NOT wall-clock milliseconds. For a wall-clock-bounded run, use <code><a class="el" href="classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae" title="Run the simulation in real-time for milliseconds wall-clock ms (blocking).">runForRealTime()</a></code> instead.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">runTime</td><td>Duration to simulate in ms. </td></tr>
+    <tr><td class="paramname">runTime</td><td>Duration to simulate, in simulation-time units. </td></tr>
+    <tr><td class="paramname">closeOnFinish</td><td>If true, calls <code><a class="el" href="classdnf__composer_1_1Simulation.html#a62cc626df0de91c4eef6db88e34a6080" title="Release resources of all elements and reset timing state.">close()</a></code> after the run, releasing element resources and resetting <code><a class="el" href="classdnf__composer_1_1Simulation.html#aef41788a81a53039c90b541e8d756d29" title="Return true if init() has been called and the simulation is ready.">isInitialized()</a></code> to false. Defaults to false so component data remains inspectable after the call returns. </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_adc98d900b0ed2e9f901ee9bf0170d93b_cgraph.svg" width="1366" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_aea0491750929bb07e371ba77b05f806d_cgraph.svg" width="1366" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a02cc12769e196f46a1ca4eb4f360fc3c" name="a02cc12769e196f46a1ca4eb4f360fc3c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02cc12769e196f46a1ca4eb4f360fc3c">&#9670;&#160;</a></span>runForRealTime()</h2>
+<a id="aafda0039519b6aeac88a817fd11f8aae" name="aafda0039519b6aeac88a817fd11f8aae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafda0039519b6aeac88a817fd11f8aae">&#9670;&#160;</a></span>runForRealTime()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1297,23 +1311,35 @@ Here is the call graph for this function:</div>
           <td class="memname">void dnf_composer::Simulation::runForRealTime </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>milliseconds</em></td><td>)</td>
+          <td class="paramname"><em>milliseconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>closeOnFinish</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Run the simulation in real-time for <code>milliseconds</code> wall-clock ms. </p>
+<p>Run the simulation in real-time for <code>milliseconds</code> wall-clock ms (blocking). </p>
+<p>Unlike <code><a class="el" href="classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d" title="Run the simulation for runTime simulation-time units (blocking).">run()</a></code>, this is bounded by wall-clock time: it steps the simulation repeatedly until <code>milliseconds</code> of real time have elapsed, regardless of how many simulation-time units that corresponds to.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">milliseconds</td><td>Wall-clock duration to run for. </td></tr>
+    <tr><td class="paramname">milliseconds</td><td>Wall-clock duration to run for, in milliseconds. </td></tr>
+    <tr><td class="paramname">closeOnFinish</td><td>If true, calls <code><a class="el" href="classdnf__composer_1_1Simulation.html#a62cc626df0de91c4eef6db88e34a6080" title="Release resources of all elements and reset timing state.">close()</a></code> after the run, releasing element resources and resetting <code><a class="el" href="classdnf__composer_1_1Simulation.html#aef41788a81a53039c90b541e8d756d29" title="Return true if init() has been called and the simulation is ready.">isInitialized()</a></code> to false. Defaults to false so component data remains inspectable after the call returns. </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a02cc12769e196f46a1ca4eb4f360fc3c_cgraph.svg" width="1336" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_aafda0039519b6aeac88a817fd11f8aae_cgraph.svg" width="1336" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
