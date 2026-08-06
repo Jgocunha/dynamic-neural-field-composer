@@ -193,6 +193,8 @@ TEST(LoggerTest, HeaderHasNoGuiOrApplicationInclude)
 
 TEST(LoggerTest, NoUiSinkRegisteredIsNoop)
 {
+    const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
+
     // Default state for this headless test binary: nothing has registered a
     // sink (that only happens in Application::init(), which tests never call).
     // GUI-mode logging must be a silent no-op, not a crash or a GUI call.
@@ -201,6 +203,7 @@ TEST(LoggerTest, NoUiSinkRegisteredIsNoop)
 
 TEST(LoggerTest, UiSinkReceivesGuiModeMessage)
 {
+    const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
     std::vector<std::string> received;
     const dnf_composer::test::ScopedUiSink guard{
         [&received](LogLevel, const std::string& message) { received.push_back(message); } };
@@ -213,6 +216,7 @@ TEST(LoggerTest, UiSinkReceivesGuiModeMessage)
 
 TEST(LoggerTest, UiSinkReceivesAllModeMessage)
 {
+    const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
     std::vector<std::string> received;
     const dnf_composer::test::ScopedUiSink guard{
         [&received](LogLevel, const std::string& message) { received.push_back(message); } };
@@ -225,6 +229,7 @@ TEST(LoggerTest, UiSinkReceivesAllModeMessage)
 
 TEST(LoggerTest, UiSinkDoesNotReceiveConsoleOnlyMessage)
 {
+    const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
     std::vector<std::string> received;
     const dnf_composer::test::ScopedUiSink guard{
         [&received](LogLevel, const std::string& message) { received.push_back(message); } };
@@ -236,6 +241,7 @@ TEST(LoggerTest, UiSinkDoesNotReceiveConsoleOnlyMessage)
 
 TEST(LoggerTest, UiSinkReceivesTheReportedLevel)
 {
+    const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
     LogLevel receivedLevel = LogLevel::DEBUG;
     const dnf_composer::test::ScopedUiSink guard{
         [&receivedLevel](const LogLevel level, const std::string&) { receivedLevel = level; } };
@@ -247,6 +253,7 @@ TEST(LoggerTest, UiSinkReceivesTheReportedLevel)
 
 TEST(LoggerTest, UiSinkClearedAfterScopeReturnsToNoop)
 {
+    const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
     std::vector<std::string> received;
     {
         const dnf_composer::test::ScopedUiSink guard{
@@ -257,4 +264,22 @@ TEST(LoggerTest, UiSinkClearedAfterScopeReturnsToNoop)
     EXPECT_NO_THROW(Logger(LogLevel::INFO, LogOutputMode::GUI).log("after-scope"));
     ASSERT_EQ(received.size(), 1u);
     EXPECT_NE(received.front().find("inside-scope"), std::string::npos);
+}
+
+TEST(LoggerTest, UiSinkCallingSetUiSinkReentrantlyDoesNotDeadlock)
+{
+    // log_ui() must release logSinkMutex before invoking the sink: a sink that
+    // calls setUiSink() (e.g. to unregister itself) reacquires the same
+    // non-recursive mutex, which deadlocks if log_ui() is still holding it.
+    const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
+    bool sinkRan = false;
+    const dnf_composer::test::ScopedUiSink guard{
+        [&sinkRan](LogLevel, const std::string&)
+        {
+            sinkRan = true;
+            Logger::setUiSink([](LogLevel, const std::string&) {});
+        } };
+
+    EXPECT_NO_THROW(Logger(LogLevel::INFO, LogOutputMode::GUI).log("reentrant-marker"));
+    EXPECT_TRUE(sinkRan);
 }

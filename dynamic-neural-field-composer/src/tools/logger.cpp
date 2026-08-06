@@ -65,8 +65,10 @@ namespace dnf_composer::tools::logger
                 std::ostringstream guiOss;
                 guiOss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
 
-                std::lock_guard<std::mutex> lock(logSinkMutex());
-                log_cmd(consoleOss.str());
+                {
+                    std::lock_guard<std::mutex> lock(logSinkMutex());
+                    log_cmd(consoleOss.str());
+                }
                 log_ui(logLevel, guiOss.str());
             }
             break;
@@ -85,7 +87,6 @@ namespace dnf_composer::tools::logger
                 std::ostringstream oss;
                 oss << "[" << std::put_time(&buf, "%Y-%m-%d %X") << "] " << prefixStr << " " << message;
 
-                std::lock_guard<std::mutex> lock(logSinkMutex());
                 log_ui(logLevel, oss.str());
             }
             break;
@@ -102,8 +103,17 @@ namespace dnf_composer::tools::logger
 
     void Logger::log_ui(const LogLevel level, const std::string& message)
     {
-        if (uiSink()) {
-            uiSink()(level, message);
+        // Copy the sink and release logSinkMutex before invoking it: the sink
+        // runs arbitrary UI code, and if that code calls setUiSink() reentrantly
+        // (e.g. to unregister itself), calling it while still holding the lock
+        // would deadlock on the non-recursive mutex.
+        UiLogSink sink;
+        {
+            std::lock_guard<std::mutex> lock(logSinkMutex());
+            sink = uiSink();
+        }
+        if (sink) {
+            sink(level, message);
         }
     }
 

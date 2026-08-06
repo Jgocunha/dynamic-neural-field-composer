@@ -64,12 +64,14 @@ namespace dnf_composer::user_interface
 			ImGui::PushTextWrapPos(0.0F);
 			{
 				std::lock_guard lock(logsMutex);
-				for (const auto& [message, color] : logs)
+				for (const auto& entry : logs)
 				{
-					if (filter.PassFilter(message.c_str()))
+					if (filter.PassFilter(entry.message.c_str()))
 					{
+						const ImVec4 color = entry.resolveColorFromLevel
+							? getLogLevelColorCodeGui(entry.level) : entry.color;
 						ImGui::PushStyleColor(ImGuiCol_Text, color);
-						ImGui::TextEx(message.c_str());
+						ImGui::TextEx(entry.message.c_str());
 						ImGui::PopStyleColor();
 					}
 				}
@@ -96,7 +98,19 @@ namespace dnf_composer::user_interface
 		buffer.back() = '\0';
 		 va_end(args);
 		std::lock_guard lock(logsMutex);
-		logs.push_back({ buffer.data(), color });
+		logs.push_back({ buffer.data(), color, false, tools::logger::LogLevel::INFO });
+	}
+
+	void LogWindow::addLog(const tools::logger::LogLevel level, const char* fmt, ...)
+	{
+   		va_list args;
+		va_start(args, fmt);
+		std::array<char, 1024> buffer{};
+		vsnprintf(buffer.data(), buffer.size(), fmt, args);
+		buffer.back() = '\0';
+		 va_end(args);
+		std::lock_guard lock(logsMutex);
+		logs.push_back({ buffer.data(), ImVec4{}, true, level });
 	}
 
 	void LogWindow::draw()

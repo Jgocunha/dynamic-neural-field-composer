@@ -25,21 +25,25 @@ namespace dnf_composer
 		if (this->visualization->getSimulation() != this->simulation) {
 			throw Exception(ErrorCode::APP_VIS_SIM_MISMATCH);
 		}
+
+		// Wire the logger to the GUI (issue #123): tools/logger has no dependency on
+		// the UI, so the UI hands it a callback here instead. Registering before
+		// setGUIParameters() means its "GUI parameters set successfully" log (and
+		// every log() call from this point on) also reaches the log window,
+		// matching the previous direct-call behavior exactly.
+		// The callback stores the level rather than resolving a color here, since
+		// log() can be reached from off the UI thread and getLogLevelColorCodeGui()
+		// calls ImGui; LogWindow resolves the color on the UI thread at render time.
+		tools::logger::Logger::setUiSink([](const tools::logger::LogLevel level, const std::string& message)
+		{
+			user_interface::LogWindow::addLog(level, "%s", message.c_str());
+		});
+
 		setGUIParameters();
 	}
 
 	void Application::init() const
 	{
-		// Wire the logger to the GUI (issue #123): tools/logger has no dependency on
-		// the UI, so the UI hands it a callback here instead. Registering before any
-		// other init step means every log() call from this point on (including the
-		// "initialized successfully" message below) also reaches the log window,
-		// matching the previous direct-call behavior exactly.
-		tools::logger::Logger::setUiSink([](const tools::logger::LogLevel level, const std::string& message)
-		{
-			user_interface::LogWindow::addLog(user_interface::getLogLevelColorCodeGui(level), "%s", message.c_str());
-		});
-
 		simulation->init();
 		gui->initialize();
 
