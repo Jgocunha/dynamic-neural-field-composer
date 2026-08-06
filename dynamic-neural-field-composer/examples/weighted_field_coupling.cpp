@@ -1,5 +1,6 @@
 #include "user_interface/main_menu_bar.h"
 #include "user_interface/static_layout.h"
+#include "example_common.h"
 
 
 int main()
@@ -148,10 +149,7 @@ int main()
 
 		app.init();
 
-		while (!app.hasGUIBeenClosed())
-		{
-			app.step();
-		}
+		dnf_composer::examples::runExampleLoop(app);
 
 		app.close();
 
