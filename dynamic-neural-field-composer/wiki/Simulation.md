@@ -31,16 +31,27 @@ auto sim = std::make_shared<Simulation>("my simulation");
 ## Lifecycle
 
 ```cpp
-sim.init();          // initializes all registered elements
-sim.step();          // advances all elements by deltaT
-sim.run(1000.0);     // step N times (headless, no GUI)
-sim.pause();         // suspends stepping
-sim.resume();        // resumes stepping after pause
-sim.close();         // tears down elements
-sim.clean();         // removes all elements without closing
+sim.init();                    // initializes all registered elements
+sim.step();                    // advances all elements by deltaT
+sim.run(1000.0);               // step until t advances by 1000 simulation-time units
+sim.runForRealTime(1000.0);    // step for 1000 wall-clock milliseconds
+sim.pause();                   // suspends stepping
+sim.resume();                  // resumes stepping after pause
+sim.close();                   // tears down elements
+sim.clean();                   // removes all elements without closing
 ```
 
 `init()` must be called before the first `step()`. When using `Application`, `app.init()` handles this automatically.
+
+`run(runTime)` measures `runTime` in **simulation-time units** — the same units as
+`deltaT` and `t` — not wall-clock milliseconds; it runs until `t` has advanced by
+`runTime`. For a wall-clock-bounded run, use `runForRealTime(milliseconds)` instead,
+which is genuinely bounded by real elapsed time.
+
+Neither method closes the simulation by default: element data remains readable via
+`getComponent()` / `getComponentPtr()` after the call returns. Pass `true` as the
+second argument (`sim.run(1000.0, true)`) to close automatically when the run
+finishes, releasing element resources and resetting `isInitialized()` to `false`.
 
 `clean()` and the destructor both sever every connection between the simulation's
 elements before releasing them. This matters because `addInput()` records the
@@ -77,7 +88,7 @@ sim.createInteraction(
 ## Querying elements and data
 
 ```cpp
-// Get element by name or index
+// Get element by name or index — both return nullptr if not found
 auto el = sim.getElement("field name");
 auto el = sim.getElement(0);
 

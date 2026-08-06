@@ -65,13 +65,32 @@ namespace dnf_composer
 		/// @brief Advance all elements by one @c deltaT.
 		void step();
 
-		/// @brief Run the simulation for @p runTime milliseconds (blocking).
-		/// @param runTime  Duration to simulate in ms.
-		void run(double runTime);
+		/// @brief Run the simulation for @p runTime simulation-time units (blocking).
+		///
+		/// This advances @c t by @c deltaT per step until @c t reaches @c t + runTime;
+		/// @p runTime is measured in simulation-time units (the same units as @c deltaT
+		/// and @c t), NOT wall-clock milliseconds. For a wall-clock-bounded run, use
+		/// @c runForRealTime() instead.
+		///
+		/// @param runTime        Duration to simulate, in simulation-time units.
+		/// @param closeOnFinish  If true, calls @c close() after the run, releasing
+		///                       element resources and resetting @c isInitialized() to
+		///                       false. Defaults to false so component data remains
+		///                       inspectable after the call returns.
+		void run(double runTime, bool closeOnFinish = false);
 
-		/// @brief Run the simulation in real-time for @p milliseconds wall-clock ms.
-		/// @param milliseconds  Wall-clock duration to run for.
-		void runForRealTime(double milliseconds);
+		/// @brief Run the simulation in real-time for @p milliseconds wall-clock ms (blocking).
+		///
+		/// Unlike @c run(), this is bounded by wall-clock time: it steps the simulation
+		/// repeatedly until @p milliseconds of real time have elapsed, regardless of how
+		/// many simulation-time units that corresponds to.
+		///
+		/// @param milliseconds   Wall-clock duration to run for, in milliseconds.
+		/// @param closeOnFinish  If true, calls @c close() after the run, releasing
+		///                       element resources and resetting @c isInitialized() to
+		///                       false. Defaults to false so component data remains
+		///                       inspectable after the call returns.
+		void runForRealTime(double milliseconds, bool closeOnFinish = false);
 
 		/// @brief Release resources of all elements and reset timing state.
 		void close();
@@ -130,12 +149,14 @@ namespace dnf_composer
 		std::vector<std::shared_ptr<element::Element>> getElements() const;
 		std::string getUniqueIdentifier() const;
 
-		/// @brief Retrieve an element by its unique name. Throws if not found.
+		/// @brief Retrieve an element by its unique name.
 		/// @param id  Unique name of the element.
+		/// @return The element, or @c nullptr if no element with that name exists.
 		std::shared_ptr<element::Element> getElement(const std::string& id) const;
 
-		/// @brief Retrieve an element by its registry index.
-		/// @param index  Zero-based index into the element list.
+		/// @brief Retrieve an element by its registry index (its @c getUniqueIdentifier()).
+		/// @param index  Identifier index to look up.
+		/// @return The element, or @c nullptr if no element with that index exists.
 		std::shared_ptr<element::Element> getElement(int index) const;
 
 		std::vector<double> getComponent(const std::string& id, const std::string& componentName) const;
