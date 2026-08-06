@@ -107,8 +107,32 @@ namespace dnf_composer
 		/// logged and skipped rather than failing the load, which is what lets a file
 		/// written by a newer version still load here.
 		///
+		/// Every element-specific field read inside the per-label switch (e.g. `tau`,
+		/// `amplitude`, `width`) is required and read with `json::at()`, which throws
+		/// `json::out_of_range` if the key is missing -- the caller (buildElementsOrRollBack())
+		/// catches that and reports the file as malformed. The element-specific fields
+		/// that are genuinely optional, with a documented fallback, are `activationFunction`
+		/// (defaults to `SigmoidFunction(0.0, 10.0)`); `input_x_max`/`input_d_x` on
+		/// `field coupling`/`gauss field coupling` (default to `ElementDimensions{}`, i.e.
+		/// x_max 100, d_x 1.0 -- see FieldCouplingParameters/GaussFieldCouplingParameters);
+		/// `couplings` on `gauss field coupling`; and `onTimes` on `timed gauss stimulus`/
+		/// `timed gauss stimulus 2d`. The latter two are read with `contains()` and default
+		/// to an empty vector when absent or not an array, rather than `at()` -- this is
+		/// pre-existing tolerant behavior this function does not change, not a considered
+		/// design decision, so a file that provides a malformed `couplings`/`onTimes` (a
+		/// non-array, e.g.) does not fail the load the way a malformed required field does.
+		///
+		/// The four fields common to every element (`uniqueName`, `label`, `x_max`, `d_x`)
+		/// and `inputs` are also read with `at()`, for the same reason. `uniqueName`/`label`/
+		/// `x_max`/`d_x` are already guaranteed present by the up-front pre-check this
+		/// function runs before either loop, so `at()` here is a local-safety guarantee
+		/// rather than the primary defense; `inputs` is not covered by that pre-check, so
+		/// its `at()` is the only thing rejecting a file that omits it.
+		///
 		/// @param jsonElements  The element array to build from.
 		/// @return @c false if validation rejected the file, @c true otherwise.
+		/// @throws nlohmann::json::out_of_range if an element object is missing a required,
+		///         type-specific field for its label.
 		[[nodiscard]] bool jsonToElements(const json& jsonElements) const;
 
 		/// @brief Pull the element array out of a parsed `.dnf` root and apply its metadata.
