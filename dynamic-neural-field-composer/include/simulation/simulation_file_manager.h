@@ -110,11 +110,17 @@ namespace dnf_composer
 		/// Every element-specific field read inside the per-label switch (e.g. `tau`,
 		/// `amplitude`, `width`) is required and read with `json::at()`, which throws
 		/// `json::out_of_range` if the key is missing -- the caller (buildElementsOrRollBack())
-		/// catches that and reports the file as malformed. The only element-specific fields
+		/// catches that and reports the file as malformed. The element-specific fields
 		/// that are genuinely optional, with a documented fallback, are `activationFunction`
-		/// (defaults to `SigmoidFunction(0.0, 10.0)`) and `input_x_max`/`input_d_x` on
+		/// (defaults to `SigmoidFunction(0.0, 10.0)`); `input_x_max`/`input_d_x` on
 		/// `field coupling`/`gauss field coupling` (default to `ElementDimensions{}`, i.e.
-		/// x_max 100, d_x 1.0 -- see FieldCouplingParameters/GaussFieldCouplingParameters).
+		/// x_max 100, d_x 1.0 -- see FieldCouplingParameters/GaussFieldCouplingParameters);
+		/// `couplings` on `gauss field coupling`; and `onTimes` on `timed gauss stimulus`/
+		/// `timed gauss stimulus 2d`. The latter two are read with `contains()` and default
+		/// to an empty vector when absent or not an array, rather than `at()` -- this is
+		/// pre-existing tolerant behavior this function does not change, not a considered
+		/// design decision, so a file that provides a malformed `couplings`/`onTimes` (a
+		/// non-array, e.g.) does not fail the load the way a malformed required field does.
 		///
 		/// The four fields common to every element (`uniqueName`, `label`, `x_max`, `d_x`)
 		/// and `inputs` are also read with `at()`, for the same reason. `uniqueName`/`label`/

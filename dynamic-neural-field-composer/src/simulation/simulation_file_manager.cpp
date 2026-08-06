@@ -859,11 +859,16 @@ namespace dnf_composer
                 // default: FieldCouplingParameters defaults inputFieldDimensions to
                 // ElementDimensions{} (x_max 100, d_x 1.0) when none is supplied, so an
                 // older file that omits these two keys still loads with that default
-                // rather than being rejected as malformed.
+                // rather than being rejected as malformed. The fallback is all-or-nothing:
+                // a file supplying only one of the two keys still gets the full default
+                // pair rather than a hybrid of the supplied value and the other default,
+                // since a partial ElementDimensions is not a state ElementDimensions'
+                // own constructors can produce either.
                 const element::ElementDimensions defaultInputDimensions{};
-                const int input_x_max = elementJson.contains("input_x_max")
+                const bool hasInputDims = elementJson.contains("input_x_max") && elementJson.contains("input_d_x");
+                const int input_x_max = hasInputDims
                     ? elementJson["input_x_max"].get<int>() : defaultInputDimensions.x_max;
-                const double input_d_x = elementJson.contains("input_d_x")
+                const double input_d_x = hasInputDims
                     ? elementJson["input_d_x"].get<double>() : defaultInputDimensions.d_x;
                 auto coupling = std::make_shared<element::FieldCoupling>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
@@ -876,12 +881,14 @@ namespace dnf_composer
             {
 				const bool circular = elementJson.at("circular");
                 const bool normalized = elementJson.at("normalized");
-                // Same genuine default as FIELD_COUPLING above: GaussFieldCouplingParameters
-                // defaults inputFieldDimensions to ElementDimensions{} (x_max 100, d_x 1.0).
+                // Same genuine, all-or-nothing default as FIELD_COUPLING above:
+                // GaussFieldCouplingParameters defaults inputFieldDimensions to
+                // ElementDimensions{} (x_max 100, d_x 1.0) unless both keys are present.
                 const element::ElementDimensions defaultInputDimensions{};
-                const int input_x_max = elementJson.contains("input_x_max")
+                const bool hasInputDims = elementJson.contains("input_x_max") && elementJson.contains("input_d_x");
+                const int input_x_max = hasInputDims
                     ? elementJson["input_x_max"].get<int>() : defaultInputDimensions.x_max;
-                const double input_d_x = elementJson.contains("input_d_x")
+                const double input_d_x = hasInputDims
                     ? elementJson["input_d_x"].get<double>() : defaultInputDimensions.d_x;
 
                 std::vector<element::GaussCoupling> couplings;

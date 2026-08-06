@@ -2279,6 +2279,89 @@ TEST_F(SimulationFileManagerTest, LoadGaussFieldCouplingMissingInputDimsDefaults
     EXPECT_DOUBLE_EQ(gfc->getParameters().inputFieldDimensions.d_x, 1.0);
 }
 
+// The four tests above/below use x_max: 100, d_x: 1.0 for the OUTER element,
+// which happens to equal ElementDimensions{}'s default (100, 1.0) -- so a
+// hybrid-fallback bug that mixes a supplied input_x_max with the default
+// input_d_x would coincidentally still read (100, 1.0) if the outer and
+// default happened to match. These use non-default outer dimensions AND
+// supply only one of the two input_* keys, so the pair-level fallback (both
+// default) is distinguishable from a hybrid one (only the missing key
+// defaults) by the assertion.
+
+TEST_F(SimulationFileManagerTest, LoadFieldCouplingMissingInputDXFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "fc 1", "label": [10, "field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "learningRate": 0.01, "learningRule": 0, "scalar": 1.0, "input_x_max": 50 })";
+    const std::string path = writeSingleElementFile(tempDir, "fc-missing-input-dx", body);
+
+    const auto sim = createSimulation("fc-missing-input-dx-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto fc = std::dynamic_pointer_cast<FieldCoupling>(sim->getElement("fc 1"));
+    ASSERT_NE(fc, nullptr);
+    // Both fall back to the ElementDimensions{} default (100, 1.0), NOT the
+    // hybrid (50, 1.0) a per-key fallback would have produced from the
+    // supplied input_x_max plus the default input_d_x.
+    EXPECT_EQ(fc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(fc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFieldCouplingMissingInputXMaxFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "fc 1", "label": [10, "field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "learningRate": 0.01, "learningRule": 0, "scalar": 1.0, "input_d_x": 0.25 })";
+    const std::string path = writeSingleElementFile(tempDir, "fc-missing-input-xmax", body);
+
+    const auto sim = createSimulation("fc-missing-input-xmax-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto fc = std::dynamic_pointer_cast<FieldCoupling>(sim->getElement("fc 1"));
+    ASSERT_NE(fc, nullptr);
+    // Both fall back to (100, 1.0), NOT the hybrid (100, 0.25) a per-key
+    // fallback would have produced from the default input_x_max plus the
+    // supplied input_d_x.
+    EXPECT_EQ(fc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(fc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussFieldCouplingMissingInputDXFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "gfc 1", "label": [11, "gauss field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "circular": true, "normalized": true, "couplings": [], "input_x_max": 50 })";
+    const std::string path = writeSingleElementFile(tempDir, "gfc-missing-input-dx", body);
+
+    const auto sim = createSimulation("gfc-missing-input-dx-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto gfc = std::dynamic_pointer_cast<GaussFieldCoupling>(sim->getElement("gfc 1"));
+    ASSERT_NE(gfc, nullptr);
+    EXPECT_EQ(gfc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(gfc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussFieldCouplingMissingInputXMaxFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "gfc 1", "label": [11, "gauss field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "circular": true, "normalized": true, "couplings": [], "input_d_x": 0.25 })";
+    const std::string path = writeSingleElementFile(tempDir, "gfc-missing-input-xmax", body);
+
+    const auto sim = createSimulation("gfc-missing-input-xmax-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto gfc = std::dynamic_pointer_cast<GaussFieldCoupling>(sim->getElement("gfc 1"));
+    ASSERT_NE(gfc, nullptr);
+    EXPECT_EQ(gfc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(gfc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
 // ---------------------------------------------------------------------------
 // SimulationFileManagerBackwardsCompatibility (issue #163)
 // ---------------------------------------------------------------------------
