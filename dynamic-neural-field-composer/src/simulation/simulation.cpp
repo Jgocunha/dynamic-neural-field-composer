@@ -372,6 +372,11 @@ namespace dnf_composer
 	void Simulation::changeDimensions(const std::string& elementId, const element::ElementDimensions& newDimensions)
 	{
 		const auto element = getElement(elementId);
+		if (!element)
+		{
+			log(tools::logger::LogLevel::WARNING, std::format("Element '{}' was not found and consequently not resized.", elementId));
+			return;
+		}
 		element->removeInputs();
 		element->removeOutputs();
 		element->changeDimensions(newDimensions);

@@ -636,11 +636,19 @@ namespace dnf_composer::user_interface
 
 				if (g_pendingOutputPin && isValidInput)
 				{
-					// Second click on an input pin: complete the connection.
+					// Second click on an input pin: complete the connection. maxIdx is the
+					// highest identifier currently in use, not a dense upper bound -- ids
+					// are assigned from a process-wide counter and removeElement() does not
+					// renumber survivors, so a valid-looking id can still miss.
 					const int srcId = static_cast<int>(g_pendingOutputPin.Get()) - startingOutputPinId;
-					simulation->createInteraction(
-						simulation->getElement(srcId)->getUniqueName(), "output",
-						simulation->getElement(asInput)->getUniqueName());
+					const auto srcElement = simulation->getElement(srcId);
+					const auto dstElement = simulation->getElement(asInput);
+					if (srcElement && dstElement)
+					{
+						simulation->createInteraction(
+							srcElement->getUniqueName(), "output",
+							dstElement->getUniqueName());
+					}
 					g_pendingOutputPin = 0;
 				}
 				else if (isValidOutput)
@@ -674,9 +682,15 @@ namespace dnf_composer::user_interface
 				{
 					if (ImNodeEditor::AcceptNewItem())
 					{
-						simulation->createInteraction(
-							simulation->getElement(srcId)->getUniqueName(), "output",
-							simulation->getElement(dstId)->getUniqueName());
+						// Same sparse-id caveat as the click-to-click path above.
+						const auto srcElement = simulation->getElement(srcId);
+						const auto dstElement = simulation->getElement(dstId);
+						if (srcElement && dstElement)
+						{
+							simulation->createInteraction(
+								srcElement->getUniqueName(), "output",
+								dstElement->getUniqueName());
+						}
 						g_pendingOutputPin = 0;
 					}
 				}
@@ -719,7 +733,12 @@ namespace dnf_composer::user_interface
 		if (srcId < 0 || dstId < 0 || srcId > maxIdx || dstId > maxIdx) { return;
 }
 
-		simulation->getElement(dstId)->removeInput(srcId);
+		// maxIdx bounds ids currently in use, not a dense range -- getElement(int) can
+		// still return nullptr for an id that fell in a gap left by a removed element.
+		const auto dstElement = simulation->getElement(dstId);
+		if (dstElement) {
+			dstElement->removeInput(srcId);
+}
 	}
 
 	void NodeGraphWindow::handleNodeSelection() const
