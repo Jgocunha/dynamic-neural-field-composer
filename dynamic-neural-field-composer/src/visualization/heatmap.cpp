@@ -30,6 +30,51 @@ namespace dnf_composer
 		return { rows, cols, false };
 	}
 
+	const char* selectHeatmapTickFormat(double scaleMin, double scaleMax)
+	{
+		const double span = std::abs(scaleMax - scaleMin);
+
+		if (!std::isfinite(span) || span == 0.0) {
+			return "%.2f";
+		}
+		if (span >= 10.0) {
+			return "%.0f";
+		}
+		if (span >= 1.0) {
+			return "%.2f";
+		}
+		if (span >= 0.01) {
+			return "%.4f";
+		}
+		if (span >= 1e-4) {
+			return "%.5f";
+		}
+		return "%.1e";
+	}
+
+	namespace
+	{
+		// ImPlot::ColormapScale sizes its own frame to the fixed width the caller
+		// passes in and clips tick labels to that frame rather than growing to fit
+		// them. selectHeatmapTickFormat() picks precision from the displayed range,
+		// so a narrow range now produces longer labels (e.g. "-0.0090") than
+		// ImPlot's old "%g" default did (e.g. "-0.009"); a colorbar width tuned for
+		// the old default clips the new, more precise labels right back down to
+		// the unreadable text this fix exists to avoid. Size the frame from the
+		// actual worst-case label instead of a constant.
+		float colorbarWidthFor(double scaleMin, double scaleMax)
+		{
+			const char* fmt = selectHeatmapTickFormat(scaleMin, scaleMax);
+			char buf[32];
+			std::snprintf(buf, sizeof(buf), fmt, scaleMin);
+			const float wMin = ImGui::CalcTextSize(buf).x;
+			std::snprintf(buf, sizeof(buf), fmt, scaleMax);
+			const float wMax = ImGui::CalcTextSize(buf).x;
+			constexpr float barAndPadding = 34.0F; // color bar itself + tick marks + margins
+			return barAndPadding + (wMin > wMax ? wMin : wMax);
+		}
+	}
+
 	HeatmapParameters::HeatmapParameters()
 		: scaleMin(0), scaleMax(1), autoScale(true), autoDimensions(true)
 	{}
@@ -275,8 +320,11 @@ namespace dnf_composer
 			}
 		}
 
+		const float cbW = colorbarWidthFor(scaleMin, scaleMax);
+		const ImVec2 hmSize(plotSize.x + 65.0F - cbW - ImGui::GetStyle().ItemSpacing.x, plotSize.y);
+
 		static constexpr ImPlotFlags hm_flags = ImPlotFlags_Crosshairs | ImPlotFlags_NoLegend;
-		if (ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, hm_flags)) {
+		if (ImPlot::BeginPlot(uniquePlotID.c_str(), hmSize, hm_flags)) {
 			ImPlot::PushColormap(map);
 			static constexpr ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;
 			ImPlot::SetupAxes(commonParameters.annotations.x_label.c_str(),
@@ -296,7 +344,8 @@ namespace dnf_composer
 
 		// // Add color scale next to the heatmap
 		 ImGui::SameLine();
-		 ImPlot::ColormapScale("##HeatScale", scaleMin, scaleMax, ImVec2(60, plotSize.y));
+		 ImPlot::ColormapScale("##HeatScale", scaleMin, scaleMax, ImVec2(cbW, plotSize.y),
+			 selectHeatmapTickFormat(scaleMin, scaleMax));
 		//ImPlot::PopColormap();
 	}
 
