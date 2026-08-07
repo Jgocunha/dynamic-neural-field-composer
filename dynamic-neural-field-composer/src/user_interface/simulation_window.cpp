@@ -921,6 +921,7 @@ namespace dnf_composer::user_interface
 		static auto rule        = LearningRule::HEBB;
 		static double      scalar       = 1.0;
 		static double      learningRate = 0.01;
+		static double      decayRate    = 0.0;
 
 		ImGui::SeparatorText("Output dimensions");
 		if (beginParamTable("##fc_odim")) {
@@ -956,14 +957,20 @@ namespace dnf_composer::user_interface
 				ImGui::EndCombo();
 			}
 			paramRowDouble("Scalar",        "##fc_scal", &scalar,       "%.2f");
-			paramRowDouble("Learning rate", "##fc_lr",   &learningRate, "%.4f");
+			// "%.3g", not a fixed-decimal format: DELTA couplings wired from raw
+			// "activation" legitimately use rates around 1e-5, which "%.4f" would
+			// display as a flat 0.0000.
+			paramRowDouble("Learning rate", "##fc_lr",   &learningRate, "%.3g");
+			if (rule == LearningRule::DELTA) {
+				paramRowDouble("Decay rate", "##fc_dr", &decayRate, "%.4f");
+}
 			endParamTable();
 		}
 
 		if (addRequested)
 		{
 			const element::ElementDimensions inDims{ x_max_in, d_x_in };
-			const element::FieldCouplingParameters fcp{ inDims, rule, scalar, learningRate };
+			const element::FieldCouplingParameters fcp{ inDims, rule, scalar, learningRate, decayRate };
 			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max_out, d_x_out } };
 			simulation->addElement(std::make_shared<element::FieldCoupling>(common, fcp));
 		}
