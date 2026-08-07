@@ -221,6 +221,28 @@ TEST_F(NodeGraphWindowTest, RenderWithCoupledElements)
 	SUCCEED();
 }
 
+TEST_F(NodeGraphWindowTest, RenderWithNarrowNonzeroWeightRangeDoesNotCrash)
+{
+	// Regression: a DELTA FieldCoupling's learned weights are legitimately a
+	// narrow, nonzero, non-symmetric range (e.g. [-0.0074, 0.0090] -- see
+	// FieldCoupling::updateWeights()). The inline node preview's colorbar used
+	// to reserve a fixed-width margin for its tick labels; sizing that margin
+	// from the actual label text (see NodeGraphWindow::inlineColorbarWidth)
+	// must not corrupt layout or crash across multiple render frames.
+	const auto simulation = makeCoupledSimulation();
+	const auto coupling = std::dynamic_pointer_cast<element::FieldCoupling>(simulation->getElement("coupling"));
+	ASSERT_NE(coupling, nullptr);
+	auto* weights = coupling->getComponentPtr("weights");
+	ASSERT_NE(weights, nullptr);
+	for (std::size_t i = 0; i < weights->size(); ++i) {
+		(*weights)[i] = -0.0074 + (0.0164 * static_cast<double>(i) / static_cast<double>(weights->size()));
+	}
+
+	user_interface::NodeGraphWindow window{ simulation };
+	gui.frames(3, [&] { window.render(); });
+	SUCCEED();
+}
+
 TEST_F(NodeGraphWindowTest, RenderWithCoupled2DElements)
 {
 	const auto simulation = makeCoupled2DSimulation();
