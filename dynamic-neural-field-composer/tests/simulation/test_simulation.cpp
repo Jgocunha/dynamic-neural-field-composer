@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <memory>
+#include <chrono>
 
 #include "simulation/simulation.h"
 #include "elements/gauss_stimulus.h"
@@ -156,8 +157,44 @@ TEST(SimulationLifecycle, RunAutoInitsAndAdvancesTime)
     sim.addElement(makeStimulus("stim"));
     EXPECT_FALSE(sim.isInitialized());
     sim.run(10.0);
-    // After run(), close() is called so isInitialized() == false again
+    EXPECT_DOUBLE_EQ(sim.getT(), 10.0);
+}
+
+TEST(SimulationLifecycle, RunDoesNotCloseByDefault)
+{
+    // Regression test for #124: run() used to call close() unconditionally,
+    // wiping all element data. The default must leave the simulation open
+    // and its component data inspectable.
+    Simulation sim("s", 1.0, 0.0, 0.0);
+    sim.addElement(makeStimulus("stim"));
+    sim.run(10.0);
+    EXPECT_TRUE(sim.isInitialized());
+    EXPECT_NE(sim.getElement("stim"), nullptr);
+}
+
+TEST(SimulationLifecycle, RunClosesWhenRequested)
+{
+    Simulation sim("s", 1.0, 0.0, 0.0);
+    sim.addElement(makeStimulus("stim"));
+    sim.run(10.0, true);
     EXPECT_FALSE(sim.isInitialized());
+}
+
+TEST(SimulationLifecycle, RunUsesSimulationTimeUnitsNotWallClockMs)
+{
+    // Regression test for #124: run()'s duration parameter is simulation-time
+    // units (t advances by deltaT per step), not wall-clock milliseconds.
+    // A runTime of 5000 would block for ~5 real seconds if it were wall-clock ms;
+    // it must instead complete almost instantly.
+    Simulation sim("s", 1.0, 0.0, 0.0);
+    sim.addElement(makeStimulus("stim"));
+
+    const auto start = std::chrono::steady_clock::now();
+    sim.run(5000.0);
+    const auto elapsed = std::chrono::steady_clock::now() - start;
+
+    EXPECT_LT(elapsed, std::chrono::milliseconds(500));
+    EXPECT_DOUBLE_EQ(sim.getT(), 5000.0);
 }
 
 // ---------------------------------------------------------------------------
@@ -204,10 +241,15 @@ TEST(SimulationElements, GetElementByNameReturnsNullForMissing)
     EXPECT_EQ(el, nullptr);
 }
 
-TEST(SimulationElements, GetElementByIndexThrowsForMissing)
+TEST(SimulationElements, GetElementByIndexReturnsNullForMissing)
 {
+    // Regression test for #124: both getElement() overloads must share one
+    // not-found contract. getElement(int) used to throw while
+    // getElement(const std::string&) returned nullptr; it now also returns
+    // nullptr, matching the string overload (which many existing callers
+    // already pattern-match on).
     const Simulation sim("s", 1.0, 0.0, 0.0);
-    EXPECT_THROW(sim.getElement(9999), Exception);
+    EXPECT_EQ(sim.getElement(9999), nullptr);
 }
 
 TEST(SimulationElements, GetElementsReturnsAll)

@@ -90,6 +90,65 @@ All notable changes to this project will be documented in this file.
   non-contiguous after deletion, so a bounds check on the highest uid alone doesn't rule
   out a stale id) — a possible uncaught exception mid-frame. Both paths now go through a
   non-throwing lookup helper.
+## [2.10.1] - 2026-08-06
+
+### Fixed
+- `Simulation::run(double runTime)`'s Doxygen said "milliseconds," but `run()` advances `t`
+  by `deltaT` per step until `t` reaches `t + runTime` — `runTime` is simulation-time units,
+  not wall-clock ms (`runForRealTime()` is the actual wall-clock entry point). Separately,
+  both `run()` and `runForRealTime()` called `close()` unconditionally, silently wiping every
+  element's output right after the run a caller meant to inspect. Both now take a defaulted
+  `closeOnFinish = false` parameter, so `close()` is opt-in and existing call sites keep
+  compiling unchanged. `getElement(const std::string&)` returned `nullptr` on a miss while
+  `getElement(int)` threw — same operation, two error models; `getElement(int)` now also
+  returns `nullptr`, converging both overloads on the contract already relied on by the
+  dozens of `nullptr`-checking call sites for the string overload (#124)
+- A follow-up sweep of every `getElement()` call site for the same not-found contract found
+  four unguarded dereferences that would have crashed on the `nullptr` change above:
+  `Simulation::changeDimensions()`, and three sites in `NodeGraphWindow` (click-to-click pin
+  completion, drag-to-connect via `AcceptNewItem()`, and link removal). All four now null-check
+  before dereferencing
+- `SimulationFileManager::jsonToElements()` took `const json&`, so every `elementJson["key"]`
+  read inside it resolved to nlohmann::json's const `operator[]` — undefined behavior (an
+  assert in debug, an out-of-bounds read in release) on a missing key, never a null like the
+  non-const overload. An audit found 27 such reads with no `contains()` guard across every
+  `ElementLabel` branch, including a dead guard on `activationFunction`: the `is_null()` check
+  meant to trigger its default-sigmoid fallback ran *after* the UB read it was supposed to
+  guard. Every type-specific field across all 24 `ElementLabel` branches now reads with
+  `json::at()`, which throws a catchable `json::out_of_range` on a missing key instead,
+  reported as a malformed file with a full rollback. `activationFunction` and the
+  `input_x_max`/`input_d_x` pair on `FIELD_COUPLING`/`GAUSS_FIELD_COUPLING` keep their
+  documented optional-with-default behavior — the coupling pair now falls back to the full
+  default `ElementDimensions{}` pair together instead of independently per key, so a file
+  supplying only one of the two no longer loads a hybrid of a custom value and a mismatched
+  default (#163)
+- `tools/logger.h` included `<imgui-platform-kit/log_window.h>`, and `logger.cpp` included
+  `application/application.h` and `user_interface/log_window.h` to call
+  `user_interface::LogWindow::addLog()` directly — a low-level layer depending on the GUI
+  layer built on top of it. `Logger::log_ui()` now forwards GUI-destined messages to a
+  `UiLogSink` callback registered via `Logger::setUiSink()`, no-oping until one is registered;
+  `Application::init()` registers the real sink, routing messages into `LogWindow` exactly as
+  before. `LogLevel` → `ImVec4` color mapping moved out of `tools/logger` entirely into
+  `user_interface::getLogLevelColorCodeGui()`, since color is a rendering concern — `tools/logger`
+  no longer touches `ImVec4`/ImGui at all. The sink itself is now registered before
+  `setGUIParameters()` runs (previously after), so its own "GUI parameters set successfully"
+  log reaches the log window like every other startup log; the sink callback no longer resolves
+  a color itself (an ImGui call), instead storing the `LogLevel` and letting `LogWindow` resolve
+  color on the UI thread at render time; and `Logger::log_ui()` now copies the registered sink
+  under `logSinkMutex` and releases the lock before invoking it, so a sink that calls
+  `setUiSink()` reentrantly can no longer deadlock on the mutex (#123)
+- Removed a redundant `extern ImFont* g_BlackLargeFont;` declaration left behind in
+  `visualization.cpp`'s own `dnf_composer` namespace after the logger fix above added an
+  `application/application.h` include there — `application.h` already declares the same
+  symbol `inline` in the same namespace, and clang-tidy flags the re-declaration as an error
+
+### CI
+- Enabled LeakSanitizer in the `sanitizers-linux` `asan-ubsan` job, with suppressions for the
+  known element-ownership reference cycle and an FFTW3 internal allocation
+- The test suite now also runs as a single process in CI (in addition to however it ran
+  before), to catch order-dependent failures that only reproduce when every suite shares
+  one process's global state
+- Added a headless smoke-run of the example programs to CI
 
 ## [2.10.0] - 2026-08-05
 

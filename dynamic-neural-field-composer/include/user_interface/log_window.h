@@ -8,6 +8,7 @@
 #include <imgui-platform-kit/user_interface_window.h>
 
 #include "application/application.h"
+#include "tools/logger.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_MonoMediumFont;
@@ -18,7 +19,19 @@ namespace dnf_composer::user_interface
 	{
         std::string message;
         ImVec4 color;
+        bool resolveColorFromLevel = false;
+        tools::logger::LogLevel level = tools::logger::LogLevel::INFO;
     };
+
+    /// @brief Map a logger severity to the ImGui text color used in the log window.
+    ///
+    /// Color is a rendering concern, so it lives here rather than in tools/logger —
+    /// the logger only ever hands the UI a @c LogLevel; the UI decides how to
+    /// draw it (issue #123).
+    /// @param level Severity to look up.
+    /// @return An accent color for DEBUG/INFO/WARNING/ERROR/FATAL; for any other
+    ///         value, the current ImGui text color if a context exists, otherwise gray.
+    ImVec4 getLogLevelColorCodeGui(tools::logger::LogLevel level);
 
     class LogWindow final : public imgui_kit::UserInterfaceWindow
 	{
@@ -33,6 +46,10 @@ namespace dnf_composer::user_interface
     public:
         LogWindow();
         static void addLog(const ImVec4& color, const char* fmt, ...) IM_FMTARGS(2);
+        // Off-UI-thread-safe: unlike addLog(), performs no ImGui calls. The
+        // level is stored and resolved to a color in renderContent() on the
+        // UI thread instead (issue #123 sink callback).
+        static void addLog(tools::logger::LogLevel level, const char* fmt, ...) IM_FMTARGS(2);
         void render() override { draw(); }
         static bool isActive()            { return isWindowActive; }
         static void setActive(bool v)     { isWindowActive = v; }

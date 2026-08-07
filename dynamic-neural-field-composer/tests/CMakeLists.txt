@@ -73,8 +73,11 @@ if(DNF_COMPOSER_BUILD_TESTS)
             ${CMAKE_CURRENT_SOURCE_DIR}/validation)
 
     # Path to the vendored field-dynamics reference data (sim JSONs + expected CSVs).
+    # LOGGER_HEADER_PATH lets test_logger.cpp read tools/logger.h's own source to
+    # assert it has no GUI/application include (issue #123 dependency-direction guard).
     target_compile_definitions(dnf_composer_tests PRIVATE
-            VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data")
+            VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data"
+            LOGGER_HEADER_PATH="${CMAKE_SOURCE_DIR}/include/tools/logger.h")
     target_link_libraries(dnf_composer_tests PRIVATE
             ${CMAKE_PROJECT_NAME}
             GTest::gtest

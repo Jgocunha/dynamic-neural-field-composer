@@ -1,9 +1,31 @@
 #include "user_interface/log_window.h"
 
 #include <array>
+#include <imgui-platform-kit/colour_palette.h>
 
 namespace dnf_composer::user_interface
 {
+	ImVec4 getLogLevelColorCodeGui(const tools::logger::LogLevel level)
+	{
+		ImVec4 currentTextColor = imgui_kit::colours::Gray;
+		if (ImGui::GetCurrentContext() != nullptr)
+		{
+			const ImGuiStyle& style = ImGui::GetStyle();
+			currentTextColor = style.Colors[ImGuiCol_Text];
+		}
+
+		using tools::logger::LogLevel;
+		switch (level)
+		{
+		case LogLevel::DEBUG:     return imgui_kit::colours::Green;
+		case LogLevel::INFO:      return imgui_kit::colours::White;
+		case LogLevel::WARNING:   return imgui_kit::colours::Yellow;
+		case LogLevel::ERROR:
+		case LogLevel::FATAL:     return imgui_kit::colours::Red;
+		default:                  return currentTextColor;
+		}
+	}
+
 	LogWindow::LogWindow()
 	{
    		isWindowActive = false;
@@ -42,12 +64,14 @@ namespace dnf_composer::user_interface
 			ImGui::PushTextWrapPos(0.0F);
 			{
 				std::lock_guard lock(logsMutex);
-				for (const auto& [message, color] : logs)
+				for (const auto& entry : logs)
 				{
-					if (filter.PassFilter(message.c_str()))
+					if (filter.PassFilter(entry.message.c_str()))
 					{
+						const ImVec4 color = entry.resolveColorFromLevel
+							? getLogLevelColorCodeGui(entry.level) : entry.color;
 						ImGui::PushStyleColor(ImGuiCol_Text, color);
-						ImGui::TextEx(message.c_str());
+						ImGui::TextEx(entry.message.c_str());
 						ImGui::PopStyleColor();
 					}
 				}
@@ -74,7 +98,19 @@ namespace dnf_composer::user_interface
 		buffer.back() = '\0';
 		 va_end(args);
 		std::lock_guard lock(logsMutex);
-		logs.push_back({ buffer.data(), color });
+		logs.push_back({ buffer.data(), color, false, tools::logger::LogLevel::INFO });
+	}
+
+	void LogWindow::addLog(const tools::logger::LogLevel level, const char* fmt, ...)
+	{
+   		va_list args;
+		va_start(args, fmt);
+		std::array<char, 1024> buffer{};
+		vsnprintf(buffer.data(), buffer.size(), fmt, args);
+		buffer.back() = '\0';
+		 va_end(args);
+		std::lock_guard lock(logsMutex);
+		logs.push_back({ buffer.data(), ImVec4{}, true, level });
 	}
 
 	void LogWindow::draw()

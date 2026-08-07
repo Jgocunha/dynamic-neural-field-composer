@@ -2076,3 +2076,468 @@ TEST_F(SimulationFileManagerTest, LoadWellFormedFileStillSucceedsAfterValidation
     EXPECT_EQ(sim->getNumberOfElements(), 1);
     EXPECT_NE(sim->getElement("nf 1"), nullptr);
 }
+
+// ---------------------------------------------------------------------------
+// SimulationFileManagerMissingRequiredKey (issue #163 regression tests)
+// ---------------------------------------------------------------------------
+// jsonToElements() used to read every element-specific field with the const
+// json::operator[], which is undefined behaviour on a missing key. It now reads
+// every REQUIRED field with json::at(), which throws json::out_of_range instead;
+// buildElementsOrRollBack() already catches that and reports the file as
+// malformed. One test per element label below builds a full, otherwise-valid
+// element object for that label and omits a single required key, then checks
+// the load fails cleanly (no exception escapes loadElementsFromJson(), and the
+// malformed element is never added to the simulation) rather than crashing.
+
+namespace
+{
+    // Writes a single-element .dnf file under tempDir/testName/testName.dnf, with
+    // elementBody as the sole entry of "elements", and returns the file path.
+    std::string writeSingleElementFile(const std::string& tempDir, const std::string& testName,
+        const std::string& elementBody)
+    {
+        const std::string dir = tempDir + testName + "/";
+        fs::create_directories(dir);
+        const std::string path = dir + testName + ".dnf";
+        std::ofstream f(path);
+        f << R"({
+            "identifier": ")" << testName << R"(",
+            "deltaT": 1.0,
+            "elements": [ )" << elementBody << R"( ]
+        })";
+        return path;
+    }
+
+    // Loads path into a fresh simulation and asserts the load failed cleanly:
+    // no exception escaped, and nothing was added.
+    void expectCleanRejection(const std::string& testName, const std::string& path)
+    {
+        const auto sim = createSimulation(testName + "-sim", 1.0, 0.0, 0.0);
+        const SimulationFileManager sfm{ sim, path };
+        EXPECT_NO_THROW(sfm.loadElementsFromJson());
+        EXPECT_EQ(sim->getNumberOfElements(), 0);
+    }
+}
+
+TEST_F(SimulationFileManagerTest, LoadNeuralFieldMissingTauFailsCleanly)
+{
+    // "tau" omitted.
+    const std::string body = R"({ "uniqueName": "nf 1", "label": [1, "neural field"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "restingLevel": -5.0,
+        "activationFunction": { "type": "sigmoid", "x_shift": 0.0, "steepness": 10.0 } })";
+    expectCleanRejection("nf-missing-tau", writeSingleElementFile(tempDir, "nf-missing-tau", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadNormalNoiseMissingAmplitudeFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn 1", "label": [8, "normal noise"],
+        "x_max": 100, "d_x": 1.0, "inputs": [] })";
+    expectCleanRejection("nn-missing-amplitude", writeSingleElementFile(tempDir, "nn-missing-amplitude", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadCorrelatedNormalNoiseMissingWidthFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "cnn 1", "label": [9, "correlated normal noise"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "amplitude": 0.1, "circular": true })";
+    expectCleanRejection("cnn-missing-width", writeSingleElementFile(tempDir, "cnn-missing-width", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussKernelMissingAmplitudeGlobalFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "gk 1", "label": [4, "gauss kernel"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "amplitude": 10.0, "width": 5.0, "circular": true, "normalized": true })";
+    expectCleanRejection("gk-missing-amplitudeglobal", writeSingleElementFile(tempDir, "gk-missing-amplitudeglobal", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadMexicanHatKernelMissingAmplitudeExcFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "mhk 1", "label": [5, "mexican hat kernel"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "widthExc": 3.0, "amplitudeInh": 6.0, "widthInh": 8.0, "amplitudeGlobal": -0.05,
+        "circular": true, "normalized": true })";
+    expectCleanRejection("mhk-missing-amplitudeexc", writeSingleElementFile(tempDir, "mhk-missing-amplitudeexc", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussStimulusMissingPositionFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "gs 1", "label": [2, "gauss stimulus"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "amplitude": 15.0, "width": 5.0, "circular": true, "normalized": false })";
+    expectCleanRejection("gs-missing-position", writeSingleElementFile(tempDir, "gs-missing-position", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadFieldCouplingMissingLearningRateFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "fc 1", "label": [10, "field coupling"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "learningRule": 0, "scalar": 1.0, "input_x_max": 100, "input_d_x": 1.0 })";
+    expectCleanRejection("fc-missing-learningrate", writeSingleElementFile(tempDir, "fc-missing-learningrate", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussFieldCouplingMissingCircularFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "gfc 1", "label": [11, "gauss field coupling"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "normalized": true, "input_x_max": 100, "input_d_x": 1.0, "couplings": [] })";
+    expectCleanRejection("gfc-missing-circular", writeSingleElementFile(tempDir, "gfc-missing-circular", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadOscillatoryKernelMissingDecayFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "ok 1", "label": [6, "oscillatory kernel"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "zeroCrossings": 2.0, "amplitude": 10.0, "amplitudeGlobal": 0.0,
+        "circular": true, "normalized": true })";
+    expectCleanRejection("ok-missing-decay", writeSingleElementFile(tempDir, "ok-missing-decay", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadAsymmetricGaussKernelMissingTimeShiftFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "agk 1", "label": [7, "asymmetric gauss kernel"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "width": 5.0, "amplitude": 10.0, "amplitudeGlobal": 0.0,
+        "circular": true, "normalized": true })";
+    expectCleanRejection("agk-missing-timeshift", writeSingleElementFile(tempDir, "agk-missing-timeshift", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadBoostStimulusMissingIsActiveFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "bs 1", "label": [3, "boost stimulus"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "amplitude": 5.0 })";
+    expectCleanRejection("bs-missing-isactive", writeSingleElementFile(tempDir, "bs-missing-isactive", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadMemoryTraceMissingThresholdFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "mt 1", "label": [12, "memory trace"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "tauBuild": 10.0, "tauDecay": 20.0 })";
+    expectCleanRejection("mt-missing-threshold", writeSingleElementFile(tempDir, "mt-missing-threshold", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadNeuralField2DMissingRestingLevelFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nf2d 1", "label": [13, "neural field 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "tau": 25.0,
+        "activationFunction": { "type": "sigmoid", "x_shift": 0.0, "steepness": 10.0 } })";
+    expectCleanRejection("nf2d-missing-restinglevel", writeSingleElementFile(tempDir, "nf2d-missing-restinglevel", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussStimulus2DMissingPositionYFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "gs2d 1", "label": [14, "gauss stimulus 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "width": 5.0, "amplitude": 15.0, "position_x": 25.0,
+        "circular": true, "normalized": false })";
+    expectCleanRejection("gs2d-missing-positiony", writeSingleElementFile(tempDir, "gs2d-missing-positiony", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussKernel2DMissingWidthFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "gk2d 1", "label": [15, "gauss kernel 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "amplitude": 10.0, "amplitudeGlobal": 0.0, "circular": true, "normalized": true })";
+    expectCleanRejection("gk2d-missing-width", writeSingleElementFile(tempDir, "gk2d-missing-width", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadMexicanHatKernel2DMissingWidthInhFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "mhk2d 1", "label": [16, "mexican hat kernel 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "widthExc": 3.0, "amplitudeExc": 10.0, "amplitudeInh": 6.0, "amplitudeGlobal": -0.05,
+        "circular": true, "normalized": true })";
+    expectCleanRejection("mhk2d-missing-widthinh", writeSingleElementFile(tempDir, "mhk2d-missing-widthinh", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadNormalNoise2DMissingAmplitudeFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn2d 1", "label": [17, "normal noise 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [] })";
+    expectCleanRejection("nn2d-missing-amplitude", writeSingleElementFile(tempDir, "nn2d-missing-amplitude", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadOscillatoryKernel2DMissingZeroCrossingsFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "ok2d 1", "label": [18, "oscillatory kernel 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "amplitude": 10.0, "decay": 0.5, "amplitudeGlobal": 0.0,
+        "circular": true, "normalized": true })";
+    expectCleanRejection("ok2d-missing-zerocrossings", writeSingleElementFile(tempDir, "ok2d-missing-zerocrossings", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadTimedGaussStimulusMissingWidthFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "tgs 1", "label": [19, "timed gauss stimulus"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "amplitude": 15.0, "position": 50.0, "circular": true, "normalized": false,
+        "onTimes": [] })";
+    expectCleanRejection("tgs-missing-width", writeSingleElementFile(tempDir, "tgs-missing-width", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadTimedGaussStimulus2DMissingPositionXFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "tgs2d 1", "label": [20, "timed gauss stimulus 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "width": 5.0, "amplitude": 15.0, "position_y": 25.0,
+        "circular": true, "normalized": false, "onTimes": [] })";
+    expectCleanRejection("tgs2d-missing-positionx", writeSingleElementFile(tempDir, "tgs2d-missing-positionx", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadBoostStimulus2DMissingAmplitudeFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "bs2d 1", "label": [21, "boost stimulus 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "isActive": true })";
+    expectCleanRejection("bs2d-missing-amplitude", writeSingleElementFile(tempDir, "bs2d-missing-amplitude", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadCorrelatedNormalNoise2DMissingCircularFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "cnn2d 1", "label": [22, "correlated normal noise 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "amplitude": 0.1, "width": 5.0 })";
+    expectCleanRejection("cnn2d-missing-circular", writeSingleElementFile(tempDir, "cnn2d-missing-circular", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadAsymmetricGaussKernel2DMissingTimeShiftYFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "agk2d 1", "label": [23, "asymmetric gauss kernel 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "width": 5.0, "amplitude": 10.0, "amplitudeGlobal": 0.0, "timeShift_x": 1.0,
+        "circular": true, "normalized": true })";
+    expectCleanRejection("agk2d-missing-timeshifty", writeSingleElementFile(tempDir, "agk2d-missing-timeshifty", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadMemoryTrace2DMissingTauBuildFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "mt2d 1", "label": [24, "memory trace 2d"],
+        "x_max": 50, "d_x": 1.0, "y_max": 50, "d_y": 1.0, "inputs": [],
+        "tauDecay": 20.0, "threshold": 0.5 })";
+    expectCleanRejection("mt2d-missing-taubuild", writeSingleElementFile(tempDir, "mt2d-missing-taubuild", body));
+}
+
+// ---------------------------------------------------------------------------
+// SimulationFileManagerMissingCommonKey (issue #163 follow-up)
+// ---------------------------------------------------------------------------
+// uniqueName/label/x_max/d_x are common to every element and were still read
+// with the const operator[] this PR eliminates from the type-specific fields
+// above. jsonToElements()'s up-front pre-check already checks contains() for
+// all four and returns false with a specific error message on a miss -- e.g.
+// LoadElementMissingUniqueNameFailsCleanly below is actually rejected by that
+// pre-check (`is missing a valid "uniqueName"`), never reaching the at() added
+// below it. That at() is defense-in-depth: it keeps the read itself locally
+// safe rather than depending on the pre-check continuing to cover exactly
+// these keys, the same way #163 found the type-specific fields' safety had
+// silently drifted from "validated" to "not validated" over time. "inputs" is
+// different: it has no pre-check at all, so its at() is the only thing
+// rejecting a file that omits it, and this is a genuinely new rejection.
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingUniqueNameFailsCleanly)
+{
+    // Rejected by the pre-check's own contains("uniqueName") test, before
+    // either loop (and its at()) is reached.
+    const std::string body = R"({ "label": [8, "normal noise"],
+        "x_max": 100, "d_x": 1.0, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-uniquename", writeSingleElementFile(tempDir, "elem-missing-uniquename", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingLabelFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn 1",
+        "x_max": 100, "d_x": 1.0, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-label", writeSingleElementFile(tempDir, "elem-missing-label", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingXMaxFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn 1", "label": [8, "normal noise"],
+        "d_x": 1.0, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-xmax", writeSingleElementFile(tempDir, "elem-missing-xmax", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingDXFailsCleanly)
+{
+    const std::string body = R"({ "uniqueName": "nn 1", "label": [8, "normal noise"],
+        "x_max": 100, "inputs": [], "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-dx", writeSingleElementFile(tempDir, "elem-missing-dx", body));
+}
+
+TEST_F(SimulationFileManagerTest, LoadElementMissingInputsFailsCleanly)
+{
+    // Unlike uniqueName/label/x_max/d_x, "inputs" has no up-front pre-check at
+    // all -- this is the one case where at() is the sole guard, not a
+    // belt-and-suspenders addition on top of an existing rejection.
+    const std::string body = R"({ "uniqueName": "nn 1", "label": [8, "normal noise"],
+        "x_max": 100, "d_x": 1.0, "amplitude": 0.1 })";
+    expectCleanRejection("elem-missing-inputs", writeSingleElementFile(tempDir, "elem-missing-inputs", body));
+}
+
+// ---------------------------------------------------------------------------
+// SimulationFileManagerGenuineDefaults (issue #163: keys that stay optional)
+// ---------------------------------------------------------------------------
+// Unlike every key above, "activationFunction" and the FIELD_COUPLING /
+// GAUSS_FIELD_COUPLING "input_x_max"/"input_d_x" pair have a documented default
+// and must keep loading successfully when omitted, not be rejected.
+
+TEST_F(SimulationFileManagerTest, LoadNeuralFieldMissingActivationFunctionDefaultsToSigmoid)
+{
+    const std::string body = R"({ "uniqueName": "nf 1", "label": [1, "neural field"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "tau": 25.0, "restingLevel": -5.0 })";
+    const std::string path = writeSingleElementFile(tempDir, "nf-missing-activationfunction", body);
+
+    const auto sim = createSimulation("nf-missing-activationfunction-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto nf = std::dynamic_pointer_cast<NeuralField>(sim->getElement("nf 1"));
+    ASSERT_NE(nf, nullptr);
+    // getParameters() returns by value, so the owning NeuralFieldParameters must
+    // outlive the raw pointer taken from its activationFunction unique_ptr.
+    const auto params = nf->getParameters();
+    const auto* sigmoid = dynamic_cast<const SigmoidFunction*>(params.activationFunction.get());
+    ASSERT_NE(sigmoid, nullptr);
+    EXPECT_DOUBLE_EQ(sigmoid->x_shift, 0.0);
+    EXPECT_DOUBLE_EQ(sigmoid->steepness, 10.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFieldCouplingMissingInputDimsDefaultsToElementDimensions)
+{
+    const std::string body = R"({ "uniqueName": "fc 1", "label": [10, "field coupling"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "learningRate": 0.01, "learningRule": 0, "scalar": 1.0 })";
+    const std::string path = writeSingleElementFile(tempDir, "fc-missing-inputdims", body);
+
+    const auto sim = createSimulation("fc-missing-inputdims-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto fc = std::dynamic_pointer_cast<FieldCoupling>(sim->getElement("fc 1"));
+    ASSERT_NE(fc, nullptr);
+    EXPECT_EQ(fc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(fc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussFieldCouplingMissingInputDimsDefaultsToElementDimensions)
+{
+    const std::string body = R"({ "uniqueName": "gfc 1", "label": [11, "gauss field coupling"],
+        "x_max": 100, "d_x": 1.0, "inputs": [],
+        "circular": true, "normalized": true, "couplings": [] })";
+    const std::string path = writeSingleElementFile(tempDir, "gfc-missing-inputdims", body);
+
+    const auto sim = createSimulation("gfc-missing-inputdims-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto gfc = std::dynamic_pointer_cast<GaussFieldCoupling>(sim->getElement("gfc 1"));
+    ASSERT_NE(gfc, nullptr);
+    EXPECT_EQ(gfc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(gfc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+// The four tests above/below use x_max: 100, d_x: 1.0 for the OUTER element,
+// which happens to equal ElementDimensions{}'s default (100, 1.0) -- so a
+// hybrid-fallback bug that mixes a supplied input_x_max with the default
+// input_d_x would coincidentally still read (100, 1.0) if the outer and
+// default happened to match. These use non-default outer dimensions AND
+// supply only one of the two input_* keys, so the pair-level fallback (both
+// default) is distinguishable from a hybrid one (only the missing key
+// defaults) by the assertion.
+
+TEST_F(SimulationFileManagerTest, LoadFieldCouplingMissingInputDXFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "fc 1", "label": [10, "field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "learningRate": 0.01, "learningRule": 0, "scalar": 1.0, "input_x_max": 50 })";
+    const std::string path = writeSingleElementFile(tempDir, "fc-missing-input-dx", body);
+
+    const auto sim = createSimulation("fc-missing-input-dx-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto fc = std::dynamic_pointer_cast<FieldCoupling>(sim->getElement("fc 1"));
+    ASSERT_NE(fc, nullptr);
+    // Both fall back to the ElementDimensions{} default (100, 1.0), NOT the
+    // hybrid (50, 1.0) a per-key fallback would have produced from the
+    // supplied input_x_max plus the default input_d_x.
+    EXPECT_EQ(fc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(fc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFieldCouplingMissingInputXMaxFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "fc 1", "label": [10, "field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "learningRate": 0.01, "learningRule": 0, "scalar": 1.0, "input_d_x": 0.25 })";
+    const std::string path = writeSingleElementFile(tempDir, "fc-missing-input-xmax", body);
+
+    const auto sim = createSimulation("fc-missing-input-xmax-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto fc = std::dynamic_pointer_cast<FieldCoupling>(sim->getElement("fc 1"));
+    ASSERT_NE(fc, nullptr);
+    // Both fall back to (100, 1.0), NOT the hybrid (100, 0.25) a per-key
+    // fallback would have produced from the default input_x_max plus the
+    // supplied input_d_x.
+    EXPECT_EQ(fc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(fc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussFieldCouplingMissingInputDXFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "gfc 1", "label": [11, "gauss field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "circular": true, "normalized": true, "couplings": [], "input_x_max": 50 })";
+    const std::string path = writeSingleElementFile(tempDir, "gfc-missing-input-dx", body);
+
+    const auto sim = createSimulation("gfc-missing-input-dx-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto gfc = std::dynamic_pointer_cast<GaussFieldCoupling>(sim->getElement("gfc 1"));
+    ASSERT_NE(gfc, nullptr);
+    EXPECT_EQ(gfc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(gfc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadGaussFieldCouplingMissingInputXMaxFallsBackToFullDefaultPair)
+{
+    const std::string body = R"({ "uniqueName": "gfc 1", "label": [11, "gauss field coupling"],
+        "x_max": 250, "d_x": 2.5, "inputs": [],
+        "circular": true, "normalized": true, "couplings": [], "input_d_x": 0.25 })";
+    const std::string path = writeSingleElementFile(tempDir, "gfc-missing-input-xmax", body);
+
+    const auto sim = createSimulation("gfc-missing-input-xmax-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+
+    const auto gfc = std::dynamic_pointer_cast<GaussFieldCoupling>(sim->getElement("gfc 1"));
+    ASSERT_NE(gfc, nullptr);
+    EXPECT_EQ(gfc->getParameters().inputFieldDimensions.x_max, 100);
+    EXPECT_DOUBLE_EQ(gfc->getParameters().inputFieldDimensions.d_x, 1.0);
+}
+
+// ---------------------------------------------------------------------------
+// SimulationFileManagerBackwardsCompatibility (issue #163)
+// ---------------------------------------------------------------------------
+// Existing, previously-saved .dnf files must still load unchanged after
+// switching required-key reads from operator[] to at().
+
+TEST_F(SimulationFileManagerTest, LoadAllElementsSampleFileStillSucceeds)
+{
+    // data/all-elements/all-elements.dnf exercises every ElementLabel this loader
+    // supports (26 elements across all 24 labels, some duplicated). If any
+    // genuinely-required key had been misclassified as optional-with-a-default,
+    // or vice versa, this file would fail to load or lose elements.
+    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/all-elements/all-elements.dnf";
+    const auto sim = createSimulation("load-all-elements", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, testFile };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 26);
+}

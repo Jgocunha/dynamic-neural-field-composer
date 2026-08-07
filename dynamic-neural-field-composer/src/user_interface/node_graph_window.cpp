@@ -734,22 +734,18 @@ namespace dnf_composer::user_interface
 
 				if (g_pendingOutputPin && isValidInput)
 				{
-					// Second click on an input/target pin: complete the connection.
-					// The destination pin's kind picks the "target" sentinel (routed by
-					// FieldCoupling::addInput); the source pin's kind picks which of the
-					// source's own components ("activation" vs "output") is read. A
-					// Target destination fed from an Activation source becomes
-					// "target:activation" (see FieldCoupling::parseSlot()).
-					const auto srcDecoded = PinIdEncoding::decode(static_cast<uint64_t>(g_pendingOutputPin.Get()));
-					const auto src = tryGetElement(*simulation, srcDecoded.uid);
-					const auto dst = tryGetElement(*simulation, decoded.uid);
-					if (src && dst)
+					// Second click on an input pin: complete the connection. maxIdx is the
+					// highest identifier currently in use, not a dense upper bound -- ids
+					// are assigned from a process-wide counter and removeElement() does not
+					// renumber survivors, so a valid-looking id can still miss.
+					const int srcId = static_cast<int>(g_pendingOutputPin.Get()) - startingOutputPinId;
+					const auto srcElement = simulation->getElement(srcId);
+					const auto dstElement = simulation->getElement(asInput);
+					if (srcElement && dstElement)
 					{
-						const bool fromActivation = srcDecoded.kind == Kind::Activation;
-						const std::string component = decoded.kind == Kind::Target
-							? (fromActivation ? "target:activation" : "target")
-							: (fromActivation ? "activation" : "output");
-						simulation->createInteraction(src->getUniqueName(), component, dst->getUniqueName());
+						simulation->createInteraction(
+							srcElement->getUniqueName(), "output",
+							dstElement->getUniqueName());
 					}
 					g_pendingOutputPin = 0;
 				}
@@ -786,15 +782,14 @@ namespace dnf_composer::user_interface
 				{
 					if (ImNodeEditor::AcceptNewItem())
 					{
-						const auto src = tryGetElement(*simulation, srcDecoded.uid);
-						const auto dst = tryGetElement(*simulation, dstDecoded.uid);
-						if (src && dst)
+						// Same sparse-id caveat as the click-to-click path above.
+						const auto srcElement = simulation->getElement(srcId);
+						const auto dstElement = simulation->getElement(dstId);
+						if (srcElement && dstElement)
 						{
-							const bool fromActivation = srcDecoded.kind == Kind::Activation;
-							const std::string component = dstDecoded.kind == Kind::Target
-								? (fromActivation ? "target:activation" : "target")
-								: (fromActivation ? "activation" : "output");
-							simulation->createInteraction(src->getUniqueName(), component, dst->getUniqueName());
+							simulation->createInteraction(
+								srcElement->getUniqueName(), "output",
+								dstElement->getUniqueName());
 						}
 						g_pendingOutputPin = 0;
 					}
@@ -839,10 +834,12 @@ namespace dnf_composer::user_interface
 			(dstDecoded.kind != Kind::Input && dstDecoded.kind != Kind::Target)) { return;
 }
 
-		const auto dst = tryGetElement(*simulation, dstDecoded.uid);
-		if (!dst) { return;
+		// maxIdx bounds ids currently in use, not a dense range -- getElement(int) can
+		// still return nullptr for an id that fell in a gap left by a removed element.
+		const auto dstElement = simulation->getElement(dstId);
+		if (dstElement) {
+			dstElement->removeInput(srcId);
 }
-		dst->removeInput(srcDecoded.uid);
 	}
 
 	void NodeGraphWindow::handleNodeSelection() const

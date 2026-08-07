@@ -1,10 +1,13 @@
 #pragma once
 
-// Included before the max/min undef guard below since it transitively drags in
-// <windows.h> (via imgui-platform-kit), which would otherwise redefine those
-// macros again right after the guard clears them.
 #include "tools/logger.h"
 
+// tools/logger.h no longer drags in <windows.h> itself (#123 -- tools/ has no
+// GUI dependency), so this header can no longer assume windows.h's max/min/
+// ERROR macros were already cleared by the time its own text is processed. A
+// translation unit that includes a GUI header (which does pull windows.h)
+// before this one would otherwise see those macros still active for the
+// LogLevel::ERROR usage and std::max/min calls below.
 //https://github.com/stevenlovegrove/Pangolin/issues/352
 #ifdef max
 #undef max
@@ -12,6 +15,10 @@
 
 #ifdef min
 #undef min
+#endif
+
+#ifdef ERROR
+#undef ERROR
 #endif
 
 #include <vector>

@@ -40,7 +40,8 @@ jobs:
             libxcursor-dev \
             libxi-dev \
             libxext-dev \
-            gcovr
+            gcovr \
+            xvfb
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
@@ -96,10 +97,59 @@ jobs:
         working-directory: ./dynamic-neural-field-composer/build/linux-release
         run: ctest --output-on-failure --parallel $(nproc)
 
+      # ctest (above) runs every gtest case as its own CTest test via
+      # gtest_discover_tests, each in a separate process -- so a case that
+      # leaks process-global state (e.g. Logger's minimum level) can never
+      # affect a later case and this can never fail here. Run the whole
+      # binary once in a single process, the way a contributor running
+      # `dnf_composer_tests` directly would, so that kind of order
+      # dependence has a real chance to fail CI (#161). --gtest_shuffle
+      # randomizes case order each run to widen what a single run can catch.
+      - name: Run full test suite in a single process (order-dependence check)
+        if: ${{ !matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer/build/linux-release
+        run: ./tests/dnf_composer_tests --gtest_shuffle
+
       - name: Run tests (coverage)
         if: ${{ matrix.coverage }}
         working-directory: ./dynamic-neural-field-composer/build/linux-debug
         run: ctest --output-on-failure --parallel $(nproc)
+
+      # ── Example smoke-run (#129) ────────────────────────────────────────────
+      # The example_*.cpp GUI examples are compiled but never executed, so a
+      # broken example only surfaces when a human happens to run it by hand.
+      # Each example's main loop now honors DNFC_EXAMPLE_MAX_STEPS
+      # (examples/example_common.h): set, it requests its own shutdown after
+      # that many app.step() calls instead of waiting for a window close.
+      # xvfb-run supplies the virtual display GLFW/OpenGL need to initialize
+      # at all on a headless runner; LIBGL_ALWAYS_SOFTWARE forces Mesa's
+      # software (llvmpipe) rasterizer since the runner has no real GPU.
+      - name: Smoke-run examples (headless)
+        if: ${{ !matrix.coverage }}
+        working-directory: ./dynamic-neural-field-composer/build/linux-release/examples
+        env:
+          DNFC_EXAMPLE_MAX_STEPS: "200"
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          shopt -s nullglob
+          binaries=(example_*)
+          if [ ${#binaries[@]} -eq 0 ]; then
+            echo "No example_* binaries found in $(pwd) -- examples/CMakeLists.txt or the build may have changed."
+            exit 1
+          fi
+          fail=0
+          for bin in "${binaries[@]}"; do
+            [ -x "$bin" ] || continue
+            echo "::group::$bin"
+            if xvfb-run -a --server-args="-screen 0 1280x1024x24" "./$bin"; then
+              echo "OK: $bin"
+            else
+              echo "FAILED: $bin (exit $?)"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $fail
 
       # ── Coverage report (Debug matrix entry only) ──────────────────────────
       - name: Generate coverage report
@@ -211,11 +261,16 @@ jobs:
         if: matrix.name == 'asan-ubsan'
         working-directory: ./dynamic-neural-field-composer/${{ matrix.build_dir }}
         env:
-          # detect_leaks=0: connected elements hold shared_ptr to each other in
-          # both directions (Element::inputs/outputs), a known ownership cycle
-          # that LeakSanitizer reports on every connection test. Re-enable when
-          # the input-cache/ownership redesign breaks the cycle.
-          ASAN_OPTIONS: halt_on_error=1:detect_leaks=0
+          # detect_leaks=1: PR #151 severed the Element::inputs/outputs shared_ptr
+          # ownership cycle on Simulation teardown, and PR #153 fixed the
+          # ImNodeEditor context leak. Leak detection is back on so a new leak
+          # outside the known exclusions below can fail this job instead of
+          # passing silently. See tests/lsan_suppressions.txt for exactly what
+          # is still excluded and why (the cycle is not fully closed -- only
+          # for Simulation-owned elements -- plus a well-known FFTW3 false
+          # positive).
+          ASAN_OPTIONS: halt_on_error=1:detect_leaks=1
+          LSAN_OPTIONS: suppressions=${{ github.workspace }}/dynamic-neural-field-composer/tests/lsan_suppressions.txt
           UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
         run: ctest --output-on-failure --parallel $(nproc)
 
