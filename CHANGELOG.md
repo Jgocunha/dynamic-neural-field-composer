@@ -4,6 +4,92 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Elements exposing an `"activation"` component (e.g. `NeuralField`/`NeuralField2D`) now
+  render a second output-side "Activation" pin in the node graph, alongside the regular
+  Output pin, so a field's raw activation can be wired directly into another element's
+  input instead of its sigmoided output.
+
+### Fixed
+- Heatmap colorbar tick labels were unreadable for narrow value ranges, such as a DELTA
+  `FieldCoupling`'s learned weight matrix (correctly on the order of
+  `target_amplitude / inputSize`, e.g. `±0.009`), across all four heatmap rendering paths
+  (the standalone Plot window, both node-graph plot cards, and the inline node preview).
+  Two compounding causes: (1) every `ImPlot::ColormapScale(...)` call site omitted the
+  format argument, defaulting to ImPlot's `"%g"`; added `selectHeatmapTickFormat()`,
+  which picks fixed-decimal precision from the displayed range (falling back to
+  scientific notation only once fixed-decimal would collapse a nonzero value to all
+  zeros); (2) `ColormapScale`'s colorbar frame width was a hardcoded 60px tuned for the
+  old default's short labels — passing a correct-but-longer format string (e.g.
+  `"-0.0090"` instead of `"-0.009"`) then clipped the label back down to the same
+  unreadable text the format fix was meant to eliminate. The colorbar frame (and, for
+  the inline node preview's hand-rolled axis, its reserved margin) is now sized from the
+  actual worst-case label for the chosen format instead of a constant. Display only — no
+  change to the underlying data, colors, or scale values.
+- A `FieldCoupling`'s learning rate could neither be read nor edited in the GUI once it
+  was small. Both the element properties panel and the add-element dialog formatted it
+  with a fixed-decimal format (`%.3f` / `%.4f`), so a legitimate rate of `1e-5` rendered
+  as a flat `0.000`; the properties panel's drag also used a linear speed of `0.01` over
+  a `0..10` range, making every value below ~0.01 unreachable by dragging. Both now use
+  `%.3g`, the drag is logarithmic over `1e-8..10`, and the properties panel's
+  commit-back check compares relative to the current value instead of against a fixed
+  `1e-6` epsilon that silently swallowed edits at that scale.
+- `FieldCoupling`'s DELTA rule gated every weight update by the output field's own
+  post-synaptic output (`post = g(u_out)`), a Hebbian construct that doesn't belong in
+  Widrow-Hoff. Since the coupling is typically the output field's only drive, weights
+  start at zero, so the forward pass is zero, so the output field never leaves its
+  resting level, so `post ≈ 0` forever — a deadlock no `learningRate` or `scalar` could
+  escape (weights observed staying ~0 regardless of how high either was set).
+  `deltaLearningRuleWidrowHoff` no longer takes a `post` parameter; the rule is now the
+  textbook `dW[i][j] = learningRate * pre[i] * (error[j] - decayRate * W[i][j])`. This is
+  a **source-breaking signature change** to the (public, templated) function in
+  `tools/math.h` — the only in-repo caller, `FieldCoupling::updateWeights()`, is updated.
+  **Weights trained under the post-gated rule should be retrained.**
+- `FieldCoupling` accepted a connection from an element's Activation pin (component
+  `"activation"`) but only honored it for the forward pass — `updateWeights()`'s DELTA
+  branch still hardcoded `"output"` for its `pre` term, so the learning rule silently
+  disagreed with what was actually wired, and the target slot could not be wired from an
+  Activation pin at all. Both slots now read whichever component they were connected
+  from: the input slot already stored `"activation"`/`"output"` correctly and now
+  `updateWeights()` follows it too, and the target slot gains a `"target:activation"`
+  form (`addInput(field, "target:activation")` / `createInteraction(field,
+  "target:activation", coupling)`) alongside the existing `"target"`. `"target"` and
+  `"output"` are unchanged, so no existing `.dnf` file or call site is affected.
+  HEBB/OJA are deliberately unaffected — they always read `"activation"` regardless of
+  which pin the input/output fields were wired from.
+- `FieldCoupling`'s DELTA learning rule was not actually the delta rule: it took the
+  output field's own activation as its own teaching signal, comparing it against an
+  internally recomputed prediction — a self-referential correlation update chasing a
+  moving target through the field's feedback loop, not the supervised Widrow-Hoff rule
+  the name promised. DELTA is now genuinely supervised: `FieldCoupling` gains a
+  `"target"` component, fed by a second connection to the coupling (pass the literal
+  component name `"target"` to `addInput`/`createInteraction`, rendered as a second
+  "Target" input pin below the regular Input pin in the node graph). The update rule was
+  `dW = learningRate * pre * post * (error - decayRate * w)`, where `pre = g(u_in)`,
+  `post = g(u_out)`, and `error = target - actual` (the coupling's own output) — with a
+  new `decayRate` parameter (default `0.0`, DELTA only) for the weight-decay term. (The
+  `post` factor was itself later found to deadlock training and was removed — see above.)
+  HEBB/OJA are unaffected. **Weights trained under the old DELTA implementation encode
+  the previous (incorrect) rule and should be retrained**; a `.dnf` file with an existing
+  DELTA coupling will load with learning disabled and a logged warning until a target
+  field is connected to its Target pin. See `examples/delta_learning.cpp`.
+- The node-editor's pin/link id scheme was additive (`1000/2000/3000 + element uid`)
+  against a never-reset global uid counter, so pins already collided once any element's
+  uid reached 1000 (e.g. an input pin at uid 1000 coincided with an output pin at uid
+  0), and link ids built via decimal string concatenation collided for multi-digit uids
+  (`"11"+"1"` and `"1"+"11"` both parse to `111`). Replaced with a multiplicative
+  per-kind band (`NodeGraphWindow::PinIdEncoding`) and a shift-based link id, which also
+  made room for the new Target pin without reusing address space.
+- `FieldCoupling::changeInputDimensions` reallocated `components["input"]` without
+  invalidating the cached input pointer, and `Element::severIncompatibleInputs`'s size
+  check assumed every source feeds the single `"input"` buffer. `Element` gained a
+  protected `invalidateInputCache()` used by both `FieldCoupling::changeDimensions` and
+  `changeInputDimensions`.
+- The node graph's connect/disconnect handlers looked up elements by uid via
+  `Simulation::getElement(int)`, which throws when the uid isn't found (element uids are
+  non-contiguous after deletion, so a bounds check on the highest uid alone doesn't rule
+  out a stale id) — a possible uncaught exception mid-frame. Both paths now go through a
+  non-throwing lookup helper.
 ## [2.10.1] - 2026-08-06
 
 ### Fixed

@@ -39,6 +39,31 @@ namespace dnf_composer
 	[[nodiscard]] ManualHeatmapDimensions resolveManualHeatmapDimensions(int x_max, int y_max,
 		float x_step, float y_step, std::size_t dataSize);
 
+	/// @brief Pick a printf format for a heatmap colorbar's tick labels from the
+	/// displayed range.
+	///
+	/// Every `ImPlot::ColormapScale(...)` call site previously omitted the format
+	/// argument, defaulting to ImPlot's `"%g"`. For a narrow range (e.g. a
+	/// FieldCoupling DELTA weight matrix, whose weights are legitimately on the
+	/// order of `target_amplitude / inputSize` -- see
+	/// FieldCoupling::updateWeights()), ImPlot's tick locator then produces
+	/// values that `"%g"` either rounds to a meaningless `0.00` or, depending on
+	/// where the tick lands, renders as an oversized fixed-notation integer.
+	/// Neither is readable.
+	///
+	/// This selects fixed-decimal precision that scales down as the range
+	/// narrows, falling back to scientific notation only once fixed-decimal
+	/// would otherwise collapse a nonzero value to all zeros. It is deliberately
+	/// pure: it is called from a render function that runs every frame (see
+	/// resolveManualHeatmapDimensions above for the same extraction rationale),
+	/// and it never inspects the actual data -- only the [scaleMin, scaleMax]
+	/// range already computed by the caller.
+	///
+	/// @param scaleMin,scaleMax  The colorbar's displayed range, in either order.
+	/// @return A static string literal (never null); safe to pass directly to
+	///         ImPlot::ColormapScale, which stores the pointer without copying.
+	[[nodiscard]] const char* selectHeatmapTickFormat(double scaleMin, double scaleMax);
+
 	struct HeatmapParameters final : PlotSpecificParameters
 	{
 		double scaleMin, scaleMax;

@@ -81,6 +81,23 @@ sim.createInteraction(
     "output",                // which component to read
     "target element name"    // the element receiving the data
 );
+
+// FieldCoupling's DELTA rule: wire a field as the teaching signal by passing
+// the literal component name "target" instead of "output". Do not confuse
+// this string with "target element name" above (the receiving element,
+// unrelated) -- this is a FieldCoupling-specific sentinel routed to its
+// components["target"], not summed into components["input"].
+sim.createInteraction(
+    "teacher field name",
+    "target",
+    "field coupling name"
+);
+
+// A FieldCoupling's input or target slot may also be wired from a source's
+// Activation pin instead of its default Output pin, so the forward pass (and,
+// for DELTA, the learning rule) reads raw activation instead of g(u):
+sim.createInteraction("input field name", "activation", "field coupling name");
+sim.createInteraction("teacher field name", "target:activation", "field coupling name");
 ```
 
 ---

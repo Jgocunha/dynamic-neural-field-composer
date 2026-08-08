@@ -891,47 +891,118 @@ TEST(OjaLearningRule, DecayShrinksUpdateFromNonZeroWeights)
     EXPECT_NEAR(result[0], 1.0, 1e-9);
 }
 
+// ---------------------------------------------------------------------------
+// deltaLearningRuleWidrowHoff — supervised, decaying delta rule used by
+// FieldCoupling's DELTA learning rule. Deliberately NOT post-synaptically
+// gated: see PostSynapticActivityIsNotRequired below for why.
+//
+// dW[i][j] = lr * pre[i] * (err[j] - decayRate * w[i][j])
+// err[j] = target[j] - actual[j]
+// ---------------------------------------------------------------------------
+
 TEST(DeltaLearningRuleWidrowHoff, ZeroErrorMeansNoChange)
 {
-    std::vector<std::vector<double>> weights{ { 1.0, 2.0 }, { 3.0, 4.0 } };
+    std::vector<double> weights{ 1.0, 2.0, 3.0, 4.0 };
     const auto original = weights;
-    const std::vector<double> input{ 1.0, 1.0 };
-    const std::vector<double> actual{ 5.0, 5.0 };
-    const std::vector<double> target{ 5.0, 5.0 };
+    const std::vector<double> pre{ 1.0, 1.0 };
+    const std::vector<double> actual{ 4.0, 6.0 };
+    const std::vector<double> target{ 4.0, 6.0 }; // == actual, so err == 0 everywhere
 
-    const auto result = deltaLearningRuleWidrowHoff(weights, input, actual, target, 0.1);
+    const auto result = deltaLearningRuleWidrowHoff(weights, pre, target, actual, 0.5, 0.0);
     EXPECT_EQ(result, original);
 }
 
-TEST(DeltaLearningRuleWidrowHoff, HandComputedUpdate)
+TEST(DeltaLearningRuleWidrowHoff, HandComputedUpdateNoDecay)
 {
-    // w[i][j] += lr * (target[j]-actual[j]) * input[i]
-    std::vector<std::vector<double>> weights{ { 0.0, 0.0 } };
-    const std::vector<double> input{ 2.0 };
+    // err = target - actual = {2, 3}
+    // w[i][j] += lr * pre[i] * err[j]
+    std::vector<double> weights{ 0.0, 0.0, 0.0, 0.0 };
+    const std::vector<double> pre{ 1.0, 2.0 };
+    const std::vector<double> target{ 3.0, 4.0 };
     const std::vector<double> actual{ 1.0, 1.0 };
-    const std::vector<double> target{ 2.0, 3.0 };
-    constexpr double lr = 0.5;
+    constexpr double lr = 0.1;
 
-    const auto result = deltaLearningRuleWidrowHoff(weights, input, actual, target, lr);
-    // error = [1, 2]; w[0][0] += 0.5*1*2 = 1.0; w[0][1] += 0.5*2*2 = 2.0
-    EXPECT_NEAR(result[0][0], 1.0, 1e-9);
-    EXPECT_NEAR(result[0][1], 2.0, 1e-9);
+    const auto result = deltaLearningRuleWidrowHoff(weights, pre, target, actual, lr, 0.0);
+    EXPECT_NEAR(result[0], 0.20, 1e-9); // i=0,j=0: 0.1*1*2
+    EXPECT_NEAR(result[1], 0.30, 1e-9); // i=0,j=1: 0.1*1*3
+    EXPECT_NEAR(result[2], 0.40, 1e-9); // i=1,j=0: 0.1*2*2
+    EXPECT_NEAR(result[3], 0.60, 1e-9); // i=1,j=1: 0.1*2*3
 }
 
-TEST(DeltaLearningRuleKroghHertz, ArgumentOrderIsTargetThenActual)
+TEST(DeltaLearningRuleWidrowHoff, DecayShrinksTowardZeroWithZeroError)
 {
-    // Krogh-Hertz signature is (weights, input, targetOutput, actualOutput, lr) —
-    // the opposite order of the (actualOutput, targetOutput) params vs Widrow-Hoff.
-    // This test pins that order down.
-    std::vector<std::vector<double>> weights{ { 0.0, 0.0 } };
-    const std::vector<double> input{ 2.0 };
-    const std::vector<double> targetOutput{ 2.0, 3.0 };
-    const std::vector<double> actualOutput{ 1.0, 1.0 };
-    constexpr double lr = 0.5;
+    // err == 0 everywhere, so dW[i][j] = lr * pre[i] * (-decayRate * w[i][j])
+    //                                  = 0.5 * 1 * (-0.2 * 1) = -0.1
+    std::vector<double> weights{ 1.0, 1.0, 1.0, 1.0 };
+    const std::vector<double> pre{ 1.0, 1.0 };
+    const std::vector<double> target{ 0.0, 0.0 };
+    const std::vector<double> actual{ 0.0, 0.0 };
 
-    const auto result = deltaLearningRuleKroghHertz(weights, input, targetOutput, actualOutput, lr);
-    EXPECT_NEAR(result[0][0], 1.0, 1e-9);
-    EXPECT_NEAR(result[0][1], 2.0, 1e-9);
+    const auto result = deltaLearningRuleWidrowHoff(weights, pre, target, actual, 0.5, 0.2);
+    for (const double w : result) {
+        EXPECT_NEAR(w, 0.9, 1e-9);
+    }
+}
+
+TEST(DeltaLearningRuleWidrowHoff, ZeroPreGatingBlocksUpdate)
+{
+    // pre[0] == 0 must leave row 0 untouched regardless of a nonzero error.
+    std::vector<double> weights{ 0.0, 0.0, 0.0, 0.0 };
+    const std::vector<double> pre{ 0.0, 1.0 };
+    const std::vector<double> target{ 5.0, 5.0 };
+    const std::vector<double> actual{ 0.0, 0.0 };
+
+    const auto result = deltaLearningRuleWidrowHoff(weights, pre, target, actual, 0.1, 0.0);
+    EXPECT_EQ(result[0], 0.0);
+    EXPECT_EQ(result[1], 0.0);
+    EXPECT_GT(result[2], 0.0);
+    EXPECT_GT(result[3], 0.0);
+}
+
+TEST(DeltaLearningRuleWidrowHoff, PostSynapticActivityIsNotRequired)
+{
+    // Regression: a zero-initialized coupling whose output field it alone
+    // drives starts with post-synaptic output at ~0 forever (the field never
+    // leaves resting level until the coupling's own forward pass moves it).
+    // A rule gated by post-synaptic activity deadlocks in exactly this
+    // situation -- weights can never leave zero no matter how large the
+    // error or learning rate are. Widrow-Hoff's error term alone must be
+    // enough to start learning.
+    std::vector<double> weights{ 0.0, 0.0 };
+    const std::vector<double> pre{ 2.0 };
+    const std::vector<double> target{ 5.0, 5.0 };
+    const std::vector<double> actual{ 0.0, 0.0 }; // as if post/output were still at rest
+
+    const auto result = deltaLearningRuleWidrowHoff(weights, pre, target, actual, 0.1, 0.0);
+    EXPECT_GT(result[0], 0.0);
+    EXPECT_GT(result[1], 0.0);
+}
+
+TEST(DeltaLearningRuleWidrowHoff, EmptyPreThrows)
+{
+    std::vector<double> weights{ 0.0 };
+    const std::vector<double> pre;
+    const std::vector<double> target{ 1.0 };
+    const std::vector<double> actual{ 0.0 };
+    EXPECT_THROW(deltaLearningRuleWidrowHoff(weights, pre, target, actual, 0.1, 0.0), std::invalid_argument);
+}
+
+TEST(DeltaLearningRuleWidrowHoff, SizeMismatchThrows)
+{
+    std::vector<double> weights{ 0.0, 0.0 };  // should be 2*2=4 for 2 pre, 2 target
+    const std::vector<double> pre{ 1.0, 1.0 };
+    const std::vector<double> target{ 1.0, 1.0 };
+    const std::vector<double> actual{ 0.0, 0.0 };
+    EXPECT_THROW(deltaLearningRuleWidrowHoff(weights, pre, target, actual, 0.1, 0.0), std::invalid_argument);
+}
+
+TEST(DeltaLearningRuleWidrowHoff, TargetActualMismatchThrows)
+{
+    std::vector<double> weights{ 0.0, 0.0 };
+    const std::vector<double> pre{ 1.0, 1.0 };
+    const std::vector<double> target{ 1.0 };
+    const std::vector<double> actual{ 0.0, 0.0 }; // target.size() == 1, actual.size() == 2
+    EXPECT_THROW(deltaLearningRuleWidrowHoff(weights, pre, target, actual, 0.1, 0.0), std::invalid_argument);
 }
 
 // ---------------------------------------------------------------------------

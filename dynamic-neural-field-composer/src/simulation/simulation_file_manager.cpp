@@ -377,6 +377,7 @@ namespace dnf_composer
             elementJson["learningRate"] = fieldCouplingParameters.learningRate;
             elementJson["learningRule"] = fieldCouplingParameters.learningRule;
             elementJson["scalar"] = fieldCouplingParameters.scalar;
+            elementJson["decayRate"] = fieldCouplingParameters.decayRate;
             elementJson["input_x_max"] = fieldCouplingParameters.inputFieldDimensions.x_max;
             elementJson["input_d_x"] = fieldCouplingParameters.inputFieldDimensions.d_x;
         }
@@ -855,6 +856,10 @@ namespace dnf_composer
                 const double learningRate = elementJson.at("learningRate");
                 const LearningRule learningRule = elementJson.at("learningRule");
                 const double scalar = elementJson.at("scalar");
+                // decayRate is genuinely optional (unlike the keys above): files saved
+                // before decayRate existed don't have this key at all, and must still
+                // load (at 0.0, i.e. decay disabled) rather than throw.
+                const double decayRate = elementJson.value("decayRate", 0.0);
                 // Unlike the keys above, the input field's own dimensions have a genuine
                 // default: FieldCouplingParameters defaults inputFieldDimensions to
                 // ElementDimensions{} (x_max 100, d_x 1.0) when none is supplied, so an
@@ -872,7 +877,7 @@ namespace dnf_composer
                     ? elementJson["input_d_x"].get<double>() : defaultInputDimensions.d_x;
                 auto coupling = std::make_shared<element::FieldCoupling>(
                     element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
-                    element::FieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), learningRule, scalar, learningRate)
+                    element::FieldCouplingParameters(element::ElementDimensions(input_x_max, input_d_x), learningRule, scalar, learningRate, decayRate)
                 );
                 simulation->addElement(coupling);
             }

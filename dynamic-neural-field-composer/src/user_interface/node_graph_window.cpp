@@ -1,5 +1,8 @@
 #include "user_interface/node_graph_window.h"
+#include <algorithm>
 #include <array>
+#include <cfloat>
+#include <cstdio>
 #include <cstring>
 
 #include "elements/correlated_normal_noise_2d.h"
@@ -8,6 +11,7 @@
 #include "elements/collapse.h"
 #include "elements/expand.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
+#include "visualization/heatmap.h"
 
 namespace dnf_composer::user_interface
 {
@@ -28,6 +32,27 @@ namespace dnf_composer::user_interface
 		std::unordered_map<std::string, std::pair<double, double>> g_wmRangeCache;
 		std::unordered_map<std::string, std::pair<double, double>> g_rangeCache;
 		ImNodeEditor::PinId g_pendingOutputPin = 0;
+
+		// ImPlot::ColormapScale sizes its own frame to the fixed width the caller
+		// passes in, then clips tick labels to that frame -- it does not grow to
+		// fit longer text. selectHeatmapTickFormat() (heatmap.h) picks precision
+		// from the displayed range, so a narrow weight-matrix range now produces
+		// longer labels (e.g. "-0.0090") than ImPlot's old "%g" default did (e.g.
+		// "-0.009"); a colorbar width tuned for the old default clips the new,
+		// more precise labels right back down to the unreadable text this fix
+		// exists to avoid. Size the frame from the actual worst-case label instead
+		// of a constant.
+		float colorbarWidthFor(double scaleMin, double scaleMax)
+		{
+			const char* fmt = selectHeatmapTickFormat(scaleMin, scaleMax);
+			char buf[32];
+			std::snprintf(buf, sizeof(buf), fmt, scaleMin);
+			const float wMin = ImGui::CalcTextSize(buf).x;
+			std::snprintf(buf, sizeof(buf), fmt, scaleMax);
+			const float wMax = ImGui::CalcTextSize(buf).x;
+			constexpr float barAndPadding = 34.0F; // color bar itself + tick marks + margins
+			return barAndPadding + (wMin > wMax ? wMin : wMax);
+		}
 	}
 
 	void NodeGraphWindow::resetTransientStateForTesting()
@@ -400,8 +425,7 @@ namespace dnf_composer::user_interface
 	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void NodeGraphWindow::renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
-		constexpr float pad       = 0.0F;
-		constexpr float axisRight = 30.0F;  // reserved for amplitude colorbar
+		constexpr float pad = 0.0F;
 
 		const auto  label       = element->getLabel();
 		const bool  isWeightMap = isWeightMapElement(label);
@@ -442,6 +466,7 @@ namespace dnf_composer::user_interface
 					if (stableMax - stableMin < 1e-9) { stableMax = stableMin + 1.0;
 }
 
+					const float axisRight = inlineColorbarWidth(stableMin, stableMax);
 					const ImRect hmRect(rect.Min, ImVec2(rect.Max.x - axisRight, rect.Max.y));
 					draw2DFieldHeatmap(dl, hmRect, weights, rows, cols, stableMin, stableMax);
 					drawInlineHeatmapAxes(dl, hmRect, rows, cols, stableMin, stableMax);
@@ -481,6 +506,7 @@ namespace dnf_composer::user_interface
 					if (stableMax - stableMin < 1e-9) { stableMax = stableMin + 1.0;
 }
 
+					const float axisRight = inlineColorbarWidth(stableMin, stableMax);
 					const ImRect hmRect(
 						ImVec2(rect.Min.x,        rect.Min.y + pad),
 						ImVec2(rect.Max.x - pad - axisRight, rect.Max.y ));
@@ -529,6 +555,8 @@ namespace dnf_composer::user_interface
 	{
 		using ax::Widgets::IconType;
 		constexpr auto pinColor = ImVec4(1.0F, 1.0F, 1.0F, 0.90F);
+		constexpr auto targetPinColor = ImVec4(0.83F, 0.75F, 0.47F, 0.95F); // cream-gold, matches the coupling header
+		constexpr auto activationPinColor = ImVec4(0.55F, 0.75F, 0.90F, 0.95F); // cool blue, contrasts with Target
 		constexpr auto iconSize = ImVec2(14, 14);
 
 		const auto lbl = element->getLabel();
@@ -542,6 +570,16 @@ namespace dnf_composer::user_interface
 			lbl != element::ElementLabel::CORRELATED_NORMAL_NOISE &&
 			lbl != element::ElementLabel::BOOST_STIMULUS &&
 			lbl != element::ElementLabel::BOOST_STIMULUS_2D;
+		// Only FieldCoupling has a "target" component; a Target pin on any other
+		// element would accept a link that Element::updateInput() then sums into
+		// "input" -- exactly the routing bug this pin exists to avoid.
+		const bool hasTargetPin = (lbl == element::ElementLabel::FIELD_COUPLING);
+		// Gate on the element's actual components (not a label list) so any element
+		// exposing "activation" -- today NeuralField/NeuralField2D, but not hardcoded
+		// to them -- automatically gets the pin with no further change here.
+		const auto componentList = element->getComponentList();
+		const bool hasActivationPin =
+			std::ranges::find(componentList, "activation") != componentList.end();
 
 		if (ImGui::BeginTable("##pins", 2, ImGuiTableFlags_None, ImVec2(minNodeSize, 0.F)))
 		{
@@ -552,7 +590,7 @@ namespace dnf_composer::user_interface
 			ImGui::TableSetColumnIndex(0);
 			if (hasInputPin)
 			{
-				ImNodeEditor::BeginPin(startingInputPinId + element->getUniqueIdentifier(),
+				ImNodeEditor::BeginPin(PinIdEncoding::inputPin(element->getUniqueIdentifier()),
 				                       ImNodeEditor::PinKind::Input);
 				ImNodeEditor::PinPivotAlignment(ImVec2(0.0F, 0.5F));
 				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
@@ -562,7 +600,7 @@ namespace dnf_composer::user_interface
 			}
 
 			ImGui::TableSetColumnIndex(1);
-			ImNodeEditor::BeginPin(startingOutputPinId + element->getUniqueIdentifier(),
+			ImNodeEditor::BeginPin(PinIdEncoding::outputPin(element->getUniqueIdentifier()),
 			                       ImNodeEditor::PinKind::Output);
 			ImNodeEditor::PinPivotAlignment(ImVec2(1.0F, 0.5F));
 			{
@@ -577,6 +615,39 @@ namespace dnf_composer::user_interface
 			ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
 			ImNodeEditor::EndPin();
 
+			if (hasTargetPin)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImNodeEditor::BeginPin(PinIdEncoding::targetPin(element->getUniqueIdentifier()),
+				                       ImNodeEditor::PinKind::Input);
+				ImNodeEditor::PinPivotAlignment(ImVec2(0.0F, 0.5F));
+				ax::Widgets::Icon(iconSize, IconType::Circle, true, targetPinColor, ImVec4(0,0,0,0));
+				ImGui::SameLine(0, 4);
+				ImGui::TextUnformatted("Target");
+				ImNodeEditor::EndPin();
+			}
+
+			if (hasActivationPin)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(1);
+				ImNodeEditor::BeginPin(PinIdEncoding::activationPin(element->getUniqueIdentifier()),
+				                       ImNodeEditor::PinKind::Output);
+				ImNodeEditor::PinPivotAlignment(ImVec2(1.0F, 0.5F));
+				{
+					const float avail  = ImGui::GetContentRegionAvail().x;
+					const float needed = ImGui::CalcTextSize("Activation").x + 4.0F + iconSize.x;
+					if (avail > needed) {
+						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - needed);
+}
+				}
+				ImGui::TextUnformatted("Activation");
+				ImGui::SameLine(0, 4);
+				ax::Widgets::Icon(iconSize, IconType::Circle, true, activationPinColor, ImVec4(0,0,0,0));
+				ImNodeEditor::EndPin();
+			}
+
 			ImGui::EndTable();
 		}
 	}
@@ -584,20 +655,27 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderElementNodeConnections(const std::shared_ptr<element::Element>& element)
 	{
 		constexpr float thickness = 2.0F;
-		constexpr auto linkCol   = ImVec4(0.08F, 0.08F, 0.08F, 0.85F); // near-black
+		constexpr auto linkCol           = ImVec4(0.08F, 0.08F, 0.08F, 0.85F); // near-black
+		constexpr auto targetLinkCol     = ImVec4(0.60F, 0.50F, 0.15F, 0.85F); // matches the Target pin
+		constexpr auto activationLinkCol = ImVec4(0.30F, 0.50F, 0.65F, 0.85F); // matches the Activation pin
 
-		for (const auto& input : element->getInputs())
+		for (const auto& [input, component] : element->getInputsAndComponents())
 		{
-			const std::string idStr =
-				std::to_string(element->getUniqueIdentifier()) +
-				std::to_string(input->getUniqueIdentifier());
-			const size_t linkId = std::stoull(idStr) + startingLinkId;
+			// "target:activation" is FieldCoupling's target slot fed from a source's
+			// Activation pin -- see FieldCoupling::parseSlot(). It is both a target
+			// connection and an activation-sourced one.
+			const bool isTarget = component.starts_with("target");
+			const bool isFromActivation = (component == "activation") || (component == "target:activation");
+			const uint64_t linkId = PinIdEncoding::linkId(
+				input->getUniqueIdentifier(), element->getUniqueIdentifier(), isTarget, isFromActivation);
 
 			ImNodeEditor::Link(
 				linkId,
-				input->getUniqueIdentifier()   + startingOutputPinId,
-				element->getUniqueIdentifier() + startingInputPinId,
-				linkCol, thickness);
+				isFromActivation ? PinIdEncoding::activationPin(input->getUniqueIdentifier())
+				                 : PinIdEncoding::outputPin(input->getUniqueIdentifier()),
+				isTarget ? PinIdEncoding::targetPin(element->getUniqueIdentifier())
+				         : PinIdEncoding::inputPin(element->getUniqueIdentifier()),
+				isTarget ? targetLinkCol : (isFromActivation ? activationLinkCol : linkCol), thickness);
 		}
 	}
 
@@ -608,13 +686,34 @@ namespace dnf_composer::user_interface
 		handleNodeSelection();
 	}
 
+	namespace
+	{
+		// getElement(int) throws when the uid isn't found (unlike the string
+		// overload, which returns nullptr) -- and uids are non-contiguous after
+		// element deletion, so a uid <= maxIdx range check is necessary but not
+		// sufficient. Both connect paths and the disconnect path look elements up
+		// by uid decoded from a possibly-stale pin/link id, so route them all
+		// through this helper rather than calling the throwing overload directly
+		// from inside a render frame.
+		std::shared_ptr<element::Element> tryGetElement(const Simulation& simulation, int uid)
+		{
+			try
+			{
+				return simulation.getElement(uid);
+			}
+			catch (const Exception&)
+			{
+				return nullptr;
+			}
+		}
+	}
+
 	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - flat state machine over drag/hover/release pin events; splitting would obscure the transitions
 	void NodeGraphWindow::handlePinInteractions() const
 	{
 		// g_pendingOutputPin: set when user clicks an output pin; cleared when they click an input
 		// pin (completing the connection), click elsewhere, or start a successful drag.
-
-		const int maxIdx = simulation->getHighestElementIndex();
+		using Kind = PinIdEncoding::Kind;
 
 		// Cancel with Escape or right-click.
 		if (g_pendingOutputPin &&
@@ -629,31 +728,34 @@ namespace dnf_composer::user_interface
 			const ImNodeEditor::PinId hovered = ImNodeEditor::GetHoveredPin();
 			if (hovered)
 			{
-				const int asOutput = static_cast<int>(hovered.Get()) - startingOutputPinId;
-				const int asInput  = static_cast<int>(hovered.Get()) - startingInputPinId;
-				const bool isValidOutput = asOutput >= 0 && asOutput <= maxIdx;
-				const bool isValidInput  = asInput  >= 0 && asInput  <= maxIdx;
+				const auto decoded = PinIdEncoding::decode(static_cast<uint64_t>(hovered.Get()));
+				const bool isValidSource = decoded.kind == Kind::Output || decoded.kind == Kind::Activation;
+				const bool isValidInput  = decoded.kind == Kind::Input || decoded.kind == Kind::Target;
 
 				if (g_pendingOutputPin && isValidInput)
 				{
-					// Second click on an input pin: complete the connection. maxIdx is the
-					// highest identifier currently in use, not a dense upper bound -- ids
-					// are assigned from a process-wide counter and removeElement() does not
-					// renumber survivors, so a valid-looking id can still miss.
-					const int srcId = static_cast<int>(g_pendingOutputPin.Get()) - startingOutputPinId;
-					const auto srcElement = simulation->getElement(srcId);
-					const auto dstElement = simulation->getElement(asInput);
-					if (srcElement && dstElement)
+					// Second click on an input/target pin: complete the connection.
+					// The destination pin's kind picks the "target" sentinel (routed by
+					// FieldCoupling::addInput); the source pin's kind picks which of the
+					// source's own components ("activation" vs "output") is read. A
+					// Target destination fed from an Activation source becomes
+					// "target:activation" (see FieldCoupling::parseSlot()).
+					const auto srcDecoded = PinIdEncoding::decode(static_cast<uint64_t>(g_pendingOutputPin.Get()));
+					const auto src = tryGetElement(*simulation, srcDecoded.uid);
+					const auto dst = tryGetElement(*simulation, decoded.uid);
+					if (src && dst)
 					{
-						simulation->createInteraction(
-							srcElement->getUniqueName(), "output",
-							dstElement->getUniqueName());
+						const bool fromActivation = srcDecoded.kind == Kind::Activation;
+						const std::string component = decoded.kind == Kind::Target
+							? (fromActivation ? "target:activation" : "target")
+							: (fromActivation ? "activation" : "output");
+						simulation->createInteraction(src->getUniqueName(), component, dst->getUniqueName());
 					}
 					g_pendingOutputPin = 0;
 				}
-				else if (isValidOutput)
+				else if (isValidSource)
 				{
-					// First click (or change of mind): record this output pin.
+					// First click (or change of mind): record this source pin.
 					g_pendingOutputPin = hovered;
 				}
 				else
@@ -675,21 +777,24 @@ namespace dnf_composer::user_interface
 			ImNodeEditor::PinId endPin;
 			if (ImNodeEditor::QueryNewLink(&startPin, &endPin))
 			{
-				const int srcId = static_cast<int>(startPin.Get()) - startingOutputPinId;
-				const int dstId = static_cast<int>(endPin.Get())   - startingInputPinId;
+				const auto srcDecoded = PinIdEncoding::decode(static_cast<uint64_t>(startPin.Get()));
+				const auto dstDecoded = PinIdEncoding::decode(static_cast<uint64_t>(endPin.Get()));
+				const bool valid = (srcDecoded.kind == Kind::Output || srcDecoded.kind == Kind::Activation) &&
+					(dstDecoded.kind == Kind::Input || dstDecoded.kind == Kind::Target);
 
-				if (srcId >= 0 && srcId <= maxIdx && dstId >= 0 && dstId <= maxIdx)
+				if (valid)
 				{
 					if (ImNodeEditor::AcceptNewItem())
 					{
-						// Same sparse-id caveat as the click-to-click path above.
-						const auto srcElement = simulation->getElement(srcId);
-						const auto dstElement = simulation->getElement(dstId);
-						if (srcElement && dstElement)
+						const auto src = tryGetElement(*simulation, srcDecoded.uid);
+						const auto dst = tryGetElement(*simulation, dstDecoded.uid);
+						if (src && dst)
 						{
-							simulation->createInteraction(
-								srcElement->getUniqueName(), "output",
-								dstElement->getUniqueName());
+							const bool fromActivation = srcDecoded.kind == Kind::Activation;
+							const std::string component = dstDecoded.kind == Kind::Target
+								? (fromActivation ? "target:activation" : "target")
+								: (fromActivation ? "activation" : "output");
+							simulation->createInteraction(src->getUniqueName(), component, dst->getUniqueName());
 						}
 						g_pendingOutputPin = 0;
 					}
@@ -726,19 +831,18 @@ namespace dnf_composer::user_interface
 		ImNodeEditor::PinId endPin;
 		GetLinkPins(clicked, &startPin, &endPin);
 
-		const int srcId  = static_cast<int>(startPin.Get()) - startingOutputPinId;
-		const int dstId  = static_cast<int>(endPin.Get())   - startingInputPinId;
-		const int maxIdx = simulation->getHighestElementIndex();
+		using Kind = PinIdEncoding::Kind;
+		const auto srcDecoded = PinIdEncoding::decode(static_cast<uint64_t>(startPin.Get()));
+		const auto dstDecoded = PinIdEncoding::decode(static_cast<uint64_t>(endPin.Get()));
 
-		if (srcId < 0 || dstId < 0 || srcId > maxIdx || dstId > maxIdx) { return;
+		if ((srcDecoded.kind != Kind::Output && srcDecoded.kind != Kind::Activation) ||
+			(dstDecoded.kind != Kind::Input && dstDecoded.kind != Kind::Target)) { return;
 }
 
-		// maxIdx bounds ids currently in use, not a dense range -- getElement(int) can
-		// still return nullptr for an id that fell in a gap left by a removed element.
-		const auto dstElement = simulation->getElement(dstId);
-		if (dstElement) {
-			dstElement->removeInput(srcId);
+		const auto dst = tryGetElement(*simulation, dstDecoded.uid);
+		if (!dst) { return;
 }
+		dst->removeInput(srcDecoded.uid);
 	}
 
 	void NodeGraphWindow::handleNodeSelection() const
@@ -942,7 +1046,7 @@ namespace dnf_composer::user_interface
 					std::snprintf(state.yLabel.data(), state.yLabel.size(), "%s", "Input field");
 				}
 
-				const float cbW = 60.0F;
+				const float cbW = colorbarWidthFor(scMin, scMax);
 				const float hmW = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
 				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
 				if (!state.autoFit) {
@@ -959,7 +1063,8 @@ namespace dnf_composer::user_interface
 					ImPlot::EndPlot();
 				}
 				ImGui::SameLine(0, 4.0F);
-				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
+				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH),
+					selectHeatmapTickFormat(scMin, scMax));
 				ImPlot::PopColormap();
 			}
 		}
@@ -1021,7 +1126,7 @@ namespace dnf_composer::user_interface
 
 				}
 
-				const float cbW    = 60.0F;
+				const float cbW    = colorbarWidthFor(scMin, scMax);
 				const float hmW    = plotW - cbW - ImGui::GetStyle().ItemSpacing.x;
 				const ImPlotAxisFlags axF = state.autoFit ? ImPlotAxisFlags_AutoFit : ImPlotAxisFlags_None;
 				if (!state.autoFit) {
@@ -1038,7 +1143,8 @@ namespace dnf_composer::user_interface
 					ImPlot::EndPlot();
 				}
 				ImGui::SameLine(0, 4.0F);
-				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH));
+				ImPlot::ColormapScale("##cb", scMin, scMax, ImVec2(cbW, plotH),
+					selectHeatmapTickFormat(scMin, scMax));
 				ImPlot::PopColormap();
 			}
 		}
@@ -1272,6 +1378,12 @@ namespace dnf_composer::user_interface
 			ImGui::Text("Rule: %s",             LearningRuleToString.at(p.learningRule).c_str());
 			ImGui::Text("Scalar: %.2f",         p.scalar);
 			ImGui::Text("Learning rate: %.4f",  p.learningRate);
+			if (p.learningRule == LearningRule::DELTA)
+			{
+				ImGui::Text("Decay rate: %.4f", p.decayRate);
+				const auto target = fc->getTargetField();
+				ImGui::Text("Target: %s", target ? target->getUniqueName().c_str() : "(none)");
+			}
 			ImGui::Text("Learning active: %s",  p.isLearningActive ? "true" : "false");
 			break;
 		}
@@ -1460,6 +1572,23 @@ namespace dnf_composer::user_interface
 		       label == element::ElementLabel::GAUSS_FIELD_COUPLING;
 	}
 
+	float NodeGraphWindow::inlineColorbarWidth(const double dMin, const double dMax)
+	{
+		constexpr float fs           = 9.0F;
+		constexpr float barGapAndW   = 10.0F; // barGap + barW below
+		constexpr float tickAndSpace = 5.0F;  // tick mark length + text gap below
+
+		ImFont* const font = ImGui::GetFont();
+		const char*   fmt  = selectHeatmapTickFormat(dMin, dMax);
+		char buf[32];
+		std::snprintf(buf, sizeof(buf), fmt, dMin);
+		const float wMin = font->CalcTextSizeA(fs, FLT_MAX, 0.0F, buf).x;
+		std::snprintf(buf, sizeof(buf), fmt, dMax);
+		const float wMax = font->CalcTextSizeA(fs, FLT_MAX, 0.0F, buf).x;
+
+		return barGapAndW + tickAndSpace + (wMin > wMax ? wMin : wMax);
+	}
+
 	void NodeGraphWindow::drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect,
 		const int rows, const int cols, const double dMin, const double dMax, const int colormap)
 	{
@@ -1488,13 +1617,14 @@ namespace dnf_composer::user_interface
 		}
 		dl->AddRect(ImVec2(barX0, hmRect.Min.y), ImVec2(barX1, hmRect.Max.y), tickCol, 0.0F, 0, 0.5F);
 		// Colorbar ticks and value labels
-		std::array<char, 16> buf{};
+		const char* fmt = selectHeatmapTickFormat(dMin, dMax);
+		std::array<char, 32> buf{};
 		for (int i = 0; i <= nTicks; ++i)
 		{
 			const float  t   = static_cast<float>(i) / nTicks;
 			const float  y   = hmRect.Max.y - t * hmRect.GetHeight();
 			const double val = dMin + t * (dMax - dMin);
-			std::snprintf(buf.data(), buf.size(), "%.1f", val);
+			std::snprintf(buf.data(), buf.size(), fmt, val);
 			dl->AddLine(ImVec2(barX1, y), ImVec2(barX1 + 2.0F, y), tickCol, 1.0F);
 			dl->AddText(font, fs, ImVec2(barX1 + 3.0F, y - fs * 0.5F), textCol, buf.data());
 		}

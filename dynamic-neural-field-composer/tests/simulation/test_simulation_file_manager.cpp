@@ -798,6 +798,167 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesFieldCouplingParameters)
     EXPECT_EQ(loaded->getParameters(), fcp);
 }
 
+TEST_F(SimulationFileManagerTest, RoundTripPreservesFieldCouplingDecayRate)
+{
+    const FieldCouplingParameters fcp{ ElementDimensions(100, 1.0), LearningRule::DELTA, 1.0, 0.05, 0.2 };
+    const auto coupling = std::make_shared<FieldCoupling>(
+        ElementCommonParameters{ "fc decay rt", 100 }, fcp);
+
+    const auto simA = createSimulation("rt-fc-decay", 1.0, 0.0, 0.0);
+    simA->addElement(coupling);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-fc-decay-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-fc-decay/rt-fc-decay.dnf" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<FieldCoupling>(simB->getElement("fc decay rt"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_DOUBLE_EQ(loaded->getParameters().decayRate, 0.2);
+}
+
+TEST_F(SimulationFileManagerTest, LoadingFileWithoutDecayRateKeyDefaultsToZero)
+{
+    // Backwards compatibility: a .dnf saved before decayRate existed must
+    // still load, with decayRate defaulting to 0.0 rather than throwing.
+    const FieldCouplingParameters fcp{ ElementDimensions(100, 1.0), LearningRule::HEBB, 1.0, 0.01 };
+    const auto coupling = std::make_shared<FieldCoupling>(
+        ElementCommonParameters{ "fc nodecay", 100 }, fcp);
+
+    const auto simA = createSimulation("rt-fc-nodecay", 1.0, 0.0, 0.0);
+    simA->addElement(coupling);
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const std::string filePath = tempDir + "rt-fc-nodecay/rt-fc-nodecay.dnf";
+    std::ifstream in(filePath);
+    std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    in.close();
+
+    // Strip the decayRate key to simulate a pre-existing file saved by an
+    // older build, which never wrote this key at all.
+    const std::size_t pos = contents.find("\"decayRate\"");
+    ASSERT_NE(pos, std::string::npos);
+    const std::size_t valueStart = contents.find(':', pos) + 1;
+    const std::size_t valueEnd = contents.find_first_of(",}", valueStart);
+    contents.erase(pos, (valueEnd - pos) + 1);
+
+    std::ofstream out(filePath, std::ios::trunc);
+    out << contents;
+    out.close();
+
+    const auto simB = createSimulation("rt-fc-nodecay-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, filePath };
+    EXPECT_NO_THROW(sfmLoad.loadElementsFromJson());
+
+    const auto loaded = std::dynamic_pointer_cast<FieldCoupling>(simB->getElement("fc nodecay"));
+    ASSERT_NE(loaded, nullptr);
+    EXPECT_DOUBLE_EQ(loaded->getParameters().decayRate, 0.0);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesFieldCouplingTargetConnection)
+{
+    const auto inputField = makeField("fc-target-in", 100);
+    const auto outputField = makeField("fc-target-out", 100);
+    const auto targetField = makeField("fc-target-teacher", 100);
+    const FieldCouplingParameters fcp{ ElementDimensions(100, 1.0), LearningRule::DELTA, 1.0, 0.05 };
+    const auto coupling = std::make_shared<FieldCoupling>(
+        ElementCommonParameters{ "fc target rt", 100 }, fcp);
+
+    const auto simA = createSimulation("rt-fc-target", 1.0, 0.0, 0.0);
+    simA->addElement(inputField);
+    simA->addElement(outputField);
+    simA->addElement(targetField);
+    simA->addElement(coupling);
+    simA->createInteraction("fc-target-in", "output", "fc target rt");
+    simA->createInteraction("fc target rt", "output", "fc-target-out");
+    simA->createInteraction("fc-target-teacher", "target", "fc target rt");
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-fc-target-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-fc-target/rt-fc-target.dnf" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<FieldCoupling>(simB->getElement("fc target rt"));
+    ASSERT_NE(loaded, nullptr);
+    const auto loadedTarget = std::dynamic_pointer_cast<NeuralField>(simB->getElement("fc-target-teacher"));
+    ASSERT_NE(loadedTarget, nullptr);
+    EXPECT_EQ(loaded->getTargetField(), loadedTarget);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesActivationInputConnection)
+{
+    const auto inputField = makeField("fc-actin-in", 100);
+    const auto outputField = makeField("fc-actin-out", 100);
+    const FieldCouplingParameters fcp{ ElementDimensions(100, 1.0), LearningRule::HEBB, 1.0, 0.05 };
+    const auto coupling = std::make_shared<FieldCoupling>(
+        ElementCommonParameters{ "fc actin rt", 100 }, fcp);
+
+    const auto simA = createSimulation("rt-fc-actin", 1.0, 0.0, 0.0);
+    simA->addElement(inputField);
+    simA->addElement(outputField);
+    simA->addElement(coupling);
+    simA->createInteraction("fc-actin-in", "activation", "fc actin rt");
+    simA->createInteraction("fc actin rt", "output", "fc-actin-out");
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-fc-actin-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-fc-actin/rt-fc-actin.dnf" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<FieldCoupling>(simB->getElement("fc actin rt"));
+    ASSERT_NE(loaded, nullptr);
+    const auto loadedInput = simB->getElement("fc-actin-in");
+    ASSERT_NE(loadedInput, nullptr);
+    const auto inputsAndComponents = loaded->getInputsAndComponents();
+    const auto it = inputsAndComponents.find(loadedInput);
+    ASSERT_NE(it, inputsAndComponents.end());
+    EXPECT_EQ(it->second, "activation");
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripPreservesActivationTargetConnection)
+{
+    const auto inputField = makeField("fc-acttgt-in", 100);
+    const auto outputField = makeField("fc-acttgt-out", 100);
+    const auto targetField = makeField("fc-acttgt-teacher", 100);
+    const FieldCouplingParameters fcp{ ElementDimensions(100, 1.0), LearningRule::DELTA, 1.0, 0.05 };
+    const auto coupling = std::make_shared<FieldCoupling>(
+        ElementCommonParameters{ "fc acttgt rt", 100 }, fcp);
+
+    const auto simA = createSimulation("rt-fc-acttgt", 1.0, 0.0, 0.0);
+    simA->addElement(inputField);
+    simA->addElement(outputField);
+    simA->addElement(targetField);
+    simA->addElement(coupling);
+    simA->createInteraction("fc-acttgt-in", "output", "fc acttgt rt");
+    simA->createInteraction("fc acttgt rt", "output", "fc-acttgt-out");
+    simA->createInteraction("fc-acttgt-teacher", "target:activation", "fc acttgt rt");
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-fc-acttgt-loaded", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-fc-acttgt/rt-fc-acttgt.dnf" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loaded = std::dynamic_pointer_cast<FieldCoupling>(simB->getElement("fc acttgt rt"));
+    ASSERT_NE(loaded, nullptr);
+    const auto loadedTarget = std::dynamic_pointer_cast<NeuralField>(simB->getElement("fc-acttgt-teacher"));
+    ASSERT_NE(loadedTarget, nullptr);
+    EXPECT_EQ(loaded->getTargetField(), loadedTarget);
+    const auto inputsAndComponents = loaded->getInputsAndComponents();
+    const auto it = inputsAndComponents.find(loadedTarget);
+    ASSERT_NE(it, inputsAndComponents.end());
+    EXPECT_EQ(it->second, "target:activation");
+}
+
 TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussFieldCouplingWithNoCouplings)
 {
     const GaussFieldCouplingParameters gfcp{ ElementDimensions(100, 1.0), false, true, {} };
