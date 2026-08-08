@@ -856,6 +856,10 @@ namespace dnf_composer
                 const double learningRate = elementJson.at("learningRate");
                 const LearningRule learningRule = elementJson.at("learningRule");
                 const double scalar = elementJson.at("scalar");
+                // decayRate is genuinely optional (unlike the keys above): files saved
+                // before decayRate existed don't have this key at all, and must still
+                // load (at 0.0, i.e. decay disabled) rather than throw.
+                const double decayRate = elementJson.value("decayRate", 0.0);
                 // Unlike the keys above, the input field's own dimensions have a genuine
                 // default: FieldCouplingParameters defaults inputFieldDimensions to
                 // ElementDimensions{} (x_max 100, d_x 1.0) when none is supplied, so an
