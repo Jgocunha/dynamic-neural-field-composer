@@ -620,8 +620,9 @@ TEST(FieldCouplingActivationWiring, DeltaRuleReadsActivationWhenWiredFromActivat
     fc->step(0.0, 0.1);
 
     // actual = scalar * W * pre = 0 (weights start at zero) => err = target - actual = 2.0
-    // Δw = lr * pre * post * err = 0.1 * 4.0 * 1.0 * 2.0 = 0.8 for every weight,
-    // which is only reachable if pre came from "activation" (4.0), not "output" (999.0).
+    // Δw = lr * pre * err = 0.1 * 4.0 * 2.0 = 0.8 for every weight (no post-synaptic
+    // gating; decayRate is 0 here), which is only reachable if pre came from
+    // "activation" (4.0), not "output" (999.0).
     for (double w : *fc->getComponentPtr("weights"))
         EXPECT_NEAR(w, 0.8, 1e-9);
 }

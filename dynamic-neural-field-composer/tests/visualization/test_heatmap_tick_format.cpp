@@ -46,6 +46,14 @@ TEST(SelectHeatmapTickFormat, VerySmallRangeGetsScientific)
     EXPECT_STREQ(selectHeatmapTickFormat(0.0, 1e-5), "%.1e");
 }
 
+TEST(SelectHeatmapTickFormat, NarrowRangeOffsetFromZeroGetsScientific)
+{
+    // span = 0.000101 alone would pick "%.5f" from its width, but that format
+    // rounds the nonzero endpoint 0.000001 down to "0.00000" -- an unreadable
+    // label for a value that is not actually zero. Must fall back to scientific.
+    EXPECT_STREQ(selectHeatmapTickFormat(0.000001, 0.000102), "%.1e");
+}
+
 TEST(SelectHeatmapTickFormat, ArgumentOrderDoesNotMatter)
 {
     EXPECT_STREQ(selectHeatmapTickFormat(-0.00739912, 0.0089524),

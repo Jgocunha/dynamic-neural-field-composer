@@ -4,6 +4,7 @@
 #include <cfloat>
 #include <cstdio>
 #include <cstring>
+#include <utility>
 
 #include "elements/correlated_normal_noise_2d.h"
 #include "elements/resize.h"
@@ -790,8 +791,15 @@ namespace dnf_composer::user_interface
 			ImNodeEditor::PinId endPin;
 			if (ImNodeEditor::QueryNewLink(&startPin, &endPin))
 			{
-				const auto srcDecoded = PinIdEncoding::decode(static_cast<uint64_t>(startPin.Get()));
-				const auto dstDecoded = PinIdEncoding::decode(static_cast<uint64_t>(endPin.Get()));
+				auto srcDecoded = PinIdEncoding::decode(static_cast<uint64_t>(startPin.Get()));
+				auto dstDecoded = PinIdEncoding::decode(static_cast<uint64_t>(endPin.Get()));
+				// imgui-node-editor reports the pin the drag started from as startPin,
+				// which may be the sink side if the user dragged from an Input/Target
+				// pin -- normalise to source -> sink before validating.
+				if ((srcDecoded.kind == Kind::Input || srcDecoded.kind == Kind::Target) &&
+					(dstDecoded.kind == Kind::Output || dstDecoded.kind == Kind::Activation)) {
+					std::swap(srcDecoded, dstDecoded);
+}
 				const bool valid = (srcDecoded.kind == Kind::Output || srcDecoded.kind == Kind::Activation) &&
 					(dstDecoded.kind == Kind::Input || dstDecoded.kind == Kind::Target);
 

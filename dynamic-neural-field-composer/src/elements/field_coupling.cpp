@@ -66,9 +66,13 @@
 			components["output"].assign(newDimensions.size, 0.0);
 			components["target"].assign(newDimensions.size, 0.0);
 			components["weights"].assign(static_cast<std::size_t>(inputSize) * newDimensions.size, 0.0);
-			// A previously connected target field is now size-mismatched.
-			targetField = nullptr;
-			targetSourceComponent = "output";
+			// A previously connected target field is now size-mismatched: sever it from
+			// the input graph too, not just the targetField pointer, or updateInput()
+			// keeps summing its stale entry into components["target"].
+			if (targetField) {
+				Element::removeInput(targetField->getUniqueName());
+}
+			clearTarget();
 			init();
 		}
 
@@ -160,6 +164,14 @@
 						commonParameters.identifiers.uniqueName));
 					return;
 				}
+				if (targetField)
+				{
+					log(tools::logger::LogLevel::ERROR, std::format(
+						"Field coupling '{}' already has a target field ('{}') connected. "
+						"Remove it before connecting a new one.",
+						commonParameters.identifiers.uniqueName, targetField->getUniqueName()));
+					return;
+				}
 				// The literal "target"/"target:activation" is kept as the stored component
 				// name (rather than resolved here) so it round-trips through JSON
 				// persistence and the GUI can route the link to the Target pin by reading
@@ -184,6 +196,7 @@
 				clearTarget();
 }
 			Element::removeInput(inputElementId);
+			updateInputField();
 		}
 
 		void FieldCoupling::removeInput(int uniqueId)
@@ -192,12 +205,14 @@
 				clearTarget();
 }
 			Element::removeInput(uniqueId);
+			updateInputField();
 		}
 
 		void FieldCoupling::removeInputs()
 		{
 			clearTarget();
 			Element::removeInputs();
+			updateInputField();
 		}
 
 		void FieldCoupling::updateInput()
@@ -244,6 +259,11 @@
 					"Incorrect number of inputs for field coupling '{}'. Should be 1, is {}.",
 					commonParameters.identifiers.uniqueName, inputCount);
 				log(tools::logger::LogLevel::WARNING, logMessage);
+				// A removed/invalid input graph must not leave a stale `input` pointer
+				// behind -- checkValidConnections() and DELTA would otherwise keep
+				// reading a field that is no longer (or not yet) actually connected.
+				input = nullptr;
+				inputSourceComponent = "output";
 				return;
 			}
 
@@ -253,6 +273,8 @@
 					"Incorrect input type for field coupling '{}'. Should be a neural field, is {}.",
 					commonParameters.identifiers.uniqueName, ElementLabelToString.at(candidate->getLabel()));
 				log(tools::logger::LogLevel::WARNING, logMessage);
+				input = nullptr;
+				inputSourceComponent = "output";
 				return;
 			}
 
@@ -271,7 +293,10 @@
 				log(tools::logger::LogLevel::WARNING, std::format(
 					"Incorrect target type for field coupling '{}'. Should be a neural field, is {}.",
 					commonParameters.identifiers.uniqueName, ElementLabelToString.at(targetField->getLabel())));
-				targetField = nullptr;
+				// Sever the graph entry too, not just the pointer -- otherwise
+				// updateInput() keeps summing this invalid source into components["target"].
+				Element::removeInput(targetField->getUniqueName());
+				clearTarget();
 				return;
 			}
 
@@ -280,7 +305,8 @@
 				log(tools::logger::LogLevel::WARNING, std::format(
 					"Target field size does not match the output size of field coupling '{}'. Target ignored.",
 					commonParameters.identifiers.uniqueName));
-				targetField = nullptr;
+				Element::removeInput(targetField->getUniqueName());
+				clearTarget();
 			}
 		}
 

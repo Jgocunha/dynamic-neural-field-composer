@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 #include <utility>
 
@@ -36,6 +39,23 @@ namespace dnf_composer
 		return { rows, cols, false };
 	}
 
+	namespace
+	{
+		// A candidate format is unusable if it rounds a genuinely nonzero endpoint
+		// down to zero (e.g. "%.5f" on 0.000001 prints "0.00000") -- span alone
+		// picks precision from the *width* of the range, not from how close its
+		// endpoints sit to zero, so a narrow-but-offset range like
+		// [0.000001, 0.000102] needs this separate check.
+		bool rendersNonzeroEndpointAsZero(const char* fmt, double value)
+		{
+			if (value == 0.0) { return false; }
+			std::array<char, 32> buf{};
+			std::snprintf(buf.data(), buf.size(), fmt, value);
+			const double parsedBack = std::strtod(buf.data(), nullptr);
+			return parsedBack == 0.0;
+		}
+	}
+
 	const char* selectHeatmapTickFormat(double scaleMin, double scaleMax)
 	{
 		const double span = std::abs(scaleMax - scaleMin);
@@ -43,19 +63,27 @@ namespace dnf_composer
 		if (!std::isfinite(span) || span == 0.0) {
 			return "%.2f";
 		}
+
+		const char* candidate = "%.1e";
 		if (span >= 10.0) {
-			return "%.0f";
+			candidate = "%.0f";
 		}
-		if (span >= 1.0) {
-			return "%.2f";
+		else if (span >= 1.0) {
+			candidate = "%.2f";
 		}
-		if (span >= 0.01) {
-			return "%.4f";
+		else if (span >= 0.01) {
+			candidate = "%.4f";
 		}
-		if (span >= 1e-4) {
-			return "%.5f";
+		else if (span >= 1e-4) {
+			candidate = "%.5f";
 		}
-		return "%.1e";
+
+		if (std::strcmp(candidate, "%.1e") != 0 &&
+			(rendersNonzeroEndpointAsZero(candidate, scaleMin) ||
+			 rendersNonzeroEndpointAsZero(candidate, scaleMax))) {
+			return "%.1e";
+		}
+		return candidate;
 	}
 
 	namespace
