@@ -196,8 +196,8 @@ Demonstrates the supervised DELTA (Widrow-Hoff) learning rule, which — unlike 
 
 **Architecture:**
 - Perceptual field (200 units): `NeuralField` + `GaussStimulus`
-- Output field (200 units): `NeuralField`, driven only by the `FieldCoupling`
-- Target field (200 units): `NeuralField` + `GaussStimulus`, connected to the coupling's `"target"` component
+- Output field (200 units): `NeuralField`, externally driven by the `FieldCoupling` plus its own recurrent `MexicanHatKernel`
+- Target field (200 units): `NeuralField` + `GaussStimulus`, connected to the coupling's Target slot (`addInput(target, "target")`)
 - One `FieldCoupling` (200→200) with the DELTA learning rule
 - Heatmap of the learned weight matrix
 

@@ -11,6 +11,29 @@ All notable changes to this project will be documented in this file.
   input instead of its sigmoided output.
 
 ### Fixed
+- `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or
+  replacing the first, so `inputs` could hold two target entries that `updateInput()`
+  summed together into `components["target"]` — training against a combined/stale
+  teaching signal. A second target connection is now rejected with a logged error;
+  `changeDimensions()` and `updateTargetField()`'s validation-failure paths now also
+  sever the stale entry from the input graph itself (`Element::removeInput`), not just
+  the `targetField` pointer, matching what `removeInput`/`removeInputs` already did.
+- `FieldCoupling::updateInputField()` left the previously selected `input` and
+  `inputSourceComponent` pointing at a removed or now-invalid field whenever the normal
+  input graph dropped to zero or more than one connection, so DELTA could keep reading a
+  disconnected field's stale data. Both early-return paths now reset `input` to `nullptr`,
+  and `removeInput`/`removeInputs` now call `updateInputField()` to recompute state
+  immediately rather than only handling the target-slot case.
+- The node graph's drag-to-connect only accepted drags started from an Output/Activation
+  pin; imgui-node-editor reports whichever pin the drag started from as the "start" pin,
+  so dragging from an Input or Target pin to an Output/Activation pin was silently
+  rejected. The decoded start/end pins are now normalized to source→sink order before
+  validation, regardless of drag direction.
+- `selectHeatmapTickFormat()` picked fixed-decimal precision from the range's width
+  (`scaleMax - scaleMin`) alone, so a narrow range offset from zero (e.g.
+  `[0.000001, 0.000102]`) still selected a precision that rounded the nonzero lower
+  endpoint down to `"0.00000"`. It now checks whether either endpoint would render as
+  zero at the candidate precision and falls back to scientific notation if so.
 - Heatmap colorbar tick labels were unreadable for narrow value ranges, such as a DELTA
   `FieldCoupling`'s learned weight matrix (correctly on the order of
   `target_amplitude / inputSize`, e.g. `±0.009`), across all four heatmap rendering paths

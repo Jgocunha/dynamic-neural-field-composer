@@ -470,7 +470,7 @@ std::string dir = coupling->getWeightsDirectory();
 
 | Name | Description |
 |---|---|
-| `"weights"` | Flattened 2D weight matrix (rows = output positions, cols = input positions) |
+| `"weights"` | Flattened 2D weight matrix, row-major (rows = input positions, cols = output positions) |
 | `"output"` | Weighted sum of the source field output |
 | `"target"` | DELTA rule's teaching signal, fed by the field connected to the Target pin (`"output"`-sized; zero if none connected) |
 
