@@ -130,6 +130,72 @@ namespace dnf_composer::user_interface
 
 	class NodeGraphWindow final : public imgui_kit::UserInterfaceWindow
 	{
+	public:
+		/// @brief Encodes/decodes node-editor pin and link ids.
+		///
+		/// Pin ids used to be additive (`1000 + uid`, `2000 + uid`, ...) with a
+		/// never-reset global element uid counter -- so any element reaching
+		/// uid >= 1000 collided with a pin of a lower-uid element (e.g. input pin
+		/// of uid 1000 == output pin of uid 0). The link id formula
+		/// (`stoull(to_string(dst)+to_string(src))`) had the same problem for
+		/// multi-digit uids: `stoull("11"+"1") == stoull("1"+"11")`.
+		///
+		/// Replaced with a multiplicative kind stride: each pin kind owns a
+		/// disjoint band `[kind * pinKindStride, (kind+1) * pinKindStride)`, so
+		/// any uid below the stride can never collide across kinds, and link ids
+		/// are packed by bit-shifting the two uids rather than string-concatenating
+		/// their decimal digits.
+		///
+		/// Exposed publicly (not just as private statics) so this encoding can be
+		/// unit-tested directly -- see tests/user_interface/test_node_graph_window_pin_ids.cpp.
+		struct PinIdEncoding
+		{
+			// Input/Target are input-side (sink) pins; Output/Activation are
+			// output-side (source) pins. A link's destination component name is
+			// derived from the sink pin's kind ("target" vs "output"); its source
+			// component name is derived from the source pin's kind ("activation"
+			// vs "output") -- see NodeGraphWindow::handlePinInteractions().
+			enum class Kind { Input, Target, Output, Activation, Invalid };
+
+			static constexpr uint64_t pinKindStride  = 1'000'000ULL;
+			static constexpr uint64_t inputPinBase      = 1ULL * pinKindStride;
+			static constexpr uint64_t targetPinBase     = 2ULL * pinKindStride;
+			static constexpr uint64_t outputPinBase     = 3ULL * pinKindStride;
+			static constexpr uint64_t activationPinBase = 4ULL * pinKindStride;
+			static constexpr uint64_t linkIdBase        = 5ULL * pinKindStride;
+
+			static uint64_t inputPin(int uid)      { return inputPinBase      + static_cast<uint64_t>(uid); }
+			static uint64_t targetPin(int uid)     { return targetPinBase     + static_cast<uint64_t>(uid); }
+			static uint64_t outputPin(int uid)     { return outputPinBase     + static_cast<uint64_t>(uid); }
+			static uint64_t activationPin(int uid) { return activationPinBase + static_cast<uint64_t>(uid); }
+
+			/// @brief Distinguishes links that differ only in which pin they start/end
+			/// at (e.g. Output-to-Input vs Activation-to-Input between the same pair
+			/// of elements), so they never share an id.
+			static uint64_t linkId(int srcUid, int dstUid, bool isTargetSlot, bool isFromActivation = false)
+			{
+				return linkIdBase + (static_cast<uint64_t>(srcUid) << 32)
+					+ (static_cast<uint64_t>(dstUid) << 2)
+					+ (isTargetSlot ? 1ULL : 0ULL) + (isFromActivation ? 2ULL : 0ULL);
+			}
+
+			struct Decoded { Kind kind; int uid; };
+
+			/// @brief Decode a raw pin id back into its kind and element uid.
+			/// Returns Kind::Invalid for an id outside any known band (e.g. a
+			/// stale id from a since-removed encoding).
+			static Decoded decode(uint64_t rawPinId)
+			{
+				const uint64_t band = (rawPinId / pinKindStride) * pinKindStride;
+				const int uid = static_cast<int>(rawPinId % pinKindStride);
+				if (band == inputPinBase)      { return { Kind::Input,      uid }; }
+				if (band == targetPinBase)     { return { Kind::Target,     uid }; }
+				if (band == outputPinBase)     { return { Kind::Output,     uid }; }
+				if (band == activationPinBase) { return { Kind::Activation, uid }; }
+				return { Kind::Invalid, -1 };
+			}
+		};
+
 	private:
 		std::shared_ptr<Simulation> simulation;
 		// config must outlive context: CreateEditor() keeps the pointer we hand it,
@@ -137,9 +203,6 @@ namespace dnf_composer::user_interface
 		// declared first.
 		ImNodeEditor::Config config;
 		std::unique_ptr<ImNodeEditor::EditorContext, EditorContextDeleter> context;
-		static constexpr uint16_t startingInputPinId = 1000;
-		static constexpr uint16_t startingOutputPinId = 2000;
-		static constexpr uint16_t startingLinkId = 3000;
 
 		// Initial-layout state: nodes not yet seen in this session get a grid position
 		// on the frame after their first render (when we can read their actual position).
@@ -207,6 +270,12 @@ namespace dnf_composer::user_interface
 			int rows, int cols, double wMin, double wMax, int colormap = ImPlotColormap_Deep);
 		static void drawInlineHeatmapAxes(ImDrawList* dl, const ImRect& hmRect, int rows, int cols,
 			double dMin, double dMax, int colormap = ImPlotColormap_Deep);
+		/// @brief Space (px) to reserve to the right of the inline node preview's
+		/// heatmap square for its colorbar strip, ticks, and value labels -- sized
+		/// from the widest label selectHeatmapTickFormat() will draw for [dMin,
+		/// dMax], so a narrow (e.g. DELTA weight matrix) range doesn't clip its
+		/// more precise labels the way a fixed constant did.
+		static float inlineColorbarWidth(double dMin, double dMax);
 		static void renderNodeScrollingName(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodeInlinePreview(const std::shared_ptr<element::Element>& element, float minNodeSize);
 		static void renderNodePins(const std::shared_ptr<element::Element>& element, float minNodeSize);

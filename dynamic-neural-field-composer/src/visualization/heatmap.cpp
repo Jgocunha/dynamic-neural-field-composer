@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 #include <utility>
 
@@ -34,6 +37,76 @@ namespace dnf_composer
 		}
 
 		return { rows, cols, false };
+	}
+
+	namespace
+	{
+		// A candidate format is unusable if it rounds a genuinely nonzero endpoint
+		// down to zero (e.g. "%.5f" on 0.000001 prints "0.00000") -- span alone
+		// picks precision from the *width* of the range, not from how close its
+		// endpoints sit to zero, so a narrow-but-offset range like
+		// [0.000001, 0.000102] needs this separate check.
+		bool rendersNonzeroEndpointAsZero(const char* fmt, double value)
+		{
+			if (value == 0.0) { return false; }
+			std::array<char, 32> buf{};
+			std::snprintf(buf.data(), buf.size(), fmt, value);
+			const double parsedBack = std::strtod(buf.data(), nullptr);
+			return parsedBack == 0.0;
+		}
+	}
+
+	const char* selectHeatmapTickFormat(double scaleMin, double scaleMax)
+	{
+		const double span = std::abs(scaleMax - scaleMin);
+
+		if (!std::isfinite(span) || span == 0.0) {
+			return "%.2f";
+		}
+
+		const char* candidate = "%.1e";
+		if (span >= 10.0) {
+			candidate = "%.0f";
+		}
+		else if (span >= 1.0) {
+			candidate = "%.2f";
+		}
+		else if (span >= 0.01) {
+			candidate = "%.4f";
+		}
+		else if (span >= 1e-4) {
+			candidate = "%.5f";
+		}
+
+		if (std::strcmp(candidate, "%.1e") != 0 &&
+			(rendersNonzeroEndpointAsZero(candidate, scaleMin) ||
+			 rendersNonzeroEndpointAsZero(candidate, scaleMax))) {
+			return "%.1e";
+		}
+		return candidate;
+	}
+
+	namespace
+	{
+		// ImPlot::ColormapScale sizes its own frame to the fixed width the caller
+		// passes in and clips tick labels to that frame rather than growing to fit
+		// them. selectHeatmapTickFormat() picks precision from the displayed range,
+		// so a narrow range now produces longer labels (e.g. "-0.0090") than
+		// ImPlot's old "%g" default did (e.g. "-0.009"); a colorbar width tuned for
+		// the old default clips the new, more precise labels right back down to
+		// the unreadable text this fix exists to avoid. Size the frame from the
+		// actual worst-case label instead of a constant.
+		float colorbarWidthFor(double scaleMin, double scaleMax)
+		{
+			const char* fmt = selectHeatmapTickFormat(scaleMin, scaleMax);
+			std::array<char, 32> buf{};
+			std::snprintf(buf.data(), buf.size(), fmt, scaleMin);
+			const float wMin = ImGui::CalcTextSize(buf.data()).x;
+			std::snprintf(buf.data(), buf.size(), fmt, scaleMax);
+			const float wMax = ImGui::CalcTextSize(buf.data()).x;
+			constexpr float barAndPadding = 34.0F; // color bar itself + tick marks + margins
+			return barAndPadding + (wMin > wMax ? wMin : wMax);
+		}
 	}
 
 	HeatmapParameters::HeatmapParameters()
@@ -281,8 +354,11 @@ namespace dnf_composer
 			}
 		}
 
+		const float cbW = colorbarWidthFor(scaleMin, scaleMax);
+		const ImVec2 hmSize(plotSize.x + 65.0F - cbW - ImGui::GetStyle().ItemSpacing.x, plotSize.y);
+
 		static constexpr ImPlotFlags hm_flags = ImPlotFlags_Crosshairs | ImPlotFlags_NoLegend;
-		if (ImPlot::BeginPlot(uniquePlotID.c_str(), plotSize, hm_flags)) {
+		if (ImPlot::BeginPlot(uniquePlotID.c_str(), hmSize, hm_flags)) {
 			ImPlot::PushColormap(map);
 			static constexpr ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;
 			ImPlot::SetupAxes(commonParameters.annotations.x_label.c_str(),
@@ -302,7 +378,8 @@ namespace dnf_composer
 
 		// // Add color scale next to the heatmap
 		 ImGui::SameLine();
-		 ImPlot::ColormapScale("##HeatScale", scaleMin, scaleMax, ImVec2(60, plotSize.y));
+		 ImPlot::ColormapScale("##HeatScale", scaleMin, scaleMax, ImVec2(cbW, plotSize.y),
+			 selectHeatmapTickFormat(scaleMin, scaleMax));
 		//ImPlot::PopColormap();
 	}
 

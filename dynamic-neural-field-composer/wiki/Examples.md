@@ -187,6 +187,22 @@ Demonstrates online Hebbian (multiplicative) learning between two neural fields 
 
 **Key concepts:** Hebbian learning, `FieldCoupling`, online weight formation, enabling/disabling learning at runtime
 
+### delta_learning
+
+**Source:** `examples/delta_learning.cpp`
+**Executable:** `example_delta_learning`
+
+Demonstrates the supervised DELTA (Widrow-Hoff) learning rule, which — unlike Hebbian/Oja — requires a third field wired to the coupling's Target pin as an externally supplied teaching signal. A perceptual field is coupled to an output field; a target field (driven by its own stimulus during training) supplies the desired output pattern. After learning, the target stimulus is removed and the coupling alone reproduces the learned association from the perceptual field's activation.
+
+**Architecture:**
+- Perceptual field (200 units): `NeuralField` + `GaussStimulus`
+- Output field (200 units): `NeuralField`, externally driven by the `FieldCoupling` plus its own recurrent `MexicanHatKernel`
+- Target field (200 units): `NeuralField` + `GaussStimulus`, connected to the coupling's Target slot (`addInput(target, "target")`)
+- One `FieldCoupling` (200→200) with the DELTA learning rule
+- Heatmap of the learned weight matrix
+
+**Key concepts:** supervised (DELTA) learning, the Target pin / `addInput(target, "target")`, `decayRate`, distinguishing DELTA from the unsupervised HEBB/OJA rules
+
 ---
 
 ## Movement examples

@@ -391,7 +391,8 @@ FieldCouplingParameters{
     ElementDimensions inputFieldDimensions,          // dimensions of the source field
     LearningRule      learningRule  = LearningRule::HEBB,
     double            scalar        = 1.0,
-    double            learningRate  = 0.01
+    double            learningRate  = 0.01,
+    double            decayRate     = 0.0             // DELTA rule only
 }
 ```
 
@@ -401,6 +402,7 @@ FieldCouplingParameters{
 | `learningRule` | `HEBB` | Learning rule used to update the weight matrix |
 | `scalar` | `1.0` | Multiplicative scaling of the coupling output |
 | `learningRate` | `0.01` | Step size for weight updates |
+| `decayRate` | `0.0` | Weight decay coefficient, **DELTA rule only**; `0.0` disables decay |
 
 ### Learning rules
 
@@ -408,14 +410,53 @@ FieldCouplingParameters{
 |---|---|---|
 | Hebbian | `LearningRule::HEBB` | Weights grow when pre- and post-synaptic activity co-occur |
 | Oja's rule | `LearningRule::OJA` | Normalized Hebbian — prevents unbounded weight growth |
-| Delta rule | `LearningRule::DELTA` | Error-correcting — drives weights toward a target |
+| Delta rule | `LearningRule::DELTA` | **Supervised** Widrow-Hoff/delta rule — see below |
+
+**DELTA is supervised**, unlike HEBB/OJA: it requires a third field — the *target* — connected
+to the coupling's Target pin, supplying the teaching signal. Without a target connected, DELTA
+learning is disabled and a warning is logged; HEBB/OJA are unaffected and still work with only
+an input and an output connection.
+
+```cpp
+coupling->addInput(inputField);              // input, as usual
+outputField->addInput(coupling);             // output, as usual
+coupling->addInput(targetField, "target");   // DELTA's teaching signal
+```
+
+The update rule is `dW[i][j] = learningRate * pre[i] * (error[j] - decayRate * W[i][j])`, where
+`pre = g(u_in)` and `error = target - actual` (the coupling's own output). In the node graph, the
+Target pin renders as a second input pin, below the regular Input pin, on every `FieldCoupling`
+node.
+
+Unlike HEBB/OJA, this update is **not** gated by the output field's own post-synaptic activity.
+The error term alone is the complete Widrow-Hoff learning signal; post-gating would deadlock the
+common case where the coupling itself is the output field's only drive (weights start at zero, so
+the forward pass is zero, so the output field never leaves resting level, so a post-gated update
+could never leave zero either — no learning rate could fix that).
+
+**Wiring from the Activation pin:** both the input and target slots read whichever component
+they were actually connected from. Connecting a field's *Activation* pin (instead of its
+default *Output* pin) makes the coupling read raw activation there — for DELTA, this changes
+`pre` (or the target signal) from `g(u)` to `u` directly. Use `"activation"` for the input slot
+and `"target:activation"` for the target slot:
+
+```cpp
+coupling->addInput(inputField, "activation");            // pre = u_in, not g(u_in)
+coupling->addInput(targetField, "target:activation");    // teaching signal = u_tar, not g(u_tar)
+```
+
+HEBB/OJA are unaffected by which pin the input/output fields are wired from — they always read
+`"activation"` regardless.
 
 ### Runtime control
 
 ```cpp
 coupling->setLearning(true);              // enable / disable weight updates
 coupling->setLearningRate(0.005);         // change learning rate on the fly
+coupling->setDecayRate(0.01);             // DELTA only; no effect on HEBB/OJA
 coupling->setParameters(newParams);
+
+coupling->getTargetField();               // the connected teaching-signal field, or nullptr
 
 coupling->writeWeights();                 // save weights to disk
 coupling->readWeights();                  // load weights from disk
@@ -429,8 +470,9 @@ std::string dir = coupling->getWeightsDirectory();
 
 | Name | Description |
 |---|---|
-| `"weights"` | Flattened 2D weight matrix (rows = output positions, cols = input positions) |
+| `"weights"` | Flattened 2D weight matrix, row-major (rows = input positions, cols = output positions) |
 | `"output"` | Weighted sum of the source field output |
+| `"target"` | DELTA rule's teaching signal, fed by the field connected to the Target pin (`"output"`-sized; zero if none connected) |
 
 ---
 

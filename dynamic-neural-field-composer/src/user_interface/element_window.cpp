@@ -59,12 +59,13 @@ namespace dnf_composer::user_interface
 		}
 		void ewEndTable() { ImGui::EndTable(); }
 		void ewRowDrag(const char* lbl, const char* wid, float* v,
-		                      float spd, float mn, float mx, const char* fmt = "%.3f") {
+		                      float spd, float mn, float mx, const char* fmt = "%.3f",
+		                      ImGuiSliderFlags flags = 0) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0); ImGui::AlignTextToFramePadding(); ImGui::TextUnformatted(lbl);
 			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
 			ImGui::PushFont(g_MonoMediumFont);
-			ImGui::DragFloat(wid, v, spd, mn, mx, fmt);
+			ImGui::DragFloat(wid, v, spd, mn, mx, fmt, flags);
 			ImGui::PopFont();
 		}
 		void ewRowBool(const char* lbl, const char* wid, bool* v) {
@@ -1341,7 +1342,9 @@ namespace dnf_composer::user_interface
 
 		auto scalar       = static_cast<float>(fcp.scalar);
 		auto learningRate = static_cast<float>(fcp.learningRate);
+		auto decayRate    = static_cast<float>(fcp.decayRate);
 		bool activateLearning = fcp.isLearningActive;
+		const bool isDelta = (fcp.learningRule == LearningRule::DELTA);
 
 		ewSectionLabel("Parameters");
 		if (ewBeginTable(("##fc_tbl" + uid).c_str())) {
@@ -1364,7 +1367,24 @@ namespace dnf_composer::user_interface
 				ImGui::EndCombo();
 			}
 
-			ewRowDrag("Learning rate", ("##fc_lrate" + uid).c_str(), &learningRate, 0.01F, 0.0F, 10.0F);
+			// "%.3g" so small rates read as 1e-05 rather than rounding to 0.000, and
+			// logarithmic drag so 1e-5 and 0.5 are equally reachable -- a linear drag
+			// over this range skips straight past the small end. DELTA couplings wired
+			// from raw "activation" legitimately need rates around 1e-5.
+			ewRowDrag("Learning rate", ("##fc_lrate" + uid).c_str(), &learningRate,
+				0.01F, 1e-8F, 10.0F, "%.3g", ImGuiSliderFlags_Logarithmic);
+			if (isDelta)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::TextUnformatted("Decay rate");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::SetNextItemWidth(-FLT_MIN);
+				ImGui::PushFont(g_MonoMediumFont);
+				ImGui::DragFloat(("##fc_dr" + uid).c_str(), &decayRate, 0.001F, 0.0F, 1.0F, "%.3f");
+				ImGui::PopFont();
+			}
 			ewRowDrag("Scalar",        ("##fc_sc"    + uid).c_str(), &scalar,       0.1F, -20.0F, 20.0F);
 			ewRowBool("Activate learning", ("##fc_al" + uid).c_str(), &activateLearning);
 
@@ -1376,8 +1396,14 @@ namespace dnf_composer::user_interface
 			{ fcp.scalar = scalar; fieldCoupling->setParameters(fcp); }
 		if (activateLearning != fcp.isLearningActive)
 			{ fcp.isLearningActive = activateLearning; fieldCoupling->setParameters(fcp); }
-		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) > epsilon)
+		// A learning rate is legitimately as small as 1e-5 (DELTA wired from raw
+		// "activation"), so the shared 1e-6 epsilon would swallow real edits at that
+		// scale. Compare relative to the current value, with a tiny absolute floor.
+		if (std::abs(learningRate - static_cast<float>(fcp.learningRate)) >
+			std::max(1e-12, 1e-4 * std::abs(fcp.learningRate)))
 			{ fcp.learningRate = learningRate; fieldCoupling->setParameters(fcp); }
+		if (isDelta && std::abs(decayRate - static_cast<float>(fcp.decayRate)) > epsilon)
+			{ fcp.decayRate = decayRate; fieldCoupling->setParameters(fcp); }
 
 		ImGui::PushID(uid.c_str());
 		if (ImGui::Button("Load"))

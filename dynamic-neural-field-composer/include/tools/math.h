@@ -594,57 +594,78 @@ namespace dnf_composer::tools::math
 		return weights;
 	}
 
+	/// @brief Supervised Widrow-Hoff / delta rule with weight decay, used by
+	/// FieldCoupling's DELTA learning rule.
+	///
+	/// dW[i][j] = lr * pre[i] * ( err[j] - decayRate * w[i][j] ),
+	/// err[j] = target[j] - actual[j].
+	///
+	/// `pre` is the pre-synaptic gating g(u_in) of the coupling's input field,
+	/// `target` is a separate, externally supplied teaching signal g(u_out^tar),
+	/// and `actual` is the caller's own current forward pass (e.g. FieldCoupling's
+	/// `scalar * W * input`) -- NOT re-derived here. Passing the caller's own
+	/// output back in as `actual` is what keeps the scalar (or any other gain
+	/// the caller applies) correctly reflected in the error term without this
+	/// function double-counting it.
+	///
+	/// Deliberately NOT gated by the output field's own post-synaptic activity
+	/// (unlike hebbLearningRule()/ojaLearningRule() above): the error term alone
+	/// is the complete Widrow-Hoff learning signal. Gating it by post-synaptic
+	/// output is a Hebbian construct, and it deadlocks the common case where the
+	/// coupling itself is the output field's only drive -- weights start at zero,
+	/// so the forward pass is zero, so the output field never leaves resting
+	/// level, so a post-gated update could never leave zero either, regardless
+	/// of learningRate.
+	///
+	/// Weight layout matches hebbLearningRule()/ojaLearningRule(): a flattened
+	/// (inputSize x outputSize) row-major matrix, weights[i * outputSize + j].
+	///
+	/// @param weights      Flattened (inputSize x outputSize) row-major matrix, modified in place.
+	/// @param pre           Pre-synaptic gating g(u_in), size inputSize.
+	/// @param target        Teaching signal g(u_out^tar), size outputSize.
+	/// @param actual        The caller's own forward pass, size outputSize.
+	/// @param learningRate  lr.
+	/// @param decayRate     Weight decay coefficient (0.0 disables decay).
+	/// @throws std::invalid_argument if `pre` or `target` is empty, if `target`/`actual`
+	///         sizes disagree, or if `weights.size() != pre.size() * target.size()`.
 	template <typename T>
-	std::vector<std::vector<T>> deltaLearningRuleWidrowHoff(std::vector<std::vector<T>>& weights, const std::vector<T>& input,
-	                                                        const std::vector<T>& actualOutput, const std::vector<T>& targetOutput, double learningRate)
+	std::vector<T> deltaLearningRuleWidrowHoff(std::vector<T>& weights,
+		const std::vector<T>& pre, const std::vector<T>& target,
+		const std::vector<T>& actual, double learningRate, double decayRate = 0.0)
 	{
-		const int inputSize = input.size();
-		const int outputSize = targetOutput.size();
+		if (pre.empty() || target.empty()) {
+			throw std::invalid_argument("Pre-synaptic and target vectors cannot be empty");
+}
+		if (target.size() != actual.size()) {
+			throw std::invalid_argument("target/actual size mismatch");
+}
 
-		// Calculate the error between the target output and the actual output
-		std::vector<T> error(outputSize, 0.0);
+		const size_t inputSize = pre.size();
+		const size_t outputSize = target.size();
+		const size_t expectedSize = inputSize * outputSize;
+
+		if (weights.size() != expectedSize) {
+			throw std::invalid_argument("Weight matrix size mismatch");
+}
+
+		std::vector<T> err(outputSize);
 		for (size_t j = 0; j < outputSize; ++j) {
-			error[j] = targetOutput[j] - actualOutput[j];
-		}
+			err[j] = target[j] - actual[j];
+}
 
-		// Update the weights based on the error and current activation levels of the fields
-		for (size_t i = 0; i < inputSize; ++i) {
-			for (size_t j = 0; j < outputSize; ++j) {
-				weights[i][j] += learningRate * error[j] * input[i];
-			}
-		}
+		for (size_t i = 0; i < inputSize; ++i)
+		{
+			const size_t baseIndex = i * outputSize;
+			const T scaledPre = static_cast<T>(learningRate) * pre[i];
+			if (scaledPre == T()) {
+				continue;
+}
 
-		return weights;
-	}
-
-	template <typename T>
-	std::vector<std::vector<T>> deltaLearningRuleKroghHertz(std::vector<std::vector<T>>& weights, const std::vector<T>& input,
-	                                                        const std::vector<T>& targetOutput, const std::vector<T>& actualOutput,
-	                                                        double learningRate)
-	{
-		const int inputSize = input.size();
-		int outputSize = targetOutput.size();
-
-		//// Calculate the activation levels of the fields based on the input values and current weights
-		//std::vector<T> actualOutput(outputSize, 0.0);
-		//for (size_t j = 0; j < outputSize; ++j) {
-		//	for (size_t i = 0; i < inputSize; ++i) {
-		//		actualOutput[j] += input[i] * weights[i][j];
-		//	}
-		//}
-
-		// Calculate the error between the target output and the actual output
-		std::vector<T> error(outputSize, 0.0);
-		for (size_t j = 0; j < outputSize; ++j) {
-			error[j] = targetOutput[j] - actualOutput[j];
-		}
-
-		// Update the weights based on the error and current activation levels of the fields
-		for (size_t i = 0; i < inputSize; ++i) {
-			for (size_t j = 0; j < outputSize; ++j) {
-				//weights[i][j] += learningRate * (error[j] - learningRate * weights[i][j]) * input[i]; // old
-				weights[i][j] += learningRate * (error[j]) * input[i];
-			}
+			for (size_t j = 0; j < outputSize; ++j)
+			{
+				weights[baseIndex + j] += scaledPre
+					* (err[j] - static_cast<T>(decayRate) * weights[baseIndex + j]);
+}
 		}
 
 		return weights;

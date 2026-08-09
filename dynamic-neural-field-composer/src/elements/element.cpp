@@ -64,8 +64,13 @@ namespace dnf_composer::element
 		for (auto &vec: components | std::views::values) {
 			vec.assign(newDimensions.size, 0.0);
 }
-		inputPtr = nullptr; // components ["input"] was reallocated; rebuild cache on next updateInput()
+		invalidateInputCache(); // components["input"] was reallocated; rebuild cache on next updateInput()
 		init();
+	}
+
+	void Element::invalidateInputCache()
+	{
+		inputPtr = nullptr;
 	}
 
 	void Element::close()

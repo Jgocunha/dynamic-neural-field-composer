@@ -47,7 +47,17 @@ namespace dnf_composer::element
 		///        via changeDimensions() after the cache was built, so accumulating
 		///        it in full would write out-of-bounds). Logs a warning per severed
 		///        connection and forces a cache rebuild on the next updateInput().
+		///        Assumes a single "input" sink -- a subclass that overrides
+		///        updateInput() to route sources into additional buffers (e.g.
+		///        FieldCoupling's "target") must not rely on this to guard them.
 		void severIncompatibleInputs();
+	protected:
+		/// @brief Force the next updateInput() to rebuild its source cache from
+		/// scratch. Call after directly reallocating a component that the cache
+		/// may hold a stale reference into (e.g. a subclass's changeDimensions()
+		/// override that resizes "input" or another routed-into buffer outside
+		/// of the base class's own changeDimensions()).
+		void invalidateInputCache();
 	public:
 		/// @brief Construct an element with the given common parameters.
 		/// @param parameters  Name, label, and spatial dimensions.
@@ -95,17 +105,27 @@ namespace dnf_composer::element
 		virtual void addInput(const std::shared_ptr<Element>& inputElement,
 		                      const std::string& inputComponent = "output");
 
-		void removeInput(const std::string& inputElementId);
-		void removeInput(int uniqueId);
-		void removeInputs();
+		/// @brief Deregister the input element named @p inputElementId.
+		/// Virtual so a subclass that routes some inputs into an additional
+		/// buffer (e.g. FieldCoupling's "target") can clear that buffer too.
+		virtual void removeInput(const std::string& inputElementId);
+		virtual void removeInput(int uniqueId);
+		virtual void removeInputs();
 		bool hasInput(const std::string& inputElementName, const std::string& inputComponent);
 		bool hasInput(int inputElementId, const std::string& inputComponent);
 
 		/// @brief Pull data from all registered input elements into this element's components.
-		void updateInput();
+		/// Virtual so a subclass can route some inputs into additional buffers
+		/// instead of summing everything into "input" (e.g. FieldCoupling routes
+		/// a source declared with component "target" into components["target"]).
+		virtual void updateInput();
 
 		/// @brief Cache raw pointers to input component data. Call after all element init()s complete.
-		void buildInputCache();
+		/// Virtual so a subclass whose updateInput() override doesn't use this cache
+		/// (e.g. FieldCoupling, which reads `inputs` directly every call) can make it
+		/// a no-op -- the base implementation assumes every entry in `inputs` names a
+		/// component that exists on the source, which "target" deliberately does not.
+		virtual void buildInputCache();
 
 		/// @brief Deregister this element as an input of @p outputElementId.
 		void removeOutput(const std::string& outputElementId);
