@@ -3,6 +3,7 @@
 #include "elements/element_factory.h"
 #include "user_interface/main_menu_bar.h"
 #include "user_interface/static_layout.h"
+#include "example_common.h"
 
 // Demonstrates the supervised DELTA (Widrow-Hoff) learning rule: unlike
 // HEBB/OJA, it requires a third, externally supplied teaching signal
@@ -150,10 +151,7 @@ int main()
 
 		app.init();
 
-		while (!app.hasGUIBeenClosed())
-		{
-			app.step();
-		}
+		dnf_composer::examples::runExampleLoop(app);
 
 		app.close();
 
