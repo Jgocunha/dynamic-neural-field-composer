@@ -59,7 +59,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" target="_top" xlink:title="Pull data from all registered input elements into this element&#39;s components.">
+<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" target="_top" xlink:title="Pull data from all registered input elements into this element&#39;s components. Virtual so a subclass ca...">
 <polygon fill="white" stroke="#666666" points="323,-78 191,-78 191,-48 323,-48 323,-78"/>
 <text text-anchor="start" x="199" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="257" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::updateInput</text>
@@ -97,7 +97,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" target="_top" xlink:title="Cache raw pointers to input component data. Call after all element init()s complete.">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" target="_top" xlink:title="Cache raw pointers to input component data. Call after all element init()s complete....">
 <polygon fill="white" stroke="#666666" points="532,-78 384,-78 384,-48 532,-48 532,-78"/>
 <text text-anchor="start" x="392" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="458" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::buildInputCache</text>

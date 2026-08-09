@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Pull data from all registered input elements into this element&#39;s components.">
+<g id="a_Node000001"><a xlink:title="Pull data from all registered input elements into this element&#39;s components. Virtual so a subclass ca...">
 <polygon fill="#999999" stroke="#666666" points="132,-30 0,-30 0,0 132,0 132,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="66" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::updateInput</text>
@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" target="_top" xlink:title="Cache raw pointers to input component data. Call after all element init()s complete.">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e" target="_top" xlink:title="Cache raw pointers to input component data. Call after all element init()s complete....">
 <polygon fill="white" stroke="#666666" points="316,-30 168,-30 168,0 316,0 316,-30"/>
 <text text-anchor="start" x="176" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="242" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::buildInputCache</text>

@@ -175,12 +175,10 @@ Functions</h2></td></tr>
 <tr class="separator:a460d2b3c2736c0fcff28caf69f87979a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67b836c5dd7641c0def85f572838361e" id="r_a67b836c5dd7641c0def85f572838361e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a67b836c5dd7641c0def85f572838361e">createExtendedIndex</a> (int fieldSize, const std::array&lt; int, 2 &gt; &amp;kernelRange)</td></tr>
 <tr class="separator:a67b836c5dd7641c0def85f572838361e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a219b3be549aba116279eae1135f00dfc" id="r_a219b3be549aba116279eae1135f00dfc"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a219b3be549aba116279eae1135f00dfc"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a219b3be549aba116279eae1135f00dfc">deltaLearningRuleKroghHertz</a> (std::vector&lt; std::vector&lt; T &gt; &gt; &amp;weights, const std::vector&lt; T &gt; &amp;input, const std::vector&lt; T &gt; &amp;targetOutput, const std::vector&lt; T &gt; &amp;actualOutput, double learningRate)</td></tr>
-<tr class="separator:a219b3be549aba116279eae1135f00dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1a98f6f9a10e9a3fc46eb2447eb171d" id="r_aa1a98f6f9a10e9a3fc46eb2447eb171d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aa1a98f6f9a10e9a3fc46eb2447eb171d"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#aa1a98f6f9a10e9a3fc46eb2447eb171d">deltaLearningRuleWidrowHoff</a> (std::vector&lt; std::vector&lt; T &gt; &gt; &amp;weights, const std::vector&lt; T &gt; &amp;input, const std::vector&lt; T &gt; &amp;actualOutput, const std::vector&lt; T &gt; &amp;targetOutput, double learningRate)</td></tr>
-<tr class="separator:aa1a98f6f9a10e9a3fc46eb2447eb171d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ae15f5770fa7bd2822e46f550d30ab2" id="r_a5ae15f5770fa7bd2822e46f550d30ab2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a5ae15f5770fa7bd2822e46f550d30ab2"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a5ae15f5770fa7bd2822e46f550d30ab2">deltaLearningRuleWidrowHoff</a> (std::vector&lt; T &gt; &amp;weights, const std::vector&lt; T &gt; &amp;pre, const std::vector&lt; T &gt; &amp;target, const std::vector&lt; T &gt; &amp;actual, double learningRate, double decayRate=0.0)</td></tr>
+<tr class="memdesc:a5ae15f5770fa7bd2822e46f550d30ab2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supervised Widrow-Hoff / delta rule with weight decay, used by FieldCoupling's DELTA learning rule.  <br /></td></tr>
+<tr class="separator:a5ae15f5770fa7bd2822e46f550d30ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7736cef6d000a58dcce32e6b25b0ce39" id="r_a7736cef6d000a58dcce32e6b25b0ce39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a7736cef6d000a58dcce32e6b25b0ce39">embedWrapped1D</a> (std::vector&lt; double &gt; &amp;out, std::span&lt; const double &gt; window, int kR0)</td></tr>
 <tr class="separator:a7736cef6d000a58dcce32e6b25b0ce39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21953fa472672322904cd0bdb98ffd86" id="r_a21953fa472672322904cd0bdb98ffd86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a21953fa472672322904cd0bdb98ffd86">fillNormal</a> (double *dst, std::size_t n)</td></tr>
@@ -1235,8 +1233,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a219b3be549aba116279eae1135f00dfc" name="a219b3be549aba116279eae1135f00dfc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a219b3be549aba116279eae1135f00dfc">&#9670;&#160;</a></span>deltaLearningRuleKroghHertz()</h2>
+<a id="a5ae15f5770fa7bd2822e46f550d30ab2" name="a5ae15f5770fa7bd2822e46f550d30ab2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ae15f5770fa7bd2822e46f550d30ab2">&#9670;&#160;</a></span>deltaLearningRuleWidrowHoff()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1244,34 +1242,40 @@ Here is the caller graph for this function:</div>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::vector&lt; T &gt; &gt; dnf_composer::tools::math::deltaLearningRuleKroghHertz </td>
+          <td class="memname">std::vector&lt; T &gt; dnf_composer::tools::math::deltaLearningRuleWidrowHoff </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; T &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
           <td class="paramname"><em>weights</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>input</em>, </td>
+          <td class="paramname"><em>pre</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>targetOutput</em>, </td>
+          <td class="paramname"><em>target</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>actualOutput</em>, </td>
+          <td class="paramname"><em>actual</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>learningRate</em>&#160;</td>
+          <td class="paramname"><em>learningRate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>decayRate</em> = <code>0.0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1281,53 +1285,28 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="aa1a98f6f9a10e9a3fc46eb2447eb171d" name="aa1a98f6f9a10e9a3fc46eb2447eb171d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1a98f6f9a10e9a3fc46eb2447eb171d">&#9670;&#160;</a></span>deltaLearningRuleWidrowHoff()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::vector&lt; T &gt; &gt; dnf_composer::tools::math::deltaLearningRuleWidrowHoff </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; T &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>weights</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>input</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>actualOutput</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>targetOutput</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>learningRate</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Supervised Widrow-Hoff / delta rule with weight decay, used by FieldCoupling's DELTA learning rule. </p>
+<p>dW[i][j] = lr * pre[i] * ( err[j] - decayRate * w[i][j] ), err[j] = target[j] - actual[j].</p>
+<p><code>pre</code> is the pre-synaptic gating g(u_in) of the coupling's input field, <code>target</code> is a separate, externally supplied teaching signal g(u_out^tar), and <code>actual</code> is the caller's own current forward pass (e.g. FieldCoupling's <code>scalar * W * input</code>) &ndash; NOT re-derived here. Passing the caller's own output back in as <code>actual</code> is what keeps the scalar (or any other gain the caller applies) correctly reflected in the error term without this function double-counting it.</p>
+<p>Deliberately NOT gated by the output field's own post-synaptic activity (unlike <a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a0b09f3d9ce824878f275ae7697c851d6">hebbLearningRule()</a>/ojaLearningRule() above): the error term alone is the complete Widrow-Hoff learning signal. Gating it by post-synaptic output is a Hebbian construct, and it deadlocks the common case where the coupling itself is the output field's only drive &ndash; weights start at zero, so the forward pass is zero, so the output field never leaves resting level, so a post-gated update could never leave zero either, regardless of learningRate.</p>
+<p>Weight layout matches <a class="el" href="namespacednf__composer_1_1tools_1_1math.html#a0b09f3d9ce824878f275ae7697c851d6">hebbLearningRule()</a>/ojaLearningRule(): a flattened (inputSize x outputSize) row-major matrix, weights[i * outputSize + j].</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">weights</td><td>Flattened (inputSize x outputSize) row-major matrix, modified in place. </td></tr>
+    <tr><td class="paramname">pre</td><td>Pre-synaptic gating g(u_in), size inputSize. </td></tr>
+    <tr><td class="paramname">target</td><td>Teaching signal g(u_out^tar), size outputSize. </td></tr>
+    <tr><td class="paramname">actual</td><td>The caller's own forward pass, size outputSize. </td></tr>
+    <tr><td class="paramname">learningRate</td><td>lr. </td></tr>
+    <tr><td class="paramname">decayRate</td><td>Weight decay coefficient (0.0 disables decay). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if <code>pre</code> or <code>target</code> is empty, if <code>target</code>/<code>actual</code> sizes disagree, or if <code>weights.size() != pre.size() * target.size()</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

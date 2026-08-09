@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['quitaction_0',['QuitAction',['../namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247',1,'dnf_composer::user_interface']]]
+  ['plottype_0',['PlotType',['../namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66',1,'dnf_composer']]],
+  ['projectionaxis_1',['ProjectionAxis',['../group__elements.html#ga2e0515a41d6b55d8c4f4d47e9d30cddf',1,'dnf_composer::element']]]
 ];

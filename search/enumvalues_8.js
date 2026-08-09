@@ -20,5 +20,7 @@ var searchData=
   ['imguifreetypeloaderflags_5fnoautohint_17',['ImGuiFreeTypeLoaderFlags_NoAutoHint',['../imgui__freetype_8h.html#ae4638626618a00186bcedf096a86c90daa67c0999644f10a7bc02d7ae51e30c90',1,'imgui_freetype.h']]],
   ['imguifreetypeloaderflags_5fnohinting_18',['ImGuiFreeTypeLoaderFlags_NoHinting',['../imgui__freetype_8h.html#ae4638626618a00186bcedf096a86c90dadd3d8a5956b7a9c902215eb8b94fe80b',1,'imgui_freetype.h']]],
   ['imguifreetypeloaderflags_5foblique_19',['ImGuiFreeTypeLoaderFlags_Oblique',['../imgui__freetype_8h.html#ae4638626618a00186bcedf096a86c90da565ff91016fc49559b983ebc4724c111',1,'imgui_freetype.h']]],
-  ['info_20',['INFO',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda43a666c6ef802ca83a0a0e89994bbc5b',1,'dnf_composer::tools::logger']]]
+  ['info_20',['INFO',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda43a666c6ef802ca83a0a0e89994bbc5b',1,'dnf_composer::tools::logger']]],
+  ['input_21',['Input',['../structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a2a64a2d4f380a99271cc6024b5acd30da324118a6721dd6b8a9b9f4e327df2bf5',1,'dnf_composer::user_interface::NodeGraphWindow::PinIdEncoding']]],
+  ['invalid_22',['Invalid',['../structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a2a64a2d4f380a99271cc6024b5acd30da4bbb8f967da6d1a610596d7257179c2b',1,'dnf_composer::user_interface::NodeGraphWindow::PinIdEncoding']]]
 ];

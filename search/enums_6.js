@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['plottype_0',['PlotType',['../namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66',1,'dnf_composer']]],
-  ['projectionaxis_1',['ProjectionAxis',['../group__elements.html#ga2e0515a41d6b55d8c4f4d47e9d30cddf',1,'dnf_composer::element']]]
+  ['learningrule_0',['LearningRule',['../group__elements.html#gaf31721249688c9a40e39db23ebebcdec',1,'dnf_composer']]],
+  ['loglevel_1',['LogLevel',['../namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd',1,'dnf_composer::tools::logger']]],
+  ['logoutputmode_2',['LogOutputMode',['../namespacednf__composer_1_1tools_1_1logger.html#a140699a0bf2e738ec68ba603bc082b6a',1,'dnf_composer::tools::logger']]]
 ];

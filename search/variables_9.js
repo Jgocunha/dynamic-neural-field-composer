@@ -14,12 +14,13 @@ var searchData=
   ['kernelrange_11',['kernelRange',['../classdnf__composer_1_1element_1_1Kernel.html#a21bfe5104e2b8711d063b60218452955',1,'dnf_composer::element::Kernel']]],
   ['kfftminaxissize_12',['kFFTMinAxisSize',['../namespacednf__composer_1_1tools_1_1math.html#a8b8a94e22f18eb7803539b7c66cbc210',1,'dnf_composer::tools::math']]],
   ['kffttapthreshold_13',['kFFTTapThreshold',['../namespacednf__composer_1_1tools_1_1math.html#ab3e7d7bf1dd8d4f38c393efb0773b6c4',1,'dnf_composer::tools::math']]],
-  ['kmargin_14',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
-  ['kpagecount_15',['kPageCount',['../namespacednf__composer_1_1user__interface.html#ae93e92a1246e1e8b64fa164c7292621a',1,'dnf_composer::user_interface']]],
-  ['kpagetitles_16',['kPageTitles',['../namespacednf__composer_1_1user__interface.html#a957431631bb82454c6c54443c88246fb',1,'dnf_composer::user_interface']]],
-  ['kr0_5fx_17',['kR0_x',['../structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html#ad7faf9200a2e076f3609e1d45ca106f3',1,'dnf_composer::tools::math::SeparableKernelTerm2D']]],
-  ['kr0_5fy_18',['kR0_y',['../structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html#a2b7a40809e8d4a6f74294fea8d8a5da1',1,'dnf_composer::tools::math::SeparableKernelTerm2D']]],
-  ['krounding_19',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
-  ['kstatusbarh_20',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
-  ['ktopbarh_21',['kTopBarH',['../namespacednf__composer_1_1user__interface.html#a94b8e14815bca9944462e2c32f484f02',1,'dnf_composer::user_interface']]]
+  ['kind_14',['kind',['../structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding_1_1Decoded.html#a732ce3122bfe8ba3ef9ea196f1b25116',1,'dnf_composer::user_interface::NodeGraphWindow::PinIdEncoding::Decoded']]],
+  ['kmargin_15',['kMargin',['../namespacednf__composer_1_1user__interface.html#a0fba05da09b3226b7b9387214790d876',1,'dnf_composer::user_interface']]],
+  ['kpagecount_16',['kPageCount',['../namespacednf__composer_1_1user__interface.html#ae93e92a1246e1e8b64fa164c7292621a',1,'dnf_composer::user_interface']]],
+  ['kpagetitles_17',['kPageTitles',['../namespacednf__composer_1_1user__interface.html#a957431631bb82454c6c54443c88246fb',1,'dnf_composer::user_interface']]],
+  ['kr0_5fx_18',['kR0_x',['../structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html#ad7faf9200a2e076f3609e1d45ca106f3',1,'dnf_composer::tools::math::SeparableKernelTerm2D']]],
+  ['kr0_5fy_19',['kR0_y',['../structdnf__composer_1_1tools_1_1math_1_1SeparableKernelTerm2D.html#a2b7a40809e8d4a6f74294fea8d8a5da1',1,'dnf_composer::tools::math::SeparableKernelTerm2D']]],
+  ['krounding_20',['kRounding',['../namespacednf__composer_1_1user__interface.html#a1988e209df0972bf3d47aff867ec17bb',1,'dnf_composer::user_interface']]],
+  ['kstatusbarh_21',['kStatusBarH',['../namespacednf__composer_1_1user__interface.html#aca0b9da0c83e99184bbfe2121278c9b5',1,'dnf_composer::user_interface']]],
+  ['ktopbarh_22',['kTopBarH',['../namespacednf__composer_1_1user__interface.html#a94b8e14815bca9944462e2c32f484f02',1,'dnf_composer::user_interface']]]
 ];

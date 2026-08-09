@@ -215,6 +215,9 @@ Functions</h2></td></tr>
 <tr class="separator:a3d3e619a9f43f533ce840c2e621f48fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3541a00b0ecfcc65863eef4c45a11aa" id="r_ab3541a00b0ecfcc65863eef4c45a11aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1ManualHeatmapDimensions.html">ManualHeatmapDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#ab3541a00b0ecfcc65863eef4c45a11aa">resolveManualHeatmapDimensions</a> (int x_max, int y_max, float x_step, float y_step, std::size_t dataSize)</td></tr>
 <tr class="separator:ab3541a00b0ecfcc65863eef4c45a11aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb1b9b3242effde97a3c964e52d99719" id="r_acb1b9b3242effde97a3c964e52d99719"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#acb1b9b3242effde97a3c964e52d99719">selectHeatmapTickFormat</a> (double scaleMin, double scaleMax)</td></tr>
+<tr class="memdesc:acb1b9b3242effde97a3c964e52d99719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick a printf format for a heatmap colorbar's tick labels from the displayed range.  <br /></td></tr>
+<tr class="separator:acb1b9b3242effde97a3c964e52d99719"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad30e4ea88d4d0f27e03cc3af4a419517" id="r_ad30e4ea88d4d0f27e03cc3af4a419517"><td class="memItemLeft" align="right" valign="top">static ImVec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#ad30e4ea88d4d0f27e03cc3af4a419517">toVec2</a> (const nlohmann::json &amp;j)</td></tr>
 <tr class="separator:ad30e4ea88d4d0f27e03cc3af4a419517"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8509302dcdc1179eb17b6700d3f86038" id="r_a8509302dcdc1179eb17b6700d3f86038"><td class="memItemLeft" align="right" valign="top">static ImVec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#a8509302dcdc1179eb17b6700d3f86038">toVec4</a> (const nlohmann::json &amp;j)</td></tr>
@@ -490,6 +493,50 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_ab3541a00b0ecfcc65863eef4c45a11aa_icgraph.svg" width="460" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="acb1b9b3242effde97a3c964e52d99719" name="acb1b9b3242effde97a3c964e52d99719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb1b9b3242effde97a3c964e52d99719">&#9670;&#160;</a></span>selectHeatmapTickFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * dnf_composer::selectHeatmapTickFormat </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>scaleMin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>scaleMax</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pick a printf format for a heatmap colorbar's tick labels from the displayed range. </p>
+<p>Every <code>ImPlot::ColormapScale(...)</code> call site previously omitted the format argument, defaulting to ImPlot's <code>"%g"</code>. For a narrow range (e.g. a FieldCoupling DELTA weight matrix, whose weights are legitimately on the order of <code>target_amplitude / inputSize</code> &ndash; see FieldCoupling::updateWeights()), ImPlot's tick locator then produces values that <code>"%g"</code> either rounds to a meaningless <code>0.00</code> or, depending on where the tick lands, renders as an oversized fixed-notation integer. Neither is readable.</p>
+<p>This selects fixed-decimal precision that scales down as the range narrows, falling back to scientific notation only once fixed-decimal would otherwise collapse a nonzero value to all zeros. It is deliberately pure: it is called from a render function that runs every frame (see resolveManualHeatmapDimensions above for the same extraction rationale), and it never inspects the actual data &ndash; only the [scaleMin, scaleMax] range already computed by the caller.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scaleMin,scaleMax</td><td>The colorbar's displayed range, in either order. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A static string literal (never null); safe to pass directly to ImPlot::ColormapScale, which stores the pointer without copying. </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_acb1b9b3242effde97a3c964e52d99719_icgraph.svg" width="463" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

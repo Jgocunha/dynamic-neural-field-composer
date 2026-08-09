@@ -1,5 +1,7 @@
 <map id="dnf_composer::Heatmap::render" name="dnf_composer::Heatmap::render">
-<area shape="rect" id="Node000001" title="Render the plot using the provided data and legends." alt="" coords="5,5,188,45"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer.html#ab3541a00b0ecfcc65863eef4c45a11aa" title=" " alt="" coords="236,5,455,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,23,222,23,222,28,188,28"/>
+<area shape="rect" id="Node000001" title="Render the plot using the provided data and legends." alt="" coords="5,37,188,77"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer.html#ab3541a00b0ecfcc65863eef4c45a11aa" title=" " alt="" coords="237,5,456,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,43,223,38,224,44,189,48"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer.html#acb1b9b3242effde97a3c964e52d99719" title="Pick a printf format for a heatmap colorbar&#39;s tick labels from the displayed range." alt="" coords="236,69,457,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,66,223,71,222,76,188,72"/>
 </map>

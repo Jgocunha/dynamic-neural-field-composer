@@ -322,29 +322,31 @@
 <g id="Node000010" class="node">
 <title>Node10</title>
 <g id="a_Node000010"><a xlink:href="structdnf__composer_1_1element_1_1FieldCouplingParameters.html" target="_top" xlink:title="Parameters for a learned full&#45;matrix field coupling.">
-<polygon fill="white" stroke="transparent" points="1708.5,-180 1557.5,-180 1557.5,-30 1708.5,-30 1708.5,-180"/>
-<text text-anchor="start" x="1569.5" y="-168" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
-<text text-anchor="start" x="1569.5" y="-157" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCouplingParameters</text>
-<text text-anchor="start" x="1562" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">inputFieldDimensions</text>
-<text text-anchor="start" x="1562" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">isLearningActive</text>
-<text text-anchor="start" x="1562" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">learningRate</text>
-<text text-anchor="start" x="1562" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">learningRule</text>
-<text text-anchor="start" x="1562" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">scalar</text>
-<text text-anchor="start" x="1562" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">FieldCouplingParameters()</text>
-<text text-anchor="start" x="1562" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">operator==()</text>
-<text text-anchor="start" x="1562" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1575" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
-<polygon fill="#666666" stroke="#666666" points="1558,-152 1558,-152 1709,-152 1709,-152 1558,-152"/>
-<polygon fill="#666666" stroke="#666666" points="1558,-77 1558,-77 1573,-77 1573,-77 1558,-77"/>
-<polygon fill="#666666" stroke="#666666" points="1573,-77 1573,-77 1709,-77 1709,-77 1573,-77"/>
-<polygon fill="none" stroke="#666666" points="1557.5,-30 1557.5,-180 1708.5,-180 1708.5,-30 1557.5,-30"/>
+<polygon fill="white" stroke="transparent" points="1708.5,-187.5 1557.5,-187.5 1557.5,-22.5 1708.5,-22.5 1708.5,-187.5"/>
+<text text-anchor="start" x="1569.5" y="-175" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
+<text text-anchor="start" x="1569.5" y="-164" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCouplingParameters</text>
+<text text-anchor="start" x="1562" y="-149" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-149" font-family="Helvetica,sans-Serif" font-size="10.00">decayRate</text>
+<text text-anchor="start" x="1562" y="-134" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-134" font-family="Helvetica,sans-Serif" font-size="10.00">inputFieldDimensions</text>
+<text text-anchor="start" x="1562" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">isLearningActive</text>
+<text text-anchor="start" x="1562" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">learningRate</text>
+<text text-anchor="start" x="1562" y="-89" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-89" font-family="Helvetica,sans-Serif" font-size="10.00">learningRule</text>
+<text text-anchor="start" x="1562" y="-74" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-74" font-family="Helvetica,sans-Serif" font-size="10.00">scalar</text>
+<text text-anchor="start" x="1562" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">FieldCouplingParameters()</text>
+<text text-anchor="start" x="1562" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">operator==()</text>
+<text text-anchor="start" x="1562" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1575" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">toString()</text>
+<polygon fill="#666666" stroke="#666666" points="1558,-159 1558,-159 1709,-159 1709,-159 1558,-159"/>
+<polygon fill="#666666" stroke="#666666" points="1558,-69 1558,-69 1573,-69 1573,-69 1558,-69"/>
+<polygon fill="#666666" stroke="#666666" points="1573,-69 1573,-69 1709,-69 1709,-69 1573,-69"/>
+<polygon fill="none" stroke="#666666" points="1557.5,-22.5 1557.5,-187.5 1708.5,-187.5 1708.5,-22.5 1557.5,-22.5"/>
 </a>
 </g>
 </g>
@@ -352,7 +354,7 @@
 <g id="edge9_Node000001_Node000010" class="edge">
 <title>Node1&#45;&gt;Node10</title>
 <g id="a_edge9_Node000001_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M2526.11,-297.48C2322.61,-295.96 1854.88,-284.23 1717,-210 1703.21,-202.57 1690.85,-191.83 1680.12,-180.04"/>
+<path fill="none" stroke="#63b8ff" d="M2526.11,-297.48C2322.61,-295.96 1854.88,-284.23 1717,-210 1706.27,-204.22 1696.41,-196.44 1687.51,-187.72"/>
 <polygon fill="none" stroke="#63b8ff" points="2526.17,-300.98 2536.19,-297.55 2526.21,-293.98 2526.17,-300.98"/>
 </a>
 </g>

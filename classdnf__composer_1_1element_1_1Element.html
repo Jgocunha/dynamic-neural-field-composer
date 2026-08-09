@@ -77,6 +77,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classdnf__composer_1_1element_1_1Element-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">dnf_composer::element::Element Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__elements.html">Elements</a></div></div></div>
@@ -90,12 +91,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::Element:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__inherit__graph.svg" width="4366" height="1155"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__inherit__graph.svg" width="4366" height="1195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::Element:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__coll__graph.svg" width="635" height="1548"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__coll__graph.svg" width="638" height="1568"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -103,8 +104,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aed78b4e2f69bf55673030220bbef6650" id="r_aed78b4e2f69bf55673030220bbef6650"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650">addInput</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &amp;inputElement, const std::string &amp;inputComponent=&quot;output&quot;)</td></tr>
 <tr class="memdesc:aed78b4e2f69bf55673030220bbef6650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element.  <br /></td></tr>
 <tr class="separator:aed78b4e2f69bf55673030220bbef6650"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48e4fcaeda8316d79dfaa8de41cec87e" id="r_a48e4fcaeda8316d79dfaa8de41cec87e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e">buildInputCache</a> ()</td></tr>
-<tr class="memdesc:a48e4fcaeda8316d79dfaa8de41cec87e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache raw pointers to input component data. Call after all element <a class="el" href="classdnf__composer_1_1element_1_1Element.html#af09ce7373b714e18c46783bacf4add15" title="Initialize the element (called once before the simulation loop).">init()</a>s complete.  <br /></td></tr>
+<tr class="memitem:a48e4fcaeda8316d79dfaa8de41cec87e" id="r_a48e4fcaeda8316d79dfaa8de41cec87e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e">buildInputCache</a> ()</td></tr>
+<tr class="memdesc:a48e4fcaeda8316d79dfaa8de41cec87e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache raw pointers to input component data. Call after all element <a class="el" href="classdnf__composer_1_1element_1_1Element.html#af09ce7373b714e18c46783bacf4add15" title="Initialize the element (called once before the simulation loop).">init()</a>s complete. Virtual so a subclass whose <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components. Virtual so a subclass ca...">updateInput()</a> override doesn't use this cache (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>, which reads <code>inputs</code> directly every call) can make it a no-op &ndash; the base implementation assumes every entry in <code>inputs</code> names a component that exists on the source, which "target" deliberately does not.  <br /></td></tr>
 <tr class="separator:a48e4fcaeda8316d79dfaa8de41cec87e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab061ce821963cb81da964bd34ead0214" id="r_ab061ce821963cb81da964bd34ead0214"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions)</td></tr>
 <tr class="memdesc:ab061ce821963cb81da964bd34ead0214"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> all components to <code>newDimensions</code> and re-initialize.  <br /></td></tr>
@@ -171,11 +172,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2b1969335e7a768f53d9cf3d4abc2671"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a006295ce616dea39b7ec7cabd573ca73" id="r_a006295ce616dea39b7ec7cabd573ca73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a006295ce616dea39b7ec7cabd573ca73">print</a> () const</td></tr>
 <tr class="separator:a006295ce616dea39b7ec7cabd573ca73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7508a9a8d72df33b553d7a75e5138d37" id="r_a7508a9a8d72df33b553d7a75e5138d37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37">removeInput</a> (const std::string &amp;inputElementId)</td></tr>
+<tr class="memitem:a7508a9a8d72df33b553d7a75e5138d37" id="r_a7508a9a8d72df33b553d7a75e5138d37"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37">removeInput</a> (const std::string &amp;inputElementId)</td></tr>
+<tr class="memdesc:a7508a9a8d72df33b553d7a75e5138d37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deregister the input element named <code>inputElementId</code>. Virtual so a subclass that routes some inputs into an additional buffer (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>'s "target") can clear that buffer too.  <br /></td></tr>
 <tr class="separator:a7508a9a8d72df33b553d7a75e5138d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5df41b16d087981d9d4f93a504648f72" id="r_a5df41b16d087981d9d4f93a504648f72"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72">removeInput</a> (int uniqueId)</td></tr>
+<tr class="memitem:a5df41b16d087981d9d4f93a504648f72" id="r_a5df41b16d087981d9d4f93a504648f72"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72">removeInput</a> (int uniqueId)</td></tr>
 <tr class="separator:a5df41b16d087981d9d4f93a504648f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeac5c33e5670c5bf0c162f3b1ec290e4" id="r_aeac5c33e5670c5bf0c162f3b1ec290e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs</a> ()</td></tr>
+<tr class="memitem:aeac5c33e5670c5bf0c162f3b1ec290e4" id="r_aeac5c33e5670c5bf0c162f3b1ec290e4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs</a> ()</td></tr>
 <tr class="separator:aeac5c33e5670c5bf0c162f3b1ec290e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c10d5a2d969823d9ca113bf13b7e3b3" id="r_a5c10d5a2d969823d9ca113bf13b7e3b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a5c10d5a2d969823d9ca113bf13b7e3b3">removeOutput</a> (const std::string &amp;outputElementId)</td></tr>
 <tr class="memdesc:a5c10d5a2d969823d9ca113bf13b7e3b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deregister this element as an input of <code>outputElementId</code>.  <br /></td></tr>
@@ -192,11 +194,17 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a37d8927c995eccab63d3602d8eace4e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb280f36ae38591d556eaf64604c7f01" id="r_afb280f36ae38591d556eaf64604c7f01"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#afb280f36ae38591d556eaf64604c7f01">toString</a> () const =0</td></tr>
 <tr class="separator:afb280f36ae38591d556eaf64604c7f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87401af54d46e1cf99d2755d3fce0a9a" id="r_a87401af54d46e1cf99d2755d3fce0a9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a">updateInput</a> ()</td></tr>
-<tr class="memdesc:a87401af54d46e1cf99d2755d3fce0a9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pull data from all registered input elements into this element's components.  <br /></td></tr>
+<tr class="memitem:a87401af54d46e1cf99d2755d3fce0a9a" id="r_a87401af54d46e1cf99d2755d3fce0a9a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a">updateInput</a> ()</td></tr>
+<tr class="memdesc:a87401af54d46e1cf99d2755d3fce0a9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pull data from all registered input elements into this element's components. Virtual so a subclass can route some inputs into additional buffers instead of summing everything into "input" (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a> routes a source declared with component "target" into components["target"]).  <br /></td></tr>
 <tr class="separator:a87401af54d46e1cf99d2755d3fce0a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf501cf6f61a1f0d274c82abe17c807a" id="r_abf501cf6f61a1f0d274c82abe17c807a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#abf501cf6f61a1f0d274c82abe17c807a">~Element</a> ()=default</td></tr>
 <tr class="separator:abf501cf6f61a1f0d274c82abe17c807a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a561f0f7205078354540f0dd3864f5d4c" id="r_a561f0f7205078354540f0dd3864f5d4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a561f0f7205078354540f0dd3864f5d4c">invalidateInputCache</a> ()</td></tr>
+<tr class="memdesc:a561f0f7205078354540f0dd3864f5d4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force the next <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components. Virtual so a subclass ca...">updateInput()</a> to rebuild its source cache from scratch. Call after directly reallocating a component that the cache may hold a stale reference into (e.g. a subclass's <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214" title="Resize all components to newDimensions and re-initialize.">changeDimensions()</a> override that resizes "input" or another routed-into buffer outside of the base class's own <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214" title="Resize all components to newDimensions and re-initialize.">changeDimensions()</a>).  <br /></td></tr>
+<tr class="separator:a561f0f7205078354540f0dd3864f5d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -360,6 +368,9 @@ Here is the caller graph for this function:</div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void dnf_composer::element::Element::buildInputCache </td>
@@ -368,13 +379,18 @@ Here is the caller graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Cache raw pointers to input component data. Call after all element <a class="el" href="classdnf__composer_1_1element_1_1Element.html#af09ce7373b714e18c46783bacf4add15" title="Initialize the element (called once before the simulation loop).">init()</a>s complete. </p>
+<p>Cache raw pointers to input component data. Call after all element <a class="el" href="classdnf__composer_1_1element_1_1Element.html#af09ce7373b714e18c46783bacf4add15" title="Initialize the element (called once before the simulation loop).">init()</a>s complete. Virtual so a subclass whose <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components. Virtual so a subclass ca...">updateInput()</a> override doesn't use this cache (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>, which reads <code>inputs</code> directly every call) can make it a no-op &ndash; the base implementation assumes every entry in <code>inputs</code> names a component that exists on the source, which "target" deliberately does not. </p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_a48e4fcaeda8316d79dfaa8de41cec87e_icgraph.svg" width="1019" height="1267"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_a48e4fcaeda8316d79dfaa8de41cec87e_icgraph.svg" width="1019" height="1203"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -416,7 +432,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_ab061ce821963cb81da964bd34ead0214_cgraph.svg" width="451" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_ab061ce821963cb81da964bd34ead0214_cgraph.svg" width="506" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -906,6 +922,38 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a561f0f7205078354540f0dd3864f5d4c" name="a561f0f7205078354540f0dd3864f5d4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a561f0f7205078354540f0dd3864f5d4c">&#9670;&#160;</a></span>invalidateInputCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::element::Element::invalidateInputCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Force the next <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components. Virtual so a subclass ca...">updateInput()</a> to rebuild its source cache from scratch. Call after directly reallocating a component that the cache may hold a stale reference into (e.g. a subclass's <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214" title="Resize all components to newDimensions and re-initialize.">changeDimensions()</a> override that resizes "input" or another routed-into buffer outside of the base class's own <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab061ce821963cb81da964bd34ead0214" title="Resize all components to newDimensions and re-initialize.">changeDimensions()</a>). </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_a561f0f7205078354540f0dd3864f5d4c_icgraph.svg" width="506" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="a2b1969335e7a768f53d9cf3d4abc2671" name="a2b1969335e7a768f53d9cf3d4abc2671"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b1969335e7a768f53d9cf3d4abc2671">&#9670;&#160;</a></span>operator=()</h2>
 
@@ -951,6 +999,9 @@ Here is the call graph for this function:</div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void dnf_composer::element::Element::removeInput </td>
@@ -960,11 +1011,25 @@ Here is the call graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Deregister the input element named <code>inputElementId</code>. Virtual so a subclass that routes some inputs into an additional buffer (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>'s "target") can clear that buffer too. </p>
+
+<p>Reimplemented in <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704">dnf_composer::element::FieldCoupling</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_a7508a9a8d72df33b553d7a75e5138d37_cgraph.svg" width="434" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_a7508a9a8d72df33b553d7a75e5138d37_icgraph.svg" width="486" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -974,6 +1039,9 @@ Here is the call graph for this function:</div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void dnf_composer::element::Element::removeInput </td>
@@ -983,7 +1051,14 @@ Here is the call graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065">dnf_composer::element::FieldCoupling</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -997,6 +1072,9 @@ Here is the call graph for this function:</div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void dnf_composer::element::Element::removeInputs </td>
@@ -1005,11 +1083,18 @@ Here is the call graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#ae03ad578d78c90775e284a6b8fd50831">dnf_composer::element::FieldCoupling</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_aeac5c33e5670c5bf0c162f3b1ec290e4_icgraph.svg" width="492" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_aeac5c33e5670c5bf0c162f3b1ec290e4_icgraph.svg" width="492" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1188,6 +1273,9 @@ Here is the caller graph for this function:</div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void dnf_composer::element::Element::updateInput </td>
@@ -1196,9 +1284,14 @@ Here is the caller graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Pull data from all registered input elements into this element's components. </p>
+<p>Pull data from all registered input elements into this element's components. Virtual so a subclass can route some inputs into additional buffers instead of summing everything into "input" (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a> routes a source declared with component "target" into components["target"]). </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1207,7 +1300,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_a87401af54d46e1cf99d2755d3fce0a9a_icgraph.svg" width="774" height="1267"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element_a87401af54d46e1cf99d2755d3fce0a9a_icgraph.svg" width="774" height="1203"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

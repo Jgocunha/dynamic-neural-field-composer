@@ -1,9 +1,9 @@
 <map id="dnf_composer::element::AsymmetricGaussKernel" name="dnf_composer::element::AsymmetricGaussKernel">
-<area shape="rect" id="Node000001" title="Spatially shifted Gaussian kernel that induces directional peak drift." alt="" coords="5,769,204,969"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Kernel.html" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="21,521,189,721"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,735,107,769,102,769,102,735"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="21,133,189,473"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="107,487,107,521,102,521,102,487"/>
+<area shape="rect" id="Node000001" title="Spatially shifted Gaussian kernel that induces directional peak drift." alt="" coords="5,789,204,989"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Kernel.html" title="Abstract base class for all convolution&#45;based interaction kernels." alt="" coords="21,541,189,741"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,755,107,789,102,789,102,755"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html" title="Abstract base class for all simulation elements." alt="" coords="16,133,193,493"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="107,507,107,541,102,541,102,507"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="21,5,188,85"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="107,99,107,133,102,133,102,99"/>
 </map>
