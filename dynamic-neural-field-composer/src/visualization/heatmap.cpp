@@ -71,11 +71,11 @@ namespace dnf_composer
 		float colorbarWidthFor(double scaleMin, double scaleMax)
 		{
 			const char* fmt = selectHeatmapTickFormat(scaleMin, scaleMax);
-			char buf[32];
-			std::snprintf(buf, sizeof(buf), fmt, scaleMin);
-			const float wMin = ImGui::CalcTextSize(buf).x;
-			std::snprintf(buf, sizeof(buf), fmt, scaleMax);
-			const float wMax = ImGui::CalcTextSize(buf).x;
+			std::array<char, 32> buf{};
+			std::snprintf(buf.data(), buf.size(), fmt, scaleMin);
+			const float wMin = ImGui::CalcTextSize(buf.data()).x;
+			std::snprintf(buf.data(), buf.size(), fmt, scaleMax);
+			const float wMax = ImGui::CalcTextSize(buf.data()).x;
 			constexpr float barAndPadding = 34.0F; // color bar itself + tick marks + margins
 			return barAndPadding + (wMin > wMax ? wMin : wMax);
 		}

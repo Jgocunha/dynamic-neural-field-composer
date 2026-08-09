@@ -45,11 +45,11 @@ namespace dnf_composer::user_interface
 		float colorbarWidthFor(double scaleMin, double scaleMax)
 		{
 			const char* fmt = selectHeatmapTickFormat(scaleMin, scaleMax);
-			char buf[32];
-			std::snprintf(buf, sizeof(buf), fmt, scaleMin);
-			const float wMin = ImGui::CalcTextSize(buf).x;
-			std::snprintf(buf, sizeof(buf), fmt, scaleMax);
-			const float wMax = ImGui::CalcTextSize(buf).x;
+			std::array<char, 32> buf{};
+			std::snprintf(buf.data(), buf.size(), fmt, scaleMin);
+			const float wMin = ImGui::CalcTextSize(buf.data()).x;
+			std::snprintf(buf.data(), buf.size(), fmt, scaleMax);
+			const float wMax = ImGui::CalcTextSize(buf.data()).x;
 			constexpr float barAndPadding = 34.0F; // color bar itself + tick marks + margins
 			return barAndPadding + (wMin > wMax ? wMin : wMax);
 		}
@@ -669,13 +669,17 @@ namespace dnf_composer::user_interface
 			const uint64_t linkId = PinIdEncoding::linkId(
 				input->getUniqueIdentifier(), element->getUniqueIdentifier(), isTarget, isFromActivation);
 
+			ImVec4 linkColor = linkCol;
+			if (isTarget) { linkColor = targetLinkCol; }
+			else if (isFromActivation) { linkColor = activationLinkCol; }
+
 			ImNodeEditor::Link(
 				linkId,
 				isFromActivation ? PinIdEncoding::activationPin(input->getUniqueIdentifier())
 				                 : PinIdEncoding::outputPin(input->getUniqueIdentifier()),
 				isTarget ? PinIdEncoding::targetPin(element->getUniqueIdentifier())
 				         : PinIdEncoding::inputPin(element->getUniqueIdentifier()),
-				isTarget ? targetLinkCol : (isFromActivation ? activationLinkCol : linkCol), thickness);
+				linkColor, thickness);
 		}
 	}
 
@@ -705,6 +709,17 @@ namespace dnf_composer::user_interface
 			{
 				return nullptr;
 			}
+		}
+
+		// Picks the interaction component name from which pin kinds are being
+		// connected. A Target destination fed from an Activation source becomes
+		// "target:activation" (see FieldCoupling::parseSlot()).
+		std::string componentForConnection(bool isTargetDestination, bool fromActivation)
+		{
+			if (isTargetDestination) {
+				return fromActivation ? "target:activation" : "target";
+			}
+			return fromActivation ? "activation" : "output";
 		}
 	}
 
@@ -746,9 +761,7 @@ namespace dnf_composer::user_interface
 					if (src && dst)
 					{
 						const bool fromActivation = srcDecoded.kind == Kind::Activation;
-						const std::string component = decoded.kind == Kind::Target
-							? (fromActivation ? "target:activation" : "target")
-							: (fromActivation ? "activation" : "output");
+						const std::string component = componentForConnection(decoded.kind == Kind::Target, fromActivation);
 						simulation->createInteraction(src->getUniqueName(), component, dst->getUniqueName());
 					}
 					g_pendingOutputPin = 0;
@@ -791,9 +804,7 @@ namespace dnf_composer::user_interface
 						if (src && dst)
 						{
 							const bool fromActivation = srcDecoded.kind == Kind::Activation;
-							const std::string component = dstDecoded.kind == Kind::Target
-								? (fromActivation ? "target:activation" : "target")
-								: (fromActivation ? "activation" : "output");
+							const std::string component = componentForConnection(dstDecoded.kind == Kind::Target, fromActivation);
 							simulation->createInteraction(src->getUniqueName(), component, dst->getUniqueName());
 						}
 						g_pendingOutputPin = 0;
@@ -1580,11 +1591,11 @@ namespace dnf_composer::user_interface
 
 		ImFont* const font = ImGui::GetFont();
 		const char*   fmt  = selectHeatmapTickFormat(dMin, dMax);
-		char buf[32];
-		std::snprintf(buf, sizeof(buf), fmt, dMin);
-		const float wMin = font->CalcTextSizeA(fs, FLT_MAX, 0.0F, buf).x;
-		std::snprintf(buf, sizeof(buf), fmt, dMax);
-		const float wMax = font->CalcTextSizeA(fs, FLT_MAX, 0.0F, buf).x;
+		std::array<char, 32> buf{};
+		std::snprintf(buf.data(), buf.size(), fmt, dMin);
+		const float wMin = font->CalcTextSizeA(fs, FLT_MAX, 0.0F, buf.data()).x;
+		std::snprintf(buf.data(), buf.size(), fmt, dMax);
+		const float wMax = font->CalcTextSizeA(fs, FLT_MAX, 0.0F, buf.data()).x;
 
 		return barGapAndW + tickAndSpace + (wMin > wMax ? wMin : wMax);
 	}
