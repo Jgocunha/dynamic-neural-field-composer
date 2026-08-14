@@ -52,7 +52,6 @@ You do **not** need to install any of the following — the setup scripts handle
 | `unofficial-imgui-node-editor` | vcpkg | Visual node-graph editor |
 | `nlohmann-json` | vcpkg | Simulation serialization |
 | `gtest` | vcpkg | Unit testing framework |
-| `catch2` | vcpkg | Unit testing framework |
 | `imgui-platform-kit` | Built from source (cloned to `deps/`) | Platform/window abstraction |
 
 ---
