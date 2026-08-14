@@ -184,6 +184,7 @@ All notable changes to this project will be documented in this file.
   before), to catch order-dependent failures that only reproduce when every suite shares
   one process's global state
 - Added a headless smoke-run of the example programs to CI
+
 ## [2.10.0] - 2026-08-05
 
 ### Fixed
