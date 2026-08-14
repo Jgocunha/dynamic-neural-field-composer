@@ -16,6 +16,9 @@ jobs:
         with:
           persist-credentials: false
 
+      # Deliberately upstream HEAD, not the pin in dependencies.env: this job
+      # exists to report how far the pin has drifted, so it has to look at what
+      # is current. Do not "fix" it to use VCPKG_COMMIT.
       - name: Clone vcpkg
         run: git clone --depth=1 https://github.com/microsoft/vcpkg.git "$GITHUB_WORKSPACE/vcpkg"
 
@@ -66,15 +69,17 @@ jobs:
           # Compose issue body
           BODY=$(printf "## Monthly vcpkg dependency report — %s\n\n\
           This is an automated monthly check of the vcpkg packages used by **dynamic-neural-field-composer**.\n\
-          The project does not pin a vcpkg baseline; CI always pulls the latest vcpkg HEAD.\n\
-          The versions below are what is currently available in the vcpkg registry.\n\n\
+          CI builds against the vcpkg commit pinned in \`dependencies.env\`. This report\n\
+          deliberately reads upstream HEAD instead, so the versions below are what the\n\
+          registry currently offers — that is, how far the pin has drifted.\n\n\
           ### Package versions\n\n%s\n\
           ### What to look for\n\n\
           - **Non-zero port-version**: the port was patched without an upstream release — usually safe, but worth noting.\n\
           - **Major version bumps**: may introduce breaking API changes. Consider running a manual integration test before the next release.\n\n\
           ### Recommended action\n\n\
           Review the table above. If any package shows a major version bump since the last report,\n\
-          clone the repo, update vcpkg, and run the CI build scripts locally to verify nothing is broken.\n\
+          bump \`VCPKG_COMMIT\` in \`dependencies.env\`, re-run the setup script against a clean\n\
+          prefix, and let CI confirm all four platforms still build.\n\
           Close this issue once reviewed.\n" "$DATE" "$(printf "$TABLE")")
 
           gh issue create \

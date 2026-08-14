@@ -35,7 +35,10 @@ jobs:
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+          git -C $VCPKG_ROOT checkout --quiet $VCPKG_COMMIT
 
       - name: Bootstrap vcpkg
         run: $VCPKG_ROOT/bootstrap-vcpkg.bat -disableMetrics
@@ -44,7 +47,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/dependencies.env', '.github/workflows/release.yml') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       - name: Install vcpkg packages
@@ -59,7 +62,10 @@ jobs:
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
-        run: git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
+          git -C $IPK_SRC checkout --quiet $IPK_COMMIT
 
       - name: Configure imgui-platform-kit
         run: |
@@ -144,7 +150,10 @@ jobs:
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+          git -C $VCPKG_ROOT checkout --quiet $VCPKG_COMMIT
 
       - name: Bootstrap vcpkg
         run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
@@ -153,7 +162,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/dependencies.env', '.github/workflows/release.yml') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       - name: Install vcpkg packages
@@ -169,8 +178,11 @@ jobs:
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
         run: |
+          . dynamic-neural-field-composer/dependencies.env
           git clone https://github.com/Jgocunha/imgui-platform-kit.git \
             ${{ github.workspace }}/imgui-platform-kit-src
+          git -C ${{ github.workspace }}/imgui-platform-kit-src \
+            checkout --quiet $IPK_COMMIT
 
       - name: Configure imgui-platform-kit
         run: |
@@ -242,7 +254,10 @@ jobs:
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+          git -C $VCPKG_ROOT checkout --quiet $VCPKG_COMMIT
 
       - name: Bootstrap vcpkg
         run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
@@ -251,7 +266,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-arm64-osx-${{ hashFiles('build_macos.sh') }}
+          key: vcpkg-${{ runner.os }}-arm64-osx-${{ hashFiles('dynamic-neural-field-composer/dependencies.env', '.github/workflows/release.yml') }}
           restore-keys: vcpkg-${{ runner.os }}-arm64-osx-
 
       - name: Install vcpkg packages
@@ -267,8 +282,11 @@ jobs:
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
         run: |
+          . dynamic-neural-field-composer/dependencies.env
           git clone https://github.com/Jgocunha/imgui-platform-kit.git \
             ${{ github.workspace }}/imgui-platform-kit-src
+          git -C ${{ github.workspace }}/imgui-platform-kit-src \
+            checkout --quiet $IPK_COMMIT
 
       - name: Configure imgui-platform-kit
         run: |

@@ -16,11 +16,14 @@ chmod +x scripts/setup.sh
 ```
 
 What it does:
-1. If `VCPKG_ROOT` is not set, clones vcpkg to `$HOME/vcpkg`, bootstraps it, and prints the line to add to your shell profile to persist the variable
-2. Auto-detects your OS and CPU architecture to select the correct vcpkg triplet (`x64-linux`, `x64-osx`, or `arm64-osx`)
-3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
-4. Clones `imgui-platform-kit` into `deps/imgui-platform-kit/` (skipped if already present)
-5. Builds and installs `imgui-platform-kit` into `deps/ipk-install/` (skipped if already present)
+1. Reads the pinned dependency revisions from [`dependencies.env`](../dependencies.env)
+2. If `VCPKG_ROOT` is not set, clones vcpkg to `$HOME/vcpkg` at the pinned commit, bootstraps it, and prints the line to add to your shell profile to persist the variable
+3. Auto-detects your OS and CPU architecture to select the correct vcpkg triplet (`x64-linux`, `x64-osx`, or `arm64-osx`)
+4. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
+5. Clones `imgui-platform-kit` into `deps/imgui-platform-kit/` at the pinned commit (skipped if already present)
+6. Builds and installs `imgui-platform-kit` into `deps/ipk-install/` (skipped if already present)
+
+A vcpkg you already had is never moved to the pin — it is shared with your other projects. The script warns instead, so a local/CI discrepancy is visible rather than silent.
 
 Idempotent — safe to re-run; already-completed steps are skipped.
 
@@ -31,10 +34,13 @@ scripts\setup.bat
 ```
 
 What it does:
-1. If `VCPKG_ROOT` is not set, clones vcpkg to `C:\tools\vcpkg`, bootstraps it, and persists `VCPKG_ROOT` permanently via `setx`
-2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
-3. Clones `imgui-platform-kit` into `deps\imgui-platform-kit\` (skipped if already present)
-4. Builds and installs `imgui-platform-kit` into `deps\ipk-install\` (skipped if already present)
+1. Reads the pinned dependency revisions from [`dependencies.env`](../dependencies.env)
+2. If `VCPKG_ROOT` is not set, clones vcpkg to `C:\tools\vcpkg` at the pinned commit, bootstraps it, and persists `VCPKG_ROOT` permanently via `setx`
+3. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
+4. Clones `imgui-platform-kit` into `deps\imgui-platform-kit\` at the pinned commit (skipped if already present)
+5. Builds and installs `imgui-platform-kit` into `deps\ipk-install\` (skipped if already present)
+
+As on Linux, an existing `VCPKG_ROOT` is warned about rather than moved.
 
 Idempotent — safe to re-run; already-completed steps are skipped.
 

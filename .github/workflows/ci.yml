@@ -47,7 +47,10 @@ jobs:
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+          git -C $VCPKG_ROOT checkout --quiet $VCPKG_COMMIT
 
       - name: Bootstrap vcpkg
         run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
@@ -56,7 +59,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh', 'dynamic-neural-field-composer/dependencies.env') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       # ── Dependencies + build ───────────────────────────────────────────────
@@ -221,7 +224,10 @@ jobs:
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+          git -C $VCPKG_ROOT checkout --quiet $VCPKG_COMMIT
 
       - name: Bootstrap vcpkg
         run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
@@ -230,7 +236,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh', 'dynamic-neural-field-composer/dependencies.env') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       # ── Dependencies + build ───────────────────────────────────────────────
@@ -303,7 +309,10 @@ jobs:
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+          git -C $VCPKG_ROOT checkout --quiet $VCPKG_COMMIT
 
       - name: Bootstrap vcpkg
         run: $VCPKG_ROOT/bootstrap-vcpkg.bat -disableMetrics
@@ -312,7 +321,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.bat') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.bat', 'dynamic-neural-field-composer/dependencies.env') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       # ── Dependencies + build ───────────────────────────────────────────────
@@ -359,7 +368,10 @@ jobs:
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+        run: |
+          . dynamic-neural-field-composer/dependencies.env
+          git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+          git -C $VCPKG_ROOT checkout --quiet $VCPKG_COMMIT
 
       - name: Bootstrap vcpkg
         run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
@@ -368,7 +380,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh', 'dynamic-neural-field-composer/dependencies.env') }}
           restore-keys: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-
 
       # ── Dependencies + build ───────────────────────────────────────────────
