@@ -51,6 +51,13 @@ The application's ImGui theme is loaded at startup from `resources/style_light_g
 
 You can personalize the look by editing these values and restarting the application — adjust the colors to your taste or tweak the metrics for a tighter or roomier layout.
 
+This JSON theme only covers the generic ImGui color slots (`Text`, `WindowBg`, `Button`, ...).
+Colours specific to a widget's *role* — a per-element-type node header, a destructive button's
+red, the enabled/disabled state of an icon — are hardcoded C++ constants in
+`include/user_interface/colour_registry.h`, grouped by area with a short comment each. If you
+are changing one of those, edit the registry, not the call site; the point of the registry is
+that the same role never needs to be re-spelled twice.
+
 ---
 
 ## Registering windows

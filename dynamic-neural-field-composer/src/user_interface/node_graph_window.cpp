@@ -221,9 +221,9 @@ namespace dnf_composer::user_interface
 	{
 		// Light background that matches the rest of the ImGui windows
 		ImNodeEditor::PushStyleColor(ImNodeEditor::StyleColor_Bg,
-			ImVec4(0.94F, 0.95F, 0.96F, 1.00F));
+			colour::kCanvasBackground);
 		ImNodeEditor::PushStyleColor(ImNodeEditor::StyleColor_Grid,
-			ImVec4(0.80F, 0.82F, 0.85F, 0.60F));
+			colour::kCanvasGridLine);
 	}
 
 	void NodeGraphWindow::restoreCanvasStyle()
@@ -437,8 +437,8 @@ namespace dnf_composer::user_interface
 		const ImRect rect(origin, ImVec2(origin.x + minNodeSize, origin.y + plotH));
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
-		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0F);
-		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0F);
+		dl->AddRectFilled(rect.Min, rect.Max, colour::kHeatmapOverlayFill, 4.0F);
+		dl->AddRect      (rect.Min, rect.Max, colour::kHeatmapOverlayBorder, 4.0F);
 
 		const auto* comps = element->getComponents();
 		bool drewContent  = false;
@@ -532,7 +532,7 @@ namespace dnf_composer::user_interface
 			{
 				if (data.size() < 2) { ++colorIdx; continue; }
 				const ImVec4 colF = ImPlot::GetColormapColor(colorIdx++, ImPlotColormap_Deep);
-				const ImU32  col  = ImGui::ColorConvertFloat4ToU32(ImVec4(colF.x, colF.y, colF.z, 0.86F));
+				const ImU32  col  = ImGui::ColorConvertFloat4ToU32(ImVec4(colF.x, colF.y, colF.z, colour::kMultiSeriesLineAlpha));
 				const int    n    = static_cast<int>(data.size());
 
 				auto toScreen = [&](const int i) -> ImVec2 {
@@ -555,9 +555,9 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderNodePins(const std::shared_ptr<element::Element>& element, const float minNodeSize)
 	{
 		using ax::Widgets::IconType;
-		constexpr auto pinColor = ImVec4(1.0F, 1.0F, 1.0F, 0.90F);
-		constexpr auto targetPinColor = ImVec4(0.83F, 0.75F, 0.47F, 0.95F); // cream-gold, matches the coupling header
-		constexpr auto activationPinColor = ImVec4(0.55F, 0.75F, 0.90F, 0.95F); // cool blue, contrasts with Target
+		constexpr auto pinColor = colour::kInputPinColour;
+		constexpr auto targetPinColor = colour::kTargetPinColour; // cream-gold, matches the coupling header
+		constexpr auto activationPinColor = colour::kActivationPinColour; // cool blue, contrasts with Target
 		constexpr auto iconSize = ImVec2(14, 14);
 
 		const auto lbl = element->getLabel();
@@ -594,7 +594,7 @@ namespace dnf_composer::user_interface
 				ImNodeEditor::BeginPin(PinIdEncoding::inputPin(element->getUniqueIdentifier()),
 				                       ImNodeEditor::PinKind::Input);
 				ImNodeEditor::PinPivotAlignment(ImVec2(0.0F, 0.5F));
-				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
+				ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, colour::kPinIconInnerFill);
 				ImGui::SameLine(0, 4);
 				ImGui::TextUnformatted("Input");
 				ImNodeEditor::EndPin();
@@ -613,7 +613,7 @@ namespace dnf_composer::user_interface
 			}
 			ImGui::TextUnformatted("Output");
 			ImGui::SameLine(0, 4);
-			ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, ImVec4(0,0,0,0));
+			ax::Widgets::Icon(iconSize, IconType::Circle, true, pinColor, colour::kPinIconInnerFill);
 			ImNodeEditor::EndPin();
 
 			if (hasTargetPin)
@@ -623,7 +623,7 @@ namespace dnf_composer::user_interface
 				ImNodeEditor::BeginPin(PinIdEncoding::targetPin(element->getUniqueIdentifier()),
 				                       ImNodeEditor::PinKind::Input);
 				ImNodeEditor::PinPivotAlignment(ImVec2(0.0F, 0.5F));
-				ax::Widgets::Icon(iconSize, IconType::Circle, true, targetPinColor, ImVec4(0,0,0,0));
+				ax::Widgets::Icon(iconSize, IconType::Circle, true, targetPinColor, colour::kPinIconInnerFill);
 				ImGui::SameLine(0, 4);
 				ImGui::TextUnformatted("Target");
 				ImNodeEditor::EndPin();
@@ -645,7 +645,7 @@ namespace dnf_composer::user_interface
 				}
 				ImGui::TextUnformatted("Activation");
 				ImGui::SameLine(0, 4);
-				ax::Widgets::Icon(iconSize, IconType::Circle, true, activationPinColor, ImVec4(0,0,0,0));
+				ax::Widgets::Icon(iconSize, IconType::Circle, true, activationPinColor, colour::kPinIconInnerFill);
 				ImNodeEditor::EndPin();
 			}
 
@@ -656,9 +656,9 @@ namespace dnf_composer::user_interface
 	void NodeGraphWindow::renderElementNodeConnections(const std::shared_ptr<element::Element>& element)
 	{
 		constexpr float thickness = 2.0F;
-		constexpr auto linkCol           = ImVec4(0.08F, 0.08F, 0.08F, 0.85F); // near-black
-		constexpr auto targetLinkCol     = ImVec4(0.60F, 0.50F, 0.15F, 0.85F); // matches the Target pin
-		constexpr auto activationLinkCol = ImVec4(0.30F, 0.50F, 0.65F, 0.85F); // matches the Activation pin
+		constexpr auto linkCol           = colour::kLinkColour; // near-black
+		constexpr auto targetLinkCol     = colour::kTargetLinkColour; // matches the Target pin
+		constexpr auto activationLinkCol = colour::kActivationLinkColour; // matches the Activation pin
 
 		for (const auto& [input, component] : element->getInputsAndComponents())
 		{
@@ -931,7 +931,7 @@ namespace dnf_composer::user_interface
 			bool open = true;
 			const float ui = ImGui::GetIO().FontGlobalScale;
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 2.0F * ui));
-			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.95F, 0.97F, 0.98F, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, colour::kFloatingPanelBackground);
 			ImGui::PushFont(g_BlackLargeFont);
 			const bool visible = ImGui::Begin(element->getUniqueName().c_str(), &open, cardFlags);
 			ImGui::PopFont();
@@ -1612,8 +1612,8 @@ namespace dnf_composer::user_interface
 		const int rows, const int cols, const double dMin, const double dMax, const int colormap)
 	{
 		constexpr float  fs      = 9.0F;
-		constexpr ImU32  textCol = IM_COL32( 40,  40,  40, 230);
-		constexpr ImU32  tickCol = IM_COL32( 80,  80,  80, 180);
+		constexpr ImU32  textCol = colour::kHeatmapAxisText;
+		constexpr ImU32  tickCol = colour::kHeatmapAxisTick;
 		constexpr int    nTicks  = 4;
 		ImFont* const    font    = ImGui::GetFont();
 
@@ -1674,9 +1674,9 @@ namespace dnf_composer::user_interface
 		if (open)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0F);
-			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.92F, 0.92F, 0.93F, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.80F, 0.84F, 0.95F, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.65F, 0.72F, 0.92F, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Button,        colour::kNavButtonBackground);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kNavButtonHoveredBackground);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kNavButtonActiveBackground);
 
 			ImGui::PushFont(g_MediumIconsFont);
 			const bool fitAll = ImGui::Button(ICON_FA_EXPAND,   ImVec2(kBtnSize, kBtnSize));
@@ -1771,12 +1771,12 @@ namespace dnf_composer::user_interface
 						cachedNodeRects[i].first.y + cachedNodeRects[i].second.y });
 					const ImU32 col = getHeaderColorForElementType(cachedNodeLabels[i]);
 					dl->AddRectFilled(p0, p1, col, 2.0F);
-					dl->AddRect(p0, p1, IM_COL32(255, 255, 255, 60), 2.0F);
+					dl->AddRect(p0, p1, colour::kMinimapNodeBorder, 2.0F);
 				}
 
 				const ImVec2 vp0 = toScreen(cachedVpMin);
 				const ImVec2 vp1 = toScreen(cachedVpMax);
-				dl->AddRect(vp0, vp1, IM_COL32(255, 255, 255, 200), 2.0F, 0, 1.5F);
+				dl->AddRect(vp0, vp1, colour::kMinimapViewportBorder, 2.0F, 0, 1.5F);
 			}
 		}
 		ImGui::End();
@@ -1808,8 +1808,8 @@ namespace dnf_composer::user_interface
 		const double wMin, const double wMax, const int colormap)
 	{
 		constexpr float pad = 3.0F;
-		dl->AddRectFilled(rect.Min, rect.Max, IM_COL32(255, 255, 255, 40), 4.0F);
-		dl->AddRect      (rect.Min, rect.Max, IM_COL32(0,   0,   0,   30), 4.0F);
+		dl->AddRectFilled(rect.Min, rect.Max, colour::kHeatmapOverlayFill, 4.0F);
+		dl->AddRect      (rect.Min, rect.Max, colour::kHeatmapOverlayBorder, 4.0F);
 		const double wRange = (wMax - wMin) < 1e-9 ? 1.0 : (wMax - wMin);
 		const float cellW = (rect.GetWidth()  - 2*pad) / static_cast<float>(cols);
 		const float cellH = (rect.GetHeight() - 2*pad) / static_cast<float>(rows);

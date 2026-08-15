@@ -1,4 +1,5 @@
 ﻿#include "user_interface/element_window.h"
+#include "user_interface/colour_registry.h"
 
 #include <array>
 #include <unordered_map>
@@ -219,7 +220,7 @@ namespace dnf_composer::user_interface
 		}
 
 		constexpr ImGuiWindowFlags childFlags = ImGuiWindowFlags_NoSavedSettings;
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 		ImGui::BeginChild("##element_scroll", ImVec2(0, 0), 0, childFlags);
 		ImGui::PopStyleColor();
 
@@ -422,7 +423,8 @@ namespace dnf_composer::user_interface
 		{
 			ImVec4 color = getColorForElementType(label);
 			ImGui::PushStyleColor(ImGuiCol_Header, color);
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(color.x * 1.1F, color.y * 1.1F, color.z * 1.1F, color.w));
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(color.x * colour::kCategoryHeaderHoverBrighten,
+				color.y * colour::kCategoryHeaderHoverBrighten, color.z * colour::kCategoryHeaderHoverBrighten, color.w));
 
 			std::string headerName = getElementTypeDisplayName(label) + " (" + std::to_string(elements.size()) + ")";
 
@@ -1115,10 +1117,10 @@ namespace dnf_composer::user_interface
 					ImGui::DragFloat(("##tgs_e" + uid + std::to_string(i)).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(2);
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85F, 0.25F, 0.25F, 1.0F));
-					ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+					ImGui::PushStyleColor(ImGuiCol_Text, colour::kDestructiveText);
+					ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 					ImGui::PushFont(g_MediumIconsFont);
 					if (ImGui::Button((ICON_FA_TRASH "##tgs_del" + uid + std::to_string(i)).c_str())) {
 						tgsDeleteIdx = i;
@@ -1148,9 +1150,9 @@ namespace dnf_composer::user_interface
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(2);
 				ImGui::PushFont(g_MediumIconsFont);
-				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+				ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 				tgsAddClicked = ImGui::Button((ICON_FA_CIRCLE_PLUS "##tgs_add" + uid).c_str());
 				ImGui::PopFont();
 				ImGui::PopStyleColor(3);
@@ -1259,10 +1261,10 @@ namespace dnf_composer::user_interface
 					ImGui::DragFloat(("##tgs2_e" + uid + std::to_string(i)).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(2);
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85F, 0.25F, 0.25F, 1.0F));
-					ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+					ImGui::PushStyleColor(ImGuiCol_Text, colour::kDestructiveText);
+					ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 					ImGui::PushFont(g_MediumIconsFont);
 					if (ImGui::Button((ICON_FA_TRASH "##tgs2_del" + uid + std::to_string(i)).c_str())) {
 						tgs2DeleteIdx = i;
@@ -1292,9 +1294,9 @@ namespace dnf_composer::user_interface
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(2);
 				ImGui::PushFont(g_MediumIconsFont);
-				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+				ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 				tgs2AddClicked = ImGui::Button((ICON_FA_CIRCLE_PLUS "##tgs2_add" + uid).c_str());
 				ImGui::PopFont();
 				ImGui::PopStyleColor(3);
@@ -1649,10 +1651,10 @@ namespace dnf_composer::user_interface
 				ImGui::DragFloat(gfcLabel("##gfc_w").c_str(), &w,   0.1F,  1.0F,  30.0F, "%.2f");
 				ImGui::PopFont();
 				ImGui::TableSetColumnIndex(4);
-				ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85F, 0.25F, 0.25F, 1.0F));
-				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+				ImGui::PushStyleColor(ImGuiCol_Text,          colour::kDestructiveText);
+				ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 				ImGui::PushFont(g_MediumIconsFont);
 				if (ImGui::Button(gfcLabel(ICON_FA_TRASH "##gfc_del").c_str())) {
 					gfcDeleteIdx = i;
@@ -1691,9 +1693,9 @@ namespace dnf_composer::user_interface
 			ImGui::PopFont();
 			ImGui::TableSetColumnIndex(4);
 			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+			ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 			gfcAddClicked = ImGui::Button((ICON_FA_CIRCLE_PLUS "##gfc_add" + uid).c_str());
 			ImGui::PopFont();
 			ImGui::PopStyleColor(3);
@@ -2513,8 +2515,8 @@ namespace dnf_composer::user_interface
 		p.pad      = ImVec2(10.0F * p.ui, 8.0F * p.ui);
 
 		// soft fill/border from base color
-		p.fill   = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.18F));
-		p.border = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, 0.35F));
+		p.fill   = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, colour::kElementPanelFillAlpha));
+		p.border = ImGui::GetColorU32(ImVec4(baseColor.x, baseColor.y, baseColor.z, colour::kElementPanelBorderAlpha));
 
 		// fixed rect from the current cursor (screen coords)
 		const ImVec2 topLeft = ImGui::GetCursorScreenPos();

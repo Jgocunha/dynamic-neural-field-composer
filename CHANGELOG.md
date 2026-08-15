@@ -10,6 +10,13 @@ All notable changes to this project will be documented in this file.
   Output pin, so a field's raw activation can be wired directly into another element's
   input instead of its sigmoided output.
 
+### Changed
+- Centralised the ~120 scattered GUI colour literals in `node_graph_window.h/.cpp`,
+  `element_window.cpp`, and `simulation_window.cpp` behind named, role-based constants in a
+  new `include/user_interface/colour_registry.h` (e.g. `kDestructiveText`,
+  `kAccentHoverDarken`), so the same semantic colour is no longer re-spelled at every call
+  site. Zero behaviour change — every colour renders byte-identical (#28).
+
 ### Fixed
 - `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or
   replacing the first, so `inputs` could hold two target entries that `updateInput()`
