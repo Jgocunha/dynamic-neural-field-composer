@@ -113,6 +113,18 @@ All notable changes to this project will be documented in this file.
   non-contiguous after deletion, so a bounds check on the highest uid alone doesn't rule
   out a stale id) — a possible uncaught exception mid-frame. Both paths now go through a
   non-throwing lookup helper.
+- Two packaging defects (#126): the exported target's `INSTALL_INTERFACE` include
+  directory was `include`, but headers install under `include/dnf_composer/` — a
+  `find_package(dynamic-neural-field-composer)` consumer's `#include` paths did not
+  resolve. The interface now points at `include/dnf_composer`, matching the install
+  destination. Separately, `PROJECT_DIR`/`OUTPUT_DIRECTORY` baked `CMAKE_SOURCE_DIR`
+  into every binary via `add_compile_definitions()` at the top of `CMakeLists.txt`,
+  even though only `tools::utils::getResourceRoot()`'s dev-build fallback and two test
+  files needed them. `PROJECT_DIR` is now `target_compile_definitions(... PRIVATE ...)`
+  on the library target only, gated behind a new `DNF_COMPOSER_DEV_FALLBACK_PATHS`
+  option (default `ON`, preserving current behavior); `OUTPUT_DIRECTORY` is replaced by
+  a new runtime `tools::utils::getOutputDirectory()` (`getResourceRoot() + "/data"`),
+  used by the two test files that referenced the old macro.
 ## [2.10.1] - 2026-08-06
 
 ### Fixed

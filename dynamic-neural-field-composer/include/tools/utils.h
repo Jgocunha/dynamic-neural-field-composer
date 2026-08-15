@@ -10,9 +10,48 @@
 
 namespace dnf_composer::tools::utils
 {
-	// Returns the runtime install prefix (parent of bin/).
-	// Falls back to the compile-time PROJECT_DIR in dev builds.
+	/// @brief Decide the resource root given the executable's directory and a
+	/// dev-build fallback value.
+	///
+	/// Returns the parent of @p exeDir when a `resources` subdirectory exists
+	/// there -- the layout `cmake --install` produces (`bin/` next to
+	/// `resources/`, see CMakeLists.txt's `install(DIRECTORY resources/ ...)`).
+	/// Otherwise returns @p devFallback unchanged: an uninstalled binary run
+	/// straight from the build tree has no `resources/` next to it, so it needs
+	/// some other way to find fonts, icons, and sample data during development.
+	///
+	/// This is the pure decision logic behind getResourceRoot(), pulled out so
+	/// it can be exercised against a real (temporary) filesystem layout in
+	/// tests instead of the actual running executable's path.
+	///
+	/// @param exeDir      Directory containing the executable.
+	/// @param devFallback Value to return when no `resources` dir is found next
+	///                    to @p exeDir. Pass an empty string when the project
+	///                    was configured with `DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF`
+	///                    (see CMakeLists.txt) so no build-machine path is used.
+	[[nodiscard]] std::string resolveResourceRoot(const std::filesystem::path& exeDir, const std::string& devFallback);
+
+	/// @brief Returns the runtime install prefix (parent of `bin/`) for locating
+	/// resources (fonts, icons, sample data) relative to the running executable.
+	///
+	/// Falls back to a compile-time source-tree path in dev builds (when
+	/// `resources/` is not found next to the executable, e.g. running directly
+	/// from the build tree rather than an installed layout) -- see
+	/// resolveResourceRoot() for the decision logic, and
+	/// `DNF_COMPOSER_DEV_FALLBACK_PATHS` in CMakeLists.txt for how to build
+	/// without that fallback embedded at all (#126).
 	std::string getResourceRoot();
+
+	/// @brief Returns the directory for simulation/recording output:
+	/// `getResourceRoot() + "/data"`.
+	///
+	/// Replaces the old `OUTPUT_DIRECTORY` compile-time macro, which baked
+	/// `CMAKE_SOURCE_DIR` into every binary regardless of whether it was ever
+	/// used (#126). This computes the equivalent path at runtime, relative to
+	/// the executable, the same way every other `getResourceRoot()`-based data
+	/// path in this codebase already does (e.g. Simulation::save()).
+	std::string getOutputDirectory();
+
 	int countNumOfLinesInFile(const std::string& filename);
 
 	bool saveVectorToFile(const std::vector<double>& vector, const std::string& filename);

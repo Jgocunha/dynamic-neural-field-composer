@@ -226,6 +226,15 @@ find_package(dynamic-neural-field-composer REQUIRED)
 target_link_libraries(your_target PRIVATE dynamic-neural-field-composer)
 ```
 
+The exported target's include path is `<prefix>/include/dnf_composer`, so `#include`
+headers the same way the library's own sources do -- without a `dnf_composer/` prefix,
+e.g.:
+
+```cpp
+#include "visualization/visualization.h"
+#include "elements/neural_field.h"
+```
+
 ---
 
 ## Running the tests
