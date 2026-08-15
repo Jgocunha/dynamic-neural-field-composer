@@ -319,30 +319,28 @@
 
 		void FieldCoupling::updateOutputField()
 		{
-			if (outputs.size() != 1)
+			// getOutputs() (not the raw outputs.size()) so a still-registered but
+			// already-destroyed entry -- possible now that outputs is non-owning
+			// (#168) -- isn't miscounted as a live connection.
+			const auto liveOutputs = getOutputs();
+			if (liveOutputs.size() != 1)
 			{
 				const std::string logMessage = std::format(
 					"Incorrect number of outputs for field coupling '{}'. Should be 1, is {}.",
-					commonParameters.identifiers.uniqueName, outputs.size());
+					commonParameters.identifiers.uniqueName, liveOutputs.size());
 				log(tools::logger::LogLevel::WARNING, logMessage);
+				output = {}; // Don't keep training against a stale prior output field.
 				return;
 			}
 
-			const auto outputElement = outputs.begin()->first.lock();
-			if (!outputElement)
-			{
-				// The registered output entry has already been destroyed. Treat it the
-				// same as "no output connected" -- checkValidConnections() picks this up
-				// on the next check via output.expired().
-				return;
-			}
-
+			const auto& outputElement = liveOutputs.front();
 			if (outputElement->getLabel() != ElementLabel::NEURAL_FIELD)
 			{
 				const std::string logMessage = std::format(
 					"Incorrect output type for field coupling '{}'. Should be a neural field, is {}.",
 					commonParameters.identifiers.uniqueName, ElementLabelToString.at(outputElement->getLabel()));
 				log(tools::logger::LogLevel::WARNING, logMessage);
+				output = {};
 				return;
 			}
 
