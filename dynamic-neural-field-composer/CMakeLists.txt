@@ -56,15 +56,19 @@ set(VCPKG_ROOT $ENV{VCPKG_ROOT})
 # Include VCPKG toolchain
 include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
-# Set the project directory
-set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
-# Pass the PROJECT_DIR as a preprocessor definition
-add_compile_definitions(PROJECT_DIR="${PROJECT_DIR}")
-
-# Set the desired data output directory
-set(OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/data")
-# Pass the OUTPUT_DIRECTORY as a preprocessor definition
-add_compile_definitions(OUTPUT_DIRECTORY="${OUTPUT_DIRECTORY}")
+# tools/utils.cpp's getResourceRoot() resolves resources (fonts, icons, sample
+# data) relative to the running executable's own location at RUNTIME, which is
+# what a properly `cmake --install`-ed binary needs (#126). It falls back to
+# this compile-time source-tree path only when no `resources/` directory is
+# found next to the executable -- e.g. running straight from the build tree,
+# which has no install step and therefore no resources/ copied next to the
+# binary. Disable this option for a release/packaging build so no
+# build-machine path is compiled in at all; do so only if you also arrange for
+# the binary to always run from a proper install layout (resources/ next to
+# bin/), since there is then no fallback if that assumption doesn't hold.
+option(DNF_COMPOSER_DEV_FALLBACK_PATHS
+       "Embed CMAKE_SOURCE_DIR as a fallback resource path for uninstalled (build-tree) binaries."
+       ON)
 
 # Set header files grouped by directories
 set(simulation_headers
@@ -265,6 +269,15 @@ set(src
 add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
 
+# PROJECT_DIR is used by exactly one translation unit (src/tools/utils.cpp,
+# see getResourceRoot()'s dev-build fallback) -- scoped PRIVATE to this target
+# rather than the old project-wide add_compile_definitions(), so it is not
+# needlessly recompiled into the launchers, examples, and tests, none of which
+# reference it. See the DNF_COMPOSER_DEV_FALLBACK_PATHS option above.
+if(DNF_COMPOSER_DEV_FALLBACK_PATHS)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE PROJECT_DIR="${CMAKE_SOURCE_DIR}")
+endif()
+
 # AVX2+FMA is scoped to ONE translation unit (src/tools/simd_dispatch_avx2.cpp),
 # not the whole library: every other file, and every dnf-composer executable,
 # compiles at the toolchain's default baseline. Whether the AVX2 kernel actually
@@ -287,8 +300,16 @@ set_source_files_properties(src/tools/simd_dispatch_avx2.cpp PROPERTIES
 )
 endif()
 target_include_directories(${CMAKE_PROJECT_NAME}
-    PUBLIC $<INSTALL_INTERFACE:include> 
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include 
+    # Headers install under include/dnf_composer/ (see the install(FILES ...)
+    # calls below and INCLUDES DESTINATION on install(TARGETS ...)), so the
+    # exported interface must point there too -- otherwise a find_package()
+    # consumer's include path (<prefix>/include) does not contain the
+    # <prefix>/include/dnf_composer/... headers it was promised (#126). This
+    # keeps the same #include spelling the repo's own umbrella headers and
+    # examples use (e.g. #include "visualization/visualization.h"): relative
+    # to <prefix>/include/dnf_composer, that path resolves correctly.
+    PUBLIC $<INSTALL_INTERFACE:include/dnf_composer>
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # Setup imgui

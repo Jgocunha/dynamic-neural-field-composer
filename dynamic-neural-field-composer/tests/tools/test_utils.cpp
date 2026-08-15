@@ -199,3 +199,47 @@ TEST(UtilsTest, FillMatrixWithRandomValuesModifiesMatrix)
             if (v != 0.0) { anyNonZero = true; break; }
     EXPECT_TRUE(anyNonZero);
 }
+
+// ---------------------------------------------------------------------------
+// resolveResourceRoot -- the decision logic behind getResourceRoot(), pulled
+// out into a pure function so it can be exercised against a real (but
+// temporary) filesystem layout instead of the actual running executable's
+// path. See getResourceRoot()'s doc comment for why a dev-build fallback
+// exists at all (#126): the build tree does not copy resources/ next to the
+// test binary the way `cmake --install` does, so an uninstalled binary must
+// fall back to something -- these tests pin exactly when that fallback is
+// used, and that the exe-relative path never contains it when it wasn't.
+// ---------------------------------------------------------------------------
+
+TEST_F(UtilsFileTest, ResolveResourceRootPrefersExeRelativeDirectoryWhenResourcesExists)
+{
+    const auto exeDir = fs::path(tempDir) / "bin";
+    fs::create_directories(exeDir);
+    fs::create_directories(fs::path(tempDir) / "resources");
+
+    const std::string devFallback = "C:/some/configure-time/source/tree";
+    const std::string root = resolveResourceRoot(exeDir, devFallback);
+
+    EXPECT_EQ(root, fs::weakly_canonical(tempDir).string());
+    EXPECT_NE(root, devFallback);
+}
+
+TEST_F(UtilsFileTest, ResolveResourceRootFallsBackWhenNoResourcesDirNextToExe)
+{
+    const auto exeDir = fs::path(tempDir) / "bin";
+    fs::create_directories(exeDir);
+    // Deliberately do not create a "resources" sibling directory.
+
+    const std::string devFallback = "C:/some/configure-time/source/tree";
+    EXPECT_EQ(resolveResourceRoot(exeDir, devFallback), devFallback);
+}
+
+TEST_F(UtilsFileTest, ResolveResourceRootFallbackCanBeEmpty)
+{
+    // A release build configured with DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF has
+    // no compile-time path to fall back to at all; the fallback is "", not a
+    // build-machine path, once no exe-relative resources dir is found.
+    const auto exeDir = fs::path(tempDir) / "bin";
+    fs::create_directories(exeDir);
+    EXPECT_EQ(resolveResourceRoot(exeDir, ""), "");
+}
