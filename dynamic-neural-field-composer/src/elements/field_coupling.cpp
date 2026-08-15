@@ -328,16 +328,25 @@
 				return;
 			}
 
-			if (outputs.begin()->first->getLabel() != ElementLabel::NEURAL_FIELD)
+			const auto outputElement = outputs.begin()->first.lock();
+			if (!outputElement)
+			{
+				// The registered output entry has already been destroyed. Treat it the
+				// same as "no output connected" -- checkValidConnections() picks this up
+				// on the next check via output.expired().
+				return;
+			}
+
+			if (outputElement->getLabel() != ElementLabel::NEURAL_FIELD)
 			{
 				const std::string logMessage = std::format(
 					"Incorrect output type for field coupling '{}'. Should be a neural field, is {}.",
-					commonParameters.identifiers.uniqueName, ElementLabelToString.at(outputs.begin()->first->getLabel()));
+					commonParameters.identifiers.uniqueName, ElementLabelToString.at(outputElement->getLabel()));
 				log(tools::logger::LogLevel::WARNING, logMessage);
 				return;
 			}
 
-			output = outputs.begin()->first;
+			output = outputElement;
 		}
 
 		void FieldCoupling::updateWeights()
@@ -368,8 +377,12 @@
 			case LearningRule::HEBB:
 			case LearningRule::OJA:
 			{
+				const auto outputElement = output.lock();
+				if (!outputElement) {
+					break; // Output field destroyed since checkValidConnections() last ran; skip this step's update.
+				}
 				std::vector<double> inputActivation = tools::math::normalize(input->getComponents()->at("activation"));
-				std::vector<double> outputActivation = tools::math::normalize(output->getComponents()->at("activation"));
+				std::vector<double> outputActivation = tools::math::normalize(outputElement->getComponents()->at("activation"));
 				if (parameters.learningRule == LearningRule::HEBB) {
 					tools::math::hebbLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
 				} else {
@@ -483,7 +496,7 @@
 				return false;
 			}
 
-			if (!output)
+			if (output.expired())
 			{
 				const std::string logMessage = std::format(
 					"Field coupling '{}' has no output field. Learning is disabled.", commonParameters.identifiers.uniqueName);
