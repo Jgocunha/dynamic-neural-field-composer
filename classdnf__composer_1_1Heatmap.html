@@ -99,6 +99,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adb8ffb45e7d0355ff6996080a66150ec" id="r_adb8ffb45e7d0355ff6996080a66150ec"><td class="memItemLeft" align="right" valign="top">std::pair&lt; double, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#adb8ffb45e7d0355ff6996080a66150ec">getScale</a> () const</td></tr>
 <tr class="separator:adb8ffb45e7d0355ff6996080a66150ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84b33a5a4a58cc91fbc2e1710f32e4ab" id="r_a84b33a5a4a58cc91fbc2e1710f32e4ab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#a84b33a5a4a58cc91fbc2e1710f32e4ab">Heatmap</a> (const <a class="el" href="structdnf__composer_1_1PlotCommonParameters.html">PlotCommonParameters</a> &amp;parameters={ <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a>, {0.0, 100.0, 0.0, 100.0, 1.0, 1.0}, <a class="el" href="structdnf__composer_1_1PlotAnnotations.html">PlotAnnotations</a>{&quot;Heatmap plot&quot;, &quot;Spatial dimension output&quot;, &quot;Spatial dimension input&quot;}}, <a class="el" href="structdnf__composer_1_1HeatmapParameters.html">HeatmapParameters</a> heatmapParameters=<a class="el" href="structdnf__composer_1_1HeatmapParameters.html">HeatmapParameters</a>())</td></tr>
+<tr class="memdesc:a84b33a5a4a58cc91fbc2e1710f32e4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a heatmap plot.  <br /></td></tr>
 <tr class="separator:a84b33a5a4a58cc91fbc2e1710f32e4ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a661868bf27974821247fb82cf6498ea8" id="r_a661868bf27974821247fb82cf6498ea8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#a661868bf27974821247fb82cf6498ea8">render</a> (const std::vector&lt; std::vector&lt; double &gt; * &gt; &amp;data, const std::vector&lt; std::string &gt; &amp;legends) override</td></tr>
 <tr class="memdesc:a661868bf27974821247fb82cf6498ea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render the plot using the provided data and legends.  <br /></td></tr>
@@ -176,6 +177,16 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Construct a heatmap plot. </p>
+<p>Unlike <a class="el" href="classdnf__composer_1_1LinePlot.html">LinePlot</a>, which throws <code>std::invalid_argument</code> when <code>parameters.type != <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66abdd402e16007eedd39f69adf0f10f88b">PlotType::LINE_PLOT</a></code>, <a class="el" href="classdnf__composer_1_1Heatmap.html">Heatmap</a> does not throw on a mismatched type. If <code>parameters.type != <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code>, the type is normalized to <code><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code> and a warning is logged (<code><a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda32006df00ffc389221671e52a11132a9">tools::logger::LogLevel::WARNING</a></code>) &ndash; throwing here would turn a working caller's program into a crash on upgrade, which this codebase treats as unacceptable. <code><a class="el" href="classdnf__composer_1_1Plot.html#a96e8a2ff44f8a7e388d97df4343f6b83">getType()</a></code> therefore always reports <code><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code> after construction, regardless of what was passed in (#143).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameters</td><td>Common plot parameters (type, dimensions, annotations). </td></tr>
+    <tr><td class="paramname">heatmapParameters</td><td>Heatmap-specific parameters (scale, dimension hints). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
