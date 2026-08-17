@@ -112,7 +112,16 @@ namespace dnf_composer
 		protected:
 			FieldCouplingParameters parameters;
 			std::shared_ptr<Element> input;
-			std::shared_ptr<Element> output;
+
+			/// Cached downstream element that reads this coupling's output, refreshed
+			/// from the (non-owning, #168) base `Element::outputs` in updateOutputField().
+			/// Deliberately a weak_ptr, not a shared_ptr: that downstream element already
+			/// owns this coupling via its own `inputs`, so a strong reference back would
+			/// form the same two-way ownership cycle #168 fixed at the `Element::outputs`
+			/// level, just re-created one class down. Lock before use and treat an
+			/// expired lock the same as "no output field connected".
+			std::weak_ptr<Element> output;
+
 			std::shared_ptr<Element> targetField; ///< DELTA rule's teaching signal; nullptr if unconnected.
 			std::string inputSourceComponent{ "output" }; ///< Component read from `input` ("output" or "activation").
 			std::string targetSourceComponent{ "output" }; ///< Component read from `targetField` ("output" or "activation").

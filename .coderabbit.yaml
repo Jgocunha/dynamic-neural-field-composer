@@ -11,7 +11,7 @@ reviews:
     This is **dynamic-neural-field-composer**, a C++20 library and GUI application implementing
     Dynamic Neural Fields. The GUI uses Dear ImGui with the imgui-platform-kit layer.
     vcpkg packages: imgui (docking-experimental, glfw/opengl3 bindings), implot,
-    imgui-node-editor, nlohmann-json, gtest, catch2.
+    imgui-node-editor, nlohmann-json, gtest.
 
     Review every PR for the following, posting inline comments on the relevant lines:
 
@@ -24,7 +24,7 @@ reviews:
 
     **Test coverage**
     - Changes to element behaviour, simulation logic, or utilities must have tests in
-      `dynamic-neural-field-composer/tests/` (Google Test target `dnf_composer_tests` or Catch2).
+      `dynamic-neural-field-composer/tests/` (Google Test target `dnf_composer_tests`).
     - Flag any new public functions or changed behaviour without corresponding tests.
 
     **Doxygen documentation**

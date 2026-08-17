@@ -85,6 +85,20 @@ namespace dnf_composer
 		/// instead of once per frame. -1 means "nothing reported yet".
 		int lastReportedClampedCols = -1;
 	public:
+		/// @brief Construct a heatmap plot.
+		///
+		/// Unlike LinePlot, which throws @c std::invalid_argument when
+		/// `parameters.type != PlotType::LINE_PLOT`, Heatmap does not throw on a
+		/// mismatched type. If `parameters.type != PlotType::HEATMAP`, the type is
+		/// normalized to @c PlotType::HEATMAP and a warning is logged
+		/// (`tools::logger::LogLevel::WARNING`) -- throwing here would turn a
+		/// working caller's program into a crash on upgrade, which this codebase
+		/// treats as unacceptable. @c getType() therefore always reports
+		/// @c PlotType::HEATMAP after construction, regardless of what was passed
+		/// in (#143).
+		///
+		/// @param parameters       Common plot parameters (type, dimensions, annotations).
+		/// @param heatmapParameters Heatmap-specific parameters (scale, dimension hints).
 		explicit Heatmap(const PlotCommonParameters& parameters =
 		                 { PlotType::HEATMAP,
 			                 {0.0, 100.0, 0.0, 100.0, 1.0, 1.0},
