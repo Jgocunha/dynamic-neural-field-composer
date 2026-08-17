@@ -1,9 +1,9 @@
 <map id="dnf_composer::element::Element::removeInput" name="dnf_composer::element::Element::removeInput">
-<area shape="rect" id="Node000001" title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into..." alt="" coords="304,69,480,109"/>
+<area shape="rect" id="Node000001" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme..." alt="" coords="304,69,480,109"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a388fed7e504ed30765199aeb5a21650c" title="Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions an..." alt="" coords="5,5,256,45"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="296,69,212,48,213,43,297,63"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into..." alt="" coords="26,69,235,109"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme..." alt="" coords="26,69,235,109"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="290,92,236,92,236,87,290,87"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" title=" " alt="" coords="26,133,235,173"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" title="Deregister the input element with uniqueId, and erase the matching outputs entry on that element (#16..." alt="" coords="26,133,235,173"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="297,115,213,136,212,131,296,110"/>
 </map>

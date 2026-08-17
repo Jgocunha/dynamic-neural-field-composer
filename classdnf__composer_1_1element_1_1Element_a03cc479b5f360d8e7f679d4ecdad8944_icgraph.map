@@ -1,12 +1,12 @@
 <map id="dnf_composer::element::Element::getUniqueName" name="dnf_composer::element::Element::getUniqueName">
 <area shape="rect" id="Node000001" title=" " alt="" coords="567,485,765,525"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" title="Register inputElement as an upstream source for this element." alt="" coords="323,5,499,45"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="323,5,499,45"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="661,472,654,389,645,335,632,278,613,219,589,161,557,107,517,59,498,46,501,41,520,55,561,104,593,158,618,217,637,276,650,334,659,388,666,471"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" title="Register inputElement as an upstream source for this element." alt="" coords="323,69,499,109"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="323,69,499,109"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="659,472,648,400,624,306,605,256,581,208,552,163,517,123,498,110,501,106,520,119,556,160,586,205,610,254,629,304,653,399,664,471"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" title="Register inputElement as an upstream source for this element." alt="" coords="323,133,499,173"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="323,133,499,173"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="656,472,641,411,615,334,596,294,574,255,548,219,517,187,498,175,501,170,520,183,552,216,579,252,601,292,620,332,646,410,661,471"/>
-<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element." alt="" coords="323,197,499,237"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="323,197,499,237"/>
 <area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="652,473,634,424,606,364,567,303,543,276,517,251,498,240,501,235,520,247,547,272,571,300,610,361,639,422,657,471"/>
 <area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1Collapse.html#aac1829e73a37f4021417c1d979ea86c1" title="Initialize the element (called once before the simulation loop)." alt="" coords="323,261,499,301"/>
 <area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="646,474,625,437,595,394,559,352,517,316,496,304,498,299,520,311,563,348,600,391,629,434,651,472"/>
@@ -22,9 +22,9 @@
 <area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="611,534,520,572,485,584,483,579,518,567,609,529"/>
 <area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#aed8043b5951aea5276d37e06b26f04a7" title="Load the weight matrix from a binary file in weightsDirectory." alt="" coords="308,645,515,685"/>
 <area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="639,538,587,588,555,613,520,636,494,648,492,643,517,631,552,609,584,584,636,534"/>
-<area shape="rect" id="Node000022" href="$classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into..." alt="" coords="323,709,499,749"/>
+<area shape="rect" id="Node000022" href="$classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme..." alt="" coords="323,709,499,749"/>
 <area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="651,539,629,576,600,619,563,663,520,700,498,712,496,707,517,695,559,659,595,616,625,573,646,536"/>
-<area shape="rect" id="Node000026" href="$classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72" title=" " alt="" coords="323,773,499,813"/>
+<area shape="rect" id="Node000026" href="$classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72" title="Deregister the input element with uniqueId, and erase the matching outputs entry on that element (#16..." alt="" coords="323,773,499,813"/>
 <area shape="poly" id="edge25_Node000001_Node000026" title=" " alt="" coords="657,539,639,589,610,649,571,711,547,739,520,763,501,776,498,771,517,759,543,735,567,707,606,647,634,587,652,537"/>
 <area shape="rect" id="Node000027" href="$classdnf__composer_1_1element_1_1Element.html#a5c10d5a2d969823d9ca113bf13b7e3b3" title="Deregister this element as an input of outputElementId." alt="" coords="318,837,505,877"/>
 <area shape="poly" id="edge26_Node000001_Node000027" title=" " alt="" coords="661,540,646,601,620,678,601,719,579,758,552,795,520,827,503,839,500,835,517,823,548,792,574,755,596,716,615,676,641,599,656,538"/>
@@ -52,8 +52,8 @@
 <area shape="poly" id="edge20_Node000020_Node000021" title=" " alt="" coords="294,679,246,684,245,678,294,674"/>
 <area shape="rect" id="Node000023" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a388fed7e504ed30765199aeb5a21650c" title="Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions an..." alt="" coords="5,736,256,776"/>
 <area shape="poly" id="edge22_Node000022_Node000023" title=" " alt="" coords="310,742,257,747,256,741,309,736"/>
-<area shape="rect" id="Node000024" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into..." alt="" coords="26,800,235,840"/>
+<area shape="rect" id="Node000024" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme..." alt="" coords="26,800,235,840"/>
 <area shape="poly" id="edge23_Node000022_Node000024" title=" " alt="" coords="324,756,305,764,281,777,257,790,222,803,220,797,255,786,279,773,303,759,322,751"/>
-<area shape="rect" id="Node000025" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" title=" " alt="" coords="26,864,235,904"/>
+<area shape="rect" id="Node000025" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" title="Deregister the input element with uniqueId, and erase the matching outputs entry on that element (#16..." alt="" coords="26,864,235,904"/>
 <area shape="poly" id="edge24_Node000022_Node000025" title=" " alt="" coords="313,758,306,763,289,785,283,808,276,831,258,854,237,867,234,862,254,850,271,829,278,806,284,783,302,759,310,754"/>
 </map>

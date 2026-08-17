@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into...">
+<g id="a_Node000001"><a xlink:title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme...">
 <polygon fill="#999999" stroke="#666666" points="356,-78 224,-78 224,-48 356,-48 356,-78"/>
 <text text-anchor="start" x="232" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="290" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::removeInput</text>
@@ -40,7 +40,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" target="_top" xlink:title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into...">
+<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" target="_top" xlink:title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme...">
 <polygon fill="white" stroke="#666666" points="172.5,-78 15.5,-78 15.5,-48 172.5,-48 172.5,-78"/>
 <text text-anchor="start" x="23.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="94" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCoupling::removeInput</text>
@@ -59,7 +59,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" target="_top" xlink:title="Deregister the input element with uniqueId, and erase the matching outputs entry on that element (#16...">
 <polygon fill="white" stroke="#666666" points="172.5,-30 15.5,-30 15.5,0 172.5,0 172.5,-30"/>
 <text text-anchor="start" x="23.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="94" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCoupling::removeInput</text>

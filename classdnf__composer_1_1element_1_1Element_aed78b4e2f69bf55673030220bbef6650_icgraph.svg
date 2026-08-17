@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000001"><a xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="#999999" stroke="#666666" points="305,-126 173,-126 173,-96 305,-96 305,-126"/>
 <text text-anchor="start" x="181" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="239" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::addInput</text>
@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="134.5,-222 2.5,-222 2.5,-192 134.5,-192 134.5,-222"/>
 <text text-anchor="start" x="10.5" y="-210" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="68.5" y="-199" font-family="Helvetica,sans-Serif" font-size="10.00">::Collapse::addInput</text>
@@ -40,7 +40,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="134.5,-174 2.5,-174 2.5,-144 134.5,-144 134.5,-174"/>
 <text text-anchor="start" x="10.5" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="68.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">::Expand::addInput</text>
@@ -78,7 +78,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="134.5,-78 2.5,-78 2.5,-48 134.5,-48 134.5,-78"/>
 <text text-anchor="start" x="10.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="68.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::Resize::addInput</text>
@@ -97,7 +97,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="134.5,-30 2.5,-30 2.5,0 134.5,0 134.5,-30"/>
 <text text-anchor="start" x="10.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="68.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Resize2D::addInput</text>

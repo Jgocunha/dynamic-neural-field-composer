@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="Resize the output field dimensions and rebuild the weight matrix. Preserves input field dimensions an..." alt="" coords="5,37,256,77"/>
 <area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a5877186a9f20ab2329297690c57d16da" title="Initialize the element (called once before the simulation loop)." alt="" coords="304,5,480,45"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="256,39,290,35,291,40,256,45"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into..." alt="" coords="304,69,480,109"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme..." alt="" coords="304,69,480,109"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,70,291,74,290,80,256,75"/>
 <area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Element.html#a03cc479b5f360d8e7f679d4ecdad8944" title=" " alt="" coords="528,69,727,109"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="481,87,514,87,514,92,481,92"/>

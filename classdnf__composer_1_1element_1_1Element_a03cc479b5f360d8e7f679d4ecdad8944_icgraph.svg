@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="370.5,-750 238.5,-750 238.5,-720 370.5,-720 370.5,-750"/>
 <text text-anchor="start" x="246.5" y="-738" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="304.5" y="-727" font-family="Helvetica,sans-Serif" font-size="10.00">::Collapse::addInput</text>
@@ -40,7 +40,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="370.5,-702 238.5,-702 238.5,-672 370.5,-672 370.5,-702"/>
 <text text-anchor="start" x="246.5" y="-690" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="304.5" y="-679" font-family="Helvetica,sans-Serif" font-size="10.00">::Expand::addInput</text>
@@ -59,7 +59,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="370.5,-654 238.5,-654 238.5,-624 370.5,-624 370.5,-654"/>
 <text text-anchor="start" x="246.5" y="-642" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="304.5" y="-631" font-family="Helvetica,sans-Serif" font-size="10.00">::Resize::addInput</text>
@@ -78,7 +78,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" target="_top" xlink:title="Register inputElement as an upstream source for this element.">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" target="_top" xlink:title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">
 <polygon fill="white" stroke="#666666" points="370.5,-606 238.5,-606 238.5,-576 370.5,-576 370.5,-606"/>
 <text text-anchor="start" x="246.5" y="-594" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="304.5" y="-583" font-family="Helvetica,sans-Serif" font-size="10.00">::Resize2D::addInput</text>
@@ -230,7 +230,7 @@
 <!-- Node22 -->
 <g id="Node000022" class="node">
 <title>Node22</title>
-<g id="a_Node000022"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" target="_top" xlink:title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into...">
+<g id="a_Node000022"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" target="_top" xlink:title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme...">
 <polygon fill="white" stroke="#666666" points="370.5,-222 238.5,-222 238.5,-192 370.5,-192 370.5,-222"/>
 <text text-anchor="start" x="246.5" y="-210" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="304.5" y="-199" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::removeInput</text>
@@ -249,7 +249,7 @@
 <!-- Node26 -->
 <g id="Node000026" class="node">
 <title>Node26</title>
-<g id="a_Node000026"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72" target="_top" xlink:title=" ">
+<g id="a_Node000026"><a xlink:href="classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72" target="_top" xlink:title="Deregister the input element with uniqueId, and erase the matching outputs entry on that element (#16...">
 <polygon fill="white" stroke="#666666" points="370.5,-174 238.5,-174 238.5,-144 370.5,-144 370.5,-174"/>
 <text text-anchor="start" x="246.5" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="304.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">::Element::removeInput</text>
@@ -517,7 +517,7 @@
 <!-- Node24 -->
 <g id="Node000024" class="node">
 <title>Node24</title>
-<g id="a_Node000024"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" target="_top" xlink:title="Deregister the input element named inputElementId. Virtual so a subclass that routes some inputs into...">
+<g id="a_Node000024"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704" target="_top" xlink:title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme...">
 <polygon fill="white" stroke="#666666" points="172.5,-154 15.5,-154 15.5,-124 172.5,-124 172.5,-154"/>
 <text text-anchor="start" x="23.5" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="94" y="-131" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCoupling::removeInput</text>
@@ -536,7 +536,7 @@
 <!-- Node25 -->
 <g id="Node000025" class="node">
 <title>Node25</title>
-<g id="a_Node000025"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" target="_top" xlink:title=" ">
+<g id="a_Node000025"><a xlink:href="classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065" target="_top" xlink:title="Deregister the input element with uniqueId, and erase the matching outputs entry on that element (#16...">
 <polygon fill="white" stroke="#666666" points="172.5,-106 15.5,-106 15.5,-76 172.5,-76 172.5,-106"/>
 <text text-anchor="start" x="23.5" y="-94" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::element</text>
 <text text-anchor="middle" x="94" y="-83" font-family="Helvetica,sans-Serif" font-size="10.00">::FieldCoupling::removeInput</text>

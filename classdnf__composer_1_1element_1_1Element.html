@@ -96,13 +96,13 @@ Inheritance diagram for dnf_composer::element::Element:</div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::Element:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__coll__graph.svg" width="638" height="1568"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Element__coll__graph.svg" width="888" height="1612"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aed78b4e2f69bf55673030220bbef6650" id="r_aed78b4e2f69bf55673030220bbef6650"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650">addInput</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &amp;inputElement, const std::string &amp;inputComponent=&quot;output&quot;)</td></tr>
-<tr class="memdesc:aed78b4e2f69bf55673030220bbef6650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element.  <br /></td></tr>
+<tr class="memdesc:aed78b4e2f69bf55673030220bbef6650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element. Wires both directions of the bookkeeping: this element strongly owns <code>inputElement</code> via <code>inputs</code>, and <code>inputElement</code> records this element as an observer via its non-owning <code>outputs</code> (#168).  <br /></td></tr>
 <tr class="separator:aed78b4e2f69bf55673030220bbef6650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48e4fcaeda8316d79dfaa8de41cec87e" id="r_a48e4fcaeda8316d79dfaa8de41cec87e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a48e4fcaeda8316d79dfaa8de41cec87e">buildInputCache</a> ()</td></tr>
 <tr class="memdesc:a48e4fcaeda8316d79dfaa8de41cec87e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache raw pointers to input component data. Call after all element <a class="el" href="classdnf__composer_1_1element_1_1Element.html#af09ce7373b714e18c46783bacf4add15" title="Initialize the element (called once before the simulation loop).">init()</a>s complete. Virtual so a subclass whose <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a87401af54d46e1cf99d2755d3fce0a9a" title="Pull data from all registered input elements into this element&#39;s components. Virtual so a subclass ca...">updateInput()</a> override doesn't use this cache (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>, which reads <code>inputs</code> directly every call) can make it a no-op &ndash; the base implementation assumes every entry in <code>inputs</code> names a component that exists on the source, which "target" deliberately does not.  <br /></td></tr>
@@ -142,6 +142,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2982501622d89acb575cbcab2c72ef16" id="r_a2982501622d89acb575cbcab2c72ef16"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a2982501622d89acb575cbcab2c72ef16">getMaxSpatialDimension</a> () const</td></tr>
 <tr class="separator:a2982501622d89acb575cbcab2c72ef16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa417ff3bc6bf14814c20e3768e007aec" id="r_aa417ff3bc6bf14814c20e3768e007aec"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aa417ff3bc6bf14814c20e3768e007aec">getOutputs</a> ()</td></tr>
+<tr class="memdesc:aa417ff3bc6bf14814c20e3768e007aec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the currently live downstream elements. Each <code>outputs</code> entry is a weak_ptr; an entry whose element has been destroyed (without going through <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme...">removeInput()</a>/removeInputs()) is skipped rather than surfaced as a null pointer (#168).  <br /></td></tr>
 <tr class="separator:aa417ff3bc6bf14814c20e3768e007aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec11c7cefd3515674ae7f034cbfad9fa" id="r_aec11c7cefd3515674ae7f034cbfad9fa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aec11c7cefd3515674ae7f034cbfad9fa">getSize</a> () const</td></tr>
 <tr class="memdesc:aec11c7cefd3515674ae7f034cbfad9fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of spatial samples (size = round(x_max / d_x)).  <br /></td></tr>
@@ -160,8 +161,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0c0da01c938ee779de15aa65b3c52fa4" id="r_a0c0da01c938ee779de15aa65b3c52fa4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a0c0da01c938ee779de15aa65b3c52fa4">hasInput</a> (int inputElementId, const std::string &amp;inputComponent)</td></tr>
 <tr class="separator:a0c0da01c938ee779de15aa65b3c52fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a28c8356064ab80b1102d94e1b6b7e0" id="r_a5a28c8356064ab80b1102d94e1b6b7e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a5a28c8356064ab80b1102d94e1b6b7e0">hasOutput</a> () const</td></tr>
+<tr class="memdesc:a5a28c8356064ab80b1102d94e1b6b7e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if at least one registered <code>outputs</code> entry still points to a live element (#168).  <br /></td></tr>
 <tr class="separator:a5a28c8356064ab80b1102d94e1b6b7e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0dd6c255ece7616420de02ec1d7c8c2f" id="r_a0dd6c255ece7616420de02ec1d7c8c2f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a0dd6c255ece7616420de02ec1d7c8c2f">hasOutput</a> (const std::string &amp;outputElementName, const std::string &amp;outputComponent)</td></tr>
+<tr class="memdesc:a0dd6c255ece7616420de02ec1d7c8c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if a live (not-yet-destroyed) downstream element named <code>outputElementName</code> exposes <code>outputComponent</code> (#168).  <br /></td></tr>
 <tr class="separator:a0dd6c255ece7616420de02ec1d7c8c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4f020af07953255d59f54b1a1a0c41f" id="r_ad4f020af07953255d59f54b1a1a0c41f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#ad4f020af07953255d59f54b1a1a0c41f">hasOutput</a> (int outputElementId, const std::string &amp;outputComponent)</td></tr>
 <tr class="separator:ad4f020af07953255d59f54b1a1a0c41f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,9 +176,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a006295ce616dea39b7ec7cabd573ca73" id="r_a006295ce616dea39b7ec7cabd573ca73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a006295ce616dea39b7ec7cabd573ca73">print</a> () const</td></tr>
 <tr class="separator:a006295ce616dea39b7ec7cabd573ca73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7508a9a8d72df33b553d7a75e5138d37" id="r_a7508a9a8d72df33b553d7a75e5138d37"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37">removeInput</a> (const std::string &amp;inputElementId)</td></tr>
-<tr class="memdesc:a7508a9a8d72df33b553d7a75e5138d37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deregister the input element named <code>inputElementId</code>. Virtual so a subclass that routes some inputs into an additional buffer (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>'s "target") can clear that buffer too.  <br /></td></tr>
+<tr class="memdesc:a7508a9a8d72df33b553d7a75e5138d37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deregister the input element named <code>inputElementId</code>, and erase the matching <code>outputs</code> entry on that element so the two sides of the connection stay symmetric (#168). Virtual so a subclass that routes some inputs into an additional buffer (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>'s "target") can clear that buffer too.  <br /></td></tr>
 <tr class="separator:a7508a9a8d72df33b553d7a75e5138d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5df41b16d087981d9d4f93a504648f72" id="r_a5df41b16d087981d9d4f93a504648f72"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#a5df41b16d087981d9d4f93a504648f72">removeInput</a> (int uniqueId)</td></tr>
+<tr class="memdesc:a5df41b16d087981d9d4f93a504648f72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deregister the input element with <code>uniqueId</code>, and erase the matching <code>outputs</code> entry on that element (#168).  <br /></td></tr>
 <tr class="separator:a5df41b16d087981d9d4f93a504648f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeac5c33e5670c5bf0c162f3b1ec290e4" id="r_aeac5c33e5670c5bf0c162f3b1ec290e4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs</a> ()</td></tr>
 <tr class="separator:aeac5c33e5670c5bf0c162f3b1ec290e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,15 +219,13 @@ Protected Attributes</h2></td></tr>
 <tr class="memdesc:a529da70219d7497c61b328c2b9af5a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Named data arrays (e.g. "output").  <br /></td></tr>
 <tr class="separator:a529da70219d7497c61b328c2b9af5a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb95bf073a57eac4357c7f0a50576f46" id="r_adb95bf073a57eac4357c7f0a50576f46"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt;, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#adb95bf073a57eac4357c7f0a50576f46">inputs</a></td></tr>
-<tr class="memdesc:adb95bf073a57eac4357c7f0a50576f46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upstream elements and the component they expose.  <br /></td></tr>
 <tr class="separator:adb95bf073a57eac4357c7f0a50576f46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affdd0e9a5d8ddc500f668b108b31fddf" id="r_affdd0e9a5d8ddc500f668b108b31fddf"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt;, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#affdd0e9a5d8ddc500f668b108b31fddf">outputs</a></td></tr>
-<tr class="memdesc:affdd0e9a5d8ddc500f668b108b31fddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Downstream elements that read this element's output.  <br /></td></tr>
-<tr class="separator:affdd0e9a5d8ddc500f668b108b31fddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab40b9458dc9e86903a3567a9f2ecedbc" id="r_ab40b9458dc9e86903a3567a9f2ecedbc"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::weak_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt;, std::string, std::owner_less&lt; std::weak_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Element.html#ab40b9458dc9e86903a3567a9f2ecedbc">outputs</a></td></tr>
+<tr class="separator:ab40b9458dc9e86903a3567a9f2ecedbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract base class for all simulation elements. </p>
-<p>Every element owns a set of named data components (e.g. "activation", "output"), a list of input elements, and a list of output elements. Concrete subclasses implement the <code>init</code> / <code>step</code> lifecycle and exchange data via <code><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element.">addInput()</a></code>. </p>
+<p>Every element owns a set of named data components (e.g. "activation", "output"), a list of input elements, and a list of output elements. Concrete subclasses implement the <code>init</code> / <code>step</code> lifecycle and exchange data via <code><a class="el" href="classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">addInput()</a></code>. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7b6bb1265bb1229b5ae34765008e9f4d" name="a7b6bb1265bb1229b5ae34765008e9f4d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7b6bb1265bb1229b5ae34765008e9f4d">&#9670;&#160;</a></span>Element() <span class="overload">[1/2]</span></h2>
@@ -345,7 +347,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Register <code>inputElement</code> as an upstream source for this element. </p>
+<p>Register <code>inputElement</code> as an upstream source for this element. Wires both directions of the bookkeeping: this element strongly owns <code>inputElement</code> via <code>inputs</code>, and <code>inputElement</code> records this element as an observer via its non-owning <code>outputs</code> (#168). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">inputElement</td><td>The element whose output will be read. </td></tr>
@@ -663,6 +665,8 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Return the currently live downstream elements. Each <code>outputs</code> entry is a weak_ptr; an entry whose element has been destroyed (without going through <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme...">removeInput()</a>/removeInputs()) is skipped rather than surfaced as a null pointer (#168). </p>
+
 </div>
 </div>
 <a id="aec11c7cefd3515674ae7f034cbfad9fa" name="aec11c7cefd3515674ae7f034cbfad9fa"></a>
@@ -830,6 +834,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>True if at least one registered <code>outputs</code> entry still points to a live element (#168). </p>
+
 </div>
 </div>
 <a id="a0dd6c255ece7616420de02ec1d7c8c2f" name="a0dd6c255ece7616420de02ec1d7c8c2f"></a>
@@ -857,6 +863,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>True if a live (not-yet-destroyed) downstream element named <code>outputElementName</code> exposes <code>outputComponent</code> (#168). </p>
 
 </div>
 </div>
@@ -1018,7 +1026,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Deregister the input element named <code>inputElementId</code>. Virtual so a subclass that routes some inputs into an additional buffer (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>'s "target") can clear that buffer too. </p>
+<p>Deregister the input element named <code>inputElementId</code>, and erase the matching <code>outputs</code> entry on that element so the two sides of the connection stay symmetric (#168). Virtual so a subclass that routes some inputs into an additional buffer (e.g. <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a>'s "target") can clear that buffer too. </p>
 
 <p>Reimplemented in <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#ab103ff10139ceaa8b9e3242c9b4ba704">dnf_composer::element::FieldCoupling</a>.</p>
 <div class="dynheader">
@@ -1057,6 +1065,8 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Deregister the input element with <code>uniqueId</code>, and erase the matching <code>outputs</code> entry on that element (#168). </p>
 
 <p>Reimplemented in <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a442b92fb2ff2021a693b01ad0cc95065">dnf_composer::element::FieldCoupling</a>.</p>
 <div class="dynheader">
@@ -1373,13 +1383,12 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Upstream elements and the component they expose. </p>
+<p>Upstream elements and the component they expose. Owning: an element depends on its inputs staying alive for as long as it does, so it holds a strong shared_ptr to each of them. </p>
 
 </div>
 </div>
-<a id="affdd0e9a5d8ddc500f668b108b31fddf" name="affdd0e9a5d8ddc500f668b108b31fddf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#affdd0e9a5d8ddc500f668b108b31fddf">&#9670;&#160;</a></span>outputs</h2>
+<a id="ab40b9458dc9e86903a3567a9f2ecedbc" name="ab40b9458dc9e86903a3567a9f2ecedbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab40b9458dc9e86903a3567a9f2ecedbc">&#9670;&#160;</a></span>outputs</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1388,7 +1397,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;std::shared_ptr&lt;<a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a>&gt;, std::string&gt; dnf_composer::element::Element::outputs</td>
+          <td class="memname">std::map&lt;std::weak_ptr&lt;<a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a>&gt;, std::string, std::owner_less&lt;std::weak_ptr&lt;<a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a>&gt; &gt; &gt; dnf_composer::element::Element::outputs</td>
         </tr>
       </table>
   </td>
@@ -1397,8 +1406,8 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Downstream elements that read this element's output. </p>
+<p>Downstream elements that read this element's output, and the component name they were registered under. Non-owning by design (#168): the downstream element already keeps <em>this</em> alive via its own <code>inputs</code> entry, so a strong reference here would form a two-way ownership cycle and neither element would ever be freed. A weak_ptr key, compared by std::owner_less (weak_ptr has no default hash/equality), lets this map observe a connection without owning it. A locked entry may be null if the downstream element has since been destroyed through any path other than <a class="el" href="classdnf__composer_1_1element_1_1Element.html#a7508a9a8d72df33b553d7a75e5138d37" title="Deregister the input element named inputElementId, and erase the matching outputs entry on that eleme...">removeInput()</a>/removeInputs() &ndash; callers must treat that as "not
+connected", never dereference it. </p>
 
 </div>
 </div>
