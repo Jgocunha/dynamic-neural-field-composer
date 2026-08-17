@@ -276,6 +276,38 @@ TEST(FieldCouplingTest, AddInputAtRuntimeDoesNotDisableLearning)
     EXPECT_TRUE(fc->getParameters().isLearningActive);
 }
 
+// Regression for #168 code review: updateOutputField() must count *live* outputs,
+// not raw outputs.size(). A downstream element destroyed without ever calling
+// removeInput()/removeInputs() leaves a still-registered but expired weak_ptr entry
+// in outputs (outputs is non-owning as of #168). Before this fix, outputs.size()
+// counted that stale entry anyway, so a coupling with exactly one live output
+// connection plus one already-destroyed one was misreported as "2 outputs", output
+// was never refreshed, and learning was silently disabled.
+TEST(FieldCouplingTest, UpdateOutputFieldCountsOnlyLiveOutputs)
+{
+    const auto inputField      = makeField("live-count-in");
+    const auto fc              = makeFC("live-count-fc", 100, 100);
+    const auto liveOutputField = makeField("live-count-out");
+
+    liveOutputField->addInput(fc);
+    {
+        const auto transientOutputField = makeField("live-count-transient");
+        transientOutputField->addInput(fc);
+        // transientOutputField destroyed here without removeInput()/removeInputs():
+        // fc->outputs still has 2 entries, one now expired.
+    }
+
+    inputField->init();
+    fc->init();
+    liveOutputField->init();
+
+    fc->addInput(inputField);
+    fc->setLearning(true);
+    fc->step(0.0, 0.1);
+
+    EXPECT_TRUE(fc->getParameters().isLearningActive);
+}
+
 // ---------------------------------------------------------------------------
 // DELTA learning rule — supervised Widrow-Hoff. updateWeights() reads:
 //   pre    = fc->input's "output" (g(u_in)), or whichever component the

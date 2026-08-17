@@ -136,6 +136,13 @@ namespace dnf_composer
 	Heatmap::Heatmap(const PlotCommonParameters& parameters, HeatmapParameters  heatmapParameters)
 		: Plot(parameters), heatmapParameters(std::move(heatmapParameters))
 	{
+		if (parameters.type != PlotType::HEATMAP)
+		{
+			log(tools::logger::LogLevel::WARNING,
+				"Heatmap: parameters.type was not PlotType::HEATMAP; normalizing so getType() "
+				"reports PlotType::HEATMAP instead of the mismatched value it was constructed with.");
+			commonParameters.type = PlotType::HEATMAP;
+		}
 	}
 
 	void Heatmap::setScale(double min, double max)

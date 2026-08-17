@@ -18,7 +18,7 @@ chmod +x scripts/setup.sh
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `$HOME/vcpkg`, bootstraps it, and prints the line to add to your shell profile to persist the variable
 2. Auto-detects your OS and CPU architecture to select the correct vcpkg triplet (`x64-linux`, `x64-osx`, or `arm64-osx`)
-3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
+3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`
 4. Clones `imgui-platform-kit` into `deps/imgui-platform-kit/` (skipped if already present)
 5. Builds and installs `imgui-platform-kit` into `deps/ipk-install/` (skipped if already present)
 
@@ -32,7 +32,7 @@ scripts\setup.bat
 
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `C:\tools\vcpkg`, bootstraps it, and persists `VCPKG_ROOT` permanently via `setx`
-2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
+2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`
 3. Clones `imgui-platform-kit` into `deps\imgui-platform-kit\` (skipped if already present)
 4. Builds and installs `imgui-platform-kit` into `deps\ipk-install\` (skipped if already present)
 

@@ -195,6 +195,16 @@ auto outputs   = elementA->getOutputs();
 
 Each `step()` call accumulates all registered input components into the element's `"input"` buffer before computing its own dynamics.
 
+**Ownership:** an element's `inputs` strongly own the elements it reads from (a `shared_ptr`
+each) — it depends on them staying alive. The reverse `outputs` bookkeeping is deliberately
+non-owning (`std::weak_ptr`): a downstream element already keeps its sources alive via its own
+`inputs`, so an owning reference the other way would form a two-way cycle and neither element
+would ever be freed. This means `getOutputs()` only returns the *currently live* downstream
+elements — one destroyed by any means other than `removeInput()`/`removeInputs()` (e.g. its
+last external `shared_ptr` simply went out of scope) is silently skipped rather than surfaced
+as a dangling or null pointer, and `hasOutput()`/`hasOutput(name, component)` follow the same
+rule.
+
 ---
 
 ## Querying element properties

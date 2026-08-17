@@ -319,25 +319,32 @@
 
 		void FieldCoupling::updateOutputField()
 		{
-			if (outputs.size() != 1)
+			// getOutputs() (not the raw outputs.size()) so a still-registered but
+			// already-destroyed entry -- possible now that outputs is non-owning
+			// (#168) -- isn't miscounted as a live connection.
+			const auto liveOutputs = getOutputs();
+			if (liveOutputs.size() != 1)
 			{
 				const std::string logMessage = std::format(
 					"Incorrect number of outputs for field coupling '{}'. Should be 1, is {}.",
-					commonParameters.identifiers.uniqueName, outputs.size());
+					commonParameters.identifiers.uniqueName, liveOutputs.size());
 				log(tools::logger::LogLevel::WARNING, logMessage);
+				output = {}; // Don't keep training against a stale prior output field.
 				return;
 			}
 
-			if (outputs.begin()->first->getLabel() != ElementLabel::NEURAL_FIELD)
+			const auto& outputElement = liveOutputs.front();
+			if (outputElement->getLabel() != ElementLabel::NEURAL_FIELD)
 			{
 				const std::string logMessage = std::format(
 					"Incorrect output type for field coupling '{}'. Should be a neural field, is {}.",
-					commonParameters.identifiers.uniqueName, ElementLabelToString.at(outputs.begin()->first->getLabel()));
+					commonParameters.identifiers.uniqueName, ElementLabelToString.at(outputElement->getLabel()));
 				log(tools::logger::LogLevel::WARNING, logMessage);
+				output = {};
 				return;
 			}
 
-			output = outputs.begin()->first;
+			output = outputElement;
 		}
 
 		void FieldCoupling::updateWeights()
@@ -368,8 +375,12 @@
 			case LearningRule::HEBB:
 			case LearningRule::OJA:
 			{
+				const auto outputElement = output.lock();
+				if (!outputElement) {
+					break; // Output field destroyed since checkValidConnections() last ran; skip this step's update.
+				}
 				std::vector<double> inputActivation = tools::math::normalize(input->getComponents()->at("activation"));
-				std::vector<double> outputActivation = tools::math::normalize(output->getComponents()->at("activation"));
+				std::vector<double> outputActivation = tools::math::normalize(outputElement->getComponents()->at("activation"));
 				if (parameters.learningRule == LearningRule::HEBB) {
 					tools::math::hebbLearningRule(components["weights"], inputActivation, outputActivation, parameters.learningRate);
 				} else {
@@ -483,7 +494,7 @@
 				return false;
 			}
 
-			if (!output)
+			if (output.expired())
 			{
 				const std::string logMessage = std::format(
 					"Field coupling '{}' has no output field. Learning is disabled.", commonParameters.identifiers.uniqueName);

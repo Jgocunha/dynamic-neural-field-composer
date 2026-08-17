@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <memory>
 #include <ranges>
 #include <algorithm>
@@ -29,8 +30,23 @@ namespace dnf_composer::element
 	protected:
 		ElementCommonParameters commonParameters;                            ///< Name, label, and spatial dimensions.
 		std::unordered_map<std::string, std::vector<double>> components;    ///< Named data arrays (e.g. "output").
-		std::unordered_map<std::shared_ptr<Element>, std::string> inputs;   ///< Upstream elements and the component they expose.
-		std::unordered_map<std::shared_ptr<Element>, std::string> outputs;  ///< Downstream elements that read this element's output.
+
+		/// Upstream elements and the component they expose. Owning: an element
+		/// depends on its inputs staying alive for as long as it does, so it holds
+		/// a strong shared_ptr to each of them.
+		std::unordered_map<std::shared_ptr<Element>, std::string> inputs;
+
+		/// Downstream elements that read this element's output, and the component
+		/// name they were registered under. Non-owning by design (#168): the
+		/// downstream element already keeps *this* alive via its own `inputs`
+		/// entry, so a strong reference here would form a two-way ownership cycle
+		/// and neither element would ever be freed. A weak_ptr key, compared by
+		/// std::owner_less (weak_ptr has no default hash/equality), lets this map
+		/// observe a connection without owning it. A locked entry may be null if
+		/// the downstream element has since been destroyed through any path other
+		/// than removeInput()/removeInputs() -- callers must treat that as "not
+		/// connected", never dereference it.
+		std::map<std::weak_ptr<Element>, std::string, std::owner_less<std::weak_ptr<Element>>> outputs;
 	private:
 		// Caches a pointer to each connected input's *vector object* (not a raw
 		// data() snapshot). A std::vector stored as an unordered_map value keeps its
@@ -51,6 +67,13 @@ namespace dnf_composer::element
 		///        updateInput() to route sources into additional buffers (e.g.
 		///        FieldCoupling's "target") must not rely on this to guard them.
 		void severIncompatibleInputs();
+
+		/// @brief Erase any `outputs` entry whose downstream element has already
+		///        been destroyed. Called opportunistically by the methods that
+		///        walk `outputs`, so the map doesn't accumulate expired weak_ptr
+		///        bookkeeping entries for elements destroyed without going through
+		///        removeInput()/removeInputs().
+		void pruneExpiredOutputs();
 	protected:
 		/// @brief Force the next updateInput() to rebuild its source cache from
 		/// scratch. Call after directly reallocating a component that the cache
@@ -100,15 +123,23 @@ namespace dnf_composer::element
 		void print() const;
 
 		/// @brief Register @p inputElement as an upstream source for this element.
+		/// Wires both directions of the bookkeeping: this element strongly owns
+		/// @p inputElement via `inputs`, and @p inputElement records this element
+		/// as an observer via its non-owning `outputs` (#168).
 		/// @param inputElement    The element whose output will be read.
 		/// @param inputComponent  Which component of @p inputElement to read (default: "output").
 		virtual void addInput(const std::shared_ptr<Element>& inputElement,
 		                      const std::string& inputComponent = "output");
 
-		/// @brief Deregister the input element named @p inputElementId.
+		/// @brief Deregister the input element named @p inputElementId, and erase
+		///        the matching `outputs` entry on that element so the two sides of
+		///        the connection stay symmetric (#168).
 		/// Virtual so a subclass that routes some inputs into an additional
 		/// buffer (e.g. FieldCoupling's "target") can clear that buffer too.
 		virtual void removeInput(const std::string& inputElementId);
+
+		/// @brief Deregister the input element with @p uniqueId, and erase the
+		///        matching `outputs` entry on that element (#168).
 		virtual void removeInput(int uniqueId);
 		virtual void removeInputs();
 		bool hasInput(const std::string& inputElementName, const std::string& inputComponent);
@@ -134,6 +165,9 @@ namespace dnf_composer::element
 		void removeOutput(int uniqueId);
 
 		void removeOutputs();
+
+		/// @brief True if a live (not-yet-destroyed) downstream element named
+		///        @p outputElementName exposes @p outputComponent (#168).
 		bool hasOutput(const std::string& outputElementName, const std::string& outputComponent);
 		bool hasOutput(int outputElementId, const std::string& outputComponent);
 
@@ -150,6 +184,9 @@ namespace dnf_composer::element
 		std::string getUniqueName() const;
 		void setUniqueName(const std::string& name);
 		ElementLabel getLabel() const;
+
+		/// @brief True if at least one registered `outputs` entry still points to
+		///        a live element (#168).
 		bool hasOutput() const;
 		bool hasInput() const;
 
@@ -168,6 +205,10 @@ namespace dnf_composer::element
 		/// @brief Return all inputs mapped to the component name they expose.
 		std::unordered_map<std::shared_ptr<Element>, std::string> getInputsAndComponents();
 
+		/// @brief Return the currently live downstream elements. Each `outputs`
+		///        entry is a weak_ptr; an entry whose element has been destroyed
+		///        (without going through removeInput()/removeInputs()) is skipped
+		///        rather than surfaced as a null pointer (#168).
 		std::vector<std::shared_ptr<Element>> getOutputs();
 	};
 }
