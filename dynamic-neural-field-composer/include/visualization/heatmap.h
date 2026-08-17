@@ -90,7 +90,7 @@ namespace dnf_composer
 		/// Unlike LinePlot, which throws @c std::invalid_argument when
 		/// `parameters.type != PlotType::LINE_PLOT`, Heatmap does not throw on a
 		/// mismatched type. If `parameters.type != PlotType::HEATMAP`, the type is
-		/// silently normalized to @c PlotType::HEATMAP and a warning is logged
+		/// normalized to @c PlotType::HEATMAP and a warning is logged
 		/// (`tools::logger::LogLevel::WARNING`) -- throwing here would turn a
 		/// working caller's program into a crash on upgrade, which this codebase
 		/// treats as unacceptable. @c getType() therefore always reports

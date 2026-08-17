@@ -3,7 +3,8 @@
 #include <cmath>
 
 #include "visualization/heatmap.h"
-#include "visualization/lineplot.h"
+
+#include "scoped_min_log_level.h"
 
 using namespace dnf_composer;
 
@@ -284,18 +285,8 @@ TEST(HeatmapParameters, ToStringContainsValues)
 }
 
 // ---------------------------------------------------------------------------
-// PlotType handling: Heatmap and LinePlot are NOT symmetric.
-//
-// LinePlot's constructor throws std::invalid_argument when
-// commonParameters.type != PlotType::LINE_PLOT (see lineplot.cpp) -- a mismatch
-// there is treated as a programmer error the caller must fix. Heatmap instead
-// normalizes: a mismatched parameters.type is silently corrected to
-// PlotType::HEATMAP (with a warning logged) rather than thrown. Symmetry with
-// LinePlot was considered and rejected: throwing from a constructor that
-// previously succeeded would turn a working caller's program into a crash on
-// upgrade, which this codebase treats as a hard no (see PR description).
-// Normalizing keeps existing callers running while making getType() honest --
-// a Heatmap always reports PlotType::HEATMAP (#143).
+// PlotType handling: Heatmap normalizes a mismatched type instead of
+// throwing, unlike LinePlot. See heatmap.h for the rationale (#143).
 // ---------------------------------------------------------------------------
 
 TEST(Heatmap, MismatchedPlotTypeStillDoesNotThrow)
@@ -313,6 +304,8 @@ TEST(Heatmap, MismatchedPlotTypeIsNormalizedToHeatmap)
 
 TEST(Heatmap, MismatchedPlotTypeLogsAWarning)
 {
+	using namespace dnf_composer::tools::logger;
+	const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
 	const PlotCommonParameters common(PlotType::LINE_PLOT);
 	::testing::internal::CaptureStdout();
 	const Heatmap heatmap(common);
@@ -322,19 +315,12 @@ TEST(Heatmap, MismatchedPlotTypeLogsAWarning)
 
 TEST(Heatmap, MatchingPlotTypeIsUnchangedAndLogsNoWarning)
 {
+	using namespace dnf_composer::tools::logger;
+	const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
 	const PlotCommonParameters common(PlotType::HEATMAP);
 	::testing::internal::CaptureStdout();
 	const Heatmap heatmap(common);
 	const std::string out = ::testing::internal::GetCapturedStdout();
 	EXPECT_EQ(heatmap.getType(), PlotType::HEATMAP);
 	EXPECT_TRUE(out.empty());
-}
-
-// Guard against a later "symmetry" refactor silently changing LinePlot's
-// throw into a normalize-and-log, which would be a breaking API change for
-// LinePlot's existing callers.
-TEST(LinePlot, MismatchedPlotTypeStillThrows)
-{
-	const PlotCommonParameters common(PlotType::HEATMAP);
-	EXPECT_THROW({ const LinePlot linePlot(common); }, std::invalid_argument);
 }
