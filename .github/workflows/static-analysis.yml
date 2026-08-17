@@ -40,7 +40,6 @@ jobs:
             "imgui-node-editor:x64-linux" \
             "nlohmann-json:x64-linux" \
             "gtest:x64-linux" \
-            "catch2:x64-linux" \
             "fftw3:x64-linux"
 
       - name: Build and install imgui-platform-kit

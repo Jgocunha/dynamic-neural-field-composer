@@ -10,6 +10,17 @@ All notable changes to this project will be documented in this file.
   Output pin, so a field's raw activation can be wired directly into another element's
   input instead of its sigmoided output.
 
+### Removed
+- `catch2` was installed by every setup script, CI job, and the release/static-analysis
+  workflows, but nothing in the codebase links or includes it — `tests/CMakeLists.txt` only
+  uses `find_package(GTest CONFIG REQUIRED)` and links `GTest::gtest`/`GTest::gtest_main`.
+  It was originally added because `imgui-platform-kit` was thought to require it (see the
+  `### Build` entry under `[2.3.0]`), but building `imgui-platform-kit` from source, as the
+  setup scripts do, never enables its own test target. Removed from `scripts/setup.sh`,
+  `scripts/setup.bat`, `release.yml`, `static-analysis.yml`, `vcpkg-maintenance.yml`,
+  `scripts/README.md`, the wiki's package table, and `.coderabbit.yaml`'s review
+  instructions (#158).
+
 ### Fixed
 - `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or
   replacing the first, so `inputs` could hold two target entries that `updateInput()`
