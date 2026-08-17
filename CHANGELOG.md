@@ -124,6 +124,13 @@ All notable changes to this project will be documented in this file.
   non-contiguous after deletion, so a bounds check on the highest uid alone doesn't rule
   out a stale id) — a possible uncaught exception mid-frame. Both paths now go through a
   non-throwing lookup helper.
+- `Heatmap`'s constructor accepted any `PlotType` and reported it back from `getType()`,
+  unlike `LinePlot`, which throws on a mismatched type — a `Heatmap` built with
+  `PlotType::LINE_PLOT` rendered correctly while claiming to be a line plot, so any
+  downstream dispatch on `getType()` did the wrong thing. `Heatmap` now normalizes a
+  mismatched `parameters.type` to `PlotType::HEATMAP` and logs a warning instead of
+  reporting it back; it still does not throw, so existing callers keep compiling and
+  running. `LinePlot`'s throw is unchanged (#143).
 ## [2.10.1] - 2026-08-06
 
 ### Fixed
