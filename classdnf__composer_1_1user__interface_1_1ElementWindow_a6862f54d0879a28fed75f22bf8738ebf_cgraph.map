@@ -1,5 +1,9 @@
 <map id="dnf_composer::user_interface::ElementWindow::renderModifyElementParameters" name="dnf_composer::user_interface::ElementWindow::renderModifyElementParameters">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,249,60"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title=" " alt="" coords="297,5,499,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="249,30,283,30,283,35,249,35"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,45,249,100"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ac97ae4e16bb752a7e94c88bc703234b5" title=" " alt="" coords="297,5,499,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="249,52,283,47,284,52,250,57"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title=" " alt="" coords="297,84,499,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="250,87,284,92,283,98,249,93"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1user__interface_1_1colour.html#aa402fb0332ae18a43f948480b9c8985b" title="Converts a packed ImU32 colour (as produced by IM_COL32) to an ImVec4, so a single ImU32 palette can ..." alt="" coords="547,5,697,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="499,30,533,30,533,35,499,35"/>
 </map>
