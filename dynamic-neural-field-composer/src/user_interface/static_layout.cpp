@@ -1,4 +1,5 @@
 #include "user_interface/static_layout.h"
+#include "user_interface/colour_registry.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 
@@ -131,7 +132,7 @@ namespace dnf_composer::user_interface
 							| ImGuiWindowFlags_NoScrollWithMouse
 							| ImGuiWindowFlags_NoSavedSettings;
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 				if (ImGui::BeginChild("##cb", ImVec2(0, 0), 0,
 					flags))
 				{
@@ -147,7 +148,7 @@ namespace dnf_composer::user_interface
 		void StaticLayoutWindow::drawPanelSimulation(const ImVec2 pos, const ImVec2 size) const
 		{
 			ImGui::SetCursorScreenPos(pos);
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 			if (ImGui::BeginChild("##sl_sim", size, 0,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
@@ -182,7 +183,7 @@ namespace dnf_composer::user_interface
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 				elementWindow->renderElementControlCard();
 				ImGui::PopStyleColor();
 			}
@@ -210,7 +211,7 @@ namespace dnf_composer::user_interface
 				ImGui::PopFont();
 				ImGui::Separator();
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 				if (ImGui::BeginChild("##ng_graph_c", ImVec2(0, 0), 0,
 					ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 				{
@@ -232,7 +233,7 @@ namespace dnf_composer::user_interface
 							| ImGuiWindowFlags_NoScrollWithMouse
 							| ImGuiWindowFlags_NoSavedSettings;
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 				if (ImGui::BeginChild("##sb", ImVec2(0, 0), 0,
 					flags))
 				{

@@ -35,6 +35,7 @@
 #include "user_interface/node_utilities/node_widgets.h"
 #include "application/application.h"
 #include "user_interface/element_window.h"
+#include "user_interface/colour_registry.h"
 
 
 namespace dnf_composer::user_interface
@@ -43,55 +44,55 @@ namespace dnf_composer::user_interface
 	{
 		switch (label) {
 		case element::ElementLabel::NEURAL_FIELD:
-			return IM_COL32(86, 128, 191, 255);   // Soft Blue
+			return colour::kNeuralFieldElement;
 		case element::ElementLabel::NORMAL_NOISE:
-			return IM_COL32(223, 148, 84, 255);   // Warm Orange
+			return colour::kNormalNoiseElement;
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
-			return IM_COL32(210, 110, 60, 255);   // Deep Orange
+			return colour::kCorrelatedNormalNoiseElement;
 		case element::ElementLabel::GAUSS_KERNEL:
-			return IM_COL32(191, 63, 63, 255);    // Muted Red
+			return colour::kGaussKernelElement;
 		case element::ElementLabel::GAUSS_STIMULUS:
-			return IM_COL32(127, 191, 127, 255);  // Sage Green
+			return colour::kGaussStimulusElement;
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
-			return IM_COL32(154, 121, 191, 255);  // Lavender
+			return colour::kMexicanHatKernelElement;
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
-			return IM_COL32(165, 102, 71, 255);   // Warm Brown
+			return colour::kGaussFieldCouplingElement;
 		case element::ElementLabel::FIELD_COUPLING:
-			return IM_COL32(212, 192, 121, 255);  // Cream Gold
+			return colour::kFieldCouplingElement;
 		case element::ElementLabel::OSCILLATORY_KERNEL:
-			return IM_COL32(175, 133, 187, 255);  // Dusty Rose
+			return colour::kOscillatoryKernelElement;
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
-			return IM_COL32(148, 178, 182, 255);  // Soft Teal
+			return colour::kAsymmetricGaussKernelElement;
 		case element::ElementLabel::BOOST_STIMULUS:
-			return IM_COL32(242, 209, 83, 255);   // Warm Yellow
+			return colour::kBoostStimulusElement;
 		case element::ElementLabel::MEMORY_TRACE:
-			return IM_COL32(110, 160, 140, 255);  // Sage Green
+			return colour::kMemoryTraceElement;
 		case element::ElementLabel::NEURAL_FIELD_2D:
-			return IM_COL32(70, 110, 175, 255);   // Deeper Blue
+			return colour::kNeuralField2DElement;
 		case element::ElementLabel::GAUSS_STIMULUS_2D:
-			return IM_COL32(105, 175, 105, 255);  // Deeper Sage Green
+			return colour::kGaussStimulus2DElement;
 		case element::ElementLabel::GAUSS_KERNEL_2D:
-			return IM_COL32(175, 48, 48, 255);    // Deeper Muted Red
+			return colour::kGaussKernel2DElement;
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
-			return IM_COL32(138, 105, 175, 255);  // Deeper Lavender
+			return colour::kMexicanHatKernel2DElement;
 		case element::ElementLabel::NORMAL_NOISE_2D:
-			return IM_COL32(207, 132, 68, 255);   // Deeper Warm Orange
+			return colour::kNormalNoise2DElement;
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
-			return IM_COL32(152, 116, 163, 255);  // Deeper Dusty Rose
+			return colour::kOscillatoryKernel2DElement;
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
-			return IM_COL32(97, 161, 97, 255);    // Darker Sage Green
+			return colour::kTimedGaussStimulusElement;
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
-			return IM_COL32(80, 133, 80, 255);    // Deepest Sage Green
+			return colour::kTimedGaussStimulus2DElement;
 		case element::ElementLabel::BOOST_STIMULUS_2D:
-			return IM_COL32(210, 182, 72, 255);   // Deeper Warm Yellow
+			return colour::kBoostStimulus2DElement;
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
-			return IM_COL32(182, 109, 44, 255);   // Deeper Deep Orange
+			return colour::kCorrelatedNormalNoise2DElement;
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
-			return IM_COL32(129, 155, 159, 255);  // Deeper Soft Teal
+			return colour::kAsymmetricGaussKernel2DElement;
 		case element::ElementLabel::MEMORY_TRACE_2D:
-			return IM_COL32(96, 139, 122, 255);   // Deeper Sage Green
+			return colour::kMemoryTrace2DElement;
 		default:
-			return IM_COL32(127, 127, 127, 255);  // Neutral Gray
+			return colour::kUnknownElement;
 		}
 	}
 

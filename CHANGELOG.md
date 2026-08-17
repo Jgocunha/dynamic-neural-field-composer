@@ -10,6 +10,21 @@ All notable changes to this project will be documented in this file.
   Output pin, so a field's raw activation can be wired directly into another element's
   input instead of its sigmoided output.
 
+### Changed
+- Centralised every first-party GUI colour literal across the user-interface layer
+  (`node_graph_window`, `element_window`, `simulation_window`, `control_bar_window`,
+  `field_metrics_window`, `static_layout`, `help_window`, `log_window`, `status_bar_window`)
+  behind named, role-based constants in `include/user_interface/colour_registry.h` (e.g.
+  `kDestructiveText`, `kAccentHoverDarken`), so the same semantic colour is no longer
+  re-spelled at every call site. As part of this, `element_window.cpp`'s
+  `getColorForElementType()` — a second, independently maintained copy of the element-type
+  palette that had already drifted from the node graph's on 6 of 25 entries by up to
+  15/255 — now derives from the same registry constants as
+  `getHeaderColorForElementType()`, so the two views can no longer re-diverge. That
+  convergence is the only visible change; every other converted colour renders
+  byte-identical. Vendored third-party UI code (`node_utilities/*`, `fonts/*`,
+  `tools/file_dialog.h`) is intentionally left untouched. Closes (#28).
+
 ### Removed
 - `catch2` was installed by every setup script, CI job, and the release/static-analysis
   workflows, but nothing in the codebase links or includes it — `tests/CMakeLists.txt` only

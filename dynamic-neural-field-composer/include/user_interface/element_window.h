@@ -36,6 +36,7 @@ namespace dnf_composer::user_interface
 		void renderModifyElementParameters();
 		static void switchElementToModify(const std::shared_ptr<element::Element>& element, const std::string& simId = {});
 		static void setFocusedElement(const std::shared_ptr<element::Element>& element);
+		static ImVec4 getColorForElementType(element::ElementLabel label);
 		~ElementWindow() override = default;
 	private:
 		void renderIdentifiersSection(const std::shared_ptr<element::Element>& element) const;
@@ -77,7 +78,6 @@ namespace dnf_composer::user_interface
 		static void modifyElementResize2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementCollapse(const std::shared_ptr<element::Element>& element);
 		static void modifyElementExpand(const std::shared_ptr<element::Element>& element);
-		static ImVec4 getColorForElementType(element::ElementLabel label);
 		static std::string getElementTypeDisplayName(element::ElementLabel label);
 		static PanelScope beginElementPanel(const ImVec4& baseColor, const ImVec2& size);
 		static void endElementPanel(const PanelScope& p);

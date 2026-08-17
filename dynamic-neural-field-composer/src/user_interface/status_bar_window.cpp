@@ -3,6 +3,7 @@
 #include <array>
 
 #include "application/application.h"
+#include "user_interface/colour_registry.h"
 
 
 namespace dnf_composer::user_interface
@@ -42,16 +43,16 @@ namespace dnf_composer::user_interface
 			const bool running = simulation->isInitialized() && !simulation->isPaused();
 			const bool paused  = simulation->isInitialized() &&  simulation->isPaused();
 
-			ImVec4 dotColor(0.75F, 0.20F, 0.20F, 1.0F);
+			ImVec4 dotColor = colour::kStatusDotStopped;
 			const char* stateStr = "Stopped";
 			if (running)
 			{
-				dotColor = ImVec4(0.20F, 0.75F, 0.20F, 1.0F);
+				dotColor = colour::kStatusDotRunning;
 				stateStr = "Running";
 			}
 			else if (paused)
 			{
-				dotColor = ImVec4(0.90F, 0.70F, 0.10F, 1.0F);
+				dotColor = colour::kStatusDotPaused;
 				stateStr = "Paused";
 			}
 
