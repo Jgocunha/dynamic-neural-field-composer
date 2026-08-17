@@ -3,6 +3,8 @@
 #include <array>
 #include <imgui-platform-kit/colour_palette.h>
 
+#include "user_interface/colour_registry.h"
+
 namespace dnf_composer::user_interface
 {
 	ImVec4 getLogLevelColorCodeGui(const tools::logger::LogLevel level)
@@ -55,8 +57,8 @@ namespace dnf_composer::user_interface
 		filter.Draw("Filter", -100.0F);
 
 		ImGui::Separator();
-		ImGui::PushStyleColor(ImGuiCol_ChildBg,    ImVec4(0.07F, 0.07F, 0.07F, 1.0F));
-		ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImVec4(0.07F, 0.07F, 0.07F, 1.0F));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg,    colour::kLogConsoleBackground);
+		ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, colour::kLogConsoleBackground);
 		if (ImGui::BeginChild("scrolling", ImVec2(0, 0), 0, ImGuiWindowFlags_None))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));

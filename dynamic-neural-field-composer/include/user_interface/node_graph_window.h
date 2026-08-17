@@ -44,55 +44,55 @@ namespace dnf_composer::user_interface
 	{
 		switch (label) {
 		case element::ElementLabel::NEURAL_FIELD:
-			return colour::kNeuralFieldHeader;
+			return colour::kNeuralFieldElement;
 		case element::ElementLabel::NORMAL_NOISE:
-			return colour::kNormalNoiseHeader;
+			return colour::kNormalNoiseElement;
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
-			return colour::kCorrelatedNormalNoiseHeader;
+			return colour::kCorrelatedNormalNoiseElement;
 		case element::ElementLabel::GAUSS_KERNEL:
-			return colour::kGaussKernelHeader;
+			return colour::kGaussKernelElement;
 		case element::ElementLabel::GAUSS_STIMULUS:
-			return colour::kGaussStimulusHeader;
+			return colour::kGaussStimulusElement;
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
-			return colour::kMexicanHatKernelHeader;
+			return colour::kMexicanHatKernelElement;
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
-			return colour::kGaussFieldCouplingHeader;
+			return colour::kGaussFieldCouplingElement;
 		case element::ElementLabel::FIELD_COUPLING:
-			return colour::kFieldCouplingHeader;
+			return colour::kFieldCouplingElement;
 		case element::ElementLabel::OSCILLATORY_KERNEL:
-			return colour::kOscillatoryKernelHeader;
+			return colour::kOscillatoryKernelElement;
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
-			return colour::kAsymmetricGaussKernelHeader;
+			return colour::kAsymmetricGaussKernelElement;
 		case element::ElementLabel::BOOST_STIMULUS:
-			return colour::kBoostStimulusHeader;
+			return colour::kBoostStimulusElement;
 		case element::ElementLabel::MEMORY_TRACE:
-			return colour::kMemoryTraceHeader;
+			return colour::kMemoryTraceElement;
 		case element::ElementLabel::NEURAL_FIELD_2D:
-			return colour::kNeuralField2DHeader;
+			return colour::kNeuralField2DElement;
 		case element::ElementLabel::GAUSS_STIMULUS_2D:
-			return colour::kGaussStimulus2DHeader;
+			return colour::kGaussStimulus2DElement;
 		case element::ElementLabel::GAUSS_KERNEL_2D:
-			return colour::kGaussKernel2DHeader;
+			return colour::kGaussKernel2DElement;
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
-			return colour::kMexicanHatKernel2DHeader;
+			return colour::kMexicanHatKernel2DElement;
 		case element::ElementLabel::NORMAL_NOISE_2D:
-			return colour::kNormalNoise2DHeader;
+			return colour::kNormalNoise2DElement;
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
-			return colour::kOscillatoryKernel2DHeader;
+			return colour::kOscillatoryKernel2DElement;
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
-			return colour::kTimedGaussStimulusHeader;
+			return colour::kTimedGaussStimulusElement;
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
-			return colour::kTimedGaussStimulus2DHeader;
+			return colour::kTimedGaussStimulus2DElement;
 		case element::ElementLabel::BOOST_STIMULUS_2D:
-			return colour::kBoostStimulus2DHeader;
+			return colour::kBoostStimulus2DElement;
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
-			return colour::kCorrelatedNormalNoise2DHeader;
+			return colour::kCorrelatedNormalNoise2DElement;
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
-			return colour::kAsymmetricGaussKernel2DHeader;
+			return colour::kAsymmetricGaussKernel2DElement;
 		case element::ElementLabel::MEMORY_TRACE_2D:
-			return colour::kMemoryTrace2DHeader;
+			return colour::kMemoryTrace2DElement;
 		default:
-			return colour::kUnknownElementHeader;
+			return colour::kUnknownElement;
 		}
 	}
 

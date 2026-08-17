@@ -11,11 +11,19 @@ All notable changes to this project will be documented in this file.
   input instead of its sigmoided output.
 
 ### Changed
-- Centralised the ~120 scattered GUI colour literals in `node_graph_window.h/.cpp`,
-  `element_window.cpp`, and `simulation_window.cpp` behind named, role-based constants in a
-  new `include/user_interface/colour_registry.h` (e.g. `kDestructiveText`,
-  `kAccentHoverDarken`), so the same semantic colour is no longer re-spelled at every call
-  site. Zero behaviour change — every colour renders byte-identical (#28).
+- Centralised every first-party GUI colour literal across the user-interface layer
+  (`node_graph_window`, `element_window`, `simulation_window`, `control_bar_window`,
+  `field_metrics_window`, `static_layout`, `help_window`, `log_window`, `status_bar_window`)
+  behind named, role-based constants in `include/user_interface/colour_registry.h` (e.g.
+  `kDestructiveText`, `kAccentHoverDarken`), so the same semantic colour is no longer
+  re-spelled at every call site. As part of this, `element_window.cpp`'s
+  `getColorForElementType()` — a second, independently maintained copy of the element-type
+  palette that had already drifted from the node graph's on 6 of 25 entries by up to
+  15/255 — now derives from the same registry constants as
+  `getHeaderColorForElementType()`, so the two views can no longer re-diverge. That
+  convergence is the only visible change; every other converted colour renders
+  byte-identical. Vendored third-party UI code (`node_utilities/*`, `fonts/*`,
+  `tools/file_dialog.h`) is intentionally left untouched. Closes (#28).
 
 ### Fixed
 - `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or

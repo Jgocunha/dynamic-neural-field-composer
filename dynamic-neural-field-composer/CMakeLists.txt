@@ -151,6 +151,7 @@ set(user_interface_headers
         "include/user_interface/static_layout.h"
         "include/user_interface/status_bar_window.h"
         "include/user_interface/control_bar_window.h"
+        "include/user_interface/colour_registry.h"
 
         "include/user_interface/node_utilities/builders.h"
         "include/user_interface/node_utilities/drawing.h"

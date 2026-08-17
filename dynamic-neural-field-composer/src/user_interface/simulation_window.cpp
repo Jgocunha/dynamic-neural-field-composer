@@ -220,7 +220,7 @@ namespace dnf_composer::user_interface
 			const ImVec4 accent  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			const ImVec4 bg      = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
 			const ImVec4 bgHov   = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered);
-			constexpr ImVec4 textSel(1.F, 1.F, 1.F, 1.F);
+			constexpr ImVec4 textSel = colour::kButtonTextOnAccent;
 			const ImVec4 textNorm = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 
 			auto dimBtn = [&](const char* label, int dim)

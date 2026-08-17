@@ -249,8 +249,6 @@ namespace dnf_composer::user_interface
 			return;
 		}
 
-		static constexpr ImVec4 kCardBg     = { 1.0F, 1.0F, 1.0F, 1.0F };
-		static constexpr ImVec4 kCardBorder = { 0.82F, 0.85F, 0.89F, 1.0F };
 		static constexpr float  kCardRound  = 8.0F;
 		static constexpr float  kCardBordSz = 1.5F;
 		static constexpr float  kStripW     = 4.0F;
@@ -289,8 +287,8 @@ namespace dnf_composer::user_interface
 				const int    dimN    = e->getElementCommonParameters()
 				                         .dimensionParameters.dimensionality;
 				const ImVec2 panelTL  = ImGui::GetCursorScreenPos();
-				const ImU32  fillClr  = ImGui::GetColorU32(kCardBg);
-				const ImU32  borderClr = ImGui::GetColorU32(kCardBorder);
+				const ImU32  fillClr  = ImGui::GetColorU32(colour::kCardBackground);
+				const ImU32  borderClr = ImGui::GetColorU32(colour::kCardBorder);
 
 				// Channel 0 = background rect (written after content is measured)
 				// Channel 1 = content
@@ -2409,63 +2407,63 @@ namespace dnf_composer::user_interface
 		switch (label)
 		{
 		case element::ElementLabel::NEURAL_FIELD:
-			return {0.337F, 0.502F, 0.749F, 1.0F};  // Soft Blue
+			return colour::toImVec4(colour::kNeuralFieldElement);
 		case element::ElementLabel::NORMAL_NOISE:
-			return {0.875F, 0.580F, 0.329F, 1.0F};  // Warm Orange
+			return colour::toImVec4(colour::kNormalNoiseElement);
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE:
-			return {0.820F, 0.490F, 0.200F, 1.0F};  // Deep Orange
+			return colour::toImVec4(colour::kCorrelatedNormalNoiseElement);
 		case element::ElementLabel::GAUSS_KERNEL:
-			return {0.749F, 0.247F, 0.247F, 1.0F};  // Muted Red
+			return colour::toImVec4(colour::kGaussKernelElement);
 		case element::ElementLabel::GAUSS_STIMULUS:
-			return {0.498F, 0.749F, 0.498F, 1.0F};  // Sage Green
+			return colour::toImVec4(colour::kGaussStimulusElement);
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:
-			return {0.604F, 0.475F, 0.749F, 1.0F};  // Lavender
+			return colour::toImVec4(colour::kMexicanHatKernelElement);
 		case element::ElementLabel::GAUSS_FIELD_COUPLING:
-			return {0.647F, 0.400F, 0.278F, 1.0F};  // Warm Brown
+			return colour::toImVec4(colour::kGaussFieldCouplingElement);
 		case element::ElementLabel::FIELD_COUPLING:
-			return {0.831F, 0.753F, 0.475F, 1.0F};  // Cream Gold
+			return colour::toImVec4(colour::kFieldCouplingElement);
 		case element::ElementLabel::OSCILLATORY_KERNEL:
-			return {0.686F, 0.522F, 0.733F, 1.0F};  // Dusty Rose
+			return colour::toImVec4(colour::kOscillatoryKernelElement);
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL:
-			return {0.580F, 0.698F, 0.714F, 1.0F};  // Soft Teal
+			return colour::toImVec4(colour::kAsymmetricGaussKernelElement);
 		case element::ElementLabel::BOOST_STIMULUS:
-			return {0.949F, 0.820F, 0.325F, 1.0F};  // Warm Yellow
+			return colour::toImVec4(colour::kBoostStimulusElement);
 		case element::ElementLabel::MEMORY_TRACE:
-			return {0.431F, 0.627F, 0.549F, 1.0F};  // Sage Green
+			return colour::toImVec4(colour::kMemoryTraceElement);
 		case element::ElementLabel::NEURAL_FIELD_2D:
-			return {0.293F, 0.437F, 0.651F, 1.0F};  // Deeper Soft Blue
+			return colour::toImVec4(colour::kNeuralField2DElement);
 		case element::ElementLabel::GAUSS_STIMULUS_2D:
-			return {0.433F, 0.651F, 0.433F, 1.0F};  // Deeper Sage Green
+			return colour::toImVec4(colour::kGaussStimulus2DElement);
 		case element::ElementLabel::GAUSS_KERNEL_2D:
-			return {0.651F, 0.216F, 0.216F, 1.0F};  // Deeper Muted Red
+			return colour::toImVec4(colour::kGaussKernel2DElement);
 		case element::ElementLabel::MEXICAN_HAT_KERNEL_2D:
-			return {0.525F, 0.412F, 0.651F, 1.0F};  // Deeper Lavender
+			return colour::toImVec4(colour::kMexicanHatKernel2DElement);
 		case element::ElementLabel::NORMAL_NOISE_2D:
-			return {0.761F, 0.506F, 0.286F, 1.0F};  // Deeper Warm Orange
+			return colour::toImVec4(colour::kNormalNoise2DElement);
 		case element::ElementLabel::OSCILLATORY_KERNEL_2D:
-			return {0.596F, 0.455F, 0.639F, 1.0F};  // Deeper Dusty Rose
+			return colour::toImVec4(colour::kOscillatoryKernel2DElement);
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS:
-			return {0.380F, 0.631F, 0.380F, 1.0F};  // Darker Sage Green
+			return colour::toImVec4(colour::kTimedGaussStimulusElement);
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
-			return {0.314F, 0.522F, 0.314F, 1.0F};  // Deepest Sage Green
+			return colour::toImVec4(colour::kTimedGaussStimulus2DElement);
 		case element::ElementLabel::BOOST_STIMULUS_2D:
-			return {0.825F, 0.714F, 0.283F, 1.0F};  // Deeper Warm Yellow
+			return colour::toImVec4(colour::kBoostStimulus2DElement);
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
-			return {0.714F, 0.427F, 0.173F, 1.0F};  // Deeper Deep Orange
+			return colour::toImVec4(colour::kCorrelatedNormalNoise2DElement);
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL_2D:
-			return {0.506F, 0.608F, 0.622F, 1.0F};  // Deeper Soft Teal
+			return colour::toImVec4(colour::kAsymmetricGaussKernel2DElement);
 		case element::ElementLabel::MEMORY_TRACE_2D:
-			return {0.376F, 0.545F, 0.478F, 1.0F};  // Deeper Sage Green
+			return colour::toImVec4(colour::kMemoryTrace2DElement);
 		case element::ElementLabel::RESIZE:
-			return {0.500F, 0.600F, 0.700F, 1.0F};  // Steel Blue
+			return colour::toImVec4(colour::kResizeElement);
 		case element::ElementLabel::RESIZE_2D:
-			return {0.420F, 0.510F, 0.600F, 1.0F};  // Deeper Steel Blue
+			return colour::toImVec4(colour::kResize2DElement);
 		case element::ElementLabel::COLLAPSE:
-			return {0.450F, 0.650F, 0.620F, 1.0F};  // Teal
+			return colour::toImVec4(colour::kCollapseElement);
 		case element::ElementLabel::EXPAND:
-			return {0.380F, 0.560F, 0.530F, 1.0F};  // Deeper Teal
+			return colour::toImVec4(colour::kExpandElement);
 		default:
-			return {0.498F, 0.498F, 0.498F, 1.0F};  // Neutral Gray
+			return colour::toImVec4(colour::kUnknownElement);
 		}
 	}
 
