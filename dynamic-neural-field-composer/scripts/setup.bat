@@ -27,7 +27,6 @@ echo Installing vcpkg packages...
     "imgui-node-editor:x64-windows" ^
     "nlohmann-json:x64-windows" ^
     "gtest:x64-windows" ^
-    "catch2:x64-windows" ^
     "fftw3:x64-windows"
 if errorlevel 1 ( echo ERROR: vcpkg install failed. & exit /b 1 )
 

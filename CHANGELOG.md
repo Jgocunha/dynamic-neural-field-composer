@@ -10,6 +10,17 @@ All notable changes to this project will be documented in this file.
   Output pin, so a field's raw activation can be wired directly into another element's
   input instead of its sigmoided output.
 
+### Removed
+- `catch2` was installed by every setup script, CI job, and the release/static-analysis
+  workflows, but nothing in the codebase links or includes it — `tests/CMakeLists.txt` only
+  uses `find_package(GTest CONFIG REQUIRED)` and links `GTest::gtest`/`GTest::gtest_main`.
+  It was originally added because `imgui-platform-kit` was thought to require it (see the
+  `### Build` entry under `[2.3.0]`), but building `imgui-platform-kit` from source, as the
+  setup scripts do, never enables its own test target. Removed from `scripts/setup.sh`,
+  `scripts/setup.bat`, `release.yml`, `static-analysis.yml`, `vcpkg-maintenance.yml`,
+  `scripts/README.md`, the wiki's package table, and `.coderabbit.yaml`'s review
+  instructions (#158).
+
 ### Fixed
 - `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or
   replacing the first, so `inputs` could hold two target entries that `updateInput()`
@@ -125,6 +136,13 @@ All notable changes to this project will be documented in this file.
   from `this->inputs`, leaving a dangling `outputs` entry on the other element (unlike
   the plural `removeInputs()`, which already cleaned both sides); both singular overloads
   now erase the matching `outputs` entry too.
+- `Heatmap`'s constructor accepted any `PlotType` and reported it back from `getType()`,
+  unlike `LinePlot`, which throws on a mismatched type — a `Heatmap` built with
+  `PlotType::LINE_PLOT` rendered correctly while claiming to be a line plot, so any
+  downstream dispatch on `getType()` did the wrong thing. `Heatmap` now normalizes a
+  mismatched `parameters.type` to `PlotType::HEATMAP` and logs a warning instead of
+  reporting it back; it still does not throw, so existing callers keep compiling and
+  running. `LinePlot`'s throw is unchanged (#143).
 ## [2.10.1] - 2026-08-06
 
 ### Fixed
