@@ -208,6 +208,39 @@ TEST(ElementInputs, RemoveInputByUniqueId)
     EXPECT_FALSE(field->hasInput());
 }
 
+// Regression test for #168: the singular removeInput() overloads must erase the
+// matching entry from the *other* element's `outputs`, exactly like removeInputs()
+// (plural) already does. Before the fix, `field->removeInput(id)` cleared only
+// `field->inputs`, leaving `stim->outputs` with a dangling bookkeeping entry that
+// still reported the (now disconnected) field as an output.
+TEST(ElementInputs, RemoveInputByUniqueIdErasesOtherElementsOutputEntry)
+{
+    const auto stim  = makeStimulus("stim");
+    const auto field = makeField("field");
+    field->addInput(stim, "output");
+    ASSERT_TRUE(stim->hasOutput());
+
+    const int id = stim->getUniqueIdentifier();
+    field->removeInput(id);
+
+    EXPECT_FALSE(stim->hasOutput());
+    EXPECT_TRUE(stim->getOutputs().empty());
+}
+
+// Same asymmetry as above, for the name-based overload.
+TEST(ElementInputs, RemoveInputByNameErasesOtherElementsOutputEntry)
+{
+    const auto stim  = makeStimulus("stim");
+    const auto field = makeField("field");
+    field->addInput(stim, "output");
+    ASSERT_TRUE(stim->hasOutput());
+
+    field->removeInput("stim");
+
+    EXPECT_FALSE(stim->hasOutput());
+    EXPECT_TRUE(stim->getOutputs().empty());
+}
+
 TEST(ElementInputs, RemoveInputs)
 {
     const auto stim1 = makeStimulus("s1");
@@ -310,6 +343,50 @@ TEST(ElementOutputs, GetOutputsReturnsConnectedElements)
     const auto outputs = stim->getOutputs();
     ASSERT_EQ(outputs.size(), 1u);
     EXPECT_EQ(outputs[0]->getUniqueName(), "field");
+}
+
+// Regression test for #168: `Element::outputs` must be a non-owning (observing)
+// reference to the downstream element, not a shared_ptr. Before the fix, addInput()
+// wired a two-way shared_ptr cycle (field->inputs[stim], stim->outputs[field]), so
+// the only external owner of `field` going out of scope did not free it -- it was
+// kept alive by `stim`, which is itself still alive (held by this test). A weak_ptr
+// observer registered before the scope ends must report the element as destroyed.
+TEST(ElementOutputs, DownstreamElementIsDestroyedWhenLastExternalOwnerReleases)
+{
+    const auto stim = makeStimulus("stim");
+    std::weak_ptr<Element> fieldWatcher;
+    {
+        const auto field = makeField("field");
+        field->addInput(stim, "output");
+        fieldWatcher = field;
+        // `field`'s only external shared_ptr goes out of scope here. `stim->outputs`
+        // must not keep it alive.
+    }
+
+    EXPECT_TRUE(fieldWatcher.expired());
+}
+
+// Regression test for #168: getOutputs() must silently skip an entry whose element
+// has already been destroyed (a natural consequence of outputs being non-owning),
+// rather than returning a null shared_ptr or crashing. fieldA is destroyed without
+// ever calling removeInput()/removeOutputs() -- exactly the pattern the cycle bug
+// used to paper over by keeping it alive forever.
+TEST(ElementOutputs, GetOutputsSkipsExpiredEntryAfterDownstreamDestroyed)
+{
+    const auto stim = makeStimulus("stim");
+    const auto fieldB = makeField("fieldB");
+    fieldB->addInput(stim, "output");
+    {
+        const auto fieldA = makeField("fieldA");
+        fieldA->addInput(stim, "output");
+        // fieldA destroyed here; stim->outputs must not keep it alive, and
+        // getOutputs() must not surface a stale/null entry for it afterward.
+    }
+
+    const auto outputs = stim->getOutputs();
+    ASSERT_EQ(outputs.size(), 1u);
+    ASSERT_NE(outputs[0], nullptr);
+    EXPECT_EQ(outputs[0]->getUniqueName(), "fieldB");
 }
 
 // Regression test: removeOutputs() erases the receiver's `inputs` map entry
