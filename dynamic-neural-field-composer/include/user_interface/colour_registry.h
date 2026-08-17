@@ -56,13 +56,13 @@ namespace dnf_composer::user_interface::colour
 
 	/// @brief Converts a packed ImU32 colour (as produced by IM_COL32) to an ImVec4, so a single
 	/// ImU32 palette can back both node-graph headers (ImU32) and element cards (ImVec4).
-	inline constexpr ImVec4 toImVec4(const ImU32 c)
+	constexpr ImVec4 toImVec4(const ImU32 c)
 	{
-		return ImVec4(
+		return {
 			static_cast<float>((c >> IM_COL32_R_SHIFT) & 0xFF) / 255.0F,
 			static_cast<float>((c >> IM_COL32_G_SHIFT) & 0xFF) / 255.0F,
 			static_cast<float>((c >> IM_COL32_B_SHIFT) & 0xFF) / 255.0F,
-			static_cast<float>((c >> IM_COL32_A_SHIFT) & 0xFF) / 255.0F);
+			static_cast<float>((c >> IM_COL32_A_SHIFT) & 0xFF) / 255.0F};
 	}
 
 	// ---------------------------------------------------------------------------------------
