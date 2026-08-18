@@ -22,8 +22,13 @@ too vague to work unattended; stop and say so.
 Never work on `main`, and never in an existing worktree that belongs to another issue.
 
 ```bash
-git worktree add C:/dev-files/dnf-wt/<short-name> -b <type>/<slug> origin/main
+git worktree add C:/dev-files/dnf-wt/<short-name> -b <type>/<slug> <BASE>
 ```
+
+`<BASE>` is normally `origin/main`. **Until PR #178 (`chore/claude-infrastructure`) is
+merged, use `origin/chore/claude-infrastructure` instead** - a worktree branched from
+`origin/main` has no `.claude/` directory, so it sees neither CLAUDE.md nor these skills.
+Once #178 lands, go back to `origin/main`.
 
 Branch type is one of `bug/ feat/ chore/ ci/ docs/ test/ refactor/`. Keep the slug short
 and specific: `bug/connection-dim-check`, not `bug/fix-the-connection-dimension-problem`.

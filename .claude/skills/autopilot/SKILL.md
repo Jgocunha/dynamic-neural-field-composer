@@ -63,6 +63,11 @@ test, implement, build, test. Then report back with:
 Tell it explicitly: do not review, do not touch docs, do not commit, do not push, do not
 open a PR. Those are the orchestrator's.
 
+**Base branch:** until PR #178 (`chore/claude-infrastructure`) is merged, workers must
+branch from `origin/chore/claude-infrastructure`, not `origin/main` - a worktree off main
+has no `.claude/` and would see none of these skills. Pass the base explicitly in each
+worker's prompt. After #178 lands, `origin/main` is correct again.
+
 Builds run at `--parallel 4` (the `build-and-test` skill enforces this). Three unbounded
 C++ builds on one machine would thrash every core.
 
