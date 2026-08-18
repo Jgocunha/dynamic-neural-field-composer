@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh *)",
+      "Bash(git *)",
+      "Bash(cmake -S *)",
+      "Bash(cmake --build *)",
+      "Bash(cmake --install *)",
+      "Bash(ctest *)",
+      "Bash(./dnf_composer_tests.exe *)",
+      "Bash(./dnf_composer_tests.exe)",
+      "Bash(clang-tidy *)",
+      "Bash(run-clang-tidy *)",
+      "Bash(clang++ --version)",
+      "Bash(timeout *)",
+      "Bash(echo *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(grep *)",
+      "Bash(awk *)",
+      "Bash(sed *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(cut *)",
+      "Bash(tr *)",
+      "Bash(xargs *)",
+      "Bash(find *)",
+      "Bash(diff *)",
+      "Bash(cd *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(export *)",
+      "Bash(for *)",
+      "Bash(python3 *)",
+      "Bash(jq *)",
+      "PowerShell(cmd /c *)",
+      "PowerShell(Get-*)",
+      "Read(//c/dev-files/**)",
+      "Read(//c/Users/gaspa/AppData/Local/Temp/claude/**)",
+      "Read(//tmp/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\dev-files\\dnf-wt"
+    ],
+    "model": "claude-opus-4-8"
+  }
+}

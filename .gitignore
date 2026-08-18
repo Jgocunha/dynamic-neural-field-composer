@@ -2,7 +2,6 @@
 *.vscode
 profiling/
 *.idea
-*.claude
 
 install/
 build/
@@ -11,3 +10,10 @@ docs/
 
 imgui.ini
 imnode-window.json
+
+# Claude configuration is tracked; only local overrides and scratch are not.
+# The !.claude/docs/ negation must follow the docs/ rule above to win.
+!.claude/docs/
+.claude/settings.local.json
+.claude/temp/*
+!.claude/temp/.gitkeep
