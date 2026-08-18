@@ -20,7 +20,8 @@ gh issue list --limit 60
 ```
 
 Read the candidates. Rank by implementation complexity, not by label. Write the ranked
-queue to `.claude/temp/autopilot-queue.md`:
+queue to `.claude/temp/autopilot-queue.md` (`mkdir -p .claude/temp` first - it is untracked
+and may not exist in a fresh worktree):
 
 | # | Issue | Title | Complexity | Files | Backwards-compat risk |
 

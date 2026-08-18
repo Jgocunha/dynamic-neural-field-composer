@@ -1,9 +1,5 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
-
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
-
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
@@ -62,10 +58,6 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
-
----
-
 # Project: dynamic-neural-field-composer
 
 Everything above is general engineering guidance. Everything below is specific to this
@@ -95,8 +87,7 @@ Use the `build-and-test` skill. Two facts that bite:
 - **`tests/CMakeLists.txt` lists every test file explicitly. There is no globbing.** A new
   test file not added there is silently never compiled - the suite goes green without ever
   having run it.
-- The live build tree is Ninja at `build/release`. `build/x64-release` is a stale
-  Visual-Studio-generator tree left by `scripts/build.bat`; do not use it.
+- The live build tree is Ninja at `build/release`.
 
 ## Conventions
 
@@ -105,8 +96,8 @@ Never proceed on an assumption about what is safe to break.
 
 **Clean Code always.** Deviating needs an explicit justification in the PR description.
 Meaningful names, small focused functions, no comments explaining *what*, no raw owning
-pointers (`shared_ptr` / `unique_ptr` only). See
-`.claude/docs/code-review-martin-stroustrup.md`.
+pointers (`shared_ptr` / `unique_ptr` only). See the code style section of
+`CONTRIBUTING.md`.
 
 **Check `tools/` before writing any helper.** Math, utility, profiling and exception
 helpers have existing homes and belong there, not beside their call site:
@@ -129,8 +120,8 @@ failure, not a style nit.
 **TDD** - write the failing test first, watch it fail, then implement. "Fix the bug" means
 "write a test that reproduces it, then make it pass".
 
-**Temp files** go to `.claude/temp/` (gitignored). Never scatter scratch files through the
-project tree.
+**Temp files** go to `.claude/temp/` (gitignored; `mkdir -p` it if missing). Never scatter
+scratch files through the project tree.
 
 **Doxygen** - new or changed public entities under `include/` need `@brief`, one `@param`
 per parameter, and `@return` unless void.

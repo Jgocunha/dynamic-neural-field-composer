@@ -9,9 +9,10 @@ Review `git diff origin/main...HEAD` (or the diff you were given) against the ch
 This deliberately overlaps `.coderabbit.yaml` so problems surface locally before CodeRabbit
 posts them on the PR.
 
-Deep background on this codebase's recurring problems lives in
-`.claude/docs/code-review-martin-stroustrup.md` - ODR hazards, ownership/lifetime traps,
-duplication hotspots. Consult it when a finding looks structural.
+If `.claude/docs/code-review-martin-stroustrup.md` is present locally, it holds deep
+background on this codebase's recurring problems - ODR hazards, ownership/lifetime traps,
+duplication hotspots. Consult it when a finding looks structural. It is untracked working
+material, so do not assume it exists.
 
 ## 1. Backwards compatibility (highest severity)
 
