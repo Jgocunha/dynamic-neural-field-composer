@@ -120,6 +120,25 @@ failure, not a style nit.
 **TDD** - write the failing test first, watch it fail, then implement. "Fix the bug" means
 "write a test that reproduces it, then make it pass".
 
+**Instrument, don't guess.** When tracing a bug, add logging and read the output rather than
+reasoning about control flow from the source. Use
+`dnf_composer::tools::logger::log(logger::DEBUG, ...)` from `include/tools/logger.h` -
+levels `DEBUG/INFO/WARNING/ERROR/FATAL`, `setMinLogLevel()` for the threshold, and
+`tests/common/scoped_min_log_level.h` when a test needs to change it. Write messages as
+plain natural-language sentences carrying the values that matter: *"field 'u' at step 42:
+max activation 0.87 at index 51, below threshold 1.0, no bump"* is worth far more than
+`here1` or a bare variable dump - people and models both read them. Remove instrumentation
+before the PR unless it earns a permanent place at `DEBUG`.
+
+**Write findings down.** Something learned while working that is not obvious from the code
+goes in a short, self-contained `.md` file - one topic per file, readable without the
+conversation that produced it:
+
+| Finding | Goes in |
+|---|---|
+| True of the project anywhere | `.claude/(project)notes/` - tracked |
+| Only true of this machine (toolchain versions, install locations, local paths) | `.claude/(machine)notes/` - gitignored |
+
 **Temp files** go to `.claude/temp/` (gitignored; `mkdir -p` it if missing). Never scatter
 scratch files through the project tree.
 

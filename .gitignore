@@ -11,8 +11,9 @@ docs/
 imgui.ini
 imnode-window.json
 
-# Only CLAUDE.md and skills/ are shared. Settings hold machine-specific paths, and
-# docs/ tests/ issues/ reports/ temp/ are local working material.
+# Only CLAUDE.md, skills/ and (project)notes/ are shared. Settings hold machine-specific
+# paths, and docs/ tests/ issues/ reports/ temp/ (machine)notes/ are local working material.
 .claude/*
 !.claude/CLAUDE.md
 !.claude/skills/
+!.claude/(project)notes/

@@ -51,11 +51,29 @@ guess.
 
 ## Phase 3 - Dispatch
 
-Spawn 3 Sonnet agents in parallel, one issue each. Give each: the issue body, its plan,
-its worktree path and branch name.
+Workers run in parallel, so each needs its **own checkout** - three agents cannot share one
+working tree. Create a worktree per issue, in a directory *outside* the repository so the
+build trees and scratch files never collide with it:
 
-Instruct each worker to follow `work-an-issue` **steps 2-5 only** - worktree, failing
-test, implement, build, test. Then report back with:
+```bash
+git worktree add <worktrees-dir>/<short-name> -b <type>/<slug> <base>
+```
+
+Use the worktree root the user names. If none was given, default to a sibling of the
+repository (e.g. `../<repo-name>-worktrees/`) and say which you chose. Record the mapping
+of issue to worktree so you can find each one again in Phase 4.
+
+**Base branch:** until PR #178 (`chore/claude-infrastructure`) is merged, workers must
+branch from `origin/chore/claude-infrastructure`, not `origin/main` - a worktree off main
+has no `.claude/` and would see none of these skills. Pass the base explicitly in each
+worker's prompt. After #178 lands, `origin/main` is correct again.
+
+Spawn 3 Sonnet agents in parallel, one issue each. Give each: the issue body, its plan, its
+worktree path, and its branch name (already created - the worker works in place).
+
+Instruct each worker to follow `work-an-issue` **steps 1 and 3-6 only** - understand, failing
+test, instrument, implement, build and test. Skip step 2; its branch already exists. Then
+report back with:
 
 - the full diff
 - test results with counts
@@ -63,11 +81,6 @@ test, implement, build, test. Then report back with:
 
 Tell it explicitly: do not review, do not touch docs, do not commit, do not push, do not
 open a PR. Those are the orchestrator's.
-
-**Base branch:** until PR #178 (`chore/claude-infrastructure`) is merged, workers must
-branch from `origin/chore/claude-infrastructure`, not `origin/main` - a worktree off main
-has no `.claude/` and would see none of these skills. Pass the base explicitly in each
-worker's prompt. After #178 lands, `origin/main` is correct again.
 
 Builds run at `--parallel 4` (the `build-and-test` skill enforces this). Three unbounded
 C++ builds on one machine would thrash every core.

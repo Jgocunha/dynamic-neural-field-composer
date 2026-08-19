@@ -1,99 +1,73 @@
 ---
 name: build-and-test
-description: Configure, build and test dynamic-neural-field-composer on Windows. Use whenever you need to compile the library, run the GoogleTest suite, verify a change builds, or reproduce a test failure - in the main repo or in any worktree under C:\dev-files\dnf-wt.
+description: Configure, build and test dynamic-neural-field-composer. Use whenever you need to compile the library, run the GoogleTest suite, verify a change builds, or reproduce a test failure.
 ---
 
 # Build and test
 
-The canonical loop. Do not improvise cmake or vcvars invocations; the commands below are
-verified working in this repo, and the obvious-looking alternatives are broken (see step 1).
+## Where things are
 
-## Facts you need
+All commands run from the **nested project root**, `dynamic-neural-field-composer/` inside
+the repository - not the repository root.
 
-- Project root is **nested**: `<worktree>/dynamic-neural-field-composer/`. All commands
-  below run from there, not the repo root.
-- `VCPKG_ROOT` is `C:\dev-files\vcpkg`.
-- `imgui-platform-kit` resolves from the **system install** at
-  `C:\Program Files\imgui-platform-kit`. A fresh worktree therefore needs **no**
-  `scripts/setup.bat` and no local `deps/` - it configures straight away.
-- Build tree is Ninja at `build/release`. Ignore `build/x64-release`; it is a stale
-  Visual-Studio-generator tree.
-- Test binary lands at `build/release/tests/dnf_composer_tests.exe`.
+`VCPKG_ROOT` must be set in the environment; the CMake presets read it. If it is unset, run
+`scripts/setup.sh` (Linux/macOS) or `scripts/setup.bat` (Windows) once - it installs the
+dependencies and sets the variable.
 
-## 1. Pick the toolchain - read this before anything else
+On Windows the presets use Ninja with MSVC, so `cl.exe` must be on `PATH`. Run from a shell
+that has the MSVC environment loaded (a Developer Command Prompt, or after sourcing
+`vcvars64.bat`). See Troubleshooting for which MSVC to load.
 
-**Do not use `vswhere -latest`.** On this machine it returns *VS 18 BuildTools*, whose STL
-headers `static_assert` that the compiler is MSVC 19.50 or newer. Every build tree here was
-configured with *VS 2022 Community* (`cl.exe` 14.44), so sourcing VS18's `vcvars64.bat`
-puts VS18 headers in front of a 14.44 compiler and every translation unit dies with:
+**On Windows, re-assert `VCPKG_ROOT` after loading the MSVC environment.** `vcvars64.bat`
+overwrites `VCPKG_ROOT` to point at Visual Studio's bundled vcpkg, which does not have this
+project's packages installed. The presets expand `$env{VCPKG_ROOT}` *after* that, so they
+pick up the wrong toolchain. Snapshot the value before loading MSVC and set it back
+afterwards - `scripts/build.bat` does exactly this, for exactly this reason.
 
-    error C2338: static_assert failed: 'error STL1001: Unexpected compiler version,
-    expected MSVC Compiler 19.50 or newer.'
+On an already-configured tree the cached toolchain wins and the problem stays invisible; a
+fresh configure is where it bites.
 
-`scripts/build.bat` uses `vswhere -latest` and carries the same latent bug - it only
-survives because it configures from scratch, so CMake and vcvars agree with each other.
+## Configure
 
-**Rule: the vcvars you source must match `CMAKE_CXX_COMPILER` in that build tree's
-`CMakeCache.txt`.** Check when in doubt:
+The project ships `CMakePresets.json`. Use it - it resolves the generator, build directory
+and vcpkg toolchain for you, so nothing needs a hardcoded path:
 
 ```bash
-grep "^CMAKE_CXX_COMPILER:" build/release/CMakeCache.txt
+cmake --preset release      # or: debug
 ```
 
-For every existing build tree and worktree in this project, that is:
+Presets are `release` and `debug`, both Ninja, writing to `build/release` and `build/debug`.
+Confirm what is available with `cmake --list-presets`.
 
-    C:\Program Files\Microsoft Visual Studio\2022\Community
+Configure once per checkout. Re-run only if a `CMakeLists.txt` changed.
 
-## 2. Configure (once per worktree)
+## Build
 
-MSVC needs `vcvars64.bat` sourced in the same shell, so this goes through `cmd /c`. Drive
-it from PowerShell - `cmd`'s `for /f` parser chokes on the parentheses in
-`%ProgramFiles(x86)%`, which is why the inline-vswhere one-liner fails.
-
-```powershell
-$vs   = "C:\Program Files\Microsoft Visual Studio\2022\Community"
-$proj = "<WORKTREE>\dynamic-neural-field-composer"
-cmd /c "`"$vs\VC\Auxiliary\Build\vcvars64.bat`" >nul && cd /d `"$proj`" && cmake -S . -B build/release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake"
-```
-
-Skip this if `build/release/CMakeCache.txt` exists and no `CMakeLists.txt` changed.
-
-## 3. Build
-
-**Always cap parallelism at 4.** Several agents may be building at once on this machine;
+**Cap parallelism at 4.** Several agents may be building on the same machine at once;
 unbounded `--parallel` oversubscribes every core and slows all of them down.
 
-```powershell
-cmd /c "`"$vs\VC\Auxiliary\Build\vcvars64.bat`" >nul && cd /d `"$proj`" && cmake --build build/release --target dnf_composer_tests --parallel 4"
+```bash
+cmake --build --preset release --target dnf_composer_tests --parallel 4
 ```
 
-Targets: `dnf_composer_tests`, `dnf_composer_lib`, `dynamic-neural-field-composer`
-(the GUI app), `dnf_composer_benchmark`, `dnf_composer_profiler`.
+Targets: `dnf_composer_tests`, `dnf_composer_lib`, `dynamic-neural-field-composer` (the GUI
+app), `dnf_composer_benchmark`, `dnf_composer_profiler`.
 
-A cold build of `dnf_composer_tests` takes several minutes - run it in the background
-rather than blocking on a foreground timeout.
+A cold build takes several minutes - run it in the background rather than blocking on a
+foreground timeout.
 
-## 4. Test
+## Test
 
-**Prefer the test binary directly.** It is the reliable path and avoids the CMake-version
-coupling described below:
+Run the GoogleTest binary directly. `CMakePresets.json` defines no test presets, so this is
+the reliable path:
 
 ```bash
-./build/release/tests/dnf_composer_tests.exe
-./build/release/tests/dnf_composer_tests.exe --gtest_filter="SuiteName.*"   # TDD inner loop
+./build/release/tests/dnf_composer_tests          # .exe on Windows
+./build/release/tests/dnf_composer_tests --gtest_filter="SuiteName.*"    # TDD inner loop
 ```
 
-**`ctest` on PATH is broken for this build tree.** It is version 3.28.0-rc5, but the tree
-was generated by CLion's bundled CMake 3.31, so `ctest --test-dir build/release` fails with:
-
-    CMake 3.30 or higher is required.  You are running version 3.28.0-rc5
-
-If you specifically need ctest (for its per-test isolation), use CLion's build:
-
-```bash
-"/c/Program Files/JetBrains/CLion 2025.1.1/bin/cmake/win/x64/bin/ctest.exe" \
-    --test-dir build/release --output-on-failure
-```
+`ctest --test-dir build/release --output-on-failure` also works when the available `ctest`
+is new enough - see Troubleshooting.
 
 Golden-data tests regenerate with `DNF_UPDATE_GOLDEN=1`. Only do this when the change to
 the reference values is intentional and you can explain why each one moved.
@@ -102,17 +76,46 @@ the reference values is intentional and you can explain why each one moved.
 
 `tests/CMakeLists.txt` lists every source explicitly - **there is no globbing**. A new file
 not added to that list is silently never compiled, and the suite will go green without ever
-having run it. Add the file, then reconfigure (step 2) before building.
+having run it. Add the file, then reconfigure before building.
+
+## Working in an existing build tree
+
+`scripts/build.bat`, `build.sh` and `build_macos.sh` create *different* trees from the
+presets - `build/x64-release`, `build/linux-release`, `build/macos-release`. Prefer the
+presets. If you must use an existing tree, pick whichever directory under `build/` actually
+has a `CMakeCache.txt`, and read that cache for its generator and compiler.
+
+## Troubleshooting
+
+**Every translation unit fails with `STL1001: Unexpected compiler version`.**
+The MSVC environment you loaded does not match the compiler the build tree was configured
+with, so one toolchain's STL headers are being fed to another's compiler. The rule: **the
+vcvars you source must match `CMAKE_CXX_COMPILER` in that tree's `CMakeCache.txt`.** Check
+it:
+
+```bash
+grep "^CMAKE_CXX_COMPILER:" build/release/CMakeCache.txt
+```
+
+Beware `vswhere -latest` when more than one Visual Studio is installed - it can select a
+newer one than the tree was configured with. `scripts/build.bat` uses `vswhere -latest` and
+carries this latent bug; it survives only because it configures from scratch, so CMake and
+vcvars end up agreeing.
+
+**`ctest` fails demanding a newer CMake** (`CMake 3.30 or higher is required`).
+The `ctest` on `PATH` is older than the CMake that generated the build tree - common when
+an IDE with a bundled CMake configured it. **ctest must be at least the generator's CMake
+version.** Either invoke the matching ctest, or just run the gtest binary directly.
 
 ## Reporting results
 
 Report what actually happened, with real output:
 
 - Green: say so plainly, with the test count.
-- Red: paste the failing assertion and the test name. Do not summarise a failure as
-  "some tests failed" - the actual message is the useful part.
-- **Check the exit code of the build itself, not of a pipeline.** Piping cmake into `tail`
-  or `Select-Object` returns the *pipe's* status, so a failed build reports exit 0. Capture
-  `$LASTEXITCODE` immediately, or read the tail of the output for `FAILED:` lines.
+- Red: paste the failing assertion and the test name. Do not summarise a failure as "some
+  tests failed" - the actual message is the useful part.
+- **Check the build's own exit code, not a pipeline's.** Piping cmake into `tail` or
+  `Select-Object` returns the *pipe's* status, so a failed build reports success. Capture
+  the exit code directly, or scan the output for `FAILED:`.
 - Do not claim verification you did not perform. If you only built and did not run the
   suite, say that.
