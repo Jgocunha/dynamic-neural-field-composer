@@ -109,6 +109,12 @@ struct Result
 	bool        noisy      = false;
 	Stats       stepsPerSec;
 	Stats       nsPerCellStep;
+
+	// FNV-1a64 of the source deck file's bytes (bench_env::detail::fnv1a64), empty for a
+	// Result with no backing file (e.g. dnf_composer_benchmark's synthetic N-fields
+	// configurations). A changed hash means a deck was edited, which invalidates any
+	// baseline recorded against it regardless of what the timings say.
+	std::string deckHash;
 };
 
 namespace detail {
@@ -162,6 +168,7 @@ inline void writeJson(const std::string& path, const bench_env::Env& env,
 			{"path", r.path},
 			{"field_cells", r.fieldCells},
 			{"noisy", r.noisy},
+			{"deck_hash", r.deckHash},
 			{"steps_per_sec", detail::statsToJson(r.stepsPerSec)},
 			{"ns_per_cell_step", detail::statsToJson(r.nsPerCellStep)},
 		});

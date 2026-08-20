@@ -175,6 +175,38 @@ if(DNF_COMPOSER_BUILD_TESTS)
             imgui-platform-kit
     )
 
+    # Deck-driven performance baseline (manual perf run; not a unit test). Times the
+    # fixed deck set in tests/benchmark/decks.json instead of a synthetic architecture --
+    # see tests/benchmark/DECKS.md. Writes JSON session reports to
+    # tests/benchmark/results/ (gitignored; results.md/baselines/ are the tracked history).
+    add_executable(dnf_composer_deckbench "benchmark/deckbench_main.cpp" "common/bench_env.h" "common/bench_report.h")
+    target_include_directories(dnf_composer_deckbench PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common)
+    # Same COMDAT hazard as dnf_composer_profiler above: without the library's own AVX2
+    # flags, this TU's scalar instantiations of the math.h templates could win the link
+    # and this tool would measure code the library never runs.
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i.86)$")
+    target_compile_options(dnf_composer_deckbench PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+            $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>)
+    endif()
+    target_compile_definitions(dnf_composer_deckbench PRIVATE
+            DECKBENCH_DECKS_MANIFEST="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/decks.json"
+            DECKBENCH_VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data"
+            DECKBENCH_RESULTS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results"
+            BENCH_ENV_BUILD_TYPE="$<CONFIG>"
+            BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}"
+            BENCH_ENV_CXX_FLAGS="${DNF_BENCH_CXX_FLAGS}"
+            BENCH_ENV_GIT_DIRTY=${DNF_COMPOSER_GIT_DIRTY})
+    target_link_libraries(dnf_composer_deckbench PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            nlohmann_json::nlohmann_json
+            imgui::imgui
+            imgui-platform-kit
+    )
+
     # Regenerates tests/validation/data/2d_spectral/expected/*.csv from the sim
     # JSONs under tests/validation/data/2d_spectral/simulations/. Not a unit
     # test (NOT registered with gtest_discover_tests) and not built as part of
