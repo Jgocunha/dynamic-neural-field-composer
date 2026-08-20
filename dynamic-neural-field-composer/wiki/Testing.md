@@ -2,6 +2,8 @@
 
 The project uses **Google Test (GTest)** for unit testing. The test suite covers all major library modules and is integrated into the CMake build via `gtest_discover_tests`, so tests are automatically registered with CTest.
 
+This page covers correctness testing. For the performance tools — the `dnf_composer_deckbench` regression gate, the profiler, and the kernel microbenchmarks — see [Performance Benchmarking](Performance%20Benchmarking.md). Those are manual runs, not part of the test suite.
+
 ---
 
 ## Setup
