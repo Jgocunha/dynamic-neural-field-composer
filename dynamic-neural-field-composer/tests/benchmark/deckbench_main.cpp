@@ -9,6 +9,7 @@
 //
 // Usage: dnf_composer_deckbench [--decks <manifest.json>] [--steps N] [--runs N]
 //                                [--json <out.json>] [--paths]
+//                                [--record [--force] | --check [--threshold PCT]]
 //   --decks   deck manifest, default: the one baked in at configure time
 //   --steps   timed steps per run, default 2000
 //   --runs    runs per deck, default 5 (median + IQR reported)
@@ -16,10 +17,16 @@
 //   --paths   for every "large*" tier deck, ALSO time under ForceDirect and ForceSpectral
 //             (tools::math::ScopedConvolutionMode) so Auto's dispatch choice is confirmed
 //             empirically instead of assumed. There is no other way to observe which
-//             convolution path Auto took without instrumenting the library.
+//             convolution path Auto took without instrumenting the library. Ignored (a
+//             warning is printed) together with --record/--check, which always compare
+//             the plain Auto-mode measurement so every deck has exactly one entry.
 //
-// --record / --check against a per-machine baseline are added by a later work package
-// (WP-06); this tool only measures and reports.
+// --record / --check compare against a per-machine baseline at
+// tests/benchmark/baselines/<fingerprint>.json -- see the exit-code table on
+// runCheck() below. NEVER run these from CI: GitHub-hosted runners are shared VMs
+// whose run-to-run spread exceeds any regression worth gating on (see
+// .claude/performance-workplan/WP-07-machine-hygiene-scripts.md). This is a local,
+// pre-PR check, ideally run under scripts/bench.ps1 / scripts/bench.sh.
 
 #include <chrono>
 #include <cstdio>
@@ -28,6 +35,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "simulation/simulation.h"
@@ -52,6 +60,16 @@ constexpr int WARMUP_STEPS = 200;
 #ifndef DECKBENCH_RESULTS_DIR
 #define DECKBENCH_RESULTS_DIR "results"
 #endif
+#ifndef DECKBENCH_BASELINES_DIR
+#define DECKBENCH_BASELINES_DIR "baselines"
+#endif
+
+// Measured, not guessed: .claude/(project)notes/perf-noise-floor.md records a 10-session
+// noise-floor measurement under scripts/bench (median IQR/median 1.89%, worst session
+// 3.79%) on the reference dev machine. 5% sits comfortably above both, with real margin
+// rather than being tuned to rarely fire. Re-measure and revise here (and in
+// tests/benchmark/DECKS.md) if that changes materially on a different reference machine.
+constexpr double kDefaultThresholdPct = 5.0;
 
 struct DeckSpec
 {
@@ -154,6 +172,158 @@ void printResultLine(const bench_report::Result& r)
 	            r.nsPerCellStep.relSpread() * 100.0, r.noisy ? "  [NOISY]" : "");
 }
 
+std::filesystem::path baselinePathFor(const bench_env::Env& env)
+{
+	return std::filesystem::path(DECKBENCH_BASELINES_DIR) / (bench_env::fingerprint(env) + ".json");
+}
+
+// --record: write tests/benchmark/baselines/<fingerprint>.json from `results`. Refuses to
+// overwrite an existing baseline without --force, and refuses outright if any result is
+// noisy -- a baseline recorded on a noisy machine poisons every later comparison.
+int runRecord(const bench_env::Env& env, const std::vector<bench_report::Result>& results,
+              const nlohmann::json& config, bool force)
+{
+	for (const auto& r : results)
+	{
+		if (r.noisy)
+		{
+			std::fprintf(stderr,
+				"--record refused: %s is too noisy to trust (IQR/median = %.1f%%).\n"
+				"Re-run under scripts/bench.ps1 / scripts/bench.sh -- a baseline recorded\n"
+				"here would poison every later --check comparison.\n",
+				r.name.c_str(), r.nsPerCellStep.relSpread() * 100.0);
+			return 1;
+		}
+	}
+
+	const std::filesystem::path baselinesDir(DECKBENCH_BASELINES_DIR);
+	std::filesystem::create_directories(baselinesDir);
+	const auto path = baselinePathFor(env);
+
+	if (std::filesystem::exists(path) && !force)
+	{
+		std::fprintf(stderr,
+			"--record refused: %s already exists. Pass --force to overwrite deliberately.\n",
+			path.string().c_str());
+		return 1;
+	}
+
+	bench_report::writeJson(path.string(), env, results, config);
+	std::printf("Recorded baseline: %s\n", path.string().c_str());
+	return 0;
+}
+
+struct BaselineEntry { double nsPerCellStepMedian = 0.0; bool noisy = false; std::string deckHash; };
+
+// --check: compare `results` against tests/benchmark/baselines/<fingerprint>.json.
+//
+// Exit codes:
+//   0  every deck within threshold
+//   1  at least one deck regressed past threshold
+//   2  no baseline for this fingerprint, or a deck's hash no longer matches the
+//      baseline's -- refuse to compare rather than silently comparing apples to oranges
+//   3  a current or baseline result is too noisy to conclude anything -- inconclusive,
+//      NOT a failure (a gate that fails on noise gets ignored within a week)
+int runCheck(const bench_env::Env& env, const std::vector<bench_report::Result>& results,
+             double thresholdPct)
+{
+	const auto path = baselinePathFor(env);
+	if (!std::filesystem::exists(path))
+	{
+		std::fprintf(stderr,
+			"--check refused: no baseline for this environment's fingerprint (%s) at %s.\n"
+			"Run --record on a known-good tree first.\n",
+			bench_env::fingerprint(env).c_str(), path.string().c_str());
+		return 2;
+	}
+
+	std::ifstream f(path);
+	nlohmann::json baselineJson;
+	f >> baselineJson;
+
+	if (baselineJson.value("fingerprint", std::string{}) != bench_env::fingerprint(env))
+	{
+		std::fprintf(stderr,
+			"--check refused: %s's own fingerprint field does not match this environment's.\n"
+			"This baseline file appears to have been copied or edited -- re-record it.\n",
+			path.string().c_str());
+		return 2;
+	}
+
+	std::unordered_map<std::string, BaselineEntry> baseline;
+	for (const auto& r : baselineJson.at("results"))
+	{
+		BaselineEntry e;
+		e.nsPerCellStepMedian = r.at("ns_per_cell_step").at("median").get<double>();
+		e.noisy               = r.value("noisy", false);
+		e.deckHash            = r.value("deck_hash", std::string{});
+		baseline[r.at("name").get<std::string>()] = e;
+	}
+
+	std::printf("\n%-22s %14s %14s %10s  %s\n", "deck", "baseline", "current", "delta", "verdict");
+	std::printf("%-22s %14s %14s %10s  %s\n", "----", "--------", "-------", "-----", "-------");
+
+	bool anyMismatch  = false;
+	bool anyNoisy     = false;
+	bool anyRegressed = false;
+
+	for (const auto& r : results)
+	{
+		const auto it = baseline.find(r.name);
+		if (it == baseline.end())
+		{
+			std::printf("%-22s %14s %14s %10s  NOT IN BASELINE\n", r.name.c_str(), "--", "--", "--");
+			anyMismatch = true;
+			continue;
+		}
+		const auto& b = it->second;
+		if (!b.deckHash.empty() && !r.deckHash.empty() && b.deckHash != r.deckHash)
+		{
+			std::printf("%-22s %14s %14s %10s  DECK CHANGED SINCE BASELINE\n",
+			            r.name.c_str(), "--", "--", "--");
+			anyMismatch = true;
+			continue;
+		}
+
+		const double deltaPct = b.nsPerCellStepMedian > 0.0
+			? 100.0 * (r.nsPerCellStep.median - b.nsPerCellStepMedian) / b.nsPerCellStepMedian
+			: 0.0;
+		const bool noisyHere = r.noisy || b.noisy;
+		const bool regressed = deltaPct > thresholdPct;
+		anyNoisy     = anyNoisy || noisyHere;
+		anyRegressed = anyRegressed || regressed;
+
+		const char* verdict = noisyHere ? "NOISY" : (regressed ? "REGRESSED" : "ok");
+		std::printf("%-22s %14.2f %14.2f %+9.2f%%  %s\n",
+		            r.name.c_str(), b.nsPerCellStepMedian, r.nsPerCellStep.median, deltaPct, verdict);
+	}
+	std::printf("(ns/field-cell/step, median; delta = current vs baseline; threshold %.1f%%)\n",
+	            thresholdPct);
+
+	if (anyMismatch)
+	{
+		std::fprintf(stderr,
+			"\n--check refused: see NOT IN BASELINE / DECK CHANGED rows above. A deck that\n"
+			"changed (edited, added, or removed) invalidates the comparison regardless of\n"
+			"the timings -- re-record the baseline once the change is deliberate.\n");
+		return 2;
+	}
+	if (anyNoisy)
+	{
+		std::fprintf(stderr,
+			"\n--check inconclusive: see NOISY rows above. A noisy run never fails this\n"
+			"gate -- re-run under scripts/bench.ps1 / scripts/bench.sh and check again.\n");
+		return 3;
+	}
+	if (anyRegressed)
+	{
+		std::fprintf(stderr, "\n--check FAILED: see REGRESSED rows above.\n");
+		return 1;
+	}
+	std::printf("\n--check passed: every deck within %.1f%%.\n", thresholdPct);
+	return 0;
+}
+
 } // namespace
 
 int main(int argc, char* argv[])
@@ -164,21 +334,42 @@ int main(int argc, char* argv[])
 	int         timedSteps  = 2000;
 	int         nRuns       = 5;
 	std::string jsonArg;
-	bool        pathsMode = false;
+	bool        pathsMode  = false;
+	bool        recordMode = false;
+	bool        checkMode  = false;
+	bool        force      = false;
+	double      thresholdPct = kDefaultThresholdPct;
 
 	for (int i = 1; i < argc; ++i)
 	{
 		const std::string a = argv[i];
-		if (a == "--decks" && i + 1 < argc)      manifestArg = argv[++i];
-		else if (a == "--steps" && i + 1 < argc) timedSteps  = std::stoi(argv[++i]);
-		else if (a == "--runs" && i + 1 < argc)  nRuns       = std::stoi(argv[++i]);
-		else if (a == "--json" && i + 1 < argc)  jsonArg     = argv[++i];
-		else if (a == "--paths")                 pathsMode   = true;
+		if (a == "--decks" && i + 1 < argc)         manifestArg  = argv[++i];
+		else if (a == "--steps" && i + 1 < argc)    timedSteps   = std::stoi(argv[++i]);
+		else if (a == "--runs" && i + 1 < argc)     nRuns        = std::stoi(argv[++i]);
+		else if (a == "--json" && i + 1 < argc)     jsonArg      = argv[++i];
+		else if (a == "--paths")                    pathsMode    = true;
+		else if (a == "--record")                   recordMode   = true;
+		else if (a == "--check")                    checkMode    = true;
+		else if (a == "--force")                    force        = true;
+		else if (a == "--threshold" && i + 1 < argc) thresholdPct = std::stod(argv[++i]);
 		else
 		{
 			std::fprintf(stderr, "Unknown argument: %s\n", a.c_str());
 			return 1;
 		}
+	}
+
+	if (recordMode && checkMode)
+	{
+		std::fprintf(stderr, "--record and --check are mutually exclusive.\n");
+		return 1;
+	}
+	if ((recordMode || checkMode) && pathsMode)
+	{
+		std::fprintf(stderr,
+			"Note: --paths is ignored with --record/--check, which always compare the plain\n"
+			"Auto-mode measurement so every deck has exactly one baseline entry.\n");
+		pathsMode = false;
 	}
 
 	std::vector<DeckSpec> decks;
@@ -316,6 +507,16 @@ int main(int argc, char* argv[])
 		            bench_report::kNoisyRelSpread * 100.0);
 
 	const auto env = bench_env::capture();
+	const auto config = nlohmann::json{{"warmup_steps", WARMUP_STEPS},
+	                                    {"timed_steps", timedSteps},
+	                                    {"runs", nRuns},
+	                                    {"paths_mode", pathsMode},
+	                                    {"manifest", manifestArg}};
+
+	if (recordMode)
+		return runRecord(env, results, config, force);
+	if (checkMode)
+		return runCheck(env, results, thresholdPct);
 
 	std::filesystem::path jsonPath;
 	if (!jsonArg.empty())
@@ -329,12 +530,7 @@ int main(int argc, char* argv[])
 		jsonPath = resultsDir / ("deckbench_" + filenameTimestamp() + "_" + bench_env::fingerprint(env) + ".json");
 	}
 
-	bench_report::writeJson(jsonPath.string(), env, results,
-	                         nlohmann::json{{"warmup_steps", WARMUP_STEPS},
-	                                        {"timed_steps", timedSteps},
-	                                        {"runs", nRuns},
-	                                        {"paths_mode", pathsMode},
-	                                        {"manifest", manifestArg}});
+	bench_report::writeJson(jsonPath.string(), env, results, config);
 	std::printf("\nWrote %s\n", jsonPath.string().c_str());
 
 	return 0;

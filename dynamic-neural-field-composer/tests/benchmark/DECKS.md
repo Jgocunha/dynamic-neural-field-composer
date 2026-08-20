@@ -50,3 +50,13 @@ baselines before that point were measured against a different deck.
 | Date | Change | Reason |
 |---|---|---|
 | 2026-08-20 | Initial selection: `sim_001_sigmoid_b100`, `sim_049_sigmoid_b100`, `golden_001_gauss_narrow`, `golden_002_gauss_wide` | Smallest set covering 1D + 2D, direct + spectral, 1-term + 2-term kernels, and the dispatch boundary — see rationale above |
+
+## `--check` threshold
+
+`dnf_composer_deckbench --check`'s default `--threshold` is **5%**, on median
+`ns_per_cell_step` per deck. This is a measured value, not a guess: see
+`.claude/(project)notes/perf-noise-floor.md` for the 10-session-bare-vs-10-session-wrapped
+noise-floor measurement it's derived from (median relative spread 1.89% under
+`scripts/bench`, worst observed session 3.79% — 5% has real margin above both). Revisit
+that note, and this line, if a re-measurement on a different reference machine changes
+the picture materially.
