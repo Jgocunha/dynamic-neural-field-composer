@@ -163,6 +163,11 @@ if(DNF_COMPOSER_BUILD_TESTS)
     endif()
     target_compile_definitions(dnf_composer_profiler PRIVATE
             PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md"
+            # --deck / --decks mode only: resolves decks.json's relative paths (same root
+            # dnf_composer_deckbench uses) and where its JSON output lands (the same
+            # gitignored dir dnf_composer_benchmark/deckbench already write session JSON to).
+            PROFILER_VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data"
+            PROFILER_JSON_DIR="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results"
             BENCH_ENV_BUILD_TYPE="$<CONFIG>"
             BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
             BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}"
