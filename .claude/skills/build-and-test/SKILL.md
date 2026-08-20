@@ -11,8 +11,11 @@ All commands run from the **nested project root**, `dynamic-neural-field-compose
 the repository - not the repository root.
 
 `VCPKG_ROOT` must be set in the environment; the CMake presets read it. If it is unset, run
-`scripts/setup.sh` (Linux/macOS) or `scripts/setup.bat` (Windows) once - it installs the
-dependencies and sets the variable.
+`scripts/setup.sh` (Linux/macOS) or `scripts/setup.bat` (Windows) once to install the
+dependencies. **Neither script leaves `VCPKG_ROOT` set in the shell you ran it from** -
+`setup.sh` only `export`s inside its own process, and `setup.bat` writes it via `setx`,
+which only reaches shells opened afterward. Open a new shell before configuring, or set the
+variable directly for the current session.
 
 On Windows the presets use Ninja with MSVC, so `cl.exe` must be on `PATH`. Run from a shell
 that has the MSVC environment loaded (a Developer Command Prompt, or after sourcing
@@ -39,7 +42,8 @@ cmake --preset release      # or: debug
 Presets are `release` and `debug`, both Ninja, writing to `build/release` and `build/debug`.
 Confirm what is available with `cmake --list-presets`.
 
-Configure once per checkout. Re-run only if a `CMakeLists.txt` changed.
+Configure once per checkout. Re-run if `CMakeLists.txt`, `CMakePresets.json`, or the vcpkg
+toolchain/dependency set changed - CMake does not watch any of these on its own.
 
 ## Build
 
@@ -74,9 +78,14 @@ the reference values is intentional and you can explain why each one moved.
 
 ## Adding a test file
 
-`tests/CMakeLists.txt` lists every source explicitly - **there is no globbing**. A new file
-not added to that list is silently never compiled, and the suite will go green without ever
-having run it. Add the file, then reconfigure before building.
+`tests/CMakeLists.txt` lists the core sources explicitly (`elements/`, `simulation/`,
+`tools/`, `exceptions/`, `application/`). A new file there that isn't added to the list is
+silently never compiled, and the suite will go green without ever having run it. Add it,
+then reconfigure before building.
+
+`golden/`, `user_interface/` and `visualization/` are auto-discovered via
+`file(GLOB ... CONFIGURE_DEPENDS ...)` - a new file there just needs a reconfigure, no list
+edit.
 
 ## Working in an existing build tree
 

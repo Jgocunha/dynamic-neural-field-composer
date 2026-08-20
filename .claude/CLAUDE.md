@@ -48,7 +48,7 @@ Transform tasks into verifiable goals:
 - "Refactor X" → "Ensure tests pass before and after"
 
 For multi-step tasks, state a brief plan:
-```
+```text
 1. [Step] → verify: [check]
 2. [Step] → verify: [check]
 3. [Step] → verify: [check]
@@ -68,25 +68,29 @@ repository and takes precedence where the two overlap.
 The repo root holds `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `codecov.yml` and
 `.github/`. The project itself is nested one level down:
 
-    dynamic-neural-field-composer/
-    |-- include/          public headers - Doxygen lives here
-    |   |-- elements/ element_parameters/ simulation/ visualization/
-    |   |-- user_interface/ application/
-    |   |-- tools/        math.h utils.h profiling.h logger.h fft_convolution.h simd_dispatch.h
-    |   +-- exceptions/   exception.h
-    |-- src/              mirrors include/
-    |-- tests/            GoogleTest -> target dnf_composer_tests
-    |-- examples/         ~21 demo main()s, deliberately not unit-tested
-    |-- wiki/             15 user-facing pages
-    +-- scripts/          setup/build/install for windows, linux, macos
+```text
+dynamic-neural-field-composer/
+|-- include/          public headers - Doxygen lives here
+|   |-- elements/ element_parameters/ simulation/ visualization/
+|   |-- user_interface/ application/
+|   |-- tools/        math.h utils.h profiling.h logger.h fft_convolution.h simd_dispatch.h
+|   +-- exceptions/   exception.h
+|-- src/              mirrors include/
+|-- tests/            GoogleTest -> target dnf_composer_tests
+|-- examples/         ~21 demo main()s, deliberately not unit-tested
+|-- wiki/             15 user-facing pages
++-- scripts/          setup/build/install for windows, linux, macos
+```
 
 ## Build and test
 
 Use the `build-and-test` skill. Two facts that bite:
 
-- **`tests/CMakeLists.txt` lists every test file explicitly. There is no globbing.** A new
-  test file not added there is silently never compiled - the suite goes green without ever
-  having run it.
+- **`tests/CMakeLists.txt` lists the core sources explicitly** (`elements/`, `simulation/`,
+  `tools/`, `exceptions/`, `application/`) - a new file there that isn't added is silently
+  never compiled, and the suite goes green without ever having run it. `golden/`,
+  `user_interface/` and `visualization/` are auto-discovered via
+  `file(GLOB ... CONFIGURE_DEPENDS ...)`, so files dropped there are picked up automatically.
 - The live build tree is Ninja at `build/release`.
 
 ## Conventions
@@ -156,9 +160,11 @@ slug: `bug/connection-dim-check`, `feat/oja-example`.
 Commits - conventional, lowercase, optional scope. Types in use across the history:
 `fix, feat, test, perf, docs, refactor, ci, chore, style`.
 
-    fix: reject 1D<->2D connections with matching flattened size
-    test(golden): add sigmoid regime coverage
-    chore: pin vcpkg and imgui-platform-kit revisions
+```text
+fix: reject 1D<->2D connections with matching flattened size
+test(golden): add sigmoid regime coverage
+chore: pin vcpkg and imgui-platform-kit revisions
+```
 
 Note the split: bugfix *branches* use `bug/`, their *commits* use `fix:`.
 

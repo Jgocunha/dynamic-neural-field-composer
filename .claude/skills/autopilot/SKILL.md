@@ -60,8 +60,10 @@ git worktree add <worktrees-dir>/<short-name> -b <type>/<slug> <base>
 ```
 
 Use the worktree root the user names. If none was given, default to a sibling of the
-repository (e.g. `../<repo-name>-worktrees/`) and say which you chose. Record the mapping
-of issue to worktree so you can find each one again in Phase 4.
+repository (e.g. `../<repo-name>-worktrees/`) and say which you chose. `<base>` defaults to
+`origin/main` unless told otherwise - record whichever value you used, since Phase 5 needs
+the same one for `gh pr create --base`. Record the mapping of issue to worktree so you can
+find each one again in Phase 4.
 
 Spawn 3 Sonnet agents in parallel, one issue each. Give each: the issue body, its plan, its
 worktree path, and its branch name (already created - the worker works in place).
@@ -82,11 +84,13 @@ C++ builds on one machine would thrash every core.
 
 ## Phase 4 - Review
 
-For each returned diff:
+For each worker that reported back:
 
-1. Dispatch a **Haiku** agent with the diff and the `project-code-review` skill. Give it
-   the diff text directly - it reviews the change, not the whole repo.
-2. Dispatch a **Haiku** to run `docs-check` on the same diff.
+1. Dispatch a **Haiku** agent pointed at the worker's worktree, running
+   `project-code-review`. Give it the worktree path, not just diff text -
+   `project-code-review` requires searching `tools/` for helper reuse and checking
+   `tests/CMakeLists.txt` for registration, neither possible from a diff alone.
+2. Dispatch a **Haiku** to run `docs-check` the same way, in the same worktree.
 
 If either turns up findings, send them to the **owning worker** via `SendMessage` rather
 than spawning a new agent - the worker still holds all the context about why it wrote
@@ -102,10 +106,13 @@ Once a diff is clean, from the worker's worktree:
 ```bash
 git add -A && git commit -m "<type>: <lowercase summary>"
 git push -u origin <branch>
-gh pr create --title "<type>: <summary>" --body "<what / why / how to verify>
+gh pr create --base <base> --title "<type>: <summary>" --body "<what / why / how to verify>
 
 Closes #<N>"
 ```
+
+`gh pr create --base` takes a branch name, not a ref - `main`, not `origin/main`. Use
+whichever branch Phase 3's `<base>` pointed at.
 
 ## Phase 6 - Monitor
 
