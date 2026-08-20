@@ -10,6 +10,12 @@ Sessions before 2026-07-29 predate the **Env:** line and calibration; they all
 ran on the reference dev machine (AMD Ryzen 5 3600, MSVC 19.44, /O2 /arch:AVX2,
 Windows 11).
 
+Sessions before 2026-08-20 predate `setMeasureStepDuration(false)`, so their steps/sec
+numbers have a step discontinuity there (two fewer `steady_clock::now()` calls per step
+from that point on), and predate the ns/field-cell/step, IQR, and JSON-sidecar additions.
+The JSON sidecar (`results/<timestamp>_<fingerprint>.json`, see `tests/common/bench_report.h`)
+is the machine-readable form of each session for programmatic diffing.
+
 ## 2026-06-25 09:34:13   (dnfc 2.9.3, 2000 steps x 3 runs)
 
 | dim | N=10 | N=50 | N=100 |
