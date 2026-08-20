@@ -63,11 +63,6 @@ Use the worktree root the user names. If none was given, default to a sibling of
 repository (e.g. `../<repo-name>-worktrees/`) and say which you chose. Record the mapping
 of issue to worktree so you can find each one again in Phase 4.
 
-**Base branch:** until PR #178 (`chore/claude-infrastructure`) is merged, workers must
-branch from `origin/chore/claude-infrastructure`, not `origin/main` - a worktree off main
-has no `.claude/` and would see none of these skills. Pass the base explicitly in each
-worker's prompt. After #178 lands, `origin/main` is correct again.
-
 Spawn 3 Sonnet agents in parallel, one issue each. Give each: the issue body, its plan, its
 worktree path, and its branch name (already created - the worker works in place).
 
@@ -91,7 +86,7 @@ For each returned diff:
 
 1. Dispatch a **Haiku** agent with the diff and the `project-code-review` skill. Give it
    the diff text directly - it reviews the change, not the whole repo.
-2. Run `docs-check` yourself on the same diff.
+2. Dispatch a **Haiku** to run `docs-check` on the same diff.
 
 If either turns up findings, send them to the **owning worker** via `SendMessage` rather
 than spawning a new agent - the worker still holds all the context about why it wrote
