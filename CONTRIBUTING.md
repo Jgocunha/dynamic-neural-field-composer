@@ -66,6 +66,8 @@ See [Getting Started](dynamic-neural-field-composer/wiki/Getting%20Started.md) f
 2. Use a descriptive branch name: `fix/element-factory-null-check`, `feat/new-kernel-type`.
 3. Keep changes focused — one logical change per PR.
 
+Using Claude Code on this repository? See [Helping Claude Help You](dynamic-neural-field-composer/wiki/Helping%20Claude%20Help%20You.md).
+
 **Code style**
 
 New code should follow the principles in *Clean Code* by Robert C. Martin: meaningful names, small focused functions, no redundant comments, and code that reads like prose. See [Jgocunha/command-line-parser](https://github.com/Jgocunha/command-line-parser). The short version:
