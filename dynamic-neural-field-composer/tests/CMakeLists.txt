@@ -1,6 +1,7 @@
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
 if(DNF_COMPOSER_BUILD_TESTS)
     find_package(GTest CONFIG REQUIRED)
+    find_package(benchmark CONFIG REQUIRED)
 
     add_executable(dnf_composer_tests
             # application
@@ -209,6 +210,28 @@ if(DNF_COMPOSER_BUILD_TESTS)
     target_link_libraries(dnf_composer_deckbench PRIVATE
             ${CMAKE_PROJECT_NAME}
             nlohmann_json::nlohmann_json
+            imgui::imgui
+            imgui-platform-kit
+    )
+
+    # Google Benchmark microbenchmarks on individual hot kernels, in isolation from a
+    # full simulation (manual perf run; not a unit test). See
+    # tests/benchmark/kernels/kernelbench_main.cpp's header for what this answers that
+    # dnf_composer_deckbench does not, and vice versa.
+    add_executable(dnf_composer_kernelbench "benchmark/kernels/kernelbench_main.cpp")
+    target_include_directories(dnf_composer_kernelbench PRIVATE
+            ${CMAKE_SOURCE_DIR}/include)
+    # Same COMDAT hazard as dnf_composer_profiler/deckbench above -- matters MORE here:
+    # a microbenchmark with no AVX2 flags would silently report the library's SCALAR
+    # instantiations of the math.h templates as if they were what production runs.
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i.86)$")
+    target_compile_options(dnf_composer_kernelbench PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+            $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>)
+    endif()
+    target_link_libraries(dnf_composer_kernelbench PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            benchmark::benchmark
             imgui::imgui
             imgui-platform-kit
     )

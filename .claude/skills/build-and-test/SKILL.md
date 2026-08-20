@@ -55,7 +55,8 @@ cmake --build --preset release --target dnf_composer_tests --parallel 4
 ```
 
 Targets: `dnf_composer_tests`, `dnf_composer_lib`, `dynamic-neural-field-composer` (the GUI
-app), `dnf_composer_benchmark`, `dnf_composer_deckbench`, `dnf_composer_profiler`.
+app), `dnf_composer_benchmark`, `dnf_composer_deckbench`, `dnf_composer_profiler`,
+`dnf_composer_kernelbench`.
 
 A cold build takes several minutes - run it in the background rather than blocking on a
 foreground timeout.
