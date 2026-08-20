@@ -113,6 +113,16 @@ if(DNF_COMPOSER_BUILD_TESTS)
     include(GoogleTest)
     gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)
 
+    # Full compiler flag string for the configured build type, stamped into every perf
+    # tool's provenance record. /arch:AVX2 vs not is a large swing, so a run recorded
+    # without it cannot be told apart from one built differently on the same machine.
+    # Ninja is single-config here, so CMAKE_BUILD_TYPE is set and the per-config flags
+    # resolve without a generator expression (which could not be embedded in a define).
+    string(TOUPPER "${CMAKE_BUILD_TYPE}" DNF_BENCH_CONFIG_UPPER)
+    set(DNF_BENCH_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${DNF_BENCH_CONFIG_UPPER}}")
+    string(REPLACE ";" " " DNF_BENCH_CXX_FLAGS "${DNF_BENCH_CXX_FLAGS}")
+    string(STRIP "${DNF_BENCH_CXX_FLAGS}" DNF_BENCH_CXX_FLAGS)
+
     # Standalone throughput benchmark (manual perf run; not a unit test, so it is
     # NOT registered with gtest_discover_tests). Appends a dated session block to
     # tests/benchmark/results.md.
@@ -124,9 +134,12 @@ if(DNF_COMPOSER_BUILD_TESTS)
             BENCHMARK_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results.md"
             BENCH_ENV_BUILD_TYPE="$<CONFIG>"
             BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
-            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}")
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}"
+            BENCH_ENV_CXX_FLAGS="${DNF_BENCH_CXX_FLAGS}"
+            BENCH_ENV_GIT_DIRTY=${DNF_COMPOSER_GIT_DIRTY})
     target_link_libraries(dnf_composer_benchmark PRIVATE
             ${CMAKE_PROJECT_NAME}
+            nlohmann_json::nlohmann_json
             imgui::imgui
             imgui-platform-kit
     )
@@ -152,9 +165,12 @@ if(DNF_COMPOSER_BUILD_TESTS)
             PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md"
             BENCH_ENV_BUILD_TYPE="$<CONFIG>"
             BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
-            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}")
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}"
+            BENCH_ENV_CXX_FLAGS="${DNF_BENCH_CXX_FLAGS}"
+            BENCH_ENV_GIT_DIRTY=${DNF_COMPOSER_GIT_DIRTY})
     target_link_libraries(dnf_composer_profiler PRIVATE
             ${CMAKE_PROJECT_NAME}
+            nlohmann_json::nlohmann_json
             imgui::imgui
             imgui-platform-kit
     )

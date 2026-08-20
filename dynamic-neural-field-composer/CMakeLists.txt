@@ -30,6 +30,24 @@ if(Git_FOUND)
     endif()
 endif()
 
+# Whether the working tree had uncommitted changes at configure time. A benchmark run
+# stamped only with a SHA is misleading when the tree it was built from did not match that
+# SHA, so the perf tools record this alongside it. Same best-effort contract as the SHA.
+set(DNF_COMPOSER_GIT_DIRTY 0)
+if(Git_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} status --porcelain
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE DNF_COMPOSER_GIT_DIRTY_OUT
+        RESULT_VARIABLE DNF_COMPOSER_GIT_DIRTY_RESULT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if(DNF_COMPOSER_GIT_DIRTY_RESULT EQUAL 0 AND NOT DNF_COMPOSER_GIT_DIRTY_OUT STREQUAL "")
+        set(DNF_COMPOSER_GIT_DIRTY 1)
+    endif()
+endif()
+
 set(DNF_COMPOSER_LIB_PREFIX "release")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(DNF_COMPOSER_LIB_PREFIX "debug")
