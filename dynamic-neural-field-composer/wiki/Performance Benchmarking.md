@@ -321,14 +321,6 @@ Step 3 is not optional: a faster simulation that computes different numbers is n
 
 ---
 
-## Why none of this runs in CI
-
-Deliberately, not by oversight. GitHub-hosted runners are shared virtualized VMs with no guaranteed CPU model and no guaranteed AVX2 — run-to-run wall-clock spread there routinely reaches 2–3×, far larger than the regressions worth catching. A threshold loose enough not to false-positive on that spread would catch nothing; a tight one would turn CI red on unrelated noise often enough that people learn to ignore the perf check within a week. A check nobody trusts is worse than no check, because it still consumes review attention.
-
-Correctness is unaffected: `dnf_composer_tests`, including the golden and field-dynamics validation fixtures, runs in every CI job. An optimization that changes behaviour still fails CI the normal way. Only *speed* regression detection is kept local.
-
----
-
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
