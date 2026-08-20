@@ -99,6 +99,23 @@ what it wrote, so a fresh agent would just re-derive it at full cost.
 Loop until the diff is clean. If a worker cannot resolve a finding after two rounds,
 stop on that issue and record it for the report rather than burning turns.
 
+## Phase 4b - Performance check (serialized)
+
+Only for worktrees whose diff touches the simulation hot path (`src/elements/`, `src/simulation/`,
+`src/tools/`, `include/tools/math.h`, `include/tools/fft_convolution.h`,
+`include/tools/simd_dispatch.h`). Skip the rest and say so.
+
+**Run these one at a time, with every other worker idle.** Three parallel workers make wall-clock
+measurement worthless - this is the one phase that cannot be parallelised, and running it
+concurrently produces confident nonsense rather than an error.
+
+For each qualifying worktree, use the `perf-regression-test` skill. Because the machine is running
+agents, treat the result as advisory: note any delta over 5% in the PR body, and stop on the issue
+only past 15% - a delta that large is a real regression regardless of the noise.
+
+An inconclusive result goes in the PR body as unverified. Do not re-run in a loop chasing a clean
+number.
+
 ## Phase 5 - Ship
 
 Once a diff is clean, from the worker's worktree:
@@ -139,6 +156,8 @@ If CodeRabbit hits its rate limit, note it in the report and move on - do not bl
 ## Phase 7 - Report
 
 - PRs opened, with URLs and one line each on what they do
+- for each PR: perf verdict from Phase 4b - checked / skipped (with the reason) / inconclusive /
+  regression (with the delta)
 - issues deferred, each with the reason
 - anything that needs a human decision
 - anything left mid-flight, and its exact state

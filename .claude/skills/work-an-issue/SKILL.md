@@ -66,6 +66,17 @@ will be rejected in review.
 
 Use the `build-and-test` skill. Green means the full suite, not just your new test.
 
+## 6b. Performance check
+
+If the diff touches the simulation hot path — `src/elements/`, `src/simulation/`, `src/tools/`,
+`include/tools/math.h`, `include/tools/fft_convolution.h`, `include/tools/simd_dispatch.h` —
+use the `perf-regression-test` skill.
+
+Skip it otherwise, and say you skipped it. A silent skip reads as a pass.
+
+An inconclusive result (too noisy, or no baseline for this machine) is not a pass. Report it as
+unverified rather than moving on quietly.
+
 ## 7. Review your own diff
 
 Use the `project-code-review` skill on `git diff origin/main...HEAD`. Fix what it finds
