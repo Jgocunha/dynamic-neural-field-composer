@@ -17,6 +17,13 @@ dynamic-neural-field-composer/tests/benchmark/results/
 imgui.ini
 imnode-window.json
 
+# Benchmark dashboard's own virtual environment (resources/benchmark/run_dashboard.*
+# creates it at repo root, not under resources/, so CMake's resources/ install rule
+# never ships it) and Python bytecode caches.
+.dashboard-venv/
+__pycache__/
+*.pyc
+
 # Only CLAUDE.md, skills/ and (project)notes/ are shared. Settings hold machine-specific
 # paths, and docs/ tests/ issues/ reports/ temp/ (machine)notes/ are local working material.
 .claude/*

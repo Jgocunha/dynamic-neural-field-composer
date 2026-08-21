@@ -321,6 +321,16 @@ Step 3 is not optional: a faster simulation that computes different numbers is n
 
 ---
 
+## Dashboard
+
+`resources/benchmark/` has a Streamlit dashboard that reads every artifact the tools above produce — deckbench/baseline JSON, profiler element JSON, kernelbench's Google Benchmark output, and the two legacy markdown logs — and turns them into an Overview (latest gate verdict per deck), Trends (ns/cell/step over time, baseline and threshold overlaid), Decks (per-deck comparison and the direct/spectral dispatch crossover), Elements (per-element attribution and session-to-session deltas), Kernels, and Runs (every discovered artifact plus a hygiene checklist).
+
+Double-click `run_dashboard.bat` (Windows) or `run_dashboard.sh` (Linux/macOS) — first run creates its own virtual environment at the repo root and installs what it needs, later runs skip straight to launching.
+
+**It is read-only.** It never launches a perf tool itself — a benchmark measured next to a running web server and browser is a worse measurement than one taken alone. Run the tools yourself, then hit Refresh in the sidebar. See `resources/benchmark/README.md` for the one gotcha worth knowing: `--record`/`--check` write no JSON of their own, so a plain (no-flag) `dnf_composer_deckbench` run is what leaves a trend point for the dashboard to show.
+
+---
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -336,6 +346,7 @@ Step 3 is not optional: a faster simulation that computes different numbers is n
 
 ## See also
 
+- `resources/benchmark/README.md` — the dashboard: what it reads, how to run it
 - `tests/benchmark/DECKS.md` — why those four decks, and the rules for changing them
 - `tests/validation/data/2d_spectral/README.md` — tap counts and expected dispatch for the `large-a`/`large-b` pair
 - [Testing](Testing.md) — the correctness suite
