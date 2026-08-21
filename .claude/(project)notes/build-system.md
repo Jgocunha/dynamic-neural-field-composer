@@ -14,16 +14,16 @@ cmake --build --preset release --target dnf_composer_tests --parallel 4
 This is why `build/release` is the live build tree: it is the preset's `binaryDir`, not
 something anyone configured by hand.
 
-## There are no test presets
+## Test presets
 
-`CMakePresets.json` has `configurePresets` and `buildPresets` but no `testPresets`, so
-there is no `ctest --preset`. Tests run by invoking the binary directly:
+`CMakePresets.json` has `testPresets` (`release`/`debug`, mirroring the configure/build
+presets), so `ctest --preset release` works the same way `cmake --build --preset release`
+does - no need to invoke the binary directly, though that still works too:
 
 ```bash
+ctest --preset release --output-on-failure
 ./build/release/tests/dnf_composer_tests            # .exe on Windows
 ```
-
-Adding test presets would be a genuine improvement and is not yet done.
 
 ## The scripts build somewhere else
 
@@ -40,15 +40,18 @@ So a repo can hold several build trees configured by different tools with differ
 generators. When working in an existing tree rather than a preset one, read its
 `CMakeCache.txt` for the generator and compiler instead of assuming.
 
-## `scripts/build.bat` has a latent toolchain bug
+## `scripts/build.bat` pins the VS install per build tree
 
-It picks the compiler with `vswhere -latest`. On a machine with more than one Visual Studio
-installed, that can select a different VS than an existing build tree was configured with,
-and the mismatched STL headers fail every translation unit with
-`STL1001: Unexpected compiler version`.
+It used to pick the compiler with `vswhere -latest` on every run. On a machine with more
+than one Visual Studio installed, that could select a different VS than an existing build
+tree was configured with, and the mismatched STL headers would fail every translation unit
+with `STL1001: Unexpected compiler version`. It survived only because it always configured
+from scratch in practice, so CMake and vcvars happened to agree.
 
-It survives today only because it always configures from scratch, so CMake and vcvars end
-up agreeing. Anyone reusing an existing tree does not get that protection. Not yet fixed.
+Fixed: the script now records the VS install path it used in `build\.vsinstall` after a
+successful `vswhere` lookup, and reuses that recorded path (skipping `vswhere`) as long as
+it still has a `vcvars64.bat`. A fresh tree (no marker yet) behaves exactly as before. Only
+deleting `build\.vsinstall` (or the whole `build\` tree) lets a newer "latest" VS take over.
 
 ## Dependencies
 
@@ -58,7 +61,7 @@ installed somewhere CMake looks. Everything else comes from vcpkg via `VCPKG_ROO
 
 ## Verified baseline
 
-As of 2026-08-19, `dnf_composer_tests` builds clean and runs **1591 tests across 349 test
+As of 2026-08-21, `dnf_composer_tests` builds clean and runs **1592 tests across 349 test
 suites, all passing**. Use that as the reference when judging whether a failure is
 pre-existing.
 

@@ -4,6 +4,7 @@
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_kernel.h"
 #include "elements/neural_field.h"
+#include "elements/neural_field_2d.h"
 #include "elements/activation_function.h"
 #include "elements/normal_noise.h"
 #include "exceptions/exception.h"
@@ -186,6 +187,23 @@ TEST(ElementInputs, AddSizeMismatchedInputDoesNotAddConnection)
 
     EXPECT_FALSE(largeField->hasInput(smallStim->getUniqueName(), "output"));
     EXPECT_FALSE(smallStim->hasOutput(largeField->getUniqueName(), "output"));
+}
+
+// Regression test for #41: addInput compares only flattened size, so a 1D element and a
+// 2D element whose x_max*y_max happens to equal the 1D element's size connect silently,
+// even though the spatial layouts are not interchangeable.
+TEST(ElementInputs, AddDimensionMismatchedInputDoesNotAddConnection)
+{
+    const auto stim1D = makeStimulus("stim1d", 100);
+    const ElementCommonParameters cp2D{ "field2d", ElementDimensions(10, 10, 1.0, 1.0) };
+    const auto field2D = std::make_shared<NeuralField2D>(cp2D, NeuralField2DParameters{});
+
+    ASSERT_EQ(stim1D->getSize(), field2D->getSize());
+
+    EXPECT_NO_THROW(field2D->addInput(stim1D, "output"));
+
+    EXPECT_FALSE(field2D->hasInput(stim1D->getUniqueName(), "output"));
+    EXPECT_FALSE(stim1D->hasOutput(field2D->getUniqueName(), "output"));
 }
 
 TEST(ElementInputs, RemoveInputByName)

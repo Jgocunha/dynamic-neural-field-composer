@@ -104,6 +104,22 @@ namespace dnf_composer::element
 			return;
 		}
 
+		// Elements that bridge dimensionality (Collapse, Expand, Resize*, FieldCoupling) size
+		// "input" to the source's own shape before delegating here, so their "input" size
+		// differs from their own getSize(); this guard only applies to elements that don't,
+		// where "input" and "output" always share the element's own dimensionality by
+		// construction and a size-only check can't catch a coincidentally-matching flattened
+		// size across different shapes.
+		if (this->getComponentPtr("input")->size() == this->getSize() &&
+			inputElement->commonParameters.dimensionParameters.dimensionality !=
+			this->commonParameters.dimensionParameters.dimensionality)
+		{
+			const std::string logMessage = std::format("Input '{}' has a different dimensionality than '{}'.",
+			                               inputElement->getUniqueName(), this->getUniqueName());
+			log(tools::logger::LogLevel::ERROR, logMessage);
+			return;
+		}
+
 		if (inputElement->getComponentPtr("output")->size() != this->getComponentPtr("input")->size())
 		{
 			if (inputElement->getComponentPtr("output")->size() != this->getSize())

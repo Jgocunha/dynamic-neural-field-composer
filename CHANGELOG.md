@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
   render a second output-side "Activation" pin in the node graph, alongside the regular
   Output pin, so a field's raw activation can be wired directly into another element's
   input instead of its sigmoided output.
+- `CMakePresets.json` now has `testPresets` (`release`/`debug`, mirroring the existing
+  configure/build presets), so `ctest --preset release` works instead of having to invoke
+  `./build/release/tests/dnf_composer_tests` directly.
 
 ### Changed
 - Centralised every first-party GUI colour literal across the user-interface layer
@@ -37,6 +40,27 @@ All notable changes to this project will be documented in this file.
   instructions (#158).
 
 ### Fixed
+- `Element::addInput` validated only the flattened component size, so a 1D element and a 2D
+  element whose flattened sizes happened to match (e.g. a 1D field of size 10 and a 2D field
+  of 5×2) connected silently and produced incorrect dynamics, since the underlying data has
+  a different spatial layout in each case. It now also rejects a dimensionality mismatch,
+  logging `"Input '...' has a different dimensionality than '...'."` `Resize`/`Resize2D`/
+  `Collapse`/`Expand`/`FieldCoupling`, which intentionally bridge different shapes and
+  validate the connection themselves, are unaffected (#41).
+- `scripts/build.bat` picked the Visual Studio install with `vswhere -latest` on every run,
+  which on a machine with more than one VS installed could select a different VS than an
+  existing `build/x64-*` tree was configured with, mismatching the cached compiler's cl.exe
+  against the newly-loaded vcvars environment's headers and failing every translation unit
+  with `STL1001: Unexpected compiler version`. The script now records the VS install path it
+  used in `build\.vsinstall` and reuses it (skipping `vswhere`) as long as it still has a
+  `vcvars64.bat`, so a reused tree stays pinned to the toolchain it was actually configured
+  with; a fresh tree behaves as before.
+- `static-analysis.yml` and `release.yml` keyed their vcpkg package cache on
+  `hashFiles('build.sh')`/`hashFiles('build_macos.sh')` — paths that don't exist from the
+  repo root (and, for `release.yml`, files these jobs don't even use, since they install
+  vcpkg packages inline rather than via a setup script). `hashFiles` on a missing path
+  returns an empty string, so the cache key never changed when dependencies changed. Both
+  now key on the workflow file that actually declares the installed packages.
 - `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or
   replacing the first, so `inputs` could hold two target entries that `updateInput()`
   summed together into `components["target"]` — training against a combined/stale
