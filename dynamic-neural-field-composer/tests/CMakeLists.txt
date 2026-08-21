@@ -1,6 +1,7 @@
 option(DNF_COMPOSER_BUILD_TESTS "Build unit tests" ON)
 if(DNF_COMPOSER_BUILD_TESTS)
     find_package(GTest CONFIG REQUIRED)
+    find_package(benchmark CONFIG REQUIRED)
 
     add_executable(dnf_composer_tests
             # application
@@ -113,6 +114,16 @@ if(DNF_COMPOSER_BUILD_TESTS)
     include(GoogleTest)
     gtest_discover_tests(dnf_composer_tests DISCOVERY_MODE PRE_TEST)
 
+    # Full compiler flag string for the configured build type, stamped into every perf
+    # tool's provenance record. /arch:AVX2 vs not is a large swing, so a run recorded
+    # without it cannot be told apart from one built differently on the same machine.
+    # Ninja is single-config here, so CMAKE_BUILD_TYPE is set and the per-config flags
+    # resolve without a generator expression (which could not be embedded in a define).
+    string(TOUPPER "${CMAKE_BUILD_TYPE}" DNF_BENCH_CONFIG_UPPER)
+    set(DNF_BENCH_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${DNF_BENCH_CONFIG_UPPER}}")
+    string(REPLACE ";" " " DNF_BENCH_CXX_FLAGS "${DNF_BENCH_CXX_FLAGS}")
+    string(STRIP "${DNF_BENCH_CXX_FLAGS}" DNF_BENCH_CXX_FLAGS)
+
     # Standalone throughput benchmark (manual perf run; not a unit test, so it is
     # NOT registered with gtest_discover_tests). Appends a dated session block to
     # tests/benchmark/results.md.
@@ -124,9 +135,12 @@ if(DNF_COMPOSER_BUILD_TESTS)
             BENCHMARK_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results.md"
             BENCH_ENV_BUILD_TYPE="$<CONFIG>"
             BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
-            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}")
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}"
+            BENCH_ENV_CXX_FLAGS="${DNF_BENCH_CXX_FLAGS}"
+            BENCH_ENV_GIT_DIRTY=${DNF_COMPOSER_GIT_DIRTY})
     target_link_libraries(dnf_composer_benchmark PRIVATE
             ${CMAKE_PROJECT_NAME}
+            nlohmann_json::nlohmann_json
             imgui::imgui
             imgui-platform-kit
     )
@@ -150,11 +164,74 @@ if(DNF_COMPOSER_BUILD_TESTS)
     endif()
     target_compile_definitions(dnf_composer_profiler PRIVATE
             PROFILER_RESULTS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler/profile.md"
+            # --deck / --decks mode only: resolves decks.json's relative paths (same root
+            # dnf_composer_deckbench uses) and where its JSON output lands (the same
+            # gitignored dir dnf_composer_benchmark/deckbench already write session JSON to).
+            PROFILER_VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data"
+            PROFILER_JSON_DIR="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results"
             BENCH_ENV_BUILD_TYPE="$<CONFIG>"
             BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
-            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}")
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}"
+            BENCH_ENV_CXX_FLAGS="${DNF_BENCH_CXX_FLAGS}"
+            BENCH_ENV_GIT_DIRTY=${DNF_COMPOSER_GIT_DIRTY})
     target_link_libraries(dnf_composer_profiler PRIVATE
             ${CMAKE_PROJECT_NAME}
+            nlohmann_json::nlohmann_json
+            imgui::imgui
+            imgui-platform-kit
+    )
+
+    # Deck-driven performance baseline (manual perf run; not a unit test). Times the
+    # fixed deck set in tests/benchmark/decks.json instead of a synthetic architecture --
+    # see tests/benchmark/DECKS.md. Writes JSON session reports to
+    # tests/benchmark/results/ (gitignored; results.md/baselines/ are the tracked history).
+    add_executable(dnf_composer_deckbench "benchmark/deckbench_main.cpp" "common/bench_env.h" "common/bench_report.h")
+    target_include_directories(dnf_composer_deckbench PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/common)
+    # Same COMDAT hazard as dnf_composer_profiler above: without the library's own AVX2
+    # flags, this TU's scalar instantiations of the math.h templates could win the link
+    # and this tool would measure code the library never runs.
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i.86)$")
+    target_compile_options(dnf_composer_deckbench PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+            $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>)
+    endif()
+    target_compile_definitions(dnf_composer_deckbench PRIVATE
+            DECKBENCH_DECKS_MANIFEST="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/decks.json"
+            DECKBENCH_VALIDATION_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/validation/data"
+            DECKBENCH_RESULTS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/results"
+            DECKBENCH_BASELINES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/benchmark/baselines"
+            BENCH_ENV_BUILD_TYPE="$<CONFIG>"
+            BENCH_ENV_FFTW_VERSION="${FFTW3_VERSION}"
+            BENCH_ENV_GIT_SHA="${DNF_COMPOSER_GIT_SHA}"
+            BENCH_ENV_CXX_FLAGS="${DNF_BENCH_CXX_FLAGS}"
+            BENCH_ENV_GIT_DIRTY=${DNF_COMPOSER_GIT_DIRTY})
+    target_link_libraries(dnf_composer_deckbench PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            nlohmann_json::nlohmann_json
+            imgui::imgui
+            imgui-platform-kit
+    )
+
+    # Google Benchmark microbenchmarks on individual hot kernels, in isolation from a
+    # full simulation (manual perf run; not a unit test). See
+    # tests/benchmark/kernels/kernelbench_main.cpp's header for what this answers that
+    # dnf_composer_deckbench does not, and vice versa.
+    add_executable(dnf_composer_kernelbench "benchmark/kernels/kernelbench_main.cpp")
+    target_include_directories(dnf_composer_kernelbench PRIVATE
+            ${CMAKE_SOURCE_DIR}/include)
+    # Same COMDAT hazard as dnf_composer_profiler/deckbench above -- matters MORE here:
+    # a microbenchmark with no AVX2 flags would silently report the library's SCALAR
+    # instantiations of the math.h templates as if they were what production runs.
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i.86)$")
+    target_compile_options(dnf_composer_kernelbench PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+            $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>)
+    endif()
+    target_link_libraries(dnf_composer_kernelbench PRIVATE
+            ${CMAKE_PROJECT_NAME}
+            benchmark::benchmark
             imgui::imgui
             imgui-platform-kit
     )

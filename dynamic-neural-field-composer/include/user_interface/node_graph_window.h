@@ -248,6 +248,15 @@ namespace dnf_composer::user_interface
 		/// code, where the caches are meant to persist.
 		static void resetTransientStateForTesting();
 
+		/// @brief Stops newly constructed windows persisting their node layout to disk.
+		///
+		/// The node editor writes its layout to `imnode-window.json` resolved against the
+		/// process working directory, so a test binary constructing this window drops that
+		/// file into whatever directory it was run from. Call this once before constructing
+		/// any window in a test process; it affects only windows created afterwards, and
+		/// has no use in application code, where persisting the layout is the point.
+		static void disableLayoutPersistenceForTesting();
+
 		~NodeGraphWindow() override = default;
 	private:
 		void renderGraphContent() const;
