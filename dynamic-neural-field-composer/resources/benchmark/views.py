@@ -454,11 +454,21 @@ def decks(data: bench_data.DiscoveredData):
                 f"Investigate before trusting this run."
             )
         elif not direct_row.empty and not spectral_row.empty:
-            faster = "direct" if direct_row["ns_per_cell_step_median"].iloc[0] < spectral_row["ns_per_cell_step_median"].iloc[0] else "spectral"
-            match_word = "correctly" if observed == expected else "observably"
-            crossover_lines.append(
-                f"<code>{tier}</code>: Auto {match_word} chose {observed}, matching the faster of the two forced paths ({faster})."
-            )
+            d = direct_row["ns_per_cell_step_median"].iloc[0]
+            s = spectral_row["ns_per_cell_step_median"].iloc[0]
+            faster_path = "direct-2d" if d < s else "spectral-2d"
+            gain_pct = 100.0 * abs(d - s) / max(d, s)
+            confirmed = f"<code>{tier}</code>: Auto chose <b>{observed}</b>, as expected."
+            if faster_path == observed:
+                crossover_lines.append(f"{confirmed} It is also the faster of the two forced paths, by {gain_pct:.1f}%.")
+            else:
+                # Auto followed the tap-count rule, but the other path measured faster --
+                # that is a statement about where kFFTTapThreshold sits, not a dispatch bug.
+                crossover_lines.append(
+                    f"{confirmed} Note though that <b>{faster_path} measured {gain_pct:.1f}% faster</b> here, "
+                    f"so the crossover for this deck's tap count may sit below "
+                    f"<code>kFFTTapThreshold</code>. Worth a look before treating the threshold as tuned."
+                )
     _interpretation(crossover_lines)
 
 
