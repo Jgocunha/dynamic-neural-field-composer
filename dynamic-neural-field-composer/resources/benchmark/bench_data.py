@@ -87,6 +87,7 @@ def _load_envelope(path: Path) -> list[dict]:
     doc = json.loads(path.read_text(encoding="utf-8"))
     kind = _classify_envelope(path, doc)
     env = doc.get("env", {})
+    config = doc.get("config", {})
     rows = []
     for r in doc.get("results", []):
         row = {

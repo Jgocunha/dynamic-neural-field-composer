@@ -129,6 +129,28 @@ def overview(data: bench_data.DiscoveredData):
             f"Run `--record` on a known-good tree first.",
             icon="⚠️",
         )
+    else:
+        # The environment fingerprint covers machine/compiler/flags, but NOT the run
+        # configuration or the hygiene state -- so a short, unwrapped run will happily
+        # compare against a long, pinned baseline and report the difference as a
+        # regression. Say so rather than letting the delta stand unqualified.
+        caveats = []
+        cur_steps, base_steps = latest["timed_steps"].iloc[0], baseline["timed_steps"].iloc[0]
+        cur_runs, base_runs = latest["runs"].iloc[0], baseline["runs"].iloc[0]
+        if cur_steps and base_steps and cur_steps != base_steps:
+            caveats.append(f"**{cur_steps} timed steps** vs the baseline's **{base_steps}**")
+        if cur_runs and base_runs and cur_runs != base_runs:
+            caveats.append(f"**{cur_runs} runs** vs the baseline's **{base_runs}**")
+        if not latest["wrapped"].iloc[0] and baseline["wrapped"].iloc[0]:
+            caveats.append("**not run under scripts/bench**, while the baseline was")
+        if caveats:
+            st.warning(
+                "This run was measured differently from the baseline it is being compared against — "
+                + "; ".join(caveats)
+                + ". ns/cell/step is a rate, so it is nominally comparable, but short or unpinned runs "
+                "carry a much wider noise floor. Treat the deltas below as indicative only.",
+                icon="⚖️",
+            )
 
     history = data.envelopes[
         (data.envelopes["source_kind"] == "deckbench")
@@ -397,7 +419,35 @@ def decks(data: bench_data.DiscoveredData):
 
         manifest_row = data.decks_manifest[data.decks_manifest["tier"] == tier] if not data.decks_manifest.empty else pd.DataFrame()
         expected = manifest_row["expect_path"].iloc[0] if not manifest_row.empty else None
-        if expected and observed != "unknown" and observed != expected:
+
+        # Auto's path is inferred purely from which forced timing its own timing sits
+        # closer to. When any of the three is noisy, or when the two forced paths are
+        # closer together than the noise, that inference cannot support a conclusion --
+        # so don't report a "mismatch" that is really just a wide IQR.
+        any_noisy = bool(g["noisy"].any())
+        separation_pct = None
+        if not direct_row.empty and not spectral_row.empty:
+            d = direct_row["ns_per_cell_step_median"].iloc[0]
+            s = spectral_row["ns_per_cell_step_median"].iloc[0]
+            if min(d, s) > 0:
+                separation_pct = 100.0 * abs(d - s) / min(d, s)
+        rel_spreads = (g["ns_per_cell_step_q3"] - g["ns_per_cell_step_q1"]) / g["ns_per_cell_step_median"]
+        worst_spread = float(rel_spreads.max() * 100.0) if rel_spreads.notna().any() else None
+
+        inconclusive = any_noisy or (
+            separation_pct is not None and worst_spread is not None and separation_pct < worst_spread
+        )
+
+        if inconclusive:
+            detail = f"the two forced paths differ by only {separation_pct:.1f}%" if separation_pct is not None else "the forced paths were not both measured"
+            spread_txt = f", while the widest IQR here is {worst_spread:.1f}%" if worst_spread is not None else ""
+            crossover_lines.append(
+                f"<code>{tier}</code>: <b>inconclusive</b> — {detail}{spread_txt}, so which path Auto took "
+                f"cannot be read off these timings (it appears to be {observed}, expected {expected}). "
+                f"Re-run <code>--paths</code> under scripts/bench with the full step count before treating "
+                f"this as a dispatch finding."
+            )
+        elif expected and observed != "unknown" and observed != expected:
             crossover_lines.append(
                 f"<b>Mismatch on <code>{tier}</code></b>: Auto dispatched to {observed} but {expected} was expected — "
                 f"either the dispatch rule or tests/validation/data/2d_spectral/README.md is now wrong. "
