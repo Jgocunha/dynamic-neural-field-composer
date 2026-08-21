@@ -88,12 +88,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::NodeGraphWindow:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__inherit__graph.svg" width="242" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__inherit__graph.svg" width="242" height="414"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::user_interface::NodeGraphWindow:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__coll__graph.svg" width="242" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1user__interface_1_1NodeGraphWindow__coll__graph.svg" width="242" height="414"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -123,6 +123,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a15094af6a5188279c2aaa58c87ad226f" id="r_a15094af6a5188279c2aaa58c87ad226f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html#a15094af6a5188279c2aaa58c87ad226f">disableLayoutPersistenceForTesting</a> ()</td></tr>
+<tr class="memdesc:a15094af6a5188279c2aaa58c87ad226f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops newly constructed windows persisting their node layout to disk.  <br /></td></tr>
+<tr class="separator:a15094af6a5188279c2aaa58c87ad226f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae451ff068be9f4dcadb277be79811ab0" id="r_ae451ff068be9f4dcadb277be79811ab0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html#ae451ff068be9f4dcadb277be79811ab0">resetTransientStateForTesting</a> ()</td></tr>
 <tr class="memdesc:ae451ff068be9f4dcadb277be79811ab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the window's cross-frame UI caches (hover timers, EMA-smoothed colormap ranges, and any half-finished click-to-click connection).  <br /></td></tr>
 <tr class="separator:ae451ff068be9f4dcadb277be79811ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -232,6 +235,34 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a15094af6a5188279c2aaa58c87ad226f" name="a15094af6a5188279c2aaa58c87ad226f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15094af6a5188279c2aaa58c87ad226f">&#9670;&#160;</a></span>disableLayoutPersistenceForTesting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::user_interface::NodeGraphWindow::disableLayoutPersistenceForTesting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stops newly constructed windows persisting their node layout to disk. </p>
+<p>The node editor writes its layout to <code>imnode-window.json</code> resolved against the process working directory, so a test binary constructing this window drops that file into whatever directory it was run from. Call this once before constructing any window in a test process; it affects only windows created afterwards, and has no use in application code, where persisting the layout is the point. </p>
+
+</div>
+</div>
 <a id="a398d410f4b33c27279e4f8e9add12550" name="a398d410f4b33c27279e4f8e9add12550"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a398d410f4b33c27279e4f8e9add12550">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
