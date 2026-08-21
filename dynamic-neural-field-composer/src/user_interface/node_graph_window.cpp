@@ -29,6 +29,11 @@ namespace dnf_composer::user_interface
 		// results would depend on test order. Gathering them here keeps that
 		// cross-frame behaviour but makes it resettable; see
 		// NodeGraphWindow::resetTransientStateForTesting().
+		// Cleared by NodeGraphWindow::disableLayoutPersistenceForTesting(): the node
+		// editor resolves SettingsFile against the process working directory, so a test
+		// binary would otherwise drop imnode-window.json wherever it happened to run.
+		bool g_persistLayout = true;
+
 		std::unordered_map<size_t, double> g_hoverStart;
 		std::unordered_map<std::string, std::pair<double, double>> g_wmRangeCache;
 		std::unordered_map<std::string, std::pair<double, double>> g_rangeCache;
@@ -64,10 +69,17 @@ namespace dnf_composer::user_interface
 		g_pendingOutputPin = 0;
 	}
 
+	void NodeGraphWindow::disableLayoutPersistenceForTesting()
+	{
+		g_persistLayout = false;
+	}
+
 	NodeGraphWindow::NodeGraphWindow(const std::shared_ptr<Simulation>& simulation)
 		: simulation(simulation)
 	{
-		config.SettingsFile = "imnode-window.json";
+		// nullptr (not "") disables both load and save -- the editor guards on the
+		// pointer, so an empty string would still open a file named "".
+		config.SettingsFile = g_persistLayout ? "imnode-window.json" : nullptr;
 		context.reset(ImNodeEditor::CreateEditor(&config));
 	}
 

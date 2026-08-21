@@ -175,7 +175,13 @@ protected:
 	// pin) live outside it and are keyed by node id / element name -- and the
 	// factories below deliberately reuse names like "field1" and "coupling". Clear
 	// them too, or a test inherits smoothed state from whichever test ran first.
-	void SetUp() override { user_interface::NodeGraphWindow::resetTransientStateForTesting(); }
+	void SetUp() override
+	{
+		// Without this the node editor writes imnode-window.json into whatever
+		// directory the test binary was launched from.
+		user_interface::NodeGraphWindow::disableLayoutPersistenceForTesting();
+		user_interface::NodeGraphWindow::resetTransientStateForTesting();
+	}
 	void TearDown() override { user_interface::NodeGraphWindow::resetTransientStateForTesting(); }
 
 	test::HeadlessImGui gui;
