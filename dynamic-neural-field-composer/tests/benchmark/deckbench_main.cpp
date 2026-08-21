@@ -237,9 +237,23 @@ int runCheck(const bench_env::Env& env, const std::vector<bench_report::Result>&
 		return 2;
 	}
 
-	std::ifstream f(path);
+	// A truncated or hand-edited baseline must refuse the comparison (exit 2), not abort
+	// on an uncaught parse exception -- the caller cannot tell a crash from a real
+	// regression, and this file is one people are told to inspect and commit.
 	nlohmann::json baselineJson;
-	f >> baselineJson;
+	try
+	{
+		std::ifstream f(path);
+		f >> baselineJson;
+	}
+	catch (const std::exception& e)
+	{
+		std::fprintf(stderr,
+			"--check refused: %s is not readable as JSON (%s).\n"
+			"Re-record the baseline on a known-good tree.\n",
+			path.string().c_str(), e.what());
+		return 2;
+	}
 
 	if (baselineJson.value("fingerprint", std::string{}) != bench_env::fingerprint(env))
 	{
@@ -250,14 +264,28 @@ int runCheck(const bench_env::Env& env, const std::vector<bench_report::Result>&
 		return 2;
 	}
 
+	// Parsed above, but the shape is still unverified: at() throws on a baseline that is
+	// valid JSON yet missing the keys this reads. Same reasoning as the parse guard --
+	// refuse the comparison rather than abort.
 	std::unordered_map<std::string, BaselineEntry> baseline;
-	for (const auto& r : baselineJson.at("results"))
+	try
 	{
-		BaselineEntry e;
-		e.nsPerCellStepMedian = r.at("ns_per_cell_step").at("median").get<double>();
-		e.noisy               = r.value("noisy", false);
-		e.deckHash            = r.value("deck_hash", std::string{});
-		baseline[r.at("name").get<std::string>()] = e;
+		for (const auto& r : baselineJson.at("results"))
+		{
+			BaselineEntry e;
+			e.nsPerCellStepMedian = r.at("ns_per_cell_step").at("median").get<double>();
+			e.noisy               = r.value("noisy", false);
+			e.deckHash            = r.value("deck_hash", std::string{});
+			baseline[r.at("name").get<std::string>()] = e;
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::fprintf(stderr,
+			"--check refused: %s does not have the expected shape (%s).\n"
+			"Re-record the baseline on a known-good tree.\n",
+			path.string().c_str(), e.what());
+		return 2;
 	}
 
 	std::printf("\n%-22s %14s %14s %10s  %s\n", "deck", "baseline", "current", "delta", "verdict");
@@ -340,18 +368,64 @@ int main(int argc, char* argv[])
 	bool        force      = false;
 	double      thresholdPct = kDefaultThresholdPct;
 
+	// std::stoi/stod throw on text that is not a number, and a zero or negative step or
+	// run count produces a meaningless measurement rather than an error. Reject both here
+	// so the tool prints a usage message instead of terminating on an uncaught exception
+	// part-way through a timing session.
+	const auto parsePositiveInt = [](const char* text, const char* flag, int& out) {
+		try
+		{
+			const int value = std::stoi(text);
+			if (value <= 0)
+			{
+				std::fprintf(stderr, "%s must be a positive integer, got '%s'.\n", flag, text);
+				return false;
+			}
+			out = value;
+			return true;
+		}
+		catch (const std::exception&)
+		{
+			std::fprintf(stderr, "%s expects an integer, got '%s'.\n", flag, text);
+			return false;
+		}
+	};
+
 	for (int i = 1; i < argc; ++i)
 	{
 		const std::string a = argv[i];
 		if (a == "--decks" && i + 1 < argc)         manifestArg  = argv[++i];
-		else if (a == "--steps" && i + 1 < argc)    timedSteps   = std::stoi(argv[++i]);
-		else if (a == "--runs" && i + 1 < argc)     nRuns        = std::stoi(argv[++i]);
+		else if (a == "--steps" && i + 1 < argc)
+		{
+			if (!parsePositiveInt(argv[++i], "--steps", timedSteps)) return 1;
+		}
+		else if (a == "--runs" && i + 1 < argc)
+		{
+			if (!parsePositiveInt(argv[++i], "--runs", nRuns)) return 1;
+		}
 		else if (a == "--json" && i + 1 < argc)     jsonArg      = argv[++i];
 		else if (a == "--paths")                    pathsMode    = true;
 		else if (a == "--record")                   recordMode   = true;
 		else if (a == "--check")                    checkMode    = true;
 		else if (a == "--force")                    force        = true;
-		else if (a == "--threshold" && i + 1 < argc) thresholdPct = std::stod(argv[++i]);
+		else if (a == "--threshold" && i + 1 < argc)
+		{
+			const char* text = argv[++i];
+			try
+			{
+				thresholdPct = std::stod(text);
+			}
+			catch (const std::exception&)
+			{
+				std::fprintf(stderr, "--threshold expects a number, got '%s'.\n", text);
+				return 1;
+			}
+			if (thresholdPct <= 0.0)
+			{
+				std::fprintf(stderr, "--threshold must be positive, got '%s'.\n", text);
+				return 1;
+			}
+		}
 		else
 		{
 			std::fprintf(stderr, "Unknown argument: %s\n", a.c_str());

@@ -31,8 +31,11 @@ pio.templates["dnfc"] = bench_theme.plotly_template()
 pio.templates.default = "dnfc"
 
 
+# `signature` must NOT be underscore-prefixed: st.cache_data excludes underscored
+# parameters from the cache key, which would mean the mtime signature never invalidated
+# anything and the page served stale artifacts until someone hit Refresh.
 @st.cache_data(show_spinner="Reading benchmark artifacts…")
-def _load(_signature: tuple) -> bench_data.DiscoveredData:
+def _load(signature: tuple) -> bench_data.DiscoveredData:
     return bench_data.load_all()
 
 

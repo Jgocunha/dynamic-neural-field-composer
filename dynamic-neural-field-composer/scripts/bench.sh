@@ -34,7 +34,16 @@ fi
 # Core 2, not 0 -- core 0 is where many Linux systems concentrate interrupt/
 # housekeeping work, which is exactly the kind of scheduling noise pinning exists to
 # avoid. A single core is enough: the workload is single-threaded.
+#
+# Fall back to the highest core that exists on a machine with fewer than 3, rather than
+# handing taskset a core id it will reject (containers and small VMs routinely have 1-2).
 TASKSET_CORE=2
+if command -v nproc >/dev/null 2>&1; then
+    CPU_COUNT=$(nproc)
+    if [ "$CPU_COUNT" -le "$TASKSET_CORE" ]; then
+        TASKSET_CORE=$((CPU_COUNT - 1))
+    fi
+fi
 
 NICE_LEVEL=-20
 NICE_PREFIX=()

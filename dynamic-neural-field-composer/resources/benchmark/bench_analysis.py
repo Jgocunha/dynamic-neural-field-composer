@@ -75,9 +75,18 @@ def compute_verdicts(current: pd.DataFrame, baseline: pd.DataFrame, threshold_pc
             rows.append({**r.to_dict(), "baseline_median": None, "delta_pct": None, "verdict": "DECK CHANGED"})
             continue
 
+        # A result whose stats block was absent from the JSON arrives here as NaN, and
+        # NaN is truthy while every NaN comparison is False -- so without this guard a
+        # missing measurement would compute a NaN delta, fail the `> threshold` test and
+        # be reported OK. Refusing the comparison is the same call runCheck() makes for a
+        # deck it cannot line up against the baseline.
         b_median = b.get("ns_per_cell_step_median")
         r_median = r.get("ns_per_cell_step_median")
-        delta_pct = 100.0 * (r_median - b_median) / b_median if b_median else 0.0
+        if pd.isna(b_median) or pd.isna(r_median) or not b_median:
+            rows.append({**r.to_dict(), "baseline_median": None, "delta_pct": None, "verdict": "NO BASELINE"})
+            continue
+
+        delta_pct = 100.0 * (r_median - b_median) / b_median
         noisy_here = bool(r.get("noisy")) or bool(b.get("noisy"))
         regressed = delta_pct > threshold_pct
 

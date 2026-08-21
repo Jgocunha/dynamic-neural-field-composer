@@ -192,10 +192,17 @@ def load_profiler_decks() -> pd.DataFrame:
 
 
 def load_kernelbench(path: Path) -> pd.DataFrame:
-    """Parses a --benchmark_format=json --benchmark_out=<path> file. Prefers the
-    'median' aggregate row when --benchmark_repetitions produced aggregates;
-    falls back to the raw iteration row otherwise."""
-    doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    """Parses a --benchmark_format=json --benchmark_out=<path> file."""
+    return parse_kernelbench(json.loads(Path(path).read_text(encoding="utf-8")))
+
+
+def parse_kernelbench(doc: dict) -> pd.DataFrame:
+    """Reduces an already-parsed Google Benchmark document to one row per run. Prefers
+    the 'median' aggregate row when --benchmark_repetitions produced aggregates; falls
+    back to the raw iteration row otherwise.
+
+    Split from load_kernelbench so an uploaded file can be read straight from memory
+    rather than being staged through a scratch file in the working directory."""
     context = doc.get("context", {})
     by_run: dict[str, dict] = {}
     for b in doc.get("benchmarks", []):

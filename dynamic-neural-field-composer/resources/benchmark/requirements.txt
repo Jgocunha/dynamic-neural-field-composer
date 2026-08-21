@@ -1,3 +1,7 @@
-streamlit>=1.40
+# 1.51 is the verified floor, not a guess: st.image/st.button/st.dataframe/st.plotly_chart
+# all need the width="stretch" parameter that replaced use_container_width (added 1.48-1.49),
+# and st.navigation needs its `position` parameter, which the sidebar layout depends on.
+# Checked against an actual 1.51.0 install -- every one of those APIs is present.
+streamlit>=1.51
 plotly>=5.20
 pandas>=2.0

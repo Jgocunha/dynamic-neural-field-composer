@@ -78,24 +78,56 @@ catch {
     # powercfg itself is missing or unusable -- proceed unpinned on clocks and say so.
 }
 
+# PROCTHROTTLEMAX below is written INTO the High Performance scheme, so it outlives this
+# script: restoring only the active-scheme GUID would leave that plan permanently capped
+# at 99% for every later use of the machine. Capture the value first so it can be put back.
+$originalThrottle = $null
+try {
+    $throttleQuery = (powercfg /query $HighPerfGuid SUB_PROCESSOR PROCTHROTTLEMAX) -join "`n"
+    if ($throttleQuery -match 'Current AC Power Setting Index:\s*0x([0-9a-fA-F]+)') {
+        $originalThrottle = [Convert]::ToInt32($Matches[1], 16)
+    }
+}
+catch {
+    # Leave $originalThrottle null -- the throttle is then not modified at all below,
+    # rather than modified with no way back.
+}
+
 $powerRestored = $false
 function Restore-Power {
-    if (-not $script:powerRestored -and $script:originalGuid) {
-        powercfg /setactive $script:originalGuid *> $null
-        $script:powerRestored = $true
+    if ($script:powerRestored) { return }
+    if ($null -ne $script:originalThrottle) {
+        powercfg /setacvalueindex $script:HighPerfGuid SUB_PROCESSOR PROCTHROTTLEMAX $script:originalThrottle *> $null
     }
+    if ($script:originalGuid) {
+        powercfg /setactive $script:originalGuid *> $null
+    }
+    $script:powerRestored = $true
 }
 # Ctrl-C during the wrapped run must still restore the original power plan.
 Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { Restore-Power } | Out-Null
 
 try {
     powercfg /setactive $HighPerfGuid *> $null
-    # Caps turbo so clocks stay closer to base across runs -- large, unpredictable
-    # boost swings are one of the biggest sources of run-to-run noise on a desktop
-    # CPU with no dedicated cooling headroom.
-    powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 99 *> $null
-    powercfg /setactive $HighPerfGuid *> $null
-    $env:DNFC_BENCH_POWER = 'high-performance,PROCTHROTTLEMAX=99'
+    if ($null -ne $originalThrottle) {
+        # Caps turbo so clocks stay closer to base across runs -- large, unpredictable
+        # boost swings are one of the biggest sources of run-to-run noise on a desktop
+        # CPU with no dedicated cooling headroom. Only applied when the pre-existing
+        # value was readable, so Restore-Power can always put it back.
+        powercfg /setacvalueindex $HighPerfGuid SUB_PROCESSOR PROCTHROTTLEMAX 99 *> $null
+        powercfg /setactive $HighPerfGuid *> $null
+    }
+
+    # Record what is actually in effect, read back rather than assumed: powercfg reports
+    # failure through its exit code, not an exception, so a bare try/catch would happily
+    # stamp a clean-looking value onto a run that never got one.
+    $applied = (powercfg /query $HighPerfGuid SUB_PROCESSOR PROCTHROTTLEMAX) -join "`n"
+    if ($applied -match 'Current AC Power Setting Index:\s*0x([0-9a-fA-F]+)') {
+        $env:DNFC_BENCH_POWER = "high-performance,PROCTHROTTLEMAX=$([Convert]::ToInt32($Matches[1], 16))"
+    }
+    else {
+        $env:DNFC_BENCH_POWER = 'high-performance,PROCTHROTTLEMAX=unverified'
+    }
 }
 catch {
     # /setacvalueindex needs elevation on some systems -- degrade gracefully. An
@@ -116,9 +148,24 @@ $exitCode = 1
 try {
     $proc = Start-Process -FilePath $ResolvedExe -ArgumentList $ExeArgs -NoNewWindow -PassThru
 
-    try { $proc.ProcessorAffinity = [IntPtr]1 }
+    # Set, then read back: assignment can appear to succeed and still not stick (the
+    # child may already have exited on a very short run). The env vars the child
+    # inherited cannot be corrected retroactively, so a mismatch is reported loudly here
+    # -- treat such a run's recorded hygiene state as unverified.
+    try {
+        $proc.ProcessorAffinity = [IntPtr]1
+        if (-not $proc.HasExited -and [int]$proc.ProcessorAffinity -ne 1) {
+            Write-Warning "bench.ps1: CPU affinity read back as $([int]$proc.ProcessorAffinity), not 0x1 -- this run is NOT pinned as its JSON claims."
+        }
+    }
     catch { Write-Warning "bench.ps1: could not set CPU affinity ($($_.Exception.Message)) -- this run is NOT actually pinned despite DNFC_BENCH_AFFINITY=0x1 in its JSON." }
-    try { $proc.PriorityClass = 'High' }
+
+    try {
+        $proc.PriorityClass = 'High'
+        if (-not $proc.HasExited -and $proc.PriorityClass -ne 'High') {
+            Write-Warning "bench.ps1: priority read back as $($proc.PriorityClass), not High -- this run is NOT elevated as its JSON claims."
+        }
+    }
     catch { Write-Warning "bench.ps1: could not set process priority ($($_.Exception.Message)) -- this run is NOT actually elevated despite DNFC_BENCH_PRIORITY=high in its JSON." }
 
     $proc.WaitForExit()

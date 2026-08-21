@@ -22,7 +22,9 @@ if %errorlevel%==0 (
 )
 if not defined PYTHON (
     where python >nul 2>nul
-    if %errorlevel%==0 (
+    rem !errorlevel!, not %errorlevel%: the whole parenthesised block is parsed before
+    rem any of it runs, so %errorlevel% would expand to its value from before `where`.
+    if !errorlevel!==0 (
         set PYTHON=python
     ) else (
         echo ERROR: no Python interpreter found on PATH.

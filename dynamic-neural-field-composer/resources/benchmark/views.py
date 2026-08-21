@@ -4,6 +4,7 @@ to run) when a source is empty rather than raising."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -526,12 +527,16 @@ def elements(data: bench_data.DiscoveredData):
             fig2.update_layout(height=max(240, 24 * len(merged)))
             st.plotly_chart(fig2, width="stretch")
 
-            biggest = merged.reindex(merged["delta_us"].abs().sort_values(ascending=False).index).iloc[0]
-            direction = "grew" if biggest["delta_us"] > 0 else "shrank"
-            element_lines.append(
-                f"Biggest change since the previous profiler run: <code>{biggest['element_name']}</code> in "
-                f"<code>{biggest['tier']}</code> {direction} by {abs(biggest['delta_us']):.2f} us."
-            )
+            # The merge is on (tier, element_name), so it comes back empty whenever the two
+            # runs share no deck -- e.g. one profiled a single --deck and the other a full
+            # manifest. .iloc[0] would raise there.
+            if not merged.empty:
+                biggest = merged.reindex(merged["delta_us"].abs().sort_values(ascending=False).index).iloc[0]
+                direction = "grew" if biggest["delta_us"] > 0 else "shrank"
+                element_lines.append(
+                    f"Biggest change since the previous profiler run: <code>{biggest['element_name']}</code> in "
+                    f"<code>{biggest['tier']}</code> {direction} by {abs(biggest['delta_us']):.2f} us."
+                )
 
         for tier, g in latest.groupby("tier"):
             top = g.sort_values("share_pct", ascending=False).iloc[0]
@@ -583,12 +588,17 @@ def kernels(data: bench_data.DiscoveredData):
 
     df = None
     if uploaded is not None:
-        import json as _json
-        doc = _json.loads(uploaded.getvalue())
-        Path("_kernelbench_tmp.json").write_text(_json.dumps(doc))
-        df = bench_data.load_kernelbench(Path("_kernelbench_tmp.json"))
+        try:
+            df = bench_data.parse_kernelbench(json.loads(uploaded.getvalue()))
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            st.error(f"That file is not readable as Google Benchmark JSON: {exc}", icon="🚫")
+            return
     elif path_str and Path(path_str).is_file():
-        df = bench_data.load_kernelbench(Path(path_str))
+        try:
+            df = bench_data.load_kernelbench(Path(path_str))
+        except (json.JSONDecodeError, UnicodeDecodeError, OSError) as exc:
+            st.error(f"Could not read {path_str}: {exc}", icon="🚫")
+            return
 
     if df is None or df.empty:
         _empty_state(
