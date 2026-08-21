@@ -96,3 +96,52 @@ near-zero IQR (0.1-0.2%) -- unambiguous, exit code 1. Reverted immediately after
 the strongest evidence in this note: the comparison logic doesn't just work on paper or
 against a hand-edited baseline, it works against a genuinely slower measurement flowing
 through the exact same code path a real regression would take.
+
+## `small`'s noise is not run-length related (2026-08-21 measurement)
+
+The earlier section above guessed that `small`'s chronic noisiness might be a
+short-measurement artifact: at 20000 steps a `small` run takes only ~24 ms, close enough
+to the Windows scheduler quantum (~15.6 ms) that a single preemption would dominate its
+IQR. **That hypothesis is wrong**, and it is worth recording so nobody re-derives it.
+
+Measured on 2026-08-21, `small` alone (via a one-deck manifest), 9 runs at each step
+count, all under `scripts/bench.ps1`:
+
+| steps | approx. run length | median ns/cell/step | IQR/median |
+|---:|---:|---:|---:|
+| 20,000 | ~24 ms | 11.67 | 3.6% |
+| 50,000 | ~60 ms | 11.91 | 3.9% |
+| 200,000 | ~240 ms | 12.00 | 2.3% |
+| 500,000 | ~600 ms | 11.98 | 3.6% |
+
+A 25x increase in run length does not reduce the spread — it bounces around 3-4%
+throughout, with no trend. If the mechanism were a fixed-size absolute perturbation (one
+scheduler preemption, one interrupt), a 600 ms run would be ~25x less affected in
+relative terms than a 24 ms one, and the last row would be far below the first. It is not.
+
+The behaviour instead fits background load stealing a roughly **constant fraction** of
+cycles: a longer run accumulates proportionally more interference, so relative variance
+stays flat no matter how long the run is. On a machine with IDEs and a browser running,
+no step count will average that away. Only quieting the machine will.
+
+**The median, though, is reproducible.** Across that 25x range the median moved only
+11.67 -> 12.00, i.e. ±1.4%. So `small`'s *measurement* is accurate even in sessions where
+its *IQR* fails the 3% trust gate. The two are answering different questions, and for this
+deck on this machine they routinely disagree.
+
+**Practical consequence.** `dnf_composer_deckbench --record` refuses if *any* deck is
+noisy, so a chronically-noisy `small` blocks re-recording the whole baseline even when the
+other three decks are pristine (one 2026-08-21 session had medium and large-a at 0.5%
+while `small` sat at 7.3%). Four consecutive attempts that day were all refused on `small`.
+That is the gate working as designed, not a bug — but it does mean **re-recording a
+baseline on this machine requires closing the IDEs and browser first**, not just retrying.
+Retrying makes it worse: back-to-back attempts degraded `small` from 5.4% to 3.8% to 20.3%,
+the same thermal-accumulation effect described earlier in this note.
+
+If this becomes a recurring obstacle, the options worth weighing (none taken yet, all
+needing a deliberate decision rather than a quiet tweak) are: a per-deck step-count
+override in `decks.json`; a per-deck noise tolerance instead of one global
+`kNoisyRelSpread`; or gating `--record` on median stability across repeated runs rather
+than on within-run IQR. Loosening the global 3% cutoff is *not* on that list — a gate that
+passes noisy data is worse than one that refuses, which is the whole reason exit code 3
+exists.
