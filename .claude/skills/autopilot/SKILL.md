@@ -20,8 +20,9 @@ gh issue list --limit 60
 ```
 
 Read the candidates. Rank by implementation complexity, not by label. Write the ranked
-queue to `.claude/temp/autopilot-queue.md` (`mkdir -p .claude/temp` first - it is untracked
-and may not exist in a fresh worktree):
+queue to `<repo root>/.claude/temp/autopilot-queue.md` - that directory is tracked and
+always exists, so write to it directly rather than creating it (a relative `mkdir` from the
+nested project root would make a second, wrong `.claude/`):
 
 | # | Issue | Title | Complexity | Files | Backwards-compat risk |
 

@@ -143,8 +143,11 @@ conversation that produced it:
 | True of the project anywhere | `.claude/(project)notes/` - tracked |
 | Only true of this machine (toolchain versions, install locations, local paths) | `.claude/(machine)notes/` - gitignored |
 
-**Temp files** go to `.claude/temp/` (gitignored; `mkdir -p` it if missing). Never scatter
-scratch files through the project tree.
+**Temp files** go to **`<repo root>/.claude/temp/`** - the `.claude/` beside `README.md`,
+*not* one inside `dynamic-neural-field-composer/`. It is tracked and always exists, so use
+it directly; never `mkdir` it. A relative `mkdir -p .claude/temp` run from the nested
+project root creates a second, wrong `.claude/` one level down. Its contents are
+gitignored. Never scatter scratch files through the project tree.
 
 **Doxygen** - new or changed public entities under `include/` need `@brief`, one `@param`
 per parameter, and `@return` unless void.
