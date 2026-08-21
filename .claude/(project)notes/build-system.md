@@ -53,6 +53,21 @@ successful `vswhere` lookup, and reuses that recorded path (skipping `vswhere`) 
 it still has a `vcvars64.bat`. A fresh tree (no marker yet) behaves exactly as before. Only
 deleting `build\.vsinstall` (or the whole `build\` tree) lets a newer "latest" VS take over.
 
+A tree that already existed **before** this pinning landed has no marker either, so it looks
+"fresh" to the check above. To not silently reintroduce the same bug for that one case, the
+script also checks: no marker, but `build\x64-release\CMakeCache.txt` already exists → compare
+its cached `CMAKE_CXX_COMPILER` against the freshly-detected VS (normalizing `\` to `/` first,
+since CMake's cache uses forward slashes and `vswhere` doesn't) and refuse to proceed on a
+mismatch, rather than guess. `scripts/README.md` documents the one-time manual fix (delete the
+tree, or hand-write `build\.vsinstall`).
+
+The marker write uses delayed expansion (`!VSINSTALL!`, script-wide via
+`setlocal EnableDelayedExpansion`) rather than `%VSINSTALL%`, so a value containing `&`/`|`/`<`/
+`>` can't be reinterpreted as command syntax when the line is parsed (delayed expansion
+substitutes after parsing, not before) — flagged by CodeRabbit on PR #180 even though `VSINSTALL`
+only ever comes from `vswhere` or this script's own marker file, neither realistically
+attacker-controlled.
+
 ## Dependencies
 
 `imgui-platform-kit` is consumed as an installed package found via `CMAKE_PREFIX_PATH`, not
@@ -61,7 +76,7 @@ installed somewhere CMake looks. Everything else comes from vcpkg via `VCPKG_ROO
 
 ## Verified baseline
 
-As of 2026-08-21, `dnf_composer_tests` builds clean and runs **1592 tests across 349 test
+As of 2026-08-21, `dnf_composer_tests` builds clean and runs **1596 tests across 349 test
 suites, all passing**. Use that as the reference when judging whether a failure is
 pre-existing.
 

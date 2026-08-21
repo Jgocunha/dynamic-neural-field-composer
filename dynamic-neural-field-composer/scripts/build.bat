@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableDelayedExpansion
 
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..
@@ -36,11 +37,33 @@ if not defined VSINSTALL for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -latest
     -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
     -property installationPath`) do set "VSINSTALL=%%i"
 if not defined VSINSTALL ( echo ERROR: Visual Studio with C++ tools not found. & exit /b 1 )
+
+:: A pre-existing build\x64-release with no marker was configured by a build.bat that
+:: predates VS pinning (or was configured by hand). Reusing it with the VSINSTALL just
+:: detected above is only safe if that VS is the one CMake's cache already has recorded --
+:: CACHED_CL uses forward slashes (CMake's own normalization) while VSINSTALL uses
+:: backslashes (vswhere's format), so compare after normalizing VSINSTALL to match.
+if not exist "%VSINSTALL_MARKER%" if exist "%PROJECT_ROOT%\build\x64-release\CMakeCache.txt" (
+    set "CACHED_CL="
+    for /f "usebackq tokens=1,* delims==" %%A in (`findstr /b "CMAKE_CXX_COMPILER:" "%PROJECT_ROOT%\build\x64-release\CMakeCache.txt"`) do set "CACHED_CL=%%B"
+    set "VSINSTALL_FWD=!VSINSTALL:\=/!"
+    echo !CACHED_CL!| findstr /b /i /c:"!VSINSTALL_FWD!" >nul
+    if errorlevel 1 (
+        echo ERROR: build\x64-release was already configured with a different Visual Studio
+        echo   install than the one just detected: !VSINSTALL!
+        echo   Reusing it here would fail with STL1001: Unexpected compiler version.
+        echo   Delete build\x64-release and build\x64-debug for a clean reconfigure, or create
+        echo   build\.vsinstall containing the VS install path that tree was built with, then
+        echo   re-run this script.
+        exit /b 1
+    )
+)
+
 call "%VSINSTALL%\VC\Auxiliary\Build\vcvars64.bat"
 if errorlevel 1 ( echo ERROR: failed to initialize MSVC environment. & exit /b 1 )
 
 if not exist "%PROJECT_ROOT%\build" mkdir "%PROJECT_ROOT%\build"
-> "%VSINSTALL_MARKER%" echo %VSINSTALL%
+> "%VSINSTALL_MARKER%" echo !VSINSTALL!
 
 :: Create build folders
 mkdir %PROJECT_ROOT%\build\x64-release

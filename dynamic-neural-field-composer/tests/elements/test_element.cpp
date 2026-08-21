@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "elements/gauss_stimulus.h"
+#include "elements/gauss_stimulus_2d.h"
 #include "elements/gauss_kernel.h"
 #include "elements/neural_field.h"
 #include "elements/neural_field_2d.h"
@@ -35,6 +36,23 @@ static std::shared_ptr<GaussKernel> makeKernel(const std::string& name, int size
 {
     ElementCommonParameters cp{ name, size };
     return std::make_shared<GaussKernel>(cp, GaussKernelParameters{});
+}
+
+static std::shared_ptr<GaussStimulus2D> makeStimulus2D(const std::string& name,
+    const int sizeX, const int sizeY)
+{
+    ElementCommonParameters cp{ name, ElementDimensions{ sizeX, sizeY, 1.0, 1.0 } };
+    GaussStimulus2DParameters gsp{ 5.0, 15.0, 0.0, 0.0, true, false };
+    return std::make_shared<GaussStimulus2D>(cp, gsp);
+}
+
+static std::shared_ptr<NeuralField2D> makeField2D(const std::string& name,
+    const int sizeX, const int sizeY)
+{
+    const SigmoidFunction sig{ 0.0, 10.0 };
+    NeuralField2DParameters nfp{ 25.0, -5.0, sig };
+    ElementCommonParameters cp{ name, ElementDimensions{ sizeX, sizeY, 1.0, 1.0 } };
+    return std::make_shared<NeuralField2D>(cp, nfp);
 }
 
 // ---------------------------------------------------------------------------
@@ -189,21 +207,46 @@ TEST(ElementInputs, AddSizeMismatchedInputDoesNotAddConnection)
     EXPECT_FALSE(smallStim->hasOutput(largeField->getUniqueName(), "output"));
 }
 
-// Regression test for #41: addInput compares only flattened size, so a 1D element and a
-// 2D element whose x_max*y_max happens to equal the 1D element's size connect silently,
-// even though the spatial layouts are not interchangeable.
-TEST(ElementInputs, AddDimensionMismatchedInputDoesNotAddConnection)
+// Regression (#41): a 1D size-10 element and a 2D 5x2 element both flatten to
+// 10 samples, but their spatial layouts are not interchangeable. The old
+// flattened-size-only check let this connect silently; it must now be rejected.
+TEST(ElementInputs, Add1DInputTo2DElementWithMatchingFlattenedSizeIsRejected)
 {
-    const auto stim1D = makeStimulus("stim1d", 100);
-    const ElementCommonParameters cp2D{ "field2d", ElementDimensions(10, 10, 1.0, 1.0) };
-    const auto field2D = std::make_shared<NeuralField2D>(cp2D, NeuralField2DParameters{});
-
-    ASSERT_EQ(stim1D->getSize(), field2D->getSize());
+    // position 0 keeps the Gaussian centre in range for this small 1D field.
+    const GaussStimulusParameters gp{ 1.0, 1.0, 0.0 };
+    const auto stim1D = std::make_shared<GaussStimulus>(
+        ElementCommonParameters{ "stim-1d", ElementDimensions{ 10, 1.0 } }, gp);  // 1D, size 10
+    const auto field2D = makeField2D("field-2d", 5, 2);     // 2D, 5x2 = 10
 
     EXPECT_NO_THROW(field2D->addInput(stim1D, "output"));
 
     EXPECT_FALSE(field2D->hasInput(stim1D->getUniqueName(), "output"));
     EXPECT_FALSE(stim1D->hasOutput(field2D->getUniqueName(), "output"));
+    EXPECT_TRUE(field2D->getInputs().empty());
+}
+
+// Symmetric case: a 2D 5x2 source into a 1D size-10 element must also be rejected.
+TEST(ElementInputs, Add2DInputTo1DElementWithMatchingFlattenedSizeIsRejected)
+{
+    const auto stim2D = makeStimulus2D("stim-2d", 5, 2);    // 2D, 5x2 = 10
+    const auto field1D = makeField("field-1d", 10);         // 1D, size 10
+
+    EXPECT_NO_THROW(field1D->addInput(stim2D, "output"));
+
+    EXPECT_FALSE(field1D->hasInput(stim2D->getUniqueName(), "output"));
+    EXPECT_TRUE(field1D->getInputs().empty());
+}
+
+// Same-shape 2D<->2D connections must still succeed after the stricter gate.
+TEST(ElementInputs, AddSameShape2DInputConnects)
+{
+    const auto stim2D  = makeStimulus2D("stim-2d", 5, 2);
+    const auto field2D = makeField2D("field-2d", 5, 2);
+
+    EXPECT_NO_THROW(field2D->addInput(stim2D, "output"));
+
+    EXPECT_TRUE(field2D->hasInput(stim2D->getUniqueName(), "output"));
+    ASSERT_EQ(field2D->getInputs().size(), 1u);
 }
 
 TEST(ElementInputs, RemoveInputByName)

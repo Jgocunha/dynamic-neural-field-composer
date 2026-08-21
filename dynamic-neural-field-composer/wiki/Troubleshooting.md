@@ -70,11 +70,11 @@ Thrown from the `GaussStimulus`/`GaussStimulus2D`/`TimedGaussStimulus`/`TimedGau
 
 It is also thrown directly from the base `Element` constructor (so from **any** element type, not just `Collapse`/`Expand`) if `ElementCommonParameters.dimensionParameters.size` is not positive. In practice this can only happen if an `ElementDimensions` that was already validated at construction is mutated afterward (its fields are public) into an invalid state before being handed to an element's constructor — `ElementDimensions`'s own constructors already reject a non-positive extent/step/sample-count, so a size `<= 0` can no longer be produced through them. Previously this path logged an `ERROR` and silently produced a broken element (empty `components`, so `getComponentPtr("output")` failed with a confusing `ELEM_COMP_NOT_FOUND` later, or `getSize()` returned `0` and downstream loops silently no-op); the constructor now fails loudly at the point of construction instead.
 
-### `ERROR`: "Input '...' has a different dimensionality than '...'."
+### `ERROR`: "Input '...' has an incompatible shape (...) for '...' (...)."
 
-Logged (not thrown) from `Element::addInput()` at `ERROR` level when you connect a 1D element to a 2D element (or vice versa) directly — the connection is silently rejected. Before this check existed, a 1D element and a 2D element whose *flattened* sizes happened to match (e.g. a 1D field of size 10 and a 2D field of 5×2) would connect without complaint and produce silently incorrect dynamics, since the underlying data has a different spatial layout in each case.
+Logged (not thrown) from `Element::addInput()` at `ERROR` level when you connect a source whose dimensionality or per-axis size (`x_max`/`y_max`) doesn't match the target directly — the connection is silently rejected. Before this check existed, a 1D element and a 2D element whose *flattened* sizes happened to match (e.g. a 1D field of size 10 and a 2D field of 5×2) would connect without complaint and produce silently incorrect dynamics, since the underlying data has a different spatial layout in each case.
 
-This check only applies to elements that connect their own "input" directly to their own shape (the common case). `Resize`/`Resize2D`/`Collapse`/`Expand`/`FieldCoupling` are exempt — they exist specifically to bridge different shapes/dimensionalities and validate the connection themselves.
+This check only applies to elements that connect their own "input" directly to their own shape (the common case). `Resize`/`Resize2D`/`Collapse`/`Expand`/`FieldCoupling`/`GaussFieldCoupling` are exempt (`Element::bridgesDimensions()` returns `true` for them) — they exist specifically to bridge different shapes/dimensionalities and validate the connection themselves.
 
 **Fix:** insert a `Collapse` (2D→1D) or `Expand` (1D→2D) element between them (see [Element Reference](Element-Reference) for each).
 

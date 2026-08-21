@@ -70,6 +70,8 @@ scripts\build.bat
 
 Configures and builds both Release and Debug configurations with Ninja and the MSVC toolchain. Output lands in `build\x64-release\` and `build\x64-debug\`.
 
+On a machine with more than one Visual Studio installed, the script pins the VS install it uses to `build\.vsinstall` so a reused tree can't silently pick up a different VS on a later run (which would fail with `STL1001: Unexpected compiler version`). If you have an existing `build\x64-release\` from **before** this pinning existed, the script detects the mismatch instead of guessing: delete `build\x64-release\` and `build\x64-debug\` for a clean reconfigure, or create `build\.vsinstall` yourself containing the VS install path (e.g. `C:\Program Files\Microsoft Visual Studio\2022\Community`) that tree was originally built with.
+
 ---
 
 ## Install (run after build)

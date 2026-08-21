@@ -43,10 +43,14 @@ All notable changes to this project will be documented in this file.
 - `Element::addInput` validated only the flattened component size, so a 1D element and a 2D
   element whose flattened sizes happened to match (e.g. a 1D field of size 10 and a 2D field
   of 5×2) connected silently and produced incorrect dynamics, since the underlying data has
-  a different spatial layout in each case. It now also rejects a dimensionality mismatch,
-  logging `"Input '...' has a different dimensionality than '...'."` `Resize`/`Resize2D`/
-  `Collapse`/`Expand`/`FieldCoupling`, which intentionally bridge different shapes and
-  validate the connection themselves, are unaffected (#41).
+  a different spatial layout in each case. It now compares the full shape (dimensionality,
+  `size_x`, `size_y`), logging `"Input '...' has an incompatible shape (...) for '...' (...)."`
+  Elements that intentionally bridge dimensionality or size (`Collapse`, `Expand`, `Resize`,
+  `Resize2D`, `FieldCoupling`, `GaussFieldCoupling`) declare that explicitly via a new
+  `Element::bridgesDimensions()` virtual and are exempt — an earlier version of this fix tried
+  to infer the exemption from a buffer-length heuristic instead, which wrongly rejected valid
+  bridge connections whenever the source's flattened size coincided with the target's own size
+  (e.g. a degenerate 2D `5x1` source collapsing into a 1D size-5 `Collapse` output) (#41).
 - `scripts/build.bat` picked the Visual Studio install with `vswhere -latest` on every run,
   which on a machine with more than one VS installed could select a different VS than an
   existing `build/x64-*` tree was configured with, mismatching the cached compiler's cl.exe
@@ -54,7 +58,12 @@ All notable changes to this project will be documented in this file.
   with `STL1001: Unexpected compiler version`. The script now records the VS install path it
   used in `build\.vsinstall` and reuses it (skipping `vswhere`) as long as it still has a
   `vcvars64.bat`, so a reused tree stays pinned to the toolchain it was actually configured
-  with; a fresh tree behaves as before.
+  with; a fresh tree behaves as before. A tree that already existed before this fix (so has no
+  marker yet) is checked against its own `CMakeCache.txt` instead of being assumed fresh, and
+  the script now refuses to proceed on a detected mismatch rather than risk the same failure —
+  see `scripts/README.md` for the one-time manual fix. The marker write also switched from
+  `%VSINSTALL%` to delayed expansion (`!VSINSTALL!`) so a value containing `&`/`|`/`<`/`>`
+  can't be reinterpreted as command syntax.
 - `static-analysis.yml` and `release.yml` keyed their vcpkg package cache on
   `hashFiles('build.sh')`/`hashFiles('build_macos.sh')` — paths that don't exist from the
   repo root (and, for `release.yml`, files these jobs don't even use, since they install

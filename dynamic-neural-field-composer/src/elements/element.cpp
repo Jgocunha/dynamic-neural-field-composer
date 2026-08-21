@@ -104,20 +104,31 @@ namespace dnf_composer::element
 			return;
 		}
 
-		// Elements that bridge dimensionality (Collapse, Expand, Resize*, FieldCoupling) size
-		// "input" to the source's own shape before delegating here, so their "input" size
-		// differs from their own getSize(); this guard only applies to elements that don't,
-		// where "input" and "output" always share the element's own dimensionality by
-		// construction and a size-only check can't catch a coincidentally-matching flattened
-		// size across different shapes.
-		if (this->getComponentPtr("input")->size() == this->getSize() &&
-			inputElement->commonParameters.dimensionParameters.dimensionality !=
-			this->commonParameters.dimensionParameters.dimensionality)
+		// A matching flattened size does not guarantee a compatible spatial layout
+		// (e.g. a 1D size-10 element and a 2D 5x2 element both flatten to 10 samples),
+		// so exemption from this check must not be inferred from buffer length: a
+		// dimension-bridging source can coincidentally flatten to the same count as
+		// this element's own size (e.g. a degenerate 2D 5x1 source collapsing to a 1D
+		// size-5 output). Elements that intentionally bridge dimensionality or size
+		// (Collapse, Expand, Resize, Resize2D, FieldCoupling, GaussFieldCoupling)
+		// instead declare that explicitly via bridgesDimensions() and size their own
+		// "input" component from their own declared parameters ahead of this call;
+		// every other element keeps its "input" component sized to its own declared
+		// dimensions here, so compare shapes directly against the source.
+		if (!bridgesDimensions())
 		{
-			const std::string logMessage = std::format("Input '{}' has a different dimensionality than '{}'.",
-			                               inputElement->getUniqueName(), this->getUniqueName());
-			log(tools::logger::LogLevel::ERROR, logMessage);
-			return;
+			const ElementDimensions inputDims = inputElement->getElementCommonParameters().dimensionParameters;
+			const ElementDimensions& thisDims = this->commonParameters.dimensionParameters;
+			if (inputDims.dimensionality != thisDims.dimensionality ||
+				inputDims.size_x != thisDims.size_x ||
+				inputDims.size_y != thisDims.size_y)
+			{
+				const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' has an incompatible shape ("
+				                               + inputDims.toString() + ") for '" + this->getUniqueName() + "' ("
+				                               + thisDims.toString() + ").";
+				log(tools::logger::LogLevel::ERROR, logMessage);
+				return;
+			}
 		}
 
 		if (inputElement->getComponentPtr("output")->size() != this->getComponentPtr("input")->size())
