@@ -130,6 +130,22 @@ def overview(data: bench_data.DiscoveredData):
             icon="⚠️",
         )
     else:
+        # Neither --record nor --check writes a JSON sidecar (both return before the
+        # writeJson() at the end of deckbench_main.cpp's main()), so the newest file on
+        # disk can easily predate the baseline it is being compared against. That shows
+        # up as a stale "REGRESSED" for a run that was superseded -- say so loudly,
+        # because the terminal said the gate passed and this would flatly contradict it.
+        latest_ts, baseline_ts = latest["timestamp"].iloc[0], baseline["timestamp"].iloc[0]
+        if pd.notna(latest_ts) and pd.notna(baseline_ts) and latest_ts < baseline_ts:
+            st.warning(
+                f"**This run predates the baseline it is being compared against** "
+                f"({latest_ts:%Y-%m-%d %H:%M} vs baseline {baseline_ts:%Y-%m-%d %H:%M} UTC), "
+                "so the verdicts below are history, not the current state. `--record` and "
+                "`--check` write no JSON sidecar, so a passing `--check` leaves nothing here. "
+                "Run `dnf_composer_deckbench` with no `--record`/`--check` flag to refresh this page.",
+                icon="🕰️",
+            )
+
         # The environment fingerprint covers machine/compiler/flags, but NOT the run
         # configuration or the hygiene state -- so a short, unwrapped run will happily
         # compare against a long, pinned baseline and report the difference as a
