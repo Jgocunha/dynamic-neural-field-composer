@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
   render a second output-side "Activation" pin in the node graph, alongside the regular
   Output pin, so a field's raw activation can be wired directly into another element's
   input instead of its sigmoided output.
+- `CMakePresets.json` now has `testPresets` (`release`/`debug`, mirroring the existing
+  configure/build presets), so `ctest --preset release` works instead of having to invoke
+  `./build/release/tests/dnf_composer_tests` directly.
 
 ### Changed
 - Centralised every first-party GUI colour literal across the user-interface layer
@@ -37,6 +40,36 @@ All notable changes to this project will be documented in this file.
   instructions (#158).
 
 ### Fixed
+- `Element::addInput` validated only the flattened component size, so a 1D element and a 2D
+  element whose flattened sizes happened to match (e.g. a 1D field of size 10 and a 2D field
+  of 5×2) connected silently and produced incorrect dynamics, since the underlying data has
+  a different spatial layout in each case. It now compares the full shape (dimensionality,
+  `size_x`, `size_y`), logging `"Input '...' has an incompatible shape (...) for '...' (...)."`
+  Elements that intentionally bridge dimensionality or size (`Collapse`, `Expand`, `Resize`,
+  `Resize2D`, `FieldCoupling`, `GaussFieldCoupling`) declare that explicitly via a new
+  `Element::bridgesDimensions()` virtual and are exempt — an earlier version of this fix tried
+  to infer the exemption from a buffer-length heuristic instead, which wrongly rejected valid
+  bridge connections whenever the source's flattened size coincided with the target's own size
+  (e.g. a degenerate 2D `5x1` source collapsing into a 1D size-5 `Collapse` output) (#41).
+- `scripts/build.bat` picked the Visual Studio install with `vswhere -latest` on every run,
+  which on a machine with more than one VS installed could select a different VS than an
+  existing `build/x64-*` tree was configured with, mismatching the cached compiler's cl.exe
+  against the newly-loaded vcvars environment's headers and failing every translation unit
+  with `STL1001: Unexpected compiler version`. The script now records the VS install path it
+  used in `build\.vsinstall` and reuses it (skipping `vswhere`) as long as it still has a
+  `vcvars64.bat`, so a reused tree stays pinned to the toolchain it was actually configured
+  with; a fresh tree behaves as before. A tree that already existed before this fix (so has no
+  marker yet) is checked against its own `CMakeCache.txt` instead of being assumed fresh, and
+  the script now refuses to proceed on a detected mismatch rather than risk the same failure —
+  see `scripts/README.md` for the one-time manual fix. The marker write also switched from
+  `%VSINSTALL%` to delayed expansion (`!VSINSTALL!`) so a value containing `&`/`|`/`<`/`>`
+  can't be reinterpreted as command syntax.
+- `static-analysis.yml` and `release.yml` keyed their vcpkg package cache on
+  `hashFiles('build.sh')`/`hashFiles('build_macos.sh')` — paths that don't exist from the
+  repo root (and, for `release.yml`, files these jobs don't even use, since they install
+  vcpkg packages inline rather than via a setup script). `hashFiles` on a missing path
+  returns an empty string, so the cache key never changed when dependencies changed. Both
+  now key on the workflow file that actually declares the installed packages.
 - `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or
   replacing the first, so `inputs` could hold two target entries that `updateInput()`
   summed together into `components["target"]` — training against a combined/stale

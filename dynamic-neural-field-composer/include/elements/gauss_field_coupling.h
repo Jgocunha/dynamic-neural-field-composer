@@ -129,6 +129,14 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
+		/// @brief GaussFieldCoupling maps an independently-sized input field to its own
+		/// output field through explicit point-to-point couplings, so its "input"
+		/// component is deliberately sized from
+		/// @c GaussFieldCouplingParameters::inputFieldDimensions rather than matching
+		/// this element's own dimensions; it is exempt from the base
+		/// dimensionality/shape check accordingly.
+		[[nodiscard]] bool bridgesDimensions() const override { return true; }
+
 		/// @brief Resize the output field dimensions and rebuild the weight matrix.
 		/// Preserves input field dimensions and clears weights. Connections are not
 		/// removed — call removeInputs()/removeOutputs() first if needed.

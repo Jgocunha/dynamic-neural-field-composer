@@ -154,6 +154,13 @@ namespace dnf_composer
 			std::string toString() const override;
 			std::shared_ptr<Element> clone() const override;
 
+			/// @brief FieldCoupling maps an independently-sized input field to its own
+			/// output field through a learned weight matrix, so its "input" component is
+			/// deliberately sized from @c FieldCouplingParameters::inputFieldDimensions
+			/// rather than matching this element's own dimensions; it is exempt from the
+			/// base dimensionality/shape check accordingly.
+			[[nodiscard]] bool bridgesDimensions() const override { return true; }
+
 			/// @brief Resize the output field dimensions and rebuild the weight matrix.
 			/// Preserves input field dimensions and clears weights. Connections are not
 			/// removed — call removeInputs()/removeOutputs() first if needed. Any
