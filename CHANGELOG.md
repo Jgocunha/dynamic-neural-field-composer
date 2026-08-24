@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Documentation
+- `.claude/(project)notes/` and `.claude/(machine)notes/` renamed to `.claude/notes/` and
+  `.claude/local-notes/`, dropping the parentheses that had to be quoted in every shell
+  command; all references updated (`.gitignore`, `CLAUDE.md`, `perf-regression-test` skill,
+  `wiki/Helping Claude Help You.md`, and the benchmark tooling comments/help text that
+  pointed at `perf-noise-floor.md`/`perf-tools-not-in-ci.md`)
+- Added `commit` and `pr` skills: read the working tree or branch diff and print a
+  conventional commit message or a filled-in PR title/description to chat, without running
+  `git commit`, `git push` or `gh pr create`
+- `wiki/Helping Claude Help You.md`'s skill table updated to list all eight skills
+  (previously missing `perf-regression-test`, `commit`, `pr`, and stated "Five")
+
 ## [2.11.0] - 2026-08-24
 
 ### Added
