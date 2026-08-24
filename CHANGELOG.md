@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-08-24
+
 ### Added
 - Elements exposing an `"activation"` component (e.g. `NeuralField`/`NeuralField2D`) now
   render a second output-side "Activation" pin in the node graph, alongside the regular
@@ -14,6 +16,10 @@ All notable changes to this project will be documented in this file.
   `./build/release/tests/dnf_composer_tests` directly.
 
 ### Changed
+- `describeElementCreationFailure()` moved from its own `user_interface/element_creation_error.h`/
+  `.cpp` module into `tools/utils.h`/`.cpp` (as `tools::utils::describeElementCreationFailure`),
+  since `SimulationWindow` was its only caller. Behaviour, including its ImGui-independent,
+  headlessly-testable design, is unchanged; only the header and qualified name moved.
 - Centralised every first-party GUI colour literal across the user-interface layer
   (`node_graph_window`, `element_window`, `simulation_window`, `control_bar_window`,
   `field_metrics_window`, `static_layout`, `help_window`, `log_window`, `status_bar_window`)
