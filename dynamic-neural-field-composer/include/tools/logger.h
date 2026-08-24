@@ -59,7 +59,7 @@ namespace dnf_composer::tools::logger
 		/// @param level Severity of the message.
 		/// @param mode  Where the message should be delivered.
 		Logger(LogLevel level, LogOutputMode mode = ALL);
-		/// @brief Emit @p message if @p level is at or above the global minimum level.
+		/// @brief Emit @p message if this logger's configured level is at or above the global minimum level.
 		/// @param message Text to log.
 		void log(const std::string& message) const;
 		/// @brief Set the global minimum level; messages below it are dropped.

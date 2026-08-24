@@ -20,10 +20,10 @@ namespace dnf_composer::tools::utils
 
 	/// @brief Count the number of lines in a text file.
 	/// @param filename Path to the file to read.
-	/// @return Number of lines in the file.
+	/// @return Number of lines in the file, or -1 if the file could not be opened.
 	int countNumOfLinesInFile(const std::string& filename);
 
-	/// @brief Write a vector of doubles to a file, one value per line.
+	/// @brief Write a vector of doubles to a file as space-separated values on a single line.
 	/// @param vector   Values to write.
 	/// @param filename Path to the file to write.
 	/// @return True on success, false if the file could not be opened.

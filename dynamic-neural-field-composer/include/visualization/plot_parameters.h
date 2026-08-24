@@ -116,6 +116,7 @@ namespace dnf_composer
 	struct PlotSpecificParameters
 	{
 		virtual ~PlotSpecificParameters() = default;
+		/// @brief Construct default (empty) plot-specific parameters.
 		PlotSpecificParameters() = default;
 		/// @brief Format the plot-type-specific parameters as a human-readable string.
 		/// @return A string describing the parameters.
