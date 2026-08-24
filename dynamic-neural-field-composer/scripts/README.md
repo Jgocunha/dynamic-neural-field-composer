@@ -92,4 +92,4 @@ Detects the OS and runs `cmake --install` on `build/linux-release/` (Linux) or `
 scripts\install.bat
 ```
 
-Installs both Release and Debug configurations from `build\x64-release\` and `build\x64-debug\`. Auto-elevates via UAC if not running as administrator.
+Installs both Release and Debug configurations from `build\x64-release\` and `build\x64-debug\`. Auto-elevates via UAC if not running as administrator. Pass `release` or `debug` to install only that configuration -- matches whichever configuration(s) `build.bat` was given.
