@@ -159,7 +159,6 @@ set(user_interface_headers
         "include/user_interface/element_window.h"
         "include/user_interface/plot_control_window.h"
         "include/user_interface/simulation_window.h"
-        "include/user_interface/element_creation_error.h"
         "include/user_interface/node_graph_window.h"
         "include/user_interface/main_menu_bar.h"
         "include/user_interface/widgets.h"
@@ -262,7 +261,6 @@ set(src
 
         "src/user_interface/plot_control_window.cpp"
         "src/user_interface/simulation_window.cpp"
-        "src/user_interface/element_creation_error.cpp"
         "src/user_interface/field_metrics_window.cpp"
         "src/user_interface/element_window.cpp"
         "src/user_interface/node_graph_window.cpp"

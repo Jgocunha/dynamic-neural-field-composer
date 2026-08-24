@@ -313,7 +313,7 @@ namespace dnf_composer::user_interface
 		// renders unguarded, so a genuine rendering fault still surfaces as itself.
 		if (addRequested)
 		{
-			lastAddElementError = describeElementCreationFailure(
+			lastAddElementError = tools::utils::describeElementCreationFailure(
 				[this, selected] { renderElementParameters(selected, id.data(), true); });
 		}
 		else
