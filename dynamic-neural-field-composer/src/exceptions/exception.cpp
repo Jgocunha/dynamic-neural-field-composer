@@ -1,5 +1,7 @@
 ﻿#include "exceptions/exception.h"
 
+#include <format>
+
 namespace dnf_composer
 {
 
@@ -57,41 +59,41 @@ namespace dnf_composer
 		case ErrorCode::APP_CLOSE:
 			return "Failed to close() Application.";
 		case ErrorCode::SIM_ELEM_NOT_FOUND:
-			return "Element with id " + errorElement + " not found.";
+			return std::format("Element with id {} not found.", errorElement);
 		case ErrorCode::SIM_RUNTIME_LESS_THAN_ZERO:
-			return "runTime should be greater than 0. Currently " + std::to_string(errorIndex) + ".";
+			return std::format("runTime should be greater than 0. Currently {}.", errorIndex);
 		case ErrorCode::SIM_ELEM_INDEX:
-			return "Element index out of range, in elements. Currently " + std::to_string(errorIndex) + ".";
+			return std::format("Element index out of range, in elements. Currently {}.", errorIndex);
 		case ErrorCode::ELEM_COMP_NOT_FOUND:
-			return "Component '" + errorComponent + "' not found for element with id '" + errorElement + "'.";
+			return std::format("Component '{}' not found for element with id '{}'.", errorComponent, errorElement);
 		case ErrorCode::ELEM_INPUT_IS_NULL:
 			return "Input element is null.";
 		case ErrorCode::ELEM_INPUT_ALREADY_EXISTS:
 			return "Input element with the same name already exists.";
 		case ErrorCode::SIM_ELEM_ALREADY_EXISTS:
-			return "Element with id " + errorElement + " already exists.";
+			return std::format("Element with id {} already exists.", errorElement);
 		case ErrorCode::ELEM_INPUT_NOT_FOUND:
-			return "Input element with name " + errorElement + " not found.";
+			return std::format("Input element with name {} not found.", errorElement);
 		case ErrorCode::ELEM_INPUT_SIZE_MISMATCH:
-			return "Input element with name " + errorElement + " has a size mismatch.";
+			return std::format("Input element with name {} has a size mismatch.", errorElement);
 		case ErrorCode::ELEM_SIZE_NOT_ALLOWED:
-			return "For now element (" + errorElement + ") cannot be resized as it can be potentially damaging for the simulation.";
+			return std::format("For now element ({}) cannot be resized as it can be potentially damaging for the simulation.", errorElement);
 		case ErrorCode::ELEM_RENAME_NOT_ALLOWED:
-			return "For now element (" + errorElement + ") cannot be renamed as it can be potentially damaging for the simulation.";
+			return std::format("For now element ({}) cannot be renamed as it can be potentially damaging for the simulation.", errorElement);
 		case ErrorCode::GAUSS_STIMULUS_POSITION_OUT_OF_RANGE:
-			return "Gaussian stimulus (" + errorElement + ") position is out of range, must be between 0 and size.";
+			return std::format("Gaussian stimulus ({}) position is out of range, must be between 0 and size.", errorElement);
 		case ErrorCode::GAUSS_STIMULUS_SUM_MISMATCH:
-			return "Size mismatch when summing gauss stimulus (" + errorElement + ").";
+			return std::format("Size mismatch when summing gauss stimulus ({}).", errorElement);
 		case ErrorCode::VIS_DATA_NOT_FOUND:
-			return "Failed to retrieve data for plotting (" + errorElement + errorComponent + ").";
+			return std::format("Failed to retrieve data for plotting ({}{}).", errorElement, errorComponent);
 		case ErrorCode::VIS_INVALID_SIM:
 			return "Invalid simulation pointer.";
 		case ErrorCode::VIS_INVALID_PLOTTING_INDEX:
 			return "Invalid plotting index.";
 		case ErrorCode::ELEM_INVALID_PARAMETER:
-			return "Invalid parameter for element (" + errorElement + ").";
+			return std::format("Invalid parameter for element ({}).", errorElement);
 		case ErrorCode::ELEM_INVALID_SIZE:
-			return "Invalid size for element (" + errorElement + ").";
+			return std::format("Invalid size for element ({}).", errorElement);
 		case ErrorCode::SIM_INVALID_PARAMETER:
 			return "Invalid parameter for simulation.";
 		case ErrorCode::LOG_LOCAL_TIME_ERROR:

@@ -8,6 +8,7 @@
 #include <string>
 #include <ctime>
 #include <filesystem>
+#include <format>
 #include <sstream>
 #include "utils.h"
 
@@ -33,7 +34,7 @@ namespace FileDialog {
 	{
 		static int file_dialog_file_select_index = 0;
 		static int file_dialog_folder_select_index = 0;
-		static std::string file_dialog_current_path = dnf_composer::tools::utils::getResourceRoot() + "/data/";
+		static std::string file_dialog_current_path = std::format("{}/data/", dnf_composer::tools::utils::getResourceRoot());
 		static std::string file_dialog_current_file;
 		static std::string file_dialog_current_folder;
 		static std::array<char, 500> file_dialog_error = {};
