@@ -19,7 +19,7 @@ import pandas as pd
 NOISY_REL_SPREAD_PCT = 3.0
 
 # Mirrors kDefaultThresholdPct in tests/benchmark/deckbench_main.cpp -- backed by
-# the noise-floor measurement in .claude/(project)notes/perf-noise-floor.md.
+# the noise-floor measurement in .claude/notes/perf-noise-floor.md.
 DEFAULT_THRESHOLD_PCT = 5.0
 
 PATH_SUFFIXES = ("-auto", "-forcedirect", "-forcespectral")

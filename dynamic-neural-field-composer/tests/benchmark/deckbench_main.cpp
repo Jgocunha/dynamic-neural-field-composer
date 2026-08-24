@@ -64,7 +64,7 @@ constexpr int WARMUP_STEPS = 200;
 #define DECKBENCH_BASELINES_DIR "baselines"
 #endif
 
-// Measured, not guessed: .claude/(project)notes/perf-noise-floor.md records a 10-session
+// Measured, not guessed: .claude/notes/perf-noise-floor.md records a 10-session
 // noise-floor measurement under scripts/bench (median IQR/median 1.89%, worst session
 // 3.79%) on the reference dev machine. 5% sits comfortably above both, with real margin
 // rather than being tuned to rarely fire. Re-measure and revise here (and in

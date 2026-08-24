@@ -18,9 +18,9 @@ are held to exactly the same standard.
 | Path | In the repo? | What it is |
 |---|---|---|
 | `CLAUDE.md` | yes | Project conventions. Claude reads this every session. |
-| `skills/` | yes | Five task workflows (below). |
-| `(project)notes/` | yes | Findings about the project that aren't obvious from the code. |
-| `(machine)notes/` | no | Notes true of one machine only — toolchain versions, local paths. |
+| `skills/` | yes | Eight task workflows (below). |
+| `notes/` | yes | Findings about the project that aren't obvious from the code. |
+| `local-notes/` | no | Notes true of one machine only — toolchain versions, local paths. |
 | `temp/` | no | Scratch space. Never commit anything from here. |
 | `settings*.json` | no | Personal permission settings. |
 
@@ -28,7 +28,7 @@ The tracked half is shared deliberately, so everyone works from the same convent
 untracked half is yours and stays on your machine.
 
 If you learn something while working that the code doesn't already say — a non-obvious
-constraint, a subtlety in the build — write it into `(project)notes/` as a short standalone
+constraint, a subtlety in the build — write it into `notes/` as a short standalone
 `.md`. That's what the directory is for.
 
 ---
@@ -44,6 +44,9 @@ own; you can also just name it.
 | `work-an-issue` | End-to-end for one issue: branch, failing test, implement, build, review, docs, PR. |
 | `docs-check` | Checks Doxygen on public API, the matching wiki page, and stale references. |
 | `project-code-review` | Reviews a diff against this project's standards before you push it. |
+| `perf-regression-test` | Checks a hot-path diff against this machine's recorded benchmark baseline. |
+| `commit` | Reads your uncommitted diff and writes the conventional commit message(s). |
+| `pr` | Reads the branch diff and writes the PR title and description. |
 | `autopilot` | Maintainer orchestration for unattended issue work. You will not need this. |
 
 For the authoritative version of any of them, read `.claude/skills/<name>/SKILL.md`. This

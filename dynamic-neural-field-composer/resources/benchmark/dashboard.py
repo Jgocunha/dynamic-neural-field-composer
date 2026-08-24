@@ -70,7 +70,7 @@ with st.sidebar:
         "Threshold %", min_value=1.0, max_value=20.0,
         value=bench_analysis.DEFAULT_THRESHOLD_PCT, step=0.5,
         help="Mirrors dnf_composer_deckbench --check's --threshold. Default is the measured "
-             "noise-floor-derived value (see .claude/(project)notes/perf-noise-floor.md).",
+             "noise-floor-derived value (see .claude/notes/perf-noise-floor.md).",
     )
 
     if not data.envelopes.empty:

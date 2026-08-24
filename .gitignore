@@ -24,12 +24,12 @@ imnode-window.json
 __pycache__/
 *.pyc
 
-# Only CLAUDE.md, skills/ and (project)notes/ are shared. Settings hold machine-specific
-# paths, and docs/ tests/ issues/ reports/ (machine)notes/ are local working material.
+# Only CLAUDE.md, skills/ and notes/ are shared. Settings hold machine-specific
+# paths, and docs/ tests/ issues/ reports/ local-notes/ are local working material.
 .claude/*
 !.claude/CLAUDE.md
 !.claude/skills/
-!.claude/(project)notes/
+!.claude/notes/
 
 # temp/ itself is tracked (via .gitkeep) but nothing inside it is, so the directory
 # always exists in a fresh clone. Without this the "put scratch files in .claude/temp/"

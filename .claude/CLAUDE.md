@@ -140,8 +140,8 @@ conversation that produced it:
 
 | Finding | Goes in |
 |---|---|
-| True of the project anywhere | `.claude/(project)notes/` - tracked |
-| Only true of this machine (toolchain versions, install locations, local paths) | `.claude/(machine)notes/` - gitignored |
+| True of the project anywhere | `.claude/notes/` - tracked |
+| Only true of this machine (toolchain versions, install locations, local paths) | `.claude/local-notes/` - gitignored |
 
 **Temp files** go to **`<repo root>/.claude/temp/`** - the `.claude/` beside `README.md`,
 *not* one inside `dynamic-neural-field-composer/`. It is tracked and always exists, so use

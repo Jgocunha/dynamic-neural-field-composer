@@ -55,7 +55,7 @@ baselines before that point were measured against a different deck.
 
 `dnf_composer_deckbench --check`'s default `--threshold` is **5%**, on median
 `ns_per_cell_step` per deck. This is a measured value, not a guess: see
-`.claude/(project)notes/perf-noise-floor.md` for the 10-session-bare-vs-10-session-wrapped
+`.claude/notes/perf-noise-floor.md` for the 10-session-bare-vs-10-session-wrapped
 noise-floor measurement it's derived from (median relative spread 1.89% under
 `scripts/bench`, worst observed session 3.79% — 5% has real margin above both). Revisit
 that note, and this line, if a re-measurement on a different reference machine changes

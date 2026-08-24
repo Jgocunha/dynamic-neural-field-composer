@@ -12,7 +12,7 @@ than ten skipped checks would have saved. Read this whole page before running an
 
 **Never run any of this in CI.** GitHub-hosted runners are shared VMs whose run-to-run
 spread (2-3x) exceeds any regression worth catching — a threshold loose enough not to
-false-positive there catches nothing. See `.claude/(project)notes/perf-tools-not-in-ci.md`.
+false-positive there catches nothing. See `.claude/notes/perf-tools-not-in-ci.md`.
 
 ## 1. Decide whether to run it
 
