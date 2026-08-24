@@ -7,6 +7,7 @@
 #include <fstream>
 #include <chrono>
 #include <filesystem>
+#include <functional>
 
 namespace dnf_composer::tools::utils
 {
@@ -63,4 +64,17 @@ namespace dnf_composer::tools::utils
 	}
 
 	float getProcessMemoryMb();
+
+	/// @brief Run a step and turn any failure into a message.
+	///
+	/// Intended for call sites (e.g. the element-creation forms in the ImGui render
+	/// loop) where an exception thrown from inside a frame unwinds straight out of
+	/// the render loop and terminates the application, so the call is funnelled
+	/// through here instead.
+	///
+	/// @param createAndAdd  The step to run.
+	/// @return An empty string if @p createAndAdd completed; otherwise a message
+	///         describing the failure. `dnf_composer::Exception` messages already
+	///         name the element and the error code, so they are passed through as-is.
+	[[nodiscard]] std::string describeElementCreationFailure(const std::function<void()>& createAndAdd);
 }

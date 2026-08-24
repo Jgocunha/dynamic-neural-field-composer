@@ -131,6 +131,20 @@ namespace dnf_composer::element
 		virtual void addInput(const std::shared_ptr<Element>& inputElement,
 		                      const std::string& inputComponent = "output");
 
+		/// @brief Whether this element manages its own input-shape validation.
+		///
+		/// Elements that intentionally bridge dimensionality or size (e.g. Collapse
+		/// going 2D -> 1D, or Resize resampling to a different count) override
+		/// @c addInput() to validate and resize their own "input" component before
+		/// delegating to Element::addInput(). For those elements, addInput()'s direct
+		/// dimensionality/shape comparison against the source is both redundant and
+		/// unsafe to infer from buffer length alone, so it is skipped whenever this
+		/// returns @c true. Plain elements keep the default (@c false) and get the
+		/// full shape check.
+		/// @return @c true if this element validates/resizes its own "input" component
+		///         and should be exempt from Element::addInput()'s shape check.
+		[[nodiscard]] virtual bool bridgesDimensions() const { return false; }
+
 		/// @brief Deregister the input element named @p inputElementId, and erase
 		///        the matching `outputs` entry on that element so the two sides of
 		///        the connection stay symmetric (#168).

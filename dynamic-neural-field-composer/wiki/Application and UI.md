@@ -366,10 +366,10 @@ the render loop and end the application.
 `SimulationWindow` therefore routes every creation call site through:
 
 ```cpp
-#include "user_interface/element_creation_error.h"
+#include "tools/utils.h"
 
 // Empty string on success; otherwise a message describing the failure.
-const std::string error = user_interface::describeElementCreationFailure([&]
+const std::string error = tools::utils::describeElementCreationFailure([&]
 {
     simulation->addElement(std::make_shared<element::NeuralField>(common, params));
 });

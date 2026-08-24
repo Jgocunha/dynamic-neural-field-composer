@@ -108,6 +108,25 @@ TEST(CollapseTest, OneDimensionalInputIsRejected)
     EXPECT_TRUE(cl->getInputs().empty());
 }
 
+// Regression (CodeRabbit review on #97): a degenerate 2D source (size_y == 1)
+// flattens to exactly the kept-axis output size, which used to coincide with
+// the old buffer-length heuristic in Element::addInput and get the connection
+// wrongly rejected as an incompatible shape. Collapse legitimately bridges
+// 2D -> 1D and must be accepted regardless of that coincidence.
+TEST(CollapseTest, DegenerateHeightSourceConnects)
+{
+    // 2D 5x1 source flattens to 5 samples -- the same count as the kept-axis
+    // (X) output, which is exactly what used to trip the old heuristic.
+    const auto cl = makeCollapse("cl", 5, 1, 5, CompressionType::SUM, ProjectionAxis::X);
+    const auto source = makeSource2D("src", 5, 1);
+    source->init();
+
+    cl->addInput(source);
+
+    EXPECT_TRUE(cl->hasInput(source->getUniqueName(), "output"));
+    ASSERT_EQ(cl->getInputs().size(), 1u);
+}
+
 // ---------------------------------------------------------------------------
 // Numerical correctness — keep X (collapse over y)
 // ---------------------------------------------------------------------------

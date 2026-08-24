@@ -9,8 +9,8 @@
 #include "elements/element_factory.h"
 #include "application/application.h"
 #include "user_interface/widgets.h"
-#include "user_interface/element_creation_error.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
+#include "tools/utils.h"
 
 extern ImFont* g_BlackMediumFont;
 
@@ -57,7 +57,7 @@ namespace dnf_composer::user_interface
 
 		/// @brief Render the parameter form for @p selected, and create the element
 		/// when @p addRequested. Split out of renderAddElementCard() so the creation
-		/// path can be funnelled through describeElementCreationFailure().
+		/// path can be funnelled through tools::utils::describeElementCreationFailure().
 		void renderElementParameters(element::ElementLabel selected, char* id, bool addRequested) const;
 
 		/// @brief Render the Add button and any validation message from the last attempt.

@@ -129,6 +129,10 @@ namespace dnf_composer::element
 		std::string toString() const override;
 		std::shared_ptr<Element> clone() const override;
 
+		/// @brief Collapse bridges 2D -> 1D and validates/resizes its own "input"
+		/// component in addInput(), so it is exempt from the base dimensionality check.
+		[[nodiscard]] bool bridgesDimensions() const override { return true; }
+
 		/// @brief Resize the 2D input field dimensions and rebuild the input buffer.
 		void changeInputDimensions(const ElementDimensions& newInputDimensions);
 
