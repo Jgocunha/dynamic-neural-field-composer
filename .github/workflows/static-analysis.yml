@@ -6,9 +6,21 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   clang-tidy:
     runs-on: ubuntu-latest
+
+    # run-clang-tidy over the whole src/ tree is the dominant cost of this job (~8 of
+    # ~9 minutes). Every file is still analysed exactly once per push/PR -- shard just
+    # splits the same file list 3 ways so the shards run in parallel instead of serially.
+    strategy:
+      matrix:
+        shard: [0, 1, 2]
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v4
@@ -69,8 +81,20 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_C_COMPILER=clang
 
-      - name: Run clang-tidy
+      - name: Run clang-tidy (shard ${{ matrix.shard }}/3)
         run: |
+          mapfile -t files < <(
+            find dynamic-neural-field-composer/src -name '*.cpp' \
+              ! -path '*/user_interface/fonts/*' ! -path '*/user_interface/node_utilities/*' \
+              | sort
+          )
+          shard_files=()
+          for i in "${!files[@]}"; do
+            if [ $(( i % 3 )) -eq ${{ matrix.shard }} ]; then
+              shard_files+=("${files[$i]}")
+            fi
+          done
+          echo "Linting ${#shard_files[@]} of ${#files[@]} files in this shard"
           run-clang-tidy -p build \
             -header-filter='dynamic-neural-field-composer/include/((application|element_parameters|elements|exceptions|simulation|tools|visualization)/.*|user_interface/[^/]+)$' \
-            $(find dynamic-neural-field-composer/src -name '*.cpp' ! -path '*/user_interface/fonts/*' ! -path '*/user_interface/node_utilities/*')
+            "${shard_files[@]}"
