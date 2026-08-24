@@ -40,11 +40,11 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="namespacednf__composer_1_1user__interface.html#ab42c898e40981214ddea65c88b1faa38" target="_top" xlink:title="Run an element&#45;creation step and turn any failure into a message.">
-<polygon fill="white" stroke="#666666" points="593,-1372.5 440,-1372.5 440,-1331.5 593,-1331.5 593,-1372.5"/>
-<text text-anchor="start" x="448" y="-1360.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
-<text text-anchor="start" x="448" y="-1349.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::describeElement</text>
-<text text-anchor="middle" x="516.5" y="-1338.5" font-family="Helvetica,sans-Serif" font-size="10.00">CreationFailure</text>
+<g id="a_Node000004"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a3ca715863a6dcaec1bae0e06d949b7ff" target="_top" xlink:title="Run a step and turn any failure into a message.">
+<polygon fill="white" stroke="#666666" points="603,-1372.5 430,-1372.5 430,-1331.5 603,-1331.5 603,-1372.5"/>
+<text text-anchor="start" x="438" y="-1360.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
+<text text-anchor="start" x="438" y="-1349.5" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::describeElementCreation</text>
+<text text-anchor="middle" x="516.5" y="-1338.5" font-family="Helvetica,sans-Serif" font-size="10.00">Failure</text>
 </a>
 </g>
 </g>
@@ -476,8 +476,8 @@
 <g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
 <g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M429.43,-1365.45C412.7,-1368.07 395.22,-1370.8 378.67,-1373.39"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="430.39,-1368.85 439.73,-1363.84 429.31,-1361.93 430.39,-1368.85"/>
+<path fill="none" stroke="#63b8ff" d="M419.88,-1366.95C406.11,-1369.1 392.05,-1371.3 378.6,-1373.4"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="420.51,-1370.39 429.85,-1365.39 419.43,-1363.48 420.51,-1370.39"/>
 </a>
 </g>
 </g>

@@ -83,13 +83,16 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="utils_8h_source.html">tools/utils.h</a>&quot;</code><br />
 <code>#include &lt;array&gt;</code><br />
+<code>#include &lt;exception&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;climits&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="exception_8h_source.html">exceptions/exception.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="logger_8h_source.html">tools/logger.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for utils.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8cpp__incl.svg" width="722" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8cpp__incl.svg" width="1220" height="256"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -105,6 +108,9 @@ Namespaces</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a2b32560bde43a2406d004eb32c179978" id="r_a2b32560bde43a2406d004eb32c179978"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a2b32560bde43a2406d004eb32c179978">dnf_composer::tools::utils::countNumOfLinesInFile</a> (const std::string &amp;filename)</td></tr>
 <tr class="separator:a2b32560bde43a2406d004eb32c179978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ca715863a6dcaec1bae0e06d949b7ff" id="r_a3ca715863a6dcaec1bae0e06d949b7ff"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a3ca715863a6dcaec1bae0e06d949b7ff">dnf_composer::tools::utils::describeElementCreationFailure</a> (const std::function&lt; void()&gt; &amp;createAndAdd)</td></tr>
+<tr class="memdesc:a3ca715863a6dcaec1bae0e06d949b7ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run a step and turn any failure into a message.  <br /></td></tr>
+<tr class="separator:a3ca715863a6dcaec1bae0e06d949b7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc349857e9ffc357a3b9e8fcd0a43e47" id="r_acc349857e9ffc357a3b9e8fcd0a43e47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#acc349857e9ffc357a3b9e8fcd0a43e47">dnf_composer::tools::utils::getProcessMemoryMb</a> ()</td></tr>
 <tr class="separator:acc349857e9ffc357a3b9e8fcd0a43e47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a140c0903ddcfc3ba01218f11d31608dc" id="r_a140c0903ddcfc3ba01218f11d31608dc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc">dnf_composer::tools::utils::getResourceRoot</a> ()</td></tr>

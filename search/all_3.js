@@ -14,7 +14,7 @@ var searchData=
   ['deltalearningrulewidrowhoff_11',['deltaLearningRuleWidrowHoff',['../namespacednf__composer_1_1tools_1_1math.html#a5ae15f5770fa7bd2822e46f550d30ab2',1,'dnf_composer::tools::math']]],
   ['deltat_12',['deltaT',['../classdnf__composer_1_1Simulation.html#a3886b8cc021ca084d2c933f895bac132',1,'dnf_composer::Simulation']]],
   ['demo_13',['Video demo',['../index.html#autotoc_md14',1,'']]],
-  ['describeelementcreationfailure_14',['describeElementCreationFailure',['../namespacednf__composer_1_1user__interface.html#ab42c898e40981214ddea65c88b1faa38',1,'dnf_composer::user_interface']]],
+  ['describeelementcreationfailure_14',['describeElementCreationFailure',['../namespacednf__composer_1_1tools_1_1utils.html#a3ca715863a6dcaec1bae0e06d949b7ff',1,'dnf_composer::tools::utils']]],
   ['diamond_15',['Diamond',['../namespaceax_1_1Drawing.html#ab1df3a7263c0f5d36c706d066c90fe0aa8f7671185d590914ac21c7511767b699',1,'ax::Drawing']]],
   ['dimensionality_16',['dimensionality',['../structdnf__composer_1_1element_1_1ElementDimensions.html#a4deca689c1f71363261886f46847a4a4',1,'dnf_composer::element::ElementDimensions']]],
   ['dimensionparameters_17',['dimensionParameters',['../structdnf__composer_1_1element_1_1ElementCommonParameters.html#a4fb2bcfdb1c6a6fdbcf66b82c6a5a309',1,'dnf_composer::element::ElementCommonParameters']]],

@@ -1,5 +1,11 @@
 <map id="dnf_composer::element::FieldCoupling::addInput" name="dnf_composer::element::FieldCoupling::addInput">
-<area shape="rect" id="Node000001" title="Register an input, output, or (for DELTA) target connection." alt="" coords="5,5,188,45"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="236,5,412,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,23,222,23,222,28,188,28"/>
+<area shape="rect" id="Node000001" title="Register an input, output, or (for DELTA) target connection." alt="" coords="5,69,188,109"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="236,69,412,109"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,87,222,87,222,92,188,92"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html#ad3e77df7d8f8f360b3529050452e8ff1" title="Whether this element manages its own input&#45;shape validation." alt="" coords="460,5,677,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="401,67,478,46,479,51,402,72"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Element.html#a03cc479b5f360d8e7f679d4ecdad8944" title=" " alt="" coords="469,69,668,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="412,87,456,87,456,92,412,92"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementDimensions.html#a1e2439e8cba19f3bf61a48cdd01c4fc7" title=" " alt="" coords="481,134,657,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="394,107,468,129,467,134,392,112"/>
 </map>

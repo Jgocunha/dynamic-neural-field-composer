@@ -89,12 +89,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::Expand:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Expand__inherit__graph.svg" width="207" height="787"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Expand__inherit__graph.svg" width="207" height="807"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::Expand:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Expand__coll__graph.svg" width="1307" height="1758"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Expand__coll__graph.svg" width="1307" height="1778"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -102,6 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac294cacc5fe3594231ac34e9d7b81053" id="r_ac294cacc5fe3594231ac34e9d7b81053"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053">addInput</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &amp;inputElement, const std::string &amp;inputComponent=&quot;output&quot;) override</td></tr>
 <tr class="memdesc:ac294cacc5fe3594231ac34e9d7b81053"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element. Wires both directions of the bookkeeping: this element strongly owns <code>inputElement</code> via <code>inputs</code>, and <code>inputElement</code> records this element as an observer via its non-owning <code>outputs</code> (#168).  <br /></td></tr>
 <tr class="separator:ac294cacc5fe3594231ac34e9d7b81053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b278288bbcaff3d06d6d27ed11852d4" id="r_a2b278288bbcaff3d06d6d27ed11852d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Expand.html#a2b278288bbcaff3d06d6d27ed11852d4">bridgesDimensions</a> () const override</td></tr>
+<tr class="memdesc:a2b278288bbcaff3d06d6d27ed11852d4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Expand.html" title="Expands a 1D input field to a 2D output by broadcasting along one axis.">Expand</a> bridges 1D -&gt; 2D and validates/resizes its own "input" component in <a class="el" href="classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">addInput()</a>, so it is exempt from the base dimensionality check.  <br /></td></tr>
+<tr class="separator:a2b278288bbcaff3d06d6d27ed11852d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cee09d9807a6b35a20c50d2f64e6dc4" id="r_a6cee09d9807a6b35a20c50d2f64e6dc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Expand.html#a6cee09d9807a6b35a20c50d2f64e6dc4">changeInputDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newInputDimensions)</td></tr>
 <tr class="memdesc:a6cee09d9807a6b35a20c50d2f64e6dc4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the 1D input field dimensions and rebuild the input buffer.  <br /></td></tr>
 <tr class="separator:a6cee09d9807a6b35a20c50d2f64e6dc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -320,8 +323,37 @@ Additional Inherited Members</h2></td></tr>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Expand_ac294cacc5fe3594231ac34e9d7b81053_cgraph.svg" width="434" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Expand_ac294cacc5fe3594231ac34e9d7b81053_cgraph.svg" width="676" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a2b278288bbcaff3d06d6d27ed11852d4" name="a2b278288bbcaff3d06d6d27ed11852d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b278288bbcaff3d06d6d27ed11852d4">&#9670;&#160;</a></span>bridgesDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dnf_composer::element::Expand::bridgesDimensions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classdnf__composer_1_1element_1_1Expand.html" title="Expands a 1D input field to a 2D output by broadcasting along one axis.">Expand</a> bridges 1D -&gt; 2D and validates/resizes its own "input" component in <a class="el" href="classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">addInput()</a>, so it is exempt from the base dimensionality check. </p>
+
+<p>Reimplemented from <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ad3e77df7d8f8f360b3529050452e8ff1">dnf_composer::element::Element</a>.</p>
 
 </div>
 </div>

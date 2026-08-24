@@ -89,12 +89,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::Resize2D:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Resize2D__inherit__graph.svg" width="207" height="787"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Resize2D__inherit__graph.svg" width="207" height="807"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::Resize2D:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Resize2D__coll__graph.svg" width="1307" height="1758"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Resize2D__coll__graph.svg" width="1307" height="1778"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -102,6 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a404491583299e2a0455232c99087d505" id="r_a404491583299e2a0455232c99087d505"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505">addInput</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &amp;inputElement, const std::string &amp;inputComponent=&quot;output&quot;) override</td></tr>
 <tr class="memdesc:a404491583299e2a0455232c99087d505"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>inputElement</code> as an upstream source for this element. Wires both directions of the bookkeeping: this element strongly owns <code>inputElement</code> via <code>inputs</code>, and <code>inputElement</code> records this element as an observer via its non-owning <code>outputs</code> (#168).  <br /></td></tr>
 <tr class="separator:a404491583299e2a0455232c99087d505"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2b977b97cc0dc82450f6cbf23e40e37" id="r_af2b977b97cc0dc82450f6cbf23e40e37"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html#af2b977b97cc0dc82450f6cbf23e40e37">bridgesDimensions</a> () const override</td></tr>
+<tr class="memdesc:af2b977b97cc0dc82450f6cbf23e40e37"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html" title="Resamples a 2D input field of size (Nx x Ny) to this element&#39;s output size (Mx x My).">Resize2D</a> resamples to a different sample count and validates/resizes its own "input" component in <a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">addInput()</a>, so it is exempt from the base dimensionality check.  <br /></td></tr>
+<tr class="separator:af2b977b97cc0dc82450f6cbf23e40e37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6748c7c90545c80522ef922012450f08" id="r_a6748c7c90545c80522ef922012450f08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html#a6748c7c90545c80522ef922012450f08">changeInputDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newInputDimensions)</td></tr>
 <tr class="memdesc:a6748c7c90545c80522ef922012450f08"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the input field dimensions and rebuild the input buffer. Connections are not removed automatically — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed (the UI does this before calling).  <br /></td></tr>
 <tr class="separator:a6748c7c90545c80522ef922012450f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -320,8 +323,37 @@ Additional Inherited Members</h2></td></tr>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Resize2D_a404491583299e2a0455232c99087d505_cgraph.svg" width="434" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1Resize2D_a404491583299e2a0455232c99087d505_cgraph.svg" width="676" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="af2b977b97cc0dc82450f6cbf23e40e37" name="af2b977b97cc0dc82450f6cbf23e40e37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2b977b97cc0dc82450f6cbf23e40e37">&#9670;&#160;</a></span>bridgesDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dnf_composer::element::Resize2D::bridgesDimensions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html" title="Resamples a 2D input field of size (Nx x Ny) to this element&#39;s output size (Mx x My).">Resize2D</a> resamples to a different sample count and validates/resizes its own "input" component in <a class="el" href="classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin...">addInput()</a>, so it is exempt from the base dimensionality check. </p>
+
+<p>Reimplemented from <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ad3e77df7d8f8f360b3529050452e8ff1">dnf_composer::element::Element</a>.</p>
 
 </div>
 </div>

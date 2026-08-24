@@ -1,85 +1,97 @@
 <map id="dnf_composer::element::ElementDimensions::toString" name="dnf_composer::element::ElementDimensions::toString">
-<area shape="rect" id="Node000001" title=" " alt="" coords="551,278,727,333"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0" title="Disconnect all connections from elementId and resize it to newDimensions." alt="" coords="291,5,483,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="624,266,607,218,581,162,546,106,525,81,501,59,482,47,484,43,504,55,529,78,550,103,586,159,612,216,629,264"/>
-<area shape="rect" id="Node000003" href="$structdnf__composer_1_1element_1_1ElementDimensions.html#a61dc48a63bf6451065883ea37f0228fa" title=" " alt="" coords="287,69,486,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="616,267,596,232,570,193,538,155,501,124,480,112,483,107,504,119,542,152,574,190,601,229,621,264"/>
-<area shape="rect" id="Node000004" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html#a83c667c71a22c80a0e415da7fab9795b" title=" " alt="" coords="278,1055,495,1110"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="627,347,399,1056,394,1055,622,345"/>
-<area shape="rect" id="Node000034" href="$structdnf__composer_1_1element_1_1CollapseParameters.html#acf5d336ea5fb71295b869cc832769caa" title=" " alt="" coords="299,134,475,189"/>
-<area shape="poly" id="edge33_Node000001_Node000034" title=" " alt="" coords="596,271,552,236,501,204,474,191,476,186,504,199,555,232,599,267"/>
-<area shape="rect" id="Node000035" href="$structdnf__composer_1_1element_1_1ExpandParameters.html#a100ca128705fe8d8d06c75f89a8276a8" title=" " alt="" coords="281,213,492,253"/>
-<area shape="poly" id="edge35_Node000001_Node000035" title=" " alt="" coords="537,278,502,268,460,256,462,251,503,263,538,273"/>
-<area shape="rect" id="Node000036" href="$structdnf__composer_1_1element_1_1FieldCouplingParameters.html#ab9b737d98c9562b14a80f4163d5bd45b" title=" " alt="" coords="291,278,483,333"/>
-<area shape="poly" id="edge37_Node000001_Node000036" title=" " alt="" coords="537,308,483,308,483,303,537,303"/>
-<area shape="rect" id="Node000037" href="$structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html#a2e99d9d86c8a44b489917bf45d325d9a" title=" " alt="" coords="271,357,503,411"/>
-<area shape="poly" id="edge39_Node000001_Node000037" title=" " alt="" coords="539,339,476,359,474,354,537,334"/>
-<area shape="rect" id="Node000038" href="$structdnf__composer_1_1element_1_1ResizeParameters.html#ac31284309afa54141546347fd0366d41" title=" " alt="" coords="283,1348,490,1388"/>
-<area shape="poly" id="edge41_Node000001_Node000038" title=" " alt="" coords="637,346,625,478,601,671,562,896,536,1011,505,1122,481,1189,452,1253,402,1349,397,1346,447,1251,476,1187,500,1121,531,1009,557,895,596,670,620,477,632,346"/>
-<area shape="rect" id="Node000039" href="$structdnf__composer_1_1element_1_1Resize2DParameters.html#afbcafae839b881516f822eb9830e2f4c" title=" " alt="" coords="299,1841,475,1895"/>
-<area shape="poly" id="edge43_Node000001_Node000039" title=" " alt="" coords="637,347,622,516,594,775,556,1084,505,1400,478,1531,448,1657,399,1841,393,1840,443,1656,473,1529,500,1400,550,1084,589,775,616,515,631,346"/>
-<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html#a446472a2d6a83b41ae55e42c024357f3" title=" " alt="" coords="5,1670,223,1725"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="366,1124,318,1219,294,1277,273,1337,263,1385,261,1429,268,1506,270,1543,265,1580,252,1618,225,1659,212,1672,208,1668,221,1656,247,1616,260,1579,264,1543,263,1507,256,1429,258,1385,268,1335,289,1275,313,1217,361,1121"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#ad04b7f2dc4f17529affba6c44995de85" title=" " alt="" coords="19,1749,209,1803"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="365,1123,317,1219,293,1277,273,1337,267,1375,263,1425,261,1542,258,1601,253,1656,242,1703,225,1738,211,1751,208,1747,221,1734,237,1701,248,1656,253,1601,256,1542,258,1425,261,1375,268,1335,288,1275,313,1217,360,1121"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a2684446b0d35c206880e4d633d3f04e8" title=" " alt="" coords="10,1827,218,1882"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="365,1123,317,1219,293,1277,273,1337,266,1383,263,1443,263,1582,262,1653,256,1719,245,1775,236,1798,225,1816,212,1829,208,1825,221,1813,231,1795,240,1773,251,1718,257,1653,258,1582,258,1442,261,1382,268,1335,288,1275,312,1216,360,1121"/>
-<area shape="rect" id="Node000008" href="$classdnf__composer_1_1element_1_1BoostStimulus.html#a8d10a318500c48897e0be68daeb73486" title=" " alt="" coords="23,1907,205,1947"/>
-<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="365,1123,317,1219,292,1277,273,1337,265,1391,264,1460,267,1623,266,1706,261,1783,248,1847,238,1874,225,1895,207,1910,204,1906,221,1892,233,1871,243,1846,256,1782,261,1706,261,1623,258,1460,260,1390,268,1335,287,1275,312,1216,360,1121"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1element_1_1BoostStimulus2D.html#a056a3a4ab8e0033bd26ed5bbaea3d950" title=" " alt="" coords="13,1971,215,2011"/>
-<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="364,1124,316,1219,292,1277,273,1337,265,1397,264,1475,269,1657,270,1750,265,1835,251,1907,240,1937,225,1960,212,1972,208,1969,221,1957,235,1934,246,1906,259,1834,264,1750,264,1657,258,1475,260,1397,268,1335,287,1275,311,1217,360,1121"/>
-<area shape="rect" id="Node000010" href="$classdnf__composer_1_1element_1_1Collapse.html#a58dd18ede01fde9207e23b56ab84e92e" title=" " alt="" coords="26,141,202,181"/>
-<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="376,1042,292,559,246,309,220,195,201,180,204,176,225,192,252,308,298,559,381,1041"/>
-<area shape="rect" id="Node000011" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#af978a9e9e7acbb0a917a4a3766efaf04" title=" " alt="" coords="23,413,205,467"/>
-<area shape="poly" id="edge10_Node000004_Node000011" title=" " alt="" coords="384,1041,380,931,372,860,359,782,339,701,310,622,271,547,247,513,221,481,204,467,207,463,225,477,252,509,275,544,315,620,344,700,364,781,378,859,385,931,389,1041"/>
-<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise2D.html#ace11403ed6a019fe22d734dc55089324" title=" " alt="" coords="13,491,215,546"/>
-<area shape="poly" id="edge11_Node000004_Node000012" title=" " alt="" coords="382,1042,373,945,363,883,349,817,328,748,301,681,265,617,221,561,206,548,210,544,225,557,270,614,305,678,333,746,354,815,369,882,378,944,387,1041"/>
-<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1Expand.html#ad4820d154bfeb73bcc0244a526544084" title=" " alt="" coords="26,205,202,245"/>
-<area shape="poly" id="edge12_Node000004_Node000013" title=" " alt="" coords="376,1042,298,600,252,370,233,294,221,259,201,244,204,240,225,256,239,292,257,369,303,599,381,1041"/>
-<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a0ec7d17d851fa9007175794248bb9590" title=" " alt="" coords="25,269,203,309"/>
-<area shape="poly" id="edge13_Node000004_Node000014" title=" " alt="" coords="376,1042,349,874,308,646,262,436,240,363,221,323,201,308,204,304,225,320,245,361,268,435,314,645,355,873,382,1041"/>
-<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a6af7a83156ac66cf5cfaafcbb16d2409" title=" " alt="" coords="26,334,202,389"/>
-<area shape="poly" id="edge14_Node000004_Node000015" title=" " alt="" coords="378,1042,359,900,326,708,304,612,279,524,251,451,236,423,221,402,201,386,204,382,225,398,241,420,256,449,284,522,309,610,331,707,364,899,383,1041"/>
-<area shape="rect" id="Node000016" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a7b8a9134ec53b0a10ad914ad363c4fd0" title=" " alt="" coords="26,571,202,611"/>
-<area shape="poly" id="edge15_Node000004_Node000016" title=" " alt="" coords="380,1042,369,955,358,901,343,843,323,784,296,726,262,672,221,625,200,610,204,606,224,621,266,669,300,723,327,782,348,841,364,900,374,954,386,1041"/>
-<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#aad30c18ace65fff07f0c104744106395" title=" " alt="" coords="20,635,208,675"/>
-<area shape="poly" id="edge16_Node000004_Node000017" title=" " alt="" coords="378,1042,363,967,335,871,314,822,288,773,258,728,221,689,204,677,207,673,224,685,262,725,293,770,319,819,340,870,368,965,383,1041"/>
-<area shape="rect" id="Node000018" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#a15f8c25e4db545c57c765a440e7a8cb7" title=" " alt="" coords="21,699,207,739"/>
-<area shape="poly" id="edge17_Node000004_Node000018" title=" " alt="" coords="374,1043,356,979,325,900,305,860,281,821,253,785,221,753,204,741,207,737,224,749,257,781,285,818,310,857,330,898,361,977,379,1041"/>
-<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#add4ff932bad991f32015046d873c6660" title=" " alt="" coords="12,763,216,803"/>
-<area shape="poly" id="edge18_Node000004_Node000019" title=" " alt="" coords="369,1044,348,992,316,931,274,869,249,841,221,817,202,805,204,800,224,813,252,837,278,866,320,928,352,989,374,1042"/>
-<area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1MemoryTrace.html#ac660d6876aaa723c4a6afa5a4387a606" title=" " alt="" coords="25,827,203,867"/>
-<area shape="poly" id="edge19_Node000004_Node000020" title=" " alt="" coords="362,1045,337,1006,305,962,266,918,221,881,199,869,202,864,224,876,270,914,309,958,342,1003,366,1042"/>
-<area shape="rect" id="Node000021" href="$classdnf__composer_1_1element_1_1MemoryTrace2D.html#ae32150b2ea377c29eaeb4cb3ab122351" title=" " alt="" coords="17,891,211,931"/>
-<area shape="poly" id="edge20_Node000004_Node000021" title=" " alt="" coords="349,1047,292,994,258,968,221,945,195,933,198,928,224,940,261,964,296,990,353,1043"/>
-<area shape="rect" id="Node000022" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ac6310b5ece9178f4d0730302822b99e3" title=" " alt="" coords="10,955,218,995"/>
-<area shape="poly" id="edge21_Node000004_Node000022" title=" " alt="" coords="319,1052,222,1009,187,997,189,992,224,1004,321,1047"/>
-<area shape="rect" id="Node000023" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#a4ab0245904a75a1410ff41bbb09bc5dc" title=" " alt="" coords="26,1019,202,1074"/>
-<area shape="poly" id="edge22_Node000004_Node000023" title=" " alt="" coords="264,1069,202,1061,202,1056,265,1064"/>
-<area shape="rect" id="Node000024" href="$classdnf__composer_1_1element_1_1NeuralField.html#acf0203117e7820c0902e2986a594e47f" title=" " alt="" coords="26,1099,202,1139"/>
-<area shape="poly" id="edge23_Node000004_Node000024" title=" " alt="" coords="265,1101,202,1110,202,1104,264,1096"/>
-<area shape="rect" id="Node000025" href="$classdnf__composer_1_1element_1_1NeuralField2D.html#a4e4561bb48eab8b878f3dc96574923d4" title=" " alt="" coords="23,1163,205,1203"/>
-<area shape="poly" id="edge24_Node000004_Node000025" title=" " alt="" coords="313,1118,224,1153,188,1165,186,1160,222,1148,311,1113"/>
-<area shape="rect" id="Node000026" href="$classdnf__composer_1_1element_1_1NormalNoise.html#a310344bc777d0f29351f0ffeaa3cd20c" title=" " alt="" coords="26,1227,202,1267"/>
-<area shape="poly" id="edge25_Node000004_Node000026" title=" " alt="" coords="350,1122,293,1171,260,1196,224,1217,197,1229,195,1224,221,1212,257,1191,290,1167,347,1118"/>
-<area shape="rect" id="Node000027" href="$classdnf__composer_1_1element_1_1NormalNoise2D.html#a7bae54e92d8beef10452ddf4c1e93435" title=" " alt="" coords="18,1291,210,1331"/>
-<area shape="poly" id="edge26_Node000004_Node000027" title=" " alt="" coords="365,1123,340,1161,308,1203,269,1245,224,1281,201,1293,199,1288,221,1276,265,1241,304,1200,336,1158,360,1120"/>
-<area shape="rect" id="Node000028" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html#aceabd095ff34c16767e66308bf408d63" title=" " alt="" coords="26,1355,202,1410"/>
-<area shape="poly" id="edge27_Node000004_Node000028" title=" " alt="" coords="372,1124,350,1174,317,1233,276,1293,224,1345,204,1358,201,1354,221,1341,271,1289,313,1230,345,1172,368,1122"/>
-<area shape="rect" id="Node000029" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html#af8470b33f4c637c87f142fb0c4eff923" title=" " alt="" coords="26,1434,202,1489"/>
-<area shape="poly" id="edge28_Node000004_Node000029" title=" " alt="" coords="369,1124,287,1302,247,1384,225,1423,204,1438,200,1434,221,1420,242,1381,282,1300,365,1122"/>
-<area shape="rect" id="Node000030" href="$classdnf__composer_1_1element_1_1Resize.html#a01d211cf228eccad7d1618280ed98050" title=" " alt="" coords="26,2035,202,2075"/>
-<area shape="poly" id="edge29_Node000004_Node000030" title=" " alt="" coords="364,1124,316,1219,292,1277,273,1337,264,1403,263,1489,271,1690,273,1792,268,1886,253,1966,241,1998,225,2024,204,2042,201,2037,221,2021,236,1996,248,1964,263,1886,267,1792,266,1690,258,1489,259,1403,268,1335,287,1275,311,1217,360,1121"/>
-<area shape="rect" id="Node000031" href="$classdnf__composer_1_1element_1_1Resize2D.html#a6ede09dafbe890913c78ff6189b5ef50" title=" " alt="" coords="26,2099,202,2139"/>
-<area shape="poly" id="edge30_Node000004_Node000031" title=" " alt="" coords="364,1124,316,1219,292,1277,273,1337,268,1389,265,1478,261,1717,258,1842,252,1953,241,2039,234,2069,225,2088,204,2106,201,2101,221,2085,229,2067,236,2038,247,1953,253,1842,256,1717,259,1478,262,1389,268,1335,287,1275,311,1216,359,1121"/>
-<area shape="rect" id="Node000032" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus.html#afa9ab0ee32955f758cce483f5f274105" title=" " alt="" coords="26,1513,202,1567"/>
-<area shape="poly" id="edge31_Node000004_Node000032" title=" " alt="" coords="368,1124,322,1220,273,1337,262,1384,259,1424,251,1462,241,1481,225,1502,204,1518,201,1514,221,1498,236,1478,246,1460,254,1423,257,1383,268,1335,317,1218,363,1121"/>
-<area shape="rect" id="Node000033" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#aea500c669bb14917031e728dcbbf948b" title=" " alt="" coords="21,1591,207,1646"/>
-<area shape="poly" id="edge32_Node000004_Node000033" title=" " alt="" coords="366,1124,319,1219,295,1277,273,1337,265,1373,262,1406,263,1465,263,1493,258,1521,246,1550,225,1580,209,1594,206,1590,221,1577,241,1547,253,1519,258,1492,258,1465,256,1406,259,1373,268,1335,290,1276,315,1217,361,1121"/>
-<area shape="poly" id="edge34_Node000034_Node000010" title=" " alt="" coords="285,164,202,164,202,159,285,159"/>
-<area shape="poly" id="edge36_Node000035_Node000013" title=" " alt="" coords="268,233,202,231,202,225,268,227"/>
-<area shape="poly" id="edge38_Node000036_Node000014" title=" " alt="" coords="277,302,203,297,203,292,277,296"/>
-<area shape="poly" id="edge40_Node000037_Node000015" title=" " alt="" coords="257,376,202,371,203,366,257,371"/>
-<area shape="poly" id="edge42_Node000038_Node000030" title=" " alt="" coords="380,1402,273,1829,265,1886,264,1934,262,1956,256,1978,244,2001,225,2025,204,2040,201,2036,221,2021,239,1998,251,1976,257,1955,259,1933,260,1886,268,1827,374,1401"/>
-<area shape="poly" id="edge44_Node000039_Node000031" title=" " alt="" coords="368,1909,344,1952,312,2000,271,2048,224,2089,203,2101,200,2096,221,2084,268,2044,307,1997,340,1949,364,1907"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="551,434,727,489"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="299,133,475,173"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="626,422,611,368,586,305,549,241,527,213,501,187,474,171,477,167,504,183,531,209,554,238,590,303,616,366,631,420"/>
+<area shape="rect" id="Node000008" href="$classdnf__composer_1_1Simulation.html#a25e8c5e2e105b2a3cf853d21824e33c0" title="Disconnect all connections from elementId and resize it to newDimensions." alt="" coords="291,197,483,237"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="620,422,601,381,575,335,542,290,501,251,481,240,484,235,504,247,546,286,580,332,606,379,625,420"/>
+<area shape="rect" id="Node000009" href="$structdnf__composer_1_1element_1_1ElementDimensions.html#a61dc48a63bf6451065883ea37f0228fa" title=" " alt="" coords="287,261,486,301"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="609,424,563,367,534,339,501,316,478,304,480,299,504,311,537,335,567,364,613,421"/>
+<area shape="rect" id="Node000010" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html#a83c667c71a22c80a0e415da7fab9795b" title=" " alt="" coords="278,1281,495,1335"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="628,503,399,1281,394,1280,623,501"/>
+<area shape="rect" id="Node000040" href="$structdnf__composer_1_1element_1_1CollapseParameters.html#acf5d336ea5fb71295b869cc832769caa" title=" " alt="" coords="299,326,475,381"/>
+<area shape="poly" id="edge39_Node000001_Node000040" title=" " alt="" coords="574,430,502,396,470,383,472,378,504,391,576,425"/>
+<area shape="rect" id="Node000041" href="$structdnf__composer_1_1element_1_1ExpandParameters.html#a100ca128705fe8d8d06c75f89a8276a8" title=" " alt="" coords="281,405,492,445"/>
+<area shape="poly" id="edge41_Node000001_Node000041" title=" " alt="" coords="537,449,492,443,493,438,537,444"/>
+<area shape="rect" id="Node000042" href="$structdnf__composer_1_1element_1_1FieldCouplingParameters.html#ab9b737d98c9562b14a80f4163d5bd45b" title=" " alt="" coords="291,470,483,525"/>
+<area shape="poly" id="edge43_Node000001_Node000042" title=" " alt="" coords="537,478,483,486,483,481,537,473"/>
+<area shape="rect" id="Node000043" href="$structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html#a2e99d9d86c8a44b489917bf45d325d9a" title=" " alt="" coords="271,549,503,603"/>
+<area shape="poly" id="edge45_Node000001_Node000043" title=" " alt="" coords="582,498,504,538,473,551,471,546,502,534,579,493"/>
+<area shape="rect" id="Node000044" href="$structdnf__composer_1_1element_1_1ResizeParameters.html#ac31284309afa54141546347fd0366d41" title=" " alt="" coords="283,1584,490,1624"/>
+<area shape="poly" id="edge47_Node000001_Node000044" title=" " alt="" coords="638,502,627,644,603,854,564,1099,537,1225,505,1347,481,1417,452,1485,402,1585,397,1582,447,1482,476,1415,500,1346,532,1224,559,1099,598,853,621,643,632,502"/>
+<area shape="rect" id="Node000045" href="$structdnf__composer_1_1element_1_1Resize2DParameters.html#afbcafae839b881516f822eb9830e2f4c" title=" " alt="" coords="299,2098,475,2153"/>
+<area shape="poly" id="edge49_Node000001_Node000045" title=" " alt="" coords="637,502,622,681,596,961,557,1294,505,1636,478,1773,448,1907,398,2099,393,2097,443,1905,473,1772,500,1636,551,1294,590,960,617,681,632,502"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Collapse.html#a253aeba5c2ce116d81e00300270ec9b4" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="26,133,202,173"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="285,156,202,156,202,151,285,151"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Expand.html#ac294cacc5fe3594231ac34e9d7b81053" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="26,197,202,237"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="288,179,200,200,199,195,287,174"/>
+<area shape="rect" id="Node000005" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#aa514731154519f2d4767bad8e27ca17b" title="Register an input, output, or (for DELTA) target connection." alt="" coords="23,261,205,301"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="288,179,272,187,257,203,249,218,241,235,224,251,203,264,200,259,221,247,236,232,244,216,253,199,269,183,285,174"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1element_1_1Resize.html#ae235a4df6fc8ac7a35eb783d9cd383b0" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="26,5,202,45"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="343,128,287,93,222,60,190,48,192,43,224,55,289,88,346,123"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1element_1_1Resize2D.html#a404491583299e2a0455232c99087d505" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="26,69,202,109"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="287,133,199,112,200,107,288,128"/>
+<area shape="rect" id="Node000011" href="$structdnf__composer_1_1element_1_1ElementCommonParameters.html#a446472a2d6a83b41ae55e42c024357f3" title=" " alt="" coords="5,1321,223,1375"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="265,1329,223,1335,223,1329,264,1323"/>
+<area shape="rect" id="Node000012" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel.html#ad04b7f2dc4f17529affba6c44995de85" title=" " alt="" coords="19,1399,209,1454"/>
+<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="321,1344,224,1389,193,1402,191,1397,222,1384,318,1339"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1element_1_1AsymmetricGaussKernel2D.html#a2684446b0d35c206880e4d633d3f04e8" title=" " alt="" coords="10,1478,218,1533"/>
+<area shape="poly" id="edge12_Node000010_Node000013" title=" " alt="" coords="356,1348,299,1408,263,1440,224,1468,201,1480,198,1475,221,1463,259,1436,295,1404,353,1344"/>
+<area shape="rect" id="Node000014" href="$classdnf__composer_1_1element_1_1BoostStimulus.html#a8d10a318500c48897e0be68daeb73486" title=" " alt="" coords="23,1557,205,1597"/>
+<area shape="poly" id="edge13_Node000010_Node000014" title=" " alt="" coords="370,1349,347,1395,315,1448,274,1501,224,1546,201,1560,198,1555,221,1542,270,1497,310,1445,343,1392,366,1347"/>
+<area shape="rect" id="Node000015" href="$classdnf__composer_1_1element_1_1BoostStimulus2D.html#a056a3a4ab8e0033bd26ed5bbaea3d950" title=" " alt="" coords="13,1621,215,1661"/>
+<area shape="poly" id="edge14_Node000010_Node000015" title=" " alt="" coords="377,1349,357,1408,326,1478,282,1550,255,1583,224,1611,206,1623,203,1619,221,1607,251,1579,278,1547,321,1476,352,1406,372,1347"/>
+<area shape="rect" id="Node000016" href="$classdnf__composer_1_1element_1_1Collapse.html#a58dd18ede01fde9207e23b56ab84e92e" title=" " alt="" coords="26,333,202,373"/>
+<area shape="poly" id="edge15_Node000010_Node000016" title=" " alt="" coords="376,1268,293,767,247,506,230,421,220,387,200,372,204,367,225,384,235,420,252,505,298,766,381,1267"/>
+<area shape="rect" id="Node000017" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise.html#af978a9e9e7acbb0a917a4a3766efaf04" title=" " alt="" coords="23,1686,205,1741"/>
+<area shape="poly" id="edge16_Node000010_Node000017" title=" " alt="" coords="371,1349,285,1544,225,1675,207,1688,204,1684,221,1672,280,1542,366,1347"/>
+<area shape="rect" id="Node000018" href="$classdnf__composer_1_1element_1_1CorrelatedNormalNoise2D.html#ace11403ed6a019fe22d734dc55089324" title=" " alt="" coords="13,1765,215,1819"/>
+<area shape="poly" id="edge17_Node000010_Node000018" title=" " alt="" coords="368,1349,322,1449,273,1573,262,1625,260,1669,252,1710,242,1731,225,1754,210,1767,206,1763,221,1750,237,1728,247,1708,255,1668,257,1624,268,1571,317,1447,363,1347"/>
+<area shape="rect" id="Node000019" href="$classdnf__composer_1_1element_1_1Expand.html#ad4820d154bfeb73bcc0244a526544084" title=" " alt="" coords="26,397,202,437"/>
+<area shape="poly" id="edge18_Node000010_Node000019" title=" " alt="" coords="376,1268,299,808,253,567,234,487,221,451,201,436,204,432,225,448,239,486,258,566,304,807,381,1267"/>
+<area shape="rect" id="Node000020" href="$classdnf__composer_1_1element_1_1FieldCoupling.html#a0ec7d17d851fa9007175794248bb9590" title=" " alt="" coords="25,461,203,501"/>
+<area shape="poly" id="edge19_Node000010_Node000020" title=" " alt="" coords="377,1267,350,1092,310,854,263,634,241,557,230,531,221,515,201,500,204,496,225,512,235,528,246,555,269,633,315,853,355,1091,382,1266"/>
+<area shape="rect" id="Node000021" href="$classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a6af7a83156ac66cf5cfaafcbb16d2409" title=" " alt="" coords="26,526,202,581"/>
+<area shape="poly" id="edge20_Node000010_Node000021" title=" " alt="" coords="378,1267,360,1119,328,918,306,817,281,724,252,647,237,618,221,595,201,579,204,575,225,592,241,615,257,645,286,722,311,815,333,917,365,1118,384,1267"/>
+<area shape="rect" id="Node000022" href="$classdnf__composer_1_1element_1_1GaussKernel.html#a7b8a9134ec53b0a10ad914ad363c4fd0" title=" " alt="" coords="26,1844,202,1884"/>
+<area shape="poly" id="edge21_Node000010_Node000022" title=" " alt="" coords="367,1348,320,1449,295,1510,273,1573,265,1612,262,1647,266,1710,266,1740,261,1770,248,1800,225,1833,204,1849,201,1844,221,1829,243,1798,256,1768,260,1740,260,1711,257,1647,259,1611,268,1571,290,1508,315,1447,362,1346"/>
+<area shape="rect" id="Node000023" href="$classdnf__composer_1_1element_1_1GaussKernel2D.html#aad30c18ace65fff07f0c104744106395" title=" " alt="" coords="20,1908,208,1948"/>
+<area shape="poly" id="edge22_Node000010_Node000023" title=" " alt="" coords="367,1349,319,1449,294,1510,273,1573,264,1622,262,1666,270,1745,272,1782,267,1819,253,1857,225,1898,210,1911,206,1906,221,1894,248,1855,262,1818,267,1782,265,1745,257,1666,258,1621,268,1571,289,1508,314,1447,362,1346"/>
+<area shape="rect" id="Node000024" href="$classdnf__composer_1_1element_1_1GaussStimulus.html#a15f8c25e4db545c57c765a440e7a8cb7" title=" " alt="" coords="21,1972,207,2012"/>
+<area shape="poly" id="edge23_Node000010_Node000024" title=" " alt="" coords="366,1349,318,1449,294,1510,273,1573,267,1610,264,1659,262,1773,259,1830,253,1884,242,1929,225,1962,209,1975,206,1971,221,1958,237,1927,248,1883,254,1830,256,1772,259,1659,262,1610,268,1571,289,1508,313,1446,361,1346"/>
+<area shape="rect" id="Node000025" href="$classdnf__composer_1_1element_1_1GaussStimulus2D.html#add4ff932bad991f32015046d873c6660" title=" " alt="" coords="12,2036,216,2076"/>
+<area shape="poly" id="edge24_Node000010_Node000025" title=" " alt="" coords="366,1349,318,1448,293,1510,273,1573,267,1617,264,1673,264,1806,262,1873,256,1935,245,1987,236,2008,225,2026,212,2038,208,2034,221,2022,231,2006,240,1985,251,1934,257,1872,259,1805,259,1673,261,1616,268,1571,288,1508,313,1446,361,1346"/>
+<area shape="rect" id="Node000026" href="$classdnf__composer_1_1element_1_1MemoryTrace.html#ac660d6876aaa723c4a6afa5a4387a606" title=" " alt="" coords="25,2100,203,2140"/>
+<area shape="poly" id="edge25_Node000010_Node000026" title=" " alt="" coords="366,1349,317,1448,293,1510,273,1573,266,1623,264,1687,266,1838,265,1915,260,1986,247,2046,237,2070,225,2090,205,2106,201,2102,221,2086,233,2068,242,2044,254,1985,260,1915,261,1838,259,1687,261,1622,268,1571,288,1508,313,1446,361,1346"/>
+<area shape="rect" id="Node000027" href="$classdnf__composer_1_1element_1_1MemoryTrace2D.html#ae32150b2ea377c29eaeb4cb3ab122351" title=" " alt="" coords="17,2164,211,2204"/>
+<area shape="poly" id="edge26_Node000010_Node000027" title=" " alt="" coords="366,1349,317,1448,293,1510,273,1573,266,1629,264,1701,268,1871,268,1958,263,2037,249,2104,239,2132,225,2154,212,2166,208,2162,221,2150,234,2129,244,2103,257,2036,263,1957,263,1871,259,1701,260,1629,268,1571,288,1508,312,1446,361,1346"/>
+<area shape="rect" id="Node000028" href="$classdnf__composer_1_1element_1_1MexicanHatKernel.html#ac6310b5ece9178f4d0730302822b99e3" title=" " alt="" coords="10,605,218,645"/>
+<area shape="poly" id="edge27_Node000010_Node000028" title=" " alt="" coords="378,1268,358,1131,325,948,303,857,279,773,251,705,236,679,221,659,207,648,210,644,225,655,241,676,256,703,284,772,309,855,330,947,364,1130,383,1267"/>
+<area shape="rect" id="Node000029" href="$classdnf__composer_1_1element_1_1MexicanHatKernel2D.html#a4ab0245904a75a1410ff41bbb09bc5dc" title=" " alt="" coords="26,670,202,725"/>
+<area shape="poly" id="edge28_Node000010_Node000029" title=" " alt="" coords="383,1267,377,1162,368,1095,355,1022,334,946,306,872,268,802,221,739,200,723,204,719,225,735,273,799,311,870,339,945,360,1021,374,1094,382,1162,388,1266"/>
+<area shape="rect" id="Node000030" href="$classdnf__composer_1_1element_1_1NeuralField.html#acf0203117e7820c0902e2986a594e47f" title=" " alt="" coords="26,749,202,789"/>
+<area shape="poly" id="edge29_Node000010_Node000030" title=" " alt="" coords="382,1267,373,1172,364,1112,349,1048,329,982,301,917,265,856,221,803,201,789,204,785,224,799,270,853,306,914,334,980,354,1046,369,1111,379,1172,387,1267"/>
+<area shape="rect" id="Node000031" href="$classdnf__composer_1_1element_1_1NeuralField2D.html#a4e4561bb48eab8b878f3dc96574923d4" title=" " alt="" coords="23,813,205,853"/>
+<area shape="poly" id="edge30_Node000010_Node000031" title=" " alt="" coords="380,1268,368,1184,341,1076,320,1019,294,964,261,913,221,867,204,855,207,851,224,863,265,909,299,961,325,1017,346,1075,373,1183,385,1267"/>
+<area shape="rect" id="Node000032" href="$classdnf__composer_1_1element_1_1NormalNoise.html#a310344bc777d0f29351f0ffeaa3cd20c" title=" " alt="" coords="26,877,202,917"/>
+<area shape="poly" id="edge31_Node000010_Node000032" title=" " alt="" coords="377,1268,361,1195,332,1105,312,1057,287,1011,256,969,221,931,201,918,204,913,224,927,261,965,291,1009,316,1055,337,1103,366,1194,382,1267"/>
+<area shape="rect" id="Node000033" href="$classdnf__composer_1_1element_1_1NormalNoise2D.html#a7bae54e92d8beef10452ddf4c1e93435" title=" " alt="" coords="18,941,210,981"/>
+<area shape="poly" id="edge32_Node000010_Node000033" title=" " alt="" coords="373,1268,354,1207,323,1134,279,1059,252,1025,221,995,203,984,206,979,224,991,256,1022,283,1056,328,1131,359,1205,378,1266"/>
+<area shape="rect" id="Node000034" href="$classdnf__composer_1_1element_1_1OscillatoryKernel.html#aceabd095ff34c16767e66308bf408d63" title=" " alt="" coords="26,1006,202,1061"/>
+<area shape="poly" id="edge33_Node000010_Node000034" title=" " alt="" coords="365,1269,342,1224,309,1172,269,1120,221,1074,201,1061,204,1057,224,1070,273,1116,314,1169,346,1222,370,1267"/>
+<area shape="rect" id="Node000035" href="$classdnf__composer_1_1element_1_1OscillatoryKernel2D.html#af8470b33f4c637c87f142fb0c4eff923" title=" " alt="" coords="26,1085,202,1139"/>
+<area shape="poly" id="edge34_Node000010_Node000035" title=" " alt="" coords="353,1272,295,1211,259,1180,221,1153,201,1142,203,1137,224,1148,263,1176,299,1207,356,1268"/>
+<area shape="rect" id="Node000036" href="$classdnf__composer_1_1element_1_1Resize.html#a01d211cf228eccad7d1618280ed98050" title=" " alt="" coords="26,2228,202,2268"/>
+<area shape="poly" id="edge35_Node000010_Node000036" title=" " alt="" coords="366,1348,317,1448,293,1510,273,1573,265,1635,264,1716,270,1904,271,2000,266,2088,252,2163,240,2193,225,2218,204,2235,201,2231,221,2214,235,2191,247,2161,261,2087,266,2000,265,1904,259,1716,260,1635,268,1571,288,1508,312,1446,361,1346"/>
+<area shape="rect" id="Node000037" href="$classdnf__composer_1_1element_1_1Resize2D.html#a6ede09dafbe890913c78ff6189b5ef50" title=" " alt="" coords="26,2292,202,2332"/>
+<area shape="poly" id="edge36_Node000010_Node000037" title=" " alt="" coords="366,1348,317,1448,292,1510,273,1573,268,1622,265,1706,261,1932,251,2154,241,2236,234,2264,225,2282,204,2299,201,2295,221,2278,229,2262,235,2235,246,2154,255,1932,260,1706,263,1622,268,1571,287,1508,312,1446,361,1346"/>
+<area shape="rect" id="Node000038" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus.html#afa9ab0ee32955f758cce483f5f274105" title=" " alt="" coords="26,1163,202,1218"/>
+<area shape="poly" id="edge37_Node000010_Node000038" title=" " alt="" coords="319,1277,222,1232,193,1221,195,1216,224,1227,321,1272"/>
+<area shape="rect" id="Node000039" href="$classdnf__composer_1_1element_1_1TimedGaussStimulus2D.html#aea500c669bb14917031e728dcbbf948b" title=" " alt="" coords="21,1242,207,1297"/>
+<area shape="poly" id="edge38_Node000010_Node000039" title=" " alt="" coords="264,1293,207,1285,208,1280,265,1288"/>
+<area shape="poly" id="edge40_Node000040_Node000016" title=" " alt="" coords="285,356,202,356,202,351,285,351"/>
+<area shape="poly" id="edge42_Node000041_Node000019" title=" " alt="" coords="268,425,202,423,202,417,268,419"/>
+<area shape="poly" id="edge44_Node000042_Node000020" title=" " alt="" coords="277,494,203,489,203,484,277,488"/>
+<area shape="poly" id="edge46_Node000043_Node000021" title=" " alt="" coords="257,568,202,563,203,558,257,563"/>
+<area shape="poly" id="edge48_Node000044_Node000036" title=" " alt="" coords="380,1638,299,1966,254,2135,237,2191,225,2218,204,2233,201,2229,221,2214,232,2189,249,2133,294,1965,375,1637"/>
+<area shape="poly" id="edge50_Node000045_Node000037" title=" " alt="" coords="357,2165,299,2225,263,2256,224,2282,198,2294,196,2290,221,2278,260,2252,295,2221,353,2161"/>
 </map>

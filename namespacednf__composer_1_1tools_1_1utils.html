@@ -85,6 +85,9 @@ $(function() {
 Functions</h2></td></tr>
 <tr class="memitem:a2b32560bde43a2406d004eb32c179978" id="r_a2b32560bde43a2406d004eb32c179978"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a2b32560bde43a2406d004eb32c179978">countNumOfLinesInFile</a> (const std::string &amp;filename)</td></tr>
 <tr class="separator:a2b32560bde43a2406d004eb32c179978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ca715863a6dcaec1bae0e06d949b7ff" id="r_a3ca715863a6dcaec1bae0e06d949b7ff"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a3ca715863a6dcaec1bae0e06d949b7ff">describeElementCreationFailure</a> (const std::function&lt; void()&gt; &amp;createAndAdd)</td></tr>
+<tr class="memdesc:a3ca715863a6dcaec1bae0e06d949b7ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run a step and turn any failure into a message.  <br /></td></tr>
+<tr class="separator:a3ca715863a6dcaec1bae0e06d949b7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0cdd9a5b819a33c8da85715120c9bd7" id="r_ae0cdd9a5b819a33c8da85715120c9bd7"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ae0cdd9a5b819a33c8da85715120c9bd7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#ae0cdd9a5b819a33c8da85715120c9bd7">fillMatrixWithRandomValues</a> (std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix, double minRange=-1.0, double maxRange=1.0)</td></tr>
 <tr class="separator:ae0cdd9a5b819a33c8da85715120c9bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -121,6 +124,44 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ca715863a6dcaec1bae0e06d949b7ff" name="a3ca715863a6dcaec1bae0e06d949b7ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ca715863a6dcaec1bae0e06d949b7ff">&#9670;&#160;</a></span>describeElementCreationFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string dnf_composer::tools::utils::describeElementCreationFailure </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; void()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>createAndAdd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run a step and turn any failure into a message. </p>
+<p>Intended for call sites (e.g. the element-creation forms in the ImGui render loop) where an exception thrown from inside a frame unwinds straight out of the render loop and terminates the application, so the call is funnelled through here instead.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">createAndAdd</td><td>The step to run. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An empty string if <code>createAndAdd</code> completed; otherwise a message describing the failure. <code><a class="el" href="classdnf__composer_1_1Exception.html">dnf_composer::Exception</a></code> messages already name the element and the error code, so they are passed through as-is. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1utils_a3ca715863a6dcaec1bae0e06d949b7ff_cgraph.svg" width="890" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1utils_a3ca715863a6dcaec1bae0e06d949b7ff_icgraph.svg" width="1038" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>

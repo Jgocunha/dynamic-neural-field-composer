@@ -103,6 +103,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa514731154519f2d4767bad8e27ca17b" id="r_aa514731154519f2d4767bad8e27ca17b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#aa514731154519f2d4767bad8e27ca17b">addInput</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">Element</a> &gt; &amp;inputElement, const std::string &amp;inputComponent=&quot;output&quot;) override</td></tr>
 <tr class="memdesc:aa514731154519f2d4767bad8e27ca17b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register an input, output, or (for DELTA) target connection.  <br /></td></tr>
 <tr class="separator:aa514731154519f2d4767bad8e27ca17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d7fe10b7d9419f051f7a34ba269a52" id="r_a51d7fe10b7d9419f051f7a34ba269a52"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a51d7fe10b7d9419f051f7a34ba269a52">bridgesDimensions</a> () const override</td></tr>
+<tr class="memdesc:a51d7fe10b7d9419f051f7a34ba269a52"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a> maps an independently-sized input field to its own output field through a learned weight matrix, so its "input" component is deliberately sized from <code><a class="el" href="structdnf__composer_1_1element_1_1FieldCouplingParameters.html#a38184c20b474ac6a3ebd52982ca799a0" title="Spatial dimensions of the source (input) field.">FieldCouplingParameters::inputFieldDimensions</a></code> rather than matching this element's own dimensions; it is exempt from the base dimensionality/shape check accordingly.  <br /></td></tr>
+<tr class="separator:a51d7fe10b7d9419f051f7a34ba269a52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a388fed7e504ed30765199aeb5a21650c" id="r_a388fed7e504ed30765199aeb5a21650c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#a388fed7e504ed30765199aeb5a21650c">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions) override</td></tr>
 <tr class="memdesc:a388fed7e504ed30765199aeb5a21650c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html#ae03ad578d78c90775e284a6b8fd50831">removeInputs()</a>/removeOutputs() first if needed. Any previously connected target field is now size-mismatched and is cleared.  <br /></td></tr>
 <tr class="separator:a388fed7e504ed30765199aeb5a21650c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -374,8 +377,37 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_aa514731154519f2d4767bad8e27ca17b_cgraph.svg" width="418" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1FieldCoupling_aa514731154519f2d4767bad8e27ca17b_cgraph.svg" width="683" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a51d7fe10b7d9419f051f7a34ba269a52" name="a51d7fe10b7d9419f051f7a34ba269a52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d7fe10b7d9419f051f7a34ba269a52">&#9670;&#160;</a></span>bridgesDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dnf_composer::element::FieldCoupling::bridgesDimensions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classdnf__composer_1_1element_1_1FieldCoupling.html" title="Full-matrix learned coupling between two neural fields.">FieldCoupling</a> maps an independently-sized input field to its own output field through a learned weight matrix, so its "input" component is deliberately sized from <code><a class="el" href="structdnf__composer_1_1element_1_1FieldCouplingParameters.html#a38184c20b474ac6a3ebd52982ca799a0" title="Spatial dimensions of the source (input) field.">FieldCouplingParameters::inputFieldDimensions</a></code> rather than matching this element's own dimensions; it is exempt from the base dimensionality/shape check accordingly. </p>
+
+<p>Reimplemented from <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ad3e77df7d8f8f360b3529050452e8ff1">dnf_composer::element::Element</a>.</p>
 
 </div>
 </div>

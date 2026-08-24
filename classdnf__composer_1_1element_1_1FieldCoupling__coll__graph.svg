@@ -19,24 +19,24 @@
 <text text-anchor="start" x="451" y="-157" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="464" y="-157" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
 <text text-anchor="start" x="451" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
+<text text-anchor="start" x="464" y="-142" font-family="Helvetica,sans-Serif" font-size="10.00">bridgesDimensions()</text>
 <text text-anchor="start" x="451" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">changeInputDimensions()</text>
+<text text-anchor="start" x="464" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
 <text text-anchor="start" x="451" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">clearWeights()</text>
+<text text-anchor="start" x="464" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">changeInputDimensions()</text>
 <text text-anchor="start" x="451" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text text-anchor="start" x="464" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">clearWeights()</text>
 <text text-anchor="start" x="451" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">FieldCoupling()</text>
+<text text-anchor="start" x="464" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
 <text text-anchor="start" x="451" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">getParameters()</text>
+<text text-anchor="start" x="464" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">FieldCoupling()</text>
 <text text-anchor="start" x="451" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">getTargetField()</text>
+<text text-anchor="start" x="464" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">getParameters()</text>
 <text text-anchor="start" x="451" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">getWeightsDirectory()</text>
+<text text-anchor="start" x="464" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">getTargetField()</text>
 <text text-anchor="start" x="451" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="464" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">init()</text>
-<text text-anchor="start" x="464" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">and 13 more...</text>
+<text text-anchor="start" x="464" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">getWeightsDirectory()</text>
+<text text-anchor="start" x="464" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">and 14 more...</text>
 <polygon fill="#666666" stroke="#666666" points="447,-182 447,-182 594,-182 594,-182 447,-182"/>
 <polygon fill="#666666" stroke="#666666" points="447,-167 447,-167 594,-167 594,-167 447,-167"/>
 <polygon fill="none" stroke="#666666" points="446.5,0 446.5,-210 593.5,-210 593.5,0 446.5,0"/>
@@ -54,24 +54,24 @@
 <text text-anchor="start" x="334" y="-557.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="347" y="-557.5" font-family="Helvetica,sans-Serif" font-size="10.00">addInput()</text>
 <text text-anchor="start" x="334" y="-542.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-542.5" font-family="Helvetica,sans-Serif" font-size="10.00">buildInputCache()</text>
+<text text-anchor="start" x="347" y="-542.5" font-family="Helvetica,sans-Serif" font-size="10.00">bridgesDimensions()</text>
 <text text-anchor="start" x="334" y="-527.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-527.5" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
+<text text-anchor="start" x="347" y="-527.5" font-family="Helvetica,sans-Serif" font-size="10.00">buildInputCache()</text>
 <text text-anchor="start" x="334" y="-512.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-512.5" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text text-anchor="start" x="347" y="-512.5" font-family="Helvetica,sans-Serif" font-size="10.00">changeDimensions()</text>
 <text text-anchor="start" x="334" y="-497.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-497.5" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
+<text text-anchor="start" x="347" y="-497.5" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
 <text text-anchor="start" x="334" y="-482.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-482.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
+<text text-anchor="start" x="347" y="-482.5" font-family="Helvetica,sans-Serif" font-size="10.00">close()</text>
 <text text-anchor="start" x="334" y="-467.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="347" y="-467.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
 <text text-anchor="start" x="334" y="-452.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-452.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
+<text text-anchor="start" x="347" y="-452.5" font-family="Helvetica,sans-Serif" font-size="10.00">Element()</text>
 <text text-anchor="start" x="334" y="-437.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-437.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
+<text text-anchor="start" x="347" y="-437.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponent()</text>
 <text text-anchor="start" x="334" y="-422.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="347" y="-422.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentPtr()</text>
-<text text-anchor="start" x="347" y="-407.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 31 more...</text>
+<text text-anchor="start" x="347" y="-422.5" font-family="Helvetica,sans-Serif" font-size="10.00">getComponentList()</text>
+<text text-anchor="start" x="347" y="-407.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 32 more...</text>
 <text text-anchor="start" x="334" y="-392.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text text-anchor="start" x="347" y="-392.5" font-family="Helvetica,sans-Serif" font-size="10.00">invalidateInputCache()</text>
 <polygon fill="#666666" stroke="#666666" points="330,-582.5 330,-582.5 463,-582.5 463,-582.5 330,-582.5"/>

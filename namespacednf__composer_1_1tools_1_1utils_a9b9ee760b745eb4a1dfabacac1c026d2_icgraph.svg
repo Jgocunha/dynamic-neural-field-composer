@@ -96,11 +96,11 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="namespacednf__composer_1_1user__interface.html#ab42c898e40981214ddea65c88b1faa38" target="_top" xlink:title="Run an element&#45;creation step and turn any failure into a message.">
-<polygon fill="white" stroke="#666666" points="593,-1401.5 440,-1401.5 440,-1360.5 593,-1360.5 593,-1401.5"/>
-<text text-anchor="start" x="448" y="-1389.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
-<text text-anchor="start" x="448" y="-1378.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::describeElement</text>
-<text text-anchor="middle" x="516.5" y="-1367.5" font-family="Helvetica,sans-Serif" font-size="10.00">CreationFailure</text>
+<g id="a_Node000006"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a3ca715863a6dcaec1bae0e06d949b7ff" target="_top" xlink:title="Run a step and turn any failure into a message.">
+<polygon fill="white" stroke="#666666" points="603,-1401.5 430,-1401.5 430,-1360.5 603,-1360.5 603,-1401.5"/>
+<text text-anchor="start" x="438" y="-1389.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
+<text text-anchor="start" x="438" y="-1378.5" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::describeElementCreation</text>
+<text text-anchor="middle" x="516.5" y="-1367.5" font-family="Helvetica,sans-Serif" font-size="10.00">Failure</text>
 </a>
 </g>
 </g>
@@ -532,8 +532,8 @@
 <g id="edge6_Node000006_Node000007" class="edge">
 <title>Node6&#45;&gt;Node7</title>
 <g id="a_edge6_Node000006_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M429.43,-1382.98C412.7,-1383.36 395.22,-1383.77 378.67,-1384.15"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="429.82,-1386.47 439.73,-1382.74 429.66,-1379.47 429.82,-1386.47"/>
+<path fill="none" stroke="#63b8ff" d="M419.48,-1383.21C405.84,-1383.52 391.92,-1383.84 378.6,-1384.15"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="419.93,-1386.7 429.85,-1382.97 419.77,-1379.7 419.93,-1386.7"/>
 </a>
 </g>
 </g>

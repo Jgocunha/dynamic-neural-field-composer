@@ -1,7 +1,12 @@
 <map id="dnf_composer::element::Resize2D::addInput" name="dnf_composer::element::Resize2D::addInput">
-<area shape="rect" id="Node000001" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="5,37,181,77"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="241,5,417,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="182,43,226,37,227,42,182,48"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html#a03cc479b5f360d8e7f679d4ecdad8944" title=" " alt="" coords="229,69,428,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="182,67,216,71,215,77,182,72"/>
+<area shape="rect" id="Node000001" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="5,115,181,155"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1element_1_1Element.html#aed78b4e2f69bf55673030220bbef6650" title="Register inputElement as an upstream source for this element. Wires both directions of the bookkeepin..." alt="" coords="229,81,405,121"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,119,215,114,216,119,182,124"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1element_1_1Element.html#a03cc479b5f360d8e7f679d4ecdad8944" title=" " alt="" coords="463,149,661,189"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="182,138,449,158,449,164,182,144"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1element_1_1Element.html#ad3e77df7d8f8f360b3529050452e8ff1" title="Whether this element manages its own input&#45;shape validation." alt="" coords="453,5,671,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="378,79,453,55,479,47,480,52,454,60,380,84"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="391,119,477,143,476,148,389,124"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1element_1_1ElementDimensions.html#a1e2439e8cba19f3bf61a48cdd01c4fc7" title=" " alt="" coords="474,70,650,125"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="405,97,460,96,460,102,405,103"/>
 </map>

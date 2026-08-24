@@ -89,12 +89,12 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for dnf_composer::element::GaussFieldCoupling:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__inherit__graph.svg" width="212" height="827"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__inherit__graph.svg" width="212" height="847"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::element::GaussFieldCoupling:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__coll__graph.svg" width="1312" height="1798"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1element_1_1GaussFieldCoupling__coll__graph.svg" width="1312" height="1818"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -102,6 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8f7bc15f1c04b96168537918190bcd9f" id="r_a8f7bc15f1c04b96168537918190bcd9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a8f7bc15f1c04b96168537918190bcd9f">addCoupling</a> (const <a class="el" href="structdnf__composer_1_1element_1_1GaussCoupling.html">GaussCoupling</a> &amp;coupling)</td></tr>
 <tr class="memdesc:a8f7bc15f1c04b96168537918190bcd9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a new point-coupling at runtime.  <br /></td></tr>
 <tr class="separator:a8f7bc15f1c04b96168537918190bcd9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace3e56ffea271e4c83bb704d8c97fe2b" id="r_ace3e56ffea271e4c83bb704d8c97fe2b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#ace3e56ffea271e4c83bb704d8c97fe2b">bridgesDimensions</a> () const override</td></tr>
+<tr class="memdesc:ace3e56ffea271e4c83bb704d8c97fe2b"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html" title="Sparse Gaussian field coupling with a fixed, user-defined projection.">GaussFieldCoupling</a> maps an independently-sized input field to its own output field through explicit point-to-point couplings, so its "input" component is deliberately sized from <code><a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html#a5bc498cbd7541d821c877e5851ac9ed7" title="Spatial dimensions of the source field.">GaussFieldCouplingParameters::inputFieldDimensions</a></code> rather than matching this element's own dimensions; it is exempt from the base dimensionality/shape check accordingly.  <br /></td></tr>
+<tr class="separator:ace3e56ffea271e4c83bb704d8c97fe2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a108ed838e6171d3ff2275b2d01099494" id="r_a108ed838e6171d3ff2275b2d01099494"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html#a108ed838e6171d3ff2275b2d01099494">changeDimensions</a> (const <a class="el" href="structdnf__composer_1_1element_1_1ElementDimensions.html">ElementDimensions</a> &amp;newDimensions) override</td></tr>
 <tr class="memdesc:a108ed838e6171d3ff2275b2d01099494"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1element_1_1Resize.html" title="Resamples a 1D input field of size N to this element&#39;s output size M.">Resize</a> the output field dimensions and rebuild the weight matrix. Preserves input field dimensions and clears weights. Connections are not removed — call <a class="el" href="classdnf__composer_1_1element_1_1Element.html#aeac5c33e5670c5bf0c162f3b1ec290e4">removeInputs()</a>/removeOutputs() first if needed.  <br /></td></tr>
 <tr class="separator:a108ed838e6171d3ff2275b2d01099494"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -301,6 +304,35 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ace3e56ffea271e4c83bb704d8c97fe2b" name="ace3e56ffea271e4c83bb704d8c97fe2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace3e56ffea271e4c83bb704d8c97fe2b">&#9670;&#160;</a></span>bridgesDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool dnf_composer::element::GaussFieldCoupling::bridgesDimensions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classdnf__composer_1_1element_1_1GaussFieldCoupling.html" title="Sparse Gaussian field coupling with a fixed, user-defined projection.">GaussFieldCoupling</a> maps an independently-sized input field to its own output field through explicit point-to-point couplings, so its "input" component is deliberately sized from <code><a class="el" href="structdnf__composer_1_1element_1_1GaussFieldCouplingParameters.html#a5bc498cbd7541d821c877e5851ac9ed7" title="Spatial dimensions of the source field.">GaussFieldCouplingParameters::inputFieldDimensions</a></code> rather than matching this element's own dimensions; it is exempt from the base dimensionality/shape check accordingly. </p>
+
+<p>Reimplemented from <a class="el" href="classdnf__composer_1_1element_1_1Element.html#ad3e77df7d8f8f360b3529050452e8ff1">dnf_composer::element::Element</a>.</p>
 
 </div>
 </div>

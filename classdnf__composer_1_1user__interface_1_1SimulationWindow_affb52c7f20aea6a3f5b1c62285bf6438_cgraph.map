@@ -1,13 +1,13 @@
 <map id="dnf_composer::user_interface::SimulationWindow::renderAddElementCard" name="dnf_composer::user_interface::SimulationWindow::renderAddElementCard">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,30,223,85"/>
-<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1user__interface.html#ab42c898e40981214ddea65c88b1faa38" title="Run an element&#45;creation step and turn any failure into a message." alt="" coords="271,30,475,85"/>
+<area shape="rect" id="Node000002" href="$namespacednf__composer_1_1tools_1_1utils.html#a3ca715863a6dcaec1bae0e06d949b7ff" title="Run a step and turn any failure into a message." alt="" coords="271,30,501,85"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="223,55,257,55,257,60,223,60"/>
-<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="539,5,693,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="474,41,525,35,525,40,475,47"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Exception.html#a52961c9cc2656b73d7767f5a3840a4b5" title=" " alt="" coords="523,69,709,109"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="475,68,509,73,509,78,474,73"/>
-<area shape="rect" id="Node000004" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="757,5,912,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="693,23,743,23,743,28,693,28"/>
-<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" title=" " alt="" coords="960,5,1123,45"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="913,23,946,23,946,28,913,28"/>
+<area shape="rect" id="Node000003" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="565,5,720,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="501,40,551,34,552,39,502,46"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1Exception.html#a52961c9cc2656b73d7767f5a3840a4b5" title=" " alt="" coords="549,69,736,109"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="502,69,536,73,535,79,501,74"/>
+<area shape="rect" id="Node000004" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="784,5,939,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="720,23,770,23,770,28,720,28"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" title=" " alt="" coords="987,5,1149,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="939,23,973,23,973,28,939,28"/>
 </map>
