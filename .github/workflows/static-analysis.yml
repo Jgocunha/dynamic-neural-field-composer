@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+# The job only reads the repository (checkout) and reads/writes the vcpkg Actions cache --
+# neither needs more than read access to repository contents.
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -89,8 +94,9 @@ jobs:
               | sort
           )
           shard_files=()
+          shard="${{ matrix.shard }}"
           for i in "${!files[@]}"; do
-            if [ $(( i % 3 )) -eq ${{ matrix.shard }} ]; then
+            if [ "$((i % 3))" -eq "$shard" ]; then
               shard_files+=("${files[$i]}")
             fi
           done
