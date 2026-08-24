@@ -43,7 +43,7 @@ Per-job step timings for the most recent `ci.yml` run:
 
 ```bash
 gh run list --workflow=ci.yml --limit 1 --json databaseId --jq '.[0].databaseId' \
-  | xargs -I{} gh api repos/:owner/:repo/actions/runs/{}/jobs \
+  | xargs -I{} gh api repos/{owner}/{repo}/actions/runs/{}/jobs \
     --jq '.jobs[] | "=== \(.name) \((.completed_at|fromdate)-(.started_at|fromdate))s",
           (.steps[] | select(.completed_at != null) |
            "   \(((.completed_at|fromdate)-(.started_at|fromdate)))s \(.name)")'
