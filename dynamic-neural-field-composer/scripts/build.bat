@@ -65,24 +65,44 @@ if errorlevel 1 ( echo ERROR: failed to initialize MSVC environment. & exit /b 1
 if not exist "%PROJECT_ROOT%\build" mkdir "%PROJECT_ROOT%\build"
 > "%VSINSTALL_MARKER%" echo !VSINSTALL!
 
-:: Create build folders
-mkdir %PROJECT_ROOT%\build\x64-release
-mkdir %PROJECT_ROOT%\build\x64-debug
+:: Which configuration(s) to build. No argument (or "all") builds both Release and
+:: Debug, matching this script's original behaviour, so existing callers and the wiki
+:: instructions keep working unchanged. "release" or "debug" builds only that one.
+set "CONFIG=%~1"
+if not defined CONFIG set "CONFIG=all"
+if /i not "%CONFIG%"=="all" if /i not "%CONFIG%"=="release" if /i not "%CONFIG%"=="debug" (
+    echo ERROR: unknown build configuration "%CONFIG%" ^(expected "release", "debug", or no argument for both^).
+    exit /b 1
+)
 
-:: Run CMake (Release)
-cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-release" ^
-    -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DCMAKE_PREFIX_PATH="%IPK_RELEASE%"
+if /i not "%CONFIG%"=="debug" (
+    :: Create build folder
+    mkdir %PROJECT_ROOT%\build\x64-release
 
-:: Build Release
-cmake --build "%PROJECT_ROOT%\build\x64-release" --parallel
+    :: Run CMake (Release)
+    cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-release" ^
+        -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
+        -DCMAKE_BUILD_TYPE=Release ^
+        -DCMAKE_PREFIX_PATH="%IPK_RELEASE%"
 
-:: Run CMake (Debug)
-cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-debug" ^
-    -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
-    -DCMAKE_BUILD_TYPE=Debug ^
-    -DCMAKE_PREFIX_PATH="%IPK_DEBUG%"
+    :: Build Release
+    cmake --build "%PROJECT_ROOT%\build\x64-release" --parallel
+)
 
-:: Build Debug
-cmake --build "%PROJECT_ROOT%\build\x64-debug" --parallel
+if /i not "%CONFIG%"=="release" (
+    :: Create build folder
+    mkdir %PROJECT_ROOT%\build\x64-debug
+
+    :: Run CMake (Debug)
+    :: /Z7 (Embedded) instead of the default /Zi: sccache (see ci.yml) can't cache /Zi,
+    :: since its PDB is written incrementally and shared across translation units. /Z7
+    :: embeds debug info per-object-file instead, which sccache can cache normally.
+    cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-debug" ^
+        -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
+        -DCMAKE_BUILD_TYPE=Debug ^
+        -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded ^
+        -DCMAKE_PREFIX_PATH="%IPK_DEBUG%"
+
+    :: Build Debug
+    cmake --build "%PROJECT_ROOT%\build\x64-debug" --parallel
+)

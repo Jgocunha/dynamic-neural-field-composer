@@ -71,7 +71,7 @@ scripts\build.bat
 
 `setup.bat` installs vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set and persists it via `setx`, installs all vcpkg packages, and builds `imgui-platform-kit` into `deps\ipk-install\`.
 
-`build.bat` configures and builds both Release and Debug with Ninja and the MSVC toolchain. Binaries land in `build\x64-release\` and `build\x64-debug\`.
+`build.bat` configures and builds both Release and Debug with Ninja and the MSVC toolchain. Binaries land in `build\x64-release\` and `build\x64-debug\`. Pass `release` or `debug` to build only that configuration (`scripts\build.bat release`); with no argument it builds both, as above.
 
 ### Linux
 
