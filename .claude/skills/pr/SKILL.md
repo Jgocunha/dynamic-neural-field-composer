@@ -57,5 +57,6 @@ Look for it in the branch slug or the commit messages. If found, close the body 
 
 ## Output
 
-A markdown title line followed by the filled body, ready to paste into `gh pr create
---body`. Nothing else - no push, no `gh pr create`.
+A markdown title line, then the filled body inside a single fenced code block (` ```markdown `)
+so it renders as literal, copy-pasteable text rather than being rendered as chat formatting -
+ready to paste into `gh pr create --body`. Nothing else - no push, no `gh pr create`.
