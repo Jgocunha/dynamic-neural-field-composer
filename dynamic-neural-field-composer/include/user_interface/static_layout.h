@@ -21,6 +21,7 @@
 
 namespace dnf_composer::user_interface
 {
+	/// @brief Top-level window that fixes and lays out all the other UI windows into panels.
 	class StaticLayoutWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
@@ -37,6 +38,9 @@ namespace dnf_composer::user_interface
 		std::unique_ptr<HelpWindow>			helpWindow;
 
 	public:
+		/// @brief Construct the layout for a simulation and its visualization.
+		/// @param simulation    Simulation shown/controlled by the child windows.
+		/// @param visualization Visualization shown by the plots window.
 		StaticLayoutWindow(const std::shared_ptr<Simulation>&    simulation,
 		                   const std::shared_ptr<Visualization>&  visualization);
 
@@ -45,6 +49,7 @@ namespace dnf_composer::user_interface
 		StaticLayoutWindow(StaticLayoutWindow&&)                 = delete;
 		StaticLayoutWindow& operator=(StaticLayoutWindow&&)      = delete;
 
+		/// @brief Draw the layout and all its child windows for this frame.
 		void render() override;
 		~StaticLayoutWindow() override = default;
 

@@ -18,6 +18,7 @@
 
 namespace dnf_composer::tools::logger
 {
+	/// @brief Severity of a log message, from most to least verbose.
 	enum LogLevel : int
 	{
 		DEBUG,
@@ -27,6 +28,7 @@ namespace dnf_composer::tools::logger
 		FATAL
 	};
 
+	/// @brief Where a log message should be delivered.
 	enum LogOutputMode : int
 	{
 		CONSOLE,
@@ -43,6 +45,7 @@ namespace dnf_composer::tools::logger
 	/// color/style without tools/ having to know anything about ImGui.
 	using UiLogSink = std::function<void(LogLevel level, const std::string& message)>;
 
+	/// @brief Formats and dispatches a single log message to console and/or GUI.
 	class Logger
 	{
 	private:
@@ -52,7 +55,12 @@ namespace dnf_composer::tools::logger
 		// log() (called from any worker thread) don't race. See logger.cpp.
 		static std::atomic<LogLevel> minLogLevel;
 	public:
+		/// @brief Construct a logger for one message.
+		/// @param level Severity of the message.
+		/// @param mode  Where the message should be delivered.
 		Logger(LogLevel level, LogOutputMode mode = ALL);
+		/// @brief Emit @p message if @p level is at or above the global minimum level.
+		/// @param message Text to log.
 		void log(const std::string& message) const;
 		/// @brief Set the global minimum level; messages below it are dropped.
 		/// @param level New global threshold.
@@ -83,6 +91,10 @@ namespace dnf_composer::tools::logger
 		static void log_ui(LogLevel level, const std::string& message);
 	};
 
+	/// @brief Convenience free function: build a @c Logger and log @p message with it.
+	/// @param level   Severity of the message.
+	/// @param message Text to log.
+	/// @param mode    Where the message should be delivered.
 	void log(LogLevel level, const std::string& message, LogOutputMode mode = ALL);
 }
 

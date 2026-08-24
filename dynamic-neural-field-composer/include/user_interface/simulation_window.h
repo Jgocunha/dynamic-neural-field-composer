@@ -21,6 +21,7 @@ enum CharSize : size_t
 
 namespace dnf_composer::user_interface
 {
+	/// @brief Sidebar window for adding, removing and configuring a simulation's elements.
 	class SimulationWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
@@ -35,6 +36,8 @@ namespace dnf_composer::user_interface
 		// Empty when the last attempt succeeded. See issue #146.
 		mutable std::string lastAddElementError;
 	public:
+		/// @brief Construct the simulation window for a simulation.
+		/// @param simulation Simulation whose elements are added to, removed and configured.
 		explicit SimulationWindow(const std::shared_ptr<Simulation>& simulation);
 
 		SimulationWindow(const SimulationWindow&) = delete;
@@ -42,13 +45,21 @@ namespace dnf_composer::user_interface
 		SimulationWindow(SimulationWindow&&) = delete;
 		SimulationWindow& operator=(SimulationWindow&&) = delete;
 
+		/// @brief Draw the simulation window for this frame.
 		void render() override;
+		/// @brief Draw the sidebar's icon strip and the currently selected content pane.
 		void renderSidebarContents() const;
+		/// @brief Draw the "Add element" content pane.
 		void renderAddElementCard() const;
+		/// @brief Draw the "Remove element" content pane.
 		void renderRemoveElementCard() const;
+		/// @brief Draw the "Set interaction" content pane.
 		void renderSetInteractionCard() const;
+		/// @brief Draw the "Data" content pane.
 		void renderDataCard() const;
+		/// @brief Draw the "Log element parameters" content pane.
 		void renderLogElementParametersCard() const;
+		/// @brief Draw the "Monitoring" content pane.
 		void renderMonitoringCard() const;
 		~SimulationWindow() override = default;
 	private:

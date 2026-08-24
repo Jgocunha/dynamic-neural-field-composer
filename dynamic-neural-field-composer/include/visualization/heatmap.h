@@ -64,20 +64,32 @@ namespace dnf_composer
 	///         ImPlot::ColormapScale, which stores the pointer without copying.
 	[[nodiscard]] const char* selectHeatmapTickFormat(double scaleMin, double scaleMax);
 
+	/// @brief Heatmap-specific plot parameters: colour scale and dimension inference.
 	struct HeatmapParameters final : PlotSpecificParameters
 	{
-		double scaleMin, scaleMax;
-		bool autoScale;
-		bool autoDimensions;  // infer rows/cols from data size each frame
-		int hintRows = 0;     // set by Visualization when element sizes are known
-		int hintCols = 0;
+		double scaleMin; ///< Colour scale lower bound, used when @c autoScale is false.
+		double scaleMax; ///< Colour scale upper bound, used when @c autoScale is false.
+		bool autoScale; ///< Whether the colour scale auto-fits the plotted data.
+		bool autoDimensions;  ///< Infer rows/cols from data size each frame.
+		int hintRows = 0;     ///< Row count hint, set by Visualization when element sizes are known.
+		int hintCols = 0;     ///< Column count hint, set by Visualization when element sizes are known.
 
+		/// @brief Construct default heatmap parameters (auto-scaled, auto-dimensioned).
 		HeatmapParameters();
+		/// @brief Construct heatmap parameters with an explicit, fixed colour scale.
+		/// @param scaleMin Lower colour scale bound.
+		/// @param scaleMax Upper colour scale bound.
 		HeatmapParameters(double scaleMin, double scaleMax);
+		/// @brief Format the parameters as a human-readable string.
+		/// @return A string describing the parameters.
 		[[nodiscard]] std::string toString() const override;
+		/// @brief Compare two parameter sets for equality.
+		/// @param other Parameters to compare against.
+		/// @return True if all fields are equal.
 		bool operator==(const HeatmapParameters& other) const;
 	};
 
+	/// @brief 2D field/weight-matrix plot rendered as a colour-mapped grid.
 	class Heatmap : public Plot
 	{
 		HeatmapParameters heatmapParameters;
@@ -105,9 +117,19 @@ namespace dnf_composer
 			                 PlotAnnotations{"Heatmap plot", "Spatial dimension output", "Spatial dimension input"}},
 		                 HeatmapParameters  heatmapParameters = HeatmapParameters());
 
+		/// @brief Set the colour scale bounds and disable auto-scaling.
+		/// @param min Lower colour scale bound.
+		/// @param max Upper colour scale bound.
 		void setScale(double min, double max);
+		/// @brief Get the current colour scale bounds.
+		/// @return The (min, max) colour scale bounds.
 		[[nodiscard]] std::pair<double, double> getScale() const;
+		/// @brief Set the row/column count hints used by manual (non-auto) dimensioning.
+		/// @param rows Row count hint.
+		/// @param cols Column count hint.
 		void setDimensionHint(int rows, int cols);
+		/// @brief Format the heatmap as a human-readable string.
+		/// @return A string describing the heatmap.
 		[[nodiscard]] std::string toString() const override;
 		void render(const std::vector<std::vector<double>*>& data, const std::vector<std::string>& legends) override;
 	};

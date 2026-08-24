@@ -20,23 +20,25 @@
 
 namespace dnf_composer::user_interface
 {
+	/// @brief Which file dialogs the main menu bar currently has open.
 	struct FileFlags
 	{
-		bool showOpenSimulationDialog = false;
-		bool showSaveSimulationDialog = false;
-		bool showOpenLayoutDialog = false;
+		bool showOpenSimulationDialog = false; ///< Open-simulation file dialog is showing.
+		bool showSaveSimulationDialog = false; ///< Save-simulation file dialog is showing.
+		bool showOpenLayoutDialog = false; ///< Open-layout file dialog is showing.
 	};
 
+	/// @brief Which debug/demo tool windows the "Advanced" menu currently has open.
 	struct AdvancedSettingsFlags
 	{
-		bool showToolMetrics = false;
-		bool showToolDebugLog = false;
-		bool showToolIdStackTool = false;
-		bool showToolStyleEditor = false;
-		bool showToolAbout = false;
-		bool showImGuiDemo = false;
-		bool showImPlotDemo = false;
-		bool showImGuiKitStyleEditor = false;
+		bool showToolMetrics = false; ///< ImGui metrics window is showing.
+		bool showToolDebugLog = false; ///< ImGui debug log window is showing.
+		bool showToolIdStackTool = false; ///< ImGui ID stack tool window is showing.
+		bool showToolStyleEditor = false; ///< ImGui style editor window is showing.
+		bool showToolAbout = false; ///< ImGui "About" window is showing.
+		bool showImGuiDemo = false; ///< ImGui demo window is showing.
+		bool showImPlotDemo = false; ///< ImPlot demo window is showing.
+		bool showImGuiKitStyleEditor = false; ///< imgui-platform-kit style editor window is showing.
 	};
 
 	/// @brief What a quit trigger (Quit menu item or Ctrl+Q shortcut) should do to
@@ -71,6 +73,7 @@ namespace dnf_composer::user_interface
 	/// save-before-closing behavior takes precedence (the safer of the two).
 	[[nodiscard]] QuitAction decideQuitAction(bool quitMenuItemClicked, bool ctrlQPressed) noexcept;
 
+	/// @brief Top-level application menu bar (File/Advanced/Quit) and its keyboard shortcuts.
 	class MainMenuBar final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
@@ -78,12 +81,15 @@ namespace dnf_composer::user_interface
 		AdvancedSettingsFlags advancedSettingsFlags;
 		FileFlags fileFlags;
 	public:
+		/// @brief Construct the menu bar for a simulation.
+		/// @param simulation Simulation acted on by File-menu items (open/save/etc.).
 		explicit MainMenuBar(const std::shared_ptr<Simulation>& simulation);
 		MainMenuBar(const MainMenuBar&) = delete;
 		MainMenuBar& operator=(const MainMenuBar&) = delete;
 		MainMenuBar(MainMenuBar&&) = delete;
 		MainMenuBar& operator=(MainMenuBar&&) = delete;
 
+		/// @brief Draw the menu bar and handle its keyboard shortcuts for this frame.
 		void render() override;
 		~MainMenuBar() override = default;
 
@@ -92,6 +98,7 @@ namespace dnf_composer::user_interface
 		/// Public (rather than an implementation detail of render()/handleShortcuts())
 		/// specifically so it can be driven directly from tests without a live ImGui
 		/// context -- it touches only Simulation and the quit request, never ImGui.
+		/// @param action Decision produced by @c decideQuitAction() for this frame.
 		void executeQuitAction(QuitAction action);
 	private:
 		void renderMainMenuBar();

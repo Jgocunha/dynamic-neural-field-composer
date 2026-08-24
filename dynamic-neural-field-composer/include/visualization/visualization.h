@@ -54,6 +54,10 @@ namespace dnf_composer
 		void plot(const PlotCommonParameters& parameters, const PlotSpecificParameters& specificParameters, const std::vector<std::pair<std::string, std::string>>& data);
 
 		/// @brief Add a fully configured plot with a single data source.
+		/// @param parameters        Common plot parameters (type, dimensions, annotations).
+		/// @param specificParameters  Type-specific parameters (e.g. LinePlotParameters).
+		/// @param name              Element unique name.
+		/// @param component         Component name (e.g. "activation", "output").
 		void plot(const PlotCommonParameters& parameters, const PlotSpecificParameters& specificParameters, const std::string& name, const std::string& component);
 
 		/// @brief Add a data source to an existing plot identified by @p plotId.
@@ -62,9 +66,13 @@ namespace dnf_composer
 		void plot(int plotId, const std::vector<std::pair<std::string, std::string>>& data);
 
 		/// @brief Add a single data source to an existing plot.
+		/// @param plotId    Unique plot identifier.
+		/// @param name      Element unique name.
+		/// @param component Component name (e.g. "activation", "output").
 		void plot(int plotId, const std::string& name, const std::string& component);
 
 		/// @brief Remove the plot with the given @p plotId.
+		/// @param plotId Unique plot identifier.
 		void removePlot(int plotId);
 
 		/// @brief Remove all registered plots.
@@ -76,9 +84,11 @@ namespace dnf_composer
 		void removePlottingDataFromPlot(int plotId, const std::pair<std::string, std::string>& data);
 
 		/// @brief Return the underlying simulation.
+		/// @return The simulation this visualization plots data from.
 		[[nodiscard]] std::shared_ptr<Simulation> getSimulation() const { return simulation; }
 
 		/// @brief Return the full plots map (plot → data sources).
+		/// @return Map from each registered plot to its {element-name, component-name} data sources.
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> getPlots() { return plots; }
 
 		/// @brief Render all plots (creates ImGui windows or child regions as appropriate).
@@ -89,7 +99,9 @@ namespace dnf_composer
 		void renderTile(int plotId);
 
 		/// @brief Set a suffix appended to all ImGui window IDs to avoid collisions.
+		/// @param s Suffix to append to plot window IDs.
 		void setWindowIdSuffix(const std::string& s) { windowSuffix = s; }
+		/// @brief Clear the ImGui window ID suffix set by setWindowIdSuffix().
 		void clearWindowIdSuffix() { windowSuffix.clear(); }
 	};
 }

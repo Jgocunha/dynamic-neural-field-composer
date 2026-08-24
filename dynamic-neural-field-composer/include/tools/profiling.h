@@ -19,9 +19,13 @@ namespace dnf_composer::tools::profiling
 	//		}
 	// }
 
+	/// @brief Scoped timer that prints its elapsed lifetime when destroyed.
 	class Timer
 	{
 	public:
+		/// @brief Start timing. The elapsed time is reported when the timer is destroyed.
+		/// @param signature Label printed alongside the elapsed time.
+		/// @param outStream Stream the elapsed time is written to.
 		Timer(std::string signature = "something that takes time", std::ostream& outStream = std::cout);
 		~Timer();
 	private:

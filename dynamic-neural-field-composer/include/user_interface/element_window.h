@@ -9,21 +9,26 @@
 
 namespace dnf_composer::user_interface
 {
+	/// @brief Cached geometry and style for one "Add elements" grid panel.
 	struct PanelScope
 	{
-		ImRect rect;          // fixed rectangle of the panel (screen coords)
-		float  ui{};
-		ImU32  fill{}, border{};
-		float  rounding{};
-		ImVec2 pad;
+		ImRect rect;          ///< Fixed rectangle of the panel (screen coords).
+		float  ui{};           ///< UI scale factor the panel was laid out with.
+		ImU32  fill{};          ///< Panel background fill colour.
+		ImU32  border{};        ///< Panel border colour.
+		float  rounding{};     ///< Corner rounding radius.
+		ImVec2 pad;             ///< Inner padding between the border and the panel's content.
 	};
 
+	/// @brief Sidebar window for creating elements and editing the parameters of the focused one.
 	class ElementWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
 		std::shared_ptr<Simulation> simulation;
 		static std::shared_ptr<element::Element> focusedElement;
 	public:
+		/// @brief Construct the element window for a simulation.
+		/// @param simulation Simulation whose elements are listed, added to, and edited.
 		explicit ElementWindow(const std::shared_ptr<Simulation>& simulation);
 
 		ElementWindow(const ElementWindow&) = delete;
@@ -31,11 +36,23 @@ namespace dnf_composer::user_interface
 		ElementWindow(ElementWindow&&) = delete;
 		ElementWindow& operator=(ElementWindow&&) = delete;
 
+		/// @brief Draw the element window for this frame.
 		void render() override;
+		/// @brief Draw the "Add elements" card grid used to create new elements.
 		void renderElementControlCard();
+		/// @brief Draw the parameter-editing panel for the currently focused element.
 		void renderModifyElementParameters();
+		/// @brief Set the element whose parameters are shown for editing.
+		/// @param element Element to switch the parameter panel to.
+		/// @param simId   Id of the simulation @p element belongs to, when it differs from
+		///                the window's own simulation (e.g. a coupled field in another sim).
 		static void switchElementToModify(const std::shared_ptr<element::Element>& element, const std::string& simId = {});
+		/// @brief Set the element highlighted as focused across the UI (e.g. from the node graph).
+		/// @param element Element to focus.
 		static void setFocusedElement(const std::shared_ptr<element::Element>& element);
+		/// @brief Look up the display colour for an element type.
+		/// @param label Element type to look up.
+		/// @return The colour associated with @p label.
 		static ImVec4 getColorForElementType(element::ElementLabel label);
 		~ElementWindow() override = default;
 	private:

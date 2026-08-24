@@ -21,41 +21,43 @@ namespace dnf_composer::user_interface::colour
 	// NodeGraphWindow::getHeaderColorForElementType() (node headers, as ImU32) and
 	// ElementWindow::getColorForElementType() (element cards, as ImVec4 via toImVec4()).
 	// ---------------------------------------------------------------------------------------
-	inline constexpr ImU32 kNeuralFieldElement              = IM_COL32(86,  128, 191, 255); // Soft Blue
-	inline constexpr ImU32 kNormalNoiseElement               = IM_COL32(223, 148, 84,  255); // Warm Orange
-	inline constexpr ImU32 kCorrelatedNormalNoiseElement     = IM_COL32(210, 110, 60,  255); // Deep Orange
-	inline constexpr ImU32 kGaussKernelElement                = IM_COL32(191, 63,  63,  255); // Muted Red
-	inline constexpr ImU32 kGaussStimulusElement              = IM_COL32(127, 191, 127, 255); // Sage Green
-	inline constexpr ImU32 kMexicanHatKernelElement           = IM_COL32(154, 121, 191, 255); // Lavender
-	inline constexpr ImU32 kGaussFieldCouplingElement         = IM_COL32(165, 102, 71,  255); // Warm Brown
-	inline constexpr ImU32 kFieldCouplingElement              = IM_COL32(212, 192, 121, 255); // Cream Gold
-	inline constexpr ImU32 kOscillatoryKernelElement          = IM_COL32(175, 133, 187, 255); // Dusty Rose
-	inline constexpr ImU32 kAsymmetricGaussKernelElement      = IM_COL32(148, 178, 182, 255); // Soft Teal
-	inline constexpr ImU32 kBoostStimulusElement              = IM_COL32(242, 209, 83,  255); // Warm Yellow
-	inline constexpr ImU32 kMemoryTraceElement                = IM_COL32(110, 160, 140, 255); // Sage Green
-	inline constexpr ImU32 kNeuralField2DElement              = IM_COL32(70,  110, 175, 255); // Deeper Blue
-	inline constexpr ImU32 kGaussStimulus2DElement            = IM_COL32(105, 175, 105, 255); // Deeper Sage Green
-	inline constexpr ImU32 kGaussKernel2DElement              = IM_COL32(175, 48,  48,  255); // Deeper Muted Red
-	inline constexpr ImU32 kMexicanHatKernel2DElement         = IM_COL32(138, 105, 175, 255); // Deeper Lavender
-	inline constexpr ImU32 kNormalNoise2DElement              = IM_COL32(207, 132, 68,  255); // Deeper Warm Orange
-	inline constexpr ImU32 kOscillatoryKernel2DElement        = IM_COL32(152, 116, 163, 255); // Deeper Dusty Rose
-	inline constexpr ImU32 kTimedGaussStimulusElement         = IM_COL32(97,  161, 97,  255); // Darker Sage Green
-	inline constexpr ImU32 kTimedGaussStimulus2DElement       = IM_COL32(80,  133, 80,  255); // Deepest Sage Green
-	inline constexpr ImU32 kBoostStimulus2DElement            = IM_COL32(210, 182, 72,  255); // Deeper Warm Yellow
-	inline constexpr ImU32 kCorrelatedNormalNoise2DElement    = IM_COL32(182, 109, 44,  255); // Deeper Deep Orange
-	inline constexpr ImU32 kAsymmetricGaussKernel2DElement    = IM_COL32(129, 155, 159, 255); // Deeper Soft Teal
-	inline constexpr ImU32 kMemoryTrace2DElement              = IM_COL32(96,  139, 122, 255); // Deeper Sage Green
-	inline constexpr ImU32 kUnknownElement              = IM_COL32(127, 127, 127, 255); // Neutral Gray
+	inline constexpr ImU32 kNeuralFieldElement              = IM_COL32(86,  128, 191, 255); ///< Soft Blue
+	inline constexpr ImU32 kNormalNoiseElement               = IM_COL32(223, 148, 84,  255); ///< Warm Orange
+	inline constexpr ImU32 kCorrelatedNormalNoiseElement     = IM_COL32(210, 110, 60,  255); ///< Deep Orange
+	inline constexpr ImU32 kGaussKernelElement                = IM_COL32(191, 63,  63,  255); ///< Muted Red
+	inline constexpr ImU32 kGaussStimulusElement              = IM_COL32(127, 191, 127, 255); ///< Sage Green
+	inline constexpr ImU32 kMexicanHatKernelElement           = IM_COL32(154, 121, 191, 255); ///< Lavender
+	inline constexpr ImU32 kGaussFieldCouplingElement         = IM_COL32(165, 102, 71,  255); ///< Warm Brown
+	inline constexpr ImU32 kFieldCouplingElement              = IM_COL32(212, 192, 121, 255); ///< Cream Gold
+	inline constexpr ImU32 kOscillatoryKernelElement          = IM_COL32(175, 133, 187, 255); ///< Dusty Rose
+	inline constexpr ImU32 kAsymmetricGaussKernelElement      = IM_COL32(148, 178, 182, 255); ///< Soft Teal
+	inline constexpr ImU32 kBoostStimulusElement              = IM_COL32(242, 209, 83,  255); ///< Warm Yellow
+	inline constexpr ImU32 kMemoryTraceElement                = IM_COL32(110, 160, 140, 255); ///< Sage Green
+	inline constexpr ImU32 kNeuralField2DElement              = IM_COL32(70,  110, 175, 255); ///< Deeper Blue
+	inline constexpr ImU32 kGaussStimulus2DElement            = IM_COL32(105, 175, 105, 255); ///< Deeper Sage Green
+	inline constexpr ImU32 kGaussKernel2DElement              = IM_COL32(175, 48,  48,  255); ///< Deeper Muted Red
+	inline constexpr ImU32 kMexicanHatKernel2DElement         = IM_COL32(138, 105, 175, 255); ///< Deeper Lavender
+	inline constexpr ImU32 kNormalNoise2DElement              = IM_COL32(207, 132, 68,  255); ///< Deeper Warm Orange
+	inline constexpr ImU32 kOscillatoryKernel2DElement        = IM_COL32(152, 116, 163, 255); ///< Deeper Dusty Rose
+	inline constexpr ImU32 kTimedGaussStimulusElement         = IM_COL32(97,  161, 97,  255); ///< Darker Sage Green
+	inline constexpr ImU32 kTimedGaussStimulus2DElement       = IM_COL32(80,  133, 80,  255); ///< Deepest Sage Green
+	inline constexpr ImU32 kBoostStimulus2DElement            = IM_COL32(210, 182, 72,  255); ///< Deeper Warm Yellow
+	inline constexpr ImU32 kCorrelatedNormalNoise2DElement    = IM_COL32(182, 109, 44,  255); ///< Deeper Deep Orange
+	inline constexpr ImU32 kAsymmetricGaussKernel2DElement    = IM_COL32(129, 155, 159, 255); ///< Deeper Soft Teal
+	inline constexpr ImU32 kMemoryTrace2DElement              = IM_COL32(96,  139, 122, 255); ///< Deeper Sage Green
+	inline constexpr ImU32 kUnknownElement              = IM_COL32(127, 127, 127, 255); ///< Neutral Gray
 
 	/// @brief Labels with an element-window category colour but no node-graph header case;
 	/// they render with kUnknownElement in the node graph until that switch grows a case (#28 follow-up).
-	inline constexpr ImU32 kResizeElement    = IM_COL32(128, 153, 179, 255); // Steel Blue
-	inline constexpr ImU32 kResize2DElement  = IM_COL32(107, 130, 153, 255); // Deeper Steel Blue
-	inline constexpr ImU32 kCollapseElement  = IM_COL32(115, 166, 158, 255); // Teal
-	inline constexpr ImU32 kExpandElement    = IM_COL32(97,  143, 135, 255); // Deeper Teal
+	inline constexpr ImU32 kResizeElement    = IM_COL32(128, 153, 179, 255); ///< Steel Blue
+	inline constexpr ImU32 kResize2DElement  = IM_COL32(107, 130, 153, 255); ///< Deeper Steel Blue
+	inline constexpr ImU32 kCollapseElement  = IM_COL32(115, 166, 158, 255); ///< Teal
+	inline constexpr ImU32 kExpandElement    = IM_COL32(97,  143, 135, 255); ///< Deeper Teal
 
 	/// @brief Converts a packed ImU32 colour (as produced by IM_COL32) to an ImVec4, so a single
 	/// ImU32 palette can back both node-graph headers (ImU32) and element cards (ImVec4).
+	/// @param c Packed ImU32 colour.
+	/// @return The equivalent ImVec4 colour.
 	constexpr ImVec4 toImVec4(const ImU32 c)
 	{
 		return {
@@ -68,13 +70,13 @@ namespace dnf_composer::user_interface::colour
 	// ---------------------------------------------------------------------------------------
 	// Node graph: canvas chrome, navigation overlay, and pin/link colours
 	// ---------------------------------------------------------------------------------------
-	inline constexpr ImVec4 kCanvasBackground      = ImVec4(0.94F, 0.95F, 0.96F, 1.00F);
-	inline constexpr ImVec4 kCanvasGridLine        = ImVec4(0.80F, 0.82F, 0.85F, 0.60F);
-	inline constexpr ImVec4 kFloatingPanelBackground = ImVec4(0.95F, 0.97F, 0.98F, 1.0F);
+	inline constexpr ImVec4 kCanvasBackground      = ImVec4(0.94F, 0.95F, 0.96F, 1.00F); ///< Node graph canvas background.
+	inline constexpr ImVec4 kCanvasGridLine        = ImVec4(0.80F, 0.82F, 0.85F, 0.60F); ///< Node graph canvas grid lines.
+	inline constexpr ImVec4 kFloatingPanelBackground = ImVec4(0.95F, 0.97F, 0.98F, 1.0F); ///< Background of a floating overlay panel (e.g. plot cards).
 
-	inline constexpr ImVec4 kNavButtonBackground        = ImVec4(0.92F, 0.92F, 0.93F, 1.0F);
-	inline constexpr ImVec4 kNavButtonHoveredBackground = ImVec4(0.80F, 0.84F, 0.95F, 1.0F);
-	inline constexpr ImVec4 kNavButtonActiveBackground  = ImVec4(0.65F, 0.72F, 0.92F, 1.0F);
+	inline constexpr ImVec4 kNavButtonBackground        = ImVec4(0.92F, 0.92F, 0.93F, 1.0F); ///< Navigation overlay button background.
+	inline constexpr ImVec4 kNavButtonHoveredBackground = ImVec4(0.80F, 0.84F, 0.95F, 1.0F); ///< Navigation overlay button background on hover.
+	inline constexpr ImVec4 kNavButtonActiveBackground  = ImVec4(0.65F, 0.72F, 0.92F, 1.0F); ///< Navigation overlay button background while pressed.
 
 	/// @brief Element-side ("input") pin colour.
 	inline constexpr ImVec4 kInputPinColour      = ImVec4(1.0F,  1.0F,  1.0F,  0.90F);
@@ -85,9 +87,9 @@ namespace dnf_composer::user_interface::colour
 	/// @brief Inner fill for a pin's icon outline; transparent so only the outline shows.
 	inline constexpr ImVec4 kPinIconInnerFill = ImVec4(0.0F, 0.0F, 0.0F, 0.0F);
 
-	inline constexpr ImVec4 kLinkColour           = ImVec4(0.08F, 0.08F, 0.08F, 0.85F); // near-black
-	inline constexpr ImVec4 kTargetLinkColour     = ImVec4(0.60F, 0.50F, 0.15F, 0.85F); // matches the Target pin
-	inline constexpr ImVec4 kActivationLinkColour = ImVec4(0.30F, 0.50F, 0.65F, 0.85F); // matches the Activation pin
+	inline constexpr ImVec4 kLinkColour           = ImVec4(0.08F, 0.08F, 0.08F, 0.85F); ///< Default link colour (near-black).
+	inline constexpr ImVec4 kTargetLinkColour     = ImVec4(0.60F, 0.50F, 0.15F, 0.85F); ///< Link colour into a Target pin; matches the Target pin.
+	inline constexpr ImVec4 kActivationLinkColour = ImVec4(0.30F, 0.50F, 0.65F, 0.85F); ///< Link colour from an Activation pin; matches the Activation pin.
 
 	/// @brief Alpha applied to per-series colormap colours in the multi-line plot preview.
 	inline constexpr float kMultiSeriesLineAlpha = 0.86F;
@@ -95,13 +97,13 @@ namespace dnf_composer::user_interface::colour
 	// ---------------------------------------------------------------------------------------
 	// Node graph: inline heatmap preview (fill/border overlay, axis text/ticks) and minimap
 	// ---------------------------------------------------------------------------------------
-	inline constexpr ImU32 kHeatmapOverlayFill   = IM_COL32(255, 255, 255, 40);
-	inline constexpr ImU32 kHeatmapOverlayBorder = IM_COL32(0,   0,   0,   30);
-	inline constexpr ImU32 kHeatmapAxisText      = IM_COL32(40,  40,  40,  230);
-	inline constexpr ImU32 kHeatmapAxisTick      = IM_COL32(80,  80,  80,  180);
+	inline constexpr ImU32 kHeatmapOverlayFill   = IM_COL32(255, 255, 255, 40); ///< Inline heatmap preview overlay fill.
+	inline constexpr ImU32 kHeatmapOverlayBorder = IM_COL32(0,   0,   0,   30); ///< Inline heatmap preview overlay border.
+	inline constexpr ImU32 kHeatmapAxisText      = IM_COL32(40,  40,  40,  230); ///< Inline heatmap preview axis label text.
+	inline constexpr ImU32 kHeatmapAxisTick      = IM_COL32(80,  80,  80,  180); ///< Inline heatmap preview axis tick marks.
 
-	inline constexpr ImU32 kMinimapNodeBorder      = IM_COL32(255, 255, 255, 60);
-	inline constexpr ImU32 kMinimapViewportBorder  = IM_COL32(255, 255, 255, 200);
+	inline constexpr ImU32 kMinimapNodeBorder      = IM_COL32(255, 255, 255, 60); ///< Node graph minimap node outline.
+	inline constexpr ImU32 kMinimapViewportBorder  = IM_COL32(255, 255, 255, 200); ///< Node graph minimap viewport rectangle outline.
 
 	// ---------------------------------------------------------------------------------------
 	// Shared accent-derived button states (element_window + simulation_window action buttons)
@@ -124,8 +126,8 @@ namespace dnf_composer::user_interface::colour
 
 	/// @brief Transparent background for a flat (borderless) icon button.
 	inline constexpr ImVec4 kFlatButtonBackground     = ImVec4(0, 0, 0, 0);
-	inline constexpr ImVec4 kFlatButtonHoverOverlay   = ImVec4(0, 0, 0, 0.06F);
-	inline constexpr ImVec4 kFlatButtonActiveOverlay  = ImVec4(0, 0, 0, 0.12F);
+	inline constexpr ImVec4 kFlatButtonHoverOverlay   = ImVec4(0, 0, 0, 0.06F); ///< Overlay drawn on a flat icon button on hover.
+	inline constexpr ImVec4 kFlatButtonActiveOverlay  = ImVec4(0, 0, 0, 0.12F); ///< Overlay drawn on a flat icon button while pressed.
 
 	/// @brief Transparent child-window background, used to inset a panel without a visible fill.
 	inline constexpr ImVec4 kTransparentChildBackground = ImVec4(0, 0, 0, 0);
@@ -138,8 +140,8 @@ namespace dnf_composer::user_interface::colour
 	/// @brief Text colour for the add-element validation error message, simulation_window (#146).
 	inline constexpr ImVec4 kValidationErrorText = ImVec4(0.90F, 0.35F, 0.35F, 1.0F);
 
-	inline constexpr ImVec4 kDestructiveButtonHoverOverlay  = ImVec4(1.0F, 0.0F, 0.0F, 0.12F);
-	inline constexpr ImVec4 kDestructiveButtonActiveOverlay = ImVec4(1.0F, 0.0F, 0.0F, 0.22F);
+	inline constexpr ImVec4 kDestructiveButtonHoverOverlay  = ImVec4(1.0F, 0.0F, 0.0F, 0.12F); ///< Overlay drawn on a destructive icon button on hover.
+	inline constexpr ImVec4 kDestructiveButtonActiveOverlay = ImVec4(1.0F, 0.0F, 0.0F, 0.22F); ///< Overlay drawn on a destructive icon button while pressed.
 	/// @brief Text colour for the recording Stop button.
 	inline constexpr ImVec4 kStopButtonText = ImVec4(0.85F, 0.15F, 0.15F, 1.0F);
 
@@ -171,32 +173,33 @@ namespace dnf_composer::user_interface::colour
 	// ---------------------------------------------------------------------------------------
 	// Control bar: transport buttons (Play/Pause/Resume/Stop, Run-for)
 	// ---------------------------------------------------------------------------------------
-	inline constexpr ImVec4 kToolbarButtonHovered = ImVec4(0.878F, 0.878F, 0.878F, 1.0F);
-	inline constexpr ImVec4 kToolbarButtonActive  = ImVec4(0.835F, 0.835F, 0.835F, 1.0F);
+	inline constexpr ImVec4 kToolbarButtonHovered = ImVec4(0.878F, 0.878F, 0.878F, 1.0F); ///< Control bar transport button background on hover.
+	inline constexpr ImVec4 kToolbarButtonActive  = ImVec4(0.835F, 0.835F, 0.835F, 1.0F); ///< Control bar transport button background while pressed.
 	/// @brief Text colour for the control bar's Stop button icon.
 	inline constexpr ImVec4 kStopControlText = ImVec4(0.8F, 0.1F, 0.1F, 1.0F);
 
 	// ---------------------------------------------------------------------------------------
 	// Field metrics window: per-field stability card
 	// ---------------------------------------------------------------------------------------
-	inline constexpr ImU32  kMetricCardDot          = IM_COL32(74,  144, 217, 255);
-	inline constexpr ImVec4 kMetricStableText       = ImVec4(0.22F, 0.75F, 0.35F, 1.0F);
-	inline constexpr ImVec4 kMetricUnstableText     = ImVec4(0.90F, 0.55F, 0.10F, 1.0F);
-	inline constexpr ImU32  kMetricBarTrack         = IM_COL32(60,  60,  60,  80);
-	inline constexpr ImU32  kMetricBarStableFill    = IM_COL32(56,  200, 90,  180);
-	inline constexpr ImU32  kMetricBarUnstableFill  = IM_COL32(230, 140, 25,  180);
-	inline constexpr ImU32  kMetricBarZeroTick      = IM_COL32(255, 255, 255, 150);
-	inline constexpr ImU32  kMetricBarNegativeTrack = IM_COL32(180, 60,  60,  80);
+	inline constexpr ImU32  kMetricCardDot          = IM_COL32(74,  144, 217, 255); ///< Per-field indicator dot on a stability card.
+	inline constexpr ImVec4 kMetricStableText       = ImVec4(0.22F, 0.75F, 0.35F, 1.0F); ///< Text colour when a field is stable.
+	inline constexpr ImVec4 kMetricUnstableText     = ImVec4(0.90F, 0.55F, 0.10F, 1.0F); ///< Text colour when a field is unstable.
+	inline constexpr ImU32  kMetricBarTrack         = IM_COL32(60,  60,  60,  80); ///< Background track of a metric bar.
+	inline constexpr ImU32  kMetricBarStableFill    = IM_COL32(56,  200, 90,  180); ///< Metric bar fill when the value is in the stable range.
+	inline constexpr ImU32  kMetricBarUnstableFill  = IM_COL32(230, 140, 25,  180); ///< Metric bar fill when the value is in the unstable range.
+	inline constexpr ImU32  kMetricBarZeroTick      = IM_COL32(255, 255, 255, 150); ///< Zero-line tick mark on a metric bar.
+	inline constexpr ImU32  kMetricBarNegativeTrack = IM_COL32(180, 60,  60,  80); ///< Background track for the negative side of a metric bar.
 
 	// ---------------------------------------------------------------------------------------
 	// Status bar: simulation state indicator dot
 	// ---------------------------------------------------------------------------------------
-	inline constexpr ImVec4 kStatusDotStopped = ImVec4(0.75F, 0.20F, 0.20F, 1.0F);
-	inline constexpr ImVec4 kStatusDotRunning = ImVec4(0.20F, 0.75F, 0.20F, 1.0F);
-	inline constexpr ImVec4 kStatusDotPaused  = ImVec4(0.90F, 0.70F, 0.10F, 1.0F);
+	inline constexpr ImVec4 kStatusDotStopped = ImVec4(0.75F, 0.20F, 0.20F, 1.0F); ///< Status bar indicator dot while the simulation is stopped.
+	inline constexpr ImVec4 kStatusDotRunning = ImVec4(0.20F, 0.75F, 0.20F, 1.0F); ///< Status bar indicator dot while the simulation is running.
+	inline constexpr ImVec4 kStatusDotPaused  = ImVec4(0.90F, 0.70F, 0.10F, 1.0F); ///< Status bar indicator dot while the simulation is paused.
 
 	// ---------------------------------------------------------------------------------------
 	// Log window: console-style background
 	// ---------------------------------------------------------------------------------------
+	/// @brief Background of the log window's console-style text area.
 	inline constexpr ImVec4 kLogConsoleBackground = ImVec4(0.07F, 0.07F, 0.07F, 1.0F);
 }

@@ -24,14 +24,19 @@ namespace dnf_composer::user_interface
 	/// Pure decision logic, kept free of ImGui so it can be unit-tested headlessly.
 	[[nodiscard]] PlotType quickPopulatePlotTypeFor(const std::shared_ptr<element::Element>& element);
 
+	/// @brief Window for adding/removing/configuring the plots shown by @c PlotsWindow.
 	class PlotControlWindow final : public imgui_kit::UserInterfaceWindow
 	{
 	private:
 		std::shared_ptr<Visualization> visualization;
 		std::shared_ptr<Simulation> simulation;
 	public:
+		/// @brief Construct the plot control window for a visualization.
+		/// @param visualization Visualization whose plots are added to, removed, and configured.
 		explicit PlotControlWindow(const std::shared_ptr<Visualization>& visualization);
+		/// @brief Draw the plot control window for this frame.
 		void render() override;
+		/// @brief Draw the plot control window's contents.
 		void renderContent() const;
 	};
 }
