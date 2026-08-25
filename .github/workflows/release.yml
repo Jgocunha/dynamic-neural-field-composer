@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: read
+
 jobs:
   release-windows:
     runs-on: windows-latest
@@ -90,7 +93,8 @@ jobs:
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
-                -DDNF_COMPOSER_BUILD_TESTS=OFF
+                -DDNF_COMPOSER_BUILD_TESTS=OFF \
+                -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
 
       - name: Build
         run: cmake --build build --config Release --parallel
@@ -204,7 +208,8 @@ jobs:
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
-                -DDNF_COMPOSER_BUILD_TESTS=OFF
+                -DDNF_COMPOSER_BUILD_TESTS=OFF \
+                -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
 
       - name: Build
         run: cmake --build build --parallel $(nproc)
@@ -297,7 +302,8 @@ jobs:
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
-                -DDNF_COMPOSER_BUILD_TESTS=OFF
+                -DDNF_COMPOSER_BUILD_TESTS=OFF \
+                -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
 
       - name: Build
         run: cmake --build build --parallel $(sysctl -n hw.logicalcpu)

@@ -6,6 +6,7 @@
 
 #include "simulation/simulation.h"
 #include "simulation/simulation_file_manager.h"
+#include "tools/utils.h"
 #include "elements/gauss_stimulus.h"
 #include "elements/gauss_kernel.h"
 #include "elements/mexican_hat_kernel.h"
@@ -351,7 +352,7 @@ TEST_F(SimulationFileManagerTest, LoadResizeWithMissingInputDimsDoesNotThrow)
 TEST_F(SimulationFileManagerTest, LoadFromTestJsonCreatesCorrectElementCount)
 {
     // test.json contains 13 elements
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/test/test.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/test/test.dnf";
     const auto sim = createSimulation("load-test", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -361,7 +362,7 @@ TEST_F(SimulationFileManagerTest, LoadFromTestJsonCreatesCorrectElementCount)
 TEST_F(SimulationFileManagerTest, LoadFromAndTestJsonCreatesCorrectElementCount)
 {
     // and-test.json contains 10 elements
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     const auto sim = createSimulation("load-and-test", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -370,7 +371,7 @@ TEST_F(SimulationFileManagerTest, LoadFromAndTestJsonCreatesCorrectElementCount)
 
 TEST_F(SimulationFileManagerTest, LoadCreatesElementsWithCorrectNames)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     const auto sim = createSimulation("load-names", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -384,7 +385,7 @@ TEST_F(SimulationFileManagerTest, LoadCreatesElementsWithCorrectNames)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresNeuralFieldParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     const auto sim = createSimulation("load-nf-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -398,7 +399,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresNeuralFieldParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresGaussKernelParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     const auto sim = createSimulation("load-gk-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -415,7 +416,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresGaussKernelParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresMexicanHatKernelParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/test/test.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/test/test.dnf";
     const auto sim = createSimulation("load-mhk-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -434,7 +435,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresMexicanHatKernelParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresNormalNoiseParameters)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     const auto sim = createSimulation("load-nn-params", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -446,7 +447,7 @@ TEST_F(SimulationFileManagerTest, LoadRestoresNormalNoiseParameters)
 
 TEST_F(SimulationFileManagerTest, LoadRestoresInteractions)
 {
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     const auto sim = createSimulation("load-interactions", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     sfm.loadElementsFromJson();
@@ -473,9 +474,9 @@ TEST_F(SimulationFileManagerTest, SimulationSaveWithDefaultPathCreatesFile)
     const auto sim = createSimulation("sim-save-default", 1.0, 0.0, 0.0);
     sim->addElement(makeField("nf 1"));
     EXPECT_NO_THROW(sim->save());
-    const std::string defaultFile = std::string(OUTPUT_DIRECTORY) + "/sim-save-default/sim-save-default.dnf";
+    const std::string defaultFile = tools::utils::getOutputDirectory() + "/sim-save-default/sim-save-default.dnf";
     EXPECT_TRUE(fs::exists(defaultFile));
-    fs::remove_all(std::string(OUTPUT_DIRECTORY) + "/sim-save-default");
+    fs::remove_all(tools::utils::getOutputDirectory() + "/sim-save-default");
 }
 
 // ---------------------------------------------------------------------------
@@ -485,7 +486,7 @@ TEST_F(SimulationFileManagerTest, SimulationSaveWithDefaultPathCreatesFile)
 TEST_F(SimulationFileManagerTest, SimulationReadFromTestJsonLoadsElements)
 {
     const auto sim = createSimulation("sim-read", 1.0, 0.0, 0.0);
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/test/test.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/test/test.dnf";
     sim->read(testFile);
     EXPECT_EQ(sim->getNumberOfElements(), 13);
 }
@@ -496,7 +497,7 @@ TEST_F(SimulationFileManagerTest, SimulationReadClearsExistingElementsBeforeLoad
     sim->addElement(makeField("pre-existing"));
     sim->addElement(makeStimulus("pre-existing-gs"));
 
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     sim->read(testFile);
 
     EXPECT_EQ(sim->getNumberOfElements(), 13);
@@ -506,7 +507,7 @@ TEST_F(SimulationFileManagerTest, SimulationReadClearsExistingElementsBeforeLoad
 TEST_F(SimulationFileManagerTest, SimulationReadInitializesSimulation)
 {
     const auto sim = createSimulation("sim-read-init", 1.0, 0.0, 0.0);
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/and/and.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/and/and.dnf";
     sim->read(testFile);
     EXPECT_TRUE(sim->isInitialized());
 }
@@ -2535,7 +2536,7 @@ TEST_F(SimulationFileManagerTest, LoadAllElementsSampleFileStillSucceeds)
     // supports (26 elements across all 24 labels, some duplicated). If any
     // genuinely-required key had been misclassified as optional-with-a-default,
     // or vice versa, this file would fail to load or lose elements.
-    const std::string testFile = std::string(OUTPUT_DIRECTORY) + "/all-elements/all-elements.dnf";
+    const std::string testFile = tools::utils::getOutputDirectory() + "/all-elements/all-elements.dnf";
     const auto sim = createSimulation("load-all-elements", 1.0, 0.0, 0.0);
     const SimulationFileManager sfm{ sim, testFile };
     EXPECT_NO_THROW(sfm.loadElementsFromJson());

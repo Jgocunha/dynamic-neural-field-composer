@@ -16,6 +16,26 @@ All notable changes to this project will be documented in this file.
 - `wiki/Helping Claude Help You.md`'s skill table updated to list all eight skills
   (previously missing `perf-regression-test`, `commit`, `pr`, and stated "Five")
 
+### Fixed
+- `PROJECT_DIR`/`OUTPUT_DIRECTORY` baked `CMAKE_SOURCE_DIR` into every binary via a
+  project-wide `add_compile_definitions()` at the top of `CMakeLists.txt`, even though
+  only `tools::utils::getResourceRoot()`'s dev-build fallback and two test files
+  referenced them (#126). `PROJECT_DIR` is now `target_compile_definitions(... PRIVATE
+  ...)` scoped to the library target only, gated behind a new
+  `DNF_COMPOSER_DEV_FALLBACK_PATHS` option (default `ON`, preserving current dev/CI
+  behavior); release CI now builds with it `OFF`, so released binaries no longer embed
+  the build machine's path. `OUTPUT_DIRECTORY` is removed entirely and replaced by a new
+  runtime `tools::utils::getOutputDirectory()` (`getResourceRoot() + "/data"`); the two
+  test files that referenced the old macro now call the function instead.
+  `getOutputDirectory()` throws instead of silently building a root-relative path like
+  `/data` in the one state that can produce an empty resource root (`DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF`
+  with no `resources/` directory found next to the executable). Separately,
+  the exported target's `INSTALL_INTERFACE` include directories now explicitly list both
+  `include` and `include/dnf_composer` (previously only `include` was listed there
+  directly, with `include/dnf_composer` added implicitly via `INCLUDES DESTINATION` on
+  `install(TARGETS ...)`) — both `#include` spellings a `find_package()` consumer might
+  use continue to resolve; no behavior change.
+
 ## [2.11.0] - 2026-08-24
 
 ### Added

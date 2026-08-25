@@ -11,6 +11,7 @@
 #include "user_interface/main_menu_bar.h"
 #include "elements/neural_field.h"
 #include "elements/activation_function.h"
+#include "tools/utils.h"
 
 using namespace dnf_composer;
 
@@ -183,9 +184,9 @@ TEST_F(MainMenuBarQuitTest, SaveAndQuitRequestsQuitAndClosesAndCleansSimulation)
     EXPECT_TRUE(sim->getElements().empty());   // clean() cleared the elements
     EXPECT_FALSE(sim->isInitialized());        // close() + clean() both clear this
 
-    const std::string savedFile = std::string(OUTPUT_DIRECTORY) + "/menu-quit-save/menu-quit-save.dnf";
+    const std::string savedFile = tools::utils::getOutputDirectory() + "/menu-quit-save/menu-quit-save.dnf";
     EXPECT_TRUE(fs::exists(savedFile)) << "save() should still have written the .dnf file, same as before this fix";
-    fs::remove_all(std::string(OUTPUT_DIRECTORY) + "/menu-quit-save");
+    fs::remove_all(tools::utils::getOutputDirectory() + "/menu-quit-save");
 }
 
 // ---------------------------------------------------------------------------
