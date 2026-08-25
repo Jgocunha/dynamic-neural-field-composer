@@ -46,6 +46,17 @@ namespace dnf_composer::tools::utils
 	///         fallback path.
 	[[nodiscard]] std::string getResourceRoot();
 
+	/// @brief Appends `/data` to a resource root, the pure decision logic
+	/// behind getOutputDirectory(), pulled out so it can be exercised against
+	/// both a normal root and the empty root that resolveResourceRoot() can
+	/// return when `DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF` and no `resources/`
+	/// directory is found next to the executable.
+	/// @param resourceRoot The value returned by getResourceRoot().
+	/// @return `resourceRoot + "/data"`.
+	/// @throws Exception if @p resourceRoot is empty, rather than silently
+	///         building a root-relative path like `/data`.
+	[[nodiscard]] std::string resolveOutputDirectory(const std::string& resourceRoot);
+
 	/// @brief Returns the directory for simulation/recording output:
 	/// `getResourceRoot() + "/data"`.
 	///
@@ -55,6 +66,8 @@ namespace dnf_composer::tools::utils
 	/// the executable, the same way every other `getResourceRoot()`-based data
 	/// path in this codebase already does (e.g. Simulation::save()).
 	/// @return `getResourceRoot() + "/data"`.
+	/// @throws Exception if getResourceRoot() returns empty -- see
+	///         resolveOutputDirectory().
 	[[nodiscard]] std::string getOutputDirectory();
 
 	int countNumOfLinesInFile(const std::string& filename);

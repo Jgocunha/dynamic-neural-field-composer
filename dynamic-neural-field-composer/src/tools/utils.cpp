@@ -95,9 +95,20 @@ namespace dnf_composer::tools::utils
 		return resourceRootCache;
 	}
 
+	std::string resolveOutputDirectory(const std::string& resourceRoot)
+	{
+		if (resourceRoot.empty()) {
+			throw Exception("getOutputDirectory(): no resource root available "
+			                 "(DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF and no resources/ "
+			                 "directory found next to the executable); refusing to "
+			                 "build a root-relative path.");
+		}
+		return resourceRoot + "/data";
+	}
+
 	std::string getOutputDirectory()
 	{
-		return getResourceRoot() + "/data";
+		return resolveOutputDirectory(getResourceRoot());
 	}
 
 	int countNumOfLinesInFile(const std::string& filename)

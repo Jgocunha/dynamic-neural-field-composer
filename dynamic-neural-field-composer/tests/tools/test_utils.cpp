@@ -337,3 +337,23 @@ TEST_F(UtilsFileTest, ResolveResourceRootFallbackCanBeEmpty)
     fs::create_directories(exeDir);
     EXPECT_EQ(resolveResourceRoot(exeDir, ""), "");
 }
+
+// ---------------------------------------------------------------------------
+// resolveOutputDirectory -- the pure decision logic behind
+// getOutputDirectory(). getResourceRoot() memoizes its result process-wide
+// (std::call_once), so the missing-resources state above
+// (DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF with no resources/ dir found) can't be
+// driven through getOutputDirectory() itself from within a single test
+// binary; testing resolveOutputDirectory() directly against the empty root
+// resolveResourceRoot() can return covers that state instead.
+// ---------------------------------------------------------------------------
+
+TEST(UtilsTest, ResolveOutputDirectoryAppendsDataToNonEmptyRoot)
+{
+    EXPECT_EQ(resolveOutputDirectory("/some/root"), "/some/root/data");
+}
+
+TEST(UtilsTest, ResolveOutputDirectoryThrowsOnEmptyRoot)
+{
+    EXPECT_THROW(resolveOutputDirectory(""), Exception);
+}

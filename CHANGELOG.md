@@ -26,7 +26,10 @@ All notable changes to this project will be documented in this file.
   behavior); release CI now builds with it `OFF`, so released binaries no longer embed
   the build machine's path. `OUTPUT_DIRECTORY` is removed entirely and replaced by a new
   runtime `tools::utils::getOutputDirectory()` (`getResourceRoot() + "/data"`); the two
-  test files that referenced the old macro now call the function instead. Separately,
+  test files that referenced the old macro now call the function instead.
+  `getOutputDirectory()` throws instead of silently building a root-relative path like
+  `/data` in the one state that can produce an empty resource root (`DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF`
+  with no `resources/` directory found next to the executable). Separately,
   the exported target's `INSTALL_INTERFACE` include directories now explicitly list both
   `include` and `include/dnf_composer` (previously only `include` was listed there
   directly, with `include/dnf_composer` added implicitly via `INCLUDES DESTINATION` on
