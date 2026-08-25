@@ -94,15 +94,25 @@ Functions</h2></td></tr>
 <tr class="memitem:ac1903a87a4c1705f6410298e8141d72b" id="r_ac1903a87a4c1705f6410298e8141d72b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ac1903a87a4c1705f6410298e8141d72b"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#ac1903a87a4c1705f6410298e8141d72b">generateRandomNumber</a> (const T &amp;min, const T &amp;max)</td></tr>
 <tr class="separator:ac1903a87a4c1705f6410298e8141d72b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0f68db79c708f4b054161772549ee88" id="r_aa0f68db79c708f4b054161772549ee88"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#aa0f68db79c708f4b054161772549ee88">getOutputDirectory</a> ()</td></tr>
+<tr class="memdesc:aa0f68db79c708f4b054161772549ee88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the directory for simulation/recording output: <code><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a> + "/data"</code>.  <br /></td></tr>
+<tr class="separator:aa0f68db79c708f4b054161772549ee88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc349857e9ffc357a3b9e8fcd0a43e47" id="r_acc349857e9ffc357a3b9e8fcd0a43e47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#acc349857e9ffc357a3b9e8fcd0a43e47">getProcessMemoryMb</a> ()</td></tr>
 <tr class="separator:acc349857e9ffc357a3b9e8fcd0a43e47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a140c0903ddcfc3ba01218f11d31608dc" id="r_a140c0903ddcfc3ba01218f11d31608dc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc">getResourceRoot</a> ()</td></tr>
+<tr class="memdesc:a140c0903ddcfc3ba01218f11d31608dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the runtime install prefix (parent of <code>bin/</code>) for locating resources (fonts, icons, sample data) relative to the running executable.  <br /></td></tr>
 <tr class="separator:a140c0903ddcfc3ba01218f11d31608dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bc031e8f5aab14bdb3300c871068b5d" id="r_a4bc031e8f5aab14bdb3300c871068b5d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a4bc031e8f5aab14bdb3300c871068b5d">replaceForwardSlashesWithBackslashes</a> (const std::string &amp;str)</td></tr>
 <tr class="separator:a4bc031e8f5aab14bdb3300c871068b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a276f23bf940a7393b0f90e5168770aa7" id="r_a276f23bf940a7393b0f90e5168770aa7"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a276f23bf940a7393b0f90e5168770aa7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">resizeMatrix</a> (std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix, int newRowSize, int newColSize)</td></tr>
 <tr class="separator:a276f23bf940a7393b0f90e5168770aa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3512ee1aedebdbb9f4563249ae62eccf" id="r_a3512ee1aedebdbb9f4563249ae62eccf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a3512ee1aedebdbb9f4563249ae62eccf">resolveOutputDirectory</a> (const std::string &amp;resourceRoot)</td></tr>
+<tr class="memdesc:a3512ee1aedebdbb9f4563249ae62eccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends <code>/data</code> to a resource root, the pure decision logic behind <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#aa0f68db79c708f4b054161772549ee88" title="Returns the directory for simulation/recording output: getResourceRoot() + &quot;/data&quot;.">getOutputDirectory()</a>, pulled out so it can be exercised against both a normal root and the empty root that <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> can return when <code>DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF</code> and no <code>resources/</code> directory is found next to the executable.  <br /></td></tr>
+<tr class="separator:a3512ee1aedebdbb9f4563249ae62eccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5694fdef203f48b9eaadc90e0f8c3112" id="r_a5694fdef203f48b9eaadc90e0f8c3112"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112">resolveResourceRoot</a> (const std::filesystem::path &amp;exeDir, const std::string &amp;devFallback)</td></tr>
+<tr class="memdesc:a5694fdef203f48b9eaadc90e0f8c3112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decide the resource root given the executable's directory and a dev-build fallback value.  <br /></td></tr>
+<tr class="separator:a5694fdef203f48b9eaadc90e0f8c3112"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b9ee760b745eb4a1dfabacac1c026d2" id="r_a9b9ee760b745eb4a1dfabacac1c026d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">safe_localtime</a> (const std::time_t *time, std::tm *result)</td></tr>
 <tr class="separator:a9b9ee760b745eb4a1dfabacac1c026d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3f5d4fdfbba22b62302a7609e4507e2" id="r_ae3f5d4fdfbba22b62302a7609e4507e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#ae3f5d4fdfbba22b62302a7609e4507e2">saveVectorToFile</a> (const std::vector&lt; double &gt; &amp;vector, const std::string &amp;filename)</td></tr>
@@ -231,6 +241,37 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="aa0f68db79c708f4b054161772549ee88" name="aa0f68db79c708f4b054161772549ee88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0f68db79c708f4b054161772549ee88">&#9670;&#160;</a></span>getOutputDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string dnf_composer::tools::utils::getOutputDirectory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the directory for simulation/recording output: <code><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a> + "/data"</code>. </p>
+<p>Replaces the old <code>OUTPUT_DIRECTORY</code> compile-time macro, which baked <code>CMAKE_SOURCE_DIR</code> into every binary regardless of whether it was ever used (#126). This computes the equivalent path at runtime, relative to the executable, the same way every other <code><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a></code>-based data path in this codebase already does (e.g. <a class="el" href="classdnf__composer_1_1Simulation.html#ac8401b97acf0d77ac89115a9eaf72fc1" title="Serialize the simulation and its elements to a JSON file.">Simulation::save()</a>). </p><dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a> + "/data"</code>. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classdnf__composer_1_1Exception.html">Exception</a></td><td>if <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a> returns empty &ndash; see <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a3512ee1aedebdbb9f4563249ae62eccf" title="Appends /data to a resource root, the pure decision logic behind getOutputDirectory(),...">resolveOutputDirectory()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1utils_aa0f68db79c708f4b054161772549ee88_cgraph.svg" width="468" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
 <a id="acc349857e9ffc357a3b9e8fcd0a43e47" name="acc349857e9ffc357a3b9e8fcd0a43e47"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acc349857e9ffc357a3b9e8fcd0a43e47">&#9670;&#160;</a></span>getProcessMemoryMb()</h2>
 
@@ -267,10 +308,13 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the runtime install prefix (parent of <code>bin/</code>) for locating resources (fonts, icons, sample data) relative to the running executable. </p>
+<p>Falls back to a compile-time source-tree path in dev builds (when <code>resources/</code> is not found next to the executable, e.g. running directly from the build tree rather than an installed layout) &ndash; see <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> for the decision logic, and <code>DNF_COMPOSER_DEV_FALLBACK_PATHS</code> in CMakeLists.txt for how to build without that fallback embedded at all (#126). </p><dl class="section return"><dt>Returns</dt><dd>The runtime install prefix (parent of <code>bin/</code>), or the dev-build fallback path. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1utils_a140c0903ddcfc3ba01218f11d31608dc_icgraph.svg" width="1296" height="430"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1utils_a140c0903ddcfc3ba01218f11d31608dc_icgraph.svg" width="1296" height="494"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -326,6 +370,84 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3512ee1aedebdbb9f4563249ae62eccf" name="a3512ee1aedebdbb9f4563249ae62eccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3512ee1aedebdbb9f4563249ae62eccf">&#9670;&#160;</a></span>resolveOutputDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string dnf_composer::tools::utils::resolveOutputDirectory </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resourceRoot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Appends <code>/data</code> to a resource root, the pure decision logic behind <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#aa0f68db79c708f4b054161772549ee88" title="Returns the directory for simulation/recording output: getResourceRoot() + &quot;/data&quot;.">getOutputDirectory()</a>, pulled out so it can be exercised against both a normal root and the empty root that <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> can return when <code>DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF</code> and no <code>resources/</code> directory is found next to the executable. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">resourceRoot</td><td>The value returned by <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>resourceRoot + "/data"</code>. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classdnf__composer_1_1Exception.html">Exception</a></td><td>if <code>resourceRoot</code> is empty, rather than silently building a root-relative path like <code>/data</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_1_1tools_1_1utils_a3512ee1aedebdbb9f4563249ae62eccf_icgraph.svg" width="468" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a5694fdef203f48b9eaadc90e0f8c3112" name="a5694fdef203f48b9eaadc90e0f8c3112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5694fdef203f48b9eaadc90e0f8c3112">&#9670;&#160;</a></span>resolveResourceRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string dnf_composer::tools::utils::resolveResourceRoot </td>
+          <td>(</td>
+          <td class="paramtype">const std::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>exeDir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>devFallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decide the resource root given the executable's directory and a dev-build fallback value. </p>
+<p>Returns the parent of <code>exeDir</code> when a <code>resources</code> subdirectory exists there &ndash; the layout <code>cmake --install</code> produces (<code>bin/</code> next to <code>resources/</code>, see CMakeLists.txt's <code>install(DIRECTORY resources/ ...)</code>). Otherwise returns <code>devFallback</code> unchanged: an uninstalled binary run straight from the build tree has no <code>resources/</code> next to it, so it needs some other way to find fonts, icons, and sample data during development.</p>
+<p>This is the pure decision logic behind <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a>, pulled out so it can be exercised against a real (temporary) filesystem layout in tests instead of the actual running executable's path.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exeDir</td><td>Directory containing the executable. </td></tr>
+    <tr><td class="paramname">devFallback</td><td>Value to return when no <code>resources</code> dir is found next to <code>exeDir</code>. Pass an empty string when the project was configured with <code>DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF</code> (see CMakeLists.txt) so no build-machine path is used. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The parent of <code>exeDir</code>, or <code>devFallback</code>. </dd></dl>
 
 </div>
 </div>

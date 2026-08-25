@@ -285,7 +285,7 @@
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title=" ">
+<g id="a_Node000011"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">
 <polygon fill="white" stroke="#666666" points="772.5,-159.5 639.5,-159.5 639.5,-129.5 772.5,-129.5 772.5,-159.5"/>
 <text text-anchor="start" x="647.5" y="-147.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="706" y="-136.5" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::getResourceRoot</text>

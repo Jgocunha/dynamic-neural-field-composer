@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">
 <polygon fill="white" stroke="#666666" points="313,-78 180,-78 180,-48 313,-48 313,-78"/>
 <text text-anchor="start" x="188" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="246.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::getResourceRoot</text>

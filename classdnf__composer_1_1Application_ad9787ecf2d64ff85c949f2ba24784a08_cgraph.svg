@@ -59,7 +59,7 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">
 <polygon fill="white" stroke="#666666" points="322,-102 189,-102 189,-72 322,-72 322,-102"/>
 <text text-anchor="start" x="197" y="-90" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="255.5" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::getResourceRoot</text>

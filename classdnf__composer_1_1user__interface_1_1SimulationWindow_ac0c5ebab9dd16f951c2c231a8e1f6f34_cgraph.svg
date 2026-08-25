@@ -305,7 +305,7 @@
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title=" ">
+<g id="a_Node000012"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" target="_top" xlink:title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">
 <polygon fill="white" stroke="#666666" points="971.5,-159.5 838.5,-159.5 838.5,-129.5 971.5,-129.5 971.5,-159.5"/>
 <text text-anchor="start" x="846.5" y="-147.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="905" y="-136.5" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::getResourceRoot</text>
