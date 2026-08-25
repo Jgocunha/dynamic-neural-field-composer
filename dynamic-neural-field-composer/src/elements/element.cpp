@@ -104,6 +104,33 @@ namespace dnf_composer::element
 			return;
 		}
 
+		// A matching flattened size does not guarantee a compatible spatial layout
+		// (e.g. a 1D size-10 element and a 2D 5x2 element both flatten to 10 samples),
+		// so exemption from this check must not be inferred from buffer length: a
+		// dimension-bridging source can coincidentally flatten to the same count as
+		// this element's own size (e.g. a degenerate 2D 5x1 source collapsing to a 1D
+		// size-5 output). Elements that intentionally bridge dimensionality or size
+		// (Collapse, Expand, Resize, Resize2D, FieldCoupling, GaussFieldCoupling)
+		// instead declare that explicitly via bridgesDimensions() and size their own
+		// "input" component from their own declared parameters ahead of this call;
+		// every other element keeps its "input" component sized to its own declared
+		// dimensions here, so compare shapes directly against the source.
+		if (!bridgesDimensions())
+		{
+			const ElementDimensions inputDims = inputElement->getElementCommonParameters().dimensionParameters;
+			const ElementDimensions& thisDims = this->commonParameters.dimensionParameters;
+			if (inputDims.dimensionality != thisDims.dimensionality ||
+				inputDims.size_x != thisDims.size_x ||
+				inputDims.size_y != thisDims.size_y)
+			{
+				const std::string logMessage = "Input '" + inputElement->getUniqueName() + "' has an incompatible shape ("
+				                               + inputDims.toString() + ") for '" + this->getUniqueName() + "' ("
+				                               + thisDims.toString() + ").";
+				log(tools::logger::LogLevel::ERROR, logMessage);
+				return;
+			}
+		}
+
 		if (inputElement->getComponentPtr("output")->size() != this->getComponentPtr("input")->size())
 		{
 			if (inputElement->getComponentPtr("output")->size() != this->getSize())
@@ -116,7 +143,7 @@ namespace dnf_composer::element
 		}
 
 		inputs[inputElement] = inputComponent;
-		inputElement->outputs[this->shared_from_this()] = inputComponent;
+		inputElement->outputs[std::weak_ptr<Element>(this->shared_from_this())] = inputComponent;
 		inputPtr = nullptr;
 
 		const std::string logMessage = std::format("Input '{}' added successfully to '{}.", inputElement->getUniqueName(), this->getUniqueName());
@@ -128,6 +155,7 @@ namespace dnf_composer::element
 		for (const auto& key : inputs | std::views::keys)
 		{
 			if (key->commonParameters.identifiers.uniqueName == inputElementId) {
+				key->outputs.erase(this->shared_from_this());
 				inputs.erase(key);
 				inputPtr = nullptr;
 				log(tools::logger::LogLevel::INFO, std::format("Input '{}' removed successfully from '{}. ",
@@ -142,6 +170,7 @@ namespace dnf_composer::element
 		for (const auto& key : inputs | std::views::keys)
 		{
 			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
+				key->outputs.erase(this->shared_from_this());
 				inputs.erase(key);
 				inputPtr = nullptr;
 				log(tools::logger::LogLevel::INFO, std::format("Input '{}' removed successfully from '{}.",
@@ -297,11 +326,18 @@ namespace dnf_composer::element
 		return commonParameters.dimensionParameters.d_x;
 	}
 
+	void Element::pruneExpiredOutputs()
+	{
+		std::erase_if(outputs, [](const auto& entry) { return entry.first.expired(); });
+	}
+
 	bool Element::hasOutput(const std::string& outputElementName, const std::string& outputComponent)
 	{
+		pruneExpiredOutputs();
 		const bool found = std::ranges::any_of(outputs, [&](const auto& pair) {
-			const auto& [key, value] = pair;
-			return key->commonParameters.identifiers.uniqueName == outputElementName && value == outputComponent;
+			const auto& [weakKey, value] = pair;
+			const auto key = weakKey.lock();
+			return key && key->commonParameters.identifiers.uniqueName == outputElementName && value == outputComponent;
 		});
 		return found;
 	}
@@ -313,21 +349,24 @@ namespace dnf_composer::element
 
 	bool Element::hasOutput(int outputElementId, const std::string& outputComponent)
 	{
+		pruneExpiredOutputs();
 		const bool found = std::ranges::any_of(outputs, [&](const auto& pair) {
-			const auto& [key, value] = pair;
-			return key->commonParameters.identifiers.uniqueIdentifier == outputElementId && value == outputComponent;
+			const auto& [weakKey, value] = pair;
+			const auto key = weakKey.lock();
+			return key && key->commonParameters.identifiers.uniqueIdentifier == outputElementId && value == outputComponent;
 		});
 		return found;
 	}
 
 	void Element::removeOutputs()
 	{
-		// views::keys can be used
-		for (const auto &key: outputs | std::views::keys)
+		for (const auto& weakKey : outputs | std::views::keys)
 		{
-			const auto& outputElement = key;
-			outputElement->inputs.erase(this->shared_from_this());
-			outputElement->inputPtr = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
+			if (const auto outputElement = weakKey.lock())
+			{
+				outputElement->inputs.erase(this->shared_from_this());
+				outputElement->inputPtr = nullptr; // cachedInputs_ is now stale; rebuild on next updateInput()
+			}
 		}
 		outputs.clear();
 	}
@@ -339,10 +378,11 @@ namespace dnf_composer::element
 
 	void Element::removeOutput(const int uniqueId)
 	{
-		for (const auto& key : outputs | std::views::keys)
+		for (const auto& weakKey : outputs | std::views::keys)
 		{
-			if (key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
-				outputs.erase(key);
+			const auto key = weakKey.lock();
+			if (key && key->commonParameters.identifiers.uniqueIdentifier == uniqueId) {
+				outputs.erase(weakKey);
 				log(tools::logger::LogLevel::INFO, std::format("Output '{}' removed successfully from '{}.",
 				                                   uniqueId, this->getUniqueName()));
 				return;
@@ -352,10 +392,11 @@ namespace dnf_composer::element
 
 	void Element::removeOutput(const std::string& outputElementId)
 	{
-		for (const auto& key : outputs | std::views::keys)
+		for (const auto& weakKey : outputs | std::views::keys)
 		{
-			if (key->commonParameters.identifiers.uniqueName == outputElementId) {
-				outputs.erase(key);
+			const auto key = weakKey.lock();
+			if (key && key->commonParameters.identifiers.uniqueName == outputElementId) {
+				outputs.erase(weakKey);
 				log(tools::logger::LogLevel::INFO, std::format("Output '{}' removed successfully from '{}.",
 				                                   outputElementId, this->getUniqueName()));
 				return;
@@ -438,7 +479,10 @@ namespace dnf_composer::element
 
 	bool Element::hasOutput() const
 	{
-		return !outputs.empty();
+		// const: cannot call the mutating pruneExpiredOutputs() here, so check
+		// liveness directly instead of relying on `outputs` having already been
+		// pruned.
+		return std::ranges::any_of(outputs, [](const auto& pair) { return !pair.first.expired(); });
 	}
 
 	bool Element::hasInput() const
@@ -448,12 +492,15 @@ namespace dnf_composer::element
 
 	std::vector<std::shared_ptr<Element>> Element::getOutputs()
 	{
+		pruneExpiredOutputs();
 		std::vector<std::shared_ptr<Element>> outputVec;
 		outputVec.reserve(outputs.size());
 
-		for (const auto& key : outputs | std::views::keys) {
-			outputVec.push_back(key);
-}
+		for (const auto& weakKey : outputs | std::views::keys) {
+			if (auto key = weakKey.lock()) {
+				outputVec.push_back(std::move(key));
+			}
+		}
 
 		return outputVec;
 	}

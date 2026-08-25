@@ -4,13 +4,107 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Documentation
+- `.claude/(project)notes/` and `.claude/(machine)notes/` renamed to `.claude/notes/` and
+  `.claude/local-notes/`, dropping the parentheses that had to be quoted in every shell
+  command; all references updated (`.gitignore`, `CLAUDE.md`, `perf-regression-test` skill,
+  `wiki/Helping Claude Help You.md`, and the benchmark tooling comments/help text that
+  pointed at `perf-noise-floor.md`/`perf-tools-not-in-ci.md`)
+- Added `commit` and `pr` skills: read the working tree or branch diff and print a
+  conventional commit message or a filled-in PR title/description to chat, without running
+  `git commit`, `git push` or `gh pr create`
+- `wiki/Helping Claude Help You.md`'s skill table updated to list all eight skills
+  (previously missing `perf-regression-test`, `commit`, `pr`, and stated "Five")
+
+### Fixed
+- `PROJECT_DIR`/`OUTPUT_DIRECTORY` baked `CMAKE_SOURCE_DIR` into every binary via a
+  project-wide `add_compile_definitions()` at the top of `CMakeLists.txt`, even though
+  only `tools::utils::getResourceRoot()`'s dev-build fallback and two test files
+  referenced them (#126). `PROJECT_DIR` is now `target_compile_definitions(... PRIVATE
+  ...)` scoped to the library target only, gated behind a new
+  `DNF_COMPOSER_DEV_FALLBACK_PATHS` option (default `ON`, preserving current dev/CI
+  behavior); release CI now builds with it `OFF`, so released binaries no longer embed
+  the build machine's path. `OUTPUT_DIRECTORY` is removed entirely and replaced by a new
+  runtime `tools::utils::getOutputDirectory()` (`getResourceRoot() + "/data"`); the two
+  test files that referenced the old macro now call the function instead. Separately,
+  the exported target's `INSTALL_INTERFACE` include directories now explicitly list both
+  `include` and `include/dnf_composer` (previously only `include` was listed there
+  directly, with `include/dnf_composer` added implicitly via `INCLUDES DESTINATION` on
+  `install(TARGETS ...)`) — both `#include` spellings a `find_package()` consumer might
+  use continue to resolve; no behavior change.
+
+## [2.11.0] - 2026-08-24
+
 ### Added
 - Elements exposing an `"activation"` component (e.g. `NeuralField`/`NeuralField2D`) now
   render a second output-side "Activation" pin in the node graph, alongside the regular
   Output pin, so a field's raw activation can be wired directly into another element's
   input instead of its sigmoided output.
+- `CMakePresets.json` now has `testPresets` (`release`/`debug`, mirroring the existing
+  configure/build presets), so `ctest --preset release` works instead of having to invoke
+  `./build/release/tests/dnf_composer_tests` directly.
+
+### Changed
+- `describeElementCreationFailure()` moved from its own `user_interface/element_creation_error.h`/
+  `.cpp` module into `tools/utils.h`/`.cpp` (as `tools::utils::describeElementCreationFailure`),
+  since `SimulationWindow` was its only caller. Behaviour, including its ImGui-independent,
+  headlessly-testable design, is unchanged; only the header and qualified name moved.
+- Centralised every first-party GUI colour literal across the user-interface layer
+  (`node_graph_window`, `element_window`, `simulation_window`, `control_bar_window`,
+  `field_metrics_window`, `static_layout`, `help_window`, `log_window`, `status_bar_window`)
+  behind named, role-based constants in `include/user_interface/colour_registry.h` (e.g.
+  `kDestructiveText`, `kAccentHoverDarken`), so the same semantic colour is no longer
+  re-spelled at every call site. As part of this, `element_window.cpp`'s
+  `getColorForElementType()` — a second, independently maintained copy of the element-type
+  palette that had already drifted from the node graph's on 6 of 25 entries by up to
+  15/255 — now derives from the same registry constants as
+  `getHeaderColorForElementType()`, so the two views can no longer re-diverge. That
+  convergence is the only visible change; every other converted colour renders
+  byte-identical. Vendored third-party UI code (`node_utilities/*`, `fonts/*`,
+  `tools/file_dialog.h`) is intentionally left untouched. Closes (#28).
+
+### Removed
+- `catch2` was installed by every setup script, CI job, and the release/static-analysis
+  workflows, but nothing in the codebase links or includes it — `tests/CMakeLists.txt` only
+  uses `find_package(GTest CONFIG REQUIRED)` and links `GTest::gtest`/`GTest::gtest_main`.
+  It was originally added because `imgui-platform-kit` was thought to require it (see the
+  `### Build` entry under `[2.3.0]`), but building `imgui-platform-kit` from source, as the
+  setup scripts do, never enables its own test target. Removed from `scripts/setup.sh`,
+  `scripts/setup.bat`, `release.yml`, `static-analysis.yml`, `vcpkg-maintenance.yml`,
+  `scripts/README.md`, the wiki's package table, and `.coderabbit.yaml`'s review
+  instructions (#158).
 
 ### Fixed
+- `Element::addInput` validated only the flattened component size, so a 1D element and a 2D
+  element whose flattened sizes happened to match (e.g. a 1D field of size 10 and a 2D field
+  of 5×2) connected silently and produced incorrect dynamics, since the underlying data has
+  a different spatial layout in each case. It now compares the full shape (dimensionality,
+  `size_x`, `size_y`), logging `"Input '...' has an incompatible shape (...) for '...' (...)."`
+  Elements that intentionally bridge dimensionality or size (`Collapse`, `Expand`, `Resize`,
+  `Resize2D`, `FieldCoupling`, `GaussFieldCoupling`) declare that explicitly via a new
+  `Element::bridgesDimensions()` virtual and are exempt — an earlier version of this fix tried
+  to infer the exemption from a buffer-length heuristic instead, which wrongly rejected valid
+  bridge connections whenever the source's flattened size coincided with the target's own size
+  (e.g. a degenerate 2D `5x1` source collapsing into a 1D size-5 `Collapse` output) (#41).
+- `scripts/build.bat` picked the Visual Studio install with `vswhere -latest` on every run,
+  which on a machine with more than one VS installed could select a different VS than an
+  existing `build/x64-*` tree was configured with, mismatching the cached compiler's cl.exe
+  against the newly-loaded vcvars environment's headers and failing every translation unit
+  with `STL1001: Unexpected compiler version`. The script now records the VS install path it
+  used in `build\.vsinstall` and reuses it (skipping `vswhere`) as long as it still has a
+  `vcvars64.bat`, so a reused tree stays pinned to the toolchain it was actually configured
+  with; a fresh tree behaves as before. A tree that already existed before this fix (so has no
+  marker yet) is checked against its own `CMakeCache.txt` instead of being assumed fresh, and
+  the script now refuses to proceed on a detected mismatch rather than risk the same failure —
+  see `scripts/README.md` for the one-time manual fix. The marker write also switched from
+  `%VSINSTALL%` to delayed expansion (`!VSINSTALL!`) so a value containing `&`/`|`/`<`/`>`
+  can't be reinterpreted as command syntax.
+- `static-analysis.yml` and `release.yml` keyed their vcpkg package cache on
+  `hashFiles('build.sh')`/`hashFiles('build_macos.sh')` — paths that don't exist from the
+  repo root (and, for `release.yml`, files these jobs don't even use, since they install
+  vcpkg packages inline rather than via a setup script). `hashFiles` on a missing path
+  returns an empty string, so the cache key never changed when dependencies changed. Both
+  now key on the workflow file that actually declares the installed packages.
 - `FieldCoupling::addInput` accepted a second Target-slot connection without rejecting or
   replacing the first, so `inputs` could hold two target entries that `updateInput()`
   summed together into `components["target"]` — training against a combined/stale
@@ -113,18 +207,25 @@ All notable changes to this project will be documented in this file.
   non-contiguous after deletion, so a bounds check on the highest uid alone doesn't rule
   out a stale id) — a possible uncaught exception mid-frame. Both paths now go through a
   non-throwing lookup helper.
-- Two packaging defects (#126): the exported target's `INSTALL_INTERFACE` include
-  directory was `include`, but headers install under `include/dnf_composer/` — a
-  `find_package(dynamic-neural-field-composer)` consumer's `#include` paths did not
-  resolve. The interface now points at `include/dnf_composer`, matching the install
-  destination. Separately, `PROJECT_DIR`/`OUTPUT_DIRECTORY` baked `CMAKE_SOURCE_DIR`
-  into every binary via `add_compile_definitions()` at the top of `CMakeLists.txt`,
-  even though only `tools::utils::getResourceRoot()`'s dev-build fallback and two test
-  files needed them. `PROJECT_DIR` is now `target_compile_definitions(... PRIVATE ...)`
-  on the library target only, gated behind a new `DNF_COMPOSER_DEV_FALLBACK_PATHS`
-  option (default `ON`, preserving current behavior); `OUTPUT_DIRECTORY` is replaced by
-  a new runtime `tools::utils::getOutputDirectory()` (`getResourceRoot() + "/data"`),
-  used by the two test files that referenced the old macro.
+- `Element::outputs` held a `shared_ptr` to every downstream element while that element's
+  `inputs` held a `shared_ptr` right back, so any two connected elements formed a direct
+  ownership cycle and neither was ever freed once created outside a `Simulation` (the
+  pattern most element unit tests use) — leak-sanitizer reported ~1470 leaks rooted in
+  `dnf_composer::element::`. `outputs` is now a `std::map<std::weak_ptr<Element>,
+  std::string, std::owner_less<std::weak_ptr<Element>>>`: inputs still own, outputs only
+  observe. `getOutputs()`/`hasOutput()` keep their existing public signatures and now
+  silently skip/report-false for an entry whose element has already been destroyed.
+  Separately, the singular `removeInput(id)`/`removeInput(name)` overloads erased only
+  from `this->inputs`, leaving a dangling `outputs` entry on the other element (unlike
+  the plural `removeInputs()`, which already cleaned both sides); both singular overloads
+  now erase the matching `outputs` entry too.
+- `Heatmap`'s constructor accepted any `PlotType` and reported it back from `getType()`,
+  unlike `LinePlot`, which throws on a mismatched type — a `Heatmap` built with
+  `PlotType::LINE_PLOT` rendered correctly while claiming to be a line plot, so any
+  downstream dispatch on `getType()` did the wrong thing. `Heatmap` now normalizes a
+  mismatched `parameters.type` to `PlotType::HEATMAP` and logs a warning instead of
+  reporting it back; it still does not throw, so existing callers keep compiling and
+  running. `LinePlot`'s throw is unchanged (#143).
 ## [2.10.1] - 2026-08-06
 
 ### Fixed

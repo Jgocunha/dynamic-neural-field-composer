@@ -2,12 +2,39 @@
 *.vscode
 profiling/
 *.idea
-*.claude
 
 install/
 build/
 deps/
 docs/
 
+# Per-run JSON sidecars from the manual perf tools (dnf_composer_benchmark,
+# dnf_composer_deckbench) -- one per invocation, not meant to accumulate in git.
+# tests/benchmark/results.md (curated) and tests/benchmark/baselines/ (deliberately
+# recorded comparison targets) are tracked; these raw per-session dumps are not.
+dynamic-neural-field-composer/tests/benchmark/results/
+
 imgui.ini
 imnode-window.json
+
+# Benchmark dashboard's own virtual environment (resources/benchmark/run_dashboard.*
+# creates it at repo root, not under resources/, so CMake's resources/ install rule
+# never ships it) and Python bytecode caches.
+.dashboard-venv/
+__pycache__/
+*.pyc
+
+# Only CLAUDE.md, skills/ and notes/ are shared. Settings hold machine-specific
+# paths, and docs/ tests/ issues/ reports/ local-notes/ are local working material.
+.claude/*
+!.claude/CLAUDE.md
+!.claude/skills/
+!.claude/notes/
+
+# temp/ itself is tracked (via .gitkeep) but nothing inside it is, so the directory
+# always exists in a fresh clone. Without this the "put scratch files in .claude/temp/"
+# rule needs an mkdir first, and a relative mkdir run from the nested project root
+# silently creates a SECOND .claude/ one level down.
+!.claude/temp/
+.claude/temp/*
+!.claude/temp/.gitkeep

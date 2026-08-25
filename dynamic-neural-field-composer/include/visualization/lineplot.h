@@ -20,6 +20,10 @@ namespace dnf_composer
 	{
 		LinePlotParameters linePlotParameters;
 	public:
+		/// @brief Construct a line plot.
+		///
+		/// @throws std::invalid_argument if `parameters.type != PlotType::LINE_PLOT`.
+		/// @see Heatmap for the rationale behind this asymmetry (#143).
 		explicit LinePlot(const PlotCommonParameters& parameters =
 		                  { PlotType::LINE_PLOT,
 			                  {0.0, 100.0, -20.0, 20.0, 1.0, 1.0},

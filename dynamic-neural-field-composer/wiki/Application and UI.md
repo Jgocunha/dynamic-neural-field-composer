@@ -51,6 +51,23 @@ The application's ImGui theme is loaded at startup from `resources/style_light_g
 
 You can personalize the look by editing these values and restarting the application — adjust the colors to your taste or tweak the metrics for a tighter or roomier layout.
 
+This JSON theme only covers the generic ImGui color slots (`Text`, `WindowBg`, `Button`, ...).
+Colours specific to a widget's *role* — a per-element-type node header, a destructive button's
+red, the enabled/disabled state of an icon — are hardcoded C++ constants in
+`include/user_interface/colour_registry.h`, grouped by area with a short comment each. If you
+are changing one of those, edit the registry, not the call site; the point of the registry is
+that the same role never needs to be re-spelled twice. Every first-party call site in the
+user-interface layer goes through the registry; the only literals left outside it belong to
+vendored third-party code (`node_utilities/*`, `fonts/*`, `tools/file_dialog.h`), which is kept
+byte-for-byte identical to upstream.
+
+The element-type palette (`kNeuralFieldElement`, `kGaussKernelElement`, ...) is a single
+source of truth shared by `NodeGraphWindow::getHeaderColorForElementType()` (node headers) and
+`ElementWindow::getColorForElementType()` (element cards) — both read the same `ImU32`
+constants, the latter via `colour::toImVec4()`. Before this, the two views held independent
+copies that had already drifted apart on several element types; adding a new element type's
+colour now only means adding one constant, not keeping two switch statements in sync.
+
 ---
 
 ## Registering windows
@@ -349,10 +366,10 @@ the render loop and end the application.
 `SimulationWindow` therefore routes every creation call site through:
 
 ```cpp
-#include "user_interface/element_creation_error.h"
+#include "tools/utils.h"
 
 // Empty string on success; otherwise a message describing the failure.
-const std::string error = user_interface::describeElementCreationFailure([&]
+const std::string error = tools::utils::describeElementCreationFailure([&]
 {
     simulation->addElement(std::make_shared<element::NeuralField>(common, params));
 });

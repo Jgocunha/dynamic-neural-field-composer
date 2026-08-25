@@ -6,14 +6,13 @@
 
 #include "elements/neural_field.h"
 #include "elements/neural_field_2d.h"
+#include "user_interface/colour_registry.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 extern ImFont* g_MonoMediumFont;
 
 namespace dnf_composer::user_interface
 {
-		static constexpr ImVec4 kCardBg     = { 1.0F, 1.0F, 1.0F, 1.0F };
-	static constexpr ImVec4 kCardBorder = { 0.82F, 0.85F, 0.89F, 1.0F };
 	static constexpr float  kCardRound  = 8.0F;
 	static constexpr float  kCardBordSz = 1.5F;
 	static constexpr float  kBarH       = 6.0F;
@@ -100,8 +99,8 @@ namespace dnf_composer::user_interface
 
 			const float avail = ImGui::GetContentRegionAvail().x;
 
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, kCardBg);
-			ImGui::PushStyleColor(ImGuiCol_Border,  kCardBorder);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kCardBackground);
+			ImGui::PushStyleColor(ImGuiCol_Border,  colour::kCardBorder);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   kCardRound);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, kCardBordSz);
 
@@ -118,7 +117,7 @@ namespace dnf_composer::user_interface
 					const ImVec2 pos = ImGui::GetCursorScreenPos();
 					const float  lh  = ImGui::GetTextLineHeight();
 					dl->AddCircleFilled({ pos.x + kDotR, pos.y + lh * 0.5F }, kDotR,
-						IM_COL32(74, 144, 217, 255));
+						colour::kMetricCardDot);
 
 					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + kDotR * 2.0F + 6.0F);
 					ImGui::PushFont(g_BoldLargeFont);
@@ -127,8 +126,8 @@ namespace dnf_composer::user_interface
 
 					const char*  badge    = stable ? "Stable" : "Unstable";
 					const ImVec4 badgeCol = stable
-						? ImVec4(0.22F, 0.75F, 0.35F, 1.0F)
-						: ImVec4(0.90F, 0.55F, 0.10F, 1.0F);
+						? colour::kMetricStableText
+						: colour::kMetricUnstableText;
 					const float badgeW = ImGui::CalcTextSize(badge).x;
 					ImGui::SameLine();
 					ImGui::SetCursorPosX(maxX - badgeW);
@@ -143,13 +142,13 @@ namespace dnf_composer::user_interface
 					const ImVec2 barMax = { barMin.x + innerW, barMin.y + kBarH };
 					const float  span   = hi - lo;
 
-					dl->AddRectFilled(barMin, barMax, IM_COL32(60, 60, 60, 80), 3.0F);
+					dl->AddRectFilled(barMin, barMax, colour::kMetricBarTrack, 3.0F);
 
 					if (span > 0.0001F)
 					{
 						const ImU32 fillCol = stable
-							? IM_COL32(56,  200, 90,  180)
-							: IM_COL32(230, 140, 25,  180);
+							? colour::kMetricBarStableFill
+							: colour::kMetricBarUnstableFill;
 
 						if (hi > 0.0F)
 						{
@@ -160,12 +159,12 @@ namespace dnf_composer::user_interface
 
 							if (lo < 0.0F) {
 								dl->AddLine({ zeroX, barMin.y - 1.0F }, { zeroX, barMax.y + 1.0F },
-									IM_COL32(255, 255, 255, 150), 1.5F);
+									colour::kMetricBarZeroTick, 1.5F);
 }
 						}
 						else
 						{
-							dl->AddRectFilled(barMin, barMax, IM_COL32(180, 60, 60, 80), 3.0F);
+							dl->AddRectFilled(barMin, barMax, colour::kMetricBarNegativeTrack, 3.0F);
 						}
 					}
 

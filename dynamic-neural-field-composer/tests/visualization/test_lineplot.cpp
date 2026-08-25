@@ -48,6 +48,10 @@ TEST(LinePlot, WithCustomParameters)
 	EXPECT_EQ(plot.getAutoFit(), 0.0);
 }
 
+// Guard against a later "symmetry" refactor silently changing LinePlot's
+// throw into a normalize-and-log, which would be a breaking API change for
+// LinePlot's existing callers. See heatmap.h for why Heatmap does not throw
+// on a mismatched type (#143).
 TEST(LinePlot, WithWrongTypeThrows)
 {
 	const PlotCommonParameters common(PlotType::HEATMAP);

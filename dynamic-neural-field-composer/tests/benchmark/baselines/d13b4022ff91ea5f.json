@@ -1,0 +1,131 @@
+{
+  "config": {
+    "manifest": "C:/dev-files/dynamic-neural-field-composer/dynamic-neural-field-composer/tests/benchmark/decks.json",
+    "paths_mode": false,
+    "runs": 9,
+    "timed_steps": 20000,
+    "warmup_steps": 200
+  },
+  "env": {
+    "affinity": "0x1",
+    "avx2": true,
+    "build_type": "Release",
+    "compiler": "MSVC 19.44",
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "cxx_flags": "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG",
+    "dnfc_version": "2.10.1",
+    "fftw": "3.3.10",
+    "git": "e2c9069c",
+    "git_dirty": false,
+    "hostname": "JGC-PC-DESKTOP",
+    "logical": 12,
+    "os": "Windows",
+    "power_state": "high-performance,PROCTHROTTLEMAX=99",
+    "priority": "high"
+  },
+  "fingerprint": "d13b4022ff91ea5f",
+  "results": [
+    {
+      "architecture": "detection-1d",
+      "deck_hash": "70f68a353e4329fa",
+      "field_cells": 100,
+      "name": "small",
+      "noisy": false,
+      "ns_per_cell_step": {
+        "max": 10.90865,
+        "median": 10.740250000000001,
+        "min": 10.694949999999999,
+        "n": 9,
+        "q1": 10.71755,
+        "q3": 10.7895
+      },
+      "path": "direct-1d",
+      "steps_per_sec": {
+        "max": 935020.7340847783,
+        "median": 931077.0233467564,
+        "min": 916703.7167752195,
+        "n": 9,
+        "q1": 926827.0077390055,
+        "q3": 933049.0643850508
+      },
+      "tier": "small"
+    },
+    {
+      "architecture": "memory-2d-mexicanhat",
+      "deck_hash": "7836a3f8135783fd",
+      "field_cells": 2500,
+      "name": "medium",
+      "noisy": false,
+      "ns_per_cell_step": {
+        "max": 25.563191999999997,
+        "median": 25.471444,
+        "min": 25.446074,
+        "n": 9,
+        "q1": 25.454328,
+        "q3": 25.51166
+      },
+      "path": "direct-2d-2term",
+      "steps_per_sec": {
+        "max": 15719.517281919403,
+        "median": 15703.860370067752,
+        "min": 15647.49816846034,
+        "n": 9,
+        "q1": 15679.105162110189,
+        "q3": 15714.419960330519
+      },
+      "tier": "medium"
+    },
+    {
+      "architecture": "detection-2d-gauss",
+      "deck_hash": "64d0072b5c4d4d59",
+      "field_cells": 16384,
+      "name": "large-a",
+      "noisy": false,
+      "ns_per_cell_step": {
+        "max": 14.734248352050782,
+        "median": 14.71539794921875,
+        "min": 14.644857177734373,
+        "n": 9,
+        "q1": 14.708262634277345,
+        "q3": 14.731444702148437
+      },
+      "path": "direct-2d",
+      "steps_per_sec": {
+        "max": 4167.685318419911,
+        "median": 4147.70680756482,
+        "min": 4142.40039883031,
+        "n": 9,
+        "q1": 4143.1887696051035,
+        "q3": 4149.718955096617
+      },
+      "tier": "large-a"
+    },
+    {
+      "architecture": "detection-2d-gauss",
+      "deck_hash": "7e8d422420cbc4ca",
+      "field_cells": 16384,
+      "name": "large-b",
+      "noisy": false,
+      "ns_per_cell_step": {
+        "max": 13.949588012695312,
+        "median": 13.874274902343751,
+        "min": 13.856565551757813,
+        "n": 9,
+        "q1": 13.867745971679689,
+        "q3": 13.88240234375
+      },
+      "path": "spectral-2d",
+      "steps_per_sec": {
+        "max": 4404.782413219069,
+        "median": 4399.160077164787,
+        "min": 4375.409237495244,
+        "n": 9,
+        "q1": 4396.584592397919,
+        "q3": 4401.231200416004
+      },
+      "tier": "large-b"
+    }
+  ],
+  "schema": 1,
+  "timestamp": "2026-08-21T10:17:30Z"
+}

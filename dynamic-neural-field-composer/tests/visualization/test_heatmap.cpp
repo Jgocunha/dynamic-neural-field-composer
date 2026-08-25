@@ -4,6 +4,8 @@
 
 #include "visualization/heatmap.h"
 
+#include "scoped_min_log_level.h"
+
 using namespace dnf_composer;
 
 // Heatmap construction tests
@@ -283,25 +285,42 @@ TEST(HeatmapParameters, ToStringContainsValues)
 }
 
 // ---------------------------------------------------------------------------
-// PlotType handling: Heatmap and LinePlot are NOT symmetric.
-//
-// LinePlot's constructor throws std::invalid_argument when
-// commonParameters.type != PlotType::LINE_PLOT (see lineplot.cpp), but Heatmap
-// performs no such check and accepts whatever type it is handed. These tests pin
-// the CURRENT behaviour so it cannot change silently; whether Heatmap *should*
-// validate its type the way LinePlot does is a product decision tracked
-// separately, and deliberately not changed here in a test-focused PR.
+// PlotType handling: Heatmap normalizes a mismatched type instead of
+// throwing, unlike LinePlot. See heatmap.h for the rationale (#143).
 // ---------------------------------------------------------------------------
 
-TEST(Heatmap, AcceptsMismatchedPlotTypeWithoutThrowing)
+TEST(Heatmap, MismatchedPlotTypeStillDoesNotThrow)
 {
 	const PlotCommonParameters common(PlotType::LINE_PLOT);
 	EXPECT_NO_THROW({ const Heatmap heatmap(common); });
 }
 
-TEST(Heatmap, ReportsTheTypeItWasGivenEvenWhenMismatched)
+TEST(Heatmap, MismatchedPlotTypeIsNormalizedToHeatmap)
 {
 	const PlotCommonParameters common(PlotType::LINE_PLOT);
 	const Heatmap heatmap(common);
-	EXPECT_EQ(heatmap.getType(), PlotType::LINE_PLOT);
+	EXPECT_EQ(heatmap.getType(), PlotType::HEATMAP);
+}
+
+TEST(Heatmap, MismatchedPlotTypeLogsAWarning)
+{
+	using namespace dnf_composer::tools::logger;
+	const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
+	const PlotCommonParameters common(PlotType::LINE_PLOT);
+	::testing::internal::CaptureStdout();
+	const Heatmap heatmap(common);
+	const std::string out = ::testing::internal::GetCapturedStdout();
+	EXPECT_NE(out.find("PlotType"), std::string::npos);
+}
+
+TEST(Heatmap, MatchingPlotTypeIsUnchangedAndLogsNoWarning)
+{
+	using namespace dnf_composer::tools::logger;
+	const dnf_composer::test::ScopedMinLogLevel levelGuard{ LogLevel::DEBUG };
+	const PlotCommonParameters common(PlotType::HEATMAP);
+	::testing::internal::CaptureStdout();
+	const Heatmap heatmap(common);
+	const std::string out = ::testing::internal::GetCapturedStdout();
+	EXPECT_EQ(heatmap.getType(), PlotType::HEATMAP);
+	EXPECT_TRUE(out.empty());
 }

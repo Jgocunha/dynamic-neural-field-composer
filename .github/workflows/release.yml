@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('.github/workflows/release.yml') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       - name: Install vcpkg packages
@@ -54,8 +54,7 @@ jobs:
             implot \
             imgui-node-editor \
             nlohmann-json \
-            gtest \
-            catch2
+            gtest
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
@@ -91,7 +90,8 @@ jobs:
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
-                -DDNF_COMPOSER_BUILD_TESTS=OFF
+                -DDNF_COMPOSER_BUILD_TESTS=OFF \
+                -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
 
       - name: Build
         run: cmake --build build --config Release --parallel
@@ -153,7 +153,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('build.sh') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('.github/workflows/release.yml') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       - name: Install vcpkg packages
@@ -163,8 +163,7 @@ jobs:
             implot \
             imgui-node-editor \
             nlohmann-json \
-            gtest \
-            catch2
+            gtest
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
@@ -206,7 +205,8 @@ jobs:
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
-                -DDNF_COMPOSER_BUILD_TESTS=OFF
+                -DDNF_COMPOSER_BUILD_TESTS=OFF \
+                -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
 
       - name: Build
         run: cmake --build build --parallel $(nproc)
@@ -251,7 +251,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-arm64-osx-${{ hashFiles('build_macos.sh') }}
+          key: vcpkg-${{ runner.os }}-arm64-osx-${{ hashFiles('.github/workflows/release.yml') }}
           restore-keys: vcpkg-${{ runner.os }}-arm64-osx-
 
       - name: Install vcpkg packages
@@ -261,8 +261,7 @@ jobs:
             implot \
             imgui-node-editor \
             nlohmann-json \
-            gtest \
-            catch2
+            gtest
 
       # ── imgui-platform-kit (from source) ───────────────────────────────────
       - name: Clone imgui-platform-kit
@@ -300,7 +299,8 @@ jobs:
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
-                -DDNF_COMPOSER_BUILD_TESTS=OFF
+                -DDNF_COMPOSER_BUILD_TESTS=OFF \
+                -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
 
       - name: Build
         run: cmake --build build --parallel $(sysctl -n hw.logicalcpu)

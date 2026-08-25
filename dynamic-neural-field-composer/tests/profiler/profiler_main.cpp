@@ -12,12 +12,22 @@
 // run, NOT a unit test.
 //
 // Usage: dnf_composer_profiler [iterations]   (default 20000)
+//
+// --deck / --decks: profile an arbitrary committed simulation's per-element breakdown
+// instead of the hardcoded detection sims above, and write JSON (no profile.md append).
+// Answers "which element got slower" for a deck dnf_composer_deckbench --check flagged --
+// this needs no library instrumentation either: profileSim() below already drives each
+// element's public step() itself, the same way it always has for the two hardcoded sims.
+//
+//   dnf_composer_profiler --deck <path/to/sim.json> [--iters N] [--json <out.json>]
+//   dnf_composer_profiler --decks <manifest.json>   [--iters N] [--json <out.json>]
 
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <ctime>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -25,6 +35,7 @@
 #include <vector>
 
 #include "simulation/simulation.h"
+#include "simulation/simulation_file_manager.h"
 #include "tools/logger.h"
 
 #include "bench_env.h"
@@ -479,11 +490,205 @@ std::string timestamp()
 	return buf;
 }
 
+// Filesystem-safe variant for the JSON filename -- ':' is not valid in a Windows path,
+// unlike timestamp()'s "%Y-%m-%d %H:%M:%S" used for the Markdown session header.
+std::string filenameTimestamp()
+{
+	const std::time_t now = std::time(nullptr);
+	std::tm tmv{};
+#if defined(_WIN32)
+	localtime_s(&tmv, &now);
+#else
+	localtime_r(&now, &tmv);
+#endif
+	char buf[32];
+	std::strftime(buf, sizeof(buf), "%Y%m%dT%H%M%S", &tmv);
+	return buf;
+}
+
+#ifndef PROFILER_VALIDATION_DATA_DIR
+#define PROFILER_VALIDATION_DATA_DIR "."
+#endif
+#ifndef PROFILER_JSON_DIR
+#define PROFILER_JSON_DIR "results"
+#endif
+
+// ── --deck / --decks: arbitrary-deck per-element breakdown, JSON output ─────────────
+
+struct DeckModeSpec { std::string tier, path, architecture; };
+
+std::vector<DeckModeSpec> loadDeckModeManifest(const std::filesystem::path& manifestPath)
+{
+	std::ifstream f(manifestPath);
+	if (!f)
+		throw std::runtime_error("Cannot open deck manifest: " + manifestPath.string());
+	nlohmann::json j;
+	f >> j;
+
+	std::vector<DeckModeSpec> decks;
+	for (const auto& d : j.at("decks"))
+		decks.push_back({ d.at("tier").get<std::string>(), d.at("path").get<std::string>(),
+		                   d.at("architecture").get<std::string>() });
+	return decks;
+}
+
+std::shared_ptr<Simulation> loadDeckForProfiling(const std::filesystem::path& jsonPath)
+{
+	auto sim = std::make_shared<Simulation>(jsonPath.stem().string());
+	const SimulationFileManager sfm(sim, jsonPath.string());
+	sfm.loadElementsFromJson();
+	return sim;
+}
+
+// Profiles one deck's per-element step() cost via the existing profileSim() (Section 2's
+// mechanism, unchanged), and shapes the result as JSON: name/type/mean_us/share_pct per
+// element, so "8% slower" from dnf_composer_deckbench --check narrows to a specific
+// element without adding any timing mechanism this file didn't already have.
+nlohmann::json profileDeckToJson(const std::filesystem::path& jsonPath, const std::string& tier,
+                                  const std::string& architecture, int iters)
+{
+	const auto instances = profileSim(loadDeckForProfiling(jsonPath), iters);
+	double total = 0.0;
+	for (const auto& r : instances) total += r.mean_us;
+
+	auto elements = nlohmann::json::array();
+	for (const auto& r : instances)
+		elements.push_back({
+			{"name", r.label},
+			{"type", r.type},
+			{"mean_us", r.mean_us},
+			{"share_pct", total > 0.0 ? 100.0 * r.mean_us / total : 0.0},
+		});
+
+	return nlohmann::json{
+		{"tier", tier},
+		{"path", jsonPath.string()},
+		{"architecture", architecture},
+		{"total_us", total},
+		{"elements", elements},
+	};
+}
+
+void printDeckBreakdown(const nlohmann::json& entry)
+{
+	for (const auto& el : entry.at("elements"))
+		std::printf("  %-20s %-24s %8.3f us  %5.1f%%\n",
+		            el.at("name").get<std::string>().c_str(), el.at("type").get<std::string>().c_str(),
+		            el.at("mean_us").get<double>(), el.at("share_pct").get<double>());
+}
+
+int runDeckMode(const std::string& deckArg, const std::string& decksArg, int iters,
+                 const std::string& jsonArg)
+{
+	auto decksOut = nlohmann::json::array();
+
+	if (!deckArg.empty())
+	{
+		const std::filesystem::path p(deckArg);
+		std::printf("Profiling deck: %s\n", p.string().c_str());
+		try
+		{
+			auto entry = profileDeckToJson(p, "manual", "unknown", iters);
+			printDeckBreakdown(entry);
+			decksOut.push_back(std::move(entry));
+		}
+		catch (const std::exception& e)
+		{
+			std::fprintf(stderr, "Failed to profile deck %s: %s\n", deckArg.c_str(), e.what());
+			return 1;
+		}
+	}
+
+	if (!decksArg.empty())
+	{
+		std::vector<DeckModeSpec> specs;
+		try
+		{
+			specs = loadDeckModeManifest(decksArg);
+		}
+		catch (const std::exception& e)
+		{
+			std::fprintf(stderr, "Failed to load deck manifest '%s': %s\n", decksArg.c_str(), e.what());
+			return 1;
+		}
+
+		// decks.json paths are relative to tests/validation/data -- same root
+		// dnf_composer_deckbench resolves its manifest against, so both tools agree on
+		// which file a given deck path means.
+		const std::filesystem::path dataRoot(PROFILER_VALIDATION_DATA_DIR);
+		for (const auto& spec : specs)
+		{
+			const auto fullPath = dataRoot / spec.path;
+			std::printf("\n%s (%s):\n", spec.tier.c_str(), spec.path.c_str());
+			try
+			{
+				auto entry = profileDeckToJson(fullPath, spec.tier, spec.architecture, iters);
+				printDeckBreakdown(entry);
+				decksOut.push_back(std::move(entry));
+			}
+			catch (const std::exception& e)
+			{
+				std::fprintf(stderr, "Failed to profile deck %s: %s\n", spec.path.c_str(), e.what());
+				return 1;
+			}
+		}
+	}
+
+	const auto env = bench_env::capture();
+	nlohmann::json out;
+	out["schema"]      = 1;
+	out["fingerprint"] = bench_env::fingerprint(env);
+	out["env"]         = bench_env::to_json(env);
+	out["config"]      = nlohmann::json{ {"iters", iters} };
+	out["decks"]       = decksOut;
+
+	std::filesystem::path jsonPath;
+	if (!jsonArg.empty())
+	{
+		jsonPath = jsonArg;
+	}
+	else
+	{
+		const std::filesystem::path resultsDir(PROFILER_JSON_DIR);
+		std::filesystem::create_directories(resultsDir);
+		jsonPath = resultsDir / ("profiler_deck_" + filenameTimestamp() + "_"
+		                          + out["fingerprint"].get<std::string>() + ".json");
+	}
+
+	std::ofstream jf(jsonPath);
+	if (!jf)
+	{
+		std::fprintf(stderr, "Cannot open %s for writing\n", jsonPath.string().c_str());
+		return 1;
+	}
+	jf << out.dump(2) << '\n';
+	std::printf("\nWrote %s\n", jsonPath.string().c_str());
+	return 0;
+}
+
 } // namespace
 
 int main(int argc, char* argv[])
 {
 	tools::logger::Logger::setMinLogLevel(tools::logger::LogLevel::FATAL);
+
+	// --deck / --decks take over completely: a separate mode with its own output (JSON,
+	// no profile.md append), so parse them first and branch out before the positional
+	// [iterations] argument below is even looked at.
+	std::string deckArg, decksArg, jsonArg;
+	int deckIters = 5000;
+	bool deckMode = false;
+	for (int i = 1; i < argc; ++i)
+	{
+		const std::string a = argv[i];
+		if (a == "--deck" && i + 1 < argc)       { deckArg  = argv[++i]; deckMode = true; }
+		else if (a == "--decks" && i + 1 < argc) { decksArg = argv[++i]; deckMode = true; }
+		else if (a == "--iters" && i + 1 < argc) { deckIters = std::stoi(argv[++i]); }
+		else if (a == "--json" && i + 1 < argc)  { jsonArg  = argv[++i]; }
+	}
+	if (deckMode)
+		return runDeckMode(deckArg, decksArg, deckIters, jsonArg);
+
 	const int iters = (argc > 1) ? std::stoi(argv[1]) : 20000;
 
 	std::printf("dnf_composer profiler  (%d iterations)\n", iters);

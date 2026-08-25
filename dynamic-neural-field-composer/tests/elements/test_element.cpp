@@ -2,8 +2,10 @@
 #include <memory>
 
 #include "elements/gauss_stimulus.h"
+#include "elements/gauss_stimulus_2d.h"
 #include "elements/gauss_kernel.h"
 #include "elements/neural_field.h"
+#include "elements/neural_field_2d.h"
 #include "elements/activation_function.h"
 #include "elements/normal_noise.h"
 #include "exceptions/exception.h"
@@ -34,6 +36,23 @@ static std::shared_ptr<GaussKernel> makeKernel(const std::string& name, int size
 {
     ElementCommonParameters cp{ name, size };
     return std::make_shared<GaussKernel>(cp, GaussKernelParameters{});
+}
+
+static std::shared_ptr<GaussStimulus2D> makeStimulus2D(const std::string& name,
+    const int sizeX, const int sizeY)
+{
+    ElementCommonParameters cp{ name, ElementDimensions{ sizeX, sizeY, 1.0, 1.0 } };
+    GaussStimulus2DParameters gsp{ 5.0, 15.0, 0.0, 0.0, true, false };
+    return std::make_shared<GaussStimulus2D>(cp, gsp);
+}
+
+static std::shared_ptr<NeuralField2D> makeField2D(const std::string& name,
+    const int sizeX, const int sizeY)
+{
+    const SigmoidFunction sig{ 0.0, 10.0 };
+    NeuralField2DParameters nfp{ 25.0, -5.0, sig };
+    ElementCommonParameters cp{ name, ElementDimensions{ sizeX, sizeY, 1.0, 1.0 } };
+    return std::make_shared<NeuralField2D>(cp, nfp);
 }
 
 // ---------------------------------------------------------------------------
@@ -188,6 +207,48 @@ TEST(ElementInputs, AddSizeMismatchedInputDoesNotAddConnection)
     EXPECT_FALSE(smallStim->hasOutput(largeField->getUniqueName(), "output"));
 }
 
+// Regression (#41): a 1D size-10 element and a 2D 5x2 element both flatten to
+// 10 samples, but their spatial layouts are not interchangeable. The old
+// flattened-size-only check let this connect silently; it must now be rejected.
+TEST(ElementInputs, Add1DInputTo2DElementWithMatchingFlattenedSizeIsRejected)
+{
+    // position 0 keeps the Gaussian centre in range for this small 1D field.
+    const GaussStimulusParameters gp{ 1.0, 1.0, 0.0 };
+    const auto stim1D = std::make_shared<GaussStimulus>(
+        ElementCommonParameters{ "stim-1d", ElementDimensions{ 10, 1.0 } }, gp);  // 1D, size 10
+    const auto field2D = makeField2D("field-2d", 5, 2);     // 2D, 5x2 = 10
+
+    EXPECT_NO_THROW(field2D->addInput(stim1D, "output"));
+
+    EXPECT_FALSE(field2D->hasInput(stim1D->getUniqueName(), "output"));
+    EXPECT_FALSE(stim1D->hasOutput(field2D->getUniqueName(), "output"));
+    EXPECT_TRUE(field2D->getInputs().empty());
+}
+
+// Symmetric case: a 2D 5x2 source into a 1D size-10 element must also be rejected.
+TEST(ElementInputs, Add2DInputTo1DElementWithMatchingFlattenedSizeIsRejected)
+{
+    const auto stim2D = makeStimulus2D("stim-2d", 5, 2);    // 2D, 5x2 = 10
+    const auto field1D = makeField("field-1d", 10);         // 1D, size 10
+
+    EXPECT_NO_THROW(field1D->addInput(stim2D, "output"));
+
+    EXPECT_FALSE(field1D->hasInput(stim2D->getUniqueName(), "output"));
+    EXPECT_TRUE(field1D->getInputs().empty());
+}
+
+// Same-shape 2D<->2D connections must still succeed after the stricter gate.
+TEST(ElementInputs, AddSameShape2DInputConnects)
+{
+    const auto stim2D  = makeStimulus2D("stim-2d", 5, 2);
+    const auto field2D = makeField2D("field-2d", 5, 2);
+
+    EXPECT_NO_THROW(field2D->addInput(stim2D, "output"));
+
+    EXPECT_TRUE(field2D->hasInput(stim2D->getUniqueName(), "output"));
+    ASSERT_EQ(field2D->getInputs().size(), 1u);
+}
+
 TEST(ElementInputs, RemoveInputByName)
 {
     const auto stim  = makeStimulus("stim");
@@ -206,6 +267,39 @@ TEST(ElementInputs, RemoveInputByUniqueId)
     const int id = stim->getUniqueIdentifier();
     field->removeInput(id);
     EXPECT_FALSE(field->hasInput());
+}
+
+// Regression test for #168: the singular removeInput() overloads must erase the
+// matching entry from the *other* element's `outputs`, exactly like removeInputs()
+// (plural) already does. Before the fix, `field->removeInput(id)` cleared only
+// `field->inputs`, leaving `stim->outputs` with a dangling bookkeeping entry that
+// still reported the (now disconnected) field as an output.
+TEST(ElementInputs, RemoveInputByUniqueIdErasesOtherElementsOutputEntry)
+{
+    const auto stim  = makeStimulus("stim");
+    const auto field = makeField("field");
+    field->addInput(stim, "output");
+    ASSERT_TRUE(stim->hasOutput());
+
+    const int id = stim->getUniqueIdentifier();
+    field->removeInput(id);
+
+    EXPECT_FALSE(stim->hasOutput());
+    EXPECT_TRUE(stim->getOutputs().empty());
+}
+
+// Same asymmetry as above, for the name-based overload.
+TEST(ElementInputs, RemoveInputByNameErasesOtherElementsOutputEntry)
+{
+    const auto stim  = makeStimulus("stim");
+    const auto field = makeField("field");
+    field->addInput(stim, "output");
+    ASSERT_TRUE(stim->hasOutput());
+
+    field->removeInput("stim");
+
+    EXPECT_FALSE(stim->hasOutput());
+    EXPECT_TRUE(stim->getOutputs().empty());
 }
 
 TEST(ElementInputs, RemoveInputs)
@@ -310,6 +404,50 @@ TEST(ElementOutputs, GetOutputsReturnsConnectedElements)
     const auto outputs = stim->getOutputs();
     ASSERT_EQ(outputs.size(), 1u);
     EXPECT_EQ(outputs[0]->getUniqueName(), "field");
+}
+
+// Regression test for #168: `Element::outputs` must be a non-owning (observing)
+// reference to the downstream element, not a shared_ptr. Before the fix, addInput()
+// wired a two-way shared_ptr cycle (field->inputs[stim], stim->outputs[field]), so
+// the only external owner of `field` going out of scope did not free it -- it was
+// kept alive by `stim`, which is itself still alive (held by this test). A weak_ptr
+// observer registered before the scope ends must report the element as destroyed.
+TEST(ElementOutputs, DownstreamElementIsDestroyedWhenLastExternalOwnerReleases)
+{
+    const auto stim = makeStimulus("stim");
+    std::weak_ptr<Element> fieldWatcher;
+    {
+        const auto field = makeField("field");
+        field->addInput(stim, "output");
+        fieldWatcher = field;
+        // `field`'s only external shared_ptr goes out of scope here. `stim->outputs`
+        // must not keep it alive.
+    }
+
+    EXPECT_TRUE(fieldWatcher.expired());
+}
+
+// Regression test for #168: getOutputs() must silently skip an entry whose element
+// has already been destroyed (a natural consequence of outputs being non-owning),
+// rather than returning a null shared_ptr or crashing. fieldA is destroyed without
+// ever calling removeInput()/removeOutputs() -- exactly the pattern the cycle bug
+// used to paper over by keeping it alive forever.
+TEST(ElementOutputs, GetOutputsSkipsExpiredEntryAfterDownstreamDestroyed)
+{
+    const auto stim = makeStimulus("stim");
+    const auto fieldB = makeField("fieldB");
+    fieldB->addInput(stim, "output");
+    {
+        const auto fieldA = makeField("fieldA");
+        fieldA->addInput(stim, "output");
+        // fieldA destroyed here; stim->outputs must not keep it alive, and
+        // getOutputs() must not surface a stale/null entry for it afterward.
+    }
+
+    const auto outputs = stim->getOutputs();
+    ASSERT_EQ(outputs.size(), 1u);
+    ASSERT_NE(outputs[0], nullptr);
+    EXPECT_EQ(outputs[0]->getUniqueName(), "fieldB");
 }
 
 // Regression test: removeOutputs() erases the receiver's `inputs` map entry

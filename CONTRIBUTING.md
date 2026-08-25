@@ -63,8 +63,10 @@ See [Getting Started](dynamic-neural-field-composer/wiki/Getting%20Started.md) f
 ## Making changes
 
 1. Fork the repository and create a branch from `main`.
-2. Use a descriptive branch name: `fix/element-factory-null-check`, `feat/new-kernel-type`.
+2. Use a descriptive branch name: `bug/element-factory-null-check`, `feat/new-kernel-type`.
 3. Keep changes focused — one logical change per PR.
+
+Using Claude Code on this repository? See [Helping Claude Help You](dynamic-neural-field-composer/wiki/Helping%20Claude%20Help%20You.md).
 
 **Code style**
 

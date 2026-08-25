@@ -26,6 +26,23 @@ auto visualization = std::make_shared<Visualization>(simulation);
 | `PlotType::LINE_PLOT` | 1D line chart — one or more overlaid curves |
 | `PlotType::HEATMAP` | 2D color map — one 2D data matrix (e.g. coupling weights) |
 
+### `PlotCommonParameters::type` contract
+
+`LinePlot` and `Heatmap` handle a mismatched `type` differently:
+
+- `LinePlot` **throws** `std::invalid_argument` if `parameters.type != PlotType::LINE_PLOT`.
+  Construction fails outright.
+- `Heatmap` **normalizes**: if `parameters.type != PlotType::HEATMAP`, it corrects the
+  stored type to `PlotType::HEATMAP` and logs a warning, but construction succeeds.
+  `getType()` always reports `PlotType::HEATMAP` on a `Heatmap`, regardless of what was
+  passed in.
+
+The asymmetry is deliberate: `LinePlot`'s throw predates this decision, and changing it
+to normalize-and-log would be a silent behaviour change for existing callers that rely on
+the throw. Making `Heatmap` throw to match would instead turn a previously-succeeding
+construction into a crash on upgrade. Both are kept as-is; pass the matching `PlotType`
+to avoid relying on either behaviour.
+
 ---
 
 ## Adding plots

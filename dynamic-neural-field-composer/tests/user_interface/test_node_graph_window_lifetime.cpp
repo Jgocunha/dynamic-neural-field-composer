@@ -39,6 +39,9 @@ using namespace dnf_composer;
 
 TEST(NodeGraphWindowLifetime, ConstructAndDestroyReleasesTheEditorContext)
 {
+    // Without this the node editor writes imnode-window.json into whatever directory
+    // the test binary was launched from.
+    user_interface::NodeGraphWindow::disableLayoutPersistenceForTesting();
     const auto sim = std::make_shared<Simulation>("node-graph-lifetime", 1.0, 0.0, 0.0);
     {
         const user_interface::NodeGraphWindow window{ sim };
@@ -49,6 +52,9 @@ TEST(NodeGraphWindowLifetime, ConstructAndDestroyReleasesTheEditorContext)
 
 TEST(NodeGraphWindowLifetime, RepeatedConstructAndDestroyDoesNotAccumulate)
 {
+    // Set here as well as in the test above: gtest gives no ordering guarantee, and
+    // either test may be the one run in isolation under --gtest_filter.
+    user_interface::NodeGraphWindow::disableLayoutPersistenceForTesting();
     // Every File->Open builds a fresh set of windows, so this cycle is the real
     // usage pattern -- the leak grew once per reopened simulation.
     const auto sim = std::make_shared<Simulation>("node-graph-lifetime-loop", 1.0, 0.0, 0.0);

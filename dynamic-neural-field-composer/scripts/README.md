@@ -18,7 +18,7 @@ chmod +x scripts/setup.sh
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `$HOME/vcpkg`, bootstraps it, and prints the line to add to your shell profile to persist the variable
 2. Auto-detects your OS and CPU architecture to select the correct vcpkg triplet (`x64-linux`, `x64-osx`, or `arm64-osx`)
-3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
+3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`
 4. Clones `imgui-platform-kit` into `deps/imgui-platform-kit/` (skipped if already present)
 5. Builds and installs `imgui-platform-kit` into `deps/ipk-install/` (skipped if already present)
 
@@ -32,7 +32,7 @@ scripts\setup.bat
 
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `C:\tools\vcpkg`, bootstraps it, and persists `VCPKG_ROOT` permanently via `setx`
-2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `catch2`
+2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`
 3. Clones `imgui-platform-kit` into `deps\imgui-platform-kit\` (skipped if already present)
 4. Builds and installs `imgui-platform-kit` into `deps\ipk-install\` (skipped if already present)
 
@@ -68,7 +68,9 @@ Auto-detects CPU architecture (`arm64` or `x64`). Configures and builds in Relea
 scripts\build.bat
 ```
 
-Configures and builds both Release and Debug configurations with Ninja and the MSVC toolchain. Output lands in `build\x64-release\` and `build\x64-debug\`.
+Configures and builds both Release and Debug configurations with Ninja and the MSVC toolchain. Output lands in `build\x64-release\` and `build\x64-debug\`. Pass `release` or `debug` as the first argument to build only that configuration; with no argument it builds both.
+
+On a machine with more than one Visual Studio installed, the script pins the VS install it uses to `build\.vsinstall` so a reused tree can't silently pick up a different VS on a later run (which would fail with `STL1001: Unexpected compiler version`). If you have an existing `build\x64-release\` from **before** this pinning existed, the script detects the mismatch instead of guessing: delete `build\x64-release\` and `build\x64-debug\` for a clean reconfigure, or create `build\.vsinstall` yourself containing the VS install path (e.g. `C:\Program Files\Microsoft Visual Studio\2022\Community`) that tree was originally built with.
 
 ---
 
@@ -90,4 +92,4 @@ Detects the OS and runs `cmake --install` on `build/linux-release/` (Linux) or `
 scripts\install.bat
 ```
 
-Installs both Release and Debug configurations from `build\x64-release\` and `build\x64-debug\`. Auto-elevates via UAC if not running as administrator.
+Installs both Release and Debug configurations from `build\x64-release\` and `build\x64-debug\`. Auto-elevates via UAC if not running as administrator. Pass `release` or `debug` to install only that configuration -- matches whichever configuration(s) `build.bat` was given.

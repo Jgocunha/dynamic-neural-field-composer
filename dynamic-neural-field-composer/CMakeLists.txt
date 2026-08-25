@@ -7,8 +7,8 @@ project(dynamic-neural-field-composer
 
 # Define library version
 set(DNF_COMPOSER_VERSION_MAJOR 2 CACHE STRING "major version" FORCE)
-set(DNF_COMPOSER_VERSION_MINOR 10 CACHE STRING "minor version" FORCE)
-set(DNF_COMPOSER_VERSION_PATCH 1 CACHE STRING "patch version" FORCE)
+set(DNF_COMPOSER_VERSION_MINOR 11 CACHE STRING "minor version" FORCE)
+set(DNF_COMPOSER_VERSION_PATCH 0 CACHE STRING "patch version" FORCE)
 set(DNF_COMPOSER_VERSION ${DNF_COMPOSER_VERSION_MAJOR}.${DNF_COMPOSER_VERSION_MINOR}.${DNF_COMPOSER_VERSION_PATCH} CACHE STRING "version" FORCE)
 
 # Git commit at configure time, used to stamp perf-tool result logs (tests/benchmark,
@@ -27,6 +27,24 @@ if(Git_FOUND)
     )
     if(DNF_COMPOSER_GIT_SHA_RESULT EQUAL 0 AND NOT DNF_COMPOSER_GIT_SHA_OUT STREQUAL "")
         set(DNF_COMPOSER_GIT_SHA ${DNF_COMPOSER_GIT_SHA_OUT})
+    endif()
+endif()
+
+# Whether the working tree had uncommitted changes at configure time. A benchmark run
+# stamped only with a SHA is misleading when the tree it was built from did not match that
+# SHA, so the perf tools record this alongside it. Same best-effort contract as the SHA.
+set(DNF_COMPOSER_GIT_DIRTY 0)
+if(Git_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} status --porcelain
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE DNF_COMPOSER_GIT_DIRTY_OUT
+        RESULT_VARIABLE DNF_COMPOSER_GIT_DIRTY_RESULT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if(DNF_COMPOSER_GIT_DIRTY_RESULT EQUAL 0 AND NOT DNF_COMPOSER_GIT_DIRTY_OUT STREQUAL "")
+        set(DNF_COMPOSER_GIT_DIRTY 1)
     endif()
 endif()
 
@@ -145,7 +163,6 @@ set(user_interface_headers
         "include/user_interface/element_window.h"
         "include/user_interface/plot_control_window.h"
         "include/user_interface/simulation_window.h"
-        "include/user_interface/element_creation_error.h"
         "include/user_interface/node_graph_window.h"
         "include/user_interface/main_menu_bar.h"
         "include/user_interface/widgets.h"
@@ -155,6 +172,7 @@ set(user_interface_headers
         "include/user_interface/static_layout.h"
         "include/user_interface/status_bar_window.h"
         "include/user_interface/control_bar_window.h"
+        "include/user_interface/colour_registry.h"
 
         "include/user_interface/node_utilities/builders.h"
         "include/user_interface/node_utilities/drawing.h"
@@ -247,7 +265,6 @@ set(src
 
         "src/user_interface/plot_control_window.cpp"
         "src/user_interface/simulation_window.cpp"
-        "src/user_interface/element_creation_error.cpp"
         "src/user_interface/field_metrics_window.cpp"
         "src/user_interface/element_window.cpp"
         "src/user_interface/node_graph_window.cpp"
@@ -300,15 +317,13 @@ set_source_files_properties(src/tools/simd_dispatch_avx2.cpp PROPERTIES
 )
 endif()
 target_include_directories(${CMAKE_PROJECT_NAME}
-    # Headers install under include/dnf_composer/ (see the install(FILES ...)
-    # calls below and INCLUDES DESTINATION on install(TARGETS ...)), so the
-    # exported interface must point there too -- otherwise a find_package()
-    # consumer's include path (<prefix>/include) does not contain the
-    # <prefix>/include/dnf_composer/... headers it was promised (#126). This
-    # keeps the same #include spelling the repo's own umbrella headers and
-    # examples use (e.g. #include "visualization/visualization.h"): relative
-    # to <prefix>/include/dnf_composer, that path resolves correctly.
-    PUBLIC $<INSTALL_INTERFACE:include/dnf_composer>
+    # Headers install under include/dnf_composer/ (see the install(FILES ...) calls
+    # below). INCLUDES DESTINATION on install(TARGETS ...) already adds that path to
+    # the exported interface; <prefix>/include is listed here too so BOTH spellings
+    # keep resolving for find_package() consumers (#126):
+    #   #include "elements/neural_field.h"              <- what this repo's own sources use
+    #   #include "dnf_composer/elements/neural_field.h" <- prefixed form
+    PUBLIC $<INSTALL_INTERFACE:include>
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 

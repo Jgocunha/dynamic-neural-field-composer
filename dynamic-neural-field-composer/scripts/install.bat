@@ -28,10 +28,25 @@ if '%errorlevel%' NEQ '0' (
     set SCRIPT_DIR=%~dp0
     set PROJECT_ROOT=%SCRIPT_DIR%..
 
-:: Install x64-release configuration (Ninja single-config; no --config needed)
-cmake --build "%PROJECT_ROOT%\build\x64-release" --target install
+:: Which configuration(s) to install. No argument (or "all") installs both, matching this
+:: script's original behaviour. "release" or "debug" installs only that one -- matches
+:: scripts\build.bat, which supports building just one configuration; installing "all"
+:: after a single-configuration build would fail on the tree that was never built.
+set "CONFIG=%~1"
+if not defined CONFIG set "CONFIG=all"
+if /i not "%CONFIG%"=="all" if /i not "%CONFIG%"=="release" if /i not "%CONFIG%"=="debug" (
+    echo ERROR: unknown install configuration "%CONFIG%" ^(expected "release", "debug", or no argument for both^).
+    exit /b 1
+)
 
-:: Install x64-debug configuration
-cmake --build "%PROJECT_ROOT%\build\x64-debug" --target install
+if /i not "%CONFIG%"=="debug" (
+    REM Install x64-release configuration (Ninja single-config; no --config needed)
+    cmake --build "%PROJECT_ROOT%\build\x64-release" --target install
+)
+
+if /i not "%CONFIG%"=="release" (
+    REM Install x64-debug configuration
+    cmake --build "%PROJECT_ROOT%\build\x64-debug" --target install
+)
 
 exit /b 0

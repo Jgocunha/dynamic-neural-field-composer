@@ -7,6 +7,7 @@
 #include <fstream>
 #include <chrono>
 #include <filesystem>
+#include <functional>
 
 namespace dnf_composer::tools::utils
 {
@@ -29,6 +30,7 @@ namespace dnf_composer::tools::utils
 	///                    to @p exeDir. Pass an empty string when the project
 	///                    was configured with `DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF`
 	///                    (see CMakeLists.txt) so no build-machine path is used.
+	/// @return The parent of @p exeDir, or @p devFallback.
 	[[nodiscard]] std::string resolveResourceRoot(const std::filesystem::path& exeDir, const std::string& devFallback);
 
 	/// @brief Returns the runtime install prefix (parent of `bin/`) for locating
@@ -40,7 +42,9 @@ namespace dnf_composer::tools::utils
 	/// resolveResourceRoot() for the decision logic, and
 	/// `DNF_COMPOSER_DEV_FALLBACK_PATHS` in CMakeLists.txt for how to build
 	/// without that fallback embedded at all (#126).
-	std::string getResourceRoot();
+	/// @return The runtime install prefix (parent of `bin/`), or the dev-build
+	///         fallback path.
+	[[nodiscard]] std::string getResourceRoot();
 
 	/// @brief Returns the directory for simulation/recording output:
 	/// `getResourceRoot() + "/data"`.
@@ -50,7 +54,8 @@ namespace dnf_composer::tools::utils
 	/// used (#126). This computes the equivalent path at runtime, relative to
 	/// the executable, the same way every other `getResourceRoot()`-based data
 	/// path in this codebase already does (e.g. Simulation::save()).
-	std::string getOutputDirectory();
+	/// @return `getResourceRoot() + "/data"`.
+	[[nodiscard]] std::string getOutputDirectory();
 
 	int countNumOfLinesInFile(const std::string& filename);
 
@@ -102,4 +107,17 @@ namespace dnf_composer::tools::utils
 	}
 
 	float getProcessMemoryMb();
+
+	/// @brief Run a step and turn any failure into a message.
+	///
+	/// Intended for call sites (e.g. the element-creation forms in the ImGui render
+	/// loop) where an exception thrown from inside a frame unwinds straight out of
+	/// the render loop and terminates the application, so the call is funnelled
+	/// through here instead.
+	///
+	/// @param createAndAdd  The step to run.
+	/// @return An empty string if @p createAndAdd completed; otherwise a message
+	///         describing the failure. `dnf_composer::Exception` messages already
+	///         name the element and the error code, so they are passed through as-is.
+	[[nodiscard]] std::string describeElementCreationFailure(const std::function<void()>& createAndAdd);
 }

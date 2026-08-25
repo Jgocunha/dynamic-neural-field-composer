@@ -24,7 +24,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
-          PACKAGES="imgui implot imgui-node-editor nlohmann-json gtest catch2"
+          PACKAGES="imgui implot imgui-node-editor nlohmann-json gtest"
           VCPKG_DIR="$GITHUB_WORKSPACE/vcpkg"
           DATE=$(date +%Y-%m-%d)
 

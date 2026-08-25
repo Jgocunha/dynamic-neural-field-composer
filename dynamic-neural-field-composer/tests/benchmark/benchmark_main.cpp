@@ -2,22 +2,28 @@
 //
 // Builds N independent neural fields (each: GaussStimulus + NeuralField +
 // lateral GaussKernel + NormalNoise(amp 0)), times Euler steps, and reports
-// median steps/second for N = 10/50/100 in both 1D (size 100) and 2D (50x50).
-// Appends one timestamped session block to tests/benchmark/results.md so
-// throughput is tracked over time as optimizations land.
+// median steps/second AND nanoseconds/field-cell/step for N = 10/50/100 in
+// both 1D (size 100) and 2D (50x50). Appends one timestamped session block to
+// tests/benchmark/results.md so throughput is tracked over time as
+// optimizations land, and writes the same session as
+// tests/benchmark/results/<timestamp>_<fingerprint>.json for machine-readable
+// comparison (see bench_report.h / dnf_composer_deckbench --check).
 //
 // This mirrors examples/benchmark_headless_2d.cpp but covers both dimensions and
 // writes a Markdown report. It is a manual performance run, NOT a unit test.
 //
 // Usage: dnf_composer_benchmark [timed_steps] [n_runs]
 //   timed_steps  default 2000
-//   n_runs       default 3   (median reported)
+//   n_runs       default 5   (median + IQR reported; 5 is the smallest count that
+//                             gives a usable interquartile range, and the whole
+//                             sweep still finishes in seconds)
 
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <ctime>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -26,7 +32,7 @@
 #include "simulation/simulation.h"
 #include "tools/logger.h"
 
-#include "bench_env.h"
+#include "bench_report.h"
 
 #include "elements/neural_field.h"
 #include "elements/gauss_stimulus.h"
@@ -131,14 +137,18 @@ std::shared_ptr<Simulation> build_2d(int N)
 	return sim;
 }
 
-// Returns median steps/sec over nRuns of timedSteps each.
-double run_cell(const std::shared_ptr<Simulation>& sim, int timedSteps, int nRuns)
+// Returns the average wall-clock time of ONE step (seconds), one sample per run of
+// timedSteps. setMeasureStepDuration(false) disables Simulation::step()'s own internal
+// steady_clock::now() pair, which would otherwise add two clock calls per step on top of
+// the ones this loop already makes around the whole run.
+std::vector<double> timeCellSeconds(const std::shared_ptr<Simulation>& sim, int timedSteps, int nRuns)
 {
 	sim->init();
+	sim->setMeasureStepDuration(false);
 	for (int t = 0; t < WARMUP_STEPS; ++t) sim->step();
 
-	std::vector<double> sps;
-	sps.reserve(nRuns);
+	std::vector<double> perRunStepSeconds;
+	perRunStepSeconds.reserve(nRuns);
 	for (int run = 0; run < nRuns; ++run)
 	{
 		sim->init();
@@ -146,13 +156,9 @@ double run_cell(const std::shared_ptr<Simulation>& sim, int timedSteps, int nRun
 		for (int t = 0; t < timedSteps; ++t) sim->step();
 		const auto t1 = std::chrono::high_resolution_clock::now();
 		const double elapsed = std::chrono::duration<double>(t1 - t0).count();
-		sps.push_back(timedSteps / elapsed);
+		perRunStepSeconds.push_back(elapsed / timedSteps);
 	}
-	std::sort(sps.begin(), sps.end());
-	const size_t mid = sps.size() / 2;
-	if (sps.size() % 2 == 0)
-		return (sps[mid - 1] + sps[mid]) / 2.0;
-	return sps[mid];
+	return perRunStepSeconds;
 }
 
 std::string timestamp()
@@ -169,6 +175,22 @@ std::string timestamp()
 	return buf;
 }
 
+// Filesystem-safe variant of timestamp() for the JSON sidecar's filename — ':' is not a
+// valid character in a Windows path, unlike the Markdown log's "%Y-%m-%d %H:%M:%S".
+std::string filenameTimestamp()
+{
+	const std::time_t now = std::time(nullptr);
+	std::tm tmv{};
+#if defined(_WIN32)
+	localtime_s(&tmv, &now);
+#else
+	localtime_r(&now, &tmv);
+#endif
+	char buf[32];
+	std::strftime(buf, sizeof(buf), "%Y%m%dT%H%M%S", &tmv);
+	return buf;
+}
+
 } // namespace
 
 int main(int argc, char* argv[])
@@ -176,32 +198,73 @@ int main(int argc, char* argv[])
 	tools::logger::Logger::setMinLogLevel(tools::logger::LogLevel::FATAL);
 
 	const int timedSteps = (argc > 1) ? std::stoi(argv[1]) : 2000;
-	const int nRuns      = (argc > 2) ? std::stoi(argv[2]) : 3;
+	const int nRuns      = (argc > 2) ? std::stoi(argv[2]) : 5;
 	const std::vector<int> Ns = {10, 50, 100};
 
 	std::printf("dnf_composer benchmark  (%d steps x %d runs, median)\n", timedSteps, nRuns);
 
-	std::vector<double> sps1d, sps2d;
+	std::vector<bench_report::Result> results1d, results2d;
 	for (int N : Ns)
 	{
-		const double s = run_cell(build_1d(N), timedSteps, nRuns);
-		sps1d.push_back(s);
-		std::printf("  1D  N=%-4d  %.1f steps/s\n", N, s);
+		const auto samples = timeCellSeconds(build_1d(N), timedSteps, nRuns);
+		const long long cells = static_cast<long long>(N) * FIELD_SIZE_1D;
+		auto r = bench_report::makeResult("1d-N" + std::to_string(N), "N=" + std::to_string(N),
+		                                   "synthetic-1d", "direct-1d", cells, samples);
+		std::printf("  1D  N=%-4d  %.1f steps/s\n", N, r.stepsPerSec.median);
+		results1d.push_back(std::move(r));
 	}
 	for (int N : Ns)
 	{
-		const double s = run_cell(build_2d(N), timedSteps, nRuns);
-		sps2d.push_back(s);
-		std::printf("  2D  N=%-4d  %.1f steps/s\n", N, s);
+		const auto samples = timeCellSeconds(build_2d(N), timedSteps, nRuns);
+		const long long cells = static_cast<long long>(N) * GRID_2D * GRID_2D;
+		auto r = bench_report::makeResult("2d-N" + std::to_string(N), "N=" + std::to_string(N),
+		                                   "synthetic-2d", "direct-2d", cells, samples);
+		std::printf("  2D  N=%-4d  %.1f steps/s\n", N, r.stepsPerSec.median);
+		results2d.push_back(std::move(r));
 	}
 
 	// Calibration: single 1D field, same wiring as the table cells. Lets sessions
 	// from different machines be compared as a ratio when their absolute numbers
 	// (which depend on CPU/AVX2/build type) are not directly comparable.
-	const double calibration = run_cell(build_1d(1), timedSteps, nRuns);
+	const auto calibSamples = timeCellSeconds(build_1d(1), timedSteps, nRuns);
+	const auto calibResult = bench_report::makeResult("calibration-1d", "N=1", "synthetic-1d",
+	                                                    "direct-1d", FIELD_SIZE_1D, calibSamples);
+	const double calibration = calibResult.stepsPerSec.median;
 	std::printf("  calibration (1 field, 1D)  %.1f steps/s\n", calibration);
 
+	std::vector<bench_report::Result> allResults;
+	allResults.reserve(results1d.size() + results2d.size() + 1);
+	allResults.insert(allResults.end(), results1d.begin(), results1d.end());
+	allResults.insert(allResults.end(), results2d.begin(), results2d.end());
+	allResults.push_back(calibResult);
+
+	bool anyNoisy = false;
+	for (const auto& r : allResults)
+	{
+		if (r.noisy)
+		{
+			if (!anyNoisy)
+				std::printf("\nWARNING: the following cells are too noisy to trust "
+				            "(IQR/median > %.0f%%) -- re-run under scripts/bench, or "
+				            "treat this session as inconclusive:\n", bench_report::kNoisyRelSpread * 100.0);
+			std::printf("  %-16s IQR/median = %.1f%%\n", r.name.c_str(), r.nsPerCellStep.relSpread() * 100.0);
+			anyNoisy = true;
+		}
+	}
+
 	const auto env = bench_env::capture();
+
+	// JSON sidecar: machine-readable, one file per session, alongside results.md.
+	const std::filesystem::path resultsMdPath(BENCHMARK_RESULTS_PATH);
+	const std::filesystem::path jsonDir = resultsMdPath.parent_path() / "results";
+	std::filesystem::create_directories(jsonDir);
+	const std::filesystem::path jsonPath =
+		jsonDir / (filenameTimestamp() + "_" + bench_env::fingerprint(env) + ".json");
+	bench_report::writeJson(jsonPath.string(), env, allResults,
+	                         nlohmann::json{{"warmup_steps", WARMUP_STEPS},
+	                                        {"timed_steps", timedSteps},
+	                                        {"runs", nRuns}});
+	std::printf("Wrote %s\n", jsonPath.string().c_str());
 
 	// Append a dated session block to results.md (create with a title if missing).
 	const std::string path = BENCHMARK_RESULTS_PATH;
@@ -218,10 +281,14 @@ int main(int argc, char* argv[])
 		  << ", 2D " << GRID_2D << "x" << GRID_2D << "). One section appended per run.\n\n"
 		     "Steps/sec is machine-dependent (CPU, AVX2 dispatch, build type all affect it) --\n"
 		     "only compare sessions with matching **Env:** lines directly. The calibration\n"
-		     "figure and ratio table let you roughly compare sessions across machines.\n\n"
+		     "figure and ratio table let you roughly compare sessions across machines. Each\n"
+		     "session also writes a machine-readable JSON sidecar to results/<timestamp>_\n"
+		     "<fingerprint>.json (see tests/common/bench_report.h) for programmatic diffing.\n\n"
 		     "Sessions before 2026-07-29 predate the **Env:** line and calibration; they all\n"
 		     "ran on the reference dev machine (AMD Ryzen 5 3600, MSVC 19.44, /O2 /arch:AVX2,\n"
-		     "Windows 11).\n";
+		     "Windows 11). Sessions before 2026-08-20 predate setMeasureStepDuration(false)\n"
+		     "and the ns/cell/step / IQR columns -- absolute steps/sec numbers have a step\n"
+		     "discontinuity there (two fewer steady_clock::now() calls per step).\n";
 
 	f << "\n## " << timestamp()
 	  << "   (dnfc " << DNF_COMPOSER_VERSION_MAJOR << "." << DNF_COMPOSER_VERSION_MINOR
@@ -231,16 +298,47 @@ int main(int argc, char* argv[])
 	f << "| dim | N=10 | N=50 | N=100 |\n";
 	f << "|-----|-----:|-----:|------:|\n";
 	f.setf(std::ios::fixed); f.precision(1);
-	f << "| 1D  | " << sps1d[0] << " | " << sps1d[1] << " | " << sps1d[2] << " |\n";
-	f << "| 2D  | " << sps2d[0] << " | " << sps2d[1] << " | " << sps2d[2] << " |\n";
+	f << "| 1D  | " << results1d[0].stepsPerSec.median << " | " << results1d[1].stepsPerSec.median
+	  << " | " << results1d[2].stepsPerSec.median << " |\n";
+	f << "| 2D  | " << results2d[0].stepsPerSec.median << " | " << results2d[1].stepsPerSec.median
+	  << " | " << results2d[2].stepsPerSec.median << " |\n";
 
 	f << "\n**Calibration** (1 field, 1D size " << FIELD_SIZE_1D << "): " << calibration << " steps/s\n\n";
 	f << "| dim | N=10 | N=50 | N=100 |\n";
 	f << "|-----|-----:|-----:|------:|\n";
 	f.precision(4);
-	f << "| 1D  | " << sps1d[0] / calibration << " | " << sps1d[1] / calibration << " | " << sps1d[2] / calibration << " |\n";
-	f << "| 2D  | " << sps2d[0] / calibration << " | " << sps2d[1] / calibration << " | " << sps2d[2] / calibration << " |\n";
+	f << "| 1D  | " << results1d[0].stepsPerSec.median / calibration << " | "
+	  << results1d[1].stepsPerSec.median / calibration << " | "
+	  << results1d[2].stepsPerSec.median / calibration << " |\n";
+	f << "| 2D  | " << results2d[0].stepsPerSec.median / calibration << " | "
+	  << results2d[1].stepsPerSec.median / calibration << " | "
+	  << results2d[2].stepsPerSec.median / calibration << " |\n";
 	f << "\n_(values = median steps/sec; second table = ratio to calibration)_\n";
+
+	// ns/field-cell/step: the metric that survives a change in problem size (a 1D size-100
+	// field and a 2D 50x50 field are directly comparable here, unlike in steps/sec).
+	f << "\n**ns/field-cell/step** (median):\n\n";
+	f << "| dim | N=10 | N=50 | N=100 |\n";
+	f << "|-----|-----:|-----:|------:|\n";
+	f.precision(2);
+	f << "| 1D  | " << results1d[0].nsPerCellStep.median << " | " << results1d[1].nsPerCellStep.median
+	  << " | " << results1d[2].nsPerCellStep.median << " |\n";
+	f << "| 2D  | " << results2d[0].nsPerCellStep.median << " | " << results2d[1].nsPerCellStep.median
+	  << " | " << results2d[2].nsPerCellStep.median << " |\n";
+
+	f << "\n**IQR / median** (%, on ns/field-cell/step -- above "
+	  << (bench_report::kNoisyRelSpread * 100.0) << "% is flagged noisy):\n\n";
+	f << "| dim | N=10 | N=50 | N=100 |\n";
+	f << "|-----|-----:|-----:|------:|\n";
+	f.precision(1);
+	f << "| 1D  | " << results1d[0].nsPerCellStep.relSpread() * 100.0 << " | "
+	  << results1d[1].nsPerCellStep.relSpread() * 100.0 << " | "
+	  << results1d[2].nsPerCellStep.relSpread() * 100.0 << " |\n";
+	f << "| 2D  | " << results2d[0].nsPerCellStep.relSpread() * 100.0 << " | "
+	  << results2d[1].nsPerCellStep.relSpread() * 100.0 << " | "
+	  << results2d[2].nsPerCellStep.relSpread() * 100.0 << " |\n";
+
+	f << "\nJSON: `results/" << jsonPath.filename().string() << "`\n";
 
 	std::printf("Appended session to %s\n", path.c_str());
 	return 0;

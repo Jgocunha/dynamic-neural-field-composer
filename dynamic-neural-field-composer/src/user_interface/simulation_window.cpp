@@ -1,4 +1,5 @@
 #include "user_interface/simulation_window.h"
+#include "user_interface/colour_registry.h"
 
 #include <array>
 
@@ -59,7 +60,7 @@ namespace dnf_composer::user_interface
 				ImGui::GetContentRegionAvail().x - kMargin,
 				ImGui::GetContentRegionAvail().y - kMargin
 			};
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 			if (ImGui::BeginChild("##sim_inset", insetSz, 0,
 				ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoSavedSettings))
 			{
@@ -83,7 +84,8 @@ namespace dnf_composer::user_interface
 		const ImVec4 wbg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(6.0F * ui, 4.0F * ui));
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(wbg.x * 0.96F, wbg.y * 0.96F, wbg.z * 0.96F, wbg.w));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(wbg.x * colour::kSidebarBackgroundDarkenFactor,
+			wbg.y * colour::kSidebarBackgroundDarkenFactor, wbg.z * colour::kSidebarBackgroundDarkenFactor, wbg.w));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding,   rounding);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0F);
 		if (ImGui::BeginChild("##sim_sidebar", {sideW, totalH}, 1,
@@ -218,7 +220,7 @@ namespace dnf_composer::user_interface
 			const ImVec4 accent  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			const ImVec4 bg      = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
 			const ImVec4 bgHov   = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered);
-			constexpr ImVec4 textSel(1.F, 1.F, 1.F, 1.F);
+			constexpr ImVec4 textSel = colour::kButtonTextOnAccent;
 			const ImVec4 textNorm = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 
 			auto dimBtn = [&](const char* label, int dim)
@@ -311,7 +313,7 @@ namespace dnf_composer::user_interface
 		// renders unguarded, so a genuine rendering fault still surfaces as itself.
 		if (addRequested)
 		{
-			lastAddElementError = describeElementCreationFailure(
+			lastAddElementError = tools::utils::describeElementCreationFailure(
 				[this, selected] { renderElementParameters(selected, id.data(), true); });
 		}
 		else
@@ -368,9 +370,9 @@ namespace dnf_composer::user_interface
 			const float addBtnH = ImGui::GetFrameHeight() * 1.5F;
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(accent.x * colour::kAccentHoverDarken, accent.y * colour::kAccentHoverDarken, accent.z * colour::kAccentHoverDarken, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(accent.x * colour::kAccentActiveDarken, accent.y * colour::kAccentActiveDarken, accent.z * colour::kAccentActiveDarken, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text,          colour::kButtonTextOnAccent);
 			if (ImGui::Button("     Add element", {-FLT_MIN, addBtnH})) {
 				addRequestedNextFrame = true;
 }
@@ -384,7 +386,7 @@ namespace dnf_composer::user_interface
 			const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
 			const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
 			ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
-				{iconX, iconY}, IM_COL32(255, 255, 255, 255), ICON_FA_PLUS);
+				{iconX, iconY}, colour::kIconEnabled, ICON_FA_PLUS);
 			ImGui::PopFont();
 		}
 
@@ -393,7 +395,7 @@ namespace dnf_composer::user_interface
 		if (!lastAddElementError.empty())
 		{
 			ImGui::Spacing();
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90F, 0.35F, 0.35F, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text, colour::kValidationErrorText);
 			ImGui::TextWrapped("%s", lastAddElementError.c_str());
 			ImGui::PopStyleColor();
 		}
@@ -1801,7 +1803,7 @@ namespace dnf_composer::user_interface
 		const float trashW = ImGui::GetFrameHeight() + 10.0F;
 		const float typeW  = 65.0F * ImGui::GetIO().FontGlobalScale;
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 		if (ImGui::BeginChild("##re_list", {0, 0}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			for (const auto& e : simulation->getElements())
@@ -1841,9 +1843,9 @@ namespace dnf_composer::user_interface
 
 				ImGui::SetCursorScreenPos({rowMin.x + avail - trashW, rowMin.y});
 				ImGui::PushFont(g_MediumIconsFont);
-				ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.06F));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0, 0, 0, 0.12F));
+				ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 				if (ImGui::Button(ICON_FA_TRASH, {trashW, selH})) {
 					pendingRemove = name;
 }
@@ -1906,10 +1908,10 @@ namespace dnf_composer::user_interface
 			const ImVec4 accent = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 			ImGui::PushStyleColor(ImGuiCol_Button,        accent);
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
+				ImVec4(accent.x * colour::kAccentHoverDarken, accent.y * colour::kAccentHoverDarken, accent.z * colour::kAccentHoverDarken, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
+				ImVec4(accent.x * colour::kAccentActiveDarken, accent.y * colour::kAccentActiveDarken, accent.z * colour::kAccentActiveDarken, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text,          colour::kButtonTextOnAccent);
 			ImGui::BeginDisabled(!canConn);
 			const bool pressed = ImGui::Button("     Connect", {-FLT_MIN, btnH});
 			ImGui::EndDisabled();
@@ -1923,7 +1925,7 @@ namespace dnf_composer::user_interface
 				const float  labelW = ImGui::CalcTextSize("     Connect").x;
 				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
 				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
-				const ImU32  col    = canConn ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				const ImU32  col    = canConn ? colour::kIconEnabled : colour::kIconDisabled;
 				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 					{iconX, iconY}, col, ICON_FA_LINK);
 				ImGui::PopFont();
@@ -1956,7 +1958,7 @@ namespace dnf_composer::user_interface
 
 		const float unlinkW = ImGui::GetFrameHeight() + 6.0F;
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 		if (ImGui::BeginChild("##si_connections", {0, 0}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			bool any = false;
@@ -1996,10 +1998,10 @@ namespace dnf_composer::user_interface
 					{
 						ImGui::SetCursorScreenPos({rowMin.x + avail - unlinkW, rowMin.y});
 						ImGui::PushFont(g_MediumIconsFont);
-						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0F, 0.0F, 0.0F, 0.12F));
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(1.0F, 0.0F, 0.0F, 0.22F));
-						ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(0.85F, 0.15F, 0.15F, 1.0F));
+						ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kDestructiveButtonHoverOverlay);
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kDestructiveButtonActiveOverlay);
+						ImGui::PushStyleColor(ImGuiCol_Text,          colour::kStopButtonText);
 						if (ImGui::Button(ICON_FA_LINK_SLASH, {unlinkW, selH}))
 						{
 							pendingRemoveTarget = tgt->getUniqueName();
@@ -2133,11 +2135,14 @@ namespace dnf_composer::user_interface
 			// Start button (red circle icon)
 			{
 				const bool canStart = hasSelection && !currentlyRecording;
-				const ImVec4 col = ImVec4(0.72F, 0.13F, 0.13F, canStart ? 1.0F : 0.4F);
+				const ImVec4 col = ImVec4(colour::kRecordButtonBase.x, colour::kRecordButtonBase.y,
+					colour::kRecordButtonBase.z, canStart ? 1.0F : 0.4F);
 				ImGui::PushStyleColor(ImGuiCol_Button,        col);
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(col.x * 0.85F, col.y * 0.85F, col.z * 0.85F, 1.0F));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(col.x * 0.70F, col.y * 0.70F, col.z * 0.70F, 1.0F));
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(col.x * colour::kAccentHoverDarkenStrong,
+					col.y * colour::kAccentHoverDarkenStrong, col.z * colour::kAccentHoverDarkenStrong, 1.0F));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(col.x * colour::kAccentActiveDarkenStrong,
+					col.y * colour::kAccentActiveDarkenStrong, col.z * colour::kAccentActiveDarkenStrong, 1.0F));
+				ImGui::PushStyleColor(ImGuiCol_Text, colour::kButtonTextOnAccent);
 				ImGui::BeginDisabled(!canStart);
 				const bool startPressed = ImGui::Button("    Record", { halfW, btnH });
 				ImGui::EndDisabled();
@@ -2151,7 +2156,7 @@ namespace dnf_composer::user_interface
 					const float  labelW = ImGui::CalcTextSize("    Record").x;
 					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
 					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
-					const ImU32  icol   = canStart ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+					const ImU32  icol   = canStart ? colour::kIconEnabled : colour::kIconDisabled;
 					ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 						{iconX, iconY}, icol, ICON_FA_CIRCLE);
 					ImGui::PopFont();
@@ -2180,10 +2185,10 @@ namespace dnf_composer::user_interface
 				ImGui::PushStyleColor(ImGuiCol_Button,
 					ImVec4(accent.x, accent.y, accent.z, alpha));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-					ImVec4(accent.x * 0.85F, accent.y * 0.85F, accent.z * 0.85F, 1.0F));
+					ImVec4(accent.x * colour::kAccentHoverDarkenStrong, accent.y * colour::kAccentHoverDarkenStrong, accent.z * colour::kAccentHoverDarkenStrong, 1.0F));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-					ImVec4(accent.x * 0.70F, accent.y * 0.70F, accent.z * 0.70F, 1.0F));
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+					ImVec4(accent.x * colour::kAccentActiveDarkenStrong, accent.y * colour::kAccentActiveDarkenStrong, accent.z * colour::kAccentActiveDarkenStrong, 1.0F));
+				ImGui::PushStyleColor(ImGuiCol_Text, colour::kButtonTextOnAccent);
 				ImGui::BeginDisabled(!currentlyRecording);
 				const bool stopPressed = ImGui::Button("    Stop", { halfW, btnH });
 				ImGui::EndDisabled();
@@ -2197,7 +2202,7 @@ namespace dnf_composer::user_interface
 					const float  labelW = ImGui::CalcTextSize("    Stop").x;
 					const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
 					const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
-					const ImU32  icol   = currentlyRecording ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+					const ImU32  icol   = currentlyRecording ? colour::kIconEnabled : colour::kIconDisabled;
 					ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 						{iconX, iconY}, icol, ICON_FA_STOP);
 					ImGui::PopFont();
@@ -2225,10 +2230,10 @@ namespace dnf_composer::user_interface
 			ImGui::PushStyleColor(ImGuiCol_Button,
 				ImVec4(accent.x, accent.y, accent.z, hasSelection ? 1.0F : accent.w));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
+				ImVec4(accent.x * colour::kAccentHoverDarken, accent.y * colour::kAccentHoverDarken, accent.z * colour::kAccentHoverDarken, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+				ImVec4(accent.x * colour::kAccentActiveDarken, accent.y * colour::kAccentActiveDarken, accent.z * colour::kAccentActiveDarken, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text, colour::kButtonTextOnAccent);
 			ImGui::BeginDisabled(!hasSelection);
 			const bool snapped = ImGui::Button("     Export", {-FLT_MIN, btnH});
 			ImGui::EndDisabled();
@@ -2242,7 +2247,7 @@ namespace dnf_composer::user_interface
 				const float  labelW = ImGui::CalcTextSize("     Export").x;
 				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
 				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
-				const ImU32  col    = hasSelection ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				const ImU32  col    = hasSelection ? colour::kIconEnabled : colour::kIconDisabled;
 				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 					{iconX, iconY}, col, ICON_FA_CAMERA);
 				ImGui::PopFont();
@@ -2301,7 +2306,7 @@ namespace dnf_composer::user_interface
 		const float maxListH = std::max(availH - btnH - ImGui::GetStyle().ItemSpacing.y, rowH);
 		const float listH    = std::min(static_cast<float>(std::max(matchCount, 1)) * rowH, maxListH);
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 		if (ImGui::BeginChild("##lp_list", {0, listH}, 0, ImGuiWindowFlags_NoSavedSettings))
 		{
 			const auto& style = ImGui::GetStyle();
@@ -2355,10 +2360,10 @@ namespace dnf_composer::user_interface
 			ImGui::PushStyleColor(ImGuiCol_Button,
 				ImVec4(accent.x, accent.y, accent.z, canLog ? 1.0F : accent.w));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-				ImVec4(accent.x * 0.9F, accent.y * 0.9F, accent.z * 0.9F, 1.0F));
+				ImVec4(accent.x * colour::kAccentHoverDarken, accent.y * colour::kAccentHoverDarken, accent.z * colour::kAccentHoverDarken, 1.0F));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-				ImVec4(accent.x * 0.8F, accent.y * 0.8F, accent.z * 0.8F, 1.0F));
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+				ImVec4(accent.x * colour::kAccentActiveDarken, accent.y * colour::kAccentActiveDarken, accent.z * colour::kAccentActiveDarken, 1.0F));
+			ImGui::PushStyleColor(ImGuiCol_Text, colour::kButtonTextOnAccent);
 			ImGui::BeginDisabled(!canLog);
 			const bool pressed = ImGui::Button("     Log to console", {-FLT_MIN, btnH});
 			ImGui::EndDisabled();
@@ -2372,7 +2377,7 @@ namespace dnf_composer::user_interface
 				const float  labelW = ImGui::CalcTextSize("     Log to console").x;
 				const float  iconX  = bMin.x + (bMax.x - bMin.x) * 0.5F - labelW * 0.5F;
 				const float  iconY  = bMin.y + (bMax.y - bMin.y - iconSz.y) * 0.5F;
-				const ImU32  col    = canLog ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 100);
+				const ImU32  col    = canLog ? colour::kIconEnabled : colour::kIconDisabled;
 				ImGui::GetWindowDrawList()->AddText(g_MediumIconsFont, g_MediumIconsFont->LegacySize,
 					{iconX, iconY}, col, ICON_FA_TERMINAL);
 				ImGui::PopFont();

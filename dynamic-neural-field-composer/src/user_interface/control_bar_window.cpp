@@ -2,6 +2,7 @@
 
 #include <array>
 #include <chrono>
+#include "user_interface/colour_registry.h"
 #include "user_interface/fonts/IconsFontAwesome6.h"
 
 
@@ -76,14 +77,9 @@ namespace dnf_composer::user_interface
             const float btnSz = ImGui::GetFrameHeight();
             const ImVec2 bSz(btnSz, btnSz);
 
-            constexpr auto kBg     = ImVec4(0.96F, 0.98F, 0.00F, 0.0F);
-            constexpr auto kHover  = ImVec4(0.878F, 0.878F, 0.878F, 1.0F);  // tone c
-            constexpr auto kActive = ImVec4(0.835F, 0.835F, 0.835F, 1.0F);
-            constexpr auto kRed   = ImVec4(0.8F, 0.1F, 0.1F, 1.0F);
-
-            ImGui::PushStyleColor(ImGuiCol_Button,        kBg);
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kHover);
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive,  kActive);
+            ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kToolbarButtonHovered);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kToolbarButtonActive);
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding,  6.0F * ui);
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,   ImVec2(0, 0));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0F);
@@ -105,7 +101,7 @@ namespace dnf_composer::user_interface
             const bool hResume = ImGui::IsItemHovered();
 
             ImGui::SameLine(0, 8);
-            ImGui::PushStyleColor(ImGuiCol_Text, kRed);
+            ImGui::PushStyleColor(ImGuiCol_Text, colour::kStopControlText);
             if (ImGui::Button(ICON_FA_STOP "##cb_stop",   bSz)) { simulation->close();
 }
             ImGui::PopStyleColor();
@@ -191,14 +187,10 @@ namespace dnf_composer::user_interface
             ImGui::SameLine(0, 6);
 
             const float btnSz = ImGui::GetFrameHeight();
-            constexpr auto kBg     = ImVec4(0.96F, 0.98F, 0.00F, 0.0F);
-            constexpr auto kHover  = ImVec4(0.878F, 0.878F, 0.878F, 1.0F);  // tone c
-            constexpr auto kActive = ImVec4(0.835F, 0.835F, 0.835F, 1.0F);
-
-            ImGui::PushStyleColor(ImGuiCol_Button,        kBg);
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, kHover);
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive,  kActive);
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+            ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kToolbarButtonHovered);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kToolbarButtonActive);
+            ImGui::PushStyleColor(ImGuiCol_Text, colour::kButtonTextOnAccent);
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0F * ui);
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0F);

@@ -6,6 +6,18 @@ on:
   pull_request:
     branches: [main]
 
+# All jobs only read the repository (checkout) and read/write the Actions cache
+# (vcpkg, sccache) -- neither needs more than read access to repository contents.
+permissions:
+  contents: read
+
+# A re-push to a PR makes the in-flight run obsolete; cancel it so the newest commit
+# gets the runners instead of queueing behind work nobody will read. Pushes to main
+# are never cancelled -- their coverage upload has to complete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build-and-test-linux:
     runs-on: ubuntu-latest
@@ -21,10 +33,22 @@ jobs:
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-linux
+      # Read by CMake on its first configure (imgui-platform-kit inside setup.sh, then
+      # this project) -- no script changes needed. Covers the sccache step below.
+      CMAKE_C_COMPILER_LAUNCHER: sccache
+      CMAKE_CXX_COMPILER_LAUNCHER: sccache
+      SCCACHE_GHA_ENABLED: "true"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # Installs the sccache binary and wires it to the GitHub Actions cache backend.
+      # Must run before any compile so CMAKE_CXX_COMPILER_LAUNCHER above resolves.
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       # ── System dependencies ────────────────────────────────────────────────
       - name: Install system dependencies
@@ -89,7 +113,7 @@ jobs:
       - name: Build (coverage)
         if: ${{ matrix.coverage }}
         working-directory: ./dynamic-neural-field-composer
-        run: cmake --build build/linux-debug --parallel $(nproc)
+        run: cmake --build build/linux-debug --target dnf_composer_tests --parallel "$(nproc)"
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests
@@ -137,19 +161,24 @@ jobs:
             echo "No example_* binaries found in $(pwd) -- examples/CMakeLists.txt or the build may have changed."
             exit 1
           fi
-          fail=0
-          for bin in "${binaries[@]}"; do
-            [ -x "$bin" ] || continue
+          # Each binary gets its own xvfb-run, which picks its own free display number,
+          # so running them concurrently is safe. -P $(nproc) caps parallelism to the
+          # runner's core count; -I{} runs one binary per xargs invocation so output from
+          # different binaries doesn't interleave mid-line.
+          printf '%s\n' "${binaries[@]}" | xargs -P "$(nproc)" -I{} bash -c '
+            bin="{}"
+            [ -x "$bin" ] || exit 0
             echo "::group::$bin"
             if xvfb-run -a --server-args="-screen 0 1280x1024x24" "./$bin"; then
               echo "OK: $bin"
             else
-              echo "FAILED: $bin (exit $?)"
-              fail=1
+              status=$?
+              echo "FAILED: $bin (exit $status)"
+              echo "::endgroup::"
+              exit 1
             fi
             echo "::endgroup::"
-          done
-          exit $fail
+          '
 
       # ── Coverage report (Debug matrix entry only) ──────────────────────────
       - name: Generate coverage report
@@ -185,22 +214,28 @@ jobs:
         include:
           - name: asan-ubsan
             build_dir: build/linux-asan
-            cxx_flags: "-fsanitize=address,undefined -fno-omit-frame-pointer -g"
+            cxx_flags: "-fsanitize=address,undefined -fno-omit-frame-pointer -g -O1"
             linker_flags: "-fsanitize=address,undefined"
           - name: tsan
             build_dir: build/linux-tsan
-            cxx_flags: "-fsanitize=thread -fno-omit-frame-pointer -g"
+            cxx_flags: "-fsanitize=thread -fno-omit-frame-pointer -g -O1"
             linker_flags: "-fsanitize=thread"
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-linux
+      CMAKE_C_COMPILER_LAUNCHER: sccache
+      CMAKE_CXX_COMPILER_LAUNCHER: sccache
+      SCCACHE_GHA_ENABLED: "true"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       # ── System dependencies ────────────────────────────────────────────────
       - name: Install system dependencies
@@ -254,7 +289,7 @@ jobs:
 
       - name: Build (${{ matrix.name }})
         working-directory: ./dynamic-neural-field-composer
-        run: cmake --build ${{ matrix.build_dir }} --parallel $(nproc)
+        run: cmake --build ${{ matrix.build_dir }} --target dnf_composer_tests --parallel "$(nproc)"
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests (ASan + UBSan)
@@ -284,9 +319,20 @@ jobs:
   build-and-test-windows:
     runs-on: windows-latest
 
+    # build.bat now takes an optional config argument (release/debug/no-argument-for-both).
+    # Splitting Release and Debug into parallel matrix legs -- instead of one job building
+    # both serially -- is what actually shortens the Windows critical path; Debug stays
+    # build-only, exactly the coverage the single job gave before this split.
+    strategy:
+      matrix:
+        config: [release, debug]
+
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-windows
+      CMAKE_C_COMPILER_LAUNCHER: sccache
+      CMAKE_CXX_COMPILER_LAUNCHER: sccache
+      SCCACHE_GHA_ENABLED: "true"
 
     defaults:
       run:
@@ -295,6 +341,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       # ── Normalize Windows paths for bash ──────────────────────────────────
       - name: Normalize paths
@@ -321,13 +372,16 @@ jobs:
         shell: cmd
         run: scripts\setup.bat
 
-      - name: Build
+      - name: Build (${{ matrix.config }})
         working-directory: ./dynamic-neural-field-composer
         shell: cmd
-        run: scripts\build.bat
+        run: scripts\build.bat ${{ matrix.config }}
 
       # ── Tests ──────────────────────────────────────────────────────────────
+      # Debug was never tested by this job before the split either -- only compiled --
+      # so this condition preserves the original behaviour exactly.
       - name: Run tests
+        if: matrix.config == 'release'
         working-directory: ./dynamic-neural-field-composer/build/x64-release
         shell: cmd
         run: |
@@ -339,10 +393,18 @@ jobs:
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      CMAKE_C_COMPILER_LAUNCHER: sccache
+      CMAKE_CXX_COMPILER_LAUNCHER: sccache
+      SCCACHE_GHA_ENABLED: "true"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       # ── Detect architecture and set vcpkg triplet ──────────────────────────
       - name: Set vcpkg triplet

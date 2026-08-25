@@ -112,7 +112,16 @@ namespace dnf_composer
 		protected:
 			FieldCouplingParameters parameters;
 			std::shared_ptr<Element> input;
-			std::shared_ptr<Element> output;
+
+			/// Cached downstream element that reads this coupling's output, refreshed
+			/// from the (non-owning, #168) base `Element::outputs` in updateOutputField().
+			/// Deliberately a weak_ptr, not a shared_ptr: that downstream element already
+			/// owns this coupling via its own `inputs`, so a strong reference back would
+			/// form the same two-way ownership cycle #168 fixed at the `Element::outputs`
+			/// level, just re-created one class down. Lock before use and treat an
+			/// expired lock the same as "no output field connected".
+			std::weak_ptr<Element> output;
+
 			std::shared_ptr<Element> targetField; ///< DELTA rule's teaching signal; nullptr if unconnected.
 			std::string inputSourceComponent{ "output" }; ///< Component read from `input` ("output" or "activation").
 			std::string targetSourceComponent{ "output" }; ///< Component read from `targetField` ("output" or "activation").
@@ -144,6 +153,13 @@ namespace dnf_composer
 			void removeInputs() override;
 			std::string toString() const override;
 			std::shared_ptr<Element> clone() const override;
+
+			/// @brief FieldCoupling maps an independently-sized input field to its own
+			/// output field through a learned weight matrix, so its "input" component is
+			/// deliberately sized from @c FieldCouplingParameters::inputFieldDimensions
+			/// rather than matching this element's own dimensions; it is exempt from the
+			/// base dimensionality/shape check accordingly.
+			[[nodiscard]] bool bridgesDimensions() const override { return true; }
 
 			/// @brief Resize the output field dimensions and rebuild the weight matrix.
 			/// Preserves input field dimensions and clears weights. Connections are not

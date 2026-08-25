@@ -1,6 +1,7 @@
 ﻿#include "tools/utils.h"
 
 #include <array>
+#include <exception>
 #include <mutex>
 
 #ifdef _WIN32
@@ -14,6 +15,12 @@
 #  include <climits>
 #  include <unistd.h>
 #endif
+
+// Included after the platform headers above: on Windows, wingdi.h (pulled in by
+// windows.h) can #define ERROR, and logger.h's own #undef ERROR guard only helps
+// if it runs after that happens.
+#include "exceptions/exception.h"
+#include "tools/logger.h"
 
 namespace dnf_composer::tools::utils
 {
@@ -162,6 +169,31 @@ namespace dnf_composer::tools::utils
 		}
 		return 0.0F;
 #endif
+	}
+
+	std::string describeElementCreationFailure(const std::function<void()>& createAndAdd)
+	{
+		try
+		{
+			createAndAdd();
+			return {};
+		}
+		catch (const Exception& ex)
+		{
+			// Already carries the element name and the ErrorCode.
+			logger::log(logger::ERROR, std::string("Could not add element: ") + ex.what());
+			return ex.what();
+		}
+		catch (const std::exception& ex)
+		{
+			logger::log(logger::ERROR, std::string("Could not add element: ") + ex.what());
+			return ex.what();
+		}
+		catch (...)
+		{
+			logger::log(logger::ERROR, "Could not add element: unknown error.");
+			return "Unknown error.";
+		}
 	}
 
 }

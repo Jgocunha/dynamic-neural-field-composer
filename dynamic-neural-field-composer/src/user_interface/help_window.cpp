@@ -4,6 +4,7 @@
 #include <cstdarg>
 
 #include "application/application.h"
+#include "user_interface/colour_registry.h"
 
 namespace dnf_composer::user_interface
 {
@@ -62,7 +63,7 @@ namespace dnf_composer::user_interface
 			ImGui::SameLine(ImGui::GetContentRegionMax().x - closeW);
 			ImGui::SetCursorPosY(startY + yOff);
 			ImGui::PushFont(g_MediumIconsFont);
-			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+			ImGui::PushStyleColor(ImGuiCol_Button,        colour::kFlatButtonBackground);
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
 			if (ImGui::Button(ICON_FA_XMARK))
@@ -78,7 +79,7 @@ namespace dnf_composer::user_interface
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0F, 0.0F, 0.0F, 0.0F));
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, colour::kTransparentChildBackground);
 			if (ImGui::BeginChild("##help_content", ImVec2(0.0F, 0.0F), 0, ImGuiWindowFlags_None))
 			{
 				switch (activePage)
@@ -105,7 +106,7 @@ namespace dnf_composer::user_interface
 	{
 		const ImVec4 accent  = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
 		const ImVec4 normal  = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-		const ImVec4 textSel(1.0F, 1.0F, 1.0F, 1.0F);
+		const ImVec4 textSel = colour::kButtonTextOnAccent;
 		const ImVec4 textNorm = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 
 		const float spacing = ImGui::GetStyle().ItemSpacing.x;

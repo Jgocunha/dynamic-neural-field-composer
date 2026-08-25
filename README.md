@@ -200,6 +200,8 @@ You can also write your own launcher, link against the library, and choose exact
 
 Bug fixes, new elements, documentation improvements, and example architectures are all welcome. Open an issue before starting non-trivial work so direction can be agreed on first. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full process.
 
+Using Claude Code on this repository? See [Helping Claude Help You](https://github.com/Jgocunha/dynamic-neural-field-composer/wiki/Helping-Claude-Help-You).
+
 ## License
 
 This project is licensed under the terms in [LICENSE](LICENSE).
