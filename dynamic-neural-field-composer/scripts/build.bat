@@ -1,4 +1,18 @@
 @echo off
+:: Wrap the whole script as a subroutine so every exit /b below returns here instead
+:: of closing the window outright -- a double-clicked .bat otherwise closes its console
+:: the instant it hits exit /b, taking any error message with it before it can be read.
+:: Skipped when CI is set (GitHub Actions sets it automatically for every run) so
+:: automated invocations never block waiting on a keypress.
+call :main %*
+set "EXITCODE=%ERRORLEVEL%"
+if not defined CI (
+    echo.
+    pause
+)
+exit /b %EXITCODE%
+
+:main
 setlocal EnableDelayedExpansion
 
 set SCRIPT_DIR=%~dp0
@@ -7,11 +21,19 @@ set IPK_INSTALL=%PROJECT_ROOT%\deps\ipk-install
 set IPK_RELEASE=%IPK_INSTALL%\release
 set IPK_DEBUG=%IPK_INSTALL%\debug
 
-:: Check if the environment variable is set
+:: Check if the environment variable is set. setup.bat persists VCPKG_ROOT with setx,
+:: which only reaches shells opened afterwards, so the very first build in the same
+:: terminal as setup would otherwise fail here. Fall back to the location setup.bat
+:: installs vcpkg to, but only if it actually holds a vcpkg.exe.
 IF NOT DEFINED VCPKG_ROOT (
-    echo ERROR: The environment variable VCPKG_ROOT is not set.
-    echo Run scripts\setup.bat first to install all dependencies automatically.
-    exit /b 1
+    if exist "C:\tools\vcpkg\vcpkg.exe" (
+        set "VCPKG_ROOT=C:\tools\vcpkg"
+        echo VCPKG_ROOT is not set; falling back to setup.bat's default install at C:\tools\vcpkg.
+    ) else (
+        echo ERROR: The environment variable VCPKG_ROOT is not set.
+        echo Run scripts\setup.bat first to install all dependencies automatically.
+        exit /b 1
+    )
 )
 
 :: Snapshot VCPKG_ROOT before vcvars. vcvars64.bat overwrites VCPKG_ROOT to point at
@@ -103,9 +125,11 @@ if /i not "%CONFIG%"=="debug" (
         -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
         -DCMAKE_BUILD_TYPE=Release ^
         -DCMAKE_PREFIX_PATH="%IPK_RELEASE%"
+    if errorlevel 1 exit /b 1
 
     REM Build Release
     cmake --build "%PROJECT_ROOT%\build\x64-release" --parallel
+    if errorlevel 1 exit /b 1
 )
 
 if /i not "%CONFIG%"=="release" (
@@ -123,7 +147,11 @@ if /i not "%CONFIG%"=="release" (
         -DCMAKE_BUILD_TYPE=Debug ^
         -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded ^
         -DCMAKE_PREFIX_PATH="%IPK_DEBUG%"
+    if errorlevel 1 exit /b 1
 
     REM Build Debug
     cmake --build "%PROJECT_ROOT%\build\x64-debug" --parallel
+    if errorlevel 1 exit /b 1
 )
+
+exit /b 0

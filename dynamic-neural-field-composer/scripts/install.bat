@@ -1,4 +1,18 @@
 @echo off
+:: Wrap the whole script as a subroutine so every exit /b below returns here instead
+:: of closing the window outright -- a double-clicked .bat otherwise closes its console
+:: the instant it hits exit /b, taking any error message with it before it can be read.
+:: Skipped when CI is set (GitHub Actions sets it automatically for every run) so
+:: automated invocations never block waiting on a keypress.
+call :main %*
+set "EXITCODE=%ERRORLEVEL%"
+if not defined CI (
+    echo.
+    pause
+)
+exit /b %EXITCODE%
+
+:main
 
 :: BatchGotAdmin
 :-------------------------------------

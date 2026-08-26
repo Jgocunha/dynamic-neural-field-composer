@@ -52,6 +52,8 @@ You do **not** need to install any of the following — the setup scripts handle
 | `unofficial-imgui-node-editor` | vcpkg | Visual node-graph editor |
 | `nlohmann-json` | vcpkg | Simulation serialization |
 | `gtest` | vcpkg | Unit testing framework |
+| `fftw3` | vcpkg | Spectral (FFT) convolution for wide kernels |
+| `benchmark` | vcpkg | Microbenchmark harness for the benchmark targets |
 | `imgui-platform-kit` | Built from source (cloned to `deps/`) | Platform/window abstraction |
 
 ---
@@ -124,6 +126,7 @@ cmake --build build/debug --config Debug
 | Option | Default | Description |
 |---|---|---|
 | `DNF_COMPOSER_BUILD_TESTS` | `ON` | Build the Google Test suite |
+| `DNF_COMPOSER_DEV_FALLBACK_PATHS` | `ON` | Embed the source-tree path as a fallback resource location for uninstalled (build-tree) binaries. Release builds set this `OFF` so no build-machine path is compiled in. |
 | `CMAKE_BUILD_TYPE` | — | `Release` or `Debug` |
 
 ---
@@ -223,6 +226,19 @@ Downstream projects can then find and link the library with:
 ```cmake
 find_package(dynamic-neural-field-composer REQUIRED)
 target_link_libraries(your_target PRIVATE dynamic-neural-field-composer)
+```
+
+The exported target's include path includes both `<prefix>/include` and
+`<prefix>/include/dnf_composer`, so `#include` headers either the same way the library's
+own sources do, or with the `dnf_composer/` prefix -- both resolve:
+
+```cpp
+#include "visualization/visualization.h"
+#include "elements/neural_field.h"
+
+// or, equivalently:
+#include "dnf_composer/visualization/visualization.h"
+#include "dnf_composer/elements/neural_field.h"
 ```
 
 ---

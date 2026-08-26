@@ -29,6 +29,33 @@ namespace dnf_composer::tools::utils
 		std::once_flag resourceRootOnce;
 		std::string resourceRootCache;
 
+		// PROJECT_DIR is only defined when the project is configured with
+		// DNF_COMPOSER_DEV_FALLBACK_PATHS=ON (the default -- see CMakeLists.txt).
+		// A release/packaging build can disable it so no build-machine path is
+		// compiled into the binary at all (#126); computeResourceRoot() then
+		// simply has no fallback to offer if resources/ isn't found next to the
+		// executable, which should never happen for a properly installed build.
+		std::string devFallbackPath()
+		{
+#ifdef PROJECT_DIR
+			return PROJECT_DIR;
+#else
+			return {};
+#endif
+		}
+	}
+
+	std::string resolveResourceRoot(const std::filesystem::path& exeDir, const std::string& devFallback)
+	{
+		const auto parent = std::filesystem::weakly_canonical(exeDir / "..");
+		if (std::filesystem::exists(parent / "resources")) {
+			return parent.string();
+		}
+		return devFallback;
+	}
+
+	namespace
+	{
 		std::string computeResourceRoot()
 		{
 			std::filesystem::path exeDir;
@@ -43,7 +70,7 @@ namespace dnf_composer::tools::utils
 				// buf was too small; size now holds the required length
 				std::string dynbuf(size, '\0');
 				if (_NSGetExecutablePath(dynbuf.data(), &size) != 0) {
-					return {PROJECT_DIR};
+					return devFallbackPath();
 				}
 				exeDir = std::filesystem::path(dynbuf).parent_path();
 			} else {
@@ -53,16 +80,12 @@ namespace dnf_composer::tools::utils
 			std::array<char, PATH_MAX> buf{};
 			const ssize_t len = readlink("/proc/self/exe", buf.data(), buf.size() - 1);
 			if (len <= 0) {
-				return {PROJECT_DIR};
+				return devFallbackPath();
 			}
 			buf.at(len) = '\0';
 			exeDir = std::filesystem::path(buf.data()).parent_path();
 #endif
-			const auto parent = std::filesystem::weakly_canonical(exeDir / "..");
-			if (std::filesystem::exists(parent / "resources")) {
-				return parent.string();
-}
-			return {PROJECT_DIR};
+			return resolveResourceRoot(exeDir, devFallbackPath());
 		}
 	}
 
@@ -70,6 +93,22 @@ namespace dnf_composer::tools::utils
 	{
 		std::call_once(resourceRootOnce, [] { resourceRootCache = computeResourceRoot(); });
 		return resourceRootCache;
+	}
+
+	std::string resolveOutputDirectory(const std::string& resourceRoot)
+	{
+		if (resourceRoot.empty()) {
+			throw Exception("getOutputDirectory(): no resource root available "
+			                 "(DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF and no resources/ "
+			                 "directory found next to the executable); refusing to "
+			                 "build a root-relative path.");
+		}
+		return resourceRoot + "/data";
+	}
+
+	std::string getOutputDirectory()
+	{
+		return resolveOutputDirectory(getResourceRoot());
 	}
 
 	int countNumOfLinesInFile(const std::string& filename)

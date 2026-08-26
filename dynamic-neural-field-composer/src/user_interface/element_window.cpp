@@ -8,6 +8,7 @@
 #include <cstring>
 #include <algorithm>
 #include <cctype>
+#include <format>
 #include <functional>
 
 #include "elements/neural_field.h"
@@ -387,7 +388,7 @@ namespace dnf_composer::user_interface
 			if (filtered.empty()) { continue;
 }
 
-			const std::string hdr = getElementTypeDisplayName(label) + "  \xc2\xb7  " + std::to_string(filtered.size());
+			const std::string hdr = std::format("{}  \xc2\xb7  {}", getElementTypeDisplayName(label), filtered.size());
 			ImGui::PushFont(g_BlackSmallFont);
 			ImGui::Text("%s", hdr.c_str());
 			ImGui::PopFont();
@@ -424,7 +425,7 @@ namespace dnf_composer::user_interface
 			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(color.x * colour::kCategoryHeaderHoverBrighten,
 				color.y * colour::kCategoryHeaderHoverBrighten, color.z * colour::kCategoryHeaderHoverBrighten, color.w));
 
-			std::string headerName = getElementTypeDisplayName(label) + " (" + std::to_string(elements.size()) + ")";
+			std::string headerName = std::format("{} ({})", getElementTypeDisplayName(label), elements.size());
 
 			if (ImGui::CollapsingHeader(headerName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 			{
@@ -1107,12 +1108,12 @@ namespace dnf_composer::user_interface
 					ImGui::TableSetColumnIndex(0);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs_s" + uid + std::to_string(i)).c_str(), &start, 0.1F, 0.0F, 1e6F, "%.2f");
+					ImGui::DragFloat(std::format("##tgs_s{}{}", uid, i).c_str(), &start, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(1);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs_e" + uid + std::to_string(i)).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
+					ImGui::DragFloat(std::format("##tgs_e{}{}", uid, i).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(2);
 					ImGui::PushStyleColor(ImGuiCol_Text, colour::kDestructiveText);
@@ -1120,7 +1121,7 @@ namespace dnf_composer::user_interface
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 					ImGui::PushFont(g_MediumIconsFont);
-					if (ImGui::Button((ICON_FA_TRASH "##tgs_del" + uid + std::to_string(i)).c_str())) {
+					if (ImGui::Button(std::format("{}##tgs_del{}{}", ICON_FA_TRASH, uid, i).c_str())) {
 						tgsDeleteIdx = i;
 }
 					ImGui::PopFont();
@@ -1251,12 +1252,12 @@ namespace dnf_composer::user_interface
 					ImGui::TableSetColumnIndex(0);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs2_s" + uid + std::to_string(i)).c_str(), &start, 0.1F, 0.0F, 1e6F, "%.2f");
+					ImGui::DragFloat(std::format("##tgs2_s{}{}", uid, i).c_str(), &start, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(1);
 					ImGui::SetNextItemWidth(-FLT_MIN);
 					ImGui::PushFont(g_MonoMediumFont);
-					ImGui::DragFloat(("##tgs2_e" + uid + std::to_string(i)).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
+					ImGui::DragFloat(std::format("##tgs2_e{}{}", uid, i).c_str(), &end, 0.1F, 0.0F, 1e6F, "%.2f");
 					ImGui::PopFont();
 					ImGui::TableSetColumnIndex(2);
 					ImGui::PushStyleColor(ImGuiCol_Text, colour::kDestructiveText);
@@ -1264,7 +1265,7 @@ namespace dnf_composer::user_interface
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colour::kFlatButtonHoverOverlay);
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive,  colour::kFlatButtonActiveOverlay);
 					ImGui::PushFont(g_MediumIconsFont);
-					if (ImGui::Button((ICON_FA_TRASH "##tgs2_del" + uid + std::to_string(i)).c_str())) {
+					if (ImGui::Button(std::format("{}##tgs2_del{}{}", ICON_FA_TRASH, uid, i).c_str())) {
 						tgs2DeleteIdx = i;
 }
 					ImGui::PopFont();
