@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Axis range and sampling step of a plot, in field/data coordinates.  
+ <a href="structdnf__composer_1_1PlotDimensions.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="plot__parameters_8h_source.html">plot_parameters.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::PlotDimensions:</div>
@@ -93,34 +96,48 @@ Collaboration diagram for dnf_composer::PlotDimensions:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8256b0ab7cae40976dbcd91489ba2aeb" id="r_a8256b0ab7cae40976dbcd91489ba2aeb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#a8256b0ab7cae40976dbcd91489ba2aeb">isLegal</a> () const</td></tr>
+<tr class="memdesc:a8256b0ab7cae40976dbcd91489ba2aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check that the bounds and steps form a valid, renderable plot range.  <br /></td></tr>
 <tr class="separator:a8256b0ab7cae40976dbcd91489ba2aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa8ec5524b29fdc45d946138d35aa814" id="r_afa8ec5524b29fdc45d946138d35aa814"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#afa8ec5524b29fdc45d946138d35aa814">operator==</a> (const <a class="el" href="structdnf__composer_1_1PlotDimensions.html">PlotDimensions</a> &amp;other) const</td></tr>
+<tr class="memdesc:afa8ec5524b29fdc45d946138d35aa814"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two dimensions for equality.  <br /></td></tr>
 <tr class="separator:afa8ec5524b29fdc45d946138d35aa814"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7cd639e056d759d531507e47a81d9d5" id="r_aa7cd639e056d759d531507e47a81d9d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#aa7cd639e056d759d531507e47a81d9d5">PlotDimensions</a> ()</td></tr>
+<tr class="memdesc:aa7cd639e056d759d531507e47a81d9d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct default (unset) dimensions.  <br /></td></tr>
 <tr class="separator:aa7cd639e056d759d531507e47a81d9d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cf95b4208cdf96fdd12826ff9068d8d" id="r_a3cf95b4208cdf96fdd12826ff9068d8d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#a3cf95b4208cdf96fdd12826ff9068d8d">PlotDimensions</a> (const double &amp;x_min, const double &amp;x_max, const double &amp;y_min, const double &amp;y_max, const double &amp;x_step, const double &amp;y_step)</td></tr>
+<tr class="memdesc:a3cf95b4208cdf96fdd12826ff9068d8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct explicit axis bounds and steps.  <br /></td></tr>
 <tr class="separator:a3cf95b4208cdf96fdd12826ff9068d8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2fa44ec139fcad958a0ab35588a0658" id="r_ae2fa44ec139fcad958a0ab35588a0658"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#ae2fa44ec139fcad958a0ab35588a0658">PlotDimensions</a> (double x_step)</td></tr>
+<tr class="memdesc:ae2fa44ec139fcad958a0ab35588a0658"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct dimensions with only the x sampling step set; bounds default to zero.  <br /></td></tr>
 <tr class="separator:ae2fa44ec139fcad958a0ab35588a0658"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d3269aa20d5e324f7acf9f85d4d7460" id="r_a2d3269aa20d5e324f7acf9f85d4d7460"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#a2d3269aa20d5e324f7acf9f85d4d7460">toString</a> () const</td></tr>
+<tr class="memdesc:a2d3269aa20d5e324f7acf9f85d4d7460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format the dimensions as a human-readable string.  <br /></td></tr>
 <tr class="separator:a2d3269aa20d5e324f7acf9f85d4d7460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a6fa368d118d05728ed4c2bd8823258ec" id="r_a6fa368d118d05728ed4c2bd8823258ec"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#a6fa368d118d05728ed4c2bd8823258ec">xMax</a></td></tr>
+<tr class="memdesc:a6fa368d118d05728ed4c2bd8823258ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper x bound.  <br /></td></tr>
 <tr class="separator:a6fa368d118d05728ed4c2bd8823258ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6f87b36a50545d46d8816fa7f8729e5" id="r_ae6f87b36a50545d46d8816fa7f8729e5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#ae6f87b36a50545d46d8816fa7f8729e5">xMin</a></td></tr>
+<tr class="memdesc:ae6f87b36a50545d46d8816fa7f8729e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower x bound.  <br /></td></tr>
 <tr class="separator:ae6f87b36a50545d46d8816fa7f8729e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8976eca34a2c5e4b140779f982d88dde" id="r_a8976eca34a2c5e4b140779f982d88dde"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#a8976eca34a2c5e4b140779f982d88dde">xStep</a></td></tr>
+<tr class="memdesc:a8976eca34a2c5e4b140779f982d88dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampling step along x.  <br /></td></tr>
 <tr class="separator:a8976eca34a2c5e4b140779f982d88dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48f6b6dee3a309768dac7fc461db7334" id="r_a48f6b6dee3a309768dac7fc461db7334"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#a48f6b6dee3a309768dac7fc461db7334">yMax</a></td></tr>
+<tr class="memdesc:a48f6b6dee3a309768dac7fc461db7334"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper y bound.  <br /></td></tr>
 <tr class="separator:a48f6b6dee3a309768dac7fc461db7334"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa6e176ef96f56dfb545cc06baf0136d" id="r_aaa6e176ef96f56dfb545cc06baf0136d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#aaa6e176ef96f56dfb545cc06baf0136d">yMin</a></td></tr>
+<tr class="memdesc:aaa6e176ef96f56dfb545cc06baf0136d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower y bound.  <br /></td></tr>
 <tr class="separator:aaa6e176ef96f56dfb545cc06baf0136d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e376b941fc97228c1b6648d5d8b5e93" id="r_a8e376b941fc97228c1b6648d5d8b5e93"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotDimensions.html#a8e376b941fc97228c1b6648d5d8b5e93">yStep</a></td></tr>
+<tr class="memdesc:a8e376b941fc97228c1b6648d5d8b5e93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampling step along y.  <br /></td></tr>
 <tr class="separator:a8e376b941fc97228c1b6648d5d8b5e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Axis range and sampling step of a plot, in field/data coordinates. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa7cd639e056d759d531507e47a81d9d5" name="aa7cd639e056d759d531507e47a81d9d5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa7cd639e056d759d531507e47a81d9d5">&#9670;&#160;</a></span>PlotDimensions() <span class="overload">[1/3]</span></h2>
 
@@ -135,6 +152,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Construct default (unset) dimensions. </p>
 
 </div>
 </div>
@@ -188,6 +207,19 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Construct explicit axis bounds and steps. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x_min</td><td>Lower x bound. </td></tr>
+    <tr><td class="paramname">x_max</td><td>Upper x bound. </td></tr>
+    <tr><td class="paramname">y_min</td><td>Lower y bound. </td></tr>
+    <tr><td class="paramname">y_max</td><td>Upper y bound. </td></tr>
+    <tr><td class="paramname">x_step</td><td>Sampling step along x. </td></tr>
+    <tr><td class="paramname">y_step</td><td>Sampling step along y. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ae2fa44ec139fcad958a0ab35588a0658" name="ae2fa44ec139fcad958a0ab35588a0658"></a>
@@ -214,6 +246,14 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Construct dimensions with only the x sampling step set; bounds default to zero. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x_step</td><td>Sampling step along x. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -231,6 +271,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Check that the bounds and steps form a valid, renderable plot range. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the dimensions are legal. </dd></dl>
 
 </div>
 </div>
@@ -250,6 +293,15 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Compare two dimensions for equality. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>Dimensions to compare against. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if all bounds and steps are equal. </dd></dl>
+
 </div>
 </div>
 <a id="a2d3269aa20d5e324f7acf9f85d4d7460" name="a2d3269aa20d5e324f7acf9f85d4d7460"></a>
@@ -266,6 +318,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Format the dimensions as a human-readable string. </p>
+<dl class="section return"><dt>Returns</dt><dd>A string describing the bounds and steps. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -287,6 +342,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Upper x bound. </p>
+
 </div>
 </div>
 <a id="ae6f87b36a50545d46d8816fa7f8729e5" name="ae6f87b36a50545d46d8816fa7f8729e5"></a>
@@ -300,6 +357,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Lower x bound. </p>
 
 </div>
 </div>
@@ -315,6 +374,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Sampling step along x. </p>
+
 </div>
 </div>
 <a id="a48f6b6dee3a309768dac7fc461db7334" name="a48f6b6dee3a309768dac7fc461db7334"></a>
@@ -328,6 +389,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Upper y bound. </p>
 
 </div>
 </div>
@@ -343,6 +406,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Lower y bound. </p>
+
 </div>
 </div>
 <a id="a8e376b941fc97228c1b6648d5d8b5e93" name="a8e376b941fc97228c1b6648d5d8b5e93"></a>
@@ -356,6 +421,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Sampling step along y. </p>
 
 </div>
 </div>

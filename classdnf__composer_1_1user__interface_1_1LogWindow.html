@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Console-style window listing accumulated log entries, with filtering and auto-scroll.  
+ <a href="classdnf__composer_1_1user__interface_1_1LogWindow.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="log__window_8h_source.html">log_window.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::LogWindow:</div>
@@ -100,6 +103,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a75dfb7f2f272573b6f2dc211435dbb15" id="r_a75dfb7f2f272573b6f2dc211435dbb15"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#a75dfb7f2f272573b6f2dc211435dbb15">LogWindow</a> ()</td></tr>
 <tr class="separator:a75dfb7f2f272573b6f2dc211435dbb15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3b7267161abb70f24421d6536ef82d5" id="r_ae3b7267161abb70f24421d6536ef82d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#ae3b7267161abb70f24421d6536ef82d5">render</a> () override</td></tr>
+<tr class="memdesc:ae3b7267161abb70f24421d6536ef82d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the log window for this frame.  <br /></td></tr>
 <tr class="separator:ae3b7267161abb70f24421d6536ef82d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff3afa30c2cdba872ad1980d52952ea4" id="r_aff3afa30c2cdba872ad1980d52952ea4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#aff3afa30c2cdba872ad1980d52952ea4">~LogWindow</a> () override=default</td></tr>
 <tr class="separator:aff3afa30c2cdba872ad1980d52952ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,17 +111,24 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:af567d0151a2faf7ab2a959d555858237" id="r_af567d0151a2faf7ab2a959d555858237"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#af567d0151a2faf7ab2a959d555858237">addLog</a> (const ImVec4 &amp;color, const char *fmt,...) IM_FMTARGS(2)</td></tr>
+<tr class="memdesc:af567d0151a2faf7ab2a959d555858237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a formatted log entry with an explicit color.  <br /></td></tr>
 <tr class="separator:af567d0151a2faf7ab2a959d555858237"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d984f65dc637661b2717b745c7a488d" id="r_a3d984f65dc637661b2717b745c7a488d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#a3d984f65dc637661b2717b745c7a488d">addLog</a> (<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd">tools::logger::LogLevel</a> level, const char *fmt,...) IM_FMTARGS(2)</td></tr>
+<tr class="memdesc:a3d984f65dc637661b2717b745c7a488d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a formatted log entry whose color is resolved from <code>level</code> when drawn.  <br /></td></tr>
 <tr class="separator:a3d984f65dc637661b2717b745c7a488d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6a5bff6ce04aef887a6813e22b7fd81" id="r_ad6a5bff6ce04aef887a6813e22b7fd81"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#ad6a5bff6ce04aef887a6813e22b7fd81">isActive</a> ()</td></tr>
+<tr class="memdesc:ad6a5bff6ce04aef887a6813e22b7fd81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the log window is currently open.  <br /></td></tr>
 <tr class="separator:ad6a5bff6ce04aef887a6813e22b7fd81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a0f1176d4b3205a5c0af2fb3a0ad0e3" id="r_a3a0f1176d4b3205a5c0af2fb3a0ad0e3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#a3a0f1176d4b3205a5c0af2fb3a0ad0e3">setActive</a> (bool v)</td></tr>
+<tr class="memdesc:a3a0f1176d4b3205a5c0af2fb3a0ad0e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open or close the log window.  <br /></td></tr>
 <tr class="separator:a3a0f1176d4b3205a5c0af2fb3a0ad0e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b97ba50d55710057ccdbae60f15f3e6" id="r_a0b97ba50d55710057ccdbae60f15f3e6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1LogWindow.html#a0b97ba50d55710057ccdbae60f15f3e6">setExpanded</a> (bool v)</td></tr>
+<tr class="memdesc:a0b97ba50d55710057ccdbae60f15f3e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set whether the log window is drawn in its expanded layout.  <br /></td></tr>
 <tr class="separator:a0b97ba50d55710057ccdbae60f15f3e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Console-style window listing accumulated log entries, with filtering and auto-scroll. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a75dfb7f2f272573b6f2dc211435dbb15" name="a75dfb7f2f272573b6f2dc211435dbb15"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a75dfb7f2f272573b6f2dc211435dbb15">&#9670;&#160;</a></span>LogWindow()</h2>
 
@@ -200,6 +211,15 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Append a formatted log entry with an explicit color. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>Text color to draw the entry with. </td></tr>
+    <tr><td class="paramname">fmt</td><td>printf-style format string. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -248,6 +268,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
+<p>Append a formatted log entry whose color is resolved from <code>level</code> when drawn. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">level</td><td>Severity the entry was logged at. </td></tr>
+    <tr><td class="paramname">fmt</td><td>printf-style format string. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ad6a5bff6ce04aef887a6813e22b7fd81" name="ad6a5bff6ce04aef887a6813e22b7fd81"></a>
@@ -273,6 +302,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
+<p>Check whether the log window is currently open. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the log window is active. </dd></dl>
+
 </div>
 </div>
 <a id="ae3b7267161abb70f24421d6536ef82d5" name="ae3b7267161abb70f24421d6536ef82d5"></a>
@@ -297,6 +329,8 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Draw the log window for this frame. </p>
 
 </div>
 </div>
@@ -324,6 +358,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
+<p>Open or close the log window. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>True to open the window, false to close it. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a0b97ba50d55710057ccdbae60f15f3e6" name="a0b97ba50d55710057ccdbae60f15f3e6"></a>
@@ -349,6 +391,14 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Set whether the log window is drawn in its expanded layout. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>True for the expanded layout, false for the compact one. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

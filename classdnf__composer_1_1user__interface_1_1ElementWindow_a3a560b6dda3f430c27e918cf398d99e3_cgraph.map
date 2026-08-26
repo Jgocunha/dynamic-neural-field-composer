@@ -1,10 +1,10 @@
 <map id="dnf_composer::user_interface::ElementWindow::renderElementControlCard" name="dnf_composer::user_interface::ElementWindow::renderElementControlCard">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,77,208,132"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ac97ae4e16bb752a7e94c88bc703234b5" title=" " alt="" coords="256,5,457,60"/>
+<area shape="rect" id="Node000001" title="Draw the &quot;Add elements&quot; card grid used to create new elements." alt="" coords="5,77,208,132"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ac97ae4e16bb752a7e94c88bc703234b5" title="Look up the display colour for an element type." alt="" coords="256,5,457,60"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,75,248,61,249,66,203,80"/>
 <area shape="rect" id="Node000004" href="$namespacednf__composer_1_1element.html#a55b0e0fb6529de014e86fa1380005bba" title="Category info for a label, or an UNKNOWN/grey fallback." alt="" coords="262,85,451,125"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="208,102,248,102,248,107,208,107"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title=" " alt="" coords="256,149,457,204"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title="Set the element whose parameters are shown for editing." alt="" coords="256,149,457,204"/>
 <area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="203,130,249,143,248,148,201,135"/>
 <area shape="rect" id="Node000003" href="$namespacednf__composer_1_1user__interface_1_1colour.html#aa402fb0332ae18a43f948480b9c8985b" title="Converts a packed ImU32 colour (as produced by IM_COL32) to an ImVec4, so a single ImU32 palette can ..." alt="" coords="519,5,669,60"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="458,30,505,30,505,35,458,35"/>

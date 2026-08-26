@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Format the line plot as a human&#45;readable string.">
 <polygon fill="#999999" stroke="#666666" points="131,-54 0,-54 0,-24 131,-24 131,-54"/>
 <text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::LinePlot</text>
 <text text-anchor="middle" x="65.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>
@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="structdnf__composer_1_1PlotCommonParameters.html#a0e9a7632cb1e21cec853bfc8e0eed413" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="structdnf__composer_1_1PlotCommonParameters.html#a0e9a7632cb1e21cec853bfc8e0eed413" target="_top" xlink:title="Format the parameters as a human&#45;readable string.">
 <polygon fill="white" stroke="#666666" points="337.5,-78 182.5,-78 182.5,-48 337.5,-48 337.5,-78"/>
 <text text-anchor="start" x="190.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotCommon</text>
 <text text-anchor="middle" x="260" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Parameters::toString</text>
@@ -40,7 +40,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="structdnf__composer_1_1LinePlotParameters.html#a6318a21826206df39f149358e7fb6cc0" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="structdnf__composer_1_1LinePlotParameters.html#a6318a21826206df39f149358e7fb6cc0" target="_top" xlink:title="Format the parameters as a human&#45;readable string.">
 <polygon fill="white" stroke="#666666" points="353,-30 167,-30 167,0 353,0 353,-30"/>
 <text text-anchor="start" x="175" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::LinePlotParameters</text>
 <text text-anchor="middle" x="260" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>
@@ -59,7 +59,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="structdnf__composer_1_1PlotDimensions.html#a2d3269aa20d5e324f7acf9f85d4d7460" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="structdnf__composer_1_1PlotDimensions.html#a2d3269aa20d5e324f7acf9f85d4d7460" target="_top" xlink:title="Format the dimensions as a human&#45;readable string.">
 <polygon fill="white" stroke="#666666" points="557.5,-102 389.5,-102 389.5,-72 557.5,-72 557.5,-102"/>
 <text text-anchor="start" x="397.5" y="-90" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotDimensions</text>
 <text text-anchor="middle" x="473.5" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>
@@ -78,7 +78,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html#aef0fb7926b0f41734d3ddba4c506ef1d" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html#aef0fb7926b0f41734d3ddba4c506ef1d" target="_top" xlink:title="Format the annotations as a human&#45;readable string.">
 <polygon fill="white" stroke="#666666" points="558,-54 389,-54 389,-24 558,-24 558,-54"/>
 <text text-anchor="start" x="397" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotAnnotations</text>
 <text text-anchor="middle" x="473.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>

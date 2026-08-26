@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Sidebar window for creating elements and editing the parameters of the focused one.  
+ <a href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="element__window_8h_source.html">element_window.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::ElementWindow:</div>
@@ -100,6 +103,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acb659b29d7a43325adeadfbf415d9fe9" id="r_acb659b29d7a43325adeadfbf415d9fe9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#acb659b29d7a43325adeadfbf415d9fe9">ElementWindow</a> (const <a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html">ElementWindow</a> &amp;)=delete</td></tr>
 <tr class="separator:acb659b29d7a43325adeadfbf415d9fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a67f052dc64254bdabdc7be1bfd78d2" id="r_a1a67f052dc64254bdabdc7be1bfd78d2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a1a67f052dc64254bdabdc7be1bfd78d2">ElementWindow</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation)</td></tr>
+<tr class="memdesc:a1a67f052dc64254bdabdc7be1bfd78d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the element window for a simulation.  <br /></td></tr>
 <tr class="separator:a1a67f052dc64254bdabdc7be1bfd78d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85ce0db7e7c829239c32a7683660ca22" id="r_a85ce0db7e7c829239c32a7683660ca22"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a85ce0db7e7c829239c32a7683660ca22">ElementWindow</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html">ElementWindow</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:a85ce0db7e7c829239c32a7683660ca22"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -108,10 +112,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab92b4c3d681e224e5554521cb4381cc4" id="r_ab92b4c3d681e224e5554521cb4381cc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html">ElementWindow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab92b4c3d681e224e5554521cb4381cc4">operator=</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html">ElementWindow</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:ab92b4c3d681e224e5554521cb4381cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a887f3bb041e6b782122c3e7638833cf5" id="r_a887f3bb041e6b782122c3e7638833cf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a887f3bb041e6b782122c3e7638833cf5">render</a> () override</td></tr>
+<tr class="memdesc:a887f3bb041e6b782122c3e7638833cf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the element window for this frame.  <br /></td></tr>
 <tr class="separator:a887f3bb041e6b782122c3e7638833cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a560b6dda3f430c27e918cf398d99e3" id="r_a3a560b6dda3f430c27e918cf398d99e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a3a560b6dda3f430c27e918cf398d99e3">renderElementControlCard</a> ()</td></tr>
+<tr class="memdesc:a3a560b6dda3f430c27e918cf398d99e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the "Add elements" card grid used to create new elements.  <br /></td></tr>
 <tr class="separator:a3a560b6dda3f430c27e918cf398d99e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6862f54d0879a28fed75f22bf8738ebf" id="r_a6862f54d0879a28fed75f22bf8738ebf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a6862f54d0879a28fed75f22bf8738ebf">renderModifyElementParameters</a> ()</td></tr>
+<tr class="memdesc:a6862f54d0879a28fed75f22bf8738ebf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the parameter-editing panel for the currently focused element.  <br /></td></tr>
 <tr class="separator:a6862f54d0879a28fed75f22bf8738ebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a895eef4eea5c9b267ca4ed532bf4c0bf" id="r_a895eef4eea5c9b267ca4ed532bf4c0bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a895eef4eea5c9b267ca4ed532bf4c0bf">~ElementWindow</a> () override=default</td></tr>
 <tr class="separator:a895eef4eea5c9b267ca4ed532bf4c0bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,13 +126,18 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ac97ae4e16bb752a7e94c88bc703234b5" id="r_ac97ae4e16bb752a7e94c88bc703234b5"><td class="memItemLeft" align="right" valign="top">static ImVec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#ac97ae4e16bb752a7e94c88bc703234b5">getColorForElementType</a> (<a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233bece">element::ElementLabel</a> label)</td></tr>
+<tr class="memdesc:ac97ae4e16bb752a7e94c88bc703234b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up the display colour for an element type.  <br /></td></tr>
 <tr class="separator:ac97ae4e16bb752a7e94c88bc703234b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6854aa3c9978809f0334b2f1e986548f" id="r_a6854aa3c9978809f0334b2f1e986548f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a6854aa3c9978809f0334b2f1e986548f">setFocusedElement</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt; &amp;element)</td></tr>
+<tr class="memdesc:a6854aa3c9978809f0334b2f1e986548f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the element highlighted as focused across the UI (e.g. from the node graph).  <br /></td></tr>
 <tr class="separator:a6854aa3c9978809f0334b2f1e986548f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab588d1eb8d31f86bfee1b99fe37c33a5" id="r_ab588d1eb8d31f86bfee1b99fe37c33a5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5">switchElementToModify</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1element_1_1Element.html">element::Element</a> &gt; &amp;element, const std::string &amp;simId={})</td></tr>
+<tr class="memdesc:ab588d1eb8d31f86bfee1b99fe37c33a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the element whose parameters are shown for editing.  <br /></td></tr>
 <tr class="separator:ab588d1eb8d31f86bfee1b99fe37c33a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Sidebar window for creating elements and editing the parameters of the focused one. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1a67f052dc64254bdabdc7be1bfd78d2" name="a1a67f052dc64254bdabdc7be1bfd78d2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1a67f052dc64254bdabdc7be1bfd78d2">&#9670;&#160;</a></span>ElementWindow() <span class="overload">[1/3]</span></h2>
 
@@ -149,6 +161,14 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Construct the element window for a simulation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">simulation</td><td><a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> whose elements are listed, added to, and edited. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -253,6 +273,15 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Look up the display colour for an element type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">label</td><td>Element type to look up. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The colour associated with <code>label</code>. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -340,6 +369,8 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Draw the element window for this frame. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -362,6 +393,8 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Draw the "Add elements" card grid used to create new elements. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -389,6 +422,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Draw the parameter-editing panel for the currently focused element. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -420,6 +455,14 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Set the element highlighted as focused across the UI (e.g. from the node graph). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">element</td><td>Element to focus. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -456,6 +499,15 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Set the element whose parameters are shown for editing. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">element</td><td>Element to switch the parameter panel to. </td></tr>
+    <tr><td class="paramname">simId</td><td>Id of the simulation <code>element</code> belongs to, when it differs from the window's own simulation (e.g. a coupled field in another sim). </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

@@ -97,7 +97,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" target="_top" xlink:title="Convenience free function: build a Logger and log message with it.">
 <polygon fill="white" stroke="#666666" points="478,-30 362,-30 362,0 478,0 478,-30"/>
 <text text-anchor="start" x="370" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="420" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::logger::log</text>
@@ -116,7 +116,7 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" target="_top" xlink:title="Emit message if this logger&#39;s configured level is at or above the global minimum level.">
 <polygon fill="white" stroke="#666666" points="630,-30 514,-30 514,0 630,0 630,-30"/>
 <text text-anchor="start" x="522" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="572" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::logger::Logger::log</text>
@@ -135,7 +135,7 @@
 <!-- Node8 -->
 <g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_Node000008"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" target="_top" xlink:title=" ">
+<g id="a_Node000008"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" target="_top" xlink:title="Portable wrapper around the platform&#39;s thread&#45;safe localtime conversion.">
 <polygon fill="white" stroke="#666666" points="788,-30 666,-30 666,0 788,0 788,-30"/>
 <text text-anchor="start" x="674" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="727" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::safe_localtime</text>

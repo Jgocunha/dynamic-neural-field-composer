@@ -11,7 +11,7 @@
 <!-- Node0 -->
 <g id="Node000000" class="node">
 <title>Node0</title>
-<g id="a_Node000000"><a xlink:href="structdnf__composer_1_1PlotSpecificParameters.html" target="_top" xlink:title=" ">
+<g id="a_Node000000"><a xlink:href="structdnf__composer_1_1PlotSpecificParameters.html" target="_top" xlink:title="Base for parameters specific to one plot type (e.g. line vs heatmap options).">
 <polygon fill="white" stroke="#666666" points="148,-42.5 0,-42.5 0,-12.5 148,-12.5 148,-42.5"/>
 <text text-anchor="start" x="8" y="-30.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotSpecific</text>
 <text text-anchor="middle" x="74" y="-19.5" font-family="Helvetica,sans-Serif" font-size="10.00">Parameters</text>
@@ -21,7 +21,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:href="structdnf__composer_1_1HeatmapParameters.html" target="_top" xlink:title=" ">
+<g id="a_Node000001"><a xlink:href="structdnf__composer_1_1HeatmapParameters.html" target="_top" xlink:title="Heatmap&#45;specific plot parameters: colour scale and dimension inference.">
 <polygon fill="white" stroke="#666666" points="376,-56 184,-56 184,-37 376,-37 376,-56"/>
 <text text-anchor="middle" x="280" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::HeatmapParameters</text>
 </a>
@@ -39,7 +39,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="structdnf__composer_1_1LinePlotParameters.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="structdnf__composer_1_1LinePlotParameters.html" target="_top" xlink:title="Line&#45;plot&#45;specific parameters: stroke thickness and axis auto&#45;fit.">
 <polygon fill="white" stroke="#666666" points="373,-19 187,-19 187,0 373,0 373,-19"/>
 <text text-anchor="middle" x="280" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::LinePlotParameters</text>
 </a>

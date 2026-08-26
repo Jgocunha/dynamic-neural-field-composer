@@ -1,12 +1,12 @@
 <map id="dnf_composer::user_interface::ElementWindow::render" name="dnf_composer::user_interface::ElementWindow::render">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,77,207,132"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#a3a560b6dda3f430c27e918cf398d99e3" title=" " alt="" coords="255,77,457,132"/>
+<area shape="rect" id="Node000001" title="Draw the element window for this frame." alt="" coords="5,77,207,132"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#a3a560b6dda3f430c27e918cf398d99e3" title="Draw the &quot;Add elements&quot; card grid used to create new elements." alt="" coords="255,77,457,132"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,102,241,102,241,107,207,107"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ac97ae4e16bb752a7e94c88bc703234b5" title=" " alt="" coords="505,5,707,60"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ac97ae4e16bb752a7e94c88bc703234b5" title="Look up the display colour for an element type." alt="" coords="505,5,707,60"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="451,75,497,61,499,66,452,80"/>
 <area shape="rect" id="Node000005" href="$namespacednf__composer_1_1element.html#a55b0e0fb6529de014e86fa1380005bba" title="Category info for a label, or an UNKNOWN/grey fallback." alt="" coords="511,85,701,125"/>
 <area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="458,102,497,102,497,107,458,107"/>
-<area shape="rect" id="Node000007" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title=" " alt="" coords="505,149,707,204"/>
+<area shape="rect" id="Node000007" href="$classdnf__composer_1_1user__interface_1_1ElementWindow.html#ab588d1eb8d31f86bfee1b99fe37c33a5" title="Set the element whose parameters are shown for editing." alt="" coords="505,149,707,204"/>
 <area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="452,130,499,143,497,148,451,135"/>
 <area shape="rect" id="Node000004" href="$namespacednf__composer_1_1user__interface_1_1colour.html#aa402fb0332ae18a43f948480b9c8985b" title="Converts a packed ImU32 colour (as produced by IM_COL32) to an ImVec4, so a single ImU32 palette can ..." alt="" coords="768,5,919,60"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="707,30,755,30,755,35,707,35"/>

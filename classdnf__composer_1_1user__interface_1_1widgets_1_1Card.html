@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Fixed-rectangle titled panel drawn as a child window.  
+ <a href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="widgets_8h_source.html">widgets.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::user_interface::widgets::Card:</div>
@@ -93,16 +96,21 @@ Collaboration diagram for dnf_composer::user_interface::widgets::Card:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad3f1b66c8cecbddce54b1e0b77062ae7" id="r_ad3f1b66c8cecbddce54b1e0b77062ae7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#ad3f1b66c8cecbddce54b1e0b77062ae7">beginCard</a> (const float &amp;uiScale) const</td></tr>
+<tr class="memdesc:ad3f1b66c8cecbddce54b1e0b77062ae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin the card's child window; must be paired with <a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#a01d3ef8d6d26372ecc155a5ab8565426" title="End a card window started with beginCard().">endCard()</a> if this returns true.  <br /></td></tr>
 <tr class="separator:ad3f1b66c8cecbddce54b1e0b77062ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dbb0538697e3cb710495a4680710b42" id="r_a7dbb0538697e3cb710495a4680710b42"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#a7dbb0538697e3cb710495a4680710b42">Card</a> (std::string id, const ImVec2 &amp;topLeftPosition, const ImVec2 &amp;size, std::string title)</td></tr>
+<tr class="memdesc:a7dbb0538697e3cb710495a4680710b42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a card at a fixed position and size.  <br /></td></tr>
 <tr class="separator:a7dbb0538697e3cb710495a4680710b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a01d3ef8d6d26372ecc155a5ab8565426" id="r_a01d3ef8d6d26372ecc155a5ab8565426"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#a01d3ef8d6d26372ecc155a5ab8565426">endCard</a> ()</td></tr>
+<tr class="memdesc:a01d3ef8d6d26372ecc155a5ab8565426"><td class="mdescLeft">&#160;</td><td class="mdescRight">End a card window started with <a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#ad3f1b66c8cecbddce54b1e0b77062ae7" title="Begin the card&#39;s child window; must be paired with endCard() if this returns true.">beginCard()</a>.  <br /></td></tr>
 <tr class="separator:a01d3ef8d6d26372ecc155a5ab8565426"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Fixed-rectangle titled panel drawn as a child window. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7dbb0538697e3cb710495a4680710b42" name="a7dbb0538697e3cb710495a4680710b42"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7dbb0538697e3cb710495a4680710b42">&#9670;&#160;</a></span>Card()</h2>
 
@@ -141,6 +149,17 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Construct a card at a fixed position and size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Unique ImGui id for the card's child window. </td></tr>
+    <tr><td class="paramname">topLeftPosition</td><td>Top-left corner of the card (screen coords). </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the card. </td></tr>
+    <tr><td class="paramname">title</td><td>Title drawn in the card's header. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -159,6 +178,15 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Begin the card's child window; must be paired with <a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#a01d3ef8d6d26372ecc155a5ab8565426" title="End a card window started with beginCard().">endCard()</a> if this returns true. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uiScale</td><td>Current UI scale factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the card is visible and <a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#a01d3ef8d6d26372ecc155a5ab8565426" title="End a card window started with beginCard().">endCard()</a> must be called. </dd></dl>
 
 </div>
 </div>
@@ -184,6 +212,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>End a card window started with <a class="el" href="classdnf__composer_1_1user__interface_1_1widgets_1_1Card.html#ad3f1b66c8cecbddce54b1e0b77062ae7" title="Begin the card&#39;s child window; must be paired with endCard() if this returns true.">beginCard()</a>. </p>
 
 </div>
 </div>

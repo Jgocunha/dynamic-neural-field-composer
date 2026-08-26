@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Draw the &quot;Log element parameters&quot; content pane.">
 <polygon fill="#999999" stroke="#666666" points="190,-59.5 0,-59.5 0,-18.5 190,-18.5 190,-59.5"/>
 <text text-anchor="start" x="8" y="-47.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="8" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -41,7 +41,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" target="_top" xlink:title="Convenience free function: build a Logger and log message with it.">
 <polygon fill="white" stroke="#666666" points="355,-30 239,-30 239,0 355,0 355,-30"/>
 <text text-anchor="start" x="247" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="297" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::logger::log</text>
@@ -79,7 +79,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" target="_top" xlink:title="Emit message if this logger&#39;s configured level is at or above the global minimum level.">
 <polygon fill="white" stroke="#666666" points="528.5,-30 412.5,-30 412.5,0 528.5,0 528.5,-30"/>
 <text text-anchor="start" x="420.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="470.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::logger::Logger::log</text>
@@ -98,7 +98,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" target="_top" xlink:title="Portable wrapper around the platform&#39;s thread&#45;safe localtime conversion.">
 <polygon fill="white" stroke="#666666" points="695,-30 573,-30 573,0 695,0 695,-30"/>
 <text text-anchor="start" x="581" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="634" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::safe_localtime</text>

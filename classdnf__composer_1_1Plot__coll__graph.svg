@@ -72,7 +72,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="structdnf__composer_1_1PlotCommonParameters.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="structdnf__composer_1_1PlotCommonParameters.html" target="_top" xlink:title="Parameters shared by every plot type: kind, axis range, and annotations.">
 <polygon fill="white" stroke="transparent" points="275,-366 126,-366 126,-231 275,-231 275,-366"/>
 <text text-anchor="start" x="131.5" y="-353.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotCommon</text>
 <text text-anchor="start" x="173" y="-342.5" font-family="Helvetica,sans-Serif" font-size="10.00">Parameters</text>
@@ -110,7 +110,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="structdnf__composer_1_1PlotDimensions.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="structdnf__composer_1_1PlotDimensions.html" target="_top" xlink:title="Axis range and sampling step of a plot, in field/data coordinates.">
 <polygon fill="white" stroke="transparent" points="213.5,-612 51.5,-612 51.5,-413 213.5,-413 213.5,-612"/>
 <text text-anchor="start" x="56.5" y="-599.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotDimensions</text>
 <text text-anchor="start" x="69.5" y="-584.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
@@ -157,7 +157,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html" target="_top" xlink:title="Title and axis labels of a plot.">
 <polygon fill="white" stroke="transparent" points="395,-559.5 232,-559.5 232,-465.5 395,-465.5 395,-559.5"/>
 <text text-anchor="start" x="237.5" y="-547.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotAnnotations</text>
 <text text-anchor="start" x="312" y="-532.5" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>

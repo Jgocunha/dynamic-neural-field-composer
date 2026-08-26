@@ -95,6 +95,7 @@ Collaboration diagram for dnf_composer::Visualization:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad98fe202167bff80ca7b5e438c9c061b" id="r_ad98fe202167bff80ca7b5e438c9c061b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#ad98fe202167bff80ca7b5e438c9c061b">clearWindowIdSuffix</a> ()</td></tr>
+<tr class="memdesc:ad98fe202167bff80ca7b5e438c9c061b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the ImGui window ID suffix set by <a class="el" href="classdnf__composer_1_1Visualization.html#a4178026c3c0c95c59ef18f5c66cca5a5" title="Set a suffix appended to all ImGui window IDs to avoid collisions.">setWindowIdSuffix()</a>.  <br /></td></tr>
 <tr class="separator:ad98fe202167bff80ca7b5e438c9c061b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac02f80ac8e4a148bc34c7ccb7ed2294d" id="r_ac02f80ac8e4a148bc34c7ccb7ed2294d"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Plot.html">Plot</a> &gt;, std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Visualization.html#ac02f80ac8e4a148bc34c7ccb7ed2294d">getPlots</a> ()</td></tr>
 <tr class="memdesc:ac02f80ac8e4a148bc34c7ccb7ed2294d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the full plots map (plot → data sources).  <br /></td></tr>
@@ -207,6 +208,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Clear the ImGui window ID suffix set by <a class="el" href="classdnf__composer_1_1Visualization.html#a4178026c3c0c95c59ef18f5c66cca5a5" title="Set a suffix appended to all ImGui window IDs to avoid collisions.">setWindowIdSuffix()</a>. </p>
+
 </div>
 </div>
 <a id="ac02f80ac8e4a148bc34c7ccb7ed2294d" name="ac02f80ac8e4a148bc34c7ccb7ed2294d"></a>
@@ -233,6 +236,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the full plots map (plot → data sources). </p>
+<dl class="section return"><dt>Returns</dt><dd>Map from each registered plot to its {element-name, component-name} data sources. </dd></dl>
 
 </div>
 </div>
@@ -260,6 +264,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the underlying simulation. </p>
+<dl class="section return"><dt>Returns</dt><dd>The simulation this visualization plots data from. </dd></dl>
 
 </div>
 </div>
@@ -302,6 +307,15 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Add a fully configured plot with a single data source. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameters</td><td>Common plot parameters (type, dimensions, annotations). </td></tr>
+    <tr><td class="paramname">specificParameters</td><td>Type-specific parameters (e.g. <a class="el" href="structdnf__composer_1_1LinePlotParameters.html" title="Line-plot-specific parameters: stroke thickness and axis auto-fit.">LinePlotParameters</a>). </td></tr>
+    <tr><td class="paramname">name</td><td>Element unique name. </td></tr>
+    <tr><td class="paramname">component</td><td>Component name (e.g. "activation", "output"). </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -346,7 +360,7 @@ Here is the call graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">parameters</td><td>Common plot parameters (type, dimensions, annotations). </td></tr>
-    <tr><td class="paramname">specificParameters</td><td>Type-specific parameters (e.g. <a class="el" href="structdnf__composer_1_1LinePlotParameters.html">LinePlotParameters</a>). </td></tr>
+    <tr><td class="paramname">specificParameters</td><td>Type-specific parameters (e.g. <a class="el" href="structdnf__composer_1_1LinePlotParameters.html" title="Line-plot-specific parameters: stroke thickness and axis auto-fit.">LinePlotParameters</a>). </td></tr>
     <tr><td class="paramname">data</td><td>List of {element-name, component-name} pairs. </td></tr>
   </table>
   </dd>
@@ -460,6 +474,14 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Add a single data source to an existing plot. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">plotId</td><td>Unique plot identifier. </td></tr>
+    <tr><td class="paramname">name</td><td>Element unique name. </td></tr>
+    <tr><td class="paramname">component</td><td>Component name (e.g. "activation", "output"). </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -577,6 +599,12 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Remove the plot with the given <code>plotId</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">plotId</td><td>Unique plot identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -712,6 +740,12 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Set a suffix appended to all ImGui window IDs to avoid collisions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>Suffix to append to plot window IDs. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

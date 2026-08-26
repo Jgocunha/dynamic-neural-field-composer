@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Modal-style help window with an "About"/"How to use"/"Quick tips"/"Resources" nav.  
+ <a href="classdnf__composer_1_1user__interface_1_1HelpWindow.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="help__window_8h_source.html">help_window.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::HelpWindow:</div>
@@ -100,6 +103,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a412e1c72f0a381857d880e301bea6106" id="r_a412e1c72f0a381857d880e301bea6106"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1HelpWindow.html#a412e1c72f0a381857d880e301bea6106">HelpWindow</a> ()=default</td></tr>
 <tr class="separator:a412e1c72f0a381857d880e301bea6106"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a780fd90b1187195ac6411d0ef7a1c85f" id="r_a780fd90b1187195ac6411d0ef7a1c85f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1HelpWindow.html#a780fd90b1187195ac6411d0ef7a1c85f">render</a> () override</td></tr>
+<tr class="memdesc:a780fd90b1187195ac6411d0ef7a1c85f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the help window for this frame.  <br /></td></tr>
 <tr class="separator:a780fd90b1187195ac6411d0ef7a1c85f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6950991f76430ba72b2ef2b661d842a0" id="r_a6950991f76430ba72b2ef2b661d842a0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1HelpWindow.html#a6950991f76430ba72b2ef2b661d842a0">~HelpWindow</a> () override=default</td></tr>
 <tr class="separator:a6950991f76430ba72b2ef2b661d842a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,11 +111,15 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:af1baa65e3f050a43d14be5469e13d6e3" id="r_af1baa65e3f050a43d14be5469e13d6e3"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1HelpWindow.html#af1baa65e3f050a43d14be5469e13d6e3">isActive</a> ()</td></tr>
+<tr class="memdesc:af1baa65e3f050a43d14be5469e13d6e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the help window is currently open.  <br /></td></tr>
 <tr class="separator:af1baa65e3f050a43d14be5469e13d6e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae726466aff5e8da8a9cf05ec89e0f4aa" id="r_ae726466aff5e8da8a9cf05ec89e0f4aa"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1HelpWindow.html#ae726466aff5e8da8a9cf05ec89e0f4aa">setActive</a> (bool v)</td></tr>
+<tr class="memdesc:ae726466aff5e8da8a9cf05ec89e0f4aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open or close the help window.  <br /></td></tr>
 <tr class="separator:ae726466aff5e8da8a9cf05ec89e0f4aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Modal-style help window with an "About"/"How to use"/"Quick tips"/"Resources" nav. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a412e1c72f0a381857d880e301bea6106" name="a412e1c72f0a381857d880e301bea6106"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a412e1c72f0a381857d880e301bea6106">&#9670;&#160;</a></span>HelpWindow()</h2>
 
@@ -186,6 +194,9 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Check whether the help window is currently open. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the help window is active. </dd></dl>
+
 </div>
 </div>
 <a id="a780fd90b1187195ac6411d0ef7a1c85f" name="a780fd90b1187195ac6411d0ef7a1c85f"></a>
@@ -210,6 +221,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Draw the help window for this frame. </p>
 
 </div>
 </div>
@@ -236,6 +249,14 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Open or close the help window. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>True to open the window, false to close it. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

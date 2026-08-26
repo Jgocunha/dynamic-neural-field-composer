@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Formats and dispatches a single log message to console and/or GUI.  
+ <a href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="logger_8h_source.html">logger.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::tools::logger::Logger:</div>
@@ -93,8 +96,10 @@ Collaboration diagram for dnf_composer::tools::logger::Logger:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:afb1ee0f96356dacc5d6ff7bde232982b" id="r_afb1ee0f96356dacc5d6ff7bde232982b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b">log</a> (const std::string &amp;message) const</td></tr>
+<tr class="memdesc:afb1ee0f96356dacc5d6ff7bde232982b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit <code>message</code> if this logger's configured level is at or above the global minimum level.  <br /></td></tr>
 <tr class="separator:afb1ee0f96356dacc5d6ff7bde232982b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69c7c0b1a7116c43871029ca74c42e6d" id="r_a69c7c0b1a7116c43871029ca74c42e6d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#a69c7c0b1a7116c43871029ca74c42e6d">Logger</a> (<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdd">LogLevel</a> level, <a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#a140699a0bf2e738ec68ba603bc082b6a">LogOutputMode</a> mode=<a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#a140699a0bf2e738ec68ba603bc082b6aa7e4785a2c3b0ebfe820639306f449f0b">ALL</a>)</td></tr>
+<tr class="memdesc:a69c7c0b1a7116c43871029ca74c42e6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a logger for one message.  <br /></td></tr>
 <tr class="separator:a69c7c0b1a7116c43871029ca74c42e6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
@@ -109,7 +114,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a65abc12235a2fe83e3158120e9c27e59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the callback that receives GUI-destined log messages.  <br /></td></tr>
 <tr class="separator:a65abc12235a2fe83e3158120e9c27e59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Formats and dispatches a single log message to console and/or GUI. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a69c7c0b1a7116c43871029ca74c42e6d" name="a69c7c0b1a7116c43871029ca74c42e6d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a69c7c0b1a7116c43871029ca74c42e6d">&#9670;&#160;</a></span>Logger()</h2>
 
@@ -135,6 +142,15 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Construct a logger for one message. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">level</td><td>Severity of the message. </td></tr>
+    <tr><td class="paramname">mode</td><td>Where the message should be delivered. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -183,6 +199,14 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Emit <code>message</code> if this logger's configured level is at or above the global minimum level. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">message</td><td>Text to log. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

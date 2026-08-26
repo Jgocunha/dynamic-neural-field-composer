@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Top control bar: simulation info, run/pause/stop buttons and timescale controls.  
+ <a href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="control__bar__window_8h_source.html">control_bar_window.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::ControlBarWindow:</div>
@@ -99,21 +102,26 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1fb2f64b8763a28803a44e9e777f1ec4" id="r_a1fb2f64b8763a28803a44e9e777f1ec4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#a1fb2f64b8763a28803a44e9e777f1ec4">ControlBarWindow</a> (const <a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html">ControlBarWindow</a> &amp;)=delete</td></tr>
 <tr class="separator:a1fb2f64b8763a28803a44e9e777f1ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9caf3ee2a65d28e12e281e26628fbac" id="r_ac9caf3ee2a65d28e12e281e26628fbac"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#ac9caf3ee2a65d28e12e281e26628fbac">ControlBarWindow</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation)</td></tr>
+<tr class="memdesc:ac9caf3ee2a65d28e12e281e26628fbac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the control bar for a simulation.  <br /></td></tr>
 <tr class="separator:ac9caf3ee2a65d28e12e281e26628fbac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af90769767068f64aa0e73127742d1726" id="r_af90769767068f64aa0e73127742d1726"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#af90769767068f64aa0e73127742d1726">ControlBarWindow</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html">ControlBarWindow</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:af90769767068f64aa0e73127742d1726"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7da52e3c03a2f225eb6459a43f61a37" id="r_ab7da52e3c03a2f225eb6459a43f61a37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#ab7da52e3c03a2f225eb6459a43f61a37">drawContents</a> () const</td></tr>
+<tr class="memdesc:ab7da52e3c03a2f225eb6459a43f61a37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the control bar's contents (info, control buttons, timescale).  <br /></td></tr>
 <tr class="separator:ab7da52e3c03a2f225eb6459a43f61a37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a247b9ca8c53fa9e501d410f084de18ae" id="r_a247b9ca8c53fa9e501d410f084de18ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html">ControlBarWindow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#a247b9ca8c53fa9e501d410f084de18ae">operator=</a> (const <a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html">ControlBarWindow</a> &amp;)=delete</td></tr>
 <tr class="separator:a247b9ca8c53fa9e501d410f084de18ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6634d644328ac0402e3894f0bac181b9" id="r_a6634d644328ac0402e3894f0bac181b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html">ControlBarWindow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#a6634d644328ac0402e3894f0bac181b9">operator=</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html">ControlBarWindow</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:a6634d644328ac0402e3894f0bac181b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32500213aa75be8bcc22761b88fc190d" id="r_a32500213aa75be8bcc22761b88fc190d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#a32500213aa75be8bcc22761b88fc190d">render</a> () override</td></tr>
+<tr class="memdesc:a32500213aa75be8bcc22761b88fc190d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the control bar for this frame.  <br /></td></tr>
 <tr class="separator:a32500213aa75be8bcc22761b88fc190d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a606b57f9722f303ea9ccc19c0e1580c5" id="r_a606b57f9722f303ea9ccc19c0e1580c5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html#a606b57f9722f303ea9ccc19c0e1580c5">~ControlBarWindow</a> () override=default</td></tr>
 <tr class="separator:a606b57f9722f303ea9ccc19c0e1580c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Top control bar: simulation info, run/pause/stop buttons and timescale controls. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac9caf3ee2a65d28e12e281e26628fbac" name="ac9caf3ee2a65d28e12e281e26628fbac"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9caf3ee2a65d28e12e281e26628fbac">&#9670;&#160;</a></span>ControlBarWindow() <span class="overload">[1/3]</span></h2>
 
@@ -137,6 +145,14 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Construct the control bar for a simulation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">simulation</td><td><a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> whose run state and timescale are shown/controlled. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -232,6 +248,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Draw the control bar's contents (info, control buttons, timescale). </p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -314,6 +332,8 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Draw the control bar for this frame. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

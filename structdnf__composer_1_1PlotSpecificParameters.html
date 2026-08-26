@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Base for parameters specific to one plot type (e.g. line vs heatmap options).  
+ <a href="structdnf__composer_1_1PlotSpecificParameters.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="plot__parameters_8h_source.html">plot_parameters.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::PlotSpecificParameters:</div>
@@ -97,13 +100,17 @@ Collaboration diagram for dnf_composer::PlotSpecificParameters:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:adde6c451ca5ed10460191b12a6607229" id="r_adde6c451ca5ed10460191b12a6607229"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotSpecificParameters.html#adde6c451ca5ed10460191b12a6607229">PlotSpecificParameters</a> ()=default</td></tr>
+<tr class="memdesc:adde6c451ca5ed10460191b12a6607229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct default (empty) plot-specific parameters.  <br /></td></tr>
 <tr class="separator:adde6c451ca5ed10460191b12a6607229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cd8ccad48c32d86369e9d3cafb370d9" id="r_a5cd8ccad48c32d86369e9d3cafb370d9"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotSpecificParameters.html#a5cd8ccad48c32d86369e9d3cafb370d9">toString</a> () const =0</td></tr>
+<tr class="memdesc:a5cd8ccad48c32d86369e9d3cafb370d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format the plot-type-specific parameters as a human-readable string.  <br /></td></tr>
 <tr class="separator:a5cd8ccad48c32d86369e9d3cafb370d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c47ba6e38140b3a6336bcc9c27394f1" id="r_a6c47ba6e38140b3a6336bcc9c27394f1"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotSpecificParameters.html#a6c47ba6e38140b3a6336bcc9c27394f1">~PlotSpecificParameters</a> ()=default</td></tr>
 <tr class="separator:a6c47ba6e38140b3a6336bcc9c27394f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Base for parameters specific to one plot type (e.g. line vs heatmap options). </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6c47ba6e38140b3a6336bcc9c27394f1" name="a6c47ba6e38140b3a6336bcc9c27394f1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c47ba6e38140b3a6336bcc9c27394f1">&#9670;&#160;</a></span>~PlotSpecificParameters()</h2>
 
@@ -152,6 +159,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Construct default (empty) plot-specific parameters. </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -177,6 +186,9 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Format the plot-type-specific parameters as a human-readable string. </p>
+<dl class="section return"><dt>Returns</dt><dd>A string describing the parameters. </dd></dl>
 
 <p>Implemented in <a class="el" href="structdnf__composer_1_1HeatmapParameters.html#abe341e9dba6443f458a9545fd21f8b27">dnf_composer::HeatmapParameters</a>, and <a class="el" href="structdnf__composer_1_1LinePlotParameters.html#a6318a21826206df39f149358e7fb6cc0">dnf_composer::LinePlotParameters</a>.</p>
 

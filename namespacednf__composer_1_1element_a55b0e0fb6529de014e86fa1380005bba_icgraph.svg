@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a3a560b6dda3f430c27e918cf398d99e3" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a3a560b6dda3f430c27e918cf398d99e3" target="_top" xlink:title="Draw the &quot;Add elements&quot; card grid used to create new elements.">
 <polygon fill="white" stroke="#666666" points="569,-159 417,-159 417,-118 569,-118 569,-159"/>
 <text text-anchor="start" x="425" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="425" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::ElementWindow</text>
@@ -41,7 +41,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" target="_top" xlink:title="Draw the &quot;Log element parameters&quot; content pane.">
 <polygon fill="white" stroke="#666666" points="588,-100 398,-100 398,-59 588,-59 588,-100"/>
 <text text-anchor="start" x="406" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="406" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -61,7 +61,7 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a58938ca889b91293bb674ffdef45b226" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a58938ca889b91293bb674ffdef45b226" target="_top" xlink:title="Draw the &quot;Remove element&quot; content pane.">
 <polygon fill="white" stroke="#666666" points="574.5,-41 411.5,-41 411.5,0 574.5,0 574.5,-41"/>
 <text text-anchor="start" x="419.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="419.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -81,7 +81,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a887f3bb041e6b782122c3e7638833cf5" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1user__interface_1_1ElementWindow.html#a887f3bb041e6b782122c3e7638833cf5" target="_top" xlink:title="Draw the element window for this frame.">
 <polygon fill="white" stroke="#666666" points="356,-159 205,-159 205,-118 356,-118 356,-159"/>
 <text text-anchor="start" x="213" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="213" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::ElementWindow</text>
@@ -101,7 +101,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title="Draw the sidebar&#39;s icon strip and the currently selected content pane.">
 <polygon fill="white" stroke="#666666" points="362,-71 199,-71 199,-30 362,-30 362,-71"/>
 <text text-anchor="start" x="207" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="207" y="-48" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -121,7 +121,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" target="_top" xlink:title="Draw the simulation window for this frame.">
 <polygon fill="white" stroke="#666666" points="163,-71 0,-71 0,-30 163,-30 163,-71"/>
 <text text-anchor="start" x="8" y="-59" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="8" y="-48" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>

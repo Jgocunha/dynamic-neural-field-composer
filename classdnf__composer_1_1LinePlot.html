@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>1D field/component plot rendered as a line.  
+ <a href="classdnf__composer_1_1LinePlot.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="lineplot_8h_source.html">lineplot.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::LinePlot:</div>
@@ -97,8 +100,10 @@ Collaboration diagram for dnf_composer::LinePlot:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abb209c1fa19cccef1d321d8a5d7d1bd9" id="r_abb209c1fa19cccef1d321d8a5d7d1bd9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1LinePlot.html#abb209c1fa19cccef1d321d8a5d7d1bd9">getAutoFit</a> () const</td></tr>
+<tr class="memdesc:abb209c1fa19cccef1d321d8a5d7d1bd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get whether axis limits auto-fit the plotted data.  <br /></td></tr>
 <tr class="separator:abb209c1fa19cccef1d321d8a5d7d1bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14eca513e936b545e05a2076c9e295ed" id="r_a14eca513e936b545e05a2076c9e295ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1LinePlot.html#a14eca513e936b545e05a2076c9e295ed">getLineThickness</a> () const</td></tr>
+<tr class="memdesc:a14eca513e936b545e05a2076c9e295ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current line stroke width.  <br /></td></tr>
 <tr class="separator:a14eca513e936b545e05a2076c9e295ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6bd697a173ea64cdcaa91a6130296a9" id="r_ac6bd697a173ea64cdcaa91a6130296a9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1LinePlot.html#ac6bd697a173ea64cdcaa91a6130296a9">LinePlot</a> (const <a class="el" href="structdnf__composer_1_1PlotCommonParameters.html">PlotCommonParameters</a> &amp;parameters={ <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66abdd402e16007eedd39f69adf0f10f88b">PlotType::LINE_PLOT</a>, {0.0, 100.0, -20.0, 20.0, 1.0, 1.0}, <a class="el" href="structdnf__composer_1_1PlotAnnotations.html">PlotAnnotations</a>{&quot;Line plot&quot;, &quot;Spatial dimension&quot;, &quot;Amplitude&quot;} }, <a class="el" href="structdnf__composer_1_1LinePlotParameters.html">LinePlotParameters</a> linePlotParameters=<a class="el" href="structdnf__composer_1_1LinePlotParameters.html">LinePlotParameters</a>())</td></tr>
 <tr class="memdesc:ac6bd697a173ea64cdcaa91a6130296a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a line plot.  <br /></td></tr>
@@ -107,26 +112,35 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a659d2055eeb1ace9847e646d6638235f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render the plot using the provided data and legends.  <br /></td></tr>
 <tr class="separator:a659d2055eeb1ace9847e646d6638235f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09f06a84b3ac3f2e9ceb0cbffc7ed6e3" id="r_a09f06a84b3ac3f2e9ceb0cbffc7ed6e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1LinePlot.html#a09f06a84b3ac3f2e9ceb0cbffc7ed6e3">setAutoFit</a> (bool autoFit)</td></tr>
+<tr class="memdesc:a09f06a84b3ac3f2e9ceb0cbffc7ed6e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set whether axis limits auto-fit the plotted data.  <br /></td></tr>
 <tr class="separator:a09f06a84b3ac3f2e9ceb0cbffc7ed6e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a911da76b643d3b7bccdfef4e133a0689" id="r_a911da76b643d3b7bccdfef4e133a0689"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1LinePlot.html#a911da76b643d3b7bccdfef4e133a0689">setLineThickness</a> (double lineThickness)</td></tr>
+<tr class="memdesc:a911da76b643d3b7bccdfef4e133a0689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the line stroke width.  <br /></td></tr>
 <tr class="separator:a911da76b643d3b7bccdfef4e133a0689"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c294653651ddc4841dc0186b4967cdb" id="r_a1c294653651ddc4841dc0186b4967cdb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1LinePlot.html#a1c294653651ddc4841dc0186b4967cdb">toString</a> () const override</td></tr>
+<tr class="memdesc:a1c294653651ddc4841dc0186b4967cdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format the line plot as a human-readable string.  <br /></td></tr>
 <tr class="separator:a1c294653651ddc4841dc0186b4967cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classdnf__composer_1_1Plot"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdnf__composer_1_1Plot')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdnf__composer_1_1Plot.html">dnf_composer::Plot</a></td></tr>
 <tr class="memitem:a9b3452f605387c32cf48fb3310f2dfa0 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a9b3452f605387c32cf48fb3310f2dfa0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1PlotAnnotations.html">PlotAnnotations</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a9b3452f605387c32cf48fb3310f2dfa0">getAnnotations</a> () const</td></tr>
+<tr class="memdesc:a9b3452f605387c32cf48fb3310f2dfa0 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's title and axis labels.  <br /></td></tr>
 <tr class="separator:a9b3452f605387c32cf48fb3310f2dfa0 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a886752fe658b70c145c0559a9b70f071 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a886752fe658b70c145c0559a9b70f071"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1PlotDimensions.html">PlotDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a886752fe658b70c145c0559a9b70f071">getDimensions</a> () const</td></tr>
+<tr class="memdesc:a886752fe658b70c145c0559a9b70f071 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's axis dimensions.  <br /></td></tr>
 <tr class="separator:a886752fe658b70c145c0559a9b70f071 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96e8a2ff44f8a7e388d97df4343f6b83 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a96e8a2ff44f8a7e388d97df4343f6b83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66">PlotType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a96e8a2ff44f8a7e388d97df4343f6b83">getType</a> () const</td></tr>
+<tr class="memdesc:a96e8a2ff44f8a7e388d97df4343f6b83 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's type.  <br /></td></tr>
 <tr class="separator:a96e8a2ff44f8a7e388d97df4343f6b83 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdc92b7eb2d23bff557a9250dcfb1787 inherit pub_methods_classdnf__composer_1_1Plot" id="r_afdc92b7eb2d23bff557a9250dcfb1787"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#afdc92b7eb2d23bff557a9250dcfb1787">getUniqueIdentifier</a> () const</td></tr>
+<tr class="memdesc:afdc92b7eb2d23bff557a9250dcfb1787 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's auto-assigned unique ID.  <br /></td></tr>
 <tr class="separator:afdc92b7eb2d23bff557a9250dcfb1787 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79a4083fddd52ce199d63bd60d259f7c inherit pub_methods_classdnf__composer_1_1Plot" id="r_a79a4083fddd52ce199d63bd60d259f7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a79a4083fddd52ce199d63bd60d259f7c">Plot</a> (<a class="el" href="structdnf__composer_1_1PlotCommonParameters.html">PlotCommonParameters</a> parameters=<a class="el" href="structdnf__composer_1_1PlotCommonParameters.html">PlotCommonParameters</a>())</td></tr>
 <tr class="memdesc:a79a4083fddd52ce199d63bd60d259f7c inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a plot with the given common parameters.  <br /></td></tr>
 <tr class="separator:a79a4083fddd52ce199d63bd60d259f7c inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5597e13e63853a282fc1bc1d44683469 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a5597e13e63853a282fc1bc1d44683469"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a5597e13e63853a282fc1bc1d44683469">setAnnotations</a> (const <a class="el" href="structdnf__composer_1_1PlotAnnotations.html">PlotAnnotations</a> &amp;annotations)</td></tr>
+<tr class="memdesc:a5597e13e63853a282fc1bc1d44683469 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the plot's title and axis labels.  <br /></td></tr>
 <tr class="separator:a5597e13e63853a282fc1bc1d44683469 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f40c59c87540c01a577c798b1447cc3 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a3f40c59c87540c01a577c798b1447cc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a3f40c59c87540c01a577c798b1447cc3">setDimensions</a> (const <a class="el" href="structdnf__composer_1_1PlotDimensions.html">PlotDimensions</a> &amp;dimensions)</td></tr>
+<tr class="memdesc:a3f40c59c87540c01a577c798b1447cc3 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the plot's axis dimensions.  <br /></td></tr>
 <tr class="separator:a3f40c59c87540c01a577c798b1447cc3 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d26cb4faec420ff8f63bd76e867b544 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a1d26cb4faec420ff8f63bd76e867b544"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a1d26cb4faec420ff8f63bd76e867b544">~Plot</a> ()=default</td></tr>
 <tr class="separator:a1d26cb4faec420ff8f63bd76e867b544 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,7 +159,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memdesc:a830e7517973883cd5321ff4bcb44065d inherit pro_static_attribs_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global counter for plot ID assignment (atomic: thread-safe construction).  <br /></td></tr>
 <tr class="separator:a830e7517973883cd5321ff4bcb44065d inherit pro_static_attribs_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>1D field/component plot rendered as a line. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac6bd697a173ea64cdcaa91a6130296a9" name="ac6bd697a173ea64cdcaa91a6130296a9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6bd697a173ea64cdcaa91a6130296a9">&#9670;&#160;</a></span>LinePlot()</h2>
 
@@ -187,7 +203,14 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdnf__composer_1_1Heatmap.html">Heatmap</a> for the rationale behind this asymmetry (#143). </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdnf__composer_1_1Heatmap.html" title="2D field/weight-matrix plot rendered as a colour-mapped grid.">Heatmap</a> for the rationale behind this asymmetry (#143). </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameters</td><td>Common plot parameters (type, dimensions, annotations). </td></tr>
+    <tr><td class="paramname">linePlotParameters</td><td>Line-plot-specific parameters (thickness, auto-fit). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -207,6 +230,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Get whether axis limits auto-fit the plotted data. </p>
+<dl class="section return"><dt>Returns</dt><dd>1.0 if auto-fit is enabled, 0.0 otherwise. </dd></dl>
+
 </div>
 </div>
 <a id="a14eca513e936b545e05a2076c9e295ed" name="a14eca513e936b545e05a2076c9e295ed"></a>
@@ -223,6 +249,9 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the current line stroke width. </p>
+<dl class="section return"><dt>Returns</dt><dd>The stroke width. </dd></dl>
 
 </div>
 </div>
@@ -289,6 +318,14 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Set whether axis limits auto-fit the plotted data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">autoFit</td><td>True to auto-fit axis limits. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a911da76b643d3b7bccdfef4e133a0689" name="a911da76b643d3b7bccdfef4e133a0689"></a>
@@ -306,6 +343,14 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Set the line stroke width. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lineThickness</td><td>New stroke width. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -331,6 +376,9 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Format the line plot as a human-readable string. </p>
+<dl class="section return"><dt>Returns</dt><dd>A string describing the line plot. </dd></dl>
 
 <p>Implements <a class="el" href="classdnf__composer_1_1Plot.html#a6fb6dc214a3cb53bc034adc1a0380b52">dnf_composer::Plot</a>.</p>
 <div class="dynheader">

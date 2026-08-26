@@ -98,6 +98,7 @@ Collaboration diagram for dnf_composer::user_interface::NodeGraphWindow::PinIdEn
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding_1_1Decoded.html">Decoded</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Result of decoding a raw pin id.  <a href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding_1_1Decoded.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
@@ -111,38 +112,49 @@ Public Types</h2></td></tr>
 &#160;&#160;<a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a2a64a2d4f380a99271cc6024b5acd30da4bbb8f967da6d1a610596d7257179c2b">Invalid</a>
 <br />
  }</td></tr>
+<tr class="memdesc:a2a64a2d4f380a99271cc6024b5acd30d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which side/role of an element a pin id encodes.  <a href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a2a64a2d4f380a99271cc6024b5acd30d">More...</a><br /></td></tr>
 <tr class="separator:a2a64a2d4f380a99271cc6024b5acd30d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a2f819bedca1c1d3c1b29f236ef4cb847" id="r_a2f819bedca1c1d3c1b29f236ef4cb847"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a2f819bedca1c1d3c1b29f236ef4cb847">activationPin</a> (int uid)</td></tr>
+<tr class="memdesc:a2f819bedca1c1d3c1b29f236ef4cb847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the activation pin id for an element.  <br /></td></tr>
 <tr class="separator:a2f819bedca1c1d3c1b29f236ef4cb847"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75fc4d3ddbc50c05f4e96b9ef027c49f" id="r_a75fc4d3ddbc50c05f4e96b9ef027c49f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding_1_1Decoded.html">Decoded</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a75fc4d3ddbc50c05f4e96b9ef027c49f">decode</a> (uint64_t rawPinId)</td></tr>
 <tr class="memdesc:a75fc4d3ddbc50c05f4e96b9ef027c49f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a raw pin id back into its kind and element uid. Returns <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a2a64a2d4f380a99271cc6024b5acd30da4bbb8f967da6d1a610596d7257179c2b">Kind::Invalid</a> for an id outside any known band (e.g. a stale id from a since-removed encoding).  <br /></td></tr>
 <tr class="separator:a75fc4d3ddbc50c05f4e96b9ef027c49f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03d9aeb4f6e4798cc033508b5c7b7420" id="r_a03d9aeb4f6e4798cc033508b5c7b7420"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a03d9aeb4f6e4798cc033508b5c7b7420">inputPin</a> (int uid)</td></tr>
+<tr class="memdesc:a03d9aeb4f6e4798cc033508b5c7b7420"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the input pin id for an element.  <br /></td></tr>
 <tr class="separator:a03d9aeb4f6e4798cc033508b5c7b7420"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d253a610a44c4a38ee8ec41e3e69dc5" id="r_a3d253a610a44c4a38ee8ec41e3e69dc5"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a3d253a610a44c4a38ee8ec41e3e69dc5">linkId</a> (int srcUid, int dstUid, bool isTargetSlot, bool isFromActivation=false)</td></tr>
 <tr class="memdesc:a3d253a610a44c4a38ee8ec41e3e69dc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distinguishes links that differ only in which pin they start/end at (e.g. Output-to-Input vs Activation-to-Input between the same pair of elements), so they never share an id.  <br /></td></tr>
 <tr class="separator:a3d253a610a44c4a38ee8ec41e3e69dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba243e95ddf8e1320f84ae3dc7d08c9f" id="r_aba243e95ddf8e1320f84ae3dc7d08c9f"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#aba243e95ddf8e1320f84ae3dc7d08c9f">outputPin</a> (int uid)</td></tr>
+<tr class="memdesc:aba243e95ddf8e1320f84ae3dc7d08c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the output pin id for an element.  <br /></td></tr>
 <tr class="separator:aba243e95ddf8e1320f84ae3dc7d08c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8879b6e77c60648b246f03bf08f1ef96" id="r_a8879b6e77c60648b246f03bf08f1ef96"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a8879b6e77c60648b246f03bf08f1ef96">targetPin</a> (int uid)</td></tr>
+<tr class="memdesc:a8879b6e77c60648b246f03bf08f1ef96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the target pin id for an element.  <br /></td></tr>
 <tr class="separator:a8879b6e77c60648b246f03bf08f1ef96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a62cb0ae8c970b82bbf1e72f4c256571c" id="r_a62cb0ae8c970b82bbf1e72f4c256571c"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a62cb0ae8c970b82bbf1e72f4c256571c">activationPinBase</a> = 4ULL * <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a98d15ba22972def085f342f4c05f1f3c">pinKindStride</a></td></tr>
+<tr class="memdesc:a62cb0ae8c970b82bbf1e72f4c256571c"><td class="mdescLeft">&#160;</td><td class="mdescRight">First id in the Activation-pin band.  <br /></td></tr>
 <tr class="separator:a62cb0ae8c970b82bbf1e72f4c256571c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fe2d67ca80ce35e44fb6f692ebf3af0" id="r_a1fe2d67ca80ce35e44fb6f692ebf3af0"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a1fe2d67ca80ce35e44fb6f692ebf3af0">inputPinBase</a> = 1ULL * <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a98d15ba22972def085f342f4c05f1f3c">pinKindStride</a></td></tr>
+<tr class="memdesc:a1fe2d67ca80ce35e44fb6f692ebf3af0"><td class="mdescLeft">&#160;</td><td class="mdescRight">First id in the Input-pin band.  <br /></td></tr>
 <tr class="separator:a1fe2d67ca80ce35e44fb6f692ebf3af0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0370a7ed6fc6a3bbf20155953bbb7a04" id="r_a0370a7ed6fc6a3bbf20155953bbb7a04"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a0370a7ed6fc6a3bbf20155953bbb7a04">linkIdBase</a> = 5ULL * <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a98d15ba22972def085f342f4c05f1f3c">pinKindStride</a></td></tr>
+<tr class="memdesc:a0370a7ed6fc6a3bbf20155953bbb7a04"><td class="mdescLeft">&#160;</td><td class="mdescRight">First id in the link-id band.  <br /></td></tr>
 <tr class="separator:a0370a7ed6fc6a3bbf20155953bbb7a04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3600241d7106d71ef8bb8bd469209ad" id="r_aa3600241d7106d71ef8bb8bd469209ad"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#aa3600241d7106d71ef8bb8bd469209ad">outputPinBase</a> = 3ULL * <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a98d15ba22972def085f342f4c05f1f3c">pinKindStride</a></td></tr>
+<tr class="memdesc:aa3600241d7106d71ef8bb8bd469209ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">First id in the Output-pin band.  <br /></td></tr>
 <tr class="separator:aa3600241d7106d71ef8bb8bd469209ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98d15ba22972def085f342f4c05f1f3c" id="r_a98d15ba22972def085f342f4c05f1f3c"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a98d15ba22972def085f342f4c05f1f3c">pinKindStride</a> = 1'000'000ULL</td></tr>
+<tr class="memdesc:a98d15ba22972def085f342f4c05f1f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of each kind's disjoint id band; must exceed any element uid.  <br /></td></tr>
 <tr class="separator:a98d15ba22972def085f342f4c05f1f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0204af1fd986f8e4656342035434f460" id="r_a0204af1fd986f8e4656342035434f460"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a0204af1fd986f8e4656342035434f460">targetPinBase</a> = 2ULL * <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a98d15ba22972def085f342f4c05f1f3c">pinKindStride</a></td></tr>
+<tr class="memdesc:a0204af1fd986f8e4656342035434f460"><td class="mdescLeft">&#160;</td><td class="mdescRight">First id in the Target-pin band.  <br /></td></tr>
 <tr class="separator:a0204af1fd986f8e4656342035434f460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -170,6 +182,8 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Which side/role of an element a pin id encodes. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a2a64a2d4f380a99271cc6024b5acd30da324118a6721dd6b8a9b9f4e327df2bf5" name="a2a64a2d4f380a99271cc6024b5acd30da324118a6721dd6b8a9b9f4e327df2bf5"></a>Input&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a2a64a2d4f380a99271cc6024b5acd30dac41a31890959544c6523af684561abe5" name="a2a64a2d4f380a99271cc6024b5acd30dac41a31890959544c6523af684561abe5"></a>Target&#160;</td><td class="fielddoc"></td></tr>
@@ -205,6 +219,15 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Encode the activation pin id for an element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uid</td><td>Element uid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The pin id. </dd></dl>
+
 </div>
 </div>
 <a id="a75fc4d3ddbc50c05f4e96b9ef027c49f" name="a75fc4d3ddbc50c05f4e96b9ef027c49f"></a>
@@ -232,6 +255,13 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Decode a raw pin id back into its kind and element uid. Returns <a class="el" href="structdnf__composer_1_1user__interface_1_1NodeGraphWindow_1_1PinIdEncoding.html#a2a64a2d4f380a99271cc6024b5acd30da4bbb8f967da6d1a610596d7257179c2b">Kind::Invalid</a> for an id outside any known band (e.g. a stale id from a since-removed encoding). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rawPinId</td><td>Pin id to decode. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The decoded kind and element uid. </dd></dl>
 
 </div>
 </div>
@@ -258,6 +288,15 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Encode the input pin id for an element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uid</td><td>Element uid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The pin id. </dd></dl>
 
 </div>
 </div>
@@ -308,6 +347,16 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Distinguishes links that differ only in which pin they start/end at (e.g. Output-to-Input vs Activation-to-Input between the same pair of elements), so they never share an id. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">srcUid</td><td>Uid of the source element. </td></tr>
+    <tr><td class="paramname">dstUid</td><td>Uid of the destination element. </td></tr>
+    <tr><td class="paramname">isTargetSlot</td><td>True if the link ends at a Target pin (vs an Input pin). </td></tr>
+    <tr><td class="paramname">isFromActivation</td><td>True if the link starts at an Activation pin (vs an Output pin). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The link id. </dd></dl>
 
 </div>
 </div>
@@ -335,6 +384,15 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Encode the output pin id for an element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uid</td><td>Element uid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The pin id. </dd></dl>
+
 </div>
 </div>
 <a id="a8879b6e77c60648b246f03bf08f1ef96" name="a8879b6e77c60648b246f03bf08f1ef96"></a>
@@ -361,6 +419,15 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Encode the target pin id for an element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uid</td><td>Element uid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The pin id. </dd></dl>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -384,6 +451,8 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>First id in the Activation-pin band. </p>
+
 </div>
 </div>
 <a id="a1fe2d67ca80ce35e44fb6f692ebf3af0" name="a1fe2d67ca80ce35e44fb6f692ebf3af0"></a>
@@ -405,6 +474,8 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>First id in the Input-pin band. </p>
 
 </div>
 </div>
@@ -428,6 +499,8 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>First id in the link-id band. </p>
+
 </div>
 </div>
 <a id="aa3600241d7106d71ef8bb8bd469209ad" name="aa3600241d7106d71ef8bb8bd469209ad"></a>
@@ -449,6 +522,8 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>First id in the Output-pin band. </p>
 
 </div>
 </div>
@@ -472,6 +547,8 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Size of each kind's disjoint id band; must exceed any element uid. </p>
+
 </div>
 </div>
 <a id="a0204af1fd986f8e4656342035434f460" name="a0204af1fd986f8e4656342035434f460"></a>
@@ -493,6 +570,8 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>First id in the Target-pin band. </p>
 
 </div>
 </div>

@@ -1,28 +1,28 @@
 <map id="dnf_composer::user_interface::SimulationWindow::render" name="dnf_composer::user_interface::SimulationWindow::render">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,203,223,257"/>
-<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" title=" " alt="" coords="271,203,488,257"/>
+<area shape="rect" id="Node000001" title="Draw the simulation window for this frame." alt="" coords="5,203,223,257"/>
+<area shape="rect" id="Node000002" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" title="Draw the sidebar&#39;s icon strip and the currently selected content pane." alt="" coords="271,203,488,257"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="223,227,257,227,257,233,223,233"/>
-<area shape="rect" id="Node000003" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#affb52c7f20aea6a3f5b1c62285bf6438" title=" " alt="" coords="554,5,771,60"/>
+<area shape="rect" id="Node000003" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#affb52c7f20aea6a3f5b1c62285bf6438" title="Draw the &quot;Add element&quot; content pane." alt="" coords="554,5,771,60"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="399,201,455,135,493,100,535,69,544,64,547,68,537,74,496,104,459,139,403,204"/>
-<area shape="rect" id="Node000009" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" title=" " alt="" coords="554,241,771,296"/>
+<area shape="rect" id="Node000009" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" title="Draw the &quot;Data&quot; content pane." alt="" coords="554,241,771,296"/>
 <area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="489,242,541,249,540,255,488,247"/>
-<area shape="rect" id="Node000013" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" title=" " alt="" coords="536,84,789,139"/>
+<area shape="rect" id="Node000013" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" title="Draw the &quot;Log element parameters&quot; content pane." alt="" coords="536,84,789,139"/>
 <area shape="poly" id="edge13_Node000002_Node000013" title=" " alt="" coords="427,200,479,173,535,148,552,141,554,146,537,152,481,178,430,205"/>
-<area shape="rect" id="Node000016" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab231a4f0beb49a70451d8dc65baaa483" title=" " alt="" coords="554,320,771,375"/>
+<area shape="rect" id="Node000016" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab231a4f0beb49a70451d8dc65baaa483" title="Draw the &quot;Monitoring&quot; content pane." alt="" coords="554,320,771,375"/>
 <area shape="poly" id="edge17_Node000002_Node000016" title=" " alt="" coords="430,255,537,306,554,313,552,318,535,311,428,260"/>
-<area shape="rect" id="Node000018" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a58938ca889b91293bb674ffdef45b226" title=" " alt="" coords="554,163,771,217"/>
+<area shape="rect" id="Node000018" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a58938ca889b91293bb674ffdef45b226" title="Draw the &quot;Remove element&quot; content pane." alt="" coords="554,163,771,217"/>
 <area shape="poly" id="edge19_Node000002_Node000018" title=" " alt="" coords="488,212,540,205,541,210,489,217"/>
-<area shape="rect" id="Node000019" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a1752634b611833df6dc90fe09952eaef" title=" " alt="" coords="554,399,771,453"/>
+<area shape="rect" id="Node000019" href="$classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a1752634b611833df6dc90fe09952eaef" title="Draw the &quot;Set interaction&quot; content pane." alt="" coords="554,399,771,453"/>
 <area shape="poly" id="edge21_Node000002_Node000019" title=" " alt="" coords="403,256,459,321,496,355,537,385,547,390,544,395,535,390,493,359,455,324,399,259"/>
 <area shape="rect" id="Node000004" href="$namespacednf__composer_1_1tools_1_1utils.html#a3ca715863a6dcaec1bae0e06d949b7ff" title="Run a step and turn any failure into a message." alt="" coords="837,12,1068,67"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="771,32,823,34,823,39,771,38"/>
-<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title=" " alt="" coords="1135,91,1289,131"/>
+<area shape="rect" id="Node000005" href="$namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" title="Convenience free function: build a Logger and log message with it." alt="" coords="1135,91,1289,131"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1052,64,1127,85,1125,90,1051,69"/>
 <area shape="rect" id="Node000008" href="$classdnf__composer_1_1Exception.html#a52961c9cc2656b73d7767f5a3840a4b5" title=" " alt="" coords="1119,19,1305,59"/>
 <area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="1068,37,1105,37,1105,42,1068,42"/>
-<area shape="rect" id="Node000006" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title=" " alt="" coords="1356,91,1511,131"/>
+<area shape="rect" id="Node000006" href="$classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" title="Emit message if this logger&#39;s configured level is at or above the global minimum level." alt="" coords="1356,91,1511,131"/>
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1290,109,1342,109,1342,114,1290,114"/>
-<area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" title=" " alt="" coords="1559,91,1721,131"/>
+<area shape="rect" id="Node000007" href="$namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2" title="Portable wrapper around the platform&#39;s thread&#45;safe localtime conversion." alt="" coords="1559,91,1721,131"/>
 <area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1511,109,1545,109,1545,114,1511,114"/>
 <area shape="rect" id="Node000010" href="$classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/..." alt="" coords="857,245,1049,285"/>
 <area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="771,265,843,264,843,269,771,270"/>
@@ -36,7 +36,7 @@
 <area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="776,136,857,156,856,161,775,141"/>
 <area shape="rect" id="Node000015" href="$namespacednf__composer_1_1element.html#add3a3ba11f87c3c31b3060e2bb378635" title="Maps every ElementLabel to its category info. The one place UI panels resolve an element&#39;s type/categ..." alt="" coords="1123,162,1301,202"/>
 <area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="1047,179,1110,179,1110,185,1047,185"/>
-<area shape="rect" id="Node000017" href="$classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#aeea6cfdef3cefb8f22fbcf50679651fe" title=" " alt="" coords="839,320,1066,375"/>
+<area shape="rect" id="Node000017" href="$classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#aeea6cfdef3cefb8f22fbcf50679651fe" title="Draw a stability card for each neural field in simulation." alt="" coords="839,320,1066,375"/>
 <area shape="poly" id="edge18_Node000016_Node000017" title=" " alt="" coords="771,345,826,345,826,350,771,350"/>
 <area shape="poly" id="edge20_Node000018_Node000014" title=" " alt="" coords="771,184,844,182,844,188,771,190"/>
 </map>

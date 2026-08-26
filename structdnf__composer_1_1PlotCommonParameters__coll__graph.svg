@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Parameters shared by every plot type: kind, axis range, and annotations.">
 <polygon fill="#999999" stroke="transparent" points="200.5,-135 51.5,-135 51.5,0 200.5,0 200.5,-135"/>
 <text text-anchor="start" x="57" y="-122.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotCommon</text>
 <text text-anchor="start" x="98.5" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">Parameters</text>
@@ -39,7 +39,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="structdnf__composer_1_1PlotDimensions.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="structdnf__composer_1_1PlotDimensions.html" target="_top" xlink:title="Axis range and sampling step of a plot, in field/data coordinates.">
 <polygon fill="white" stroke="transparent" points="162,-381 0,-381 0,-182 162,-182 162,-381"/>
 <text text-anchor="start" x="5" y="-368.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotDimensions</text>
 <text text-anchor="start" x="18" y="-353.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
@@ -86,7 +86,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html" target="_top" xlink:title="Title and axis labels of a plot.">
 <polygon fill="white" stroke="transparent" points="343.5,-328.5 180.5,-328.5 180.5,-234.5 343.5,-234.5 343.5,-328.5"/>
 <text text-anchor="start" x="186" y="-316.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotAnnotations</text>
 <text text-anchor="start" x="260.5" y="-301.5" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>

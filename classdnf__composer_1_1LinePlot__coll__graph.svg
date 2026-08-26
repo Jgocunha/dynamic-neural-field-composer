@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="1D field/component plot rendered as a line.">
 <polygon fill="#999999" stroke="transparent" points="188,-139 63,-139 63,0 188,0 188,-139"/>
 <text text-anchor="start" x="68.5" y="-126.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::LinePlot</text>
 <text text-anchor="start" x="124" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
@@ -108,7 +108,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="structdnf__composer_1_1PlotCommonParameters.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="structdnf__composer_1_1PlotCommonParameters.html" target="_top" xlink:title="Parameters shared by every plot type: kind, axis range, and annotations.">
 <polygon fill="white" stroke="transparent" points="275,-542 126,-542 126,-407 275,-407 275,-542"/>
 <text text-anchor="start" x="131.5" y="-529.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotCommon</text>
 <text text-anchor="start" x="173" y="-518.5" font-family="Helvetica,sans-Serif" font-size="10.00">Parameters</text>
@@ -146,7 +146,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="structdnf__composer_1_1PlotDimensions.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="structdnf__composer_1_1PlotDimensions.html" target="_top" xlink:title="Axis range and sampling step of a plot, in field/data coordinates.">
 <polygon fill="white" stroke="transparent" points="213.5,-788 51.5,-788 51.5,-589 213.5,-589 213.5,-788"/>
 <text text-anchor="start" x="56.5" y="-775.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotDimensions</text>
 <text text-anchor="start" x="69.5" y="-760.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
@@ -193,7 +193,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="structdnf__composer_1_1PlotAnnotations.html" target="_top" xlink:title="Title and axis labels of a plot.">
 <polygon fill="white" stroke="transparent" points="395,-735.5 232,-735.5 232,-641.5 395,-641.5 395,-735.5"/>
 <text text-anchor="start" x="237.5" y="-723.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::PlotAnnotations</text>
 <text text-anchor="start" x="312" y="-708.5" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>

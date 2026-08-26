@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Format the parameters as a human&#45;readable string.">
 <polygon fill="#999999" stroke="#666666" points="353,-30 167,-30 167,0 353,0 353,-30"/>
 <text text-anchor="start" x="175" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::LinePlotParameters</text>
 <text text-anchor="middle" x="260" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>
@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1LinePlot.html#a1c294653651ddc4841dc0186b4967cdb" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1LinePlot.html#a1c294653651ddc4841dc0186b4967cdb" target="_top" xlink:title="Format the line plot as a human&#45;readable string.">
 <polygon fill="white" stroke="#666666" points="131,-30 0,-30 0,0 131,0 131,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::LinePlot</text>
 <text text-anchor="middle" x="65.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>

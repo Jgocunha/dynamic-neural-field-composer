@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Format the parameters as a human&#45;readable string.">
 <polygon fill="#999999" stroke="#666666" points="365,-30 173,-30 173,0 365,0 365,-30"/>
 <text text-anchor="start" x="181" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::HeatmapParameters</text>
 <text text-anchor="middle" x="269" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>
@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1Heatmap.html#a8f810a3846757374ca3675b62c195801" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1Heatmap.html#a8f810a3846757374ca3675b62c195801" target="_top" xlink:title="Format the heatmap as a human&#45;readable string.">
 <polygon fill="white" stroke="#666666" points="137,-30 0,-30 0,0 137,0 137,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Heatmap</text>
 <text text-anchor="middle" x="68.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::toString</text>

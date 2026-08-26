@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Scoped timer that prints its elapsed lifetime when destroyed.  
+ <a href="classdnf__composer_1_1tools_1_1profiling_1_1Timer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="profiling_8h_source.html">profiling.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::tools::profiling::Timer:</div>
@@ -92,11 +95,14 @@ Collaboration diagram for dnf_composer::tools::profiling::Timer:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae5201c9352fce220aa0d95a46790837b" id="r_ae5201c9352fce220aa0d95a46790837b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1tools_1_1profiling_1_1Timer.html#ae5201c9352fce220aa0d95a46790837b">Timer</a> (std::string signature=&quot;something that takes time&quot;, std::ostream &amp;outStream=std::cout)</td></tr>
+<tr class="memdesc:ae5201c9352fce220aa0d95a46790837b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start timing. The elapsed time is reported when the timer is destroyed.  <br /></td></tr>
 <tr class="separator:ae5201c9352fce220aa0d95a46790837b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9255b142007e335fdba01ee04436b2e5" id="r_a9255b142007e335fdba01ee04436b2e5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1tools_1_1profiling_1_1Timer.html#a9255b142007e335fdba01ee04436b2e5">~Timer</a> ()</td></tr>
 <tr class="separator:a9255b142007e335fdba01ee04436b2e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Scoped timer that prints its elapsed lifetime when destroyed. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae5201c9352fce220aa0d95a46790837b" name="ae5201c9352fce220aa0d95a46790837b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae5201c9352fce220aa0d95a46790837b">&#9670;&#160;</a></span>Timer()</h2>
 
@@ -122,6 +128,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Start timing. The elapsed time is reported when the timer is destroyed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">signature</td><td>Label printed alongside the elapsed time. </td></tr>
+    <tr><td class="paramname">outStream</td><td>Stream the elapsed time is written to. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

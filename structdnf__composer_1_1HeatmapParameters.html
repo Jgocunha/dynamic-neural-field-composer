@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Heatmap-specific plot parameters: colour scale and dimension inference.  
+ <a href="structdnf__composer_1_1HeatmapParameters.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="heatmap_8h_source.html">heatmap.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::HeatmapParameters:</div>
@@ -98,15 +101,20 @@ Collaboration diagram for dnf_composer::HeatmapParameters:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a5c0803136b7756584e42bf19948c7553" id="r_a5c0803136b7756584e42bf19948c7553"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a5c0803136b7756584e42bf19948c7553">HeatmapParameters</a> ()</td></tr>
+<tr class="memdesc:a5c0803136b7756584e42bf19948c7553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct default heatmap parameters (auto-scaled, auto-dimensioned).  <br /></td></tr>
 <tr class="separator:a5c0803136b7756584e42bf19948c7553"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a742c68205caec29e2164a276fc91ea69" id="r_a742c68205caec29e2164a276fc91ea69"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a742c68205caec29e2164a276fc91ea69">HeatmapParameters</a> (double <a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a8397f2e1901f2dc2bc2210680d42c86a">scaleMin</a>, double <a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a11360ca14ae0ff2ae2f3663df47c78de">scaleMax</a>)</td></tr>
+<tr class="memdesc:a742c68205caec29e2164a276fc91ea69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct heatmap parameters with an explicit, fixed colour scale.  <br /></td></tr>
 <tr class="separator:a742c68205caec29e2164a276fc91ea69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6deefabcaf2f098b572ce222eb6abaea" id="r_a6deefabcaf2f098b572ce222eb6abaea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a6deefabcaf2f098b572ce222eb6abaea">operator==</a> (const <a class="el" href="structdnf__composer_1_1HeatmapParameters.html">HeatmapParameters</a> &amp;other) const</td></tr>
+<tr class="memdesc:a6deefabcaf2f098b572ce222eb6abaea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two parameter sets for equality.  <br /></td></tr>
 <tr class="separator:a6deefabcaf2f098b572ce222eb6abaea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe341e9dba6443f458a9545fd21f8b27" id="r_abe341e9dba6443f458a9545fd21f8b27"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#abe341e9dba6443f458a9545fd21f8b27">toString</a> () const override</td></tr>
+<tr class="memdesc:abe341e9dba6443f458a9545fd21f8b27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format the parameters as a human-readable string.  <br /></td></tr>
 <tr class="separator:abe341e9dba6443f458a9545fd21f8b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structdnf__composer_1_1PlotSpecificParameters"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structdnf__composer_1_1PlotSpecificParameters')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structdnf__composer_1_1PlotSpecificParameters.html">dnf_composer::PlotSpecificParameters</a></td></tr>
 <tr class="memitem:adde6c451ca5ed10460191b12a6607229 inherit pub_methods_structdnf__composer_1_1PlotSpecificParameters" id="r_adde6c451ca5ed10460191b12a6607229"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotSpecificParameters.html#adde6c451ca5ed10460191b12a6607229">PlotSpecificParameters</a> ()=default</td></tr>
+<tr class="memdesc:adde6c451ca5ed10460191b12a6607229 inherit pub_methods_structdnf__composer_1_1PlotSpecificParameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct default (empty) plot-specific parameters.  <br /></td></tr>
 <tr class="separator:adde6c451ca5ed10460191b12a6607229 inherit pub_methods_structdnf__composer_1_1PlotSpecificParameters"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c47ba6e38140b3a6336bcc9c27394f1 inherit pub_methods_structdnf__composer_1_1PlotSpecificParameters" id="r_a6c47ba6e38140b3a6336bcc9c27394f1"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1PlotSpecificParameters.html#a6c47ba6e38140b3a6336bcc9c27394f1">~PlotSpecificParameters</a> ()=default</td></tr>
 <tr class="separator:a6c47ba6e38140b3a6336bcc9c27394f1 inherit pub_methods_structdnf__composer_1_1PlotSpecificParameters"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,19 +122,27 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aad8b54d02d052f8eb240d288dff25050" id="r_aad8b54d02d052f8eb240d288dff25050"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#aad8b54d02d052f8eb240d288dff25050">autoDimensions</a></td></tr>
+<tr class="memdesc:aad8b54d02d052f8eb240d288dff25050"><td class="mdescLeft">&#160;</td><td class="mdescRight">Infer rows/cols from data size each frame.  <br /></td></tr>
 <tr class="separator:aad8b54d02d052f8eb240d288dff25050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f40f267ab5ab47ad388cead073be0bf" id="r_a4f40f267ab5ab47ad388cead073be0bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a4f40f267ab5ab47ad388cead073be0bf">autoScale</a></td></tr>
+<tr class="memdesc:a4f40f267ab5ab47ad388cead073be0bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the colour scale auto-fits the plotted data.  <br /></td></tr>
 <tr class="separator:a4f40f267ab5ab47ad388cead073be0bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac30d97174796386023a88fe53f7e3cd8" id="r_ac30d97174796386023a88fe53f7e3cd8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#ac30d97174796386023a88fe53f7e3cd8">hintCols</a> = 0</td></tr>
+<tr class="memdesc:ac30d97174796386023a88fe53f7e3cd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Column count hint, set by <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> when element sizes are known.  <br /></td></tr>
 <tr class="separator:ac30d97174796386023a88fe53f7e3cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a724f3b50dea874c02430436d1c830c2f" id="r_a724f3b50dea874c02430436d1c830c2f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a724f3b50dea874c02430436d1c830c2f">hintRows</a> = 0</td></tr>
+<tr class="memdesc:a724f3b50dea874c02430436d1c830c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row count hint, set by <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> when element sizes are known.  <br /></td></tr>
 <tr class="separator:a724f3b50dea874c02430436d1c830c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11360ca14ae0ff2ae2f3663df47c78de" id="r_a11360ca14ae0ff2ae2f3663df47c78de"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a11360ca14ae0ff2ae2f3663df47c78de">scaleMax</a></td></tr>
+<tr class="memdesc:a11360ca14ae0ff2ae2f3663df47c78de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Colour scale upper bound, used when <code>autoScale</code> is false.  <br /></td></tr>
 <tr class="separator:a11360ca14ae0ff2ae2f3663df47c78de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8397f2e1901f2dc2bc2210680d42c86a" id="r_a8397f2e1901f2dc2bc2210680d42c86a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1HeatmapParameters.html#a8397f2e1901f2dc2bc2210680d42c86a">scaleMin</a></td></tr>
+<tr class="memdesc:a8397f2e1901f2dc2bc2210680d42c86a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Colour scale lower bound, used when <code>autoScale</code> is false.  <br /></td></tr>
 <tr class="separator:a8397f2e1901f2dc2bc2210680d42c86a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Heatmap-specific plot parameters: colour scale and dimension inference. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5c0803136b7756584e42bf19948c7553" name="a5c0803136b7756584e42bf19948c7553"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5c0803136b7756584e42bf19948c7553">&#9670;&#160;</a></span>HeatmapParameters() <span class="overload">[1/2]</span></h2>
 
@@ -141,6 +157,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Construct default heatmap parameters (auto-scaled, auto-dimensioned). </p>
 
 </div>
 </div>
@@ -170,6 +188,15 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Construct heatmap parameters with an explicit, fixed colour scale. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scaleMin</td><td>Lower colour scale bound. </td></tr>
+    <tr><td class="paramname">scaleMax</td><td>Upper colour scale bound. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -188,6 +215,15 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Compare two parameter sets for equality. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>Parameters to compare against. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if all fields are equal. </dd></dl>
 
 </div>
 </div>
@@ -214,6 +250,9 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Format the parameters as a human-readable string. </p>
+<dl class="section return"><dt>Returns</dt><dd>A string describing the parameters. </dd></dl>
+
 <p>Implements <a class="el" href="structdnf__composer_1_1PlotSpecificParameters.html#a5cd8ccad48c32d86369e9d3cafb370d9">dnf_composer::PlotSpecificParameters</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -236,6 +275,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Infer rows/cols from data size each frame. </p>
+
 </div>
 </div>
 <a id="a4f40f267ab5ab47ad388cead073be0bf" name="a4f40f267ab5ab47ad388cead073be0bf"></a>
@@ -249,6 +290,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Whether the colour scale auto-fits the plotted data. </p>
 
 </div>
 </div>
@@ -264,6 +307,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Column count hint, set by <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> when element sizes are known. </p>
+
 </div>
 </div>
 <a id="a724f3b50dea874c02430436d1c830c2f" name="a724f3b50dea874c02430436d1c830c2f"></a>
@@ -277,6 +322,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Row count hint, set by <a class="el" href="classdnf__composer_1_1Visualization.html" title="Manages a collection of plots driven by a running Simulation.">Visualization</a> when element sizes are known. </p>
 
 </div>
 </div>
@@ -292,6 +339,8 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Colour scale upper bound, used when <code>autoScale</code> is false. </p>
+
 </div>
 </div>
 <a id="a8397f2e1901f2dc2bc2210680d42c86a" name="a8397f2e1901f2dc2bc2210680d42c86a"></a>
@@ -305,6 +354,8 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Colour scale lower bound, used when <code>autoScale</code> is false. </p>
 
 </div>
 </div>

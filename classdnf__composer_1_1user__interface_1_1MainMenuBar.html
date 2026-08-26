@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Top-level application menu bar (File/Advanced/Quit) and its keyboard shortcuts.  
+ <a href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="main__menu__bar_8h_source.html">main_menu_bar.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::MainMenuBar:</div>
@@ -97,11 +100,12 @@ Collaboration diagram for dnf_composer::user_interface::MainMenuBar:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a202c68ca3b04416ee69b13a5068b24fd" id="r_a202c68ca3b04416ee69b13a5068b24fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a202c68ca3b04416ee69b13a5068b24fd">executeQuitAction</a> (<a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247">QuitAction</a> action)</td></tr>
-<tr class="memdesc:a202c68ca3b04416ee69b13a5068b24fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carry out the simulation-side effects of <code>action</code> (if any) and, unless <code>action</code> is <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754" title="Neither trigger fired this frame – no action.">QuitAction::None</a>, call <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">Application::requestQuit()</a></code>. Public (rather than an implementation detail of <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">render()</a>/handleShortcuts()) specifically so it can be driven directly from tests without a live ImGui context &ndash; it touches only <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> and the quit request, never ImGui.  <br /></td></tr>
+<tr class="memdesc:a202c68ca3b04416ee69b13a5068b24fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carry out the simulation-side effects of <code>action</code> (if any) and, unless <code>action</code> is <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754" title="Neither trigger fired this frame – no action.">QuitAction::None</a>, call <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">Application::requestQuit()</a></code>. Public (rather than an implementation detail of <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c" title="Draw the menu bar and handle its keyboard shortcuts for this frame.">render()</a>/handleShortcuts()) specifically so it can be driven directly from tests without a live ImGui context &ndash; it touches only <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> and the quit request, never ImGui.  <br /></td></tr>
 <tr class="separator:a202c68ca3b04416ee69b13a5068b24fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbf3a32e7cdbfb7d4afbc6b4f46ca872" id="r_acbf3a32e7cdbfb7d4afbc6b4f46ca872"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#acbf3a32e7cdbfb7d4afbc6b4f46ca872">MainMenuBar</a> (const <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html">MainMenuBar</a> &amp;)=delete</td></tr>
 <tr class="separator:acbf3a32e7cdbfb7d4afbc6b4f46ca872"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2144b104a3c36e6ec95ef8f633b15b46" id="r_a2144b104a3c36e6ec95ef8f633b15b46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a2144b104a3c36e6ec95ef8f633b15b46">MainMenuBar</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation)</td></tr>
+<tr class="memdesc:a2144b104a3c36e6ec95ef8f633b15b46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the menu bar for a simulation.  <br /></td></tr>
 <tr class="separator:a2144b104a3c36e6ec95ef8f633b15b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af348b6376d63e1da72715d15b029c737" id="r_af348b6376d63e1da72715d15b029c737"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#af348b6376d63e1da72715d15b029c737">MainMenuBar</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html">MainMenuBar</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:af348b6376d63e1da72715d15b029c737"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,11 +114,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a03b097d43e6d7274d6073b2ec0544c" id="r_a9a03b097d43e6d7274d6073b2ec0544c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html">MainMenuBar</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a9a03b097d43e6d7274d6073b2ec0544c">operator=</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html">MainMenuBar</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:a9a03b097d43e6d7274d6073b2ec0544c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4285d2712ec3756d5850c428752bc08c" id="r_a4285d2712ec3756d5850c428752bc08c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">render</a> () override</td></tr>
+<tr class="memdesc:a4285d2712ec3756d5850c428752bc08c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the menu bar and handle its keyboard shortcuts for this frame.  <br /></td></tr>
 <tr class="separator:a4285d2712ec3756d5850c428752bc08c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16c1b8edc70f1affc70bda5cab39f3bf" id="r_a16c1b8edc70f1affc70bda5cab39f3bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a16c1b8edc70f1affc70bda5cab39f3bf">~MainMenuBar</a> () override=default</td></tr>
 <tr class="separator:a16c1b8edc70f1affc70bda5cab39f3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Top-level application menu bar (File/Advanced/Quit) and its keyboard shortcuts. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2144b104a3c36e6ec95ef8f633b15b46" name="a2144b104a3c36e6ec95ef8f633b15b46"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2144b104a3c36e6ec95ef8f633b15b46">&#9670;&#160;</a></span>MainMenuBar() <span class="overload">[1/3]</span></h2>
 
@@ -138,6 +145,14 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Construct the menu bar for a simulation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">simulation</td><td><a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> acted on by File-menu items (open/save/etc.). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -235,7 +250,13 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Carry out the simulation-side effects of <code>action</code> (if any) and, unless <code>action</code> is <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754" title="Neither trigger fired this frame – no action.">QuitAction::None</a>, call <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">Application::requestQuit()</a></code>. Public (rather than an implementation detail of <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c">render()</a>/handleShortcuts()) specifically so it can be driven directly from tests without a live ImGui context &ndash; it touches only <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> and the quit request, never ImGui. </p>
+<p>Carry out the simulation-side effects of <code>action</code> (if any) and, unless <code>action</code> is <a class="el" href="namespacednf__composer_1_1user__interface.html#a6417eb3f1829939cda3d09e733751247a6adf97f83acf6453d4a6a4b1070f3754" title="Neither trigger fired this frame – no action.">QuitAction::None</a>, call <code><a class="el" href="classdnf__composer_1_1Application.html#aad7bffe2ab56d73eb8e3f5065fd55ced" title="Ask the application to shut down at the end of the current frame.">Application::requestQuit()</a></code>. Public (rather than an implementation detail of <a class="el" href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html#a4285d2712ec3756d5850c428752bc08c" title="Draw the menu bar and handle its keyboard shortcuts for this frame.">render()</a>/handleShortcuts()) specifically so it can be driven directly from tests without a live ImGui context &ndash; it touches only <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> and the quit request, never ImGui. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>Decision produced by <code><a class="el" href="namespacednf__composer_1_1user__interface.html#ad0c1a4c286bfd471264bb1f26024ef07" title="Pure decision function: given which quit trigger(s) fired this frame, decide what should happen....">decideQuitAction()</a></code> for this frame. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -318,6 +339,8 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Draw the menu bar and handle its keyboard shortcuts for this frame. </p>
 
 </div>
 </div>

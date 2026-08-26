@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Portable wrapper around the platform&#39;s thread&#45;safe localtime conversion.">
 <polygon fill="#999999" stroke="#666666" points="1138,-547 1016,-547 1016,-517 1138,-517 1138,-547"/>
 <text text-anchor="start" x="1024" y="-535" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="1077" y="-524" font-family="Helvetica,sans-Serif" font-size="10.00">::utils::safe_localtime</text>
@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1tools_1_1logger_1_1Logger.html#afb1ee0f96356dacc5d6ff7bde232982b" target="_top" xlink:title="Emit message if this logger&#39;s configured level is at or above the global minimum level.">
 <polygon fill="white" stroke="#666666" points="965,-569 849,-569 849,-539 965,-539 965,-569"/>
 <text text-anchor="start" x="857" y="-557" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="907" y="-546" font-family="Helvetica,sans-Serif" font-size="10.00">::logger::Logger::log</text>
@@ -58,7 +58,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacednf__composer_1_1tools_1_1logger.html#af64ef64b3026606a73972fdcae2ca87a" target="_top" xlink:title="Convenience free function: build a Logger and log message with it.">
 <polygon fill="white" stroke="#666666" points="777.5,-569 661.5,-569 661.5,-539 777.5,-539 777.5,-569"/>
 <text text-anchor="start" x="669.5" y="-557" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="middle" x="719.5" y="-546" font-family="Helvetica,sans-Serif" font-size="10.00">::logger::log</text>
@@ -386,7 +386,7 @@
 <!-- Node49 -->
 <g id="Node000049" class="node">
 <title>Node49</title>
-<g id="a_Node000049"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" target="_top" xlink:title=" ">
+<g id="a_Node000049"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a3630c30901d2b73b1eaa20b40825f6f4" target="_top" xlink:title="Draw the &quot;Log element parameters&quot; content pane.">
 <polygon fill="white" stroke="#666666" points="392,-1347.5 202,-1347.5 202,-1306.5 392,-1306.5 392,-1347.5"/>
 <text text-anchor="start" x="210" y="-1335.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="210" y="-1324.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -520,7 +520,7 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#affb52c7f20aea6a3f5b1c62285bf6438" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#affb52c7f20aea6a3f5b1c62285bf6438" target="_top" xlink:title="Draw the &quot;Add element&quot; content pane.">
 <polygon fill="white" stroke="#666666" points="378.5,-1406.5 215.5,-1406.5 215.5,-1365.5 378.5,-1365.5 378.5,-1406.5"/>
 <text text-anchor="start" x="223.5" y="-1394.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="223.5" y="-1383.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -540,7 +540,7 @@
 <!-- Node8 -->
 <g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_Node000008"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title=" ">
+<g id="a_Node000008"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title="Draw the sidebar&#39;s icon strip and the currently selected content pane.">
 <polygon fill="#fff0f0" stroke="red" points="164.5,-1347.5 1.5,-1347.5 1.5,-1306.5 164.5,-1306.5 164.5,-1347.5"/>
 <text text-anchor="start" x="9.5" y="-1335.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="9.5" y="-1324.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -911,7 +911,7 @@
 <!-- Node54 -->
 <g id="Node000054" class="node">
 <title>Node54</title>
-<g id="a_Node000054"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" target="_top" xlink:title=" ">
+<g id="a_Node000054"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" target="_top" xlink:title="Draw the &quot;Data&quot; content pane.">
 <polygon fill="white" stroke="#666666" points="378.5,-1288.5 215.5,-1288.5 215.5,-1247.5 378.5,-1247.5 378.5,-1288.5"/>
 <text text-anchor="start" x="223.5" y="-1276.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="223.5" y="-1265.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>

@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Scoped timer that prints its elapsed lifetime when destroyed.">
 <polygon fill="#999999" stroke="transparent" points="110,-75 0,-75 0,0 110,0 110,-75"/>
 <text text-anchor="start" x="5" y="-62.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::tools</text>
 <text text-anchor="start" x="14.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">::profiling::Timer</text>

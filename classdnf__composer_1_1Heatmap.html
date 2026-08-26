@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>2D field/weight-matrix plot rendered as a colour-mapped grid.  
+ <a href="classdnf__composer_1_1Heatmap.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="heatmap_8h_source.html">heatmap.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::Heatmap:</div>
@@ -97,6 +100,7 @@ Collaboration diagram for dnf_composer::Heatmap:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:adb8ffb45e7d0355ff6996080a66150ec" id="r_adb8ffb45e7d0355ff6996080a66150ec"><td class="memItemLeft" align="right" valign="top">std::pair&lt; double, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#adb8ffb45e7d0355ff6996080a66150ec">getScale</a> () const</td></tr>
+<tr class="memdesc:adb8ffb45e7d0355ff6996080a66150ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current colour scale bounds.  <br /></td></tr>
 <tr class="separator:adb8ffb45e7d0355ff6996080a66150ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84b33a5a4a58cc91fbc2e1710f32e4ab" id="r_a84b33a5a4a58cc91fbc2e1710f32e4ab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#a84b33a5a4a58cc91fbc2e1710f32e4ab">Heatmap</a> (const <a class="el" href="structdnf__composer_1_1PlotCommonParameters.html">PlotCommonParameters</a> &amp;parameters={ <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a>, {0.0, 100.0, 0.0, 100.0, 1.0, 1.0}, <a class="el" href="structdnf__composer_1_1PlotAnnotations.html">PlotAnnotations</a>{&quot;Heatmap plot&quot;, &quot;Spatial dimension output&quot;, &quot;Spatial dimension input&quot;}}, <a class="el" href="structdnf__composer_1_1HeatmapParameters.html">HeatmapParameters</a> heatmapParameters=<a class="el" href="structdnf__composer_1_1HeatmapParameters.html">HeatmapParameters</a>())</td></tr>
 <tr class="memdesc:a84b33a5a4a58cc91fbc2e1710f32e4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a heatmap plot.  <br /></td></tr>
@@ -105,26 +109,35 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a661868bf27974821247fb82cf6498ea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render the plot using the provided data and legends.  <br /></td></tr>
 <tr class="separator:a661868bf27974821247fb82cf6498ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb9ee95c205cce9349cf9f1e51d90ede" id="r_abb9ee95c205cce9349cf9f1e51d90ede"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#abb9ee95c205cce9349cf9f1e51d90ede">setDimensionHint</a> (int rows, int cols)</td></tr>
+<tr class="memdesc:abb9ee95c205cce9349cf9f1e51d90ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the row/column count hints used by manual (non-auto) dimensioning.  <br /></td></tr>
 <tr class="separator:abb9ee95c205cce9349cf9f1e51d90ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16a8570febab602e5dc7b803c0eb7f0b" id="r_a16a8570febab602e5dc7b803c0eb7f0b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#a16a8570febab602e5dc7b803c0eb7f0b">setScale</a> (double min, double max)</td></tr>
+<tr class="memdesc:a16a8570febab602e5dc7b803c0eb7f0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the colour scale bounds and disable auto-scaling.  <br /></td></tr>
 <tr class="separator:a16a8570febab602e5dc7b803c0eb7f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f810a3846757374ca3675b62c195801" id="r_a8f810a3846757374ca3675b62c195801"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Heatmap.html#a8f810a3846757374ca3675b62c195801">toString</a> () const override</td></tr>
+<tr class="memdesc:a8f810a3846757374ca3675b62c195801"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format the heatmap as a human-readable string.  <br /></td></tr>
 <tr class="separator:a8f810a3846757374ca3675b62c195801"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classdnf__composer_1_1Plot"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdnf__composer_1_1Plot')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdnf__composer_1_1Plot.html">dnf_composer::Plot</a></td></tr>
 <tr class="memitem:a9b3452f605387c32cf48fb3310f2dfa0 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a9b3452f605387c32cf48fb3310f2dfa0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1PlotAnnotations.html">PlotAnnotations</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a9b3452f605387c32cf48fb3310f2dfa0">getAnnotations</a> () const</td></tr>
+<tr class="memdesc:a9b3452f605387c32cf48fb3310f2dfa0 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's title and axis labels.  <br /></td></tr>
 <tr class="separator:a9b3452f605387c32cf48fb3310f2dfa0 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a886752fe658b70c145c0559a9b70f071 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a886752fe658b70c145c0559a9b70f071"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1PlotDimensions.html">PlotDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a886752fe658b70c145c0559a9b70f071">getDimensions</a> () const</td></tr>
+<tr class="memdesc:a886752fe658b70c145c0559a9b70f071 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's axis dimensions.  <br /></td></tr>
 <tr class="separator:a886752fe658b70c145c0559a9b70f071 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96e8a2ff44f8a7e388d97df4343f6b83 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a96e8a2ff44f8a7e388d97df4343f6b83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66">PlotType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a96e8a2ff44f8a7e388d97df4343f6b83">getType</a> () const</td></tr>
+<tr class="memdesc:a96e8a2ff44f8a7e388d97df4343f6b83 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's type.  <br /></td></tr>
 <tr class="separator:a96e8a2ff44f8a7e388d97df4343f6b83 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdc92b7eb2d23bff557a9250dcfb1787 inherit pub_methods_classdnf__composer_1_1Plot" id="r_afdc92b7eb2d23bff557a9250dcfb1787"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#afdc92b7eb2d23bff557a9250dcfb1787">getUniqueIdentifier</a> () const</td></tr>
+<tr class="memdesc:afdc92b7eb2d23bff557a9250dcfb1787 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the plot's auto-assigned unique ID.  <br /></td></tr>
 <tr class="separator:afdc92b7eb2d23bff557a9250dcfb1787 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79a4083fddd52ce199d63bd60d259f7c inherit pub_methods_classdnf__composer_1_1Plot" id="r_a79a4083fddd52ce199d63bd60d259f7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a79a4083fddd52ce199d63bd60d259f7c">Plot</a> (<a class="el" href="structdnf__composer_1_1PlotCommonParameters.html">PlotCommonParameters</a> parameters=<a class="el" href="structdnf__composer_1_1PlotCommonParameters.html">PlotCommonParameters</a>())</td></tr>
 <tr class="memdesc:a79a4083fddd52ce199d63bd60d259f7c inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a plot with the given common parameters.  <br /></td></tr>
 <tr class="separator:a79a4083fddd52ce199d63bd60d259f7c inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5597e13e63853a282fc1bc1d44683469 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a5597e13e63853a282fc1bc1d44683469"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a5597e13e63853a282fc1bc1d44683469">setAnnotations</a> (const <a class="el" href="structdnf__composer_1_1PlotAnnotations.html">PlotAnnotations</a> &amp;annotations)</td></tr>
+<tr class="memdesc:a5597e13e63853a282fc1bc1d44683469 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the plot's title and axis labels.  <br /></td></tr>
 <tr class="separator:a5597e13e63853a282fc1bc1d44683469 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f40c59c87540c01a577c798b1447cc3 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a3f40c59c87540c01a577c798b1447cc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a3f40c59c87540c01a577c798b1447cc3">setDimensions</a> (const <a class="el" href="structdnf__composer_1_1PlotDimensions.html">PlotDimensions</a> &amp;dimensions)</td></tr>
+<tr class="memdesc:a3f40c59c87540c01a577c798b1447cc3 inherit pub_methods_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the plot's axis dimensions.  <br /></td></tr>
 <tr class="separator:a3f40c59c87540c01a577c798b1447cc3 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d26cb4faec420ff8f63bd76e867b544 inherit pub_methods_classdnf__composer_1_1Plot" id="r_a1d26cb4faec420ff8f63bd76e867b544"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1Plot.html#a1d26cb4faec420ff8f63bd76e867b544">~Plot</a> ()=default</td></tr>
 <tr class="separator:a1d26cb4faec420ff8f63bd76e867b544 inherit pub_methods_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,7 +156,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memdesc:a830e7517973883cd5321ff4bcb44065d inherit pro_static_attribs_classdnf__composer_1_1Plot"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global counter for plot ID assignment (atomic: thread-safe construction).  <br /></td></tr>
 <tr class="separator:a830e7517973883cd5321ff4bcb44065d inherit pro_static_attribs_classdnf__composer_1_1Plot"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>2D field/weight-matrix plot rendered as a colour-mapped grid. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a84b33a5a4a58cc91fbc2e1710f32e4ab" name="a84b33a5a4a58cc91fbc2e1710f32e4ab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a84b33a5a4a58cc91fbc2e1710f32e4ab">&#9670;&#160;</a></span>Heatmap()</h2>
 
@@ -179,7 +194,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Construct a heatmap plot. </p>
-<p>Unlike <a class="el" href="classdnf__composer_1_1LinePlot.html">LinePlot</a>, which throws <code>std::invalid_argument</code> when <code>parameters.type != <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66abdd402e16007eedd39f69adf0f10f88b">PlotType::LINE_PLOT</a></code>, <a class="el" href="classdnf__composer_1_1Heatmap.html">Heatmap</a> does not throw on a mismatched type. If <code>parameters.type != <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code>, the type is normalized to <code><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code> and a warning is logged (<code><a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda32006df00ffc389221671e52a11132a9">tools::logger::LogLevel::WARNING</a></code>) &ndash; throwing here would turn a working caller's program into a crash on upgrade, which this codebase treats as unacceptable. <code><a class="el" href="classdnf__composer_1_1Plot.html#a96e8a2ff44f8a7e388d97df4343f6b83">getType()</a></code> therefore always reports <code><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code> after construction, regardless of what was passed in (#143).</p>
+<p>Unlike <a class="el" href="classdnf__composer_1_1LinePlot.html" title="1D field/component plot rendered as a line.">LinePlot</a>, which throws <code>std::invalid_argument</code> when <code>parameters.type != <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66abdd402e16007eedd39f69adf0f10f88b">PlotType::LINE_PLOT</a></code>, <a class="el" href="classdnf__composer_1_1Heatmap.html" title="2D field/weight-matrix plot rendered as a colour-mapped grid.">Heatmap</a> does not throw on a mismatched type. If <code>parameters.type != <a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code>, the type is normalized to <code><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code> and a warning is logged (<code><a class="el" href="namespacednf__composer_1_1tools_1_1logger.html#add2bdd240ecd619a8d65d88ce271ebdda32006df00ffc389221671e52a11132a9">tools::logger::LogLevel::WARNING</a></code>) &ndash; throwing here would turn a working caller's program into a crash on upgrade, which this codebase treats as unacceptable. <code><a class="el" href="classdnf__composer_1_1Plot.html#a96e8a2ff44f8a7e388d97df4343f6b83" title="Get the plot&#39;s type.">getType()</a></code> therefore always reports <code><a class="el" href="namespacednf__composer.html#a11d79cdc740d41d36f481adcd89adb66a6aacaa32c9e8669718a0f7984bf99dde">PlotType::HEATMAP</a></code> after construction, regardless of what was passed in (#143).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">parameters</td><td>Common plot parameters (type, dimensions, annotations). </td></tr>
@@ -205,6 +220,9 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the current colour scale bounds. </p>
+<dl class="section return"><dt>Returns</dt><dd>The (min, max) colour scale bounds. </dd></dl>
 
 </div>
 </div>
@@ -285,6 +303,15 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Set the row/column count hints used by manual (non-auto) dimensioning. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rows</td><td>Row count hint. </td></tr>
+    <tr><td class="paramname">cols</td><td>Column count hint. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -319,6 +346,15 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>Set the colour scale bounds and disable auto-scaling. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">min</td><td>Lower colour scale bound. </td></tr>
+    <tr><td class="paramname">max</td><td>Upper colour scale bound. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a8f810a3846757374ca3675b62c195801" name="a8f810a3846757374ca3675b62c195801"></a>
@@ -343,6 +379,9 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Format the heatmap as a human-readable string. </p>
+<dl class="section return"><dt>Returns</dt><dd>A string describing the heatmap. </dd></dl>
 
 <p>Implements <a class="el" href="classdnf__composer_1_1Plot.html#a6fb6dc214a3cb53bc034adc1a0380b52">dnf_composer::Plot</a>.</p>
 <div class="dynheader">

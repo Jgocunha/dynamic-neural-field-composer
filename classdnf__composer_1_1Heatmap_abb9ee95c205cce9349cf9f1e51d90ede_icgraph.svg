@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Set the row/column count hints used by manual (non&#45;auto) dimensioning.">
 <polygon fill="#999999" stroke="#666666" points="534,-54 397,-54 397,-24 534,-24 534,-54"/>
 <text text-anchor="start" x="405" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Heatmap</text>
 <text text-anchor="middle" x="465.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">::setDimensionHint</text>

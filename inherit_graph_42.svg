@@ -21,7 +21,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000001"><a xlink:href="classdnf__composer_1_1user__interface_1_1ControlBarWindow.html" target="_top" xlink:title="Top control bar: simulation info, run/pause/stop buttons and timescale controls.">
 <polygon fill="white" stroke="#666666" points="336.5,-558 174.5,-558 174.5,-528 336.5,-528 336.5,-558"/>
 <text text-anchor="start" x="182.5" y="-546" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-535" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::ControlBarWindow</text>
@@ -40,7 +40,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1user__interface_1_1ElementWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1user__interface_1_1ElementWindow.html" target="_top" xlink:title="Sidebar window for creating elements and editing the parameters of the focused one.">
 <polygon fill="white" stroke="#666666" points="331,-510 180,-510 180,-480 331,-480 331,-510"/>
 <text text-anchor="start" x="188" y="-498" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-487" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::ElementWindow</text>
@@ -59,7 +59,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html" target="_top" xlink:title="Window showing per&#45;field stability metrics (bump count, amplitude, etc.) as cards.">
 <polygon fill="white" stroke="#666666" points="340.5,-462 170.5,-462 170.5,-432 340.5,-432 340.5,-462"/>
 <text text-anchor="start" x="178.5" y="-450" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-439" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::FieldMetricsWindow</text>
@@ -78,7 +78,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1user__interface_1_1HelpWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1user__interface_1_1HelpWindow.html" target="_top" xlink:title="Modal&#45;style help window with an &quot;About&quot;/&quot;How to use&quot;/&quot;Quick tips&quot;/&quot;Resources&quot; nav.">
 <polygon fill="white" stroke="#666666" points="322,-414 189,-414 189,-384 322,-384 322,-414"/>
 <text text-anchor="start" x="197" y="-402" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-391" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::HelpWindow</text>
@@ -97,7 +97,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1user__interface_1_1LogWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1user__interface_1_1LogWindow.html" target="_top" xlink:title="Console&#45;style window listing accumulated log entries, with filtering and auto&#45;scroll.">
 <polygon fill="white" stroke="#666666" points="319.5,-366 191.5,-366 191.5,-336 319.5,-336 319.5,-366"/>
 <text text-anchor="start" x="199.5" y="-354" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-343" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::LogWindow</text>
@@ -116,7 +116,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classdnf__composer_1_1user__interface_1_1MainMenuBar.html" target="_top" xlink:title="Top&#45;level application menu bar (File/Advanced/Quit) and its keyboard shortcuts.">
 <polygon fill="white" stroke="#666666" points="325,-318 186,-318 186,-288 325,-288 325,-318"/>
 <text text-anchor="start" x="194" y="-306" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-295" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::MainMenuBar</text>
@@ -135,7 +135,7 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1user__interface_1_1NodeGraphWindow.html" target="_top" xlink:title="Node&#45;editor window: renders a simulation&#39;s elements and connections as a graph.">
 <polygon fill="white" stroke="#666666" points="338,-270 173,-270 173,-240 338,-240 338,-270"/>
 <text text-anchor="start" x="181" y="-258" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-247" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::NodeGraphWindow</text>
@@ -154,7 +154,7 @@
 <!-- Node8 -->
 <g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_Node000008"><a xlink:href="classdnf__composer_1_1user__interface_1_1PlotControlWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000008"><a xlink:href="classdnf__composer_1_1user__interface_1_1PlotControlWindow.html" target="_top" xlink:title="Window for adding/removing/configuring the plots shown by PlotsWindow.">
 <polygon fill="white" stroke="#666666" points="337.5,-222 173.5,-222 173.5,-192 337.5,-192 337.5,-222"/>
 <text text-anchor="start" x="181.5" y="-210" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-199" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::PlotControlWindow</text>
@@ -173,7 +173,7 @@
 <!-- Node9 -->
 <g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_Node000009"><a xlink:href="classdnf__composer_1_1user__interface_1_1PlotsWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000009"><a xlink:href="classdnf__composer_1_1user__interface_1_1PlotsWindow.html" target="_top" xlink:title="Window hosting the heatmap/line plots configured on a simulation&#39;s visualization.">
 <polygon fill="white" stroke="#666666" points="322.5,-174 188.5,-174 188.5,-144 322.5,-144 322.5,-174"/>
 <text text-anchor="start" x="196.5" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::PlotsWindow</text>
@@ -192,7 +192,7 @@
 <!-- Node10 -->
 <g id="Node000010" class="node">
 <title>Node10</title>
-<g id="a_Node000010"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000010"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html" target="_top" xlink:title="Sidebar window for adding, removing and configuring a simulation&#39;s elements.">
 <polygon fill="white" stroke="#666666" points="337,-126 174,-126 174,-96 337,-96 337,-126"/>
 <text text-anchor="start" x="182" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -211,7 +211,7 @@
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000011"><a xlink:href="classdnf__composer_1_1user__interface_1_1StaticLayoutWindow.html" target="_top" xlink:title="Top&#45;level window that fixes and lays out all the other UI windows into panels.">
 <polygon fill="white" stroke="#666666" points="341,-78 170,-78 170,-48 341,-48 341,-78"/>
 <text text-anchor="start" x="178" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::StaticLayoutWindow</text>
@@ -230,7 +230,7 @@
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1user__interface_1_1StatusBarWindow.html" target="_top" xlink:title=" ">
+<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1user__interface_1_1StatusBarWindow.html" target="_top" xlink:title="Bottom status bar showing the simulation&#39;s current run state (stopped/running/paused).">
 <polygon fill="white" stroke="#666666" points="334.5,-30 176.5,-30 176.5,0 334.5,0 334.5,-30"/>
 <text text-anchor="start" x="184.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="middle" x="255.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::StatusBarWindow</text>

@@ -83,6 +83,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Window showing per-field stability metrics (bump count, amplitude, etc.) as cards.  
+ <a href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="field__metrics__window_8h_source.html">field_metrics_window.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dnf_composer::user_interface::FieldMetricsWindow:</div>
@@ -100,6 +103,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afd1bfe50c24c3ed964888acb5747636f" id="r_afd1bfe50c24c3ed964888acb5747636f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#afd1bfe50c24c3ed964888acb5747636f">FieldMetricsWindow</a> (const <a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html">FieldMetricsWindow</a> &amp;)=delete</td></tr>
 <tr class="separator:afd1bfe50c24c3ed964888acb5747636f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f4c7f4f71372134f0d250947a42d873" id="r_a0f4c7f4f71372134f0d250947a42d873"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#a0f4c7f4f71372134f0d250947a42d873">FieldMetricsWindow</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation)</td></tr>
+<tr class="memdesc:a0f4c7f4f71372134f0d250947a42d873"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the field metrics window for a simulation.  <br /></td></tr>
 <tr class="separator:a0f4c7f4f71372134f0d250947a42d873"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67b6c8b1fcdc9c120ef87f8a715f45f3" id="r_a67b6c8b1fcdc9c120ef87f8a715f45f3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#a67b6c8b1fcdc9c120ef87f8a715f45f3">FieldMetricsWindow</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html">FieldMetricsWindow</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:a67b6c8b1fcdc9c120ef87f8a715f45f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -108,6 +112,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adc72151af8223500bed4f4b6126ad428" id="r_adc72151af8223500bed4f4b6126ad428"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html">FieldMetricsWindow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#adc72151af8223500bed4f4b6126ad428">operator=</a> (<a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html">FieldMetricsWindow</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:adc72151af8223500bed4f4b6126ad428"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10db9e719c6aa89e1e22353ed652370e" id="r_a10db9e719c6aa89e1e22353ed652370e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#a10db9e719c6aa89e1e22353ed652370e">render</a> () override</td></tr>
+<tr class="memdesc:a10db9e719c6aa89e1e22353ed652370e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the field metrics window for this frame.  <br /></td></tr>
 <tr class="separator:a10db9e719c6aa89e1e22353ed652370e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdd385233b67776d9a5067813d9bc390" id="r_afdd385233b67776d9a5067813d9bc390"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#afdd385233b67776d9a5067813d9bc390">~FieldMetricsWindow</a> () override=default</td></tr>
 <tr class="separator:afdd385233b67776d9a5067813d9bc390"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,9 +120,12 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aeea6cfdef3cefb8f22fbcf50679651fe" id="r_aeea6cfdef3cefb8f22fbcf50679651fe"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#aeea6cfdef3cefb8f22fbcf50679651fe">renderContents</a> (const std::shared_ptr&lt; <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &gt; &amp;simulation)</td></tr>
+<tr class="memdesc:aeea6cfdef3cefb8f22fbcf50679651fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw a stability card for each neural field in <code>simulation</code>.  <br /></td></tr>
 <tr class="separator:aeea6cfdef3cefb8f22fbcf50679651fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Window showing per-field stability metrics (bump count, amplitude, etc.) as cards. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a0f4c7f4f71372134f0d250947a42d873" name="a0f4c7f4f71372134f0d250947a42d873"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0f4c7f4f71372134f0d250947a42d873">&#9670;&#160;</a></span>FieldMetricsWindow() <span class="overload">[1/3]</span></h2>
 
@@ -141,6 +149,14 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Construct the field metrics window for a simulation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">simulation</td><td><a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> whose fields' metrics are displayed. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -296,6 +312,8 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Draw the field metrics window for this frame. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -327,6 +345,14 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Draw a stability card for each neural field in <code>simulation</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">simulation</td><td><a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> whose fields' metrics are drawn. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

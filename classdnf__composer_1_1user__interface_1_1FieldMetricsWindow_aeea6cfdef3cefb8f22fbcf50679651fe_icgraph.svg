@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Draw a stability card for each neural field in simulation.">
 <polygon fill="#999999" stroke="#666666" points="774,-70 604,-70 604,-29 774,-29 774,-70"/>
 <text text-anchor="start" x="612" y="-58" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="612" y="-47" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::FieldMetricsWindow</text>
@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#a10db9e719c6aa89e1e22353ed652370e" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classdnf__composer_1_1user__interface_1_1FieldMetricsWindow.html#a10db9e719c6aa89e1e22353ed652370e" target="_top" xlink:title="Draw the field metrics window for this frame.">
 <polygon fill="white" stroke="#666666" points="568,-100 398,-100 398,-59 568,-59 568,-100"/>
 <text text-anchor="start" x="406" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="406" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::FieldMetricsWindow</text>
@@ -42,7 +42,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab231a4f0beb49a70451d8dc65baaa483" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab231a4f0beb49a70451d8dc65baaa483" target="_top" xlink:title="Draw the &quot;Monitoring&quot; content pane.">
 <polygon fill="white" stroke="#666666" points="564.5,-41 401.5,-41 401.5,0 564.5,0 564.5,-41"/>
 <text text-anchor="start" x="409.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="409.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -62,7 +62,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title="Draw the sidebar&#39;s icon strip and the currently selected content pane.">
 <polygon fill="white" stroke="#666666" points="362,-41 199,-41 199,0 362,0 362,-41"/>
 <text text-anchor="start" x="207" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="207" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -82,7 +82,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" target="_top" xlink:title="Draw the simulation window for this frame.">
 <polygon fill="white" stroke="#666666" points="163,-41 0,-41 0,0 163,0 163,-41"/>
 <text text-anchor="start" x="8" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>

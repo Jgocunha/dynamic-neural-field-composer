@@ -2,11 +2,11 @@
 <area shape="rect" id="Node000001" title="Abstract base class for all renderable plots." alt="" coords="91,863,255,1108"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,677,140,743"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,743,69,789,77,838,86,862,81,864,71,839,64,789,65,743"/>
-<area shape="rect" id="Node000003" href="$structdnf__composer_1_1PlotCommonParameters.html" title=" " alt="" coords="173,620,372,800"/>
+<area shape="rect" id="Node000003" href="$structdnf__composer_1_1PlotCommonParameters.html" title="Parameters shared by every plot type: kind, axis range, and annotations." alt="" coords="173,620,372,800"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="257,801,246,840,243,848,238,846,241,838,252,799"/>
-<area shape="rect" id="Node000004" href="$structdnf__composer_1_1PlotDimensions.html" title=" " alt="" coords="74,292,290,557"/>
+<area shape="rect" id="Node000004" href="$structdnf__composer_1_1PlotDimensions.html" title="Axis range and sampling step of a plot, in field/data coordinates." alt="" coords="74,292,290,557"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="227,557,242,603,237,605,222,558"/>
-<area shape="rect" id="Node000005" href="$structdnf__composer_1_1PlotAnnotations.html" title=" " alt="" coords="315,362,532,487"/>
+<area shape="rect" id="Node000005" href="$structdnf__composer_1_1PlotAnnotations.html" title="Title and axis labels of a plot." alt="" coords="315,362,532,487"/>
 <area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="393,489,330,606,325,604,388,486"/>
 <area shape="rect" id="Node000006" title=" " alt="" coords="384,135,463,200"/>
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="426,200,426,346,421,346,421,200"/>

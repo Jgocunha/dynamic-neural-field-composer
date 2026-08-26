@@ -82,6 +82,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Per-node floating plot card state (position, size, axis limits, heatmap options).  
+ <a href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="node__graph__window_8h_source.html">node_graph_window.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for dnf_composer::user_interface::PlotCardState:</div>
@@ -92,45 +95,66 @@ Collaboration diagram for dnf_composer::user_interface::PlotCardState:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ab01d5dfedd7f294f6eb17670749ebcc3" id="r_ab01d5dfedd7f294f6eb17670749ebcc3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#ab01d5dfedd7f294f6eb17670749ebcc3">autoFit</a> = true</td></tr>
+<tr class="memdesc:ab01d5dfedd7f294f6eb17670749ebcc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether axis limits auto-fit the plotted data.  <br /></td></tr>
 <tr class="separator:ab01d5dfedd7f294f6eb17670749ebcc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a377fc3a6fd03f53d28c341d785bdaf5c" id="r_a377fc3a6fd03f53d28c341d785bdaf5c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a377fc3a6fd03f53d28c341d785bdaf5c">autoScale</a> = true</td></tr>
+<tr class="memdesc:a377fc3a6fd03f53d28c341d785bdaf5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the heatmap colour scale auto-fits the plotted data.  <br /></td></tr>
 <tr class="separator:a377fc3a6fd03f53d28c341d785bdaf5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08c8bc31128f6fe297d6ab8833359021" id="r_a08c8bc31128f6fe297d6ab8833359021"><td class="memItemLeft" align="right" valign="top">std::array&lt; char, 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a08c8bc31128f6fe297d6ab8833359021">autoTitleComponent</a> = {&quot;&quot;}</td></tr>
+<tr class="memdesc:a08c8bc31128f6fe297d6ab8833359021"><td class="mdescLeft">&#160;</td><td class="mdescRight">Component name the auto-generated title was last derived from.  <br /></td></tr>
 <tr class="separator:a08c8bc31128f6fe297d6ab8833359021"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea1c675e709a35646368577b249b3ede" id="r_aea1c675e709a35646368577b249b3ede"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#aea1c675e709a35646368577b249b3ede">colormap</a> = ImPlotColormap_Deep</td></tr>
+<tr class="memdesc:aea1c675e709a35646368577b249b3ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">ImPlot colormap used for 2D field/weight heatmaps.  <br /></td></tr>
 <tr class="separator:aea1c675e709a35646368577b249b3ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6799159e9084cd841cd8c2d98d96b637" id="r_a6799159e9084cd841cd8c2d98d96b637"><td class="memItemLeft" align="right" valign="top">ImVec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a6799159e9084cd841cd8c2d98d96b637">initialPos</a></td></tr>
+<tr class="memdesc:a6799159e9084cd841cd8c2d98d96b637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position the card is placed at on its first frame.  <br /></td></tr>
 <tr class="separator:a6799159e9084cd841cd8c2d98d96b637"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac14954cd948cc35d0f2a07d21ebb6622" id="r_ac14954cd948cc35d0f2a07d21ebb6622"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#ac14954cd948cc35d0f2a07d21ebb6622">isFirstFrame</a> = true</td></tr>
+<tr class="memdesc:ac14954cd948cc35d0f2a07d21ebb6622"><td class="mdescLeft">&#160;</td><td class="mdescRight">True until the card's initial position has been applied once.  <br /></td></tr>
 <tr class="separator:ac14954cd948cc35d0f2a07d21ebb6622"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c5d9810a6fe8d42aa48fa6a01b6b253" id="r_a6c5d9810a6fe8d42aa48fa6a01b6b253"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a6c5d9810a6fe8d42aa48fa6a01b6b253">lineThickness</a> = 2.5F</td></tr>
+<tr class="memdesc:a6c5d9810a6fe8d42aa48fa6a01b6b253"><td class="mdescLeft">&#160;</td><td class="mdescRight">Line plot stroke width.  <br /></td></tr>
 <tr class="separator:a6c5d9810a6fe8d42aa48fa6a01b6b253"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8accbf4820fb104636bcbdbdd090a6c" id="r_ac8accbf4820fb104636bcbdbdd090a6c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#ac8accbf4820fb104636bcbdbdd090a6c">scaleMax</a> = 20.0F</td></tr>
+<tr class="memdesc:ac8accbf4820fb104636bcbdbdd090a6c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1Heatmap.html" title="2D field/weight-matrix plot rendered as a colour-mapped grid.">Heatmap</a> colour scale upper bound, used when <code>autoScale</code> is false.  <br /></td></tr>
 <tr class="separator:ac8accbf4820fb104636bcbdbdd090a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18f37024a8ac57fffeb905e984726641" id="r_a18f37024a8ac57fffeb905e984726641"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a18f37024a8ac57fffeb905e984726641">scaleMin</a> = -20.0F</td></tr>
+<tr class="memdesc:a18f37024a8ac57fffeb905e984726641"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdnf__composer_1_1Heatmap.html" title="2D field/weight-matrix plot rendered as a colour-mapped grid.">Heatmap</a> colour scale lower bound, used when <code>autoScale</code> is false.  <br /></td></tr>
 <tr class="separator:a18f37024a8ac57fffeb905e984726641"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69ea64c48b367c2c1cb522d287e1e551" id="r_a69ea64c48b367c2c1cb522d287e1e551"><td class="memItemLeft" align="right" valign="top">std::array&lt; char, 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a69ea64c48b367c2c1cb522d287e1e551">selectedComponent</a> = {&quot;&quot;}</td></tr>
+<tr class="memdesc:a69ea64c48b367c2c1cb522d287e1e551"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the field component currently plotted.  <br /></td></tr>
 <tr class="separator:a69ea64c48b367c2c1cb522d287e1e551"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26cf4e2e9d01960d42e669f21b4ea561" id="r_a26cf4e2e9d01960d42e669f21b4ea561"><td class="memItemLeft" align="right" valign="top">ImVec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a26cf4e2e9d01960d42e669f21b4ea561">size</a> = { 540.0F, 620.0F }</td></tr>
+<tr class="memdesc:a26cf4e2e9d01960d42e669f21b4ea561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current card size.  <br /></td></tr>
 <tr class="separator:a26cf4e2e9d01960d42e669f21b4ea561"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ef24eb49885020b3b9c3c35ebf5f04d" id="r_a4ef24eb49885020b3b9c3c35ebf5f04d"><td class="memItemLeft" align="right" valign="top">std::array&lt; char, 128 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a4ef24eb49885020b3b9c3c35ebf5f04d">title</a> = {&quot;&quot;}</td></tr>
+<tr class="memdesc:a4ef24eb49885020b3b9c3c35ebf5f04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Editable plot title buffer.  <br /></td></tr>
 <tr class="separator:a4ef24eb49885020b3b9c3c35ebf5f04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dc450376ab318b7a24647f50b6344ce" id="r_a5dc450376ab318b7a24647f50b6344ce"><td class="memItemLeft" align="right" valign="top">std::array&lt; char, 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a5dc450376ab318b7a24647f50b6344ce">xLabel</a> = {&quot;Spatial location&quot;}</td></tr>
+<tr class="memdesc:a5dc450376ab318b7a24647f50b6344ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Editable x-axis label buffer.  <br /></td></tr>
 <tr class="separator:a5dc450376ab318b7a24647f50b6344ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36a5f0c05009d9bf42015ad2c4ba7adc" id="r_a36a5f0c05009d9bf42015ad2c4ba7adc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a36a5f0c05009d9bf42015ad2c4ba7adc">xMax</a> = 100.F</td></tr>
+<tr class="memdesc:a36a5f0c05009d9bf42015ad2c4ba7adc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper x axis limit, used when <code>autoFit</code> is false.  <br /></td></tr>
 <tr class="separator:a36a5f0c05009d9bf42015ad2c4ba7adc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0238fb30272561af12fc82ac06874da1" id="r_a0238fb30272561af12fc82ac06874da1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a0238fb30272561af12fc82ac06874da1">xMin</a> = 0.F</td></tr>
+<tr class="memdesc:a0238fb30272561af12fc82ac06874da1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower x axis limit, used when <code>autoFit</code> is false.  <br /></td></tr>
 <tr class="separator:a0238fb30272561af12fc82ac06874da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05478a33d358112004d885ed1e90d3be" id="r_a05478a33d358112004d885ed1e90d3be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a05478a33d358112004d885ed1e90d3be">xStep</a> = 1.0F</td></tr>
+<tr class="memdesc:a05478a33d358112004d885ed1e90d3be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spatial step between samples along the x axis.  <br /></td></tr>
 <tr class="separator:a05478a33d358112004d885ed1e90d3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25bb726994d9307629f20215b09779fa" id="r_a25bb726994d9307629f20215b09779fa"><td class="memItemLeft" align="right" valign="top">std::array&lt; char, 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a25bb726994d9307629f20215b09779fa">yLabel</a> = {&quot;Amplitude&quot;}</td></tr>
+<tr class="memdesc:a25bb726994d9307629f20215b09779fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Editable y-axis label buffer.  <br /></td></tr>
 <tr class="separator:a25bb726994d9307629f20215b09779fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a818d7c35e2750ac658c709b098c9ac89" id="r_a818d7c35e2750ac658c709b098c9ac89"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a818d7c35e2750ac658c709b098c9ac89">yMax</a> = 20.F</td></tr>
+<tr class="memdesc:a818d7c35e2750ac658c709b098c9ac89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper y axis limit, used when <code>autoFit</code> is false.  <br /></td></tr>
 <tr class="separator:a818d7c35e2750ac658c709b098c9ac89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a473f5a58f4c65d32d4071006f6d3829e" id="r_a473f5a58f4c65d32d4071006f6d3829e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdnf__composer_1_1user__interface_1_1PlotCardState.html#a473f5a58f4c65d32d4071006f6d3829e">yMin</a> = -20.F</td></tr>
+<tr class="memdesc:a473f5a58f4c65d32d4071006f6d3829e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower y axis limit, used when <code>autoFit</code> is false.  <br /></td></tr>
 <tr class="separator:a473f5a58f4c65d32d4071006f6d3829e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Per-node floating plot card state (position, size, axis limits, heatmap options). </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="ab01d5dfedd7f294f6eb17670749ebcc3" name="ab01d5dfedd7f294f6eb17670749ebcc3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab01d5dfedd7f294f6eb17670749ebcc3">&#9670;&#160;</a></span>autoFit</h2>
 
@@ -142,6 +166,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Whether axis limits auto-fit the plotted data. </p>
 
 </div>
 </div>
@@ -157,6 +183,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Whether the heatmap colour scale auto-fits the plotted data. </p>
+
 </div>
 </div>
 <a id="a08c8bc31128f6fe297d6ab8833359021" name="a08c8bc31128f6fe297d6ab8833359021"></a>
@@ -170,6 +198,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Component name the auto-generated title was last derived from. </p>
 
 </div>
 </div>
@@ -185,6 +215,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>ImPlot colormap used for 2D field/weight heatmaps. </p>
+
 </div>
 </div>
 <a id="a6799159e9084cd841cd8c2d98d96b637" name="a6799159e9084cd841cd8c2d98d96b637"></a>
@@ -198,6 +230,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Position the card is placed at on its first frame. </p>
 
 </div>
 </div>
@@ -213,6 +247,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>True until the card's initial position has been applied once. </p>
+
 </div>
 </div>
 <a id="a6c5d9810a6fe8d42aa48fa6a01b6b253" name="a6c5d9810a6fe8d42aa48fa6a01b6b253"></a>
@@ -226,6 +262,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Line plot stroke width. </p>
 
 </div>
 </div>
@@ -241,6 +279,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p><a class="el" href="classdnf__composer_1_1Heatmap.html" title="2D field/weight-matrix plot rendered as a colour-mapped grid.">Heatmap</a> colour scale upper bound, used when <code>autoScale</code> is false. </p>
+
 </div>
 </div>
 <a id="a18f37024a8ac57fffeb905e984726641" name="a18f37024a8ac57fffeb905e984726641"></a>
@@ -254,6 +294,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p><a class="el" href="classdnf__composer_1_1Heatmap.html" title="2D field/weight-matrix plot rendered as a colour-mapped grid.">Heatmap</a> colour scale lower bound, used when <code>autoScale</code> is false. </p>
 
 </div>
 </div>
@@ -269,6 +311,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Name of the field component currently plotted. </p>
+
 </div>
 </div>
 <a id="a26cf4e2e9d01960d42e669f21b4ea561" name="a26cf4e2e9d01960d42e669f21b4ea561"></a>
@@ -282,6 +326,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Current card size. </p>
 
 </div>
 </div>
@@ -297,6 +343,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Editable plot title buffer. </p>
+
 </div>
 </div>
 <a id="a5dc450376ab318b7a24647f50b6344ce" name="a5dc450376ab318b7a24647f50b6344ce"></a>
@@ -310,6 +358,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Editable x-axis label buffer. </p>
 
 </div>
 </div>
@@ -325,6 +375,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Upper x axis limit, used when <code>autoFit</code> is false. </p>
+
 </div>
 </div>
 <a id="a0238fb30272561af12fc82ac06874da1" name="a0238fb30272561af12fc82ac06874da1"></a>
@@ -338,6 +390,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Lower x axis limit, used when <code>autoFit</code> is false. </p>
 
 </div>
 </div>
@@ -353,6 +407,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Spatial step between samples along the x axis. </p>
+
 </div>
 </div>
 <a id="a25bb726994d9307629f20215b09779fa" name="a25bb726994d9307629f20215b09779fa"></a>
@@ -366,6 +422,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Editable y-axis label buffer. </p>
 
 </div>
 </div>
@@ -381,6 +439,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Upper y axis limit, used when <code>autoFit</code> is false. </p>
+
 </div>
 </div>
 <a id="a473f5a58f4c65d32d4071006f6d3829e" name="a473f5a58f4c65d32d4071006f6d3829e"></a>
@@ -394,6 +454,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Lower y axis limit, used when <code>autoFit</code> is false. </p>
 
 </div>
 </div>
