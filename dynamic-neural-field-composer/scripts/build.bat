@@ -125,9 +125,11 @@ if /i not "%CONFIG%"=="debug" (
         -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
         -DCMAKE_BUILD_TYPE=Release ^
         -DCMAKE_PREFIX_PATH="%IPK_RELEASE%"
+    if errorlevel 1 exit /b 1
 
     REM Build Release
     cmake --build "%PROJECT_ROOT%\build\x64-release" --parallel
+    if errorlevel 1 exit /b 1
 )
 
 if /i not "%CONFIG%"=="release" (
@@ -145,9 +147,11 @@ if /i not "%CONFIG%"=="release" (
         -DCMAKE_BUILD_TYPE=Debug ^
         -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded ^
         -DCMAKE_PREFIX_PATH="%IPK_DEBUG%"
+    if errorlevel 1 exit /b 1
 
     REM Build Debug
     cmake --build "%PROJECT_ROOT%\build\x64-debug" --parallel
+    if errorlevel 1 exit /b 1
 )
 
 exit /b 0
