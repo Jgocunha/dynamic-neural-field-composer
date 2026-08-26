@@ -4,17 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### Documentation
-- `.claude/(project)notes/` and `.claude/(machine)notes/` renamed to `.claude/notes/` and
-  `.claude/local-notes/`, dropping the parentheses that had to be quoted in every shell
-  command; all references updated (`.gitignore`, `CLAUDE.md`, `perf-regression-test` skill,
-  `wiki/Helping Claude Help You.md`, and the benchmark tooling comments/help text that
-  pointed at `perf-noise-floor.md`/`perf-tools-not-in-ci.md`)
-- Added `commit` and `pr` skills: read the working tree or branch diff and print a
-  conventional commit message or a filled-in PR title/description to chat, without running
-  `git commit`, `git push` or `gh pr create`
-- `wiki/Helping Claude Help You.md`'s skill table updated to list all eight skills
-  (previously missing `perf-regression-test`, `commit`, `pr`, and stated "Five")
+## [2.11.1] - 2026-08-26
+
+### Changed
+- Converted the last hold-outs of manual string concatenation/`std::to_string` to
+  `std::format`: exception messages in `exceptions/exception.cpp`, the file-dialog
+  data-path build in `tools/file_dialog.h`, and element-window UI label/widget-ID strings
+  in `user_interface/element_window.cpp`. Mop-up after the logging (#61) and `toString()`
+  (#62) conversions; no behavior change.
 
 ### Fixed
 - `PROJECT_DIR`/`OUTPUT_DIRECTORY` baked `CMAKE_SOURCE_DIR` into every binary via a
@@ -35,6 +32,57 @@ All notable changes to this project will be documented in this file.
   directly, with `include/dnf_composer` added implicitly via `INCLUDES DESTINATION` on
   `install(TARGETS ...)`) — both `#include` spellings a `find_package()` consumer might
   use continue to resolve; no behavior change.
+- Setup/build scripts didn't install or document `fftw3` (spectral/FFT convolution) and
+  `benchmark` (microbenchmark harness) as vcpkg dependencies, so a fresh machine following
+  `setup.sh`/`setup.bat` or the release CI workflow could fail to build the benchmark
+  targets. Both scripts, `release.yml`, `scripts/README.md`, and the wiki's package table
+  now list them. Along the way: `vcpkg install` now passes `--recurse` so a machine with a
+  differently-featured `imgui` already installed doesn't fail requiring a manual flag;
+  `setup.bat`/`build.bat`/`install.bat` now pause on exit (skipped when `CI` is set) so a
+  double-clicked script's output, including errors, stays on screen instead of closing the
+  window immediately; and `build.bat`/`build.sh`/`build_macos.sh` fall back to their
+  respective setup script's default vcpkg install location when `VCPKG_ROOT` isn't set in
+  the current shell, since `setup.bat`'s `setx` and `setup.sh`'s `export` only reach shells
+  opened afterward.
+- `scripts/build.bat` didn't check `ERRORLEVEL` after the CMake configure or build steps,
+  so a failed Release or Debug build fell through to the unconditional `exit /b 0` and
+  reported success.
+
+### Documentation
+- `.claude/(project)notes/` and `.claude/(machine)notes/` renamed to `.claude/notes/` and
+  `.claude/local-notes/`, dropping the parentheses that had to be quoted in every shell
+  command; all references updated (`.gitignore`, `CLAUDE.md`, `perf-regression-test` skill,
+  `wiki/Helping Claude Help You.md`, and the benchmark tooling comments/help text that
+  pointed at `perf-noise-floor.md`/`perf-tools-not-in-ci.md`)
+- Added `commit` and `pr` skills: read the working tree or branch diff and print a
+  conventional commit message or a filled-in PR title/description to chat, without running
+  `git commit`, `git push` or `gh pr create`
+- `wiki/Helping Claude Help You.md`'s skill table updated to list all eight skills
+  (previously missing `perf-regression-test`, `commit`, `pr`, and stated "Five")
+- Added Doxygen coverage (`@brief`/`@param`/`@return`) for the previously undocumented
+  public entities in `tools/{logger,utils,profiling}.h` and most of `user_interface/*` and
+  `visualization/*` (#132)
+- Corrected a handful of Doxygen comments that didn't match actual behavior, flagged by
+  review: `Logger::log()` referenced a nonexistent level parameter,
+  `countNumOfLinesInFile`/`saveVectorToFile` didn't describe their real failure/format
+  behavior, and `PlotSpecificParameters()` was missing a `@brief`
+
+### CI
+- Cancel superseded PR runs; build only `dnf_composer_tests` where a job only runs
+  `ctest`; compile sanitizer builds at `-O1` instead of `-O0`; parallelize the example
+  smoke-run; split the Windows job into parallel Release/Debug legs; wire up `sccache`
+  compiler caching — shortening CI wall clock across every job
+- Sharded `clang-tidy` across three parallel jobs (a 3-way matrix splitting the same
+  sorted file list), so every file is still linted exactly once per push/PR but the
+  shards run in parallel instead of serially
+- Cancel superseded `doc-sync` runs on re-push
+- `build.bat` now takes an optional release/debug argument to build a single
+  configuration (no argument still builds both); the Debug leg switched to `/Z7` debug
+  info so `sccache` (wired up in `ci.yml`) can cache it
+- Tightened checkout credentials, permissions, and shell quoting per CodeRabbit review:
+  added a top-level `permissions: contents: read` block to `ci.yml`/`static-analysis.yml`,
+  set `persist-credentials: false` on every checkout step, and quoted/guarded a couple of
+  shell substitutions flagged by `actionlint`
 
 ## [2.11.0] - 2026-08-24
 
