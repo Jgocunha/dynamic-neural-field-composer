@@ -30,7 +30,12 @@ echo "Using vcpkg triplet: $TRIPLET"
 
 # ── vcpkg packages ────────────────────────────────────────────────────────────
 echo "Installing vcpkg packages..."
-"$VCPKG_ROOT/vcpkg" install \
+# --recurse: on a machine whose vcpkg already has imgui installed with a different
+# feature set than the one requested below, vcpkg must remove and rebuild it and every
+# dependent (implot, imgui-node-editor). Without --recurse it refuses, prints a warning
+# and exits nonzero -- leaving the user to discover the flag themselves, which defeats
+# the point of this script.
+"$VCPKG_ROOT/vcpkg" install --recurse \
     "imgui[docking-experimental,core,opengl3-binding,glfw-binding]:$TRIPLET" \
     "implot:$TRIPLET" \
     "imgui-node-editor:$TRIPLET" \

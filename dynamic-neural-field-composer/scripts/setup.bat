@@ -1,4 +1,18 @@
 @echo off
+:: Wrap the whole script as a subroutine so every exit /b below returns here instead
+:: of closing the window outright -- a double-clicked .bat otherwise closes its console
+:: the instant it hits exit /b, taking any error message with it before it can be read.
+:: Skipped when CI is set (GitHub Actions sets it automatically for every run) so
+:: automated invocations never block waiting on a keypress.
+call :main %*
+set "EXITCODE=%ERRORLEVEL%"
+if not defined CI (
+    echo.
+    pause
+)
+exit /b %EXITCODE%
+
+:main
 setlocal EnableDelayedExpansion
 
 set SCRIPT_DIR=%~dp0
@@ -21,7 +35,12 @@ if not defined VCPKG_ROOT (
 
 :: ── vcpkg packages ────────────────────────────────────────────────────────────
 echo Installing vcpkg packages...
-"%VCPKG_ROOT%\vcpkg.exe" install ^
+:: --recurse: on a machine whose vcpkg already has imgui installed with a different
+:: feature set than the one requested below, vcpkg must remove and rebuild it and every
+:: dependent (implot, imgui-node-editor). Without --recurse it refuses, prints a warning
+:: and exits nonzero -- leaving the user to discover the flag themselves, which defeats
+:: the point of this script.
+"%VCPKG_ROOT%\vcpkg.exe" install --recurse ^
     "imgui[docking-experimental,core,opengl3-binding,glfw-binding,dx12-binding,win32-binding]:x64-windows" ^
     "implot:x64-windows" ^
     "imgui-node-editor:x64-windows" ^
@@ -71,3 +90,4 @@ if not exist "%IPK_INSTALL%\debug" (
 
 echo.
 echo Setup complete. Run scripts\build.bat to build the project.
+exit /b 0
