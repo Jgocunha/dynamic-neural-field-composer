@@ -2,11 +2,13 @@
 
 These scripts automate the three phases of working with the project: setting up dependencies, building, and installing. All scripts are designed to be run from the **project root** (one level above this folder), and all paths are derived from the script's own location so they work regardless of your current directory.
 
+The three `.bat` scripts (`setup.bat`, `build.bat`, `install.bat`) pause with "Press any key to continue . . ." before their window closes, so a double-clicked script's output — including any error — stays readable instead of vanishing the instant it finishes. This is skipped automatically when the `CI` environment variable is set (GitHub Actions sets it on every run), so automated invocations never block waiting on a keypress.
+
 ---
 
 ## Setup (run once on a fresh machine)
 
-These scripts install all automated dependencies. See [Getting Started](../wiki/Getting-Started.md) for what you need to install manually before running these.
+These scripts install all automated dependencies. See [Getting Started](../wiki/Getting%20Started.md) for what you need to install manually before running these.
 
 ### `setup.sh` — Linux and macOS
 
@@ -18,7 +20,7 @@ chmod +x scripts/setup.sh
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `$HOME/vcpkg`, bootstraps it, and prints the line to add to your shell profile to persist the variable
 2. Auto-detects your OS and CPU architecture to select the correct vcpkg triplet (`x64-linux`, `x64-osx`, or `arm64-osx`)
-3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`
+3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `fftw3`, `benchmark`
 4. Clones `imgui-platform-kit` into `deps/imgui-platform-kit/` (skipped if already present)
 5. Builds and installs `imgui-platform-kit` into `deps/ipk-install/` (skipped if already present)
 
@@ -32,7 +34,7 @@ scripts\setup.bat
 
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `C:\tools\vcpkg`, bootstraps it, and persists `VCPKG_ROOT` permanently via `setx`
-2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`
+2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `fftw3`, `benchmark`
 3. Clones `imgui-platform-kit` into `deps\imgui-platform-kit\` (skipped if already present)
 4. Builds and installs `imgui-platform-kit` into `deps\ipk-install\` (skipped if already present)
 
