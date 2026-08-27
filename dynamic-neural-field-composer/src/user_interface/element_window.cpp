@@ -2122,7 +2122,7 @@ namespace dnf_composer::user_interface
 			{ mtp.tauBuild = tauBuild; mtp.tauDecay = tauDecay; mtp.threshold = threshold; memoryTrace->setParameters(mtp); }
 	}
 
-	void ElementWindow::modifyElementStimulusSum(const std::shared_ptr<element::Element>&)
+	void ElementWindow::modifyElementStimulusSum(const std::shared_ptr<element::Element>& element)
 	{
 		// StimulusSum has no tunable parameters -- it only sums its connected inputs.
 		ImGui::TextDisabled("No parameters available.");

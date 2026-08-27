@@ -14,7 +14,7 @@ namespace dnf_composer::element
 	{
 		StimulusSumParameters() = default;
 
-		bool operator==(const StimulusSumParameters&) const
+		bool operator==(const StimulusSumParameters& other) const
 		{
 			return true;
 		}
