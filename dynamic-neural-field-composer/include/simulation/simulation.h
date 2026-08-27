@@ -154,7 +154,7 @@ namespace dnf_composer
 		void setUniqueIdentifier(const std::string& id);
 		void setDeltaT(double deltaT);
 		std::vector<std::shared_ptr<element::Element>> getElements() const;
-		std::string getUniqueIdentifier() const;
+		[[nodiscard]] std::string getUniqueIdentifier() const;
 
 		/// @brief Retrieve an element by its unique name.
 		/// @param id  Unique name of the element.
@@ -179,7 +179,7 @@ namespace dnf_composer
 		int getHighestElementIndex() const;
 
 		/// @brief Return the simulation's unique identifier (alias for @c getUniqueIdentifier()).
-		std::string getIdentifier() const;
+		[[nodiscard]] std::string getIdentifier() const;
 
 		double getDeltaT() const;
 		double getTZero() const;

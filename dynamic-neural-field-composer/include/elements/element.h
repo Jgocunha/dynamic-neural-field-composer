@@ -113,11 +113,11 @@ namespace dnf_composer::element
 		/// @param deltaT  Integration step size.
 		virtual void step(double t, double deltaT) = 0;
 
-		virtual std::shared_ptr<Element> clone() const = 0;
+		[[nodiscard]] virtual std::shared_ptr<Element> clone() const = 0;
 
 		virtual ~Element() = default;
 
-		virtual std::string toString() const = 0;
+		[[nodiscard]] virtual std::string toString() const = 0;
 
 		void close();
 		void print() const;
@@ -195,9 +195,9 @@ namespace dnf_composer::element
 
 		ElementCommonParameters getElementCommonParameters() const;
 		int getUniqueIdentifier() const;
-		std::string getUniqueName() const;
+		[[nodiscard]] std::string getUniqueName() const;
 		void setUniqueName(const std::string& name);
-		ElementLabel getLabel() const;
+		[[nodiscard]] ElementLabel getLabel() const;
 
 		/// @brief True if at least one registered `outputs` entry still points to
 		///        a live element (#168).
@@ -209,10 +209,10 @@ namespace dnf_composer::element
 		std::vector<double> getComponent(const std::string& componentName);
 
 		std::vector<double>* getComponentPtr(const std::string& componentName);
-		std::vector<std::string> getComponentList() const;
+		[[nodiscard]] std::vector<std::string> getComponentList() const;
 
 		/// @brief Return a read-only pointer to the full components map.
-		const std::unordered_map<std::string, std::vector<double>>* getComponents() const;
+		[[nodiscard]] const std::unordered_map<std::string, std::vector<double>>* getComponents() const;
 
 		std::vector<std::shared_ptr<Element>> getInputs();
 

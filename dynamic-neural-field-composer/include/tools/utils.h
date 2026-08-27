@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <random>
 #include <sstream>
@@ -31,7 +32,7 @@ namespace dnf_composer::tools::utils
 	///                    was configured with `DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF`
 	///                    (see CMakeLists.txt) so no build-machine path is used.
 	/// @return The parent of @p exeDir, or @p devFallback.
-	[[nodiscard]] std::string resolveResourceRoot(const std::filesystem::path& exeDir, const std::string& devFallback);
+	[[nodiscard]] std::string resolveResourceRoot(const std::filesystem::path& exeDir, std::string_view devFallback);
 
 	/// @brief Returns the runtime install prefix (parent of `bin/`) for locating
 	/// resources (fonts, icons, sample data) relative to the running executable.
@@ -84,7 +85,7 @@ namespace dnf_composer::tools::utils
 	/// @brief Replace every forward slash in a string with a backslash.
 	/// @param str Input string.
 	/// @return Copy of @p str with `/` replaced by `\`.
-	std::string replaceForwardSlashesWithBackslashes(const std::string& str);
+	std::string replaceForwardSlashesWithBackslashes(std::string_view str);
 
 	/// @brief Resize a 2D matrix, growing or shrinking both dimensions.
 	/// @tparam T Element type.
