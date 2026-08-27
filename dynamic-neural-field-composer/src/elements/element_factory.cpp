@@ -130,6 +130,12 @@
 					return std::make_shared<MemoryTrace>(elementCommonParameters, params);
 				};
 
+			elementCreators[ElementLabel::STIMULUS_SUM] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
+				{
+					const auto& params = requireParams<StimulusSumParameters>(elementSpecificParameters, ElementLabel::STIMULUS_SUM, "StimulusSumParameters");
+					return std::make_shared<StimulusSum>(elementCommonParameters, params);
+				};
+
 			elementCreators[ElementLabel::NEURAL_FIELD_2D] = [](const ElementCommonParameters& elementCommonParameters, const ElementSpecificParameters& elementSpecificParameters)
 				{
 					const auto& params = requireParams<NeuralField2DParameters>(elementSpecificParameters, ElementLabel::NEURAL_FIELD_2D, "NeuralField2DParameters");
@@ -271,6 +277,8 @@
 						return creator->second(ElementCommonParameters(type), BoostStimulusParameters());
 					case ElementLabel::MEMORY_TRACE:
 						return creator->second(ElementCommonParameters(type), MemoryTraceParameters());
+					case ElementLabel::STIMULUS_SUM:
+						return creator->second(ElementCommonParameters(type), StimulusSumParameters());
 					case ElementLabel::NEURAL_FIELD_2D:
 						return creator->second(ElementCommonParameters(type), NeuralField2DParameters());
 					case ElementLabel::GAUSS_STIMULUS_2D:

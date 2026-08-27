@@ -24,6 +24,7 @@ namespace dnf_composer::element
 		FIELD_COUPLING,
 		GAUSS_FIELD_COUPLING,
 		MEMORY_TRACE,
+		STIMULUS_SUM,
 
 		NEURAL_FIELD_2D,
 		GAUSS_STIMULUS_2D,
@@ -59,6 +60,7 @@ namespace dnf_composer::element
 		{GAUSS_FIELD_COUPLING, "gauss field coupling" },
 		{FIELD_COUPLING, "field coupling" },
 		{MEMORY_TRACE, "memory trace" },
+		{STIMULUS_SUM, "stimulus sum" },
 
 		{NEURAL_FIELD_2D, "neural field 2d" },
 		{GAUSS_STIMULUS_2D, "gauss stimulus 2d" },
@@ -117,6 +119,7 @@ namespace dnf_composer::element
 			{TIMED_GAUSS_STIMULUS_2D,    {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
 			{BOOST_STIMULUS,             {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
 			{BOOST_STIMULUS_2D,          {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
+			{STIMULUS_SUM,               {ElementCategory::STIMULUS, "Stimulus", 31,  158, 126}},
 
 			{GAUSS_KERNEL,               {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},
 			{MEXICAN_HAT_KERNEL,         {ElementCategory::KERNEL,   "Kernel",   192, 57,  43}},

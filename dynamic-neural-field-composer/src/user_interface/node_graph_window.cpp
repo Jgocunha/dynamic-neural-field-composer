@@ -1247,6 +1247,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::TIMED_GAUSS_STIMULUS_2D:
 		case element::ElementLabel::BOOST_STIMULUS_2D:
 		case element::ElementLabel::CORRELATED_NORMAL_NOISE_2D:
+		case element::ElementLabel::STIMULUS_SUM:
 			return 0;
 		case element::ElementLabel::GAUSS_KERNEL:
 		case element::ElementLabel::MEXICAN_HAT_KERNEL:

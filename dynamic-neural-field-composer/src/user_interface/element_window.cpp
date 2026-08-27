@@ -22,6 +22,7 @@
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
 #include "elements/memory_trace.h"
+#include "elements/stimulus_sum.h"
 #include "elements/neural_field_2d.h"
 #include "elements/gauss_stimulus_2d.h"
 #include "elements/gauss_kernel_2d.h"
@@ -848,6 +849,9 @@ namespace dnf_composer::user_interface
 			break;
 		case element::ElementLabel::MEMORY_TRACE:
 			modifyElementMemoryTrace(element);
+			break;
+		case element::ElementLabel::STIMULUS_SUM:
+			modifyElementStimulusSum(element);
 			break;
 		case element::ElementLabel::NEURAL_FIELD_2D:
 			modifyElementNeuralField2D(element);
@@ -2118,6 +2122,12 @@ namespace dnf_composer::user_interface
 			{ mtp.tauBuild = tauBuild; mtp.tauDecay = tauDecay; mtp.threshold = threshold; memoryTrace->setParameters(mtp); }
 	}
 
+	void ElementWindow::modifyElementStimulusSum(const std::shared_ptr<element::Element>&)
+	{
+		// StimulusSum has no tunable parameters -- it only sums its connected inputs.
+		ImGui::TextDisabled("No parameters available.");
+	}
+
 	// NOLINTNEXTLINE(readability-function-cognitive-complexity) - linear ImGui immediate-mode layout; splitting would fragment widget state across functions
 	void ElementWindow::modifyElementNeuralField2D(const std::shared_ptr<element::Element>& element)
 	{
@@ -2431,6 +2441,8 @@ namespace dnf_composer::user_interface
 			return colour::toImVec4(colour::kBoostStimulusElement);
 		case element::ElementLabel::MEMORY_TRACE:
 			return colour::toImVec4(colour::kMemoryTraceElement);
+		case element::ElementLabel::STIMULUS_SUM:
+			return colour::toImVec4(colour::kGaussStimulusElement);
 		case element::ElementLabel::NEURAL_FIELD_2D:
 			return colour::toImVec4(colour::kNeuralField2DElement);
 		case element::ElementLabel::GAUSS_STIMULUS_2D:
@@ -2484,6 +2496,7 @@ namespace dnf_composer::user_interface
 		case element::ElementLabel::ASYMMETRIC_GAUSS_KERNEL: return "Asymmetric Gaussian Kernels";
 		case element::ElementLabel::BOOST_STIMULUS: return "Boost Stimuli";
 		case element::ElementLabel::MEMORY_TRACE:  return "Memory Traces";
+		case element::ElementLabel::STIMULUS_SUM:  return "Stimulus Sums";
 		case element::ElementLabel::NEURAL_FIELD_2D: return "Neural Fields 2D";
 		case element::ElementLabel::GAUSS_STIMULUS_2D: return "Gauss Stimuli 2D";
 		case element::ElementLabel::GAUSS_KERNEL_2D: return "Gauss Kernels 2D";

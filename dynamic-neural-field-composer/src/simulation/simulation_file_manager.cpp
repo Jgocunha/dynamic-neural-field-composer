@@ -437,6 +437,9 @@ namespace dnf_composer
             elementJson["threshold"] = memoryTraceParameters.threshold;
         }
         break;
+        case element::STIMULUS_SUM:
+            // No parameters to serialize.
+            break;
         case element::NEURAL_FIELD_2D:
         {
             const auto nf = std::dynamic_pointer_cast<element::NeuralField2D>(element);
@@ -972,6 +975,15 @@ namespace dnf_composer
                 element::MemoryTraceParameters(tauBuild, tauDecay, threshold)
             );
             simulation->addElement(memoryTrace);
+        }
+        break;
+        case element::STIMULUS_SUM:
+        {
+            auto stimulusSum = std::make_shared<element::StimulusSum>(
+                element::ElementCommonParameters(uniqueName, element::ElementDimensions(x_max, d_x)),
+                element::StimulusSumParameters()
+            );
+            simulation->addElement(stimulusSum);
         }
         break;
         case element::NEURAL_FIELD_2D:

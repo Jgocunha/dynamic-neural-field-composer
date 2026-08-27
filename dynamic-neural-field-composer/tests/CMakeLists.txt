@@ -19,6 +19,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "elements/test_correlated_normal_noise.cpp"
             "elements/test_boost_stimulus.cpp"
             "elements/test_memory_trace.cpp"
+            "elements/test_stimulus_sum.cpp"
             "elements/test_neural_field_2d.cpp"
             "elements/test_gauss_stimulus_2d.cpp"
             "elements/test_gauss_kernel_2d.cpp"
