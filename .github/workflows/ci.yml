@@ -161,32 +161,48 @@ jobs:
             echo "No example_* binaries found in $(pwd) -- examples/CMakeLists.txt or the build may have changed."
             exit 1
           fi
-          # xvfb-run -a is NOT safe under concurrency (#187): its find_free_servernum()
+          # A bare xvfb-run -a is NOT safe under concurrency (#187): find_free_servernum()
           # picks the first number with no /tmp/.X<n>-lock and only then starts Xvfb, so
-          # several simultaneous invocations all observe the same number as free and all
-          # try to claim it -- the losers die with "X11: Failed to open display :<n>".
-          # Instead each binary is paired here with its own explicit display number
-          # (display_base + index) and handed to xvfb-run -n, so no two concurrent
-          # invocations can pick the same display by construction -- no search, no race.
-          # The job owns the runner and installs xvfb itself, so only this step's displays
-          # are in play; base 128 stays clear of the :99 convention and of the range
-          # xvfb-run -a would have searched. -P $(nproc) caps parallelism to the runner's
-          # core count; -L1 runs one "display binary" pair per xargs invocation so output
-          # from different binaries doesn't interleave mid-line (example target names are
-          # fixed in examples/CMakeLists.txt and contain no whitespace).
+          # several simultaneous invocations all scan the same range, all see the same
+          # number as free, and all try to claim it -- the losers die with
+          # "X11: Failed to open display :<n>".
+          #
+          # So each binary is given its own private block of display numbers instead:
+          # block i starts at display_base + i * display_stride. Blocks never overlap, so
+          # no two concurrent invocations can ever consider the same number and the
+          # original race cannot recur.
+          #
+          # -n alone was not enough (the first attempt at this fix): xvfb-run's
+          # "that display is taken, try the next" retry is gated on -a having been passed,
+          # so with a bare -n one unavailable number is fatal with no fallback. That is
+          # what failed on :128 while 129+ all worked. Passing -a as well re-enables the
+          # retry; -n must come AFTER -a, because -a resolves its starting number at parse
+          # time and a later -n overwrites it. In this order the search starts at this
+          # binary's own base and only ever walks forward inside its own block, so the
+          # fallback costs nothing in isolation and cannot collide with a neighbour.
+          #
+          # -e /dev/stdout surfaces Xvfb's own diagnostics. xvfb-run defaults ERRORFILE to
+          # /dev/null, which is why the :128 failure gave us no reason to work from.
+          #
+          # -P $(nproc) caps parallelism to the runner's core count; -L1 runs one
+          # "display binary" pair per xargs invocation so output from different binaries
+          # doesn't interleave mid-line (example target names are fixed in
+          # examples/CMakeLists.txt and contain no whitespace).
           display_base=128
+          display_stride=8
           for i in "${!binaries[@]}"; do
-            printf '%s %s\n' "$((display_base + i))" "${binaries[$i]}"
+            printf '%s %s\n' "$((display_base + i * display_stride))" "${binaries[$i]}"
           done | xargs -P "$(nproc)" -L1 bash -c '
             display="$0"
             bin="$1"
             [ -x "$bin" ] || exit 0
             echo "::group::$bin"
-            if xvfb-run -n "$display" --server-args="-screen 0 1280x1024x24" "./$bin"; then
+            if xvfb-run -a -n "$display" -e /dev/stdout \
+                 --server-args="-screen 0 1280x1024x24" "./$bin"; then
               echo "OK: $bin"
             else
               status=$?
-              echo "FAILED: $bin (exit $status)"
+              echo "FAILED: $bin (exit $status, display block :$display)"
               echo "::endgroup::"
               exit 1
             fi
