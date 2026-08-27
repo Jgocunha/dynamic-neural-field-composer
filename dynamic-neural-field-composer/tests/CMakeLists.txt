@@ -55,6 +55,7 @@ if(DNF_COMPOSER_BUILD_TESTS)
             "validation/test_spectral_golden_2d.cpp"
             # element_parameters
             "element_parameters/test_element_parameters.cpp"
+            "element_parameters/test_concrete_parameters.cpp"
             # exceptions
             "exceptions/test_exception.cpp"
             # user_interface/ and visualization/ are auto-discovered below
