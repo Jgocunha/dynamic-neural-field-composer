@@ -44,6 +44,22 @@ namespace dnf_composer
 {
 	using json = nlohmann::json;
 
+	/// @brief The `.dnf` schema version this build writes and reads natively.
+	///
+	/// Written to the root object as `"formatVersion"` by
+	/// SimulationFileManager::saveElementsToJson(), and used by
+	/// loadElementsFromJson() to pick a read path:
+	/// - **0** (implicit -- the key is absent): every layout written before this
+	///   field existed, i.e. the legacy bare array of elements *and* the object
+	///   carrying `identifier`/`deltaT`/`elements`. Both still load unchanged.
+	/// - **1**: the current object layout, now declaring its own version.
+	///
+	/// A file declaring a version above this constant was written by a newer
+	/// build; it is loaded best-effort after a warning naming both versions.
+	///
+	/// @ingroup simulation_io
+	inline constexpr int kCurrentFormatVersion = 1;
+
 	/// @brief Serializes and deserializes a Simulation to / from a JSON file.
 	///
 	/// SimulationFileManager reads and writes every element in the simulation
@@ -87,12 +103,15 @@ namespace dnf_composer
 		/// @brief Serialize all elements and their connections to a JSON file.
 		/// When @p filePath is empty the output directory is
 		/// `data/<identifier>/` and @c FieldCoupling weight matrices are written
-		/// into the same directory before the JSON is saved.
+		/// into the same directory before the JSON is saved. The root object
+		/// declares `"formatVersion": ` #kCurrentFormatVersion.
 		void saveElementsToJson() const;
 
 		/// @brief Deserialize elements and connections from a JSON file into the simulation.
-		/// After loading, @c FieldCoupling elements have their weight directory set to
-		/// the parent directory of the JSON file and their weights are re-read from there.
+		/// The root's `"formatVersion"` selects the read path (see #kCurrentFormatVersion);
+		/// files predating that field load as version 0. After loading, @c FieldCoupling
+		/// elements have their weight directory set to the parent directory of the JSON
+		/// file and their weights are re-read from there.
 		void loadElementsFromJson() const;
 
 	private:
@@ -135,10 +154,26 @@ namespace dnf_composer
 		///         type-specific field for its label.
 		[[nodiscard]] bool jsonToElements(const json& jsonElements) const;
 
+		/// @brief Decide whether a parsed `.dnf` object root declares a version this build can read.
+		///
+		/// A root that omits `"formatVersion"` is implicit version 0 -- every file written
+		/// before the field existed -- and is accepted. A root declaring exactly
+		/// #kCurrentFormatVersion is accepted silently. A root declaring a higher version
+		/// was written by a newer build: this logs a warning naming both versions and still
+		/// accepts it, so a user gets whatever this build understands rather than nothing.
+		/// A `"formatVersion"` that is not a non-negative whole number is malformed input
+		/// and is rejected with a logged error, like any other structurally invalid root.
+		///
+		/// @param root  The parsed object root of the `.dnf` document.
+		/// @return @c true if the declared version is readable, @c false if it is malformed.
+		[[nodiscard]] bool isReadableFormatVersion(const json& root) const;
+
 		/// @brief Pull the element array out of a parsed `.dnf` root and apply its metadata.
 		///
-		/// Handles both accepted layouts: the legacy bare array of elements, and the
-		/// current object carrying `identifier` / `deltaT` alongside an `elements` array.
+		/// Handles both accepted layouts: the legacy bare array of elements (implicit
+		/// version 0, detected by shape), and the object carrying `identifier` / `deltaT`
+		/// alongside an `elements` array -- which may or may not declare `formatVersion`
+		/// (absent means version 0, i.e. a file written before that field existed).
 		/// Metadata is applied to the simulation as a side effect; malformed metadata is
 		/// logged and skipped rather than failing the load.
 		///

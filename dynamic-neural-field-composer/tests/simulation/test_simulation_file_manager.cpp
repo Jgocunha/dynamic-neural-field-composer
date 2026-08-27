@@ -36,6 +36,7 @@
 #include "elements/collapse.h"
 #include "elements/expand.h"
 #include "exceptions/exception.h"
+#include "scoped_min_log_level.h"
 
 using namespace dnf_composer;
 using namespace dnf_composer::element;
@@ -2542,3 +2543,206 @@ TEST_F(SimulationFileManagerTest, LoadAllElementsSampleFileStillSucceeds)
     EXPECT_NO_THROW(sfm.loadElementsFromJson());
     EXPECT_EQ(sim->getNumberOfElements(), 26);
 }
+
+// ---------------------------------------------------------------------------
+// SimulationFileManagerFormatVersion (issue #50)
+// ---------------------------------------------------------------------------
+// The .dnf root now declares "formatVersion". Every previously-accepted layout
+// predates that key and must keep loading exactly as before, which is what the
+// implicit-version-0 tests below pin down.
+
+namespace
+{
+    // Writes a .dnf file whose root object is exactly `rootBody`, so a test can
+    // control the "formatVersion" key (or its absence) precisely.
+    std::string writeRootFile(const std::string& tempDir, const std::string& testName,
+        const std::string& rootBody)
+    {
+        const std::string dir = tempDir + testName + "/";
+        fs::create_directories(dir);
+        const std::string path = dir + testName + ".dnf";
+        std::ofstream f(path);
+        f << rootBody;
+        return path;
+    }
+
+    // A minimal, valid neural field element object, shared by the tests below.
+    constexpr const char* kNeuralFieldBody =
+        R"({ "uniqueName": "nf 1", "label": [1, "neural field"],
+             "x_max": 100, "d_x": 1.0, "tau": 25.0, "restingLevel": -5.0,
+             "inputs": [] })";
+}
+
+TEST_F(SimulationFileManagerTest, SavedFileDeclaresCurrentFormatVersion)
+{
+    const auto sim = createSimulation("save-format-version", 1.0, 0.0, 0.0);
+    sim->addElement(makeField("nf 1"));
+
+    const SimulationFileManager sfm{ sim, tempDir };
+    sfm.saveElementsToJson();
+
+    std::ifstream file(tempDir + "save-format-version/save-format-version.dnf");
+    ASSERT_TRUE(file.is_open());
+    nlohmann::json parsed;
+    ASSERT_NO_THROW(file >> parsed);
+    ASSERT_TRUE(parsed.is_object());
+
+    ASSERT_TRUE(parsed.contains("formatVersion"));
+    EXPECT_EQ(parsed["formatVersion"].get<int>(), kCurrentFormatVersion);
+    EXPECT_EQ(kCurrentFormatVersion, 1);
+}
+
+TEST_F(SimulationFileManagerTest, RoundTripThroughVersionedFilePreservesSimulation)
+{
+    const auto simA = createSimulation("rt-format-version", 2.5, 0.0, 0.0);
+    simA->addElement(makeField("nf 1"));
+    simA->addElement(makeKernel("gk 1"));
+    simA->createInteraction("nf 1", "output", "gk 1");
+
+    const SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("placeholder", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfmLoad{ simB, tempDir + "rt-format-version/rt-format-version.dnf" };
+    sfmLoad.loadElementsFromJson();
+
+    EXPECT_EQ(simB->getUniqueIdentifier(), "rt-format-version");
+    EXPECT_DOUBLE_EQ(simB->getDeltaT(), 2.5);
+    EXPECT_EQ(simB->getNumberOfElements(), 2);
+    const auto consumers = simB->getElementsThatHaveSpecifiedElementAsInput("nf 1");
+    ASSERT_FALSE(consumers.empty());
+    EXPECT_EQ(consumers.front()->getUniqueName(), "gk 1");
+}
+
+TEST_F(SimulationFileManagerTest, LoadLegacyBareArrayFileWithoutFormatVersionStillWorks)
+{
+    // Version 0, shape A: the oldest format, a bare array of elements with no
+    // root metadata at all. Shape-sniffing remains the version-0 read path.
+    const std::string path = writeRootFile(tempDir, "v0-bare-array",
+        std::string("[ ") + kNeuralFieldBody + " ]");
+
+    const auto sim = createSimulation("v0-bare-array-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+    EXPECT_NE(sim->getElement("nf 1"), nullptr);
+    // A bare array carries no metadata, so the simulation keeps its own.
+    EXPECT_EQ(sim->getUniqueIdentifier(), "v0-bare-array-sim");
+}
+
+TEST_F(SimulationFileManagerTest, LoadObjectFileWithoutFormatVersionStillWorks)
+{
+    // Version 0, shape B: the object-with-metadata format as written by every
+    // build before "formatVersion" existed. This is the critical backwards-
+    // compatibility case -- such files are already on users' disks.
+    const std::string path = writeRootFile(tempDir, "v0-object",
+        std::string(R"({ "identifier": "v0-object", "deltaT": 3.5, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("v0-object-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+    EXPECT_EQ(sim->getUniqueIdentifier(), "v0-object");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 3.5);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFileDeclaringVersionOneLoadsNormally)
+{
+    const std::string path = writeRootFile(tempDir, "v1-explicit",
+        std::string(R"({ "formatVersion": 1, "identifier": "v1-explicit", "deltaT": 1.0, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("v1-explicit-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFileFromNewerVersionWarnsAndLoadsBestEffort)
+{
+    // A file written by a future build: warn naming both versions, then load
+    // what this build does understand rather than refusing outright.
+    const std::string path = writeRootFile(tempDir, "v999-future",
+        std::string(R"({ "formatVersion": 999, "identifier": "v999-future", "deltaT": 1.0, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("v999-future-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+
+    const test::ScopedMinLogLevel quiet{ tools::logger::WARNING };
+    ::testing::internal::CaptureStdout();
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    const std::string out = ::testing::internal::GetCapturedStdout();
+
+    EXPECT_NE(out.find("999"), std::string::npos);
+    EXPECT_NE(out.find("newer version of dnf-composer"), std::string::npos);
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFileWithNonNumericFormatVersionIsRejected)
+{
+    // Wrong JSON type for "formatVersion" is a malformed file, handled the same
+    // way as any other structurally invalid root: logged and refused, nothing added.
+    const std::string path = writeRootFile(tempDir, "bad-version-string",
+        std::string(R"({ "formatVersion": "one", "identifier": "bad-version-string", "deltaT": 1.0, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("bad-version-string-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFileWithNegativeFormatVersionIsRejected)
+{
+    const std::string path = writeRootFile(tempDir, "bad-version-negative",
+        std::string(R"({ "formatVersion": -1, "identifier": "bad-version-negative", "deltaT": 1.0, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("bad-version-negative-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, LoadFileWithFractionalFormatVersionIsRejected)
+{
+    const std::string path = writeRootFile(tempDir, "bad-version-fractional",
+        std::string(R"({ "formatVersion": 1.5, "identifier": "bad-version-fractional", "deltaT": 1.0, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("bad-version-fractional-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 0);
+}
+
+TEST_F(SimulationFileManagerTest, RejectedFormatVersionLeavesMetadataUntouched)
+{
+    // A rejected root must not have applied "identifier"/"deltaT" on the way out.
+    const std::string path = writeRootFile(tempDir, "bad-version-metadata",
+        std::string(R"({ "formatVersion": "one", "identifier": "from-the-file", "deltaT": 9.0, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("bad-version-metadata-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    sfm.loadElementsFromJson();
+
+    EXPECT_EQ(sim->getUniqueIdentifier(), "bad-version-metadata-sim");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 1.0);
+}
+
+TEST_F(SimulationFileManagerTest, FormatVersionOnABareArrayRootIsNotConsulted)
+{
+    // A bare array has nowhere to carry "formatVersion", so the version check
+    // must not run at all on that shape -- it stays implicit version 0.
+    const std::string path = writeRootFile(tempDir, "array-no-version",
+        std::string("[ ") + kNeuralFieldBody + " ]");
+
+    const auto sim = createSimulation("array-no-version-sim", 1.0, 0.0, 0.0);
+    const SimulationFileManager sfm{ sim, path };
+    EXPECT_NO_THROW(sfm.loadElementsFromJson());
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+}
+
