@@ -161,15 +161,28 @@ jobs:
             echo "No example_* binaries found in $(pwd) -- examples/CMakeLists.txt or the build may have changed."
             exit 1
           fi
-          # Each binary gets its own xvfb-run, which picks its own free display number,
-          # so running them concurrently is safe. -P $(nproc) caps parallelism to the
-          # runner's core count; -I{} runs one binary per xargs invocation so output from
-          # different binaries doesn't interleave mid-line.
-          printf '%s\n' "${binaries[@]}" | xargs -P "$(nproc)" -I{} bash -c '
-            bin="{}"
+          # xvfb-run -a is NOT safe under concurrency (#187): its find_free_servernum()
+          # picks the first number with no /tmp/.X<n>-lock and only then starts Xvfb, so
+          # several simultaneous invocations all observe the same number as free and all
+          # try to claim it -- the losers die with "X11: Failed to open display :<n>".
+          # Instead each binary is paired here with its own explicit display number
+          # (display_base + index) and handed to xvfb-run -n, so no two concurrent
+          # invocations can pick the same display by construction -- no search, no race.
+          # The job owns the runner and installs xvfb itself, so only this step's displays
+          # are in play; base 128 stays clear of the :99 convention and of the range
+          # xvfb-run -a would have searched. -P $(nproc) caps parallelism to the runner's
+          # core count; -L1 runs one "display binary" pair per xargs invocation so output
+          # from different binaries doesn't interleave mid-line (example target names are
+          # fixed in examples/CMakeLists.txt and contain no whitespace).
+          display_base=128
+          for i in "${!binaries[@]}"; do
+            printf '%s %s\n' "$((display_base + i))" "${binaries[$i]}"
+          done | xargs -P "$(nproc)" -L1 bash -c '
+            display="$0"
+            bin="$1"
             [ -x "$bin" ] || exit 0
             echo "::group::$bin"
-            if xvfb-run -a --server-args="-screen 0 1280x1024x24" "./$bin"; then
+            if xvfb-run -n "$display" --server-args="-screen 0 1280x1024x24" "./$bin"; then
               echo "OK: $bin"
             else
               status=$?
