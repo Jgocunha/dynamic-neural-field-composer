@@ -10,11 +10,15 @@
 using namespace dnf_composer;
 using namespace dnf_composer::element;
 
-// All tests here stay strictly on the headless side of the API: they never
-// call Visualization::render()/renderTile() or Plot::render(), which require
-// an ImGui/OpenGL context. Construction, plot-management, and parameter
-// accessors are pure logic and safe to exercise directly (see
+// The tests in this file never call Visualization::render()/renderTile() or
+// Plot::render(); they cover construction, plot-management, and parameter
+// accessors, which are pure logic and safe to exercise directly (see
 // .claude/tests/05-gui-headless.md).
+//
+// That is a scoping choice, not a limitation: render() needs no window or GL
+// context, only an ImGui one, which tests/user_interface/ui_test_harness.h
+// provides headlessly. The render-path tests live in
+// test_visualization_render_buffers.cpp.
 
 static std::shared_ptr<Simulation> makeSim(const std::string& id = "vis-test")
 {

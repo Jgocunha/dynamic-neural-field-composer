@@ -204,6 +204,29 @@ namespace dnf_composer
 		}
 	}
 
+	void gatherPlotSeries(const Simulation& simulation,
+		const std::vector<std::pair<std::string, std::string>>& sources,
+		std::vector<std::vector<double>*>& data,
+		std::vector<std::string>& legends)
+	{
+		// clear() keeps the capacity these buffers already grew to, so a caller
+		// that passes the same vectors back every frame stops allocating once
+		// the plot count settles.
+		data.clear();
+		legends.clear();
+		data.reserve(sources.size());
+		legends.reserve(sources.size());
+
+		for (const auto& [name, component] : sources)
+		{
+			data.emplace_back(simulation.getComponentPtr(name, component));
+			std::string legend = name;
+			legend += " - ";
+			legend += component;
+			legends.emplace_back(std::move(legend));
+		}
+	}
+
 	void Visualization::renderTile(int plotId)
 	{
 		const auto it = std::ranges::find_if(plots.begin(), plots.end(),
@@ -220,33 +243,20 @@ namespace dnf_composer
 		}
 
 		updateHeatmapDimensionHint(it->first, data, simulation);
-
-		std::vector<std::vector<double>*> ptrs;
-		ptrs.reserve(data.size());
-		for (const auto& [name, comp] : data) {
-			ptrs.emplace_back(simulation->getComponentPtr(name, comp));
-}
-
-		std::vector<std::string> legends;
-		legends.reserve(data.size());
-		for (const auto& [name, comp] : data) {
-			std::string legend = name;
-			legend += " - ";
-			legend += comp;
-			legends.emplace_back(std::move(legend));
-}
-
-		it->first->render(ptrs, legends);
+		gatherPlotSeries(*simulation, data, renderDataBuffer, renderLegendBuffer);
+		it->first->render(renderDataBuffer, renderLegendBuffer);
 	}
 
 	void Visualization::render()
 	{
 		// Removing a plot while iterating `plots` would invalidate the loop's
 		// iterators, so removals are collected and applied after the loop.
-		std::vector<int> plotsToRemove;
+		// The buffer is a member purely to reuse its capacity across frames;
+		// clear() below is what makes reuse correct.
+		plotsToRemoveBuffer.clear();
 		for (const auto&[fst, snd] : plots)
 		{
-			std::vector<std::pair<std::string, std::string>> data = snd;
+			const auto& data = snd;
 
 			// Check if data exists in the simulation, if not, remove it from the plot
 			if (!std::ranges::all_of(data, [this](const std::pair<std::string, std::string>& d)
@@ -254,31 +264,15 @@ namespace dnf_composer
 				return simulation->componentExists(d.first, d.second);
 				}))
 			{
-				plotsToRemove.push_back(fst->getUniqueIdentifier());
+				plotsToRemoveBuffer.push_back(fst->getUniqueIdentifier());
 				continue;
 			}
 
-			std::vector<std::vector<double>*> allDataToPlotPtr;
-			allDataToPlotPtr.reserve(data.size());
-			for (const auto&[fst, snd] : data)
-			{
-				auto *const singleDataToPlotPtr = simulation->getComponentPtr(fst, snd);
-				allDataToPlotPtr.emplace_back(singleDataToPlotPtr);
-			}
-
-			std::vector<std::string> legends;
-			legends.reserve(data.size());
-			for (const auto&[fst, snd] : data)
-			{
-				std::string legend = fst;
-				legend += " - ";
-				legend += snd;
-				legends.emplace_back(std::move(legend));
-			}
+			gatherPlotSeries(*simulation, data, renderDataBuffer, renderLegendBuffer);
 
 			const int plotID = fst->getUniqueIdentifier();
-			const std::string visible = "Plot #" + std::to_string(plotID);
-			const std::string plotWindowTitle = visible + "##" + (windowSuffix.empty() ? "default" : windowSuffix);
+			const std::string plotWindowTitle = std::format("Plot #{}##{}", plotID,
+				windowSuffix.empty() ? "default" : windowSuffix);
 
 			const ImGuiViewport* vp = ImGui::GetMainViewport();
 			ImGui::SetNextWindowPos(
@@ -295,16 +289,16 @@ namespace dnf_composer
 			if (open)
 			{
 				updateHeatmapDimensionHint(fst, data, simulation);
-				fst->render(allDataToPlotPtr, legends);
+				fst->render(renderDataBuffer, renderLegendBuffer);
 			}
 			ImGui::End();
 
 			if (!open) {
-				plotsToRemove.push_back(plotID);
+				plotsToRemoveBuffer.push_back(plotID);
 }
 		}
 
-		for (const int plotId : plotsToRemove) {
+		for (const int plotId : plotsToRemoveBuffer) {
 			removePlot(plotId);
 }
 	}
