@@ -45,13 +45,13 @@ namespace dnf_composer::tools::utils
 		}
 	}
 
-	std::string resolveResourceRoot(const std::filesystem::path& exeDir, const std::string& devFallback)
+	std::string resolveResourceRoot(const std::filesystem::path& exeDir, std::string_view devFallback)
 	{
 		const auto parent = std::filesystem::weakly_canonical(exeDir / "..");
 		if (std::filesystem::exists(parent / "resources")) {
 			return parent.string();
 		}
-		return devFallback;
+		return std::string(devFallback);
 	}
 
 	namespace
@@ -141,9 +141,9 @@ namespace dnf_composer::tools::utils
 		return false;
 	}
 
-	std::string replaceForwardSlashesWithBackslashes(const std::string& str)
+	std::string replaceForwardSlashesWithBackslashes(std::string_view str)
 	{
-		std::string adjustedStr = str;
+		std::string adjustedStr(str);
 		size_t pos;
 		while ((pos = adjustedStr.find('/')) != std::string::npos) {
 			adjustedStr.replace(pos, 1, "\\");
