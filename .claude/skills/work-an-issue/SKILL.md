@@ -87,7 +87,24 @@ before asking anyone else to look.
 Use the `docs-check` skill. Doxygen on new public API, wiki page for user-visible changes,
 and no stale references left behind.
 
-## 9. Ship
+## 9. Changelog
+
+Add an entry under `[Unreleased]` in the repo-root `CHANGELOG.md` — the one beside
+`README.md`, not inside `dynamic-neural-field-composer/`. Create the `[Unreleased]` heading
+if the last release consumed it.
+
+Pick the subsection matching the work; the file uses `Added`, `Changed`, `Fixed`,
+`Removed`, `Performance`, `Tests`, `Documentation`, `Build` and `CI`. Create it in that
+order if absent.
+
+Write for someone reading the release notes months from now with no access to the issue:
+what changed, and why it mattered. Reference the issue as `(#N)`. Match the surrounding
+entries' density — they are full sentences, not one-line summaries.
+
+Every issue gets an entry, CI- and test-only work included. It is easier to drop a line at
+release time than to reconstruct one from a diff.
+
+## 10. Ship
 
 ```bash
 git add -A && git commit -m "<type>: <lowercase summary>"
@@ -99,7 +116,7 @@ Closes #<N>"
 
 Do **not** merge. The PR waits for human review.
 
-## 10. Hand back
+## 11. Hand back
 
 Report: PR URL, what changed, what you verified (with the test count), and anything you
 deliberately left out.
