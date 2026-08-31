@@ -15,6 +15,16 @@ All notable changes to this project will be documented in this file.
   applied. `data/*.dnf` sample files are left as v0 deliberately and will gain the field
   next time they're re-saved.
 
+### Changed
+- Added `[[nodiscard]]` to `Element::clone()`/`toString()`/`getUniqueName()`/`getLabel()`/
+  `getComponentList()`/`getComponents()` and `Simulation::getUniqueIdentifier()`/
+  `getIdentifier()` — pure query/factory-copy methods where a dropped return value is
+  always a bug (#74). Converted `tools::utils::resolveResourceRoot`'s `devFallback` and
+  `replaceForwardSlashesWithBackslashes`'s `str` to `std::string_view`, avoiding a needless
+  allocation for two read-only, non-map-key string parameters. Both changes are
+  source-compatible; deliberately scoped narrower than #74 as a whole
+  (`getComponent()`/`getInputs()`/`getInputsAndComponents()` are left for #75).
+
 ### Documentation
 - The `work-an-issue` skill now adds a `CHANGELOG.md` entry before opening the PR (#188).
   The workflow went straight from the docs check to `gh pr create`, so changelog entries
