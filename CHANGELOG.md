@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Documentation
+- The `work-an-issue` skill now adds a `CHANGELOG.md` entry before opening the PR (#188).
+  The workflow went straight from the docs check to `gh pr create`, so changelog entries
+  were only ever reconstructed at release time from the diff.
+
 ### CI
 - Gave each example binary a private, non-overlapping block of X display numbers in the
   headless smoke-run (`128 + i*8`, invoked as `xvfb-run -a -n <base>`) instead of letting
@@ -12,11 +17,6 @@ All notable changes to this project will be documented in this file.
   the same display and the losers crashed a random example (#187). `-a` is kept so the
   retry still works, but it can now only walk forward inside that binary's own block.
   `-e /dev/stdout` surfaces Xvfb's own diagnostics, previously discarded to `/dev/null`.
-
-### Documentation
-- The `work-an-issue` skill now adds a `CHANGELOG.md` entry before opening the PR. The
-  workflow went straight from the docs check to `gh pr create`, so changelog entries were
-  only ever reconstructed at release time from the diff.
 
 ## [2.11.1] - 2026-08-26
 
