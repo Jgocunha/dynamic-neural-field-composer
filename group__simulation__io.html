@@ -72,7 +72,8 @@ $(function() {
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Simulation I/O<div class="ingroups"><a class="el" href="group__simulation.html">Simulation</a></div></div></div>
 </div><!--header-->
 <div class="contents">
@@ -90,9 +91,45 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdnf__composer_1_1SimulationFileManager.html">dnf_composer::SimulationFileManager</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes and deserializes a <a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> to / from a JSON file.  <a href="classdnf__composer_1_1SimulationFileManager.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ga18c2e0ff856e7161f6d0b9a577f9f58f" id="r_ga18c2e0ff856e7161f6d0b9a577f9f58f"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__simulation__io.html#ga18c2e0ff856e7161f6d0b9a577f9f58f">dnf_composer::kCurrentFormatVersion</a> = 1</td></tr>
+<tr class="memdesc:ga18c2e0ff856e7161f6d0b9a577f9f58f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>.dnf</code> schema version this build writes and reads natively.  <br /></td></tr>
+<tr class="separator:ga18c2e0ff856e7161f6d0b9a577f9f58f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>JSON serialization and deserialization of simulation architectures. </p>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ga18c2e0ff856e7161f6d0b9a577f9f58f" name="ga18c2e0ff856e7161f6d0b9a577f9f58f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga18c2e0ff856e7161f6d0b9a577f9f58f">&#9670;&#160;</a></span>kCurrentFormatVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int dnf_composer::kCurrentFormatVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The <code>.dnf</code> schema version this build writes and reads natively. </p>
+<p>Written to the root object as <code>"formatVersion"</code> by <a class="el" href="classdnf__composer_1_1SimulationFileManager.html#aa72b2730b34bfd79efbf4cac5c2756bb" title="Serialize all elements and their connections to a JSON file. When filePath is empty the output direct...">SimulationFileManager::saveElementsToJson()</a>, and used by loadElementsFromJson() to pick a read path:</p><ul>
+<li><b>0</b> (implicit &ndash; the key is absent): every layout written before this field existed, i.e. the legacy bare array of elements <em>and</em> the object carrying <code>identifier</code>/<code>deltaT</code>/<code>elements</code>. Both still load unchanged.</li>
+<li><b>1</b>: the current object layout, now declaring its own version.</li>
+</ul>
+<p>A file declaring a version above this constant was written by a newer build; it is loaded best-effort after a warning naming both versions. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

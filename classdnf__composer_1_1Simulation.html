@@ -1129,6 +1129,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Deserialize the simulation state from a JSON file. </p>
+<p>The file is checked for a readable root (opens, parses as JSON, and if present declares a <code>"formatVersion"</code> this build understands) before anything is cleared: a rejected file leaves the active simulation exactly as it was, rather than calling <a class="el" href="classdnf__composer_1_1Simulation.html#a77e7b52a61fe632c8a1dd4c607a433c7" title="Remove all elements and reset the simulation to its initial state.">clean()</a> first and only then discovering the load cannot proceed.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">readPath</td><td>Source file path; if empty, a default path is used. </td></tr>
@@ -1138,7 +1139,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a487ef819fe0e501707580714b92b80ca_cgraph.svg" width="1163" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classdnf__composer_1_1Simulation_a487ef819fe0e501707580714b92b80ca_cgraph.svg" width="1096" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
