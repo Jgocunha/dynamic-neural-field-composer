@@ -98,6 +98,8 @@ Both logged from `Element::addInput()` (and the overridden `Resize`/`Collapse`/`
 
 `SimulationFileManager::loadElementsFromJson()` (see [.dnf File Schema](DNF-File-Schema)) is defensive: most problems are **logged as errors and skipped** rather than thrown, so a malformed file can partially load. Check your log output for these exact messages:
 
+"Simulation unchanged" below means unchanged **including the active simulation you had open**, not just the file being loaded into it. `Simulation::read()` — the entry point behind the GUI's "open file" — checks whether the root will be readable (file opens, parses as JSON, and any `formatVersion` is one this build knows) *before* clearing the current simulation, so a file that fails one of the root-level checks (the first, second, sixth and seventh rows below) never touches what you had open. Failures caught deeper in the load, once the simulation has already been cleared to receive the new file's contents, restore only what that same load had already changed — see the `could not build the elements` row below for exactly what "restored" covers there.
+
 | Log message | Cause | What happens |
 |---|---|---|
 | `Unable to open file to load simulation: <path>.` | The `.dnf` path doesn't exist or isn't readable. | Load aborts immediately, simulation unchanged. |

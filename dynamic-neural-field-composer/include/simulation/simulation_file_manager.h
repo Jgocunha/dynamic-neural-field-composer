@@ -114,6 +114,21 @@ namespace dnf_composer
 		/// file and their weights are re-read from there.
 		void loadElementsFromJson() const;
 
+		/// @brief Check whether @c filePath is readable and its root declares a version
+		/// this build can load, without touching the simulation.
+		///
+		/// Intended as a pre-flight check before a caller discards existing state (e.g.
+		/// @c Simulation::read() clearing the active simulation before loading a new one):
+		/// running this first means a rejected file never causes that state to be lost.
+		/// Reads and parses the file independently of @c loadElementsFromJson(), so it does
+		/// not report on failures specific to that method's own pass (a malformed
+		/// individual element, for instance) -- only on what can be known from the root
+		/// alone: the file opening, the JSON parsing, and its declared `"formatVersion"`.
+		///
+		/// @return @c true if @c loadElementsFromJson() will not reject the file for one of
+		///         these root-level reasons; @c false otherwise (also logs why).
+		[[nodiscard]] bool willFileLoadSuccessfully() const;
+
 	private:
 		static json elementToJson(const std::shared_ptr<element::Element>& element);
 

@@ -245,8 +245,12 @@ namespace dnf_composer
 
 	void Simulation::read(const std::string& readPath)
 	{
-		clean();
 		const SimulationFileManager sfm{ shared_from_this(), readPath };
+		if (!sfm.willFileLoadSuccessfully()) {
+			return;
+		}
+
+		clean();
 		sfm.loadElementsFromJson();
 		init();
 	}

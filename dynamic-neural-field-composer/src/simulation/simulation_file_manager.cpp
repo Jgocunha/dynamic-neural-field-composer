@@ -220,6 +220,37 @@ namespace dnf_composer
         return true;
     }
 
+    bool SimulationFileManager::willFileLoadSuccessfully() const
+    {
+        std::ifstream file(filePath);
+        if (!file.is_open()) {
+            log(tools::logger::ERROR, std::format("Unable to open file to load simulation: {}.", filePath));
+            return false;
+        }
+
+        json root;
+        try {
+            file >> root;
+        }
+        catch (const std::exception& e) {
+            log(tools::logger::ERROR, std::format("Error reading JSON file: {}", e.what()));
+            return false;
+        }
+
+        // A bare array has nowhere to carry "formatVersion" and is always readable at the
+        // root level (element-by-element validation happens later, in loadElementsFromJson()).
+        if (root.is_array()) {
+            return true;
+        }
+        if (!root.is_object())
+        {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
+            return false;
+        }
+
+        return isReadableFormatVersion(root);
+    }
+
     void SimulationFileManager::loadElementsFromJson() const
     {
         std::ifstream file(filePath);

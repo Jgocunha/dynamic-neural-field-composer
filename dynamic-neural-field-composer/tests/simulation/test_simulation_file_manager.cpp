@@ -2746,3 +2746,26 @@ TEST_F(SimulationFileManagerTest, FormatVersionOnABareArrayRootIsNotConsulted)
     EXPECT_EQ(sim->getNumberOfElements(), 1);
 }
 
+TEST_F(SimulationFileManagerTest, SimulationReadWithMalformedFormatVersionLeavesActiveSimulationUntouched)
+{
+    // SimulationFileManager::loadElementsFromJson() on its own already leaves a
+    // rejected load's metadata untouched (see the test above), but the real entry
+    // point users hit is Simulation::read(), which calls clean() before delegating
+    // to the file manager. clean() clears every element and generates a brand new
+    // identifier, so a rejected file must not be allowed to reach that point --
+    // otherwise "the load aborts without modifying the simulation" is false at the
+    // one call site that matters (main_menu_bar.cpp's "open file").
+    const std::string path = writeRootFile(tempDir, "read-bad-version",
+        std::string(R"({ "formatVersion": "one", "identifier": "from-the-file", "deltaT": 9.0, "elements": [ )")
+        + kNeuralFieldBody + " ] }");
+
+    const auto sim = createSimulation("active-sim-untouched", 2.5, 0.0, 0.0);
+    sim->addElement(makeField("nf 1"));
+
+    sim->read(path);
+
+    EXPECT_EQ(sim->getUniqueIdentifier(), "active-sim-untouched");
+    EXPECT_DOUBLE_EQ(sim->getDeltaT(), 2.5);
+    EXPECT_EQ(sim->getNumberOfElements(), 1);
+}
+

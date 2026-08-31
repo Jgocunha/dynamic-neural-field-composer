@@ -113,6 +113,13 @@ namespace dnf_composer
 		void save(const std::string& savePath = {});
 
 		/// @brief Deserialize the simulation state from a JSON file.
+		///
+		/// The file is checked for a readable root (opens, parses as JSON, and if
+		/// present declares a `"formatVersion"` this build understands) before
+		/// anything is cleared: a rejected file leaves the active simulation exactly
+		/// as it was, rather than calling clean() first and only then discovering the
+		/// load cannot proceed.
+		///
 		/// @param readPath  Source file path; if empty, a default path is used.
 		void read(const std::string& readPath = {});
 
