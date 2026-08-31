@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- `.dnf` files now declare a `"formatVersion"` field, so a future schema change can be
+  migrated deliberately instead of relying on shape-sniffing to guess the format (#50).
+  Absent means version 0 — every legacy layout (bare array or the pre-versioning object)
+  loads unchanged. A version newer than this build knows logs a warning naming both
+  versions and loads best-effort, since the element schema has only ever grown and
+  unrecognized entries are already skipped. A malformed value (non-integer, negative,
+  fractional) is refused the same way other malformed roots are, before any metadata is
+  applied. `data/*.dnf` sample files are left as v0 deliberately and will gain the field
+  next time they're re-saved.
+
 ### Documentation
 - The `work-an-issue` skill now adds a `CHANGELOG.md` entry before opening the PR (#188).
   The workflow went straight from the docs check to `gh pr create`, so changelog entries
