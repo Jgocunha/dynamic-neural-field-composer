@@ -18,6 +18,16 @@ All notable changes to this project will be documented in this file.
   retry still works, but it can now only walk forward inside that binary's own block.
   `-e /dev/stdout` surfaces Xvfb's own diagnostics, previously discarded to `/dev/null`.
 
+### Tests
+- Kernel generation was asserted only structurally — absolute sum greater than zero, "has
+  positive and negative values" — so a Gaussian kernel was never checked to contain
+  Gaussian values (#128). Added elementwise exact-value tests for GaussKernel,
+  MexicanHatKernel, OscillatoryKernel and AsymmetricGaussKernel across
+  circular/non-circular and normalized/unnormalized, plus `GaussKernel2D`, against analytic
+  references derived from each kernel's own formula rather than from `tools::math`. Also
+  added dedicated tests for the six concrete parameter structs, pinning their 1e-6-epsilon
+  equality from both sides.
+
 ## [2.11.1] - 2026-08-26
 
 ### Changed
