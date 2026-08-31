@@ -106,19 +106,19 @@ Functions</h2></td></tr>
 <tr class="memitem:a140c0903ddcfc3ba01218f11d31608dc" id="r_a140c0903ddcfc3ba01218f11d31608dc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc">getResourceRoot</a> ()</td></tr>
 <tr class="memdesc:a140c0903ddcfc3ba01218f11d31608dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the runtime install prefix (parent of <code>bin/</code>) for locating resources (fonts, icons, sample data) relative to the running executable.  <br /></td></tr>
 <tr class="separator:a140c0903ddcfc3ba01218f11d31608dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bc031e8f5aab14bdb3300c871068b5d" id="r_a4bc031e8f5aab14bdb3300c871068b5d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a4bc031e8f5aab14bdb3300c871068b5d">replaceForwardSlashesWithBackslashes</a> (const std::string &amp;str)</td></tr>
-<tr class="memdesc:a4bc031e8f5aab14bdb3300c871068b5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace every forward slash in a string with a backslash.  <br /></td></tr>
-<tr class="separator:a4bc031e8f5aab14bdb3300c871068b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb699f27c4d4d4565aaae37881ea4fc7" id="r_acb699f27c4d4d4565aaae37881ea4fc7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#acb699f27c4d4d4565aaae37881ea4fc7">replaceForwardSlashesWithBackslashes</a> (std::string_view str)</td></tr>
+<tr class="memdesc:acb699f27c4d4d4565aaae37881ea4fc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace every forward slash in a string with a backslash.  <br /></td></tr>
+<tr class="separator:acb699f27c4d4d4565aaae37881ea4fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a276f23bf940a7393b0f90e5168770aa7" id="r_a276f23bf940a7393b0f90e5168770aa7"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a276f23bf940a7393b0f90e5168770aa7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a276f23bf940a7393b0f90e5168770aa7">resizeMatrix</a> (std::vector&lt; std::vector&lt; T &gt; &gt; &amp;matrix, int newRowSize, int newColSize)</td></tr>
 <tr class="memdesc:a276f23bf940a7393b0f90e5168770aa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize a 2D matrix, growing or shrinking both dimensions.  <br /></td></tr>
 <tr class="separator:a276f23bf940a7393b0f90e5168770aa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3512ee1aedebdbb9f4563249ae62eccf" id="r_a3512ee1aedebdbb9f4563249ae62eccf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a3512ee1aedebdbb9f4563249ae62eccf">resolveOutputDirectory</a> (const std::string &amp;resourceRoot)</td></tr>
-<tr class="memdesc:a3512ee1aedebdbb9f4563249ae62eccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends <code>/data</code> to a resource root, the pure decision logic behind <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#aa0f68db79c708f4b054161772549ee88" title="Returns the directory for simulation/recording output: getResourceRoot() + &quot;/data&quot;.">getOutputDirectory()</a>, pulled out so it can be exercised against both a normal root and the empty root that <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> can return when <code>DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF</code> and no <code>resources/</code> directory is found next to the executable.  <br /></td></tr>
+<tr class="memdesc:a3512ee1aedebdbb9f4563249ae62eccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends <code>/data</code> to a resource root, the pure decision logic behind <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#aa0f68db79c708f4b054161772549ee88" title="Returns the directory for simulation/recording output: getResourceRoot() + &quot;/data&quot;.">getOutputDirectory()</a>, pulled out so it can be exercised against both a normal root and the empty root that <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a201a35fc8a52db78f62e1ba743f89fa7" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> can return when <code>DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF</code> and no <code>resources/</code> directory is found next to the executable.  <br /></td></tr>
 <tr class="separator:a3512ee1aedebdbb9f4563249ae62eccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5694fdef203f48b9eaadc90e0f8c3112" id="r_a5694fdef203f48b9eaadc90e0f8c3112"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112">resolveResourceRoot</a> (const std::filesystem::path &amp;exeDir, const std::string &amp;devFallback)</td></tr>
-<tr class="memdesc:a5694fdef203f48b9eaadc90e0f8c3112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decide the resource root given the executable's directory and a dev-build fallback value.  <br /></td></tr>
-<tr class="separator:a5694fdef203f48b9eaadc90e0f8c3112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a201a35fc8a52db78f62e1ba743f89fa7" id="r_a201a35fc8a52db78f62e1ba743f89fa7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a201a35fc8a52db78f62e1ba743f89fa7">resolveResourceRoot</a> (const std::filesystem::path &amp;exeDir, std::string_view devFallback)</td></tr>
+<tr class="memdesc:a201a35fc8a52db78f62e1ba743f89fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decide the resource root given the executable's directory and a dev-build fallback value.  <br /></td></tr>
+<tr class="separator:a201a35fc8a52db78f62e1ba743f89fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b9ee760b745eb4a1dfabacac1c026d2" id="r_a9b9ee760b745eb4a1dfabacac1c026d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a9b9ee760b745eb4a1dfabacac1c026d2">safe_localtime</a> (const std::time_t *time, std::tm *result)</td></tr>
 <tr class="memdesc:a9b9ee760b745eb4a1dfabacac1c026d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Portable wrapper around the platform's thread-safe localtime conversion.  <br /></td></tr>
 <tr class="separator:a9b9ee760b745eb4a1dfabacac1c026d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -362,7 +362,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Returns the runtime install prefix (parent of <code>bin/</code>) for locating resources (fonts, icons, sample data) relative to the running executable. </p>
-<p>Falls back to a compile-time source-tree path in dev builds (when <code>resources/</code> is not found next to the executable, e.g. running directly from the build tree rather than an installed layout) &ndash; see <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> for the decision logic, and <code>DNF_COMPOSER_DEV_FALLBACK_PATHS</code> in CMakeLists.txt for how to build without that fallback embedded at all (#126). </p><dl class="section return"><dt>Returns</dt><dd>The runtime install prefix (parent of <code>bin/</code>), or the dev-build fallback path. </dd></dl>
+<p>Falls back to a compile-time source-tree path in dev builds (when <code>resources/</code> is not found next to the executable, e.g. running directly from the build tree rather than an installed layout) &ndash; see <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a201a35fc8a52db78f62e1ba743f89fa7" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> for the decision logic, and <code>DNF_COMPOSER_DEV_FALLBACK_PATHS</code> in CMakeLists.txt for how to build without that fallback embedded at all (#126). </p><dl class="section return"><dt>Returns</dt><dd>The runtime install prefix (parent of <code>bin/</code>), or the dev-build fallback path. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -371,8 +371,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a4bc031e8f5aab14bdb3300c871068b5d" name="a4bc031e8f5aab14bdb3300c871068b5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4bc031e8f5aab14bdb3300c871068b5d">&#9670;&#160;</a></span>replaceForwardSlashesWithBackslashes()</h2>
+<a id="acb699f27c4d4d4565aaae37881ea4fc7" name="acb699f27c4d4d4565aaae37881ea4fc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb699f27c4d4d4565aaae37881ea4fc7">&#9670;&#160;</a></span>replaceForwardSlashesWithBackslashes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -380,7 +380,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">std::string dnf_composer::tools::utils::replaceForwardSlashesWithBackslashes </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>str</em></td><td>)</td>
           <td></td>
         </tr>
@@ -466,7 +466,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Appends <code>/data</code> to a resource root, the pure decision logic behind <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#aa0f68db79c708f4b054161772549ee88" title="Returns the directory for simulation/recording output: getResourceRoot() + &quot;/data&quot;.">getOutputDirectory()</a>, pulled out so it can be exercised against both a normal root and the empty root that <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a5694fdef203f48b9eaadc90e0f8c3112" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> can return when <code>DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF</code> and no <code>resources/</code> directory is found next to the executable. </p>
+<p>Appends <code>/data</code> to a resource root, the pure decision logic behind <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#aa0f68db79c708f4b054161772549ee88" title="Returns the directory for simulation/recording output: getResourceRoot() + &quot;/data&quot;.">getOutputDirectory()</a>, pulled out so it can be exercised against both a normal root and the empty root that <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a201a35fc8a52db78f62e1ba743f89fa7" title="Decide the resource root given the executable&#39;s directory and a dev-build fallback value.">resolveResourceRoot()</a> can return when <code>DNF_COMPOSER_DEV_FALLBACK_PATHS=OFF</code> and no <code>resources/</code> directory is found next to the executable. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">resourceRoot</td><td>The value returned by <a class="el" href="namespacednf__composer_1_1tools_1_1utils.html#a140c0903ddcfc3ba01218f11d31608dc" title="Returns the runtime install prefix (parent of bin/) for locating resources (fonts,...">getResourceRoot()</a>. </td></tr>
@@ -488,8 +488,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a5694fdef203f48b9eaadc90e0f8c3112" name="a5694fdef203f48b9eaadc90e0f8c3112"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5694fdef203f48b9eaadc90e0f8c3112">&#9670;&#160;</a></span>resolveResourceRoot()</h2>
+<a id="a201a35fc8a52db78f62e1ba743f89fa7" name="a201a35fc8a52db78f62e1ba743f89fa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a201a35fc8a52db78f62e1ba743f89fa7">&#9670;&#160;</a></span>resolveResourceRoot()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -503,7 +503,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>devFallback</em>&#160;</td>
         </tr>
         <tr>
