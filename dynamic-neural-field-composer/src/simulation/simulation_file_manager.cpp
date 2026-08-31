@@ -71,6 +71,7 @@ namespace dnf_composer
 }
 
         json root;
+        root["formatVersion"] = kCurrentFormatVersion;
         root["identifier"] = simulation->getUniqueIdentifier();
         root["deltaT"]     = simulation->getDeltaT();
         root["elements"]   = elementsJson;
@@ -86,10 +87,43 @@ namespace dnf_composer
         }
 	}
 
+    bool SimulationFileManager::isReadableFormatVersion(const json& root) const
+    {
+        // No "formatVersion" key means the file predates the field: implicit version 0,
+        // which is the object layout this loader has always accepted. Files already on
+        // users' disks land here, so this must stay silent and accepting.
+        if (!root.contains("formatVersion")) {
+            return true;
+        }
+
+        const json& declared = root["formatVersion"];
+        if (!declared.is_number_integer() || declared.get<long long>() < 0)
+        {
+            log(tools::logger::ERROR, std::format(
+                "Invalid simulation file: \"formatVersion\" must be a whole number >= 0: {}", filePath));
+            return false;
+        }
+
+        const long long version = declared.get<long long>();
+        if (version > kCurrentFormatVersion)
+        {
+            // Best-effort rather than refusal: the element schema has only ever grown, and
+            // jsonToElements() already skips what it does not recognise, so a partial load
+            // is far more useful to a user than an empty simulation.
+            log(tools::logger::WARNING, std::format(
+                "Simulation file {} declares format version {}, but this build of dnf-composer only "
+                "knows version {} - this file was written by a newer version of dnf-composer. "
+                "Loading it anyway; anything the newer format added will be ignored.",
+                filePath, version, kCurrentFormatVersion));
+        }
+
+        return true;
+    }
+
     bool SimulationFileManager::extractElementsAndMetadata(const json& root, json& elementsJson) const
     {
-        // Backwards-compatible: old format is a bare array of elements.
-        // New format is an object with metadata + "elements" array.
+        // Version 0, shape A: the oldest format is a bare array of elements, with nowhere
+        // to declare a version. Detected by shape, exactly as before.
         if (root.is_array())
         {
             elementsJson = root;
@@ -98,6 +132,13 @@ namespace dnf_composer
         if (!root.is_object())
         {
             log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
+            return false;
+        }
+
+        // Object roots: version 0 (no "formatVersion") and version 1 read identically,
+        // so the branch here is only about rejecting a malformed version and warning
+        // about a future one. A real migration would fork the parse below.
+        if (!isReadableFormatVersion(root)) {
             return false;
         }
 
@@ -177,6 +218,37 @@ namespace dnf_composer
         }
 
         return true;
+    }
+
+    bool SimulationFileManager::willFileLoadSuccessfully() const
+    {
+        std::ifstream file(filePath);
+        if (!file.is_open()) {
+            log(tools::logger::ERROR, std::format("Unable to open file to load simulation: {}.", filePath));
+            return false;
+        }
+
+        json root;
+        try {
+            file >> root;
+        }
+        catch (const std::exception& e) {
+            log(tools::logger::ERROR, std::format("Error reading JSON file: {}", e.what()));
+            return false;
+        }
+
+        // A bare array has nowhere to carry "formatVersion" and is always readable at the
+        // root level (element-by-element validation happens later, in loadElementsFromJson()).
+        if (root.is_array()) {
+            return true;
+        }
+        if (!root.is_object())
+        {
+            log(tools::logger::ERROR, std::format("Invalid simulation file: unexpected JSON root type: {}", filePath));
+            return false;
+        }
+
+        return isReadableFormatVersion(root);
     }
 
     void SimulationFileManager::loadElementsFromJson() const
