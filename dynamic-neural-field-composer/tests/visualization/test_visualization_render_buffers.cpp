@@ -145,6 +145,41 @@ TEST(GatherPlotSeries, ReuseDoesNotReallocateAtSteadyState)
 	EXPECT_EQ(data.data(), dataStorage) << "steady-state frames must not reallocate the buffer";
 }
 
+// The vector-level capacity check above passes even if each individual
+// std::string's own character storage is discarded and reallocated every
+// call: legends.clear() destroys the std::string objects (only the vector's
+// slot capacity survives), so a name/component pair long enough to defeat
+// small-string optimization would still allocate on every frame despite
+// "steady state". Long enough here means every SSO threshold in practice
+// (15 on MSVC/libstdc++, 22 on libc++), well past what a legend like
+// "field - activation" would ever need.
+TEST(GatherPlotSeries, ReuseDoesNotReallocateLegendStorageAtSteadyState)
+{
+	const std::string longName(40, 'a');
+	auto simulation = std::make_shared<Simulation>("long-legend-test", 1.0, 0.0, 0.0);
+	const AbsSigmoidFunction sigmoid{ 0.0, 100.0 };
+	const NeuralFieldParameters nfp{ 25.0, -5.0, sigmoid };
+	const ElementCommonParameters common{ longName, 100 };
+	simulation->addElement(std::make_shared<NeuralField>(common, nfp));
+	simulation->init();
+
+	const Sources sources{ { longName, "activation" } };
+
+	std::vector<std::vector<double>*> data;
+	std::vector<std::string> legends;
+
+	gatherPlotSeries(*simulation, sources, data, legends);
+	ASSERT_EQ(legends.size(), 1u);
+	ASSERT_GT(legends[0].size(), 22u) << "test setup: legend must exceed every libstdc++/libc++/MSVC SSO buffer";
+	const auto* const legendStorage = legends[0].data();
+
+	for (int frame = 0; frame < 10; ++frame)
+		gatherPlotSeries(*simulation, sources, data, legends);
+
+	EXPECT_EQ(legends[0].data(), legendStorage)
+		<< "a long legend's character storage must be reused in place, not freed and reallocated each frame";
+}
+
 // Pointers are deliberately re-read from the simulation every call rather than
 // cached across frames: a component vector can reallocate (e.g. on resize) and
 // a cached pointer would dangle.

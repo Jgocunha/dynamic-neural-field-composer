@@ -209,21 +209,32 @@ namespace dnf_composer
 		std::vector<std::vector<double>*>& data,
 		std::vector<std::string>& legends)
 	{
-		// clear() keeps the capacity these buffers already grew to, so a caller
-		// that passes the same vectors back every frame stops allocating once
-		// the plot count settles.
+		// data holds raw pointers with no storage of their own, so clear()+reserve()
+		// is already optimal: nothing is freed, only the slot count is reset.
 		data.clear();
-		legends.clear();
 		data.reserve(sources.size());
-		legends.reserve(sources.size());
 
+		// legends is different: clear() destroys every std::string in it, freeing
+		// each one's own character-buffer allocation (the vector only keeps its
+		// *slot* capacity). resize() instead keeps existing std::string objects
+		// alive and reuses their capacity in place -- growing the vector default-
+		// constructs new empty strings only for genuinely new slots, and shrinking
+		// it destroys only the slots being dropped. Reassigning through each
+		// surviving string's own clear()+append (rather than constructing a new
+		// std::string) is what actually avoids the character-buffer reallocation
+		// for long labels once they've grown to fit (#53, CodeRabbit review).
+		legends.resize(sources.size());
+
+		std::size_t i = 0;
 		for (const auto& [name, component] : sources)
 		{
 			data.emplace_back(simulation.getComponentPtr(name, component));
-			std::string legend = name;
+
+			std::string& legend = legends[i++];
+			legend.clear();
+			legend += name;
 			legend += " - ";
 			legend += component;
-			legends.emplace_back(std::move(legend));
 		}
 	}
 

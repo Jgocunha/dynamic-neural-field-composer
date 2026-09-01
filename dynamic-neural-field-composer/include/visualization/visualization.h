@@ -17,10 +17,15 @@ namespace dnf_composer
 {
 	/// @brief Fill @p data and @p legends with one entry per plot data source.
 	///
-	/// Both outputs are cleared and refilled, never resized away: passing the
-	/// same buffers back on the next frame reuses their capacity, which is why
-	/// Visualization::render() keeps them as members instead of constructing
-	/// fresh vectors inside its per-plot loop every frame (#53).
+	/// Passing the same buffers back on the next frame reuses their storage,
+	/// which is why Visualization::render() keeps them as members instead of
+	/// constructing fresh vectors inside its per-plot loop every frame (#53).
+	/// @p data is cleared and refilled: raw pointers own no storage of their
+	/// own, so this is already allocation-free at steady state. @p legends is
+	/// resized (not cleared) and each surviving @c std::string is overwritten
+	/// in place, so a long label's own character-buffer allocation is reused
+	/// rather than freed and rebuilt every call -- @c clear() on the vector
+	/// would destroy each @c std::string and lose exactly that storage.
 	///
 	/// The component pointers are re-read from @p simulation on every call and
 	/// deliberately not cached across calls -- a component vector reallocates
