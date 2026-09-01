@@ -127,6 +127,7 @@ cmake --build build/debug --config Debug
 |---|---|---|
 | `DNF_COMPOSER_BUILD_TESTS` | `ON` | Build the Google Test suite |
 | `DNF_COMPOSER_DEV_FALLBACK_PATHS` | `ON` | Embed the source-tree path as a fallback resource location for uninstalled (build-tree) binaries. Release builds set this `OFF` so no build-machine path is compiled in. |
+| `DNF_COMPOSER_ENABLE_WARNINGS` | `ON` | Enable compiler warnings (`/W4` on MSVC, `-Wall -Wextra` on GCC/Clang/AppleClang) on the library target. Advisory only — `-Werror`/`/WX` is deliberately not set, so warnings never fail the build. |
 | `CMAKE_BUILD_TYPE` | — | `Release` or `Debug` |
 
 ---

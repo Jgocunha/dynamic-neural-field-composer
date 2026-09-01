@@ -61,6 +61,14 @@ All notable changes to this project will be documented in this file.
   added dedicated tests for the six concrete parameter structs, pinning their 1e-6-epsilon
   equality from both sides.
 
+### Build
+- Added a `DNF_COMPOSER_ENABLE_WARNINGS` CMake option (default `ON`) that enables `/W4`
+  on MSVC and `-Wall -Wextra` on GCC/Clang/AppleClang for the library target, scoped
+  `PRIVATE` so `find_package()` consumers aren't forced into these diagnostics (#116).
+  Deliberately advisory — no `-Werror`/`/WX` — since promoting to hard errors before the
+  existing ~94-site warning backlog is cleared would take CI red on every platform;
+  clearing the backlog and promoting are separate, later steps.
+
 ## [2.11.1] - 2026-08-26
 
 ### Changed

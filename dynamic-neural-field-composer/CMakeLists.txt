@@ -88,6 +88,15 @@ option(DNF_COMPOSER_DEV_FALLBACK_PATHS
        "Embed CMAKE_SOURCE_DIR as a fallback resource path for uninstalled (build-tree) binaries."
        ON)
 
+# Advisory diagnostics on the library target (#116). Deliberately NOT -Werror//WX: a
+# warning here never fails a build, it only adds output, so this can default ON without
+# any risk of taking CI red on the four platform/compiler combinations the project
+# builds on. Clearing the existing backlog and only then promoting to errors is a
+# separate change.
+option(DNF_COMPOSER_ENABLE_WARNINGS
+       "Enable advisory compiler warnings (/W4 on MSVC, -Wall -Wextra on GCC/Clang) for the library target."
+       ON)
+
 # Set header files grouped by directories
 set(simulation_headers
         "include/simulation/simulation.h"
@@ -285,6 +294,16 @@ set(src
 # Define library target
 add_library(${CMAKE_PROJECT_NAME} ${header} ${src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
+
+# PRIVATE so consumers of the installed package are not forced into this project's
+# diagnostic settings; see the DNF_COMPOSER_ENABLE_WARNINGS option above.
+if(DNF_COMPOSER_ENABLE_WARNINGS)
+    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+        $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall>
+        $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wextra>
+    )
+endif()
 
 # PROJECT_DIR is used by exactly one translation unit (src/tools/utils.cpp,
 # see getResourceRoot()'s dev-build fallback) -- scoped PRIVATE to this target
