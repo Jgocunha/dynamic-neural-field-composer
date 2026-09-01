@@ -38,7 +38,7 @@ add_example_executable(benchmark_headless_2d                     benchmark_headl
 # cpv_1d_test.cpp source is missing from the tree; registration disabled so the
 # build can regenerate. Re-enable if/when the source is restored.
 #add_example_executable(cpv_1d_test                               cpv_1d_test.cpp)
-#add_example_executable(example_oja_learning             oja_learning.cpp)
+add_example_executable(example_oja_learning                     oja_learning.cpp)
 #add_example_executable(example_delta_rule_learning      delta_rule_learning.cpp)
 
 
