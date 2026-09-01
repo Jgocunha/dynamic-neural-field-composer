@@ -15,6 +15,38 @@
 
 namespace dnf_composer
 {
+	/// @brief Fill @p data and @p legends with one entry per plot data source.
+	///
+	/// Passing the same buffers back on the next frame reuses their storage,
+	/// which is why Visualization::render() keeps them as members instead of
+	/// constructing fresh vectors inside its per-plot loop every frame (#53).
+	/// @p data is cleared and refilled: raw pointers own no storage of their
+	/// own, so this is already allocation-free at steady state. @p legends is
+	/// resized (not cleared) and each surviving @c std::string is overwritten
+	/// in place, so a long label's own character-buffer allocation is reused
+	/// rather than freed and rebuilt every call -- @c clear() on the vector
+	/// would destroy each @c std::string and lose exactly that storage.
+	///
+	/// The component pointers are re-read from @p simulation on every call and
+	/// deliberately not cached across calls -- a component vector reallocates
+	/// when its element is resized, so a retained pointer would dangle.
+	///
+	/// Every source must exist in @p simulation; callers check this first (via
+	/// @c Simulation::componentExists) and drop the plot otherwise.
+	///
+	/// It is deliberately pure and free-standing so the buffer contract can be
+	/// tested without an ImGui context, the same extraction rationale as
+	/// @c resolveManualHeatmapDimensions in heatmap.h.
+	///
+	/// @param simulation  Simulation to read the component vectors from.
+	/// @param sources     {element-name, component-name} pairs to gather.
+	/// @param data        Out: pointer to each source's component vector.
+	/// @param legends     Out: "element - component" label for each source.
+	void gatherPlotSeries(const Simulation& simulation,
+		const std::vector<std::pair<std::string, std::string>>& sources,
+		std::vector<std::vector<double>*>& data,
+		std::vector<std::string>& legends);
+
 	/// @brief Manages a collection of plots driven by a running Simulation.
 	///
 	/// Visualization owns a set of Plot instances. Each plot is associated with
@@ -29,6 +61,14 @@ namespace dnf_composer
 		std::shared_ptr<Simulation> simulation;
 		std::unordered_map<std::shared_ptr<Plot>, std::vector<std::pair<std::string, std::string>>> plots;
 		std::string windowSuffix;
+
+		// Scratch buffers for the render path, reused across frames so that a
+		// steady-state frame allocates nothing (#53). Refilled per plot by
+		// gatherPlotSeries(); never read outside a single render()/renderTile()
+		// call, and never holding component pointers between calls.
+		std::vector<std::vector<double>*> renderDataBuffer;
+		std::vector<std::string> renderLegendBuffer;
+		std::vector<int> plotsToRemoveBuffer;
 	public:
 		/// @brief Construct a Visualization backed by the given simulation.
 		/// @param simulation  The simulation whose data will be visualized.

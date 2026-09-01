@@ -25,6 +25,18 @@ All notable changes to this project will be documented in this file.
   source-compatible; deliberately scoped narrower than #74 as a whole
   (`getComponent()`/`getInputs()`/`getInputsAndComponents()` are left for #75).
 
+### Performance
+- `Visualization::render()` promoted its per-plot scratch vectors (component pointers,
+  legend strings, the plots-to-remove list) from per-frame locals to reusable members,
+  cleared rather than reallocated each frame; extracted the fill logic into a free
+  function, `gatherPlotSeries()`, testable headlessly without an ImGui context (#53).
+  Also dropped a per-frame deep copy of each plot's data-source vector — the largest
+  single allocation in the loop — in favor of a const reference, and collapsed the
+  window title's three string temporaries into one `std::format`. Legend strings and
+  data pointers are deliberately *not* cached: legends are a pure function of data
+  rebuilt every frame, and pointers dangle across element/component changes, so both
+  are refetched every frame into the reused buffers rather than risk stale reads.
+
 ### Documentation
 - The `work-an-issue` skill now adds a `CHANGELOG.md` entry before opening the PR (#188).
   The workflow went straight from the docs check to `gh pr create`, so changelog entries
