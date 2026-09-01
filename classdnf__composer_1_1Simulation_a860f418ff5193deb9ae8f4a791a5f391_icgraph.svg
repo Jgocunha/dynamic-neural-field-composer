@@ -113,67 +113,124 @@
 </a>
 </g>
 </g>
-<!-- Node7 -->
-<g id="Node000007" class="node">
-<title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classdnf__composer_1_1Simulation.html#a326227cbc48ec354da67169f8c3bb2e4" target="_top" xlink:title="Rename an element. No&#45;op if oldName does not exist or newName is already in use.">
+<!-- Node10 -->
+<g id="Node000010" class="node">
+<title>Node10</title>
+<g id="a_Node000010"><a xlink:href="classdnf__composer_1_1Simulation.html#a326227cbc48ec354da67169f8c3bb2e4" target="_top" xlink:title="Rename an element. No&#45;op if oldName does not exist or newName is already in use.">
 <polygon fill="white" stroke="#666666" points="744,-170 600,-170 600,-140 744,-140 744,-170"/>
 <text text-anchor="start" x="608" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="672" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">::renameElement</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node7 -->
-<g id="edge6_Node000001_Node000007" class="edge">
-<title>Node1&#45;&gt;Node7</title>
-<g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node10 -->
+<g id="edge9_Node000001_Node000010" class="edge">
+<title>Node1&#45;&gt;Node10</title>
+<g id="a_edge9_Node000001_Node000010"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M810.17,-207.58C790.38,-198.45 766.15,-187.69 744,-179 736.25,-175.96 727.93,-172.94 719.82,-170.12"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="808.96,-210.87 819.5,-211.91 811.91,-204.53 808.96,-210.87"/>
 </a>
 </g>
 </g>
-<!-- Node8 -->
-<g id="Node000008" class="node">
-<title>Node8</title>
-<g id="a_Node000008"><a xlink:href="classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" target="_top" xlink:title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/...">
+<!-- Node11 -->
+<g id="Node000011" class="node">
+<title>Node11</title>
+<g id="a_Node000011"><a xlink:href="classdnf__composer_1_1SimulationRecorder.html#ad6a67166f5f8420901788dd360115e46" target="_top" xlink:title="Write a single&#45;row snapshot CSV for the given element/component. Output path: data/&lt;simName&gt;/exports/...">
 <polygon fill="white" stroke="#666666" points="744,-122 600,-122 600,-92 744,-92 744,-122"/>
 <text text-anchor="start" x="608" y="-110" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="672" y="-99" font-family="Helvetica,sans-Serif" font-size="10.00">Recorder::takeSnapshot</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node8 -->
-<g id="edge7_Node000001_Node000008" class="edge">
-<title>Node1&#45;&gt;Node8</title>
-<g id="a_edge7_Node000001_Node000008"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node11 -->
+<g id="edge10_Node000001_Node000011" class="edge">
+<title>Node1&#45;&gt;Node11</title>
+<g id="a_edge10_Node000001_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M831.14,-204.53C811.05,-183.01 778.16,-150.95 744,-131 738.27,-127.65 732,-124.69 725.65,-122.08"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="828.6,-206.93 837.94,-211.93 833.75,-202.2 828.6,-206.93"/>
 </a>
 </g>
 </g>
-<!-- Node12 -->
-<g id="Node000012" class="node">
-<title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" target="_top" xlink:title="Called each simulation step to append rows to active recordings. Ticks are derived from sim....">
+<!-- Node15 -->
+<g id="Node000015" class="node">
+<title>Node15</title>
+<g id="a_Node000015"><a xlink:href="classdnf__composer_1_1SimulationRecorder.html#ae82a04488e5edcccdd38a7e02545b4b4" target="_top" xlink:title="Called each simulation step to append rows to active recordings. Ticks are derived from sim....">
 <polygon fill="white" stroke="#666666" points="744,-73 600,-73 600,-43 744,-43 744,-73"/>
 <text text-anchor="start" x="608" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="672" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">Recorder::update</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node12 -->
-<g id="edge11_Node000001_Node000012" class="edge">
-<title>Node1&#45;&gt;Node12</title>
-<g id="a_edge11_Node000001_Node000012"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node15 -->
+<g id="edge14_Node000001_Node000015" class="edge">
+<title>Node1&#45;&gt;Node15</title>
+<g id="a_edge14_Node000001_Node000015"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M838.79,-202.54C821.73,-170.7 787.85,-115.32 744,-83 738.85,-79.2 733.06,-75.94 727.08,-73.15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="835.8,-204.37 843.54,-211.61 842.01,-201.13 835.8,-204.37"/>
+</a>
+</g>
+</g>
+<!-- Node7 -->
+<g id="Node000007" class="node">
+<title>Node7</title>
+<g id="a_Node000007"><a xlink:href="namespacednf__composer.html#a917db26ea96966720253f7c2d8ffbcf6" target="_top" xlink:title="Fill data and legends with one entry per plot data source.">
+<polygon fill="white" stroke="#666666" points="553.5,-218 411.5,-218 411.5,-188 553.5,-188 553.5,-218"/>
+<text text-anchor="start" x="419.5" y="-206" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::gatherPlot</text>
+<text text-anchor="middle" x="482.5" y="-195" font-family="Helvetica,sans-Serif" font-size="10.00">Series</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node7 -->
+<g id="edge6_Node000006_Node000007" class="edge">
+<title>Node6&#45;&gt;Node7</title>
+<g id="a_edge6_Node000006_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M589.82,-203C577.78,-203 565.46,-203 553.67,-203"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="589.85,-206.5 599.85,-203 589.85,-199.5 589.85,-206.5"/>
+</a>
+</g>
+</g>
+<!-- Node8 -->
+<g id="Node000008" class="node">
+<title>Node8</title>
+<g id="a_Node000008"><a xlink:href="classdnf__composer_1_1Visualization.html#a4120843cb7f862565a5bdcc9e855628f" target="_top" xlink:title="Render all plots (creates ImGui windows or child regions as appropriate).">
+<polygon fill="white" stroke="#666666" points="359.5,-246 204.5,-246 204.5,-216 359.5,-216 359.5,-246"/>
+<text text-anchor="start" x="212.5" y="-234" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Visualization</text>
+<text text-anchor="middle" x="282" y="-223" font-family="Helvetica,sans-Serif" font-size="10.00">::render</text>
+</a>
+</g>
+</g>
+<!-- Node7&#45;&gt;Node8 -->
+<g id="edge7_Node000007_Node000008" class="edge">
+<title>Node7&#45;&gt;Node8</title>
+<g id="a_edge7_Node000007_Node000008"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M401.31,-214.31C387.54,-216.25 373.25,-218.27 359.58,-220.2"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="401.82,-217.77 411.24,-212.91 400.85,-210.84 401.82,-217.77"/>
 </a>
 </g>
 </g>
 <!-- Node9 -->
 <g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_Node000009"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" target="_top" xlink:title="Draw the &quot;Data&quot; content pane.">
+<g id="a_Node000009"><a xlink:href="classdnf__composer_1_1Visualization.html#ab975004429a0a13107b131e21597833e" target="_top" xlink:title="Render a single plot&#39;s content without creating an ImGui window (caller owns the region).">
+<polygon fill="white" stroke="#666666" points="359.5,-198 204.5,-198 204.5,-168 359.5,-168 359.5,-198"/>
+<text text-anchor="start" x="212.5" y="-186" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Visualization</text>
+<text text-anchor="middle" x="282" y="-175" font-family="Helvetica,sans-Serif" font-size="10.00">::renderTile</text>
+</a>
+</g>
+</g>
+<!-- Node7&#45;&gt;Node9 -->
+<g id="edge8_Node000007_Node000009" class="edge">
+<title>Node7&#45;&gt;Node9</title>
+<g id="a_edge8_Node000007_Node000009"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M400.91,-194.88C387.26,-193.5 373.12,-192.08 359.58,-190.72"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="400.94,-198.4 411.24,-195.92 401.64,-191.44 400.94,-198.4"/>
+</a>
+</g>
+</g>
+<!-- Node12 -->
+<g id="Node000012" class="node">
+<title>Node12</title>
+<g id="a_Node000012"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#a8e2eae386da6e58b71b9e681b5bd2abc" target="_top" xlink:title="Draw the &quot;Data&quot; content pane.">
 <polygon fill="white" stroke="#666666" points="564,-129.5 401,-129.5 401,-88.5 564,-88.5 564,-129.5"/>
 <text text-anchor="start" x="409" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="409" y="-106.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -181,19 +238,19 @@
 </a>
 </g>
 </g>
-<!-- Node8&#45;&gt;Node9 -->
-<g id="edge8_Node000008_Node000009" class="edge">
-<title>Node8&#45;&gt;Node9</title>
-<g id="a_edge8_Node000008_Node000009"><a xlink:title=" ">
+<!-- Node11&#45;&gt;Node12 -->
+<g id="edge11_Node000011_Node000012" class="edge">
+<title>Node11&#45;&gt;Node12</title>
+<g id="a_edge11_Node000011_Node000012"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M589.59,-107.87C581.11,-107.96 572.49,-108.05 564.02,-108.14"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="589.88,-111.37 599.85,-107.76 589.81,-104.37 589.88,-111.37"/>
 </a>
 </g>
 </g>
-<!-- Node10 -->
-<g id="Node000010" class="node">
-<title>Node10</title>
-<g id="a_Node000010"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title="Draw the sidebar&#39;s icon strip and the currently selected content pane.">
+<!-- Node13 -->
+<g id="Node000013" class="node">
+<title>Node13</title>
+<g id="a_Node000013"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ab1d68a0e88f02379e326b7b73170f8b8" target="_top" xlink:title="Draw the sidebar&#39;s icon strip and the currently selected content pane.">
 <polygon fill="white" stroke="#666666" points="363.5,-129.5 200.5,-129.5 200.5,-88.5 363.5,-88.5 363.5,-129.5"/>
 <text text-anchor="start" x="208.5" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="208.5" y="-106.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -201,19 +258,19 @@
 </a>
 </g>
 </g>
-<!-- Node9&#45;&gt;Node10 -->
-<g id="edge9_Node000009_Node000010" class="edge">
-<title>Node9&#45;&gt;Node10</title>
-<g id="a_edge9_Node000009_Node000010"><a xlink:title=" ">
+<!-- Node12&#45;&gt;Node13 -->
+<g id="edge12_Node000012_Node000013" class="edge">
+<title>Node12&#45;&gt;Node13</title>
+<g id="a_edge12_Node000012_Node000013"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M390.65,-109C381.65,-109 372.56,-109 363.67,-109"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="390.76,-112.5 400.76,-109 390.76,-105.5 390.76,-112.5"/>
 </a>
 </g>
 </g>
-<!-- Node11 -->
-<g id="Node000011" class="node">
-<title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" target="_top" xlink:title="Draw the simulation window for this frame.">
+<!-- Node14 -->
+<g id="Node000014" class="node">
+<title>Node14</title>
+<g id="a_Node000014"><a xlink:href="classdnf__composer_1_1user__interface_1_1SimulationWindow.html#ac0c5ebab9dd16f951c2c231a8e1f6f34" target="_top" xlink:title="Draw the simulation window for this frame.">
 <polygon fill="white" stroke="#666666" points="163,-129.5 0,-129.5 0,-88.5 163,-88.5 163,-129.5"/>
 <text text-anchor="start" x="8" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::user</text>
 <text text-anchor="start" x="8" y="-106.5" font-family="Helvetica,sans-Serif" font-size="10.00">_interface::SimulationWindow</text>
@@ -221,66 +278,66 @@
 </a>
 </g>
 </g>
-<!-- Node10&#45;&gt;Node11 -->
-<g id="edge10_Node000010_Node000011" class="edge">
-<title>Node10&#45;&gt;Node11</title>
-<g id="a_edge10_Node000010_Node000011"><a xlink:title=" ">
+<!-- Node13&#45;&gt;Node14 -->
+<g id="edge13_Node000013_Node000014" class="edge">
+<title>Node13&#45;&gt;Node14</title>
+<g id="a_edge13_Node000013_Node000014"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M190.15,-109C181.15,-109 172.06,-109 163.17,-109"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="190.26,-112.5 200.26,-109 190.26,-105.5 190.26,-112.5"/>
 </a>
 </g>
 </g>
-<!-- Node13 -->
-<g id="Node000013" class="node">
-<title>Node13</title>
-<g id="a_Node000013"><a xlink:href="classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" target="_top" xlink:title="Advance all elements by one deltaT.">
+<!-- Node16 -->
+<g id="Node000016" class="node">
+<title>Node16</title>
+<g id="a_Node000016"><a xlink:href="classdnf__composer_1_1Simulation.html#aeed960786dc5ee998232e105af74ae0c" target="_top" xlink:title="Advance all elements by one deltaT.">
 <polygon fill="white" stroke="#666666" points="554.5,-70 410.5,-70 410.5,-40 554.5,-40 554.5,-70"/>
 <text text-anchor="start" x="418.5" y="-58" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="482.5" y="-47" font-family="Helvetica,sans-Serif" font-size="10.00">::step</text>
 </a>
 </g>
 </g>
-<!-- Node12&#45;&gt;Node13 -->
-<g id="edge12_Node000012_Node000013" class="edge">
-<title>Node12&#45;&gt;Node13</title>
-<g id="a_edge12_Node000012_Node000013"><a xlink:title=" ">
+<!-- Node15&#45;&gt;Node16 -->
+<g id="edge15_Node000015_Node000016" class="edge">
+<title>Node15&#45;&gt;Node16</title>
+<g id="a_edge15_Node000015_Node000016"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M589.67,-56.7C578,-56.51 566.06,-56.32 554.6,-56.14"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="589.79,-60.2 599.85,-56.86 589.9,-53.2 589.79,-60.2"/>
 </a>
 </g>
 </g>
-<!-- Node14 -->
-<g id="Node000014" class="node">
-<title>Node14</title>
-<g id="a_Node000014"><a xlink:href="classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d" target="_top" xlink:title="Run the simulation for runTime simulation&#45;time units (blocking).">
+<!-- Node17 -->
+<g id="Node000017" class="node">
+<title>Node17</title>
+<g id="a_Node000017"><a xlink:href="classdnf__composer_1_1Simulation.html#aea0491750929bb07e371ba77b05f806d" target="_top" xlink:title="Run the simulation for runTime simulation&#45;time units (blocking).">
 <polygon fill="white" stroke="#666666" points="365,-67.5 199,-67.5 199,-48.5 365,-48.5 365,-67.5"/>
 <text text-anchor="middle" x="282" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation::run</text>
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node14 -->
-<g id="edge13_Node000013_Node000014" class="edge">
-<title>Node13&#45;&gt;Node14</title>
-<g id="a_edge13_Node000013_Node000014"><a xlink:title=" ">
+<!-- Node16&#45;&gt;Node17 -->
+<g id="edge16_Node000016_Node000017" class="edge">
+<title>Node16&#45;&gt;Node17</title>
+<g id="a_edge16_Node000016_Node000017"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M400.3,-56.23C388.68,-56.4 376.73,-56.58 365.09,-56.76"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="400.45,-59.73 410.4,-56.07 400.35,-52.73 400.45,-59.73"/>
 </a>
 </g>
 </g>
-<!-- Node15 -->
-<g id="Node000015" class="node">
-<title>Node15</title>
-<g id="a_Node000015"><a xlink:href="classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae" target="_top" xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms (blocking).">
+<!-- Node18 -->
+<g id="Node000018" class="node">
+<title>Node18</title>
+<g id="a_Node000018"><a xlink:href="classdnf__composer_1_1Simulation.html#aafda0039519b6aeac88a817fd11f8aae" target="_top" xlink:title="Run the simulation in real&#45;time for milliseconds wall&#45;clock ms (blocking).">
 <polygon fill="white" stroke="#666666" points="354,-30 210,-30 210,0 354,0 354,-30"/>
 <text text-anchor="start" x="218" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">dnf_composer::Simulation</text>
 <text text-anchor="middle" x="282" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::runForRealTime</text>
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node15 -->
-<g id="edge14_Node000013_Node000015" class="edge">
-<title>Node13&#45;&gt;Node15</title>
-<g id="a_edge14_Node000013_Node000015"><a xlink:title=" ">
+<!-- Node16&#45;&gt;Node18 -->
+<g id="edge17_Node000016_Node000018" class="edge">
+<title>Node16&#45;&gt;Node18</title>
+<g id="a_edge17_Node000016_Node000018"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M400.44,-38.67C385.14,-35.58 369.25,-32.38 354.27,-29.36"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="399.9,-42.13 410.4,-40.67 401.29,-35.27 399.9,-42.13"/>
 </a>

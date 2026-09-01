@@ -222,6 +222,9 @@ Functions</h2></td></tr>
 <tr class="separator:gab39c5bcaadbc5dbc4048710fbbc8ba75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d3e619a9f43f533ce840c2e621f48fa" id="r_a3d3e619a9f43f533ce840c2e621f48fa"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespacednf__composer_1_1element.html#ac3d19ecdf631f5316e2c09003233bece">element::ElementLabel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#a3d3e619a9f43f533ce840c2e621f48fa">elementLabelFromString</a> (const std::string &amp;<a class="el" href="math_8cpp.html#aded435fc7ff83c532a599d3959dcb9ed">s</a>)</td></tr>
 <tr class="separator:a3d3e619a9f43f533ce840c2e621f48fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a917db26ea96966720253f7c2d8ffbcf6" id="r_a917db26ea96966720253f7c2d8ffbcf6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#a917db26ea96966720253f7c2d8ffbcf6">gatherPlotSeries</a> (const <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &amp;simulation, const std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; &amp;sources, std::vector&lt; std::vector&lt; double &gt; * &gt; &amp;data, std::vector&lt; std::string &gt; &amp;legends)</td></tr>
+<tr class="memdesc:a917db26ea96966720253f7c2d8ffbcf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill <code>data</code> and <code>legends</code> with one entry per plot data source.  <br /></td></tr>
+<tr class="separator:a917db26ea96966720253f7c2d8ffbcf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3541a00b0ecfcc65863eef4c45a11aa" id="r_ab3541a00b0ecfcc65863eef4c45a11aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdnf__composer_1_1ManualHeatmapDimensions.html">ManualHeatmapDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#ab3541a00b0ecfcc65863eef4c45a11aa">resolveManualHeatmapDimensions</a> (int x_max, int y_max, float x_step, float y_step, std::size_t dataSize)</td></tr>
 <tr class="separator:ab3541a00b0ecfcc65863eef4c45a11aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb1b9b3242effde97a3c964e52d99719" id="r_acb1b9b3242effde97a3c964e52d99719"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacednf__composer.html#acb1b9b3242effde97a3c964e52d99719">selectHeatmapTickFormat</a> (double scaleMin, double scaleMax)</td></tr>
@@ -449,6 +452,71 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a917db26ea96966720253f7c2d8ffbcf6" name="a917db26ea96966720253f7c2d8ffbcf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a917db26ea96966720253f7c2d8ffbcf6">&#9670;&#160;</a></span>gatherPlotSeries()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dnf_composer::gatherPlotSeries </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classdnf__composer_1_1Simulation.html">Simulation</a> &amp;&#160;</td>
+          <td class="paramname"><em>simulation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>sources</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt; * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>legends</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill <code>data</code> and <code>legends</code> with one entry per plot data source. </p>
+<p>Passing the same buffers back on the next frame reuses their storage, which is why <a class="el" href="classdnf__composer_1_1Visualization.html#a4120843cb7f862565a5bdcc9e855628f" title="Render all plots (creates ImGui windows or child regions as appropriate).">Visualization::render()</a> keeps them as members instead of constructing fresh vectors inside its per-plot loop every frame (#53). <code>data</code> is cleared and refilled: raw pointers own no storage of their own, so this is already allocation-free at steady state. <code>legends</code> is resized (not cleared) and each surviving <code>std::string</code> is overwritten in place, so a long label's own character-buffer allocation is reused rather than freed and rebuilt every call &ndash; <code>clear()</code> on the vector would destroy each <code>std::string</code> and lose exactly that storage.</p>
+<p>The component pointers are re-read from <code>simulation</code> on every call and deliberately not cached across calls &ndash; a component vector reallocates when its element is resized, so a retained pointer would dangle.</p>
+<p>Every source must exist in <code>simulation</code>; callers check this first (via <code><a class="el" href="classdnf__composer_1_1Simulation.html#af2cbdd9d53809ca631ccb66c2fe615f0">Simulation::componentExists</a></code>) and drop the plot otherwise.</p>
+<p>It is deliberately pure and free-standing so the buffer contract can be tested without an ImGui context, the same extraction rationale as <code>resolveManualHeatmapDimensions</code> in <a class="el" href="heatmap_8h.html">heatmap.h</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">simulation</td><td><a class="el" href="classdnf__composer_1_1Simulation.html" title="Manages the element registry and drives the simulation loop.">Simulation</a> to read the component vectors from. </td></tr>
+    <tr><td class="paramname">sources</td><td>{element-name, component-name} pairs to gather. </td></tr>
+    <tr><td class="paramname">data</td><td>Out: pointer to each source's component vector. </td></tr>
+    <tr><td class="paramname">legends</td><td>Out: "element - component" label for each source. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_a917db26ea96966720253f7c2d8ffbcf6_cgraph.svg" width="680" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacednf__composer_a917db26ea96966720253f7c2d8ffbcf6_icgraph.svg" width="455" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
