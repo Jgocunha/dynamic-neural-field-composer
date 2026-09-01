@@ -79,6 +79,7 @@ namespace dnf_composer::user_interface
 		static void modifyElementAsymmetricGaussKernel(const std::shared_ptr<element::Element>& element);
 		static void modifyElementBoostStimulus(const std::shared_ptr<element::Element>& element);
 		static void modifyElementMemoryTrace(const std::shared_ptr<element::Element>& element);
+		static void modifyElementStimulusSum(const std::shared_ptr<element::Element>& element);
 		static void modifyElementNeuralField2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussStimulus2D(const std::shared_ptr<element::Element>& element);
 		static void modifyElementGaussKernel2D(const std::shared_ptr<element::Element>& element);

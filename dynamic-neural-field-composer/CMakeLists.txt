@@ -131,6 +131,7 @@ set(elements_headers
         "include/elements/asymmetric_gauss_kernel.h"
         "include/elements/boost_stimulus.h"
         "include/elements/memory_trace.h"
+        "include/elements/stimulus_sum.h"
         "include/elements/correlated_normal_noise.h"
 
         "include/elements/neural_field_2d.h"
@@ -242,6 +243,7 @@ set(src
         "src/elements/asymmetric_gauss_kernel.cpp"
         "src/elements/boost_stimulus.cpp"
         "src/elements/memory_trace.cpp"
+        "src/elements/stimulus_sum.cpp"
         "src/elements/neural_field_2d.cpp"
         "src/elements/gauss_stimulus_2d.cpp"
         "src/elements/gauss_kernel_2d.cpp"
