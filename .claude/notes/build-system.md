@@ -68,6 +68,28 @@ substitutes after parsing, not before) — flagged by CodeRabbit on PR #180 even
 only ever comes from `vswhere` or this script's own marker file, neither realistically
 attacker-controlled.
 
+## Restoring a file by copy can leave Ninja with stale objects
+
+Ninja decides what to rebuild from mtime. Restoring a source file with `Copy-Item` (or any
+copy that preserves the original timestamp) can put back an *older* mtime than the object
+compiled from the modified version - so Ninja considers the object up to date and skips
+recompiling. The next test run then executes the **previous** code.
+
+This bit during issue #128: after temporarily perturbing test expectations to prove the new
+tests could fail, restoring the originals by copy left the perturbed objects in place, and
+the suite reported 12 failures that no longer existed in any source file.
+
+The tell is a failure you cannot find in the source. Confirm by grepping the sources for
+whatever you changed; if they are clean, the binary is stale. Force the rebuild by touching
+the files (updating mtime to now) rather than trusting the copy:
+
+```bash
+find <paths> -name '*.cpp' -exec touch {} +
+```
+
+Editing files in place (rather than restoring from a copy) does not have this problem, since
+the edit sets a current mtime.
+
 ## Dependencies
 
 `imgui-platform-kit` is consumed as an installed package found via `CMAKE_PREFIX_PATH`, not

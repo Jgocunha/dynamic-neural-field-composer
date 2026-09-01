@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-09-01
+
 ### Added
 - `.dnf` files now declare a `"formatVersion"` field, so a future schema change can be
   migrated deliberately instead of relying on shape-sniffing to guess the format (#50).
