@@ -22,7 +22,7 @@ The setup scripts handle most dependencies automatically, but the following must
 | GCC 13+ | GCC 13 or later is required. | `sudo apt-get install gcc-13 g++-13` |
 | CMake 3.20+ | | `sudo apt-get install cmake` |
 | Git | | `sudo apt-get install git` |
-| OpenGL + X11 dev libraries | Required by the GUI. | `sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev libglfw3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev` |
+| OpenGL + X11 dev libraries | Required by the GUI; the autotools are needed by vcpkg to build GLFW's X11 dependencies. | `sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev libglfw3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev autoconf autoconf-archive automake libtool` |
 
 If GCC 13 is not yet your system default, set it:
 

@@ -34,7 +34,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang clang-tidy cmake \
-            libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+            libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config \
+            autoconf-archive
 
       - name: Set up vcpkg
         run: |
@@ -70,6 +71,7 @@ jobs:
             -DVCPKG_TARGET_TRIPLET=x64-linux \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL \
+            -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF \
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_C_COMPILER=clang
           cmake --build $IPK_SRC/build --parallel $(nproc)

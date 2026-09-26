@@ -60,7 +60,8 @@ if [ ! -d "$IPK_INSTALL" ]; then
         -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
         -DVCPKG_TARGET_TRIPLET="$TRIPLET" \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="$IPK_INSTALL"
+        -DCMAKE_INSTALL_PREFIX="$IPK_INSTALL" \
+        -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
     cmake --build "$IPK_SRC/build" --parallel "$PARALLEL"
     cmake --install "$IPK_SRC/build"
 else
