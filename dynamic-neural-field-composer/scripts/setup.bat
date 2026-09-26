@@ -64,7 +64,8 @@ if not exist "%IPK_INSTALL%\release" (
     echo Building imgui-platform-kit Release...
     cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build-release" ^
         -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
-        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\release"
+        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\release" ^
+        -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Release configure failed. & exit /b 1 )
     cmake --build "%IPK_SRC%\build-release" --config Release --parallel
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Release build failed. & exit /b 1 )
@@ -78,7 +79,8 @@ if not exist "%IPK_INSTALL%\debug" (
     echo Building imgui-platform-kit Debug...
     cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build-debug" ^
         -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
-        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\debug"
+        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\debug" ^
+        -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug configure failed. & exit /b 1 )
     cmake --build "%IPK_SRC%\build-debug" --config Debug --parallel
     if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug build failed. & exit /b 1 )

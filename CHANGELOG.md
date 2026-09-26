@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `scripts/setup.sh` and `scripts/setup.bat` failed on a clean machine: `imgui-platform-kit`
+  configures its own tests by default, which need Catch2, dropped from the vcpkg install list
+  in 2.12.0. The scripts (and the CI/release workflows) now configure it with
+  `-DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF`. Linux prerequisites in the wiki and workflows now
+  include `autoconf-archive`, which vcpkg's `pthread-stubs` (pulled in by GLFW) requires.
+
 ## [2.12.0] - 2026-09-01
 
 ### Added

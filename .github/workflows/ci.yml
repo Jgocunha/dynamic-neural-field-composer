@@ -64,6 +64,7 @@ jobs:
             libxcursor-dev \
             libxi-dev \
             libxext-dev \
+            autoconf-archive \
             gcovr \
             xvfb
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
@@ -279,7 +280,8 @@ jobs:
             libxinerama-dev \
             libxcursor-dev \
             libxi-dev \
-            libxext-dev
+            libxext-dev \
+            autoconf-archive
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 

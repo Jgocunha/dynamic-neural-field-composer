@@ -48,6 +48,14 @@ The GUI links against OpenGL/GLFW via `imgui-platform-kit`. If configure or link
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev libglfw3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
 ```
 
+### Linux: `pthread-stubs currently requires the following programs` during `setup.sh`
+
+vcpkg builds `pthread-stubs` (a dependency of GLFW's X11 chain) with autotools, and aborts if any are missing - taking `glfw3`, `imgui`, `implot` and `imgui-node-editor` down with it. Install them and re-run `./scripts/setup.sh`:
+
+```bash
+sudo apt-get install autoconf autoconf-archive automake libtool
+```
+
 ### macOS: `cmake` not found even with Xcode Command Line Tools installed
 
 Xcode CLT provides Clang and Git but **not** CMake. Install it separately: `brew install cmake` (or download from cmake.org). CMake 3.20+ is required either way.

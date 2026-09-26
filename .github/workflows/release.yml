@@ -70,7 +70,8 @@ jobs:
                 -B $IPK_SRC/build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
+                -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
 
       - name: Build imgui-platform-kit
         run: cmake --build $IPK_SRC/build --config Release --parallel
@@ -142,7 +143,8 @@ jobs:
             libxinerama-dev \
             libxcursor-dev \
             libxi-dev \
-            libxext-dev
+            libxext-dev \
+            autoconf-archive
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
@@ -183,6 +185,7 @@ jobs:
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
+                -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF \
                 -DCMAKE_CXX_COMPILER=g++-13 \
                 -DCMAKE_C_COMPILER=gcc-13
 
@@ -281,7 +284,8 @@ jobs:
                 -B ${{ github.workspace }}/imgui-platform-kit-src/build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX
+                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
+                -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
 
       - name: Build imgui-platform-kit
         run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(sysctl -n hw.logicalcpu)
