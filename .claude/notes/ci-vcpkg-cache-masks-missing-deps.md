@@ -1,9 +1,21 @@
 # The CI vcpkg cache can hide a missing dependency for weeks
 
-Every CI job clones vcpkg HEAD and restores only `$VCPKG_ROOT/installed` from the Actions
-cache, keyed on the hash of `scripts/setup.sh` (`setup.bat` on Windows) with a
-`vcpkg-<os>-` restore-key fallback. A package that was once installed stays in that cache
-after it is removed from the install list, so anything still depending on it keeps working.
+Every vcpkg-using job clones vcpkg HEAD and restores only the vcpkg `installed/` tree from the
+Actions cache. The file whose hash forms the key differs per workflow, and each has a
+prefix-only `restore-keys` fallback:
+
+| Workflow | Key hashes | Restore-key prefix |
+|---|---|---|
+| `ci.yml` (Linux, sanitizers, macOS) | `scripts/setup.sh` | `vcpkg-<os>-` (macOS: `vcpkg-<os>-<triplet>-`) |
+| `ci.yml` (Windows) | `scripts/setup.bat` | `vcpkg-<os>-` |
+| `release.yml` | `.github/workflows/release.yml` | `vcpkg-<os>-` (macOS: `vcpkg-<os>-arm64-osx-`) |
+| `static-analysis.yml` | `.github/workflows/static-analysis.yml` | `vcpkg-clang-tidy-<os>-` |
+
+`ci.yml` and `release.yml` share the `vcpkg-<os>-` prefix, so either can restore the other's
+cache. Because of the prefix fallback, editing the keyed file does not give a clean install:
+it only misses the exact key and restores the nearest older cache. A package that was once
+installed stays in that cache after it is removed from the install list, so anything still
+depending on it keeps working.
 
 GitHub evicts caches unused for 7 days. The next run after a quiet week installs from scratch
 against the current vcpkg HEAD, and every gap surfaces at once, in a commit that did not
