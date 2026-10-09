@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.12.1] - 2026-10-09
+
 ### Fixed
 - `scripts/setup.sh` and `scripts/setup.bat` failed on a clean machine: `imgui-platform-kit`
   configures its own tests by default, which need Catch2, dropped from the vcpkg install list
