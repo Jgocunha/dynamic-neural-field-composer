@@ -603,6 +603,32 @@ TEST_F(SimulationFileManagerTest, RoundTripPreservesGaussKernelParameters)
     EXPECT_EQ(loadedKernel->getParameters(), gkp);
 }
 
+TEST_F(SimulationFileManagerTest, RoundTripPreservesNeuralField2DAbsSigmoidParameters)
+{
+    const AbsSigmoidFunction absSigmoid{ 2.0, 15.0 };
+    NeuralField2DParameters nfp{ 30.0, -7.5, absSigmoid };
+    ElementCommonParameters cp{ "nf2d rt", ElementDimensions(10, 10, 1.0, 1.0) };
+    const auto field = std::make_shared<NeuralField2D>(cp, nfp);
+
+    const auto simA = createSimulation("rt-nf2d-abssigmoid-params", 1.0, 0.0, 0.0);
+    simA->addElement(field);
+
+    SimulationFileManager sfmSave{ simA, tempDir };
+    sfmSave.saveElementsToJson();
+
+    const auto simB = createSimulation("rt-nf2d-abssigmoid-loaded", 1.0, 0.0, 0.0);
+    SimulationFileManager sfmLoad{ simB, tempDir + "rt-nf2d-abssigmoid-params/rt-nf2d-abssigmoid-params.dnf" };
+    sfmLoad.loadElementsFromJson();
+
+    const auto loadedField = std::dynamic_pointer_cast<NeuralField2D>(simB->getElement("nf2d rt"));
+    ASSERT_NE(loadedField, nullptr);
+    const auto params = loadedField->getParameters();
+    const auto* loadedActivationFunction = dynamic_cast<const AbsSigmoidFunction*>(params.activationFunction.get());
+    ASSERT_NE(loadedActivationFunction, nullptr);
+    EXPECT_DOUBLE_EQ(loadedActivationFunction->getXShift(), 2.0);
+    EXPECT_DOUBLE_EQ(loadedActivationFunction->getBeta(), 15.0);
+}
+
 TEST_F(SimulationFileManagerTest, RoundTripPreservesMexicanHatKernelParameters)
 {
     MexicanHatKernelParameters mhkp{ 3.0, 10.0, 6.0, 8.0, -0.05, true, true };
