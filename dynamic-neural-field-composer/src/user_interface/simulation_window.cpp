@@ -244,12 +244,12 @@ namespace dnf_composer::user_interface
 		// ── Filtered type combo ─────────────────────────────────────────────
 		{
 			using L = element::ElementLabel;
-			static constexpr std::array<L, 15> k1D = {
+			static constexpr std::array<L, 16> k1D = {
 				L::NEURAL_FIELD, L::GAUSS_STIMULUS, L::TIMED_GAUSS_STIMULUS,
 				L::GAUSS_KERNEL, L::MEXICAN_HAT_KERNEL, L::OSCILLATORY_KERNEL,
 				L::ASYMMETRIC_GAUSS_KERNEL, L::NORMAL_NOISE, L::CORRELATED_NORMAL_NOISE,
 				L::FIELD_COUPLING, L::GAUSS_FIELD_COUPLING, L::BOOST_STIMULUS, L::MEMORY_TRACE,
-				L::RESIZE, L::COLLAPSE
+				L::STIMULUS_SUM, L::RESIZE, L::COLLAPSE
 			};
 			static constexpr std::array<L, 13> k2D = {
 				L::NEURAL_FIELD_2D, L::GAUSS_STIMULUS_2D, L::TIMED_GAUSS_STIMULUS_2D,
@@ -345,6 +345,7 @@ namespace dnf_composer::user_interface
 			case element::ElementLabel::GAUSS_FIELD_COUPLING:       addElementGaussFieldCoupling(id, addRequested);     break;
 			case element::ElementLabel::BOOST_STIMULUS:             addElementBoostStimulus(id, addRequested);           break;
 			case element::ElementLabel::MEMORY_TRACE:               addElementMemoryTrace(id, addRequested);             break;
+			case element::ElementLabel::STIMULUS_SUM:               addElementStimulusSum(id, addRequested);             break;
 			case element::ElementLabel::NEURAL_FIELD_2D:            addElementNeuralField2D(id, addRequested);           break;
 			case element::ElementLabel::GAUSS_STIMULUS_2D:          addElementGaussStimulus2D(id, addRequested);        break;
 			case element::ElementLabel::GAUSS_KERNEL_2D:            addElementGaussKernel2D(id, addRequested);          break;
@@ -1076,6 +1077,26 @@ namespace dnf_composer::user_interface
 			const element::MemoryTraceParameters mtp{ tauBuild, tauDecay, threshold };
 			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
 			simulation->addElement(std::make_shared<element::MemoryTrace>(common, mtp));
+		}
+	}
+
+	void SimulationWindow::addElementStimulusSum(char* id, bool addRequested) const
+	{
+		static int    x_max = 100;
+		static double d_x   = 1.0;
+
+		ImGui::SeparatorText("Dimensions");
+		if (beginParamTable("##ss_dim")) {
+			paramTableSetup();
+			paramRowInt   ("Size", "##ss_size", &x_max);
+			paramRowDouble("Step", "##ss_step", &d_x, "%.2f");
+			endParamTable();
+		}
+
+		if (addRequested)
+		{
+			const element::ElementCommonParameters common{ std::string(id), element::ElementDimensions{ x_max, d_x } };
+			simulation->addElement(std::make_shared<element::StimulusSum>(common, element::StimulusSumParameters()));
 		}
 	}
 
