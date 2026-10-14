@@ -40,6 +40,8 @@ add_example_executable(benchmark_headless_2d                     benchmark_headl
 #add_example_executable(cpv_1d_test                               cpv_1d_test.cpp)
 #add_example_executable(example_oja_learning             oja_learning.cpp)
 #add_example_executable(example_delta_rule_learning      delta_rule_learning.cpp)
+add_example_executable(example_bidirectional_architecture       bidirectional_architecture.cpp)
+add_example_executable(example_hierarchical_architecture        hierarchical_architecture.cpp)
 
 
 
