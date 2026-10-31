@@ -190,7 +190,8 @@ You can also write your own launcher, link against the library, and choose exact
 | Project | Publication |
 |---|---|
 | [NEAT-DNFs](https://github.com/Jgocunha/neat-dnfs) | *NEAT-DNFs: A NeuroEvolutionary Framework for Evolving Dynamic Neural Field Architectures* · GECCO 2026 · [10.1145/3795095.3805169](https://doi.org/10.1145/3795095.3805169) |
-| [dynamic-neural-field-degeneration](https://github.com/Jgocunha/dynamic-neural-field-degeneration) | *Robustness and Adaptability in a Dynamic Neural Field Architecture Subject to Degeneration* · ROBOT 2025 · Springer LNNS |
+| [dynamic-neural-field-degeneration](https://github.com/Jgocunha/dynamic-neural-field-degeneration) | *Robustness and Adaptability in a Dynamic Neural Field Architecture Subject to Degeneration* · ROBOT 2025 · Springer LNNS [10.1007/978-3-032-30156-7_14](https://link.springer.com/chapter/10.1007/978-3-032-30156-7_14) |
+| [neuroevolutionary-joint-action](https://github.com/Jgocunha/neuroevolutionary-joint-action) | *NeuroEvolution of dynamic neural field architectures for Human-Robot joint action* · Robotics and Autonomous Systems [10.1016/j.robot.2026.105818](10.1016/j.robot.2026.105818) |
 | [vr-hr-joint-task](https://github.com/Jgocunha/vr-hr-joint-task) | *Dynamic Neural Field Based Anticipatory Action Selection for Human Robot Collaboration: A Virtual Reality Experiment* · ICSR + ART 2026 |
 | [How We Can Use Dynamic Neural Fields in Human-Robot Joint Action](https://research.tue.nl/en/studentTheses/how-we-can-use-dynamic-neural-fields-in-human-robot-joint-action/) | *How We Can Use Dynamic Neural Fields in Human-Robot Joint Action* · Tessa H. Janssen · MSc thesis · TU/e |
 
