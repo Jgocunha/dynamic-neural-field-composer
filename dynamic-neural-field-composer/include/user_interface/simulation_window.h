@@ -88,6 +88,7 @@ namespace dnf_composer::user_interface
 		void addElementGaussFieldCoupling(char* id, bool addRequested) const;
 		void addElementBoostStimulus(char* id, bool addRequested) const;
 		void addElementMemoryTrace(char* id, bool addRequested) const;
+		void addElementStimulusSum(char* id, bool addRequested) const;
 		void addElementNeuralField2D(char* id, bool addRequested) const;
 		void addElementGaussStimulus2D(char* id, bool addRequested) const;
 		void addElementGaussKernel2D(char* id, bool addRequested) const;

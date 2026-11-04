@@ -15,6 +15,7 @@
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
 #include "elements/memory_trace.h"
+#include "elements/stimulus_sum.h"
 #include "elements/neural_field_2d.h"
 #include "elements/gauss_stimulus_2d.h"
 #include "elements/gauss_kernel_2d.h"

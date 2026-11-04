@@ -19,6 +19,7 @@
 #include "elements/asymmetric_gauss_kernel.h"
 #include "elements/boost_stimulus.h"
 #include "elements/memory_trace.h"
+#include "elements/stimulus_sum.h"
 #include "elements/neural_field_2d.h"
 #include "elements/gauss_stimulus_2d.h"
 #include "elements/gauss_kernel_2d.h"
@@ -67,6 +68,8 @@ namespace dnf_composer::user_interface
 			return colour::kBoostStimulusElement;
 		case element::ElementLabel::MEMORY_TRACE:
 			return colour::kMemoryTraceElement;
+		case element::ElementLabel::STIMULUS_SUM:
+			return colour::kGaussStimulusElement;
 		case element::ElementLabel::NEURAL_FIELD_2D:
 			return colour::kNeuralField2DElement;
 		case element::ElementLabel::GAUSS_STIMULUS_2D:

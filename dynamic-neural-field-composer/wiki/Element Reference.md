@@ -637,6 +637,29 @@ field->addInput(memTrace);             // field receives the trace as input (sca
 
 ---
 
+## StimulusSum
+
+A passive aggregator that outputs the element-wise sum of an arbitrary number of same-size inputs. `StimulusSum` performs no transform, applies no kernel, and has no internal dynamics — it exists purely to combine inputs.
+
+**Label:** `STIMULUS_SUM`
+
+### Parameters
+
+`StimulusSumParameters` is empty — `StimulusSum` has no tunable parameters.
+
+### Components
+
+| Name | Description |
+|---|---|
+| `"input"` | Summed input from connected elements |
+| `"output"` | Same as `"input"` — the combined sum, published as this element's output |
+
+### Usage note
+
+Use `StimulusSum` when several stimuli feed the same field (e.g. multiple `GaussStimulus` elements) and you want to inspect their combined input as a single signal, without conflating it with the field's own recurrent/kernel feedback or plotting every stimulus separately. Connect each stimulus to `StimulusSum` with `addInput()`, then read (or plot) its `"output"` component.
+
+---
+
 ## Resize
 
 A standalone resampling element. It takes an input field of spatial size **N** and produces an output of a user-specified size **M** via interpolation, acting as a bridge between two neural fields of different spatial resolutions. `Resize` performs **only** resampling — no kernel is applied — so it is the way to connect fields of different sizes.
