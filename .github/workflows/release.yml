@@ -10,13 +10,12 @@ permissions:
 
 jobs:
   release-windows:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-windows
-      IPK_SRC: ${{ github.workspace }}/imgui-platform-kit-src
-      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
       INSTALL_PREFIX: ${{ github.workspace }}/install
 
     defaults:
@@ -31,53 +30,16 @@ jobs:
       - name: Normalize paths
         run: |
           echo "VCPKG_ROOT=$(echo "$VCPKG_ROOT" | tr '\\' '/')" >> "$GITHUB_ENV"
-          echo "IPK_SRC=$(echo "$IPK_SRC" | tr '\\' '/')" >> "$GITHUB_ENV"
-          echo "IPK_INSTALL_PREFIX=$(echo "$IPK_INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=$(echo "$VCPKG_DEFAULT_BINARY_CACHE" | tr '\\' '/')" >> "$GITHUB_ENV"
           echo "INSTALL_PREFIX=$(echo "$INSTALL_PREFIX" | tr '\\' '/')" >> "$GITHUB_ENV"
           echo "WORKSPACE=$(echo "${{ github.workspace }}" | tr '\\' '/')" >> "$GITHUB_ENV"
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
-      - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - name: Bootstrap vcpkg
-        run: $VCPKG_ROOT/bootstrap-vcpkg.bat -disableMetrics
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+      - name: Set up vcpkg
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('.github/workflows/release.yml') }}
-          restore-keys: vcpkg-${{ runner.os }}-
-
-      - name: Install vcpkg packages
-        run: |
-          $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding,win32-binding,dx12-binding]" \
-            implot \
-            imgui-node-editor \
-            nlohmann-json \
-            gtest \
-            fftw3
-
-      # ── imgui-platform-kit (from source) ───────────────────────────────────
-      - name: Clone imgui-platform-kit
-        run: git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
-
-      - name: Configure imgui-platform-kit
-        run: |
-          cmake -S $IPK_SRC/imgui-platform-kit \
-                -B $IPK_SRC/build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
-                -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
-
-      - name: Build imgui-platform-kit
-        run: cmake --build $IPK_SRC/build --config Release --parallel
-
-      - name: Install imgui-platform-kit
-        run: cmake --install $IPK_SRC/build --config Release
+          triplet: x64-windows
 
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
@@ -90,13 +52,19 @@ jobs:
           cmake -S ./dynamic-neural-field-composer -B build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
                 -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
                 -DDNF_COMPOSER_BUILD_TESTS=OFF \
                 -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
+
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
 
       - name: Build
         run: cmake --build build --config Release --parallel
@@ -118,12 +86,12 @@ jobs:
           path: dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip
 
   release-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-linux
-      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
       INSTALL_PREFIX: ${{ github.workspace }}/install
 
     steps:
@@ -149,51 +117,11 @@ jobs:
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
-      - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - name: Bootstrap vcpkg
-        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+      - name: Set up vcpkg
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('.github/workflows/release.yml') }}
-          restore-keys: vcpkg-${{ runner.os }}-
-
-      - name: Install vcpkg packages
-        run: |
-          $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
-            implot \
-            imgui-node-editor \
-            nlohmann-json \
-            gtest \
-            fftw3
-
-      # ── imgui-platform-kit (from source) ───────────────────────────────────
-      - name: Clone imgui-platform-kit
-        run: |
-          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
-            ${{ github.workspace }}/imgui-platform-kit-src
-
-      - name: Configure imgui-platform-kit
-        run: |
-          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
-                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
-                -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF \
-                -DCMAKE_CXX_COMPILER=g++-13 \
-                -DCMAKE_C_COMPILER=gcc-13
-
-      - name: Build imgui-platform-kit
-        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(nproc)
-
-      - name: Install imgui-platform-kit
-        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
+          triplet: x64-linux
 
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
@@ -206,7 +134,6 @@ jobs:
           cmake -S ./dynamic-neural-field-composer -B build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
                 -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
                 -DCMAKE_CXX_COMPILER=g++-13 \
                 -DCMAKE_C_COMPILER=gcc-13 \
@@ -215,6 +142,13 @@ jobs:
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
                 -DDNF_COMPOSER_BUILD_TESTS=OFF \
                 -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
+
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
 
       - name: Build
         run: cmake --build build --parallel $(nproc)
@@ -236,12 +170,12 @@ jobs:
           path: dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
 
   release-macos:
-    runs-on: macos-latest
+    runs-on: macos-26
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: arm64-osx
-      IPK_INSTALL_PREFIX: ${{ github.workspace }}/imgui-platform-kit-install
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
       INSTALL_PREFIX: ${{ github.workspace }}/install
 
     steps:
@@ -249,49 +183,11 @@ jobs:
         uses: actions/checkout@v4
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
-      - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - name: Bootstrap vcpkg
-        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+      - name: Set up vcpkg
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-arm64-osx-${{ hashFiles('.github/workflows/release.yml') }}
-          restore-keys: vcpkg-${{ runner.os }}-arm64-osx-
-
-      - name: Install vcpkg packages
-        run: |
-          $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]" \
-            implot \
-            imgui-node-editor \
-            nlohmann-json \
-            gtest \
-            fftw3
-
-      # ── imgui-platform-kit (from source) ───────────────────────────────────
-      - name: Clone imgui-platform-kit
-        run: |
-          git clone https://github.com/Jgocunha/imgui-platform-kit.git \
-            ${{ github.workspace }}/imgui-platform-kit-src
-
-      - name: Configure imgui-platform-kit
-        run: |
-          cmake -S ${{ github.workspace }}/imgui-platform-kit-src/imgui-platform-kit \
-                -B ${{ github.workspace }}/imgui-platform-kit-src/build \
-                -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL_PREFIX \
-                -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
-
-      - name: Build imgui-platform-kit
-        run: cmake --build ${{ github.workspace }}/imgui-platform-kit-src/build --parallel $(sysctl -n hw.logicalcpu)
-
-      - name: Install imgui-platform-kit
-        run: cmake --install ${{ github.workspace }}/imgui-platform-kit-src/build
+          triplet: arm64-osx
 
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
@@ -304,13 +200,19 @@ jobs:
           cmake -S ./dynamic-neural-field-composer -B build \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
                 -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
                 -DDNF_COMPOSER_BUILD_TESTS=OFF \
                 -DDNF_COMPOSER_DEV_FALLBACK_PATHS=OFF
+
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
 
       - name: Build
         run: cmake --build build --parallel $(sysctl -n hw.logicalcpu)
@@ -334,7 +236,7 @@ jobs:
   # ── GitHub Release (after all builds succeed) ──────────────────────────
   create-release:
     needs: [release-windows, release-linux, release-macos]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: write

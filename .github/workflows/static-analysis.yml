@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   clang-tidy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # run-clang-tidy over the whole src/ tree is the dominant cost of this job (~8 of
     # ~9 minutes). Every file is still analysed exactly once per push/PR -- shard just
@@ -26,6 +26,10 @@ jobs:
       matrix:
         shard: [0, 1, 2]
       fail-fast: false
+
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
 
     steps:
       - uses: actions/checkout@v4
@@ -38,55 +42,26 @@ jobs:
             autoconf-archive
 
       - name: Set up vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git $HOME/vcpkg
-          $HOME/vcpkg/bootstrap-vcpkg.sh -disableMetrics
-          echo "VCPKG_ROOT=$HOME/vcpkg" >> $GITHUB_ENV
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ~/vcpkg/installed
-          key: vcpkg-clang-tidy-${{ runner.os }}-${{ hashFiles('.github/workflows/static-analysis.yml') }}
-          restore-keys: vcpkg-clang-tidy-${{ runner.os }}-
-
-      - name: Install vcpkg packages
-        run: |
-          $VCPKG_ROOT/vcpkg install \
-            "imgui[docking-experimental,core,opengl3-binding,glfw-binding]:x64-linux" \
-            "implot:x64-linux" \
-            "imgui-node-editor:x64-linux" \
-            "nlohmann-json:x64-linux" \
-            "gtest:x64-linux" \
-            "fftw3:x64-linux" \
-            "benchmark:x64-linux"
-
-      - name: Build and install imgui-platform-kit
-        run: |
-          IPK_SRC=$HOME/imgui-platform-kit-src
-          IPK_INSTALL=$HOME/imgui-platform-kit-install
-          git clone https://github.com/Jgocunha/imgui-platform-kit.git $IPK_SRC
-          cmake -S $IPK_SRC/imgui-platform-kit -B $IPK_SRC/build \
-            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-            -DVCPKG_TARGET_TRIPLET=x64-linux \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX=$IPK_INSTALL \
-            -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF \
-            -DCMAKE_CXX_COMPILER=clang++ \
-            -DCMAKE_C_COMPILER=clang
-          cmake --build $IPK_SRC/build --parallel $(nproc)
-          cmake --install $IPK_SRC/build
-          echo "IPK_INSTALL_PREFIX=$IPK_INSTALL" >> $GITHUB_ENV
+          triplet: x64-linux
 
       - name: Configure
         run: |
           cmake -S ./dynamic-neural-field-composer -B build \
             -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH=$IPK_INSTALL_PREFIX \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_C_COMPILER=clang
+
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
 
       - name: Run clang-tidy (shard ${{ matrix.shard }}/3)
         run: |

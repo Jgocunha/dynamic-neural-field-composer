@@ -1,0 +1,51 @@
+name: Set up vcpkg
+description: >
+  Clones vcpkg at the builtin-baseline pinned in dynamic-neural-field-composer/vcpkg.json,
+  bootstraps it and restores the vcpkg binary cache. Expects VCPKG_ROOT and
+  VCPKG_DEFAULT_BINARY_CACHE in the job's env. Save the cache with actions/cache/save once
+  the dependencies are installed, keyed as
+  "<cache-key-prefix><hashFiles of the binary cache directory>".
+
+inputs:
+  triplet:
+    description: vcpkg triplet the job builds for; part of the cache key.
+    required: true
+
+outputs:
+  cache-key-prefix:
+    description: Prefix shared by every binary-cache key this job's OS and triplet use.
+    value: ${{ steps.key.outputs.prefix }}
+
+runs:
+  using: composite
+  steps:
+    - name: Clone vcpkg at the pinned baseline
+      shell: bash
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git "$VCPKG_ROOT"
+        git -C "$VCPKG_ROOT" checkout --quiet "$(jq -r '."builtin-baseline"' dynamic-neural-field-composer/vcpkg.json)"
+
+    - name: Bootstrap vcpkg
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          "$VCPKG_ROOT/bootstrap-vcpkg.bat" -disableMetrics
+        else
+          "$VCPKG_ROOT/bootstrap-vcpkg.sh" -disableMetrics
+        fi
+        mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+
+    - name: Compute binary cache key
+      id: key
+      shell: bash
+      run: echo "prefix=vcpkg-bin-${{ runner.os }}-${{ inputs.triplet }}-" >> "$GITHUB_OUTPUT"
+
+    # Packages in the binary cache are named by their ABI hash, so restoring an older
+    # cache can only save rebuilds: it can never stand in for a dependency the manifest
+    # does not declare. The run_id key never matches; the prefix restores the newest.
+    - name: Restore vcpkg binary cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+        key: ${{ steps.key.outputs.prefix }}${{ github.run_id }}
+        restore-keys: ${{ steps.key.outputs.prefix }}
