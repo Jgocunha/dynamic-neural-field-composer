@@ -12,6 +12,10 @@ vcpkg_from_github(
 # The library exports no symbols, so it can only be linked statically.
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
+# The kit's CMakeLists stops unless VCPKG_ROOT is set in the environment, and vcpkg
+# clears that variable for port builds on Windows.
+set(ENV{VCPKG_ROOT} "${VCPKG_ROOT_DIR}")
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}/imgui-platform-kit"
     OPTIONS -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
