@@ -40,13 +40,15 @@ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
 ---
 
-### What the setup scripts install automatically
+### What is installed automatically
 
-You do **not** need to install any of the following — the setup scripts handle them:
+You do **not** need to install any of the following. The setup script provides vcpkg; every
+library is declared in [`vcpkg.json`](../vcpkg.json) and installed by CMake on the first
+configure of each build tree:
 
 | Package | Source | Purpose |
 |---|---|---|
-| `vcpkg` | Cloned from GitHub | C++ package manager |
+| `vcpkg` | Cloned from GitHub by the setup script | C++ package manager |
 | `imgui` | vcpkg | Immediate-mode GUI |
 | `implot` | vcpkg | Real-time plotting |
 | `unofficial-imgui-node-editor` | vcpkg | Visual node-graph editor |
@@ -54,7 +56,26 @@ You do **not** need to install any of the following — the setup scripts handle
 | `gtest` | vcpkg | Unit testing framework |
 | `fftw3` | vcpkg | Spectral (FFT) convolution for wide kernels |
 | `benchmark` | vcpkg | Microbenchmark harness for the benchmark targets |
-| `imgui-platform-kit` | Built from source (cloned to `deps/`) | Platform/window abstraction |
+| `imgui-platform-kit` | vcpkg overlay port in [`ports/`](../ports/), pinned to a commit | Platform/window abstraction |
+
+### Pinned versions
+
+Every dependency version is pinned. `builtin-baseline` in `vcpkg.json` names one vcpkg
+commit, and each package is installed at the version that commit provides, even when your
+own vcpkg checkout is newer. `imgui-platform-kit` is pinned by the commit in
+[`ports/imgui-platform-kit/portfile.cmake`](../ports/imgui-platform-kit/portfile.cmake).
+Upgrading a dependency means changing one of those two places in a pull request, so CI
+checks the new versions before anyone builds against them.
+
+vcpkg reads the pinned versions from its git history and from the files it has checked
+out, so `VCPKG_ROOT` must be a **full git clone** of vcpkg at the baseline commit or a newer
+one. The setup scripts fetch the full history of a shallow clone, and stop with the command
+to update a clone that is older than the baseline. A vcpkg installed from a release
+tarball, or a read-only clone, cannot be used.
+
+The manifest pins the packages, not vcpkg itself: the `vcpkg` executable and the CMake
+scripts it builds ports with come from your checkout. CI checks out the baseline commit
+itself, so it pins those too.
 
 ---
 
@@ -71,9 +92,9 @@ scripts\setup.bat
 scripts\build.bat
 ```
 
-`setup.bat` installs vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set and persists it via `setx`, installs all vcpkg packages, and builds `imgui-platform-kit` into `deps\ipk-install\`.
+`setup.bat` installs vcpkg to `C:\tools\vcpkg` if `VCPKG_ROOT` is not already set and persists it via `setx`, and makes sure that vcpkg has the pinned baseline commit.
 
-`build.bat` configures and builds both Release and Debug with Ninja and the MSVC toolchain. Binaries land in `build\x64-release\` and `build\x64-debug\`. Pass `release` or `debug` to build only that configuration (`scripts\build.bat release`); with no argument it builds both, as above.
+`build.bat` installs the dependencies from `vcpkg.json` on its first run, then configures and builds both Release and Debug with Ninja and the MSVC toolchain. Binaries land in `build\x64-release\` and `build\x64-debug\`. Pass `release` or `debug` to build only that configuration (`scripts\build.bat release`); with no argument it builds both, as above.
 
 ### Linux
 
@@ -83,7 +104,7 @@ chmod +x scripts/setup.sh scripts/build.sh
 ./scripts/build.sh
 ```
 
-`setup.sh` installs vcpkg to `$HOME/vcpkg` if not already present, installs all vcpkg packages for `x64-linux`, and builds `imgui-platform-kit`. After setup, `build.sh` configures and builds into `build/linux-release/`.
+`setup.sh` installs vcpkg to `$HOME/vcpkg` if not already present and makes sure it has the pinned baseline commit. After setup, `build.sh` installs the dependencies from `vcpkg.json` (first run only), then configures and builds into `build/linux-release/`.
 
 > **Note:** `setup.sh` exports `VCPKG_ROOT` for the current session only. It prints a one-liner to add to your `~/.bashrc` or `~/.zshrc` so that subsequent terminals pick it up automatically.
 
@@ -95,20 +116,21 @@ chmod +x scripts/setup.sh scripts/build_macos.sh
 ./scripts/build_macos.sh
 ```
 
-`setup.sh` auto-detects your architecture (`arm64-osx` or `x64-osx`) and handles everything. `build_macos.sh` builds into `build/macos-release/`.
+`build_macos.sh` auto-detects your architecture (`arm64-osx` or `x64-osx`), installs the dependencies from `vcpkg.json` on its first run, and builds into `build/macos-release/`.
 
 ---
 
 ## Manual CMake build
 
-If you already have all dependencies installed and want to drive CMake directly, pass `VCPKG_ROOT` as the toolchain and point `CMAKE_PREFIX_PATH` at your `imgui-platform-kit` install:
+To drive CMake directly, pass vcpkg as the toolchain. The first configure of each build tree
+installs the dependencies from `vcpkg.json` into `<build tree>/vcpkg_installed/`; later
+configures reuse them, and vcpkg's binary cache makes a second build tree quick:
 
 ```bash
 # Configure (Release)
 cmake -B build/release \
       -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
-      -DCMAKE_PREFIX_PATH="deps/ipk-install"
+      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
 
 # Build
 cmake --build build/release --config Release
@@ -116,10 +138,12 @@ cmake --build build/release --config Release
 # Debug
 cmake -B build/debug \
       -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
-      -DCMAKE_PREFIX_PATH="deps/ipk-install"
+      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
 cmake --build build/debug --config Debug
 ```
+
+The `release` and `debug` presets in `CMakePresets.json` do the same
+(`cmake --preset release`).
 
 ### CMake build options
 
@@ -228,6 +252,28 @@ Downstream projects can then find and link the library with:
 find_package(dynamic-neural-field-composer REQUIRED)
 target_link_libraries(your_target PRIVATE dynamic-neural-field-composer)
 ```
+
+The library is static and does not bundle its dependencies, so a downstream project has to
+provide the same ones (`imgui`, `implot`, `imgui-node-editor`, `imgui-platform-kit`,
+`nlohmann-json`, `fftw3`) at the **same versions** the library was compiled against. The
+reliable way is to give the downstream project its own `vcpkg.json` (copy this project's
+dependency list and `builtin-baseline`, plus `ports/imgui-platform-kit/` and the
+`vcpkg-configuration.json` that registers `ports/` as an overlay) and build dnf-composer
+against that manifest instead of its own:
+
+```bash
+cmake -S dynamic-neural-field-composer/dynamic-neural-field-composer -B build-dnfc \
+      -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+      -DVCPKG_MANIFEST_DIR=/path/to/your-project \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/path/to/your-project/deps/dnfc-install \
+      -DDNF_COMPOSER_BUILD_TESTS=OFF
+cmake --build build-dnfc --config Release --parallel
+cmake --install build-dnfc --config Release
+```
+
+With `VCPKG_MANIFEST_DIR` pointing at your project, dnf-composer and your project are built
+from one dependency list, so they cannot end up with two different `imgui` versions.
 
 The exported target's include path includes both `<prefix>/include` and
 `<prefix>/include/dnf_composer`, so `#include` headers either the same way the library's

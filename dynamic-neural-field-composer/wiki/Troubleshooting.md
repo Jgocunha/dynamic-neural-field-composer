@@ -24,12 +24,26 @@ If you set `VCPKG_ROOT` manually instead, make sure it's exported/persisted in t
 
 ### Build fails after pulling new changes / after switching branches
 
-`deps/ipk-install/` (the built `imgui-platform-kit`) and the vcpkg package cache can go stale relative to a newer `vcpkg.json` or a newer `imgui-platform-kit` revision. Re-running the setup script is idempotent — already-completed steps are skipped, so it's safe to re-run whenever a build starts failing for no obvious reason:
+A change to `vcpkg.json` or `ports/` (a new dependency, or a newer `builtin-baseline`) is picked up on the next configure, which installs the new versions into the build tree's `vcpkg_installed/`. If the new baseline is newer than your vcpkg clone, that configure fails with one of the errors below; re-run the setup script, which prints the command that updates the clone. It is idempotent, so it's safe to re-run whenever a build starts failing for no obvious reason:
 
 ```bash
 scripts\setup.bat   # or scripts/setup.sh
 scripts\build.bat   # or scripts/build.sh / build_macos.sh
 ```
+
+### `error: while checking out baseline from commit '...', failed to git show versions/baseline.json` or `error: no version database entry for <port> at <version>`
+
+vcpkg reads the pinned versions from the git history of `VCPKG_ROOT` and from the files it has checked out. That fails if `VCPKG_ROOT` is a shallow clone, a clone older than the pinned baseline, or not a git clone at all (a vcpkg unpacked from a release tarball). Run the setup script: it fetches the full history of a shallow clone, and for a clone older than the baseline it stops and prints the commands that check out the baseline and bootstrap it again. If `VCPKG_ROOT` is a tarball install or a directory you cannot write to, point it at a fresh clone instead:
+
+```bash
+git clone https://github.com/microsoft/vcpkg.git "$HOME/vcpkg"
+"$HOME/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+export VCPKG_ROOT="$HOME/vcpkg"
+```
+
+### Upgrading from 2.x: stale `deps/` folder
+
+Before 3.0.0 the setup scripts built `imgui-platform-kit` into `deps/imgui-platform-kit/` and `deps/ipk-install/` and installed every package into vcpkg's own `installed/` tree. Nothing reads those any more; delete `deps/` and reconfigure from a clean build tree. See the 3.0.0 entry in `CHANGELOG.md` for the full migration.
 
 ### GCC version errors on Linux (concepts / `<format>` / C++20 features)
 

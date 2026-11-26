@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build-and-test-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       matrix:
@@ -33,8 +33,9 @@ jobs:
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-linux
-      # Read by CMake on its first configure (imgui-platform-kit inside setup.sh, then
-      # this project) -- no script changes needed. Covers the sccache step below.
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
+      # Read by CMake on its first configure -- no script changes needed. Covers the
+      # sccache step below.
       CMAKE_C_COMPILER_LAUNCHER: sccache
       CMAKE_CXX_COMPILER_LAUNCHER: sccache
       SCCACHE_GHA_ENABLED: "true"
@@ -71,18 +72,11 @@ jobs:
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
-      - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - name: Bootstrap vcpkg
-        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+      - name: Set up vcpkg
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
-          restore-keys: vcpkg-${{ runner.os }}-
+          triplet: x64-linux
 
       # ── Dependencies + build ───────────────────────────────────────────────
       - name: Setup dependencies
@@ -105,7 +99,6 @@ jobs:
           cmake -S . -B build/linux-debug \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Debug \
-                -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dynamic-neural-field-composer/deps/ipk-install \
                 -DCMAKE_CXX_COMPILER=g++-13 \
                 -DCMAKE_C_COMPILER=gcc-13 \
                 -DCMAKE_CXX_FLAGS=--coverage \
@@ -115,6 +108,16 @@ jobs:
         if: ${{ matrix.coverage }}
         working-directory: ./dynamic-neural-field-composer
         run: cmake --build build/linux-debug --target dnf_composer_tests --parallel "$(nproc)"
+
+      # Dependencies are installed during configure; save them before the tests run, and
+      # even when the build itself failed, so a broken commit does not cost the next run
+      # a full dependency rebuild.
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests
@@ -237,7 +240,7 @@ jobs:
           fail_ci_if_error: false
 
   sanitizers-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       matrix:
@@ -254,6 +257,7 @@ jobs:
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-linux
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
       CMAKE_C_COMPILER_LAUNCHER: sccache
       CMAKE_CXX_COMPILER_LAUNCHER: sccache
       SCCACHE_GHA_ENABLED: "true"
@@ -286,18 +290,11 @@ jobs:
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
-      - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - name: Bootstrap vcpkg
-        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+      - name: Set up vcpkg
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
-          restore-keys: vcpkg-${{ runner.os }}-
+          triplet: x64-linux
 
       # ── Dependencies + build ───────────────────────────────────────────────
       - name: Setup dependencies
@@ -312,7 +309,6 @@ jobs:
           cmake -S . -B ${{ matrix.build_dir }} \
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Debug \
-                -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dynamic-neural-field-composer/deps/ipk-install \
                 -DCMAKE_CXX_COMPILER=g++-13 \
                 -DCMAKE_C_COMPILER=gcc-13 \
                 -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}" \
@@ -321,6 +317,16 @@ jobs:
       - name: Build (${{ matrix.name }})
         working-directory: ./dynamic-neural-field-composer
         run: cmake --build ${{ matrix.build_dir }} --target dnf_composer_tests --parallel "$(nproc)"
+
+      # Dependencies are installed during configure; save them before the tests run, and
+      # even when the build itself failed, so a broken commit does not cost the next run
+      # a full dependency rebuild.
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests (ASan + UBSan)
@@ -348,7 +354,7 @@ jobs:
         run: ctest --output-on-failure --parallel $(nproc)
 
   build-and-test-windows:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
 
     # build.bat now takes an optional config argument (release/debug/no-argument-for-both).
     # Splitting Release and Debug into parallel matrix legs -- instead of one job building
@@ -361,6 +367,7 @@ jobs:
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_TRIPLET: x64-windows
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
       CMAKE_C_COMPILER_LAUNCHER: sccache
       CMAKE_CXX_COMPILER_LAUNCHER: sccache
       SCCACHE_GHA_ENABLED: "true"
@@ -382,20 +389,14 @@ jobs:
       - name: Normalize paths
         run: |
           echo "VCPKG_ROOT=$(echo "$VCPKG_ROOT" | tr '\\' '/')" >> "$GITHUB_ENV"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=$(echo "$VCPKG_DEFAULT_BINARY_CACHE" | tr '\\' '/')" >> "$GITHUB_ENV"
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
-      - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - name: Bootstrap vcpkg
-        run: $VCPKG_ROOT/bootstrap-vcpkg.bat -disableMetrics
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+      - name: Set up vcpkg
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.bat') }}
-          restore-keys: vcpkg-${{ runner.os }}-
+          triplet: x64-windows
 
       # ── Dependencies + build ───────────────────────────────────────────────
       - name: Setup dependencies
@@ -408,6 +409,16 @@ jobs:
         shell: cmd
         run: scripts\build.bat ${{ matrix.config }}
 
+      # Dependencies are installed during configure; save them before the tests run, and
+      # even when the build itself failed, so a broken commit does not cost the next run
+      # a full dependency rebuild.
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
+
       # ── Tests ──────────────────────────────────────────────────────────────
       # Debug was never tested by this job before the split either -- only compiled --
       # so this condition preserves the original behaviour exactly.
@@ -416,14 +427,15 @@ jobs:
         working-directory: ./dynamic-neural-field-composer/build/x64-release
         shell: cmd
         run: |
-          set "PATH=C:\Program Files\CMake\bin;%VCPKG_ROOT%/installed/x64-windows/bin;%PATH%"
+          set "PATH=C:\Program Files\CMake\bin;%CD%\vcpkg_installed\x64-windows\bin;%PATH%"
           ctest -C Release --output-on-failure --parallel
 
   build-and-test-macos:
-    runs-on: macos-latest
+    runs-on: macos-26
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
       CMAKE_C_COMPILER_LAUNCHER: sccache
       CMAKE_CXX_COMPILER_LAUNCHER: sccache
       SCCACHE_GHA_ENABLED: "true"
@@ -451,18 +463,11 @@ jobs:
           fi
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
-      - name: Clone vcpkg
-        run: git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - name: Bootstrap vcpkg
-        run: $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics
-
-      - name: Cache vcpkg packages
-        uses: actions/cache@v4
+      - name: Set up vcpkg
+        id: vcpkg
+        uses: ./.github/actions/setup-vcpkg
         with:
-          path: ${{ env.VCPKG_ROOT }}/installed
-          key: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-${{ hashFiles('dynamic-neural-field-composer/scripts/setup.sh') }}
-          restore-keys: vcpkg-${{ runner.os }}-${{ steps.triplet.outputs.vcpkg_triplet }}-
+          triplet: ${{ steps.triplet.outputs.vcpkg_triplet }}
 
       # ── Dependencies + build ───────────────────────────────────────────────
       - name: Setup dependencies
@@ -476,6 +481,16 @@ jobs:
         run: |
           chmod +x scripts/build_macos.sh
           ./scripts/build_macos.sh
+
+      # Dependencies are installed during configure; save them before the tests run, and
+      # even when the build itself failed, so a broken commit does not cost the next run
+      # a full dependency rebuild.
+      - name: Save vcpkg binary cache
+        if: ${{ !cancelled() && steps.vcpkg.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: ${{ steps.vcpkg.outputs.cache-key-prefix }}${{ hashFiles('vcpkg-binary-cache/**') }}
 
       # ── Tests ──────────────────────────────────────────────────────────────
       - name: Run tests

@@ -1,0 +1,24 @@
+{
+  "name": "imgui-platform-kit",
+  "version-date": "2026-07-08",
+  "description": "Cross-platform toolkit for Dear ImGui",
+  "homepage": "https://github.com/Jgocunha/imgui-platform-kit",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "imgui",
+      "features": [
+        "docking-experimental",
+        { "name": "dx12-binding", "platform": "windows" },
+        { "name": "win32-binding", "platform": "windows" },
+        { "name": "glfw-binding", "platform": "!windows" },
+        { "name": "opengl3-binding", "platform": "!windows" }
+      ]
+    },
+    { "name": "glfw3", "platform": "!windows" },
+    "implot",
+    "imgui-node-editor",
+    { "name": "vcpkg-cmake", "host": true },
+    { "name": "vcpkg-cmake-config", "host": true }
+  ]
+}

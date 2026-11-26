@@ -3,7 +3,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-IPK_INSTALL="$PROJECT_ROOT/deps/ipk-install"
 
 # setup.sh can only export VCPKG_ROOT into its own process, so the very first build
 # in the same shell as setup would otherwise fail here. Fall back to the location
@@ -25,6 +24,5 @@ echo "VCPKG_ROOT is set to: '$VCPKG_ROOT'"
 mkdir -p "$PROJECT_ROOT/build/linux-release"
 cmake -S "$PROJECT_ROOT" -B "$PROJECT_ROOT/build/linux-release" \
     -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH="$IPK_INSTALL"
+    -DCMAKE_BUILD_TYPE=Release
 cmake --build "$PROJECT_ROOT/build/linux-release" --parallel "$(nproc)"

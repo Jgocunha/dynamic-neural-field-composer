@@ -58,7 +58,7 @@ You must install the following manually:
 | **Linux** | GCC 13+, CMake 3.20+, Git, OpenGL/X11 dev libraries |
 | **macOS** | Xcode Command Line Tools, CMake 3.20+ |
 
-Everything else — vcpkg, all library dependencies (`imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `imgui-platform-kit`) — is installed automatically by the setup scripts.
+Everything else is installed automatically: the setup script provides vcpkg, and the first build installs every library dependency (`imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `fftw3`, `imgui-platform-kit`) from [`vcpkg.json`](dynamic-neural-field-composer/vcpkg.json), at versions pinned there.
 
 ## Building
 

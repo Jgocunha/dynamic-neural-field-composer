@@ -21,13 +21,13 @@ Open an issue on GitHub using the appropriate template:
 |---|---|
 | C++ compiler | C++20 (MSVC 2022, GCC 13+, Apple Clang via Xcode Command Line Tools) |
 | CMake | 3.20 |
-| vcpkg | Any recent — set `VCPKG_ROOT` |
+| vcpkg | A git clone at the `builtin-baseline` commit in `vcpkg.json` or newer — set `VCPKG_ROOT` (the setup script checks it) |
 
 CI builds on Windows (MSVC 2022), Linux (GCC 13) and macOS. Other C++20 compilers may work but are not covered by CI.
 
 **Setup**
 
-The setup script installs the dependencies and sets `VCPKG_ROOT`. Run it once, from the repository root:
+The setup script installs vcpkg, sets `VCPKG_ROOT` and checks that it has the pinned vcpkg baseline. The first build then installs every dependency from `vcpkg.json`. Run setup once, from the repository root:
 
 ```bat
 :: Windows

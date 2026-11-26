@@ -49,8 +49,8 @@ From PowerShell, in your worktree:
 $vs = "C:\Program Files\Microsoft Visual Studio\2022\Community"
 Import-Module "$vs\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
 Enter-VsDevShell -VsInstallPath $vs -DevCmdArguments '-arch=x64 -host_arch=x64' -SkipAutomaticLocation | Out-Null
-$env:VCPKG_ROOT = "C:\dev-files\vcpkg"      # the real classic-mode cache (has imgui/implot);
-                                            # the VS-bundled $vs\VC\vcpkg does NOT and fails find_package
+$env:VCPKG_ROOT = "C:\dev-files\vcpkg"      # your own vcpkg git clone (see Getting Started),
+                                            # set again after Enter-VsDevShell overwrote it
 cmake -S . -B build/release                 # reconfigure after adding a NEW .cpp
 cmake --build build/release --target dnf_composer_tests
 build\release\tests\dnf_composer_tests.exe --gtest_filter="Golden*"

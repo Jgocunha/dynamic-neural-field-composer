@@ -92,9 +92,22 @@ the edit sets a current mtime.
 
 ## Dependencies
 
-`imgui-platform-kit` is consumed as an installed package found via `CMAKE_PREFIX_PATH`, not
-built in-tree. A checkout with no local `deps/` still configures, provided the package is
-installed somewhere CMake looks. Everything else comes from vcpkg via `VCPKG_ROOT`.
+Since 3.0.0 every dependency, `imgui-platform-kit` included, is declared in
+`dynamic-neural-field-composer/vcpkg.json` and installed by the vcpkg toolchain during the
+first configure of a build tree, into `<build tree>/vcpkg_installed/`. Versions are pinned
+by `builtin-baseline` (one vcpkg commit); the kit is an overlay port in `ports/`, pinned by
+`REF`/`SHA512` in its `portfile.cmake`. Nothing is read from `deps/` or from vcpkg's
+classic `installed/` tree any more.
+
+`VCPKG_ROOT` must be a git clone that contains the baseline commit - vcpkg `git show`s the
+port versions out of its own history. A shallow clone fails with
+`error: while checking out baseline from commit '...'`; `scripts/setup.sh` /
+`setup.bat` fetch the commit (unshallowing if needed). Reconfiguring an existing tree after
+`vcpkg.json` or `ports/` changed installs the new set automatically.
+
+The toolchain is `include()`d after `project()`, and that is enough to trigger the manifest
+install - verified on both this project and imgui-platform-kit, so neither needs
+`CMAKE_TOOLCHAIN_FILE` set before `project()`.
 
 ## Verified baseline
 
