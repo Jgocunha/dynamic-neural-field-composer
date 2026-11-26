@@ -43,7 +43,7 @@ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 ### What is installed automatically
 
 You do **not** need to install any of the following. The setup script provides vcpkg; every
-library is declared in [`vcpkg.json`](vcpkg.json) and installed by CMake on the first
+library is declared in [`vcpkg.json`](../vcpkg.json) and installed by CMake on the first
 configure of each build tree:
 
 | Package | Source | Purpose |
@@ -56,20 +56,26 @@ configure of each build tree:
 | `gtest` | vcpkg | Unit testing framework |
 | `fftw3` | vcpkg | Spectral (FFT) convolution for wide kernels |
 | `benchmark` | vcpkg | Microbenchmark harness for the benchmark targets |
-| `imgui-platform-kit` | vcpkg overlay port in [`ports/`](ports/), pinned to a commit | Platform/window abstraction |
+| `imgui-platform-kit` | vcpkg overlay port in [`ports/`](../ports/), pinned to a commit | Platform/window abstraction |
 
 ### Pinned versions
 
 Every dependency version is pinned. `builtin-baseline` in `vcpkg.json` names one vcpkg
-commit, and each package is installed at the version that commit provides, no matter how
-old or new your own vcpkg checkout is. `imgui-platform-kit` is pinned by the commit in
-[`ports/imgui-platform-kit/portfile.cmake`](ports/imgui-platform-kit/portfile.cmake).
+commit, and each package is installed at the version that commit provides, even when your
+own vcpkg checkout is newer. `imgui-platform-kit` is pinned by the commit in
+[`ports/imgui-platform-kit/portfile.cmake`](../ports/imgui-platform-kit/portfile.cmake).
 Upgrading a dependency means changing one of those two places in a pull request, so CI
 checks the new versions before anyone builds against them.
 
-vcpkg reads the pinned versions from its own git history, so `VCPKG_ROOT` must be a **git
-clone** of vcpkg that contains the baseline commit. The setup scripts fetch it when it is
-missing. A vcpkg installed from a release tarball, or a read-only clone, cannot be used.
+vcpkg reads the pinned versions from its git history and from the files it has checked
+out, so `VCPKG_ROOT` must be a **full git clone** of vcpkg at the baseline commit or a newer
+one. The setup scripts fetch the full history of a shallow clone, and stop with the command
+to update a clone that is older than the baseline. A vcpkg installed from a release
+tarball, or a read-only clone, cannot be used.
+
+The manifest pins the packages, not vcpkg itself: the `vcpkg` executable and the CMake
+scripts it builds ports with come from your checkout. CI checks out the baseline commit
+itself, so it pins those too.
 
 ---
 
@@ -251,8 +257,9 @@ The library is static and does not bundle its dependencies, so a downstream proj
 provide the same ones (`imgui`, `implot`, `imgui-node-editor`, `imgui-platform-kit`,
 `nlohmann-json`, `fftw3`) at the **same versions** the library was compiled against. The
 reliable way is to give the downstream project its own `vcpkg.json` (copy this project's
-dependency list, `builtin-baseline` and `ports/imgui-platform-kit/`) and build
-dnf-composer against that manifest instead of its own:
+dependency list and `builtin-baseline`, plus `ports/imgui-platform-kit/` and the
+`vcpkg-configuration.json` that registers `ports/` as an overlay) and build dnf-composer
+against that manifest instead of its own:
 
 ```bash
 cmake -S dynamic-neural-field-composer/dynamic-neural-field-composer -B build-dnfc \
@@ -261,8 +268,8 @@ cmake -S dynamic-neural-field-composer/dynamic-neural-field-composer -B build-dn
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=/path/to/your-project/deps/dnfc-install \
       -DDNF_COMPOSER_BUILD_TESTS=OFF
-cmake --build build-dnfc --parallel
-cmake --install build-dnfc
+cmake --build build-dnfc --config Release --parallel
+cmake --install build-dnfc --config Release
 ```
 
 With `VCPKG_MANIFEST_DIR` pointing at your project, dnf-composer and your project are built
