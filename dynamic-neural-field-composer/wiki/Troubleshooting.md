@@ -33,7 +33,7 @@ scripts\build.bat   # or scripts/build.sh / build_macos.sh
 
 ### `error: while checking out baseline from commit '...', failed to git show versions/baseline.json` or `error: no version database entry for <port> at <version>`
 
-vcpkg reads the pinned versions from the git history of `VCPKG_ROOT` and from the files it has checked out. That fails if `VCPKG_ROOT` is a shallow clone, a clone older than the pinned baseline, or not a git clone at all (a vcpkg unpacked from a release tarball). Run the setup script: it fetches the full history of a shallow clone, and for a clone older than the baseline it stops and prints the `git pull` and bootstrap commands that update it. If `VCPKG_ROOT` is a tarball install or a directory you cannot write to, point it at a fresh clone instead:
+vcpkg reads the pinned versions from the git history of `VCPKG_ROOT` and from the files it has checked out. That fails if `VCPKG_ROOT` is a shallow clone, a clone older than the pinned baseline, or not a git clone at all (a vcpkg unpacked from a release tarball). Run the setup script: it fetches the full history of a shallow clone, and for a clone older than the baseline it stops and prints the commands that check out the baseline and bootstrap it again. If `VCPKG_ROOT` is a tarball install or a directory you cannot write to, point it at a fresh clone instead:
 
 ```bash
 git clone https://github.com/microsoft/vcpkg.git "$HOME/vcpkg"

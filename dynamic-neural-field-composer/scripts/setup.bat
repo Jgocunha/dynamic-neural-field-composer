@@ -45,19 +45,19 @@ if not defined BASELINE ( echo ERROR: no builtin-baseline found in vcpkg.json. &
 set "SHALLOW="
 for /f %%S in ('git -C "%VCPKG_ROOT%" rev-parse --is-shallow-repository 2^>nul') do set "SHALLOW=%%S"
 if "%SHALLOW%"=="true" (
-    echo vcpkg at %VCPKG_ROOT% is a shallow clone, fetching its full history...
+    echo vcpkg at "%VCPKG_ROOT%" is a shallow clone, fetching its full history...
     git -C "%VCPKG_ROOT%" fetch --unshallow origin
     if errorlevel 1 (
-        echo ERROR: could not fetch the history of %VCPKG_ROOT%. VCPKG_ROOT must be a clone you can write to.
+        echo ERROR: could not fetch the history of "%VCPKG_ROOT%". VCPKG_ROOT must be a clone you can write to.
         exit /b 1
     )
 )
 git -C "%VCPKG_ROOT%" merge-base --is-ancestor %BASELINE% HEAD 2>nul
 if errorlevel 1 (
-    echo ERROR: vcpkg at %VCPKG_ROOT% is older than the pinned baseline %BASELINE%, or is not a git clone.
+    echo ERROR: vcpkg at "%VCPKG_ROOT%" is older than the pinned baseline %BASELINE%, or is not a git clone.
     echo VCPKG_ROOT must be a git clone of https://github.com/microsoft/vcpkg at that commit or newer.
-    echo To update it:
-    echo   git -C "%VCPKG_ROOT%" pull ^&^& "%VCPKG_ROOT%\bootstrap-vcpkg.bat" -disableMetrics
+    echo To move it to the pinned baseline:
+    echo   git -C "%VCPKG_ROOT%" fetch origin ^&^& git -C "%VCPKG_ROOT%" checkout %BASELINE% ^&^& "%VCPKG_ROOT%\bootstrap-vcpkg.bat" -disableMetrics
     exit /b 1
 )
 

@@ -38,8 +38,8 @@ fi
 if ! git -C "$VCPKG_ROOT" merge-base --is-ancestor "$BASELINE" HEAD 2>/dev/null; then
     echo "ERROR: vcpkg at $VCPKG_ROOT is older than the pinned baseline $BASELINE, or is not a git clone."
     echo "VCPKG_ROOT must be a git clone of https://github.com/microsoft/vcpkg at that commit or newer."
-    echo "To update it:"
-    echo "  git -C \"$VCPKG_ROOT\" pull && \"$VCPKG_ROOT/bootstrap-vcpkg.sh\" -disableMetrics"
+    echo "To move it to the pinned baseline:"
+    echo "  git -C \"$VCPKG_ROOT\" fetch origin && git -C \"$VCPKG_ROOT\" checkout $BASELINE && \"$VCPKG_ROOT/bootstrap-vcpkg.sh\" -disableMetrics"
     exit 1
 fi
 
