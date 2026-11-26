@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-11-26
+
 ### Changed
 - **Breaking: every dependency is now declared in a vcpkg manifest and pinned.**
   `dynamic-neural-field-composer/vcpkg.json` lists all of them, and its `builtin-baseline`
