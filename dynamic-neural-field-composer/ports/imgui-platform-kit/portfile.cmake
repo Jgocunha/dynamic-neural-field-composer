@@ -13,7 +13,8 @@ vcpkg_from_github(
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
 # The kit's CMakeLists stops unless VCPKG_ROOT is set in the environment, and vcpkg
-# clears that variable for port builds on Windows.
+# clears that variable for port builds on Windows. Kit 2.1.0 and later accept vcpkg's
+# toolchain instead, so this line can go once REF is at one of them.
 set(ENV{VCPKG_ROOT} "${VCPKG_ROOT_DIR}")
 
 vcpkg_cmake_configure(
