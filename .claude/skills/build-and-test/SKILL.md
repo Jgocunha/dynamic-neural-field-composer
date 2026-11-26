@@ -10,9 +10,11 @@ description: Configure, build and test dynamic-neural-field-composer. Use whenev
 All commands run from the **nested project root**, `dynamic-neural-field-composer/` inside
 the repository - not the repository root.
 
-`VCPKG_ROOT` must be set in the environment; the CMake presets read it. If it is unset, run
-`scripts/setup.sh` (Linux/macOS) or `scripts/setup.bat` (Windows) once to install the
-dependencies. **Neither script leaves `VCPKG_ROOT` set in the shell you ran it from** -
+`VCPKG_ROOT` must be set in the environment; the CMake presets read it, and it must be a git
+clone of vcpkg containing the `builtin-baseline` commit pinned in `vcpkg.json`. If it is
+unset or lacks that commit, run `scripts/setup.sh` (Linux/macOS) or `scripts/setup.bat`
+(Windows) once. The dependencies themselves are installed by the first configure of each
+build tree (into `<tree>/vcpkg_installed/`), not by the setup script. **Neither script leaves `VCPKG_ROOT` set in the shell you ran it from** -
 `setup.sh` only `export`s inside its own process, and `setup.bat` writes it via `setx`,
 which only reaches shells opened afterward. Open a new shell before configuring, or set the
 variable directly for the current session.

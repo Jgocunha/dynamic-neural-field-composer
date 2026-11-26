@@ -8,7 +8,7 @@ The three `.bat` scripts (`setup.bat`, `build.bat`, `install.bat`) pause with "P
 
 ## Setup (run once on a fresh machine)
 
-These scripts install all automated dependencies. See [Getting Started](../wiki/Getting%20Started.md) for what you need to install manually before running these.
+These scripts make sure vcpkg is available. The libraries themselves are declared in [`vcpkg.json`](../vcpkg.json) and installed by CMake on the first build. See [Getting Started](../wiki/Getting%20Started.md) for what you need to install manually before running these.
 
 ### `setup.sh` — Linux and macOS
 
@@ -19,10 +19,7 @@ chmod +x scripts/setup.sh
 
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `$HOME/vcpkg`, bootstraps it, and prints the line to add to your shell profile to persist the variable
-2. Auto-detects your OS and CPU architecture to select the correct vcpkg triplet (`x64-linux`, `x64-osx`, or `arm64-osx`)
-3. Installs all required vcpkg packages: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `fftw3`, `benchmark`
-4. Clones `imgui-platform-kit` into `deps/imgui-platform-kit/` (skipped if already present)
-5. Builds and installs `imgui-platform-kit` into `deps/ipk-install/` (skipped if already present)
+2. Checks that the vcpkg in `VCPKG_ROOT` contains the commit pinned as `builtin-baseline` in `vcpkg.json`, and fetches it (unshallowing a shallow clone) if not
 
 Idempotent — safe to re-run; already-completed steps are skipped.
 
@@ -34,9 +31,7 @@ scripts\setup.bat
 
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `C:\tools\vcpkg`, bootstraps it, and persists `VCPKG_ROOT` permanently via `setx`
-2. Installs all required vcpkg packages for `x64-windows`: `imgui`, `implot`, `imgui-node-editor`, `nlohmann-json`, `gtest`, `fftw3`, `benchmark`
-3. Clones `imgui-platform-kit` into `deps\imgui-platform-kit\` (skipped if already present)
-4. Builds and installs `imgui-platform-kit` into `deps\ipk-install\` (skipped if already present)
+2. Checks that the vcpkg in `VCPKG_ROOT` contains the commit pinned as `builtin-baseline` in `vcpkg.json`, and fetches it (unshallowing a shallow clone) if not
 
 Idempotent — safe to re-run; already-completed steps are skipped.
 
@@ -44,7 +39,7 @@ Idempotent — safe to re-run; already-completed steps are skipped.
 
 ## Build (run after setup)
 
-These scripts configure and build the project with CMake. They require setup to have been run first (i.e., `VCPKG_ROOT` must be set and `deps/ipk-install/` must exist).
+These scripts configure and build the project with CMake. They require setup to have been run first (i.e., `VCPKG_ROOT` must be set). The first configure of each build tree installs every dependency from `vcpkg.json` into `<build tree>/vcpkg_installed/`, which takes a while; later builds reuse it.
 
 ### `build.sh` — Linux
 

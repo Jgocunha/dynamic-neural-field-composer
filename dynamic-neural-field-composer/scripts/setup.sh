@@ -18,55 +18,29 @@ if [ -z "$VCPKG_ROOT" ]; then
     echo ""
 fi
 
-# ── triplet detection ─────────────────────────────────────────────────────────
-OS=$(uname -s)
-ARCH=$(uname -m)
-if [ "$OS" = "Darwin" ]; then
-    TRIPLET=$( [ "$ARCH" = "arm64" ] && echo "arm64-osx" || echo "x64-osx" )
-else
-    TRIPLET="x64-linux"
+# ── vcpkg baseline ────────────────────────────────────────────────────────────
+# Every dependency is declared in vcpkg.json and installed by CMake on the first
+# configure, at the versions of the vcpkg commit pinned there as builtin-baseline.
+# vcpkg reads those versions from its own git history, so a shallow or older clone
+# has to fetch that commit first.
+BASELINE=$(sed -n 's/.*"builtin-baseline": *"\([0-9a-f]*\)".*/\1/p' "$PROJECT_ROOT/vcpkg.json")
+if [ -z "$BASELINE" ]; then
+    echo "ERROR: no builtin-baseline found in $PROJECT_ROOT/vcpkg.json."
+    exit 1
 fi
-echo "Using vcpkg triplet: $TRIPLET"
-
-# ── vcpkg packages ────────────────────────────────────────────────────────────
-echo "Installing vcpkg packages..."
-# --recurse: on a machine whose vcpkg already has imgui installed with a different
-# feature set than the one requested below, vcpkg must remove and rebuild it and every
-# dependent (implot, imgui-node-editor). Without --recurse it refuses, prints a warning
-# and exits nonzero -- leaving the user to discover the flag themselves, which defeats
-# the point of this script.
-"$VCPKG_ROOT/vcpkg" install --recurse \
-    "imgui[docking-experimental,core,opengl3-binding,glfw-binding]:$TRIPLET" \
-    "implot:$TRIPLET" \
-    "imgui-node-editor:$TRIPLET" \
-    "nlohmann-json:$TRIPLET" \
-    "gtest:$TRIPLET" \
-    "fftw3:$TRIPLET" \
-    "benchmark:$TRIPLET"
-
-# ── imgui-platform-kit ────────────────────────────────────────────────────────
-IPK_SRC="$PROJECT_ROOT/deps/imgui-platform-kit"
-IPK_INSTALL="$PROJECT_ROOT/deps/ipk-install"
-
-if [ ! -d "$IPK_SRC" ]; then
-    echo "Cloning imgui-platform-kit..."
-    git clone https://github.com/Jgocunha/imgui-platform-kit.git "$IPK_SRC"
-fi
-
-if [ ! -d "$IPK_INSTALL" ]; then
-    echo "Building imgui-platform-kit..."
-    PARALLEL=$( [ "$OS" = "Darwin" ] && sysctl -n hw.logicalcpu || nproc )
-    cmake -S "$IPK_SRC/imgui-platform-kit" -B "$IPK_SRC/build" \
-        -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
-        -DVCPKG_TARGET_TRIPLET="$TRIPLET" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="$IPK_INSTALL" \
-        -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
-    cmake --build "$IPK_SRC/build" --parallel "$PARALLEL"
-    cmake --install "$IPK_SRC/build"
-else
-    echo "imgui-platform-kit already installed, skipping."
+if ! git -C "$VCPKG_ROOT" cat-file -e "$BASELINE^{commit}" 2>/dev/null; then
+    echo "vcpkg at $VCPKG_ROOT does not have the pinned baseline $BASELINE yet, fetching it..."
+    if [ "$(git -C "$VCPKG_ROOT" rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
+        git -C "$VCPKG_ROOT" fetch --unshallow origin
+    else
+        git -C "$VCPKG_ROOT" fetch origin
+    fi || {
+        echo "ERROR: could not fetch vcpkg commit $BASELINE into $VCPKG_ROOT."
+        echo "VCPKG_ROOT must be a git clone of https://github.com/microsoft/vcpkg that you can write to."
+        exit 1
+    }
 fi
 
 echo ""
 echo "Setup complete. Run ./scripts/build.sh or ./scripts/build_macos.sh to build the project."
+echo "The first build installs every dependency from vcpkg.json, which takes a while."

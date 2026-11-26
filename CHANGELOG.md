@@ -4,6 +4,45 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Breaking: every dependency is now declared in a vcpkg manifest and pinned.**
+  `dynamic-neural-field-composer/vcpkg.json` lists all of them, and its `builtin-baseline`
+  pins their versions to one vcpkg commit (`0699a19d0c`, the vcpkg HEAD of the last green CI
+  run: imgui 1.92.9, implot 1.0, imgui-node-editor 0.9.3, nlohmann-json 3.12.0, fftw3
+  3.3.11, gtest 1.18.0, benchmark 1.9.5). The first configure of a build tree installs them
+  into `<build tree>/vcpkg_installed/`. `imgui-platform-kit` is no longer cloned and built
+  by the setup scripts: it is a vcpkg overlay port (`ports/imgui-platform-kit/`) pinned to
+  commit `27ada91`, the revision every build has used so far. Until now vcpkg and the kit
+  both tracked HEAD, so an upstream release could break a commit that changed nothing: on
+  vcpkg's imgui 1.93.0, `NodeGraphWindowTest.RenderWithCoupled2DElements` aborts on ImGui's
+  16-bit vertex-index assertion in Debug and sanitizer builds.
+- `scripts/setup.sh` and `scripts/setup.bat` now only provide vcpkg: they clone it if
+  `VCPKG_ROOT` is unset, as before, and fetch the pinned baseline commit if that clone does
+  not have it yet (unshallowing a shallow clone). `build.sh`, `build_macos.sh` and
+  `build.bat` no longer pass `CMAKE_PREFIX_PATH`.
+- CI runner images are pinned (`ubuntu-24.04`, `windows-2025-vs2026`, `macos-26`) instead of
+  `*-latest`. `ubuntu-latest` moved to 26.04, whose clang-tidy 21 adds checks that fail
+  static analysis on unchanged code. Every workflow clones vcpkg at the pinned baseline, and
+  caches vcpkg's binary packages instead of its `installed/` tree. Binary packages are keyed
+  by their ABI hash, so a restored cache can no longer stand in for a dependency the
+  manifest does not declare (see the 2.12.1 entry below).
+- The monthly vcpkg report lists each package's pinned version next to the latest one, and
+  covers `fftw3` and `benchmark` as well.
+
+### Migrating from 2.x
+1. `VCPKG_ROOT` must be a **git clone** of vcpkg, since vcpkg reads the pinned versions from
+   its git history. A vcpkg unpacked from a release tarball no longer works. Run
+   `scripts/setup.sh` (or `setup.bat`) once; it fetches the baseline commit into your clone.
+2. Delete `deps/imgui-platform-kit/`, `deps/ipk-install/` and your existing build trees,
+   then build again. Packages installed into vcpkg's own `installed/` tree for this project
+   are no longer used.
+3. Drop `-DCMAKE_PREFIX_PATH=deps/ipk-install` from any CMake command line or preset of
+   your own.
+4. Projects that link the installed library must provide the same dependencies at the same
+   versions: give them a `vcpkg.json` with the same dependencies and `builtin-baseline`,
+   copy `ports/imgui-platform-kit/`, and build dnf-composer with
+   `-DVCPKG_MANIFEST_DIR=<that project>`. See *Getting Started → Installing the library*.
+
 ## [2.12.1] - 2026-10-09
 
 ### Fixed

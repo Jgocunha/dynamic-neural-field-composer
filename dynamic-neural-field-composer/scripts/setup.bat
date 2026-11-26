@@ -33,63 +33,33 @@ if not defined VCPKG_ROOT (
     echo NOTE: Open a new terminal for VCPKG_ROOT to be visible to other tools.
 )
 
-:: ── vcpkg packages ────────────────────────────────────────────────────────────
-echo Installing vcpkg packages...
-:: --recurse: on a machine whose vcpkg already has imgui installed with a different
-:: feature set than the one requested below, vcpkg must remove and rebuild it and every
-:: dependent (implot, imgui-node-editor). Without --recurse it refuses, prints a warning
-:: and exits nonzero -- leaving the user to discover the flag themselves, which defeats
-:: the point of this script.
-"%VCPKG_ROOT%\vcpkg.exe" install --recurse ^
-    "imgui[docking-experimental,core,opengl3-binding,glfw-binding,dx12-binding,win32-binding]:x64-windows" ^
-    "implot:x64-windows" ^
-    "imgui-node-editor:x64-windows" ^
-    "nlohmann-json:x64-windows" ^
-    "gtest:x64-windows" ^
-    "fftw3:x64-windows" ^
-    "benchmark:x64-windows"
-if errorlevel 1 ( echo ERROR: vcpkg install failed. & exit /b 1 )
+:: ── vcpkg baseline ────────────────────────────────────────────────────────────
+:: Every dependency is declared in vcpkg.json and installed by CMake on the first
+:: configure, at the versions of the vcpkg commit pinned there as builtin-baseline.
+:: vcpkg reads those versions from its own git history, so a shallow or older clone
+:: has to fetch that commit first.
+set "BASELINE="
+for /f "tokens=2 delims=:, " %%B in ('findstr /c:"builtin-baseline" "%PROJECT_ROOT%\vcpkg.json"') do set "BASELINE=%%~B"
+if not defined BASELINE ( echo ERROR: no builtin-baseline found in vcpkg.json. & exit /b 1 )
 
-:: ── imgui-platform-kit ────────────────────────────────────────────────────────
-set IPK_SRC=%PROJECT_ROOT%\deps\imgui-platform-kit
-set IPK_INSTALL=%PROJECT_ROOT%\deps\ipk-install
-
-if not exist "%IPK_SRC%" (
-    echo Cloning imgui-platform-kit...
-    git clone https://github.com/Jgocunha/imgui-platform-kit.git "%IPK_SRC%"
-    if errorlevel 1 ( echo ERROR: Failed to clone imgui-platform-kit. & exit /b 1 )
-)
-
-if not exist "%IPK_INSTALL%\release" (
-    echo Building imgui-platform-kit Release...
-    cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build-release" ^
-        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
-        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\release" ^
-        -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
-    if errorlevel 1 ( echo ERROR: imgui-platform-kit Release configure failed. & exit /b 1 )
-    cmake --build "%IPK_SRC%\build-release" --config Release --parallel
-    if errorlevel 1 ( echo ERROR: imgui-platform-kit Release build failed. & exit /b 1 )
-    cmake --install "%IPK_SRC%\build-release" --config Release
-    if errorlevel 1 ( echo ERROR: imgui-platform-kit Release install failed. & exit /b 1 )
-) else (
-    echo imgui-platform-kit Release already installed, skipping.
-)
-
-if not exist "%IPK_INSTALL%\debug" (
-    echo Building imgui-platform-kit Debug...
-    cmake -S "%IPK_SRC%\imgui-platform-kit" -B "%IPK_SRC%\build-debug" ^
-        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
-        -DCMAKE_INSTALL_PREFIX="%IPK_INSTALL%\debug" ^
-        -DIMGUI_PLATFORM_KIT_BUILD_TESTS=OFF
-    if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug configure failed. & exit /b 1 )
-    cmake --build "%IPK_SRC%\build-debug" --config Debug --parallel
-    if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug build failed. & exit /b 1 )
-    cmake --install "%IPK_SRC%\build-debug" --config Debug
-    if errorlevel 1 ( echo ERROR: imgui-platform-kit Debug install failed. & exit /b 1 )
-) else (
-    echo imgui-platform-kit Debug already installed, skipping.
+git -C "%VCPKG_ROOT%" cat-file -e %BASELINE% 2>nul
+if errorlevel 1 (
+    echo vcpkg at %VCPKG_ROOT% does not have the pinned baseline %BASELINE% yet, fetching it...
+    set "SHALLOW="
+    for /f %%S in ('git -C "%VCPKG_ROOT%" rev-parse --is-shallow-repository 2^>nul') do set "SHALLOW=%%S"
+    if "!SHALLOW!"=="true" (
+        git -C "%VCPKG_ROOT%" fetch --unshallow origin
+    ) else (
+        git -C "%VCPKG_ROOT%" fetch origin
+    )
+    if errorlevel 1 (
+        echo ERROR: could not fetch vcpkg commit %BASELINE% into %VCPKG_ROOT%.
+        echo VCPKG_ROOT must be a git clone of https://github.com/microsoft/vcpkg that you can write to.
+        exit /b 1
+    )
 )
 
 echo.
 echo Setup complete. Run scripts\build.bat to build the project.
+echo The first build installs every dependency from vcpkg.json, which takes a while.
 exit /b 0

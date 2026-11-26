@@ -17,9 +17,6 @@ setlocal EnableDelayedExpansion
 
 set SCRIPT_DIR=%~dp0
 set PROJECT_ROOT=%SCRIPT_DIR%..
-set IPK_INSTALL=%PROJECT_ROOT%\deps\ipk-install
-set IPK_RELEASE=%IPK_INSTALL%\release
-set IPK_DEBUG=%IPK_INSTALL%\debug
 
 :: Check if the environment variable is set. setup.bat persists VCPKG_ROOT with setx,
 :: which only reaches shells opened afterwards, so the very first build in the same
@@ -123,8 +120,7 @@ if /i not "%CONFIG%"=="debug" (
     REM Run CMake (Release)
     cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-release" ^
         -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
-        -DCMAKE_BUILD_TYPE=Release ^
-        -DCMAKE_PREFIX_PATH="%IPK_RELEASE%"
+        -DCMAKE_BUILD_TYPE=Release
     if errorlevel 1 exit /b 1
 
     REM Build Release
@@ -145,8 +141,7 @@ if /i not "%CONFIG%"=="release" (
     cmake -G Ninja -S "%PROJECT_ROOT%" -B "%PROJECT_ROOT%\build\x64-debug" ^
         -DCMAKE_TOOLCHAIN_FILE="%PROJECT_VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
         -DCMAKE_BUILD_TYPE=Debug ^
-        -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded ^
-        -DCMAKE_PREFIX_PATH="%IPK_DEBUG%"
+        -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
     if errorlevel 1 exit /b 1
 
     REM Build Debug
