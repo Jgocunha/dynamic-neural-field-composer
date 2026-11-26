@@ -117,7 +117,7 @@ Requirements</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><b>macOS</b>   </td><td class="markdownTableBodyNone">Xcode Command Line Tools, CMake 3.20+   </td></tr>
 </table>
-<p>Everything else — vcpkg, all library dependencies (<code>imgui</code>, <code>implot</code>, <code>imgui-node-editor</code>, <code>nlohmann-json</code>, <code>imgui-platform-kit</code>) — is installed automatically by the setup scripts.</p>
+<p>Everything else is installed automatically: the setup script provides vcpkg, and the first build installs every library dependency (<code>imgui</code>, <code>implot</code>, <code>imgui-node-editor</code>, <code>nlohmann-json</code>, <code>fftw3</code>, <code>imgui-platform-kit</code>) from <a href="dynamic-neural-field-composer/vcpkg.json"><code>vcpkg.json</code></a>, at versions pinned there.</p>
 <h2><a class="anchor" id="autotoc_md6"></a>
 Building</h2>
 <p>Run setup once on a fresh machine, then build whenever you want to compile.</p>
