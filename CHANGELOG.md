@@ -19,8 +19,8 @@ All notable changes to this project will be documented in this file.
   vcpkg's imgui 1.93.0, `NodeGraphWindowTest.RenderWithCoupled2DElements` aborts on ImGui's
   16-bit vertex-index assertion in Debug and sanitizer builds.
 - `scripts/setup.sh` and `scripts/setup.bat` now only provide vcpkg: they clone it if
-  `VCPKG_ROOT` is unset, as before, and fetch the pinned baseline commit if that clone does
-  not have it yet (unshallowing a shallow clone). `build.sh`, `build_macos.sh` and
+  `VCPKG_ROOT` is unset, as before, fetch the full history of a shallow clone, and stop with
+  the command to update a clone that is older than the pinned baseline. `build.sh`, `build_macos.sh` and
   `build.bat` no longer pass `CMAKE_PREFIX_PATH`.
 - CI runner images are pinned (`ubuntu-24.04`, `windows-2025-vs2026`, `macos-26`) instead of
   `*-latest`. `ubuntu-latest` moved to 26.04, whose clang-tidy 21 adds checks that fail
@@ -32,17 +32,19 @@ All notable changes to this project will be documented in this file.
   covers `fftw3` and `benchmark` as well.
 
 ### Migrating from 2.x
-1. `VCPKG_ROOT` must be a **git clone** of vcpkg, since vcpkg reads the pinned versions from
-   its git history. A vcpkg unpacked from a release tarball no longer works. Run
-   `scripts/setup.sh` (or `setup.bat`) once; it fetches the baseline commit into your clone.
+1. `VCPKG_ROOT` must be a **git clone** of vcpkg at the pinned baseline or newer, since vcpkg
+   reads the pinned versions from its git history and checked-out files. A vcpkg unpacked
+   from a release tarball no longer works. Run `scripts/setup.sh` (or `setup.bat`) once; it
+   unshallows a shallow clone and tells you how to update one that is too old.
 2. Delete `deps/imgui-platform-kit/`, `deps/ipk-install/` and your existing build trees,
-   then build again. Packages installed into vcpkg's own `installed/` tree for this project
-   are no longer used.
+   then build again. A build tree configured before 3.0.0 has vcpkg's classic mode cached
+   and would silently skip the manifest. Packages installed into vcpkg's own `installed/`
+   tree for this project are no longer used.
 3. Drop `-DCMAKE_PREFIX_PATH=deps/ipk-install` from any CMake command line or preset of
    your own.
 4. Projects that link the installed library must provide the same dependencies at the same
    versions: give them a `vcpkg.json` with the same dependencies and `builtin-baseline`,
-   copy `ports/imgui-platform-kit/`, and build dnf-composer with
+   copy `ports/imgui-platform-kit/` and `vcpkg-configuration.json`, and build dnf-composer with
    `-DVCPKG_MANIFEST_DIR=<that project>`. See *Getting Started → Installing the library*.
 
 ## [2.12.1] - 2026-10-09

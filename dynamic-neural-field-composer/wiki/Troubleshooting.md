@@ -24,16 +24,16 @@ If you set `VCPKG_ROOT` manually instead, make sure it's exported/persisted in t
 
 ### Build fails after pulling new changes / after switching branches
 
-A change to `vcpkg.json` or `ports/` (a new dependency, or a newer `builtin-baseline`) is picked up on the next configure, which installs the new versions into the build tree's `vcpkg_installed/`. If the new baseline is newer than your vcpkg clone, that configure fails with an error about the baseline commit; re-run the setup script, which fetches it. It is idempotent, so it's safe to re-run whenever a build starts failing for no obvious reason:
+A change to `vcpkg.json` or `ports/` (a new dependency, or a newer `builtin-baseline`) is picked up on the next configure, which installs the new versions into the build tree's `vcpkg_installed/`. If the new baseline is newer than your vcpkg clone, that configure fails with one of the errors below; re-run the setup script, which prints the command that updates the clone. It is idempotent, so it's safe to re-run whenever a build starts failing for no obvious reason:
 
 ```bash
 scripts\setup.bat   # or scripts/setup.sh
 scripts\build.bat   # or scripts/build.sh / build_macos.sh
 ```
 
-### `error: while checking out baseline from commit '...', failed to git show versions/baseline.json`
+### `error: while checking out baseline from commit '...', failed to git show versions/baseline.json` or `error: no version database entry for <port> at <version>`
 
-vcpkg reads the pinned versions from the git history of `VCPKG_ROOT`. That fails if `VCPKG_ROOT` is a shallow clone, a clone older than the pinned baseline, or not a git clone at all (a vcpkg unpacked from a release tarball). Run the setup script, which fetches the baseline into a git clone. If `VCPKG_ROOT` is a tarball install or a directory you cannot write to, point it at a fresh clone instead:
+vcpkg reads the pinned versions from the git history of `VCPKG_ROOT` and from the files it has checked out. That fails if `VCPKG_ROOT` is a shallow clone, a clone older than the pinned baseline, or not a git clone at all (a vcpkg unpacked from a release tarball). Run the setup script: it fetches the full history of a shallow clone, and for a clone older than the baseline it stops and prints the `git pull` and bootstrap commands that update it. If `VCPKG_ROOT` is a tarball install or a directory you cannot write to, point it at a fresh clone instead:
 
 ```bash
 git clone https://github.com/microsoft/vcpkg.git "$HOME/vcpkg"

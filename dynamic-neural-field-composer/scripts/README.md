@@ -19,7 +19,7 @@ chmod +x scripts/setup.sh
 
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `$HOME/vcpkg`, bootstraps it, and prints the line to add to your shell profile to persist the variable
-2. Checks that the vcpkg in `VCPKG_ROOT` contains the commit pinned as `builtin-baseline` in `vcpkg.json`, and fetches it (unshallowing a shallow clone) if not
+2. Fetches the full history if the vcpkg in `VCPKG_ROOT` is a shallow clone, then checks that it is at the commit pinned as `builtin-baseline` in `vcpkg.json` or newer, and stops with the command to update it if not
 
 Idempotent — safe to re-run; already-completed steps are skipped.
 
@@ -31,7 +31,7 @@ scripts\setup.bat
 
 What it does:
 1. If `VCPKG_ROOT` is not set, clones vcpkg to `C:\tools\vcpkg`, bootstraps it, and persists `VCPKG_ROOT` permanently via `setx`
-2. Checks that the vcpkg in `VCPKG_ROOT` contains the commit pinned as `builtin-baseline` in `vcpkg.json`, and fetches it (unshallowing a shallow clone) if not
+2. Fetches the full history if the vcpkg in `VCPKG_ROOT` is a shallow clone, then checks that it is at the commit pinned as `builtin-baseline` in `vcpkg.json` or newer, and stops with the command to update it if not
 
 Idempotent — safe to re-run; already-completed steps are skipped.
 
