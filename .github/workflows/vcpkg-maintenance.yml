@@ -38,23 +38,21 @@ jobs:
             --description "Routine maintenance tasks" \
             --force 2>/dev/null || true
 
-          # Reads a port's vcpkg.json on stdin; prints version-semver, version-date or version.
+          # Reads a port's vcpkg.json on stdin; prints its full version the way vcpkg writes it,
+          # with a #<port-version> suffix when the port has been revised (e.g. 3.12.0#2).
           port_version() {
             jq -r '
-              if .["version-semver"] then .["version-semver"]
-              elif .["version-date"] then .["version-date"]
-              elif .version then .version
-              else "unknown"
-              end'
+              (.["version-semver"] // .["version-date"] // .version // .["version-string"] // "unknown")
+              + (if (.["port-version"] // 0) > 0 then "#\(.["port-version"])" else "" end)'
           }
 
           # Build a Markdown table of pinned and latest port versions
-          TABLE="| Package | Pinned | Latest | Port-version | Notes |\n|---|---|---|---|---|\n"
+          TABLE="| Package | Pinned | Latest | Notes |\n|---|---|---|---|\n"
 
           for pkg in $PACKAGES; do
             PORT_JSON="$VCPKG_DIR/ports/$pkg/vcpkg.json"
             if [ ! -f "$PORT_JSON" ]; then
-              TABLE="${TABLE}| \`$pkg\` | — | not found | — | Port directory missing in cloned vcpkg |\n"
+              TABLE="${TABLE}| \`$pkg\` | — | not found | Port directory missing in cloned vcpkg |\n"
               continue
             fi
 
@@ -62,19 +60,12 @@ jobs:
             PINNED=$(git -C "$VCPKG_DIR" show "$BASELINE:ports/$pkg/vcpkg.json" 2>/dev/null | port_version)
             PINNED=${PINNED:-not found}
 
-            PORT_VERSION=$(jq -r '.["port-version"] // 0' "$PORT_JSON")
-
-            # Flag non-zero port-version (port patch without upstream version change)
             NOTE=""
-            if [ "$PORT_VERSION" != "0" ] && [ "$PORT_VERSION" != "null" ]; then
-              NOTE="port patch applied (port-version: $PORT_VERSION)"
-            fi
-
             if [ "$PINNED" != "$VERSION" ]; then
-              NOTE="${NOTE:+$NOTE; }newer version available"
+              NOTE="newer version available"
             fi
 
-            TABLE="${TABLE}| \`$pkg\` | $PINNED | $VERSION | $PORT_VERSION | $NOTE |\n"
+            TABLE="${TABLE}| \`$pkg\` | $PINNED | $VERSION | $NOTE |\n"
           done
 
           # Compose issue body
@@ -84,7 +75,7 @@ jobs:
           *Pinned* is what that commit provides; *Latest* is what vcpkg HEAD offers today.\n\n\
           ### Package versions\n\n%s\n\
           ### What to look for\n\n\
-          - **Non-zero port-version**: the port was patched without an upstream release — usually safe, but worth noting.\n\
+          - **A \`#N\` suffix** is a port revision: vcpkg patched the port without an upstream release — usually safe, but worth noting.\n\
           - **Major version bumps**: may introduce breaking API changes. Consider running a manual integration test before the next release.\n\n\
           ### Recommended action\n\n\
           To adopt newer versions, open a PR that sets \`builtin-baseline\` to a newer vcpkg commit and let CI verify it.\n\

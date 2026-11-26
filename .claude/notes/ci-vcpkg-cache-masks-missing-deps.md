@@ -16,7 +16,14 @@ Since 3.0.0 the dependencies are a vcpkg manifest (`vcpkg.json`), and CI caches 
   `<build tree>/vcpkg_installed/`. Nothing outside the manifest can be present.
 - Binary packages are zip files named by their ABI hash (port files, triplet, compiler,
   CMake version, ...). A restored older cache only supplies packages whose hash matches;
-  anything else is rebuilt. Restoring can save time but never change the result.
+  anything else is rebuilt. Restoring cannot change which packages, or which versions,
+  end up installed.
+- It can still hide a missing **system** prerequisite. A cached package is not rebuilt, so
+  the build tools its port needs are never run. `pthread-stubs` needs `autoconf`,
+  `autoconf-archive`, `automake` and `libtool` from apt; with a warm cache a workflow
+  that lacks them passes, and it fails as soon as the cache is cold or the package's hash
+  changes. That is how imgui-platform-kit's Linux workflows failed on their first
+  manifest-mode run.
 
 Mechanics (`.github/actions/setup-vcpkg/action.yml`): restore with a never-matching
 `run_id` key plus the `vcpkg-bin-<os>-<triplet>-` prefix (newest wins); after configure,
@@ -26,4 +33,7 @@ update changes the ABI hash) produce a new key. Old archives are never pruned - 
 grows until GitHub evicts it, which only costs one full rebuild.
 
 When a dependency failure shows up on an unrelated commit now, suspect the runner image
-(apt packages vcpkg needs, compiler) rather than the cache: the vcpkg side is pinned.
+(apt packages vcpkg needs, compiler) first: the vcpkg side is pinned. Check the "Restore
+vcpkg binary cache" step for a miss, and look in the vcpkg output for the port that was
+built rather than restored; that port is the one whose prerequisites are missing. To
+reproduce locally, install with an empty cache: `vcpkg install --binarysource=clear`.
