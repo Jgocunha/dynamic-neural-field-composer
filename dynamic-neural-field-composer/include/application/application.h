@@ -88,6 +88,8 @@ namespace dnf_composer
 			const std::shared_ptr<Visualization>& visualization = nullptr);
 
 		/// @brief Initialize the GUI and all registered windows. Call once before @c step().
+		/// @throws std::runtime_error on Linux and macOS if the GUI cannot open its window,
+		///         for example because there is no display.
 		void init() const;
 
 		/// @brief Advance the simulation by one step and render all windows.

@@ -4,16 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### CI
-- Started each smoke-run Xvfb with `-noreset`. On a fresh checkout, imgui-platform-kit's
-  `WindowParameters` opens one X connection to read the monitor size and closes it, and the
-  window opens on a second one. Closing the first left Xvfb with no clients, so it reset,
-  and a second connection that arrived during the reset was dropped: GLFW failed with
-  "X11: Failed to open display" and the example segfaulted. This failed the Linux Release
-  job on the 3.0.0 merge (`example_boost_detection_2d`) and once on its PR
-  (`example_detection_instability`).
-
-## [3.0.0] - 2026-11-26
+## [3.0.0] - 2026-11-27
 
 ### Changed
 - **Breaking: every dependency is now declared in a vcpkg manifest and pinned.**
@@ -23,10 +14,12 @@ All notable changes to this project will be documented in this file.
   3.3.11, gtest 1.18.0, benchmark 1.9.5). The first configure of a build tree installs them
   into `<build tree>/vcpkg_installed/`. `imgui-platform-kit` is no longer cloned and built
   by the setup scripts: it is a vcpkg overlay port (`ports/imgui-platform-kit/`) pinned to
-  commit `27ada91`, the revision every build has used so far. Until now vcpkg and the kit
-  both tracked HEAD, so an upstream release could break a commit that changed nothing: on
-  vcpkg's imgui 1.93.0, `NodeGraphWindowTest.RenderWithCoupled2DElements` aborts on ImGui's
-  16-bit vertex-index assertion in Debug and sanitizer builds.
+  commit `7e079db`, release 2.1.0 plus the `initialize()` fix below. 2.1.0 is the first kit
+  release that builds as a vcpkg port on Windows, where vcpkg clears `VCPKG_ROOT` from the
+  port's environment. Until now vcpkg and the kit both tracked HEAD, so an upstream release
+  could break a commit that changed nothing: on vcpkg's imgui 1.93.0,
+  `NodeGraphWindowTest.RenderWithCoupled2DElements` aborts on ImGui's 16-bit vertex-index
+  assertion in Debug and sanitizer builds.
 - `scripts/setup.sh` and `scripts/setup.bat` now only provide vcpkg: they clone it if
   `VCPKG_ROOT` is unset, as before, fetch the full history of a shallow clone, and stop with
   the command to update a clone that is older than the pinned baseline. `build.sh`, `build_macos.sh` and
@@ -39,6 +32,21 @@ All notable changes to this project will be documented in this file.
   manifest does not declare (see the 2.12.1 entry below).
 - The monthly vcpkg report lists each package's pinned version next to the latest one, and
   covers `fftw3` and `benchmark` as well.
+
+### Fixed
+- On Linux and macOS, `Application::init()` now throws `std::runtime_error` when the GUI
+  cannot open its window, instead of the first `step()` segfaulting. imgui-platform-kit's
+  `UserInterface::initialize()` used to return without a window when GLFW could not start
+  or create one; from `7e079db` it throws instead.
+
+### CI
+- Started each smoke-run Xvfb with `-noreset`. On a fresh checkout, imgui-platform-kit's
+  `WindowParameters` opens one X connection to read the monitor size and closes it, and the
+  window opens on a second one. Closing the first left Xvfb with no clients, so it reset,
+  and a second connection that arrived during the reset was dropped: GLFW failed with
+  "X11: Failed to open display" and the example segfaulted. This failed the Linux Release
+  job on the 3.0.0 merge (`example_boost_detection_2d`) and once on its PR
+  (`example_detection_instability`).
 
 ### Migrating from 2.x
 1. `VCPKG_ROOT` must be a **git clone** of vcpkg at the pinned baseline or newer, since vcpkg

@@ -193,7 +193,7 @@ jobs:
           # WindowParameters connects once to read the monitor size and disconnects, and the
           # window then opens on a second connection. Without -noreset that disconnect starts
           # a server reset, and a second connection that lands during it is dropped: GLFW
-          # reports "X11: Failed to open display" and the example segfaults. Only the first
+          # reports "X11: Failed to open display" and the example fails. Only the first
           # batch of examples runs before that file exists, so only it is exposed.
           #
           # -P $(nproc) caps parallelism to the runner's core count; -L1 runs one
