@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- The prebuilt release binaries now start on older systems. The Linux archive needed
+  glibc 2.38 (Ubuntu 24.04) and stopped with `version 'GLIBC_2.38' not found`; it is now
+  built in an Ubuntu 22.04 container with libstdc++ linked statically, so it runs on glibc
+  2.35 or newer. The macOS archive only ran on macOS 26, the runner's own version; it and
+  its vcpkg dependencies now target macOS 13.3 through the `arm64-osx-portable` overlay
+  triplet. The Windows archive was missing `fftw3.dll` and the MSVC runtime; on Windows,
+  `cmake --install` now installs both next to the executables. Each release job fails if
+  its binaries need more than these minimums (#204).
+
 ## [3.0.0] - 2026-11-27
 
 ### Changed

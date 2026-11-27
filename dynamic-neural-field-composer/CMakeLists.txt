@@ -423,6 +423,18 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
 # Install sample data (simulation JSONs, coupling weights)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/" DESTINATION data)
 
+# Windows loads an executable's DLLs from the executable's own directory. vcpkg's
+# x64-windows triplet builds FFTW3 as a DLL, and not every machine has the MSVC runtime,
+# so both are installed next to the executables.
+if(WIN32)
+    get_target_property(DNF_FFTW3_TYPE FFTW3::fftw3 TYPE)
+    if(DNF_FFTW3_TYPE STREQUAL "SHARED_LIBRARY")
+        install(FILES $<TARGET_FILE:FFTW3::fftw3> DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
+    endif()
+    set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${DNF_COMPOSER_RUNTIME_INSTALL_DIR})
+    include(InstallRequiredSystemLibraries)
+endif()
+
 install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION ${DNF_COMPOSER_CMAKE_CONFIG_INSTALL_DIR}
     FILE ${CMAKE_PROJECT_NAME}-config.cmake
 )
