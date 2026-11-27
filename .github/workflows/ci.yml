@@ -188,6 +188,14 @@ jobs:
           # -e /dev/stdout surfaces Xvfb's own diagnostics. xvfb-run defaults ERRORFILE to
           # /dev/null, which is why the :128 failure gave us no reason to work from.
           #
+          # -noreset keeps Xvfb from resetting when its last client disconnects. Until a
+          # first example has exited and saved imgui_window_parameters.ini here, the kit's
+          # WindowParameters connects once to read the monitor size and disconnects, and the
+          # window then opens on a second connection. Without -noreset that disconnect starts
+          # a server reset, and a second connection that lands during it is dropped: GLFW
+          # reports "X11: Failed to open display" and the example segfaults. Only the first
+          # batch of examples runs before that file exists, so only it is exposed.
+          #
           # -P $(nproc) caps parallelism to the runner's core count; -L1 runs one
           # "display binary" pair per xargs invocation so output from different binaries
           # doesn't interleave mid-line (example target names are fixed in
@@ -202,7 +210,7 @@ jobs:
             [ -x "$bin" ] || exit 0
             echo "::group::$bin"
             if xvfb-run -a -n "$display" -e /dev/stdout \
-                 --server-args="-screen 0 1280x1024x24" "./$bin"; then
+                 --server-args="-screen 0 1280x1024x24 -noreset" "./$bin"; then
               echo "OK: $bin"
             else
               status=$?

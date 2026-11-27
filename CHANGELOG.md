@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### CI
+- Started each smoke-run Xvfb with `-noreset`. On a fresh checkout, imgui-platform-kit's
+  `WindowParameters` opens one X connection to read the monitor size and closes it, and the
+  window opens on a second one. Closing the first left Xvfb with no clients, so it reset,
+  and a second connection that arrived during the reset was dropped: GLFW failed with
+  "X11: Failed to open display" and the example segfaulted. This failed the Linux Release
+  job on the 3.0.0 merge (`example_boost_detection_2d`) and once on its PR
+  (`example_detection_instability`).
+
 ## [3.0.0] - 2026-11-26
 
 ### Changed
