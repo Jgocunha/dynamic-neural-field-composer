@@ -461,6 +461,12 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Initialize the GUI and all registered windows. Call once before <code><a class="el" href="classdnf__composer_1_1Application.html#a0cafecfad7e6418c678c5196ae9e8fbd" title="Advance the simulation by one step and render all windows.">step()</a></code>. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>on Linux and macOS if the GUI cannot open its window, for example because there is no display. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
