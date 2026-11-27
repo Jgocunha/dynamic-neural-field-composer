@@ -4,18 +4,13 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO Jgocunha/imgui-platform-kit
-    REF 27ada9152ea705e683de2b31c5986c536e5354e5
-    SHA512 4b334ab7bcdaebf0729b8729e92f2e7203350fb2df6481c0feda5412e7a1a2c0fe934f11a9cd0600c71f78fd00b277173a8e2f835267673b542cb1569aec2b84
+    REF 7e079db016b7328f5db4b5f4ad10996949afccd7
+    SHA512 d86085d0fa77d7099ae897b60b1241c29547cf14684190dd75c652a19f373be2b38e85ca5cef0d42feb6763b1c25cef5dd4f90dca7f07e9377fc15bd58d7b488
     HEAD_REF main
 )
 
 # The library exports no symbols, so it can only be linked statically.
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
-
-# The kit's CMakeLists stops unless VCPKG_ROOT is set in the environment, and vcpkg
-# clears that variable for port builds on Windows. Kit 2.1.0 and later accept vcpkg's
-# toolchain instead, so this line can go once REF is at one of them.
-set(ENV{VCPKG_ROOT} "${VCPKG_ROOT_DIR}")
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}/imgui-platform-kit"

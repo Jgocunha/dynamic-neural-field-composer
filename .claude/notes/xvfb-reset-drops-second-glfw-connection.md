@@ -15,12 +15,16 @@ Failed to initialize GLFW.
 Segmentation fault (core dumped)
 ```
 
-The segfault comes from the kit: `UserInterface::initialize` returns without a window when
-`glfwInit` fails, and `render()` uses the null window.
+That segfault came from imgui-platform-kit before `7e079db`: `UserInterface::initialize`
+returned without a window when `glfwInit` failed, and `render()` used the null window. From
+`7e079db` (the port's pin since 3.0.0), `initialize` throws `std::runtime_error("Failed to
+initialize GLFW.")` instead, so the example ends with that uncaught exception.
 
 Signs it is this and not a display-number clash:
-- The message is the kit's `std::cerr` line, not the exception `WindowParameters` throws, so the
-  first connection to the same display worked.
+- "GUI parameters set successfully." is logged before the failure. dnf-composer logs it after
+  `WindowParameters` has connected and read the monitor, so the first connection to the same
+  display worked. (Before `7e079db`, the failure message itself also told them apart: it was
+  the kit's `std::cerr` line, not the exception `WindowParameters` throws.)
 - Each Xvfb compiles its keymap about twice (count "XKEYBOARD keymap compiler" in the log), once
   at startup and once per reset.
 - It only hits examples that start before any example has exited and written the ini file.
