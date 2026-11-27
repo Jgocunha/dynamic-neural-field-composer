@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.0.1] - 2026-11-27
+
 ### Fixed
 - The prebuilt release binaries now start on older systems. The Linux archive needed
   glibc 2.38 (Ubuntu 24.04) and stopped with `version 'GLIBC_2.38' not found`; it is now
