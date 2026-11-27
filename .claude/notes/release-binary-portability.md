@@ -35,3 +35,7 @@ Checking an archive by hand, without running it:
 - Linux: `objdump -T <bin> | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1`
 - Windows: `objdump -p <exe> | grep 'DLL Name'` (or `dumpbin -dependents`)
 - macOS: `otool -l <bin> | grep minos`
+
+To try the release jobs without tagging, run the Release workflow manually (Actions ->
+Release -> Run workflow, on any branch). It builds, checks and uploads the three archives as
+workflow artifacts named `v0.0.0`; the `create-release` job only runs for tags.

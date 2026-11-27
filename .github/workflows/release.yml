@@ -4,9 +4,15 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  # Builds and checks every archive from any branch without publishing a release.
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+env:
+  # A manual run's ref is a branch name, which is neither a version nor a valid file name.
+  RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'v0.0.0' }}
 
 jobs:
   release-windows:
@@ -44,7 +50,7 @@ jobs:
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
         run: |
-          VERSION="${{ github.ref_name }}"
+          VERSION="${{ env.RELEASE_TAG }}"
           VERSION="${VERSION#v}"
           MAJOR=$(echo $VERSION | cut -d. -f1)
           MINOR=$(echo $VERSION | cut -d. -f2)
@@ -98,14 +104,14 @@ jobs:
       - name: Create release archive
         run: |
           cd "$INSTALL_PREFIX"
-          7z a "$WORKSPACE/dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip" .
+          7z a "$WORKSPACE/dynamic-neural-field-composer-${{ env.RELEASE_TAG }}-windows-x64.zip" .
 
       # ── Upload artifact for release job ───────────────────────────────────
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-x64
-          path: dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip
+          path: dynamic-neural-field-composer-${{ env.RELEASE_TAG }}-windows-x64.zip
 
   release-linux:
     runs-on: ubuntu-24.04
@@ -164,7 +170,7 @@ jobs:
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
         run: |
-          VERSION="${{ github.ref_name }}"
+          VERSION="${{ env.RELEASE_TAG }}"
           VERSION="${VERSION#v}"
           MAJOR=$(echo $VERSION | cut -d. -f1)
           MINOR=$(echo $VERSION | cut -d. -f2)
@@ -217,14 +223,14 @@ jobs:
       - name: Create release archive
         run: |
           cd $INSTALL_PREFIX
-          tar -czf "$GITHUB_WORKSPACE/dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz" .
+          tar -czf "$GITHUB_WORKSPACE/dynamic-neural-field-composer-${{ env.RELEASE_TAG }}-linux-x64.tar.gz" .
 
       # ── Upload artifact for release job ───────────────────────────────────
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-x64
-          path: dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz
+          path: dynamic-neural-field-composer-${{ env.RELEASE_TAG }}-linux-x64.tar.gz
 
   release-macos:
     runs-on: macos-26
@@ -252,7 +258,7 @@ jobs:
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
         run: |
-          VERSION="${{ github.ref_name }}"
+          VERSION="${{ env.RELEASE_TAG }}"
           VERSION="${VERSION#v}"
           MAJOR=$(echo $VERSION | cut -d. -f1)
           MINOR=$(echo $VERSION | cut -d. -f2)
@@ -305,18 +311,19 @@ jobs:
       - name: Create release archive
         run: |
           cd $INSTALL_PREFIX
-          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz .
+          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ env.RELEASE_TAG }}-macos-arm64.tar.gz .
 
       # ── Upload artifact for release job ───────────────────────────────────
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-arm64
-          path: dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz
+          path: dynamic-neural-field-composer-${{ env.RELEASE_TAG }}-macos-arm64.tar.gz
 
   # ── GitHub Release (after all builds succeed) ──────────────────────────
   create-release:
     needs: [release-windows, release-linux, release-macos]
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-24.04
 
     permissions:
