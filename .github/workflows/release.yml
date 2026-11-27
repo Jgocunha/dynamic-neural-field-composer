@@ -294,7 +294,7 @@ jobs:
         run: |
           shopt -s nullglob
           status=0
-          for file in "$INSTALL_PREFIX"/bin/* "$INSTALL_PREFIX"/lib/*.a "build/vcpkg_installed/$VCPKG_DEFAULT_TRIPLET/lib/"*.a; do
+          for file in "$INSTALL_PREFIX"/bin/* $(find "$INSTALL_PREFIX/lib" "build/vcpkg_installed/$VCPKG_DEFAULT_TRIPLET/lib" -name '*.a'); do
             for minos in $(otool -l "$file" | awk '$1 == "minos" { print $2 }' | sort -u); do
               if awk -v found="$minos" -v target="$MACOSX_DEPLOYMENT_TARGET" 'BEGIN {
                    split(found, f, "."); split(target, t, ".")
