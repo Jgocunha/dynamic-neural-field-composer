@@ -72,6 +72,28 @@ jobs:
       - name: Install
         run: cmake --install build --config Release --prefix "$INSTALL_PREFIX"
 
+      # Every DLL an executable imports must ship in bin/ unless Windows itself provides
+      # it. The VC++ runtime sits in the runner's System32 but not on every user's
+      # machine, so it counts as shipped only when it is in bin/.
+      - name: Check executables find every DLL they import
+        run: |
+          vswhere="/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"
+          dumpbin="$(cygpath -u "$("$vswhere" -latest -find 'VC\Tools\MSVC\**\bin\Hostx64\x64\dumpbin.exe' | head -1 | tr -d '\r')")"
+          status=0
+          for exe in "$INSTALL_PREFIX"/bin/*.exe; do
+            for dll in $("$dumpbin" -nologo -dependents "$exe" | tr -d '\r' | awk '$1 ~ /\.[dD][lL][lL]$/ { print $1 }'); do
+              [ -f "$INSTALL_PREFIX/bin/$dll" ] && continue
+              case "${dll,,}" in
+                api-ms-win-*|ext-ms-win-*) continue ;;
+                msvcp*|vcruntime*|concrt*|vccorlib*) ;;
+                *) [ -f "/c/Windows/System32/$dll" ] && continue ;;
+              esac
+              echo "::error::$(basename "$exe") imports $dll, which is not in bin/"
+              status=1
+            done
+          done
+          exit $status
+
       # ── Package ────────────────────────────────────────────────────────────
       - name: Create release archive
         run: |
@@ -87,34 +109,50 @@ jobs:
 
   release-linux:
     runs-on: ubuntu-24.04
+    # A binary needs at least the glibc it was linked against, so the build runs on the
+    # oldest distribution it supports: Ubuntu 22.04, glibc 2.35. A container rather than
+    # the ubuntu-22.04 runner image, which GitHub retires in 2027.
+    container: ubuntu:22.04
 
     env:
-      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      DEBIAN_FRONTEND: noninteractive
       VCPKG_DEFAULT_TRIPLET: x64-linux
-      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
-      INSTALL_PREFIX: ${{ github.workspace }}/install
+      CC: gcc-13
+      CXX: g++-13
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       # ── System dependencies ────────────────────────────────────────────────
+      # Before checkout, so actions/checkout finds git and clones instead of downloading
+      # a tarball. gcc-13 comes from the toolchain PPA; 22.04 itself stops at gcc-12.
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          apt-get update
+          apt-get install -y software-properties-common
+          add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          apt-get update
+          apt-get install -y \
             gcc-13 g++-13 \
+            make cmake git curl zip unzip tar zstd jq pkg-config python3 \
+            autoconf autoconf-archive automake libtool \
             libgl1-mesa-dev \
             libglu1-mesa-dev \
-            libglfw3-dev \
             libxrandr-dev \
             libxinerama-dev \
             libxcursor-dev \
             libxi-dev \
             libxext-dev \
-            autoconf-archive
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+            xorg-dev
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # In a container job ${{ github.workspace }} is the host's path; $GITHUB_WORKSPACE
+      # is where the workspace is mounted inside the container.
+      - name: Set workspace paths
+        run: |
+          echo "VCPKG_ROOT=$GITHUB_WORKSPACE/vcpkg" >> "$GITHUB_ENV"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=$GITHUB_WORKSPACE/vcpkg-binary-cache" >> "$GITHUB_ENV"
+          echo "INSTALL_PREFIX=$GITHUB_WORKSPACE/install" >> "$GITHUB_ENV"
 
       # ── vcpkg ─────────────────────────────────────────────────────────────
       - name: Set up vcpkg
@@ -137,6 +175,7 @@ jobs:
                 -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
                 -DCMAKE_CXX_COMPILER=g++-13 \
                 -DCMAKE_C_COMPILER=gcc-13 \
+                "-DCMAKE_EXE_LINKER_FLAGS=-static-libstdc++ -static-libgcc" \
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
@@ -156,11 +195,29 @@ jobs:
       - name: Install
         run: cmake --install build
 
+      # A newer glibc symbol or a shared libstdc++ would stop the binaries starting on
+      # Ubuntu 22.04, whose libstdc++ predates gcc-13's.
+      - name: Check binaries run on glibc 2.35
+        run: |
+          status=0
+          for binary in "$INSTALL_PREFIX"/bin/*; do
+            newest=$(objdump -T "$binary" | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1)
+            if [ "$(printf '%s\nGLIBC_2.35\n' "$newest" | sort -V | tail -1)" != "GLIBC_2.35" ]; then
+              echo "::error::$binary needs $newest, newer than Ubuntu 22.04's GLIBC_2.35"
+              status=1
+            fi
+            if objdump -p "$binary" | grep -q 'NEEDED.*libstdc++'; then
+              echo "::error::$binary links libstdc++ dynamically instead of statically"
+              status=1
+            fi
+          done
+          exit $status
+
       # ── Package ────────────────────────────────────────────────────────────
       - name: Create release archive
         run: |
           cd $INSTALL_PREFIX
-          tar -czf ${{ github.workspace }}/dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz .
+          tar -czf "$GITHUB_WORKSPACE/dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz" .
 
       # ── Upload artifact for release job ───────────────────────────────────
       - name: Upload Linux artifact
@@ -174,7 +231,10 @@ jobs:
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-      VCPKG_DEFAULT_TRIPLET: arm64-osx
+      # The triplet pins the dependencies' minimum macOS and this variable pins the
+      # project's (CMake reads it into CMAKE_OSX_DEPLOYMENT_TARGET); keep them equal.
+      VCPKG_DEFAULT_TRIPLET: arm64-osx-portable
+      MACOSX_DEPLOYMENT_TARGET: "13.3"
       VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-binary-cache
       INSTALL_PREFIX: ${{ github.workspace }}/install
 
@@ -187,7 +247,7 @@ jobs:
         id: vcpkg
         uses: ./.github/actions/setup-vcpkg
         with:
-          triplet: arm64-osx
+          triplet: arm64-osx-portable
 
       # ── Main project ───────────────────────────────────────────────────────
       - name: Configure CMake
@@ -201,6 +261,8 @@ jobs:
                 -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+                -DVCPKG_TARGET_TRIPLET=$VCPKG_DEFAULT_TRIPLET \
+                -DVCPKG_OVERLAY_TRIPLETS=$GITHUB_WORKSPACE/.github/vcpkg-triplets \
                 -DDNF_COMPOSER_VERSION_MAJOR=$MAJOR \
                 -DDNF_COMPOSER_VERSION_MINOR=$MINOR \
                 -DDNF_COMPOSER_VERSION_PATCH=$PATCH \
@@ -219,6 +281,25 @@ jobs:
 
       - name: Install
         run: cmake --install build
+
+      # The static libraries are checked as well as the executables: an object built for
+      # a newer macOS only warns at link time, then fails at run time on older systems.
+      - name: Check binaries run on macOS ${{ env.MACOSX_DEPLOYMENT_TARGET }}
+        run: |
+          shopt -s nullglob
+          status=0
+          for file in "$INSTALL_PREFIX"/bin/* "$INSTALL_PREFIX"/lib/*.a "build/vcpkg_installed/$VCPKG_DEFAULT_TRIPLET/lib/"*.a; do
+            for minos in $(otool -l "$file" | awk '$1 == "minos" { print $2 }' | sort -u); do
+              if awk -v found="$minos" -v target="$MACOSX_DEPLOYMENT_TARGET" 'BEGIN {
+                   split(found, f, "."); split(target, t, ".")
+                   exit !(f[1] > t[1] || (f[1] == t[1] && f[2] > t[2]))
+                 }'; then
+                echo "::error::$file is built for macOS $minos, newer than $MACOSX_DEPLOYMENT_TARGET"
+                status=1
+              fi
+            done
+          done
+          exit $status
 
       # ── Package ────────────────────────────────────────────────────────────
       - name: Create release archive
@@ -269,11 +350,11 @@ jobs:
 
             Each archive contains the pre-compiled library, headers, and launcher executables.
 
-            | File | Platform |
-            |------|----------|
-            | `dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip` | Windows (x64) |
-            | `dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz` | Linux (x64) |
-            | `dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz` | macOS (Apple Silicon) |
+            | File | Platform | Runs on |
+            |------|----------|---------|
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-windows-x64.zip` | Windows (x64) | Windows 10 or newer |
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-linux-x64.tar.gz` | Linux (x64) | glibc 2.35 or newer: Ubuntu 22.04+, Debian 12+, Fedora 36+ |
+            | `dynamic-neural-field-composer-${{ github.ref_name }}-macos-arm64.tar.gz` | macOS (Apple Silicon) | macOS 13.3 or newer |
 
             ## Archive contents
 
@@ -296,6 +377,13 @@ jobs:
 
             # Static layout application
             ./bin/dnf-composer-static
+            ```
+
+            The macOS binaries are not notarized. If macOS refuses to open them, clear the
+            download quarantine flag once from the extracted directory:
+
+            ```bash
+            xattr -dr com.apple.quarantine .
             ```
 
             ## Using as a library

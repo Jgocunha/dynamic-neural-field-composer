@@ -275,6 +275,10 @@ cmake --install build-dnfc --config Release
 With `VCPKG_MANIFEST_DIR` pointing at your project, dnf-composer and your project are built
 from one dependency list, so they cannot end up with two different `imgui` versions.
 
+On Windows, `cmake --install` also copies two runtime DLLs into `<prefix>/bin`: `fftw3.dll`,
+which vcpkg's `x64-windows` triplet builds as a DLL, and the MSVC runtime. That lets the
+installed executables start on machines that have neither.
+
 The exported target's include path includes both `<prefix>/include` and
 `<prefix>/include/dnf_composer`, so `#include` headers either the same way the library's
 own sources do, or with the `dnf_composer/` prefix -- both resolve:
