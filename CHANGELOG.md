@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
   its vcpkg dependencies now target macOS 13.3 through the `arm64-osx-portable` overlay
   triplet. The Windows archive was missing `fftw3.dll` and the MSVC runtime; on Windows,
   `cmake --install` now installs both next to the executables. Each release job fails if
-  its binaries need more than these minimums.
+  its binaries need more than these minimums (#204).
 
 ## [3.0.0] - 2026-11-27
 

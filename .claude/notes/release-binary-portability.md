@@ -38,4 +38,5 @@ Checking an archive by hand, without running it:
 
 To try the release jobs without tagging, run the Release workflow manually (Actions ->
 Release -> Run workflow, on any branch). It builds, checks and uploads the three archives as
-workflow artifacts named `v0.0.0`; the `create-release` job only runs for tags.
+workflow artifacts named `v0.0.0`; the `create-release` job only runs for tag pushes, so a
+manual run started from a tag builds but does not publish either.

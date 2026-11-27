@@ -323,7 +323,8 @@ jobs:
   # ── GitHub Release (after all builds succeed) ──────────────────────────
   create-release:
     needs: [release-windows, release-linux, release-macos]
-    if: github.ref_type == 'tag'
+    # A manual run can target a tag too; only a tag push publishes.
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-24.04
 
     permissions:
