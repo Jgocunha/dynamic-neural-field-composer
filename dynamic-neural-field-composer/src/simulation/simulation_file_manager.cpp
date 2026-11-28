@@ -539,6 +539,17 @@ namespace dnf_composer
                 }
             }
             break;
+            case element::ActivationFunctionType::ABSSIGMOID:
+            {
+                if (const auto* fn = dynamic_cast<const element::AbsSigmoidFunction*>(p.activationFunction.get())) {
+                    elementJson["activationFunction"] = {
+                        {"type", "abs_sigmoid"},
+                        {"x_shift", fn->getXShift()},
+                        {"beta", fn->getBeta()},
+                    };
+                }
+            }
+            break;
             }
         }
         break;
